@@ -1,0 +1,149 @@
+import { describe, it, expect, afterEach } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
+import PopoverContentTest from './popover-content-test.svelte';
+
+describe('Popover.Content', () => {
+  // Clean up any portaled content after each test
+  afterEach(() => {
+    const dialogs = document.querySelectorAll('[role="dialog"]');
+    dialogs.forEach((d) => d.remove());
+  });
+
+  describe('Visibility', () => {
+    it('is hidden by default', async () => {
+      render(PopoverContentTest);
+
+      // Popover should not be visible initially
+      const dialog = document.querySelector('[role="dialog"]');
+      expect(dialog).toBeNull();
+    });
+
+    it('opens when trigger is clicked', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+    });
+
+    it('closes when pressing Escape', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      await userEvent.keyboard('{Escape}');
+
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+    });
+
+    it('respects shouldCloseOnEscape=false', async () => {
+      const screen = render(PopoverContentTest, { shouldCloseOnEscape: false });
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      await userEvent.keyboard('{Escape}');
+
+      // Small delay then check it's still there
+      await new Promise((r) => setTimeout(r, 100));
+      const dialog = document.querySelector('[role="dialog"]');
+      expect(dialog).toBeTruthy();
+    });
+  });
+
+  describe('Modal vs Non-Modal', () => {
+    it('has aria-modal="true" for modal popovers', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect
+        .poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-modal'))
+        .toBe('true');
+    });
+
+    it('has aria-modal="false" for non-modal popovers', async () => {
+      const screen = render(PopoverContentTest, { isNonModal: true });
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect
+        .poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-modal'))
+        .toBe('false');
+    });
+  });
+
+  describe('Close on Blur', () => {
+    it('shouldCloseOnBlur defaults to false for modal popovers', async () => {
+      const screen = render(PopoverContentTest, { isNonModal: false });
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      // Tab to an element outside - should NOT close for modal
+      await userEvent.keyboard('{Tab}');
+      await new Promise((r) => setTimeout(r, 100));
+
+      // Modal popover traps focus, so it should still be open
+      const dialog = document.querySelector('[role="dialog"]');
+      expect(dialog).toBeTruthy();
+    });
+
+    it('shouldCloseOnBlur defaults to true for non-modal popovers', async () => {
+      // Create an external button to focus on
+      const externalButton = document.createElement('button');
+      externalButton.textContent = 'External Button';
+      document.body.appendChild(externalButton);
+
+      try {
+        const screen = render(PopoverContentTest, { isNonModal: true });
+        const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+        await trigger.click();
+        await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+        // Focus the external button to trigger blur
+        externalButton.focus();
+
+        // Non-modal with shouldCloseOnBlur should close
+        await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+      } finally {
+        externalButton.remove();
+      }
+    });
+  });
+
+  describe('Positioning', () => {
+    it('is positioned with fixed positioning', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+      const style = window.getComputedStyle(dialog);
+
+      expect(style.position).toBe('fixed');
+    });
+
+    it('has z-index for stacking', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+      const style = window.getComputedStyle(dialog);
+
+      expect(parseInt(style.zIndex)).toBeGreaterThan(0);
+    });
+  });
+});

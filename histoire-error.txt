@@ -1,0 +1,13 @@
+file:///C:/Users/Agustin%20Delgado/Desktop/Agustin/svelte-components/node_modules/histoire/dist/node/config.js:317
+                    throw new Error(pc.red(`Histoire config: theme.favicon seems to target a file that does not exist: ${file} (resolved as ${resolvedFile}).\nThe favicon file should be placed in the vite 'public' directory.\nExample: if the file is in <project>/public/img/favicon.ico, you can put 'img/favicon.ico' or './public/img/favicon.ico'.`));
+                          ^
+
+Error: [31mHistoire config: theme.favicon seems to target a file that does not exist: favicon.png (resolved as C:/Users/Agustin Delgado/Desktop/Agustin/svelte-components/static/favicon.png).
+The favicon file should be placed in the vite 'public' directory.
+Example: if the file is in <project>/public/img/favicon.ico, you can put 'img/favicon.ico' or './public/img/favicon.ico'.[39m
+    at processConfig (file:///C:/Users/Agustin%20Delgado/Desktop/Agustin/svelte-components/node_modules/histoire/dist/node/config.js:317:27)
+    at createContext (file:///C:/Users/Agustin%20Delgado/Desktop/Agustin/svelte-components/node_modules/histoire/dist/node/context.js:20:11)
+    at async start (file:///C:/Users/Agustin%20Delgado/Desktop/Agustin/svelte-components/node_modules/histoire/dist/node/commands/dev.js:9:21)
+    at async devCommand (file:///C:/Users/Agustin%20Delgado/Desktop/Agustin/svelte-components/node_modules/histoire/dist/node/commands/dev.js:42:12)
+
+Node.js v25.2.1
