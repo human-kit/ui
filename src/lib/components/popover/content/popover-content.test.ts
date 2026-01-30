@@ -146,4 +146,86 @@ describe('Popover.Content', () => {
       expect(parseInt(style.zIndex)).toBeGreaterThan(0);
     });
   });
+
+  describe('CSS Custom Properties', () => {
+    it('exposes --trigger-width matching the trigger width', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      // Get trigger width before clicking
+      const triggerElement = trigger.element() as HTMLElement;
+      const triggerWidth = triggerElement.offsetWidth;
+
+      await trigger.click();
+
+      // Wait for the popover to appear and CSS vars to be applied
+      // Use approximate matching due to floating point precision
+      await expect.poll(() => {
+        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+        if (!dialog) return false;
+        const triggerWidthValue = dialog.style.getPropertyValue('--trigger-width');
+        if (!triggerWidthValue) return false;
+        const value = parseFloat(triggerWidthValue);
+        return Math.abs(value - triggerWidth) < 1; // Within 1px tolerance
+      }, { timeout: 2000 }).toBe(true);
+    });
+
+    it('exposes --trigger-height matching the trigger height', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      const triggerElement = trigger.element() as HTMLElement;
+      const triggerHeight = triggerElement.offsetHeight;
+
+      await trigger.click();
+
+      await expect.poll(() => {
+        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+        if (!dialog) return null;
+        return dialog.style.getPropertyValue('--trigger-height');
+      }, { timeout: 2000 }).toBe(`${triggerHeight}px`);
+    });
+
+    it('exposes --available-width as a positive pixel value', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+
+      await expect.poll(() => {
+        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+        if (!dialog) return null;
+        const value = dialog.style.getPropertyValue('--available-width');
+        return value && value.match(/^\d+(\.\d+)?px$/) && parseFloat(value) > 0;
+      }, { timeout: 2000 }).toBe(true);
+    });
+
+    it('exposes --available-height as a positive pixel value', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+
+      await expect.poll(() => {
+        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+        if (!dialog) return null;
+        const value = dialog.style.getPropertyValue('--available-height');
+        return value && value.match(/^\d+(\.\d+)?px$/) && parseFloat(value) > 0;
+      }, { timeout: 2000 }).toBe(true);
+    });
+
+    it('exposes --transform-origin for animations', async () => {
+      const screen = render(PopoverContentTest);
+      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+      await trigger.click();
+
+      await expect.poll(() => {
+        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+        if (!dialog) return null;
+        const value = dialog.style.getPropertyValue('--transform-origin');
+        return value && value.match(/^(center|left|right|top|bottom)\s+(center|top|bottom|left|right)$/);
+      }, { timeout: 2000 }).toBeTruthy();
+    });
+  });
 });

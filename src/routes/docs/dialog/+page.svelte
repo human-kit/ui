@@ -52,7 +52,7 @@
 								<Dialog.Content
 									{shouldCloseOnEscape}
 									{shouldCloseOnInteractOutside}
-									class="w-[400px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+									class="w-100 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 								>
 									<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 										Dialog Title
@@ -121,7 +121,7 @@
 								<Dialog.Portal>
 									<Dialog.Overlay />
 									<Dialog.Content
-										class="w-[400px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+										class="w-100 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 									>
 										<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 											Controlled Dialog
@@ -174,7 +174,7 @@
 							<Dialog.Portal>
 								<Dialog.Overlay class="bg-purple-900/70! backdrop-blur-sm" />
 								<Dialog.Content
-									class="w-[400px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+									class="w-100 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 								>
 									<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 										Custom Overlay
@@ -212,7 +212,7 @@
 							<Dialog.Portal>
 								<Dialog.Overlay />
 								<Dialog.Content
-									class="w-[400px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+									class="w-100 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 								>
 									<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 										First Dialog
@@ -234,7 +234,7 @@
 											<Dialog.Portal>
 												<Dialog.Overlay />
 												<Dialog.Content
-													class="w-[350px] max-w-[85vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+													class="w-87.5 max-w-[85vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 												>
 													<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 														Nested Dialog
@@ -286,7 +286,7 @@
 								<Dialog.Overlay />
 								<Dialog.Content
 									shouldCloseOnInteractOutside={false}
-									class="w-[450px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+									class="w-112.5 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 								>
 									<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 										Create Account
@@ -365,7 +365,7 @@
 							<Dialog.Portal>
 								<Dialog.Overlay />
 								<Dialog.Content
-									class="w-[450px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+									class="w-112.5 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 								>
 									<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 										Select a Country
@@ -434,7 +434,7 @@
 							<Dialog.Portal>
 								<Dialog.Overlay />
 								<Dialog.Content
-									class="w-[420px] max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+									class="w-105 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 								>
 									<h3 class="mb-2 text-lg font-semibold text-blue-600">Level 1</h3>
 									<p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
@@ -454,7 +454,7 @@
 											<Dialog.Portal>
 												<Dialog.Overlay />
 												<Dialog.Content
-													class="w-[380px] max-w-[85vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+													class="w-95 max-w-[85vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 												>
 													<h3 class="mb-2 text-lg font-semibold text-green-600">Level 2</h3>
 													<p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
@@ -474,7 +474,7 @@
 															<Dialog.Portal>
 																<Dialog.Overlay />
 																<Dialog.Content
-																	class="w-[340px] max-w-[80vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+																	class="w-85 max-w-[80vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 																>
 																	<h3 class="mb-2 text-lg font-semibold text-yellow-600">
 																		Level 3
@@ -496,7 +496,7 @@
 																			<Dialog.Portal>
 																				<Dialog.Overlay />
 																				<Dialog.Content
-																					class="w-[300px] max-w-[75vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+																					class="w-75 max-w-[75vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 																				>
 																					<h3 class="mb-2 text-lg font-semibold text-orange-600">
 																						Level 4
@@ -518,7 +518,7 @@
 																							<Dialog.Portal>
 																								<Dialog.Overlay />
 																								<Dialog.Content
-																									class="w-[260px] max-w-[70vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+																									class="w-65 max-w-[70vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800"
 																								>
 																									<h3
 																										class="mb-2 text-lg font-semibold text-red-600"

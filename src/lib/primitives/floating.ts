@@ -3,6 +3,7 @@ import {
   flip,
   shift,
   offset as offsetMiddleware,
+  size,
   autoUpdate,
   type Placement as FloatingPlacement
 } from '@floating-ui/dom';
@@ -82,7 +83,45 @@ function normalizeExtendedPlacement(placement: ExtendedPlacement): FloatingPlace
 }
 
 /**
+ * Calculates the transform origin based on the final placement.
+ * Used for animations that should originate from the anchor point.
+ */
+function getTransformOrigin(placement: FloatingPlacement): string {
+  const [side, align] = placement.split('-') as [string, string | undefined];
+
+  const sideMap: Record<string, string> = {
+    top: 'bottom',
+    bottom: 'top',
+    left: 'right',
+    right: 'left'
+  };
+
+  const alignMap: Record<string, string> = {
+    start: 'left',
+    end: 'right'
+  };
+
+  const vertical = side === 'top' || side === 'bottom';
+  const oppositeSide = sideMap[side] || 'top';
+
+  if (vertical) {
+    const horizontalAlign = align ? alignMap[align] || 'center' : 'center';
+    return `${horizontalAlign} ${oppositeSide}`;
+  } else {
+    const verticalAlign = align ? (align === 'start' ? 'top' : 'bottom') : 'center';
+    return `${oppositeSide} ${verticalAlign}`;
+  }
+}
+
+/**
  * Creates a Svelte action for positioning a floating element relative to an anchor.
+ * 
+ * Exposes CSS custom properties on the floating element:
+ * - `--trigger-width`: The trigger element's width
+ * - `--trigger-height`: The trigger element's height
+ * - `--available-width`: Available width between trigger and viewport edge
+ * - `--available-height`: Available height between trigger and viewport edge
+ * - `--transform-origin`: Coordinates for animations (e.g., "center top")
  */
 export function createFloating(
   anchorElement: HTMLElement | null,
@@ -106,7 +145,17 @@ export function createFloating(
     const middleware = [
       offsetMiddleware(offset),
       ...(shouldFlip ? [flip({ boundary: boundaryElement || undefined })] : []),
-      shift({ boundary: boundaryElement || undefined })
+      shift({ boundary: boundaryElement || undefined }),
+      size({
+        apply({ rects, availableWidth, availableHeight, elements, placement }) {
+          const floatingEl = elements.floating;
+          floatingEl.style.setProperty('--trigger-width', `${rects.reference.width}px`);
+          floatingEl.style.setProperty('--trigger-height', `${rects.reference.height}px`);
+          floatingEl.style.setProperty('--available-width', `${availableWidth}px`);
+          floatingEl.style.setProperty('--available-height', `${availableHeight}px`);
+          floatingEl.style.setProperty('--transform-origin', getTransformOrigin(placement));
+        }
+      })
     ];
 
     async function updatePosition() {
@@ -142,6 +191,13 @@ export function createFloating(
 /**
  * Simple Svelte action for floating positioning.
  * Use when you just need positioning without complex state management.
+ * 
+ * Exposes CSS custom properties on the floating element:
+ * - `--trigger-width`: The trigger element's width
+ * - `--trigger-height`: The trigger element's height
+ * - `--available-width`: Available width between trigger and viewport edge
+ * - `--available-height`: Available height between trigger and viewport edge
+ * - `--transform-origin`: Coordinates for animations (e.g., "center top")
  */
 export function floating(
   floatingElement: HTMLElement,
@@ -159,7 +215,17 @@ export function floating(
   const middleware = [
     offsetMiddleware(offset),
     ...(shouldFlip ? [flip({ boundary: boundaryElement || undefined })] : []),
-    shift({ boundary: boundaryElement || undefined })
+    shift({ boundary: boundaryElement || undefined }),
+    size({
+      apply({ rects, availableWidth, availableHeight, elements, placement }) {
+        const floatingEl = elements.floating;
+        floatingEl.style.setProperty('--trigger-width', `${rects.reference.width}px`);
+        floatingEl.style.setProperty('--trigger-height', `${rects.reference.height}px`);
+        floatingEl.style.setProperty('--available-width', `${availableWidth}px`);
+        floatingEl.style.setProperty('--available-height', `${availableHeight}px`);
+        floatingEl.style.setProperty('--transform-origin', getTransformOrigin(placement));
+      }
+    })
   ];
 
   let cleanup: (() => void) | null = null;

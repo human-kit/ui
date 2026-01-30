@@ -77,7 +77,7 @@
 							</div>
 
 							<ComboBox.Popover
-								class="mt-1 max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+								class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
 							>
 								<ComboBox.List emptyPlaceholder="No countries found">
 									{#each filteredCountries as country (country.id)}
