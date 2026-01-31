@@ -15,7 +15,7 @@
 		{ id: 'ca', name: 'Canada' }
 	];
 
-	let selectedCountry = $state<Set<string | number>>(new Set());
+	let selectedCountry = $state<string | number | undefined>();
 </script>
 
 <Dialog.Root>
@@ -54,7 +54,7 @@
 				<div style="margin-top: 16px;">
 					<button type="button" onclick={close} data-testid="close-button">Close</button>
 				</div>
-				<div data-testid="selected-value">{Array.from(selectedCountry).join(',')}</div>
+				<div data-testid="selected-value">{selectedCountry ?? ''}</div>
 			</Dialog.Content>
 		</Dialog.Portal>
 	{/snippet}

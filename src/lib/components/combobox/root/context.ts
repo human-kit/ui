@@ -60,12 +60,16 @@ export type ComboBoxContext<T extends object = object> = {
   setInputValue: (value: string) => void;
   /** Open the popover */
   open: () => void;
-  /** Close the popover */
-  close: () => void;
+  /** Close the popover. Pass refocusInput=true to keep focus on input. */
+  close: (refocusInput?: boolean) => void;
   /** Toggle the popover */
   toggle: () => void;
   /** Select an item */
   select: (id: string | number, label: string) => void;
+  /** Remove an item from selection (multiple mode) */
+  removeItem: (id: string | number) => void;
+  /** Clear all selections */
+  clearSelection: () => void;
   /** Called when popover open state changes */
   onOpenChange: (open: boolean) => void;
   /** Set focused item ID (virtual focus) */

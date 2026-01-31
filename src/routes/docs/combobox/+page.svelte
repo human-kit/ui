@@ -25,7 +25,7 @@
 	let triggerMode: 'focus' | 'input' | 'press' = $state('press');
 	let placeholder = $state('Search countries...');
 	let inputValue = $state('');
-	let selectedValue = $state<Set<string | number>>(new Set());
+	let selectedValue = $state<string | number | undefined>();
 
 	const filteredCountries = $derived(
 		inputValue
@@ -35,7 +35,7 @@
 
 	// Controlled state
 	let controlledInputValue = $state('');
-	let controlledSelectedValue = $state<Set<string | number>>(new Set());
+	let controlledSelectedValue = $state<string | number | undefined>();
 
 	const controlledFilteredCountries = $derived(
 		controlledInputValue
@@ -101,7 +101,7 @@
 						<DemoInput label="placeholder" bind:value={placeholder} />
 						<hr class="border-gray-200 dark:border-gray-700" />
 						<DemoState label="inputValue" value={inputValue} />
-						<DemoState label="selectedValue" value={[...selectedValue]} />
+						<DemoState label="selectedValue" value={selectedValue} />
 						<DemoState
 							label="filteredCount"
 							value={`${filteredCountries.length}/${countries.length}`}
@@ -161,7 +161,7 @@
 							</button>
 							<button
 								onclick={() => {
-									controlledSelectedValue = new Set(['us']);
+									controlledSelectedValue = 'us';
 									controlledInputValue = 'United States';
 								}}
 								class="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
@@ -170,7 +170,7 @@
 							</button>
 							<button
 								onclick={() => {
-									controlledSelectedValue = new Set();
+									controlledSelectedValue = undefined;
 									controlledInputValue = '';
 								}}
 								class="rounded-lg bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700"
@@ -184,7 +184,7 @@
 				{#snippet controls()}
 					<div class="space-y-4">
 						<DemoState label="inputValue" value={controlledInputValue} />
-						<DemoState label="selectedValue" value={[...controlledSelectedValue]} />
+						<DemoState label="selectedValue" value={controlledSelectedValue} />
 					</div>
 				{/snippet}
 			</DemoSection>

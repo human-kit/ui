@@ -3,7 +3,7 @@
 
 	type Props = {
 		onInputChange?: (value: string) => void;
-		trigger?: 'focus' | 'input' | 'manual';
+		trigger?: 'focus' | 'input' | 'press';
 	};
 
 	let { onInputChange, trigger = 'focus' }: Props = $props();
@@ -22,7 +22,7 @@
 	];
 
 	let filterValue = $state('');
-	let selectedValue = $state<Set<string | number>>(new Set());
+	let selectedValue = $state<string | number | undefined>();
 
 	const filteredCountries = $derived(
 		filterValue === ''

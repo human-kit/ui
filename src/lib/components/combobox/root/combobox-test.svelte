@@ -37,3 +37,6 @@
 		</ComboBox.List>
 	</ComboBox.Popover>
 </ComboBox>
+
+<!-- Button outside the combobox for testing blur behavior -->
+<button type="button" data-testid="outside-button">Outside</button>

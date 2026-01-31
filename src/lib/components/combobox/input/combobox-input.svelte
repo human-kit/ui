@@ -22,8 +22,8 @@
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		ctx.setInputValue(target.value);
-		// Open on input if trigger is 'input' (default) or 'focus'
-		if (!ctx.isOpen && target.value.length > 0 && ctx.trigger !== 'press') {
+		// Open on input for all trigger modes when user types
+		if (!ctx.isOpen && target.value.length > 0) {
 			ctx.open();
 		}
 	}

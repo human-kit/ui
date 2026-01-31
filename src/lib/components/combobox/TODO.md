@@ -7,6 +7,7 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 ## 🔊 Accesibilidad
 
 ### Completado ✅
+
 - [x] ARIA pattern: `aria-activedescendant` para virtual focus
 - [x] `aria-expanded`, `aria-haspopup`, `aria-controls` en input
 - [x] `aria-label` en ListBox
@@ -15,6 +16,7 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [x] `aria-disabled` en items/placeholder deshabilitados
 
 ### Pendiente
+
 - [ ] **Live regions para conteo de resultados**
   - Agregar `<div aria-live="polite">` que anuncie "{N} resultados disponibles" al filtrar
   - Importante para screen readers que no ven el cambio visual
@@ -35,12 +37,14 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 ## 📈 Escalabilidad
 
 ### Completado ✅
+
 - [x] Hook `useVirtualFocus` reutilizable
 - [x] Controlled/uncontrolled mode
 - [x] Filtrado automático en items
 - [x] `emptyPlaceholder` reactivo
 
 ### Pendiente
+
 - [ ] **`filterFn` prop customizable**
   - Actualmente filtrado es case-insensitive includes
   - Permitir: fuzzy search, startsWith, exact match, async search
@@ -73,12 +77,14 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 ## ⚡ Performance
 
 ### Completado ✅
+
 - [x] Cache de DOM queries con invalidación (`cachedItemOrder`)
 - [x] `untrack()` para evitar loops infinitos en effects
 - [x] Subscription pattern para `itemCount` reactivo
 - [x] Scoped queries via `containerRef`
 
 ### Pendiente
+
 - [ ] **Memoización de `isVisible` en ListBoxItem**
   - Actualmente se recalcula en cada render
   - Considerar memoizar con `$derived` más granular
@@ -100,6 +106,7 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 ## 🔧 Svelte 5 Runes Best Practices
 
 ### Completado ✅
+
 - [x] `$state` para estado reactivo
 - [x] `$derived` para valores computados
 - [x] `$effect` con cleanup functions
@@ -110,6 +117,7 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [x] Effects consolidados - Usando 1 `$effect` + `onDestroy` en vez de 2 effects
 
 ### Revisado - No requiere cambios
+
 - [x] **`$effect.pre`**: Revisado - no hay race conditions que lo requieran
 - [x] **Context typing**: El type único es apropiado - tree-shaking no aplica a context objects
 
@@ -118,6 +126,7 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 ## 🧪 Testing
 
 ### Completado ✅
+
 - [x] 44 tests unitarios pasando
 - [x] Keyboard navigation tests
 - [x] Selection tests  
@@ -130,6 +139,7 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [x] Selection behavior (Enter, click, Escape restoration)
 
 ### Pendiente
+
 - [ ] **Tests con muchos items (100+)** - performance tests
 - [ ] **Visual regression tests** - screenshots de estados
 

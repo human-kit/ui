@@ -399,7 +399,7 @@ describe('ComboBox', () => {
       await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('does not open on typing when trigger is press', async () => {
+    it('opens on typing when trigger is press', async () => {
       const screen = render(ComboBoxTest);
       const input = screen.getByRole('combobox');
 
@@ -407,8 +407,8 @@ describe('ComboBox', () => {
       input.element().focus();
       await userEvent.keyboard('a');
 
-      // Should still be closed (trigger='press' means only open on click/press)
-      await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+      // Should open (all trigger modes open on typing)
+      await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
   });
 
@@ -827,16 +827,16 @@ describe('ComboBox', () => {
       await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('trigger="press" does not auto-open on input', async () => {
+    it('trigger="press" opens on input', async () => {
       const screen = render(ComboBoxTest, { trigger: 'press' });
       const input = screen.getByRole('combobox');
 
-      // Focus and type - should remain closed because trigger is 'press'
+      // Focus and type - should open (all trigger modes open on typing)
       input.element().focus();
       await userEvent.keyboard('argentina');
 
-      // Should remain closed (typing doesn't open)
-      await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+      // Should open
+      await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('trigger="press" opens on click/press', async () => {
@@ -1129,6 +1129,95 @@ describe('ComboBox', () => {
       const calls = onInputChangeMock.mock.calls;
       const lastCall = calls[calls.length - 1];
       expect(lastCall[0]).toBe('Argent');
+    });
+  });
+
+  describe('Focus Behavior', () => {
+    it('allows input to lose focus when clicking outside with trigger="press"', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'press' });
+      const input = screen.getByRole('combobox');
+      const outsideButton = screen.getByTestId('outside-button');
+
+      // Focus the input using focus() method (not click, which opens popover with trigger=press)
+      input.element().focus();
+      expect(document.activeElement).toBe(input.element());
+      // Popover should still be closed
+      await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+
+      // Click outside (popover is closed so nothing is blocking)
+      await outsideButton.click();
+
+      // Input should lose focus
+      expect(document.activeElement).not.toBe(input.element());
+      expect(document.activeElement).toBe(outsideButton.element());
+    });
+
+    it('allows input to lose focus when clicking outside with trigger="input"', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'input' });
+      const input = screen.getByRole('combobox');
+      const outsideButton = screen.getByTestId('outside-button');
+
+      // Focus the input (without typing so popover doesn't open)
+      await input.click();
+      expect(document.activeElement).toBe(input.element());
+
+      // Click outside
+      await outsideButton.click();
+
+      // Input should lose focus
+      expect(document.activeElement).not.toBe(input.element());
+      expect(document.activeElement).toBe(outsideButton.element());
+    });
+
+    it('keeps focus on input after pressing Escape', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'press' });
+      const input = screen.getByRole('combobox');
+
+      // Open popover
+      await input.click();
+      await userEvent.keyboard('{ArrowDown}');
+      await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+      // Press Escape
+      await userEvent.keyboard('{Escape}');
+
+      // Popover should close but input should keep focus
+      await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+      expect(document.activeElement).toBe(input.element());
+    });
+
+    it('keeps focus on input after selecting an item', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'press' });
+      const input = screen.getByRole('combobox');
+
+      // Open popover and select
+      await input.click();
+      await userEvent.keyboard('{ArrowDown}');
+      await userEvent.keyboard('{Enter}');
+
+      // Input should keep focus after selection
+      expect(document.activeElement).toBe(input.element());
+    });
+
+    it('input can be blurred after popover closes with Escape', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'press' });
+      const input = screen.getByRole('combobox');
+      const outsideButton = screen.getByTestId('outside-button');
+
+      // Open popover
+      await input.click();
+      await userEvent.keyboard('{ArrowDown}');
+      await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+      // Close with Escape
+      await userEvent.keyboard('{Escape}');
+      await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+
+      // Now click outside - popover is closed so nothing blocks
+      await outsideButton.click();
+
+      // Focus should move to the button
+      expect(document.activeElement).toBe(outsideButton.element());
     });
   });
 });

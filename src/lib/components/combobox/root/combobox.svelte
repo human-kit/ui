@@ -7,9 +7,9 @@
 	type ComboBoxProps<T> = {
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
-		/** Selected value(s). Can be bound with bind:value */
-		value?: Set<string | number>;
-		defaultValue?: 'all' | Iterable<string | number>;
+		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
+		value?: string | number | (string | number)[];
+		defaultValue?: string | number | (string | number)[];
 		/** Current input value. Can be bound with bind:inputValue */
 		inputValue?: string;
 		defaultInputValue?: string;
@@ -21,7 +21,7 @@
 		trigger?: 'focus' | 'input' | 'press';
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
-		onChange?: (value: Set<string | number>) => void;
+		onChange?: (value: string | number | (string | number)[] | undefined) => void;
 		/** Optional: Array of items for dynamic rendering */
 		items?: T[];
 		/** Optional: Snippet to render each item (used with items prop) */
@@ -106,11 +106,22 @@
 	}
 
 	function parseSelection(
-		val: 'all' | Iterable<string | number> | undefined
+		val: string | number | (string | number)[] | undefined
 	): Set<string | number> {
 		if (val === undefined) return new Set();
-		if (val === 'all') return new Set();
-		return new Set(val);
+		if (Array.isArray(val)) return new Set(val);
+		return new Set([val]);
+	}
+
+	// Convert internal Set back to external value based on selectionMode
+	function toExternalValue(
+		internalSet: Set<string | number>
+	): string | number | (string | number)[] | undefined {
+		if (selectionMode === 'single') {
+			const arr = Array.from(internalSet);
+			return arr.length > 0 ? arr[0] : undefined;
+		}
+		return Array.from(internalSet);
 	}
 
 	// Reactive controlled mode checks - if prop changes from undefined to defined, behavior updates
@@ -154,12 +165,12 @@
 		if (val.trim() === '' && currentSelection.size > 0) {
 			const emptySelection = new Set<string | number>();
 			if (isSelectionControlled) {
-				onChange?.(emptySelection);
+				onChange?.(toExternalValue(emptySelection));
 			} else {
 				selectedInternal = emptySelection;
-				onChange?.(emptySelection);
+				onChange?.(toExternalValue(emptySelection));
 			}
-			value = emptySelection;
+			value = toExternalValue(emptySelection);
 			selectedLabel = '';
 		}
 	}
@@ -176,23 +187,63 @@
 			inputValueInternal = label;
 			inputValue = label;
 			onInputChange?.(label);
-			setIsOpen(false);
+			closePopover(true); // Close and keep focus on input
 		} else {
 			if (effectiveSelectionBehavior === 'toggle' && newSelection.has(id)) {
 				newSelection.delete(id);
 			} else {
 				newSelection.add(id);
 			}
+			// Clear input after selection in multiple mode (to continue searching)
+			inputValueInternal = '';
+			inputValue = '';
+			onInputChange?.('');
 		}
 
 		if (isSelectionControlled) {
-			onChange?.(newSelection);
+			onChange?.(toExternalValue(newSelection));
 		} else {
 			selectedInternal = newSelection;
-			onChange?.(newSelection);
+			onChange?.(toExternalValue(newSelection));
 		}
 		// Update bindable value
-		value = newSelection;
+		value = toExternalValue(newSelection);
+	}
+
+	function removeItem(id: string | number) {
+		const newSelection = new Set(currentSelection);
+		newSelection.delete(id);
+
+		if (isSelectionControlled) {
+			onChange?.(toExternalValue(newSelection));
+		} else {
+			selectedInternal = newSelection;
+			onChange?.(toExternalValue(newSelection));
+		}
+		value = toExternalValue(newSelection);
+
+		// Clear selectedLabel if we removed the last item
+		if (newSelection.size === 0) {
+			selectedLabel = '';
+		}
+	}
+
+	function clearSelection() {
+		const emptySelection = new Set<string | number>();
+
+		if (isSelectionControlled) {
+			onChange?.(toExternalValue(emptySelection));
+		} else {
+			selectedInternal = emptySelection;
+			onChange?.(toExternalValue(emptySelection));
+		}
+		value = toExternalValue(emptySelection);
+		selectedLabel = '';
+
+		// Also clear the input
+		inputValueInternal = '';
+		inputValue = '';
+		onInputChange?.('');
 	}
 
 	function openPopover() {
@@ -220,14 +271,15 @@
 		}
 	}
 
-	function closePopover() {
+	function closePopover(refocusInput = false) {
 		setIsOpen(false);
 		// Reset navigation state
 		navigation.reset();
 		// Re-enable filtering for next open
 		shouldFilter = true;
-		// Only refocus input if trigger is not 'focus', to prevent re-opening on blur
-		if (trigger !== 'focus') {
+		// Only refocus input when explicitly requested (e.g., after selection)
+		// Never refocus in focus mode to prevent re-opening
+		if (refocusInput && trigger !== 'focus') {
 			inputRef?.focus();
 		}
 	}
@@ -346,7 +398,7 @@
 				break;
 			case 'Escape':
 				if (currentIsOpen) {
-					closePopover();
+					closePopover(true); // Keep focus on input after Escape
 					// Stop propagation so parent dialogs don't also close
 					event.stopPropagation();
 					event.stopImmediatePropagation();
@@ -440,6 +492,8 @@
 		close: closePopover,
 		toggle: togglePopover,
 		select: selectItem,
+		removeItem,
+		clearSelection,
 		onOpenChange: setIsOpen,
 		setFocusedItemId: navigation.setFocused,
 		registerItem: navigation.register,
