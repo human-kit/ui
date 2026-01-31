@@ -22,7 +22,7 @@
 	];
 
 	// Interactive playground state
-	let triggerMode: 'focus' | 'input' | 'manual' = $state('focus');
+	let triggerMode: 'focus' | 'input' | 'press' = $state('press');
 	let placeholder = $state('Search countries...');
 	let inputValue = $state('');
 	let selectedValue = $state<Set<string | number>>(new Set());
@@ -46,7 +46,7 @@
 	const triggerOptions = [
 		{ value: 'focus', label: 'focus' },
 		{ value: 'input', label: 'input' },
-		{ value: 'manual', label: 'manual' }
+		{ value: 'press', label: 'press' }
 	];
 </script>
 

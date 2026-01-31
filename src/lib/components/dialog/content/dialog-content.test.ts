@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DialogTest from '../root/dialog-test.svelte';
+import DialogWithComboboxTest from '../root/dialog-with-combobox-test.svelte';
 
 describe('Dialog.Content', () => {
   // Clean up any portaled content after each test
@@ -158,6 +159,76 @@ describe('Dialog.Content', () => {
       const style = window.getComputedStyle(dialog);
 
       expect(parseInt(style.zIndex)).toBeGreaterThan(0);
+    });
+  });
+
+  describe('ComboBox Inside Dialog', () => {
+    it('does not close dialog when selecting a combobox option', async () => {
+      const screen = render(DialogWithComboboxTest, { comboboxTrigger: 'input' });
+      const trigger = screen.getByTestId('dialog-trigger');
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      // Wait for the ComboBox input to be available inside the portal
+      await expect.poll(() => document.querySelector('[data-testid="combobox-input"]')).toBeTruthy();
+
+      // Focus and type to open the ComboBox
+      const comboboxInput = document.querySelector('[data-testid="combobox-input"]') as HTMLInputElement;
+      await comboboxInput.focus();
+      comboboxInput.value = 'a';
+      comboboxInput.dispatchEvent(new InputEvent('input', { bubbles: true }));
+
+      // Wait for combobox popover to appear
+      await expect.poll(() => document.querySelector('[role="option"]')).toBeTruthy();
+
+      // Click on an option
+      const option = document.querySelector('[role="option"]') as HTMLElement;
+      option.click();
+
+      // Wait a bit for any potential close to happen
+      await new Promise((r) => setTimeout(r, 200));
+
+      // The Dialog should still be open
+      const dialog = document.querySelector('[role="dialog"]');
+      expect(dialog).toBeTruthy();
+    });
+
+    it('ComboBox with trigger="focus" works when opened manually', async () => {
+      const screen = render(DialogWithComboboxTest, {
+        comboboxTrigger: 'focus',
+        comboboxAutofocus: false
+      });
+      const trigger = screen.getByTestId('dialog-trigger');
+
+      await trigger.click();
+      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+      // Wait for the ComboBox input to be available
+      await expect.poll(() => document.querySelector('[data-testid="combobox-input"]')).toBeTruthy();
+
+      // Focus the combobox input to open it (trigger="focus")
+      const comboboxInput = document.querySelector('[data-testid="combobox-input"]') as HTMLElement;
+      comboboxInput.focus();
+
+      // Wait for focus and popover to open
+      await expect.poll(() => document.querySelector('[data-testid="combobox-item-ar"]'), { timeout: 2000 }).toBeTruthy();
+
+      // Click on an option
+      const option = document.querySelector('[data-testid="combobox-item-ar"]') as HTMLElement;
+      option.click();
+
+      // Wait for selection
+      await new Promise((r) => setTimeout(r, 100));
+
+      // The value should be selected
+      await expect.poll(() =>
+        document.querySelector('[data-testid="selected-value"]')?.textContent
+      ).toBe('ar');
+
+      // The Dialog should still be open
+      const dialog = document.querySelector('[role="dialog"]');
+      expect(dialog).toBeTruthy();
     });
   });
 });

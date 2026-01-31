@@ -26,8 +26,8 @@ export type ComboBoxContext<T extends object = object> = {
   isReadOnly: boolean;
   /** Selection mode */
   selectionMode: 'single' | 'multiple';
-  /** How the popover opens: 'focus' | 'input' | 'manual' */
-  trigger: 'focus' | 'input' | 'manual';
+  /** How the popover opens: 'focus' | 'input' | 'press' */
+  trigger: 'focus' | 'input' | 'press';
   /** Whether inputValue should be used for filtering (false = show all items) */
   shouldFilter: boolean;
   /** Currently focused item ID (virtual focus) */

@@ -4,10 +4,10 @@
 	type Props = {
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
-		trigger?: 'focus' | 'input' | 'manual';
+		trigger?: 'focus' | 'input' | 'press';
 	};
 
-	let { isDisabled = false, isReadOnly = false, trigger = 'input' }: Props = $props();
+	let { isDisabled = false, isReadOnly = false, trigger = 'press' }: Props = $props();
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },

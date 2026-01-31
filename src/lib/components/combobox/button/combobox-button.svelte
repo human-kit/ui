@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { useComboBoxContext } from '../root/context';
 
-	type ComboBoxButtonProps = {
+	type ComboBoxButtonProps = HTMLButtonAttributes & {
 		class?: string;
 		children?: Snippet;
-		tabindex?: number;
 	};
 
-	let { class: className, children, tabindex = -1 }: ComboBoxButtonProps = $props();
+	let { class: className, children, tabindex = -1, ...restProps }: ComboBoxButtonProps = $props();
 
 	const ctx = useComboBoxContext();
 
@@ -33,6 +33,7 @@
 	data-pressed={ctx.isOpen}
 	onmousedown={handleMouseDown}
 	class={className}
+	{...restProps}
 >
 	{#if children}
 		{@render children()}

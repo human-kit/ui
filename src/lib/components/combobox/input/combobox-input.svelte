@@ -23,14 +23,27 @@
 		const target = event.target as HTMLInputElement;
 		ctx.setInputValue(target.value);
 		// Open on input if trigger is 'input' (default) or 'focus'
-		if (!ctx.isOpen && target.value.length > 0 && ctx.trigger !== 'manual') {
+		if (!ctx.isOpen && target.value.length > 0 && ctx.trigger !== 'press') {
 			ctx.open();
 		}
 	}
 
 	function handleFocus() {
 		// Open on focus if trigger is 'focus'
+		// Use a small delay to avoid opening immediately on programmatic focus
+		// (e.g., from a focus trap). This gives time for refs to be set up.
 		if (ctx.trigger === 'focus' && !ctx.isOpen) {
+			requestAnimationFrame(() => {
+				if (ctx.trigger === 'focus' && !ctx.isOpen) {
+					ctx.open();
+				}
+			});
+		}
+	}
+
+	function handleMouseDown() {
+		// Open on press if trigger is 'press'
+		if (ctx.trigger === 'press' && !ctx.isOpen && !ctx.isDisabled && !ctx.isReadOnly) {
 			ctx.open();
 		}
 	}
@@ -57,6 +70,7 @@
 	readonly={ctx.isReadOnly}
 	oninput={handleInput}
 	onfocus={handleFocus}
+	onmousedown={handleMouseDown}
 	onblur={handleBlur}
 	onkeydown={ctx.handleKeydown}
 	class={cn(

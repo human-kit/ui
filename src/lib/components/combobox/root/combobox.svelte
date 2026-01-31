@@ -17,8 +17,8 @@
 		selectionMode?: 'single' | 'multiple';
 		/** Whether the popover is open. Can be bound with bind:isOpen */
 		isOpen?: boolean;
-		/** How the popover opens: 'focus' | 'input' | 'manual'. Default: 'input' */
-		trigger?: 'focus' | 'input' | 'manual';
+		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
+		trigger?: 'focus' | 'input' | 'press';
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
 		onChange?: (value: Set<string | number>) => void;
@@ -40,7 +40,7 @@
 		selectionBehavior,
 		selectionMode = 'single',
 		isOpen = $bindable(),
-		trigger = 'input',
+		trigger = 'press',
 		onInputChange,
 		onOpenChange,
 		onChange,
@@ -197,6 +197,10 @@
 
 	function openPopover() {
 		if (!isDisabled && !isReadOnly) {
+			// Don't open if triggerRef is not set yet (prevents race condition with focus trap)
+			if (!triggerRef) {
+				return;
+			}
 			// If opening with a selection, disable filtering to show all options
 			if (currentSelection.size > 0 && selectionMode === 'single') {
 				shouldFilter = false;

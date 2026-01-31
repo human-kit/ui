@@ -73,6 +73,8 @@ export function focusTrap(node: HTMLElement, enabled: boolean = true) {
     if (!node.hasAttribute('tabindex')) {
       node.setAttribute('tabindex', '-1');
     }
+
+    // Focus first focusable element, or the container if none
     requestAnimationFrame(() => {
       const focusableElements = getFocusableElements(node);
       if (focusableElements.length > 0) {

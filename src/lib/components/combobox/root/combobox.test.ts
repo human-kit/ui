@@ -129,21 +129,33 @@ describe('ComboBox', () => {
       const screen = render(ComboBoxTest);
       const input = screen.getByRole('combobox');
 
-      // Select an item (Brazil - second item)
+      // Open, select Brazil (second item), and close
       await input.click();
-      await userEvent.keyboard('{ArrowDown}');
       await userEvent.keyboard('{ArrowDown}');
       await userEvent.keyboard('{Enter}');
 
-      // Verify selection
+      // Verify selection and that it's closed
+      await expect.element(input).toHaveValue('Argentina');
+      await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+
+      // Re-open with click (trigger=press opens on click)
+      await input.click();
+
+      // Navigate to Brazil and select it
+      await userEvent.keyboard('{ArrowDown}');
+      await userEvent.keyboard('{Enter}');
+
+      // Verify Brazil is selected
       await expect.element(input).toHaveValue('Brazil');
       await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 
-      // Focus the input again and press ArrowDown
+      // Now re-open and press ArrowDown - should focus the selected item first
       await input.click();
-      await userEvent.keyboard('{ArrowDown}');
 
-      // Should focus the selected item (Brazil), not the first item (Argentina)
+      // The combobox is already open and should auto-focus Brazil
+      // Wait a moment for the focus to settle
+      await new Promise(r => setTimeout(r, 50));
+
       const activeDescendant = input.element().getAttribute('aria-activedescendant');
       expect(activeDescendant).toBeTruthy();
       expect(activeDescendant).toMatch(/combobox-item-.*-br/); // 'br' is Brazil's ID
@@ -153,21 +165,22 @@ describe('ComboBox', () => {
       const screen = render(ComboBoxTest);
       const input = screen.getByRole('combobox');
 
-      // Select an item (Brazil - second item)
+      // Open, navigate to Brazil, select it, and close
       await input.click();
       await userEvent.keyboard('{ArrowDown}');
       await userEvent.keyboard('{ArrowDown}');
       await userEvent.keyboard('{Enter}');
 
-      // Verify selection
+      // Verify selection and that it's closed
       await expect.element(input).toHaveValue('Brazil');
       await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 
-      // Focus the input again and press ArrowUp
+      // Now re-open with click - should auto-focus Brazil
       await input.click();
-      await userEvent.keyboard('{ArrowUp}');
 
-      // Should focus the selected item (Brazil), not the last item
+      // Wait a moment for the focus to settle
+      await new Promise(r => setTimeout(r, 50));
+
       const activeDescendant = input.element().getAttribute('aria-activedescendant');
       expect(activeDescendant).toBeTruthy();
       expect(activeDescendant).toMatch(/combobox-item-.*-br/); // 'br' is Brazil's ID
@@ -377,23 +390,24 @@ describe('ComboBox', () => {
   });
 
   describe('Popover Opening', () => {
-    it('opens on input when trigger is input (default)', async () => {
+    it('opens on click when trigger is press (default)', async () => {
       const screen = render(ComboBoxTest);
       const input = screen.getByRole('combobox');
 
       await input.click();
-      await userEvent.keyboard('a');
 
       await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('does not open on focus when trigger is input', async () => {
+    it('does not open on typing when trigger is press', async () => {
       const screen = render(ComboBoxTest);
       const input = screen.getByRole('combobox');
 
-      await input.click();
+      // Focus without clicking (use keyboard navigation)
+      input.element().focus();
+      await userEvent.keyboard('a');
 
-      // Should still be closed (trigger='input' means only open on input)
+      // Should still be closed (trigger='press' means only open on click/press)
       await expect.element(input).toHaveAttribute('aria-expanded', 'false');
     });
   });
@@ -813,16 +827,27 @@ describe('ComboBox', () => {
       await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('trigger="manual" does not auto-open', async () => {
-      const screen = render(ComboBoxTest, { trigger: 'manual' });
+    it('trigger="press" does not auto-open on input', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'press' });
       const input = screen.getByRole('combobox');
 
-      // Focus and type
-      await input.click();
+      // Focus and type - should remain closed because trigger is 'press'
+      input.element().focus();
       await userEvent.keyboard('argentina');
 
-      // Should remain closed
+      // Should remain closed (typing doesn't open)
       await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('trigger="press" opens on click/press', async () => {
+      const screen = render(ComboBoxTest, { trigger: 'press' });
+      const input = screen.getByRole('combobox');
+
+      // Click to open
+      await input.click();
+
+      // Should open
+      await expect.element(input).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('trigger="focus" closes on blur and stays closed', async () => {

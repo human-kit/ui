@@ -374,7 +374,7 @@
 										The ComboBox popover should appear above the dialog overlay.
 									</p>
 									<div class="mb-6">
-										<ComboBox.Root trigger="focus">
+										<ComboBox.Root>
 											<div class="flex gap-1">
 												<ComboBox.Input
 													placeholder="Search countries..."

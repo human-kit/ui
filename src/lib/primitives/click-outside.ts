@@ -13,6 +13,20 @@ export type ClickOutsideOptions = {
 };
 
 /**
+ * Check if an element is in a "top layer" (portal, dialog, popover, etc.)
+ * that was spawned from within the reference node.
+ * This prevents clicks on nested portals from triggering clickOutside.
+ */
+function isInTopLayer(target: Node): boolean {
+  if (!(target instanceof Element)) return false;
+  
+  // Check if the element or any ancestor is marked as top-layer
+  // This includes our popovers, nested dialogs, and other portaled content
+  const topLayerElement = target.closest('[data-dialog-content], [role="dialog"]');
+  return topLayerElement !== null;
+}
+
+/**
  * Svelte action that detects clicks outside of an element.
  * 
  * @example
@@ -35,6 +49,10 @@ export function clickOutside(node: HTMLElement, options: ClickOutsideOptions) {
     for (const el of ignore) {
       if (el && el.contains(target)) return;
     }
+
+    // Don't trigger if clicking on a top-layer element (portal content)
+    // This prevents closing when clicking on nested popovers/dialogs
+    if (isInTopLayer(target)) return;
 
     handler();
   }

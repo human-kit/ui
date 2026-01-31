@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { useListBoxContext } from '../root/context';
 	import { onMount, onDestroy } from 'svelte';
 
 	/**
 	 * Props for the ListBox.Item component.
 	 */
-	type ListBoxItemProps = {
+	type ListBoxItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'id' | 'children'> & {
 		/** Unique identifier for this item. Used for selection tracking. */
 		id: string | number;
 		/** Text value for typeahead search. If not provided, extracted from content. */
@@ -45,7 +46,8 @@
 		isFocusedOverride,
 		onItemSelect,
 		scrollOnFocus = false,
-		isParentDisabled = false
+		isParentDisabled = false,
+		...restProps
 	}: ListBoxItemProps = $props();
 
 	const listboxCtx = useListBoxContext();
@@ -167,6 +169,7 @@
 	onblur={handleBlur}
 	onmouseenter={handleMouseEnter}
 	onmouseleave={handleMouseLeave}
+	{...restProps}
 >
 	{#if children}
 		{@render children()}
