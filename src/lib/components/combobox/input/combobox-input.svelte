@@ -4,10 +4,22 @@
 	import { cn } from '$lib/utils/cn';
 
 	type ComboBoxInputProps = HTMLInputAttributes & {
+		/** Accessible label for the input */
+		'aria-label'?: string;
+		/** ID of element that labels this input */
+		'aria-labelledby'?: string;
+		/** ID of element that describes this input (e.g., usage instructions) */
+		'aria-describedby'?: string;
 		class?: string;
 	};
 
-	let { class: className, ...restProps }: ComboBoxInputProps = $props();
+	let {
+		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledby,
+		'aria-describedby': ariaDescribedby,
+		class: className,
+		...restProps
+	}: ComboBoxInputProps = $props();
 
 	let inputRef: HTMLInputElement | null = $state(null);
 	const ctx = useComboBoxContext();
@@ -65,6 +77,9 @@
 	aria-activedescendant={ctx.focusedItemId !== null
 		? `combobox-item-${ctx.instanceId}-${ctx.focusedItemId}`
 		: undefined}
+	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledby}
+	aria-describedby={ariaDescribedby}
 	value={ctx.displayValue}
 	disabled={ctx.isDisabled}
 	readonly={ctx.isReadOnly}

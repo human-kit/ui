@@ -9,13 +9,13 @@ export { default as PopoverTriggerButton } from './trigger/popover-trigger-butto
 
 // Context and types
 export {
-  getPopoverContext,
-  setPopoverContext,
-  type PopoverContext,
-  // Legacy aliases
-  getPopoverTriggerContext,
-  setPopoverTriggerContext,
-  type PopoverTriggerContext
+	getPopoverContext,
+	setPopoverContext,
+	type PopoverContext,
+	// Legacy aliases
+	getPopoverTriggerContext,
+	setPopoverTriggerContext,
+	type PopoverTriggerContext
 } from './root/context.ts';
 
 // Default export with subcomponents attached (legacy pattern)
@@ -25,7 +25,7 @@ import Trigger from './trigger/popover-trigger.svelte';
 import TriggerButton from './trigger/popover-trigger-button.svelte';
 
 export default Object.assign(Root, {
-  Content,
-  Trigger,
-  TriggerButton
+	Content,
+	Trigger,
+	TriggerButton
 });

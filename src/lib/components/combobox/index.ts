@@ -8,13 +8,17 @@ export { default as ComboBoxButton } from './button/combobox-button.svelte';
 export { default as ComboBoxPopover } from './popover/combobox-popover.svelte';
 export { default as ComboBoxList } from './list/combobox-listbox.svelte';
 export { default as ComboBoxItem } from './item/combobox-listboxitem.svelte';
+export { default as ComboBoxItemIndicator } from './item-indicator/combobox-item-indicator.svelte';
+export { default as ComboBoxTags } from './tags/combobox-tags.svelte';
+export { default as ComboBoxTag } from './tag/combobox-tag.svelte';
+export { default as ComboBoxTagRemove } from './tag-remove/combobox-tag-remove.svelte';
 
 // Context and types
 export {
-  getComboBoxContext,
-  setComboBoxContext,
-  useComboBoxContext,
-  type ComboBoxContext
+	getComboBoxContext,
+	setComboBoxContext,
+	useComboBoxContext,
+	type ComboBoxContext
 } from './root/context.ts';
 
 // Default export with subcomponents attached (legacy pattern)
@@ -24,11 +28,19 @@ import Button from './button/combobox-button.svelte';
 import Popover from './popover/combobox-popover.svelte';
 import List from './list/combobox-listbox.svelte';
 import Item from './item/combobox-listboxitem.svelte';
+import ItemIndicator from './item-indicator/combobox-item-indicator.svelte';
+import Tags from './tags/combobox-tags.svelte';
+import Tag from './tag/combobox-tag.svelte';
+import TagRemove from './tag-remove/combobox-tag-remove.svelte';
 
 export default Object.assign(Root, {
-  Input,
-  Button,
-  Popover,
-  List,
-  Item
+	Input,
+	Button,
+	Popover,
+	List,
+	Item,
+	ItemIndicator,
+	Tags,
+	Tag,
+	TagRemove
 });

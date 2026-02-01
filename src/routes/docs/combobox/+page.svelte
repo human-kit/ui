@@ -21,6 +21,17 @@
 		{ id: 'us', name: 'United States' }
 	];
 
+	const fruits = [
+		{ id: 'apple', name: 'Apple' },
+		{ id: 'banana', name: 'Banana' },
+		{ id: 'cherry', name: 'Cherry' },
+		{ id: 'grape', name: 'Grape' },
+		{ id: 'mango', name: 'Mango' },
+		{ id: 'orange', name: 'Orange' },
+		{ id: 'peach', name: 'Peach' },
+		{ id: 'strawberry', name: 'Strawberry' }
+	];
+
 	// Interactive playground state
 	let triggerMode: 'focus' | 'input' | 'press' = $state('press');
 	let placeholder = $state('Search countries...');
@@ -41,6 +52,16 @@
 		controlledInputValue
 			? countries.filter((c) => c.name.toLowerCase().includes(controlledInputValue.toLowerCase()))
 			: countries
+	);
+
+	// Multi-select state
+	let multiSelectValue = $state<(string | number)[]>([]);
+	let multiSelectInput = $state('');
+
+	const filteredFruits = $derived(
+		multiSelectInput
+			? fruits.filter((f) => f.name.toLowerCase().includes(multiSelectInput.toLowerCase()))
+			: fruits
 	);
 
 	const triggerOptions = [
@@ -251,6 +272,90 @@
 								</ComboBox.List>
 							</ComboBox.Popover>
 						</ComboBox.Root>
+					</div>
+				{/snippet}
+			</DemoSection>
+
+			<!-- Multi-Select with Tags -->
+			<DemoSection
+				title="Multi-Select with Tags"
+				description="Select multiple items displayed as removable tags. Use Backspace to remove the last tag."
+			>
+				{#snippet children()}
+					<div class="w-full max-w-sm">
+						<ComboBox.Root
+							selectionMode="multiple"
+							bind:value={multiSelectValue}
+							bind:inputValue={multiSelectInput}
+						>
+							<div
+								class="flex flex-wrap items-center gap-1 rounded-lg border border-gray-300 bg-white px-2 py-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+							>
+								<ComboBox.Tags class="contents">
+									{#snippet children({ item })}
+										<ComboBox.Tag
+											class="inline-flex items-center gap-1 rounded-md bg-blue-100 px-2 py-0.5 text-sm text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+										>
+											{item.label}
+											<ComboBox.TagRemove
+												class="ml-0.5 rounded hover:bg-blue-200 dark:hover:bg-blue-800"
+											>
+												<svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor">
+													<path
+														d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"
+													/>
+												</svg>
+											</ComboBox.TagRemove>
+										</ComboBox.Tag>
+									{/snippet}
+								</ComboBox.Tags>
+								<ComboBox.Input
+									placeholder={multiSelectValue.length === 0 ? 'Select fruits...' : ''}
+									class="min-w-20 flex-1 border-0 bg-transparent px-1 py-0.5 text-gray-900 outline-none placeholder:text-gray-500 dark:text-white dark:placeholder:text-gray-400"
+								/>
+								<ComboBox.Button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+									<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+										<path
+											fill-rule="evenodd"
+											d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</ComboBox.Button>
+							</div>
+
+							<ComboBox.Popover
+								class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+							>
+								<ComboBox.List emptyPlaceholder="No fruits found">
+									{#each filteredFruits as fruit (fruit.id)}
+										<ComboBox.Item
+											id={fruit.id}
+											textValue={fruit.name}
+											class="flex cursor-pointer items-center justify-between px-3 py-2 text-gray-900 hover:bg-gray-100 data-[focused=true]:bg-gray-100 data-[selected=true]:bg-blue-50 dark:text-white dark:hover:bg-gray-700 dark:data-[focused=true]:bg-gray-700 dark:data-[selected=true]:bg-blue-900/30"
+										>
+											{fruit.name}
+											<ComboBox.ItemIndicator class="text-blue-600 dark:text-blue-400" />
+										</ComboBox.Item>
+									{/each}
+								</ComboBox.List>
+							</ComboBox.Popover>
+						</ComboBox.Root>
+					</div>
+				{/snippet}
+
+				{#snippet controls()}
+					<div class="space-y-4">
+						<DemoState label="selectedValue" value={JSON.stringify(multiSelectValue)} />
+						<DemoState label="selectedCount" value={multiSelectValue.length} />
+						<button
+							onclick={() => {
+								multiSelectValue = [];
+							}}
+							class="rounded-lg bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700"
+						>
+							Clear All
+						</button>
 					</div>
 				{/snippet}
 			</DemoSection>

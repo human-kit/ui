@@ -20,6 +20,7 @@
 		| 'element'
 		| 'children'
 		| 'items'
+		| 'id'
 	> & {
 		/** Optional items for dynamic rendering - overrides items from ComboBox context */
 		items?: Iterable<T>;
@@ -65,6 +66,7 @@
 	{...props}
 	bind:context={listboxCtx}
 	bind:element={listboxElement}
+	id={`combobox-listbox-${ctx.instanceId}`}
 	items={items ?? (ctx.items as T[] | undefined)}
 	{children}
 	selectionMode={ctx.selectionMode}

@@ -15,6 +15,8 @@
 		defaultInputValue?: string;
 		selectionBehavior?: 'toggle' | 'replace';
 		selectionMode?: 'single' | 'multiple';
+		/** Whether to close popover after selection. Default: true for single, false for multiple */
+		closeOnSelect?: boolean;
 		/** Whether the popover is open. Can be bound with bind:isOpen */
 		isOpen?: boolean;
 		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
@@ -28,6 +30,10 @@
 		renderItem?: Snippet<[T]>;
 		children?: Snippet;
 		class?: string;
+		/** Accessible label for the combobox group */
+		'aria-label'?: string;
+		/** ID of element that labels this combobox group */
+		'aria-labelledby'?: string;
 	};
 
 	let {
@@ -39,6 +45,7 @@
 		defaultInputValue = '',
 		selectionBehavior,
 		selectionMode = 'single',
+		closeOnSelect,
 		isOpen = $bindable(),
 		trigger = 'press',
 		onInputChange,
@@ -47,13 +54,17 @@
 		items,
 		renderItem,
 		children,
-		class: className = ''
+		class: className = '',
+		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledby
 	}: ComboBoxProps<T> = $props();
 
 	// Track if selectionBehavior was explicitly passed (for dev warning)
 	const selectionBehaviorExplicit = $derived(selectionBehavior !== undefined);
 	// Apply default if not provided
 	const effectiveSelectionBehavior = $derived(selectionBehavior ?? 'toggle');
+	// Default closeOnSelect based on selectionMode
+	const effectiveCloseOnSelect = $derived(closeOnSelect ?? selectionMode === 'single');
 
 	// Generate unique instance ID for ARIA attributes
 	const instanceId = crypto.randomUUID().slice(0, 8);
@@ -77,6 +88,9 @@
 
 	// Persistent label of the selected item (for restore on blur/escape)
 	let selectedLabel: string = $state('');
+
+	// Persistent labels for selected items in multiple mode (not cleared on unregister)
+	let selectedLabels = $state(new Map<string | number, string>());
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -161,8 +175,9 @@
 			shouldFilter = true;
 		}
 
-		// Instant deselection when input is cleared
-		if (val.trim() === '' && currentSelection.size > 0) {
+		// Instant deselection when input is cleared (single mode only)
+		// In multiple mode, selections are managed via tags, not input
+		if (selectionMode === 'single' && val.trim() === '' && currentSelection.size > 0) {
 			const emptySelection = new Set<string | number>();
 			if (isSelectionControlled) {
 				onChange?.(toExternalValue(emptySelection));
@@ -187,17 +202,26 @@
 			inputValueInternal = label;
 			inputValue = label;
 			onInputChange?.(label);
-			closePopover(true); // Close and keep focus on input
+			if (effectiveCloseOnSelect) {
+				closePopover(true); // Close and keep focus on input
+			}
 		} else {
 			if (effectiveSelectionBehavior === 'toggle' && newSelection.has(id)) {
 				newSelection.delete(id);
+				// Remove from persistent labels
+				selectedLabels.delete(id);
 			} else {
 				newSelection.add(id);
+				// Save label persistently for tags display
+				selectedLabels.set(id, label);
 			}
 			// Clear input after selection in multiple mode (to continue searching)
 			inputValueInternal = '';
 			inputValue = '';
 			onInputChange?.('');
+			if (effectiveCloseOnSelect) {
+				closePopover(true); // Close and keep focus on input
+			}
 		}
 
 		if (isSelectionControlled) {
@@ -213,6 +237,8 @@
 	function removeItem(id: string | number) {
 		const newSelection = new Set(currentSelection);
 		newSelection.delete(id);
+		// Remove from persistent labels
+		selectedLabels.delete(id);
 
 		if (isSelectionControlled) {
 			onChange?.(toExternalValue(newSelection));
@@ -307,7 +333,17 @@
 		// Close popover first to prevent flash of options when clearing input
 		closePopover();
 
-		// If there's no selection and input has content, clear it (for Escape)
+		// In multiple mode, always clear the input on blur
+		if (selectionMode === 'multiple') {
+			if (currentInputValue.trim() !== '') {
+				inputValueInternal = '';
+				inputValue = '';
+				onInputChange?.('');
+			}
+			return;
+		}
+
+		// Single mode: If there's no selection and input has content, clear it
 		if (currentSelection.size === 0) {
 			if (currentInputValue.trim() !== '') {
 				inputValueInternal = '';
@@ -318,7 +354,7 @@
 		}
 
 		// If there's a selection, restore its label (using persistent selectedLabel)
-		if (currentSelection.size > 0 && selectionMode === 'single' && selectedLabel) {
+		if (currentSelection.size > 0 && selectedLabel) {
 			if (selectedLabel !== currentInputValue) {
 				// Restore the selected label
 				inputValueInternal = selectedLabel;
@@ -359,6 +395,34 @@
 				event.preventDefault();
 				break;
 			case 'ArrowLeft':
+				// In multiple mode, navigate to last tag when cursor is at start
+				if (selectionMode === 'multiple' && currentSelection.size > 0) {
+					const input = inputRef as HTMLInputElement | null;
+					if (input && input.selectionStart === 0 && input.selectionEnd === 0) {
+						// Close popover and focus last tag
+						if (currentIsOpen) {
+							closePopover();
+						}
+						// Find and focus last tag
+						const tagsContainer = triggerRef?.querySelector(
+							'[role="list"][aria-label="Selected values"]'
+						);
+						const lastTag = tagsContainer?.querySelector(
+							'[data-tag-id]:last-of-type'
+						) as HTMLElement | null;
+						if (lastTag) {
+							lastTag.focus();
+							event.preventDefault();
+						}
+						break;
+					}
+				}
+				if (currentIsOpen) {
+					// Reset focus when using horizontal arrows, but allow cursor movement
+					navigation.setFocused(null);
+					// Don't prevent default - let the cursor move in the input
+				}
+				break;
 			case 'ArrowRight':
 				if (currentIsOpen) {
 					// Reset focus when using horizontal arrows, but allow cursor movement
@@ -405,6 +469,16 @@
 				}
 				handleInputBlur();
 				event.preventDefault();
+				break;
+			case 'Backspace':
+				// In multiple mode, remove last tag when input is empty
+				if (selectionMode === 'multiple' && currentInputValue === '' && currentSelection.size > 0) {
+					const lastId = Array.from(currentSelection).pop();
+					if (lastId !== undefined) {
+						removeItem(lastId);
+					}
+				}
+				// Don't prevent default - let backspace work normally in input
 				break;
 		}
 	}
@@ -460,6 +534,9 @@
 		get itemLabels() {
 			return navigation.itemLabels;
 		},
+		get selectedLabels() {
+			return selectedLabels;
+		},
 		get pendingFocusDirection() {
 			return navigation.pendingFocusDirection;
 		},
@@ -508,6 +585,8 @@
 <div
 	bind:this={wrapperRef}
 	role="group"
+	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledby}
 	class={className}
 	data-combobox
 	data-disabled={isDisabled || undefined}

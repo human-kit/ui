@@ -29,6 +29,7 @@
 	{tabindex}
 	aria-label={ctx.isOpen ? 'Close menu' : 'Open menu'}
 	aria-expanded={ctx.isOpen}
+	aria-controls={`combobox-listbox-${ctx.instanceId}`}
 	disabled={ctx.isDisabled}
 	data-pressed={ctx.isOpen}
 	onmousedown={handleMouseDown}

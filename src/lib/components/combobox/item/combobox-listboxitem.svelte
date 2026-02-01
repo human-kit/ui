@@ -1,6 +1,14 @@
+<script lang="ts" module>
+	export const COMBOBOX_ITEM_CONTEXT_KEY = Symbol.for('combobox-item');
+
+	export type ComboBoxItemContext = {
+		id: string | number;
+	};
+</script>
+
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import { untrack, onDestroy } from 'svelte';
+	import { untrack, onDestroy, setContext } from 'svelte';
 	import ListBoxItem from '$lib/components/listbox/item/listbox-item.svelte';
 	import { useComboBoxContext } from '../root/context';
 	import { cn } from '$lib/utils/cn';
@@ -27,6 +35,13 @@
 	let { id, class: className, ...props }: ComboBoxListBoxItemProps = $props();
 
 	const ctx = useComboBoxContext();
+
+	// Provide item context for child components like ItemIndicator
+	setContext<ComboBoxItemContext>(COMBOBOX_ITEM_CONTEXT_KEY, {
+		get id() {
+			return id;
+		}
+	});
 
 	// Text value for filtering and display
 	const textValue = $derived(props.textValue ?? String(id));

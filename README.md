@@ -24,21 +24,19 @@ npm install @agustin/svelte-components
 
 ```svelte
 <script>
-  import { Button, ComboBox, Dialog } from '@agustin/svelte-components';
+	import { Button, ComboBox, Dialog } from '@agustin/svelte-components';
 </script>
 
 <Button>Click me</Button>
 
 <ComboBox trigger="focus">
-  <ComboBox.Input placeholder="Search..." />
-  <ComboBox.Button />
-  <ComboBox.Popover>
-    <ComboBox.ListBox>
-      <ComboBox.ListBoxItem id="1" textValue="Option 1">
-        Option 1
-      </ComboBox.ListBoxItem>
-    </ComboBox.ListBox>
-  </ComboBox.Popover>
+	<ComboBox.Input placeholder="Search..." />
+	<ComboBox.Button />
+	<ComboBox.Popover>
+		<ComboBox.ListBox>
+			<ComboBox.ListBoxItem id="1" textValue="Option 1">Option 1</ComboBox.ListBoxItem>
+		</ComboBox.ListBox>
+	</ComboBox.Popover>
 </ComboBox>
 ```
 

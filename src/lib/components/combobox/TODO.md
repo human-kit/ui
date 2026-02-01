@@ -14,6 +14,11 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [x] `role="combobox"`, `role="listbox"`, `role="option"`
 - [x] `aria-selected` en items seleccionados
 - [x] `aria-disabled` en items/placeholder deshabilitados
+- [x] Input soporta `aria-label` y `aria-labelledby` props
+- [x] ListBox tiene ID para que `aria-controls` funcione correctamente
+- [x] Button tiene `aria-controls` apuntando al listbox
+- [x] Wrapper group soporta `aria-label` y `aria-labelledby`
+- [x] Input soporta `aria-describedby` para instrucciones de uso
 
 ### Pendiente
 
@@ -28,9 +33,6 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [ ] **Soporte para grupos (sections)**
   - Implementar `role="group"` con `aria-labelledby` para secciones
   - Agregar `ComboBox.Section` component
-
-- [ ] **Descripción de estado**
-  - `aria-describedby` para instrucciones ("Escribe para filtrar, usa flechas para navegar")
 
 ---
 
@@ -53,10 +55,12 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
   - Permitir crear nuevos items cuando no hay match
   - Callback `onCreate?: (value: string) => void`
 
-- [ ] **Multiple selection UI**
-  - Chips/tags para items seleccionados
-  - Clear all button
-  - Contador de seleccionados
+- [x] **Multiple selection UI**
+  - Chips/tags para items seleccionados ✅ `ComboBox.Tags`, `ComboBox.Tag`, `ComboBox.TagRemove`
+  - Clear all button (disponible via `clearSelection()` en context)
+  - Contador de seleccionados (disponible via `selectedValue.size`)
+  - Navegación de tags con teclado (ArrowLeft/Right, Delete/Backspace)
+  - `ComboBox.ItemIndicator` para mostrar checks en items seleccionados
 
 - [ ] **Form integration**
   - `name` prop para `<form>` nativo
@@ -127,9 +131,9 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 
 ### Completado ✅
 
-- [x] 44 tests unitarios pasando
+- [x] 291 tests unitarios pasando
 - [x] Keyboard navigation tests
-- [x] Selection tests  
+- [x] Selection tests
 - [x] Filtering tests
 - [x] Empty placeholder tests
 - [x] ARIA accessibility tests (6 tests)
@@ -137,6 +141,11 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [x] Disabled/ReadOnly state tests
 - [x] Trigger modes (focus, input, manual)
 - [x] Selection behavior (Enter, click, Escape restoration)
+- [x] Multi-select tests (12 tests)
+- [x] Tags component tests (4 tests)
+- [x] Tag component tests (13 tests) - incluye navegación por teclado
+- [x] TagRemove component tests (6 tests)
+- [x] ItemIndicator component tests (5 tests)
 
 ### Pendiente
 

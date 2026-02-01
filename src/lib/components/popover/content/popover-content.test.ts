@@ -4,228 +4,256 @@ import { userEvent } from 'vitest/browser';
 import PopoverContentTest from './popover-content-test.svelte';
 
 describe('Popover.Content', () => {
-  // Clean up any portaled content after each test
-  afterEach(() => {
-    const dialogs = document.querySelectorAll('[role="dialog"]');
-    dialogs.forEach((d) => d.remove());
-  });
+	// Clean up any portaled content after each test
+	afterEach(() => {
+		const dialogs = document.querySelectorAll('[role="dialog"]');
+		dialogs.forEach((d) => d.remove());
+	});
 
-  describe('Visibility', () => {
-    it('is hidden by default', async () => {
-      render(PopoverContentTest);
+	describe('Visibility', () => {
+		it('is hidden by default', async () => {
+			render(PopoverContentTest);
 
-      // Popover should not be visible initially
-      const dialog = document.querySelector('[role="dialog"]');
-      expect(dialog).toBeNull();
-    });
+			// Popover should not be visible initially
+			const dialog = document.querySelector('[role="dialog"]');
+			expect(dialog).toBeNull();
+		});
 
-    it('opens when trigger is clicked', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('opens when trigger is clicked', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
+			await trigger.click();
 
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-    });
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
 
-    it('closes when pressing Escape', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('closes when pressing Escape', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-      await userEvent.keyboard('{Escape}');
+			await userEvent.keyboard('{Escape}');
 
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-    });
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		});
 
-    it('respects shouldCloseOnEscape=false', async () => {
-      const screen = render(PopoverContentTest, { shouldCloseOnEscape: false });
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('respects shouldCloseOnEscape=false', async () => {
+			const screen = render(PopoverContentTest, { shouldCloseOnEscape: false });
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-      await userEvent.keyboard('{Escape}');
+			await userEvent.keyboard('{Escape}');
 
-      // Small delay then check it's still there
-      await new Promise((r) => setTimeout(r, 100));
-      const dialog = document.querySelector('[role="dialog"]');
-      expect(dialog).toBeTruthy();
-    });
-  });
+			// Small delay then check it's still there
+			await new Promise((r) => setTimeout(r, 100));
+			const dialog = document.querySelector('[role="dialog"]');
+			expect(dialog).toBeTruthy();
+		});
+	});
 
-  describe('Modal vs Non-Modal', () => {
-    it('has aria-modal="true" for modal popovers', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+	describe('Modal vs Non-Modal', () => {
+		it('has aria-modal="true" for modal popovers', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect
-        .poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-modal'))
-        .toBe('true');
-    });
+			await trigger.click();
+			await expect
+				.poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-modal'))
+				.toBe('true');
+		});
 
-    it('has aria-modal="false" for non-modal popovers', async () => {
-      const screen = render(PopoverContentTest, { isNonModal: true });
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('has aria-modal="false" for non-modal popovers', async () => {
+			const screen = render(PopoverContentTest, { isNonModal: true });
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect
-        .poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-modal'))
-        .toBe('false');
-    });
-  });
+			await trigger.click();
+			await expect
+				.poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-modal'))
+				.toBe('false');
+		});
+	});
 
-  describe('Close on Blur', () => {
-    it('shouldCloseOnBlur defaults to false for modal popovers', async () => {
-      const screen = render(PopoverContentTest, { isNonModal: false });
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+	describe('Close on Blur', () => {
+		it('shouldCloseOnBlur defaults to false for modal popovers', async () => {
+			const screen = render(PopoverContentTest, { isNonModal: false });
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-      // Tab to an element outside - should NOT close for modal
-      await userEvent.keyboard('{Tab}');
-      await new Promise((r) => setTimeout(r, 100));
+			// Tab to an element outside - should NOT close for modal
+			await userEvent.keyboard('{Tab}');
+			await new Promise((r) => setTimeout(r, 100));
 
-      // Modal popover traps focus, so it should still be open
-      const dialog = document.querySelector('[role="dialog"]');
-      expect(dialog).toBeTruthy();
-    });
+			// Modal popover traps focus, so it should still be open
+			const dialog = document.querySelector('[role="dialog"]');
+			expect(dialog).toBeTruthy();
+		});
 
-    it('shouldCloseOnBlur defaults to true for non-modal popovers', async () => {
-      // Create an external button to focus on
-      const externalButton = document.createElement('button');
-      externalButton.textContent = 'External Button';
-      document.body.appendChild(externalButton);
+		it('shouldCloseOnBlur defaults to true for non-modal popovers', async () => {
+			// Create an external button to focus on
+			const externalButton = document.createElement('button');
+			externalButton.textContent = 'External Button';
+			document.body.appendChild(externalButton);
 
-      try {
-        const screen = render(PopoverContentTest, { isNonModal: true });
-        const trigger = screen.getByRole('button', { name: 'Open Popover' });
+			try {
+				const screen = render(PopoverContentTest, { isNonModal: true });
+				const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-        await trigger.click();
-        await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+				await trigger.click();
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-        // Focus the external button to trigger blur
-        externalButton.focus();
+				// Focus the external button to trigger blur
+				externalButton.focus();
 
-        // Non-modal with shouldCloseOnBlur should close
-        await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-      } finally {
-        externalButton.remove();
-      }
-    });
-  });
+				// Non-modal with shouldCloseOnBlur should close
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			} finally {
+				externalButton.remove();
+			}
+		});
+	});
 
-  describe('Positioning', () => {
-    it('is positioned with fixed positioning', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+	describe('Positioning', () => {
+		it('is positioned with fixed positioning', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-      const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-      const style = window.getComputedStyle(dialog);
+			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			const style = window.getComputedStyle(dialog);
 
-      expect(style.position).toBe('fixed');
-    });
+			expect(style.position).toBe('fixed');
+		});
 
-    it('has z-index for stacking', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('has z-index for stacking', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
-      await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-      const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-      const style = window.getComputedStyle(dialog);
+			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			const style = window.getComputedStyle(dialog);
 
-      expect(parseInt(style.zIndex)).toBeGreaterThan(0);
-    });
-  });
+			expect(parseInt(style.zIndex)).toBeGreaterThan(0);
+		});
+	});
 
-  describe('CSS Custom Properties', () => {
-    it('exposes --trigger-width matching the trigger width', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+	describe('CSS Custom Properties', () => {
+		it('exposes --trigger-width matching the trigger width', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      // Get trigger width before clicking
-      const triggerElement = trigger.element() as HTMLElement;
-      const triggerWidth = triggerElement.offsetWidth;
+			// Get trigger width before clicking
+			const triggerElement = trigger.element() as HTMLElement;
+			const triggerWidth = triggerElement.offsetWidth;
 
-      await trigger.click();
+			await trigger.click();
 
-      // Wait for the popover to appear and CSS vars to be applied
-      // Use approximate matching due to floating point precision
-      await expect.poll(() => {
-        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-        if (!dialog) return false;
-        const triggerWidthValue = dialog.style.getPropertyValue('--trigger-width');
-        if (!triggerWidthValue) return false;
-        const value = parseFloat(triggerWidthValue);
-        return Math.abs(value - triggerWidth) < 1; // Within 1px tolerance
-      }, { timeout: 2000 }).toBe(true);
-    });
+			// Wait for the popover to appear and CSS vars to be applied
+			// Use approximate matching due to floating point precision
+			await expect
+				.poll(
+					() => {
+						const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+						if (!dialog) return false;
+						const triggerWidthValue = dialog.style.getPropertyValue('--trigger-width');
+						if (!triggerWidthValue) return false;
+						const value = parseFloat(triggerWidthValue);
+						return Math.abs(value - triggerWidth) < 1; // Within 1px tolerance
+					},
+					{ timeout: 2000 }
+				)
+				.toBe(true);
+		});
 
-    it('exposes --trigger-height matching the trigger height', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('exposes --trigger-height matching the trigger height', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      const triggerElement = trigger.element() as HTMLElement;
-      const triggerHeight = triggerElement.offsetHeight;
+			const triggerElement = trigger.element() as HTMLElement;
+			const triggerHeight = triggerElement.offsetHeight;
 
-      await trigger.click();
+			await trigger.click();
 
-      await expect.poll(() => {
-        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-        if (!dialog) return null;
-        return dialog.style.getPropertyValue('--trigger-height');
-      }, { timeout: 2000 }).toBe(`${triggerHeight}px`);
-    });
+			await expect
+				.poll(
+					() => {
+						const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+						if (!dialog) return null;
+						return dialog.style.getPropertyValue('--trigger-height');
+					},
+					{ timeout: 2000 }
+				)
+				.toBe(`${triggerHeight}px`);
+		});
 
-    it('exposes --available-width as a positive pixel value', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('exposes --available-width as a positive pixel value', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
+			await trigger.click();
 
-      await expect.poll(() => {
-        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-        if (!dialog) return null;
-        const value = dialog.style.getPropertyValue('--available-width');
-        return value && value.match(/^\d+(\.\d+)?px$/) && parseFloat(value) > 0;
-      }, { timeout: 2000 }).toBe(true);
-    });
+			await expect
+				.poll(
+					() => {
+						const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+						if (!dialog) return null;
+						const value = dialog.style.getPropertyValue('--available-width');
+						return value && value.match(/^\d+(\.\d+)?px$/) && parseFloat(value) > 0;
+					},
+					{ timeout: 2000 }
+				)
+				.toBe(true);
+		});
 
-    it('exposes --available-height as a positive pixel value', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('exposes --available-height as a positive pixel value', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
+			await trigger.click();
 
-      await expect.poll(() => {
-        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-        if (!dialog) return null;
-        const value = dialog.style.getPropertyValue('--available-height');
-        return value && value.match(/^\d+(\.\d+)?px$/) && parseFloat(value) > 0;
-      }, { timeout: 2000 }).toBe(true);
-    });
+			await expect
+				.poll(
+					() => {
+						const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+						if (!dialog) return null;
+						const value = dialog.style.getPropertyValue('--available-height');
+						return value && value.match(/^\d+(\.\d+)?px$/) && parseFloat(value) > 0;
+					},
+					{ timeout: 2000 }
+				)
+				.toBe(true);
+		});
 
-    it('exposes --transform-origin for animations', async () => {
-      const screen = render(PopoverContentTest);
-      const trigger = screen.getByRole('button', { name: 'Open Popover' });
+		it('exposes --transform-origin for animations', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
-      await trigger.click();
+			await trigger.click();
 
-      await expect.poll(() => {
-        const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-        if (!dialog) return null;
-        const value = dialog.style.getPropertyValue('--transform-origin');
-        return value && value.match(/^(center|left|right|top|bottom)\s+(center|top|bottom|left|right)$/);
-      }, { timeout: 2000 }).toBeTruthy();
-    });
-  });
+			await expect
+				.poll(
+					() => {
+						const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+						if (!dialog) return null;
+						const value = dialog.style.getPropertyValue('--transform-origin');
+						return (
+							value &&
+							value.match(/^(center|left|right|top|bottom)\s+(center|top|bottom|left|right)$/)
+						);
+					},
+					{ timeout: 2000 }
+				)
+				.toBeTruthy();
+		});
+	});
 });

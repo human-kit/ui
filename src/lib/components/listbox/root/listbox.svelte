@@ -25,6 +25,8 @@
 		children?: Snippet | Snippet<[T]>;
 		/** CSS class to apply to the listbox container. */
 		class?: string;
+		/** HTML id attribute for the listbox element. */
+		id?: string;
 		/** Accessible label for the listbox. Announced by screen readers. */
 		'aria-label'?: string;
 		/** Callback fired when the selection changes. */
@@ -41,6 +43,7 @@
 		defaultValue,
 		children,
 		class: className = '',
+		id,
 		'aria-label': ariaLabel,
 		onChange,
 		context = $bindable(),
@@ -119,6 +122,7 @@
 <div
 	bind:this={listboxElement}
 	role="listbox"
+	{id}
 	aria-multiselectable={selectionMode === 'multiple'}
 	aria-label={ariaLabel}
 	class={className}
