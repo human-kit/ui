@@ -92,6 +92,9 @@
 	// Persistent labels for selected items in multiple mode (not cleared on unregister)
 	let selectedLabels = $state(new Map<string | number, string>());
 
+	// Virtual focus for tag navigation in multiple mode
+	let focusedTagId: string | number | null = $state(null);
+
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
 	let shouldFilter: boolean = $state(true);
@@ -164,6 +167,8 @@
 	}
 
 	function setInputValueHandler(val: string) {
+		// Clear tag virtual focus when typing
+		focusedTagId = null;
 		inputValueInternal = val;
 		inputValue = val; // Update bindable prop
 		onInputChange?.(val); // Notify parent of input change
@@ -235,6 +240,10 @@
 	}
 
 	function removeItem(id: string | number) {
+		// If removing the focused tag, clear virtual focus
+		if (focusedTagId === id) {
+			focusedTagId = null;
+		}
 		const newSelection = new Set(currentSelection);
 		newSelection.delete(id);
 		// Remove from persistent labels
@@ -330,6 +339,8 @@
 	 * Handle input blur or escape - restore selection label or clear if no selection
 	 */
 	function handleInputBlur() {
+		// Clear tag virtual focus
+		focusedTagId = null;
 		// Close popover first to prevent flash of options when clearing input
 		closePopover();
 
@@ -367,6 +378,85 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (isDisabled) return;
 
+		// Handle tag virtual focus navigation in multiple mode
+		if (focusedTagId !== null && selectionMode === 'multiple') {
+			const selectedIds = Array.from(currentSelection);
+			const currentIndex = selectedIds.indexOf(focusedTagId);
+
+			switch (event.key) {
+				case 'ArrowLeft': {
+					if (currentIndex > 0) {
+						focusedTagId = selectedIds[currentIndex - 1];
+					}
+					event.preventDefault();
+					return;
+				}
+				case 'ArrowRight': {
+					if (currentIndex < selectedIds.length - 1) {
+						focusedTagId = selectedIds[currentIndex + 1];
+					} else {
+						// Past last tag, return to input
+						focusedTagId = null;
+					}
+					event.preventDefault();
+					return;
+				}
+				case 'ArrowUp': {
+					focusedTagId = null;
+					if (!currentIsOpen) {
+						openPopover();
+						navigation.setPendingDirection('last');
+					} else {
+						navigation.previous();
+					}
+					event.preventDefault();
+					return;
+				}
+				case 'ArrowDown': {
+					focusedTagId = null;
+					if (!currentIsOpen) {
+						openPopover();
+						navigation.setPendingDirection('first');
+					} else {
+						navigation.next();
+					}
+					event.preventDefault();
+					return;
+				}
+				case 'Delete':
+				case 'Backspace': {
+					const prevId = currentIndex > 0 ? selectedIds[currentIndex - 1] : null;
+					const nextId =
+						currentIndex < selectedIds.length - 1 ? selectedIds[currentIndex + 1] : null;
+
+					removeItem(focusedTagId);
+
+					if (nextId !== null) {
+						focusedTagId = nextId;
+					} else if (prevId !== null) {
+						focusedTagId = prevId;
+					} else {
+						focusedTagId = null;
+					}
+					event.preventDefault();
+					return;
+				}
+				case 'Escape': {
+					focusedTagId = null;
+					break; // Fall through to normal escape handling
+				}
+				default: {
+					// Character keys: clear tag focus, let character go to input
+					if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+						focusedTagId = null;
+						// Don't prevent default - character will be typed in input
+						return;
+					}
+					break;
+				}
+			}
+		}
+
 		switch (event.key) {
 			case 'ArrowDown':
 				if (!currentIsOpen) {
@@ -399,21 +489,14 @@
 				if (selectionMode === 'multiple' && currentSelection.size > 0) {
 					const input = inputRef as HTMLInputElement | null;
 					if (input && input.selectionStart === 0 && input.selectionEnd === 0) {
-						// Close popover and focus last tag
+						// Close popover when navigating to tags
 						if (currentIsOpen) {
 							closePopover();
 						}
-						// Find and focus last tag
-						const tagsContainer = triggerRef?.querySelector(
-							'[role="list"][aria-label="Selected values"]'
-						);
-						const lastTag = tagsContainer?.querySelector(
-							'[data-tag-id]:last-of-type'
-						) as HTMLElement | null;
-						if (lastTag) {
-							lastTag.focus();
-							event.preventDefault();
-						}
+						// Set virtual focus on last tag
+						const selectedIds = Array.from(currentSelection);
+						focusedTagId = selectedIds[selectedIds.length - 1];
+						event.preventDefault();
 						break;
 					}
 				}
@@ -576,7 +659,13 @@
 		registerItem: navigation.register,
 		unregisterItem: navigation.unregister,
 		handleKeydown,
-		handleInputBlur
+		handleInputBlur,
+		get focusedTagId() {
+			return focusedTagId;
+		},
+		setFocusedTagId: (id: string | number | null) => {
+			focusedTagId = id;
+		}
 	};
 
 	setComboBoxContext(ctx);

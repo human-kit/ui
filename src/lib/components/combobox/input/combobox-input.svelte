@@ -32,6 +32,7 @@
 	});
 
 	function handleInput(event: Event) {
+		ctx.setFocusedTagId(null);
 		const target = event.target as HTMLInputElement;
 		ctx.setInputValue(target.value);
 		// Open on input for all trigger modes when user types
@@ -54,6 +55,7 @@
 	}
 
 	function handleMouseDown() {
+		ctx.setFocusedTagId(null);
 		// Open on press if trigger is 'press'
 		if (ctx.trigger === 'press' && !ctx.isOpen && !ctx.isDisabled && !ctx.isReadOnly) {
 			ctx.open();

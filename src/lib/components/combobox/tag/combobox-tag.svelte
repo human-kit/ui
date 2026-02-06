@@ -32,75 +32,23 @@
 	const tagCtx = getContext<TagContext>(TAG_CONTEXT_KEY);
 	const comboboxCtx = useComboBoxContext();
 
-	let tagRef: HTMLSpanElement | null = $state(null);
+	/** Whether this tag has virtual focus (navigated via arrow keys) */
+	const isFocused = $derived(comboboxCtx.focusedTagId === tagCtx.id);
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (tagCtx.disabled) return;
-
-		switch (event.key) {
-			case 'ArrowLeft': {
-				// Navigate to previous tag
-				const prevTag = tagRef?.previousElementSibling as HTMLElement | null;
-				if (prevTag?.hasAttribute('data-tag-id')) {
-					prevTag.focus();
-				}
-				event.preventDefault();
-				break;
-			}
-			case 'ArrowRight': {
-				// Navigate to next tag or input
-				const nextTag = tagRef?.nextElementSibling as HTMLElement | null;
-				if (nextTag?.hasAttribute('data-tag-id')) {
-					nextTag.focus();
-				} else {
-					// No more tags, focus input
-					comboboxCtx.inputRef?.focus();
-				}
-				event.preventDefault();
-				break;
-			}
-			case 'ArrowDown': {
-				// Focus input and open combobox
-				comboboxCtx.inputRef?.focus();
-				comboboxCtx.open();
-				event.preventDefault();
-				break;
-			}
-			case 'Delete':
-			case 'Backspace': {
-				// Remove this tag and focus adjacent tag or input
-				const prevTag = tagRef?.previousElementSibling as HTMLElement | null;
-				const nextTag = tagRef?.nextElementSibling as HTMLElement | null;
-
-				tagCtx.remove();
-
-				// Focus next tag, or previous, or input
-				requestAnimationFrame(() => {
-					if (nextTag?.hasAttribute('data-tag-id')) {
-						nextTag.focus();
-					} else if (prevTag?.hasAttribute('data-tag-id')) {
-						prevTag.focus();
-					} else {
-						comboboxCtx.inputRef?.focus();
-					}
-				});
-				event.preventDefault();
-				break;
-			}
-		}
+	function handleMouseDown(event: MouseEvent) {
+		// Prevent focus theft - tags use virtual focus only via arrow keys
+		event.preventDefault();
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <span
-	bind:this={tagRef}
 	role="listitem"
-	tabindex={tagCtx.disabled ? -1 : 0}
 	data-tag-id={tagCtx.id}
 	data-disabled={tagCtx.disabled || undefined}
-	onkeydown={handleKeydown}
+	data-focused={isFocused || undefined}
+	onmousedown={handleMouseDown}
 	class={cn(
-		'inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-700',
+		'inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-sm data-[focused=true]:ring-2 data-[focused=true]:ring-blue-500 data-[focused=true]:outline-none dark:bg-gray-700',
 		tagCtx.disabled && 'opacity-50',
 		className
 	)}

@@ -84,6 +84,10 @@ export type ComboBoxContext<T extends object = object> = {
 	handleKeydown: (event: KeyboardEvent) => void;
 	/** Handle input blur - restore selection or deselect if empty */
 	handleInputBlur: () => void;
+	/** Currently focused tag ID (virtual focus for tag navigation) */
+	focusedTagId: string | number | null;
+	/** Set focused tag ID (virtual focus for tag navigation) */
+	setFocusedTagId: (id: string | number | null) => void;
 };
 
 const COMBOBOX_KEY = Symbol('combobox');
