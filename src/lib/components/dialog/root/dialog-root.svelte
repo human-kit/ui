@@ -1,20 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
-
-	/**
-	 * State helpers passed to children snippet.
-	 */
-	export type DialogStateHelpers = {
-		/** Close the dialog */
-		close: () => void;
-		/** Open the dialog */
-		open: () => void;
-		/** Toggle the dialog open state */
-		toggle: () => void;
-		/** Whether the dialog is currently open */
-		isOpen: boolean;
-	};
+	import type { DialogStateHelpers } from './types';
 
 	/**
 	 * Dialog.Root - State management wrapper for Dialog components.

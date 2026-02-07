@@ -18,9 +18,9 @@
 		/** Selection mode: 'single' allows one selection, 'multiple' allows many. */
 		selectionMode?: 'single' | 'multiple';
 		/** Controlled value. When provided, the component is in controlled mode. */
-		value?: 'all' | Iterable<string | number>;
+		value?: Iterable<string | number>;
 		/** Initial selection for uncontrolled mode. */
-		defaultValue?: 'all' | Iterable<string | number>;
+		defaultValue?: Iterable<string | number>;
 		/** Content of the listbox. Can be static children or a snippet receiving items. */
 		children?: Snippet | Snippet<[T]>;
 		/** CSS class to apply to the listbox container. */
@@ -57,11 +57,8 @@
 		element = listboxElement;
 	});
 
-	function parseSelection(
-		val: 'all' | Iterable<string | number> | undefined
-	): Set<string | number> {
+	function parseSelection(val: Iterable<string | number> | undefined): Set<string | number> {
 		if (val === undefined) return new Set();
-		if (val === 'all') return new Set();
 		return new Set(val);
 	}
 

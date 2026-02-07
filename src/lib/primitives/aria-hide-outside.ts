@@ -11,6 +11,61 @@ interface HideOutsideResult {
 	restore: () => void;
 }
 
+type HiddenElementState = {
+	count: number;
+	hadInert: boolean;
+	ariaHidden: string | null;
+};
+
+/**
+ * Global hidden state tracker.
+ * Allows multiple overlapping hideOutside calls without restoring too early.
+ */
+const hiddenState = new Map<Element, HiddenElementState>();
+
+function hideElement(element: Element): void {
+	const existing = hiddenState.get(element);
+
+	if (existing) {
+		existing.count += 1;
+		hiddenState.set(element, existing);
+	} else {
+		hiddenState.set(element, {
+			count: 1,
+			hadInert: element.hasAttribute('inert'),
+			ariaHidden: element.getAttribute('aria-hidden')
+		});
+	}
+
+	element.setAttribute('inert', '');
+	element.setAttribute('aria-hidden', 'true');
+}
+
+function restoreElement(element: Element): void {
+	const existing = hiddenState.get(element);
+	if (!existing) return;
+
+	if (existing.count > 1) {
+		existing.count -= 1;
+		hiddenState.set(element, existing);
+		return;
+	}
+
+	if (!existing.hadInert) {
+		element.removeAttribute('inert');
+	} else {
+		element.setAttribute('inert', '');
+	}
+
+	if (existing.ariaHidden === null) {
+		element.removeAttribute('aria-hidden');
+	} else {
+		element.setAttribute('aria-hidden', existing.ariaHidden);
+	}
+
+	hiddenState.delete(element);
+}
+
 /**
  * Hides all content outside of the target elements from assistive technologies
  * and makes it non-interactive.
@@ -23,7 +78,7 @@ interface HideOutsideResult {
  * ```
  */
 export function hideOutside(targets: HTMLElement[]): HideOutsideResult {
-	const hiddenElements: Map<Element, { hadInert: boolean; ariaHidden: string | null }> = new Map();
+	const affectedElements = new Set<Element>();
 
 	const targetSet = new Set<Element>(targets);
 
@@ -53,13 +108,8 @@ export function hideOutside(targets: HTMLElement[]): HideOutsideResult {
 			if (targetAncestors.has(child)) {
 				walk(child);
 			} else {
-				hiddenElements.set(child, {
-					hadInert: child.hasAttribute('inert'),
-					ariaHidden: child.getAttribute('aria-hidden')
-				});
-
-				child.setAttribute('inert', '');
-				child.setAttribute('aria-hidden', 'true');
+				hideElement(child);
+				affectedElements.add(child);
 			}
 		}
 	}
@@ -68,20 +118,16 @@ export function hideOutside(targets: HTMLElement[]): HideOutsideResult {
 		walk(document.body);
 	}
 
+	let restored = false;
+
 	return {
 		restore(): void {
-			hiddenElements.forEach((original, element) => {
-				if (!original.hadInert) {
-					element.removeAttribute('inert');
-				}
-
-				if (original.ariaHidden === null) {
-					element.removeAttribute('aria-hidden');
-				} else {
-					element.setAttribute('aria-hidden', original.ariaHidden);
-				}
+			if (restored) return;
+			restored = true;
+			affectedElements.forEach((element) => {
+				restoreElement(element);
 			});
-			hiddenElements.clear();
+			affectedElements.clear();
 		}
 	};
 }

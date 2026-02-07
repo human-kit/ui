@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from '../root/popover-test.svelte';
+import PopoverTriggerInDialogTest from './popover-trigger-in-dialog-test.svelte';
 
 describe('Popover.Trigger', () => {
 	// Clean up any portaled content after each test
@@ -76,6 +77,26 @@ describe('Popover.Trigger', () => {
 			await userEvent.keyboard(' ');
 
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
+
+		it('opens when used inside Dialog content', async () => {
+			const screen = render(PopoverTriggerInDialogTest);
+			const openDialog = screen.getByRole('button', { name: 'Open Dialog' });
+
+			await openDialog.click();
+			await expect.poll(() => document.querySelector('[data-dialog-content]')).toBeTruthy();
+
+			const nestedTrigger = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'Open Nested Popover'
+			) as HTMLButtonElement | undefined;
+
+			expect(nestedTrigger).toBeTruthy();
+			nestedTrigger?.click();
+
+			await expect.poll(() => document.querySelector('.nested-popover-content')).toBeTruthy();
+			expect(document.querySelector('.nested-popover-content')?.textContent).toContain(
+				'Nested popover content'
+			);
 		});
 	});
 

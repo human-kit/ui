@@ -27,6 +27,8 @@
  * ```
  */
 
+import { SvelteMap } from 'svelte/reactivity';
+
 export type VirtualFocusOptions = {
 	/** Unique ID prefix for item identification */
 	instanceId: string;
@@ -68,7 +70,7 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 	// Internal state
 	let focusedId: string | number | null = $state(null);
 	let itemIds: (string | number)[] = $state([]);
-	let itemLabels = $state(new Map<string | number, string>());
+	const itemLabels = new SvelteMap<string | number, string>();
 	let pendingFocusDirection: 'first' | 'last' | null = $state(null);
 	let cachedItemOrder: (string | number)[] | null = $state(null);
 
@@ -104,9 +106,9 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 		itemElements.forEach((el) => {
 			const fullId = el.getAttribute('id');
 			if (fullId && fullId.startsWith(prefix)) {
-				const itemId = fullId.substring(prefix.length);
-				const numId = Number(itemId);
-				orderedIds.push(isNaN(numId) ? itemId : numId);
+				const rawId = fullId.substring(prefix.length);
+				const registeredId = itemIds.find((id) => String(id) === rawId);
+				orderedIds.push(registeredId ?? rawId);
 			}
 		});
 

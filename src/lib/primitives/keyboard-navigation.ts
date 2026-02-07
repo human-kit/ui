@@ -123,11 +123,16 @@ export function createKeyboardNavigation(
 	}
 
 	function getItemId(element: HTMLElement): string | number | null {
-		const id = element.dataset.itemId;
-		if (id === undefined) return null;
+		const rawId = element.dataset.itemId;
+		if (rawId === undefined) return null;
 
-		const numId = Number(id);
-		return isNaN(numId) ? id : numId;
+		const idType = element.dataset.itemIdType;
+		if (idType === 'number') {
+			const parsed = Number(rawId);
+			return Number.isNaN(parsed) ? rawId : parsed;
+		}
+
+		return rawId;
 	}
 
 	function focusItem(element: HTMLElement | null) {

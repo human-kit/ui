@@ -28,6 +28,8 @@
 		isFocusedOverride?: boolean;
 		/** Override the select behavior. When provided, called instead of default listbox selection. */
 		onItemSelect?: (id: string | number, label: string) => void;
+		/** Callback with resolved text value when mounted (from prop or rendered content). */
+		onResolvedTextValue?: (label: string) => void;
 		/** Whether to scroll this item into view when focused. Useful for virtual focus patterns. */
 		scrollOnFocus?: boolean;
 		/** Additional disabled state from parent. */
@@ -45,6 +47,7 @@
 		disableFocusHandling = false,
 		isFocusedOverride,
 		onItemSelect,
+		onResolvedTextValue,
 		scrollOnFocus = false,
 		isParentDisabled = false,
 		...restProps
@@ -71,11 +74,16 @@
 	let unsubscribeSelection: (() => void) | null = null;
 	let unsubscribeFocus: (() => void) | null = null;
 
+	function getResolvedTextValue() {
+		return textValue || elementRef?.textContent?.trim() || String(id);
+	}
+
 	onMount(() => {
-		const computedTextValue = textValue || elementRef?.textContent?.trim() || String(id);
+		const computedTextValue = getResolvedTextValue();
 
 		// Register with ListBox context for selection state
 		listboxCtx.registerItem(id, computedTextValue, elementRef);
+		onResolvedTextValue?.(computedTextValue);
 
 		unsubscribeSelection = listboxCtx.subscribeToItem(id, (selected) => {
 			isSelected = selected;
@@ -105,10 +113,10 @@
 		}
 	});
 
-	function handleClick(event: MouseEvent) {
+	function handleClick() {
 		if (isDisabledComputed) return;
 
-		const label = textValue || elementRef?.textContent?.trim() || String(id);
+		const label = getResolvedTextValue();
 
 		// Use custom select handler if provided, otherwise use listbox default
 		if (onItemSelect) {
@@ -158,6 +166,7 @@
 	aria-disabled={isDisabledComputed || undefined}
 	data-navigation-item={!disableFocusHandling || undefined}
 	data-item-id={id}
+	data-item-id-type={typeof id === 'number' ? 'number' : 'string'}
 	data-selected={isSelected || undefined}
 	data-disabled={isDisabledComputed || undefined}
 	data-focused={isFocusedComputed || undefined}

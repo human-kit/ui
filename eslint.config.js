@@ -3,9 +3,12 @@ import ts from 'typescript-eslint';
 import svelte from 'eslint-plugin-svelte';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'eslint/config';
 
 export default defineConfig(
+	{
+		ignores: ['build/**', '.svelte-kit/**', 'dist/**', 'node_modules/**']
+	},
 	js.configs.recommended,
 	...ts.configs.recommended,
 	...svelte.configs['flat/recommended'],
@@ -26,8 +29,5 @@ export default defineConfig(
 				parser: ts.parser
 			}
 		}
-	},
-	{
-		ignores: ['build/', '.svelte-kit/', 'dist/']
 	}
 );

@@ -537,6 +537,20 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
+		it('uses provided id for internal ARIA linkage', async () => {
+			const screen = render(ComboBoxTest, { id: 'country-picker' });
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveAttribute('aria-controls', 'combobox-listbox-country-picker');
+
+			// Open and focus an item so aria-activedescendant is populated
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+
+			const activeDescendant = input.element().getAttribute('aria-activedescendant');
+			expect(activeDescendant).toMatch(/^combobox-item-country-picker-/);
+		});
+
 		it('has correct ARIA attributes on listbox', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');

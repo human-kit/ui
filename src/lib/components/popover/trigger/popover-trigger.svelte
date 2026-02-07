@@ -30,14 +30,11 @@
 		const button = target.closest('button, [role="button"]') as HTMLElement | null;
 
 		if (button && wrapperRef?.contains(button)) {
-			const popover = button.closest('[role="dialog"]');
-			if (!popover) {
-				// Set trigger ref if not already set
-				if (!popoverCtx.triggerRef) {
-					popoverCtx.setTriggerRef(button);
-				}
-				popoverCtx.toggle();
+			// Set trigger ref if not already set
+			if (!popoverCtx.triggerRef) {
+				popoverCtx.setTriggerRef(button);
 			}
+			popoverCtx.toggle();
 		}
 	}
 
@@ -46,11 +43,8 @@
 			// Find and set up the trigger button
 			const firstButton = wrapperRef.querySelector('button, [role="button"]') as HTMLElement | null;
 			if (firstButton) {
-				const popover = firstButton.closest('[role="dialog"]');
-				if (!popover) {
-					popoverCtx.setTriggerRef(firstButton);
-					firstButton.setAttribute('aria-haspopup', 'dialog');
-				}
+				popoverCtx.setTriggerRef(firstButton);
+				firstButton.setAttribute('aria-haspopup', 'dialog');
 			}
 		}
 

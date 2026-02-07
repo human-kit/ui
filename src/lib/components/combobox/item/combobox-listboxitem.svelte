@@ -28,6 +28,7 @@
 		| 'disableFocusHandling'
 		| 'isFocusedOverride'
 		| 'onItemSelect'
+		| 'onResolvedTextValue'
 		| 'scrollOnFocus'
 		| 'isParentDisabled'
 	>;
@@ -43,14 +44,24 @@
 		}
 	});
 
-	// Text value for filtering and display
-	const textValue = $derived(props.textValue ?? String(id));
+	// Text value for filtering and display.
+	// If textValue prop is omitted, resolve it from rendered content on mount.
+	let resolvedTextValue = $state<string | null>(props.textValue ?? null);
+	const effectiveTextValue = $derived(resolvedTextValue ?? '');
+
+	$effect(() => {
+		if (props.textValue !== undefined) {
+			resolvedTextValue = props.textValue;
+		}
+	});
 
 	// Normalized input for filtering comparison
 	const normalizedInput = $derived(ctx.inputValue.trim().toLowerCase());
 
-	// Automatic filtering: item is visible if inputValue is empty or matches textValue
-	const isVisible = $derived(!normalizedInput || textValue.toLowerCase().includes(normalizedInput));
+	// Automatic filtering: if text is not resolved yet, keep item visible until mount resolves it.
+	const isVisible = $derived(
+		!normalizedInput || !effectiveTextValue || effectiveTextValue.toLowerCase().includes(normalizedInput)
+	);
 
 	// Virtual focus from ComboBox context
 	const isFocused = $derived(ctx.focusedItemId === id);
@@ -64,7 +75,7 @@
 	// Reactive registration: register when visible, unregister when hidden
 	$effect(() => {
 		const visible = isVisible;
-		const label = textValue;
+		const label = effectiveTextValue || String(id);
 		const itemId = id;
 
 		untrack(() => {
@@ -77,6 +88,15 @@
 			}
 		});
 	});
+
+	function handleResolvedTextValue(label: string) {
+		if (!label) return;
+		resolvedTextValue = label;
+		// Update label map when already registered.
+		if (isRegistered) {
+			ctx.registerItem(id, label);
+		}
+	}
 
 	// Cleanup on component destroy - use onDestroy for clearer semantics
 	onDestroy(() => {
@@ -101,11 +121,12 @@
 	<ListBoxItem
 		{id}
 		{...props}
-		{textValue}
+		textValue={props.textValue}
 		customId={uniqueId}
 		disableFocusHandling={true}
 		isFocusedOverride={isFocused}
 		onItemSelect={handleSelect}
+		onResolvedTextValue={handleResolvedTextValue}
 		scrollOnFocus={true}
 		isParentDisabled={ctx.isDisabled}
 		class={cn(

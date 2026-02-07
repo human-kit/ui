@@ -2,12 +2,13 @@
 	import ComboBox from '../index';
 
 	type Props = {
+		id?: string;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
 	};
 
-	let { isDisabled = false, isReadOnly = false, trigger = 'press' }: Props = $props();
+	let { id, isDisabled = false, isReadOnly = false, trigger = 'press' }: Props = $props();
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },
@@ -23,7 +24,7 @@
 	];
 </script>
 
-<ComboBox {isDisabled} {isReadOnly} {trigger}>
+<ComboBox {id} {isDisabled} {isReadOnly} {trigger}>
 	<ComboBox.Input placeholder="Search countries..." />
 	<ComboBox.Button />
 

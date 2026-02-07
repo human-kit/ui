@@ -1,10 +1,12 @@
 <script lang="ts" generics="T extends object = object">
-	import type { Snippet } from 'svelte';
+	import { untrack, type Snippet } from 'svelte';
 	import { setComboBoxContext, type ComboBoxContext } from './context';
 	import type { ListBoxContext } from '$lib/components/listbox/root/context';
 	import { useVirtualFocus } from '$lib/hooks/use-virtual-focus.svelte';
 
 	type ComboBoxProps<T> = {
+		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
+		id?: string;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
 		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
@@ -36,7 +38,10 @@
 		'aria-labelledby'?: string;
 	};
 
+	const generatedInstanceId = $props.id();
+
 	let {
+		id: rootId,
 		isDisabled = false,
 		isReadOnly = false,
 		value = $bindable(),
@@ -59,15 +64,14 @@
 		'aria-labelledby': ariaLabelledby
 	}: ComboBoxProps<T> = $props();
 
+	const instanceId = untrack(() => rootId) ?? generatedInstanceId;
+
 	// Track if selectionBehavior was explicitly passed (for dev warning)
 	const selectionBehaviorExplicit = $derived(selectionBehavior !== undefined);
 	// Apply default if not provided
 	const effectiveSelectionBehavior = $derived(selectionBehavior ?? 'toggle');
 	// Default closeOnSelect based on selectionMode
 	const effectiveCloseOnSelect = $derived(closeOnSelect ?? selectionMode === 'single');
-
-	// Generate unique instance ID for ARIA attributes
-	const instanceId = crypto.randomUUID().slice(0, 8);
 
 	let wrapperRef: HTMLElement | null = $state(null);
 	let inputRef: HTMLElement | null = $state(null);
