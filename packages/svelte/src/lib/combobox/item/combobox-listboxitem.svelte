@@ -60,7 +60,9 @@
 
 	// Automatic filtering: if text is not resolved yet, keep item visible until mount resolves it.
 	const isVisible = $derived(
-		!normalizedInput || !effectiveTextValue || effectiveTextValue.toLowerCase().includes(normalizedInput)
+		!normalizedInput ||
+			!effectiveTextValue ||
+			effectiveTextValue.toLowerCase().includes(normalizedInput)
 	);
 
 	// Virtual focus from ComboBox context
@@ -111,12 +113,6 @@
 	}
 </script>
 
-<!--
-	svelte-ignore a11y_interactive_supports_focus
-	This element intentionally does not have tabindex because we use a "virtual focus" pattern.
-	The ComboBox input maintains real DOM focus while aria-activedescendant points to the focused option.
-	See: https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
--->
 {#if isVisible}
 	<ListBoxItem
 		{id}

@@ -1,13 +1,13 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { DemoSection, DemoSelect, DemoState } from '$lib/demo';
 	import { ListBox } from '@human-kit/svelte-components';
 
 	const fruits = [
-		{ id: 'apple', name: '🍎 Apple' },
-		{ id: 'banana', name: '🍌 Banana' },
-		{ id: 'cherry', name: '🍒 Cherry' },
-		{ id: 'grape', name: '🍇 Grape' },
-		{ id: 'orange', name: '🍊 Orange' }
+		{ id: 'apple', name: 'ðŸŽ Apple' },
+		{ id: 'banana', name: 'ðŸŒ Banana' },
+		{ id: 'cherry', name: 'ðŸ’ Cherry' },
+		{ id: 'grape', name: 'ðŸ‡ Grape' },
+		{ id: 'orange', name: 'ðŸŠ Orange' }
 	];
 
 	// Interactive playground state
@@ -42,23 +42,21 @@
 				title="Interactive Playground"
 				description="Test all ListBox props interactively"
 			>
-				{#snippet children()}
-					<ListBox.Root
-						{selectionMode}
-						{selectionBehavior}
-						bind:value={playgroundValue}
-						class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
-					>
-						{#each fruits as fruit (fruit.id)}
-							<ListBox.Item
-								id={fruit.id}
-								class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 last:mb-0 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-							>
-								{fruit.name}
-							</ListBox.Item>
-						{/each}
-					</ListBox.Root>
-				{/snippet}
+				<ListBox.Root
+					{selectionMode}
+					{selectionBehavior}
+					bind:value={playgroundValue}
+					class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
+				>
+					{#each fruits as fruit (fruit.id)}
+						<ListBox.Item
+							id={fruit.id}
+							class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 last:mb-0 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+						>
+							{fruit.name}
+						</ListBox.Item>
+					{/each}
+				</ListBox.Root>
 
 				{#snippet controls()}
 					<div class="space-y-4">
@@ -80,45 +78,43 @@
 
 			<!-- Controlled Mode -->
 			<DemoSection title="Controlled Mode" description="External control of selection state">
-				{#snippet children()}
-					<div class="flex items-start gap-8">
-						<ListBox.Root
-							selectionMode="single"
-							bind:value={controlledValue}
-							class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
-						>
-							{#each fruits as fruit (fruit.id)}
-								<ListBox.Item
-									id={fruit.id}
-									class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 last:mb-0 hover:bg-gray-100 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-								>
-									{fruit.name}
-								</ListBox.Item>
-							{/each}
-						</ListBox.Root>
+				<div class="flex items-start gap-8">
+					<ListBox.Root
+						selectionMode="single"
+						bind:value={controlledValue}
+						class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
+					>
+						{#each fruits as fruit (fruit.id)}
+							<ListBox.Item
+								id={fruit.id}
+								class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 last:mb-0 hover:bg-gray-100 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+							>
+								{fruit.name}
+							</ListBox.Item>
+						{/each}
+					</ListBox.Root>
 
-						<div class="flex flex-col gap-2">
-							<button
-								onclick={() => (controlledValue = new Set(['apple']))}
-								class="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
-							>
-								Select Apple
-							</button>
-							<button
-								onclick={() => (controlledValue = new Set(['cherry']))}
-								class="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
-							>
-								Select Cherry
-							</button>
-							<button
-								onclick={() => (controlledValue = new Set())}
-								class="rounded-lg bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700"
-							>
-								Clear
-							</button>
-						</div>
+					<div class="flex flex-col gap-2">
+						<button
+							onclick={() => (controlledValue = new Set(['apple']))}
+							class="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+						>
+							Select Apple
+						</button>
+						<button
+							onclick={() => (controlledValue = new Set(['cherry']))}
+							class="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+						>
+							Select Cherry
+						</button>
+						<button
+							onclick={() => (controlledValue = new Set())}
+							class="rounded-lg bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700"
+						>
+							Clear
+						</button>
 					</div>
-				{/snippet}
+				</div>
 
 				{#snippet controls()}
 					<div class="space-y-4">
@@ -132,66 +128,62 @@
 				title="Multiple Selection"
 				description="Select multiple items with Ctrl+A to select all"
 			>
-				{#snippet children()}
-					<ListBox.Root
-						selectionMode="multiple"
-						selectionBehavior="toggle"
-						defaultValue={['apple', 'cherry']}
-						class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
-					>
-						{#each fruits as fruit (fruit.id)}
-							<ListBox.Item
-								id={fruit.id}
-								class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 last:mb-0 hover:bg-gray-100 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-							>
-								{fruit.name}
-							</ListBox.Item>
-						{/each}
-					</ListBox.Root>
-				{/snippet}
+				<ListBox.Root
+					selectionMode="multiple"
+					selectionBehavior="toggle"
+					defaultValue={['apple', 'cherry']}
+					class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
+				>
+					{#each fruits as fruit (fruit.id)}
+						<ListBox.Item
+							id={fruit.id}
+							class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 last:mb-0 hover:bg-gray-100 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+						>
+							{fruit.name}
+						</ListBox.Item>
+					{/each}
+				</ListBox.Root>
 			</DemoSection>
 
 			<!-- Disabled Items -->
 			<DemoSection title="Disabled Items" description="Individual items can be disabled">
-				{#snippet children()}
-					<ListBox.Root
-						selectionMode="single"
-						class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
+				<ListBox.Root
+					selectionMode="single"
+					class="w-64 rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800"
+				>
+					<ListBox.Item
+						id="apple"
+						class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
 					>
-						<ListBox.Item
-							id="apple"
-							class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-						>
-							🍎 Apple
-						</ListBox.Item>
-						<ListBox.Item
-							id="banana"
-							disabled
-							class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-						>
-							🍌 Banana (disabled)
-						</ListBox.Item>
-						<ListBox.Item
-							id="cherry"
-							class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-						>
-							🍒 Cherry
-						</ListBox.Item>
-						<ListBox.Item
-							id="grape"
-							disabled
-							class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-						>
-							🍇 Grape (disabled)
-						</ListBox.Item>
-						<ListBox.Item
-							id="orange"
-							class="cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
-						>
-							🍊 Orange
-						</ListBox.Item>
-					</ListBox.Root>
-				{/snippet}
+						ðŸŽ Apple
+					</ListBox.Item>
+					<ListBox.Item
+						id="banana"
+						disabled
+						class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+					>
+						ðŸŒ Banana (disabled)
+					</ListBox.Item>
+					<ListBox.Item
+						id="cherry"
+						class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+					>
+						ðŸ’ Cherry
+					</ListBox.Item>
+					<ListBox.Item
+						id="grape"
+						disabled
+						class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+					>
+						ðŸ‡ Grape (disabled)
+					</ListBox.Item>
+					<ListBox.Item
+						id="orange"
+						class="cursor-pointer rounded-lg px-3 py-2 text-gray-900 hover:bg-gray-100 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-gray-700"
+					>
+						ðŸŠ Orange
+					</ListBox.Item>
+				</ListBox.Root>
 			</DemoSection>
 
 			<!-- Keyboard Navigation Info -->
@@ -199,27 +191,24 @@
 				title="Keyboard Navigation"
 				description="Full keyboard support for accessibility"
 			>
-				{#snippet children()}
-					<div class="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
-						<div class="flex items-center gap-2">
-							<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">↓ / ↑</kbd>
-							<span>Navigate items</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Home / End</kbd>
-							<span>Jump to first/last</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Space / Enter</kbd
-							>
-							<span>Select item</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Ctrl+A</kbd>
-							<span>Select all (multiple mode)</span>
-						</div>
+				<div class="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">â†“ / â†‘</kbd>
+						<span>Navigate items</span>
 					</div>
-				{/snippet}
+					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Home / End</kbd>
+						<span>Jump to first/last</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Space / Enter</kbd>
+						<span>Select item</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Ctrl+A</kbd>
+						<span>Select all (multiple mode)</span>
+					</div>
+				</div>
 			</DemoSection>
 		</div>
 	</div>

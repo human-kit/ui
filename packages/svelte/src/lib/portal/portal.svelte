@@ -13,7 +13,6 @@
 	let { target = 'body', children }: PortalProps = $props();
 
 	let wrapper: HTMLDivElement | undefined = $state();
-	let mounted = $state(false);
 
 	onMount(async () => {
 		if (!browser || !wrapper) return;
@@ -27,7 +26,6 @@
 		}
 
 		targetEl.appendChild(wrapper);
-		mounted = true;
 	});
 
 	onDestroy(() => {

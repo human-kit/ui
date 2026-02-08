@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 </script>
 
 <main class="flex min-h-screen flex-col items-center justify-center bg-neutral-950 text-white">
@@ -9,25 +10,25 @@
 		</p>
 		<nav class="flex flex-wrap justify-center gap-4">
 			<a
-				href="/docs/combobox"
+				href={resolve('/docs/combobox')}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>
 				Combobox
 			</a>
 			<a
-				href="/docs/listbox"
+				href={resolve('/docs/listbox')}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>
 				Listbox
 			</a>
 			<a
-				href="/docs/popover"
+				href={resolve('/docs/popover')}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>
 				Popover
 			</a>
 			<a
-				href="/docs/dialog"
+				href={resolve('/docs/dialog')}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>
 				Dialog

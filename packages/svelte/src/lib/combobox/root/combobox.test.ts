@@ -541,7 +541,9 @@ describe('ComboBox', () => {
 			const screen = render(ComboBoxTest, { id: 'country-picker' });
 			const input = screen.getByRole('combobox');
 
-			await expect.element(input).toHaveAttribute('aria-controls', 'combobox-listbox-country-picker');
+			await expect
+				.element(input)
+				.toHaveAttribute('aria-controls', 'combobox-listbox-country-picker');
 
 			// Open and focus an item so aria-activedescendant is populated
 			await input.click();

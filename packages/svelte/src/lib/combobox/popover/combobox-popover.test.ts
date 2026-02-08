@@ -7,7 +7,6 @@ describe('ComboBox.Popover', () => {
 	describe('Visibility', () => {
 		it('is hidden when closed', async () => {
 			const screen = render(ComboBoxTest);
-			const input = screen.getByRole('combobox');
 
 			// Should not have listbox visible initially
 			const listbox = screen.container.querySelector('[role="listbox"]');

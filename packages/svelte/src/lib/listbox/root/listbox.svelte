@@ -127,7 +127,7 @@
 	use:keyboardAction
 >
 	{#if items && children}
-		{#each itemsArray as item}
+		{#each itemsArray as item (item)}
 			{@render (children as Snippet<[T]>)(item)}
 		{/each}
 	{:else if children}

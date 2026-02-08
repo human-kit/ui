@@ -8,7 +8,7 @@ import {
  * Context object shared between ListBox and ListBox.Item components.
  * Provides state management and actions for selection and focus.
  */
-export type ListBoxContext<T = unknown> = {
+export type ListBoxContext = {
 	/** Current selection mode. */
 	selectionMode: 'single' | 'multiple';
 	/** Current selection behavior. */
@@ -233,7 +233,11 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		} else {
 			selectedKeys = new Set(selectedKeys);
 			if (selectionBehavior === 'toggle') {
-				wasSelected ? selectedKeys.delete(id) : selectedKeys.add(id);
+				if (wasSelected) {
+					selectedKeys.delete(id);
+				} else {
+					selectedKeys.add(id);
+				}
 			} else {
 				selectedKeys.add(id);
 			}

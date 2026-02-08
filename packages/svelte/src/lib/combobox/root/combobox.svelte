@@ -200,11 +200,10 @@
 	}
 
 	function selectItem(id: string | number, label: string) {
-		const newSelection = new Set(currentSelection);
+		let newSelection: Set<string | number>;
 
 		if (selectionMode === 'single') {
-			newSelection.clear();
-			newSelection.add(id);
+			newSelection = new Set([id]);
 			// Save the label persistently for restore on blur/escape
 			selectedLabel = label;
 			// Update input directly without triggering deselection
@@ -215,12 +214,16 @@
 				closePopover(true); // Close and keep focus on input
 			}
 		} else {
-			if (effectiveSelectionBehavior === 'toggle' && newSelection.has(id)) {
-				newSelection.delete(id);
+			const isTogglingOff = effectiveSelectionBehavior === 'toggle' && currentSelection.has(id);
+
+			if (isTogglingOff) {
+				newSelection = new Set(
+					Array.from(currentSelection).filter((selectedId) => selectedId !== id)
+				);
 				// Remove from persistent labels
 				selectedLabels.delete(id);
 			} else {
-				newSelection.add(id);
+				newSelection = new Set([...currentSelection, id]);
 				// Save label persistently for tags display
 				selectedLabels.set(id, label);
 			}
@@ -248,8 +251,9 @@
 		if (focusedTagId === id) {
 			focusedTagId = null;
 		}
-		const newSelection = new Set(currentSelection);
-		newSelection.delete(id);
+		const newSelection = new Set(
+			Array.from(currentSelection).filter((selectedId) => selectedId !== id)
+		);
 		// Remove from persistent labels
 		selectedLabels.delete(id);
 

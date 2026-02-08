@@ -105,7 +105,6 @@ describe('Dialog Stack', () => {
 		it('returns false when stack is empty', () => {
 			const fakeId = Symbol('fake');
 			// Make sure stack is empty first
-			const initialCount = getDialogCount();
 
 			// Even with a valid-looking symbol, should return false if not in stack
 			const dialog = pushDialog(() => {});

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { Popover } from '@human-kit/svelte-components/popover';
 	import { DemoSection, DemoCheckbox, DemoSelect, DemoInput, DemoState } from '$lib/demo';
 	import type { ExtendedPlacement } from '@human-kit/svelte-components/primitives';
@@ -44,31 +44,29 @@
 				title="Interactive Playground"
 				description="Test all Popover props interactively"
 			>
-				{#snippet children()}
-					<Popover.Root bind:open={isOpen}>
-						<Popover.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								{isOpen ? 'Close' : 'Open'} Popover
-							</button>
-						</Popover.Trigger>
-						<Popover.Content
-							{placement}
-							{offset}
-							{shouldFlip}
-							{isNonModal}
-							{shouldCloseOnInteractOutside}
-							{shouldCloseOnEscape}
-							class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
+				<Popover.Root bind:open={isOpen}>
+					<Popover.Trigger>
+						<button
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
 						>
-							<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Popover Content</h3>
-							<p class="text-sm text-gray-600 dark:text-gray-300">
-								Positioned at <strong>{placement}</strong> with {offset}px offset.
-							</p>
-						</Popover.Content>
-					</Popover.Root>
-				{/snippet}
+							{isOpen ? 'Close' : 'Open'} Popover
+						</button>
+					</Popover.Trigger>
+					<Popover.Content
+						{placement}
+						{offset}
+						{shouldFlip}
+						{isNonModal}
+						{shouldCloseOnInteractOutside}
+						{shouldCloseOnEscape}
+						class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
+					>
+						<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Popover Content</h3>
+						<p class="text-sm text-gray-600 dark:text-gray-300">
+							Positioned at <strong>{placement}</strong> with {offset}px offset.
+						</p>
+					</Popover.Content>
+				</Popover.Root>
 
 				{#snippet controls()}
 					<div class="space-y-4">
@@ -92,36 +90,34 @@
 				title="Controlled Mode"
 				description="Control the popover state externally with bind:open"
 			>
-				{#snippet children()}
-					<div class="flex flex-col items-center gap-4">
-						<div class="flex gap-2">
-							<button
-								onclick={() => (controlledOpen = !controlledOpen)}
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Toggle Externally
-							</button>
-						</div>
-
-						<Popover.Root bind:open={controlledOpen}>
-							<Popover.Trigger>
-								<button
-									class="rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
-								>
-									Trigger Button
-								</button>
-							</Popover.Trigger>
-							<Popover.Content class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800">
-								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Controlled Popover</h3>
-								<p class="text-sm text-gray-600 dark:text-gray-300">
-									Controlled via <code class="rounded bg-gray-100 px-1 dark:bg-gray-700"
-										>bind:open</code
-									>.
-								</p>
-							</Popover.Content>
-						</Popover.Root>
+				<div class="flex flex-col items-center gap-4">
+					<div class="flex gap-2">
+						<button
+							onclick={() => (controlledOpen = !controlledOpen)}
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Toggle Externally
+						</button>
 					</div>
-				{/snippet}
+
+					<Popover.Root bind:open={controlledOpen}>
+						<Popover.Trigger>
+							<button
+								class="rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
+							>
+								Trigger Button
+							</button>
+						</Popover.Trigger>
+						<Popover.Content class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800">
+							<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Controlled Popover</h3>
+							<p class="text-sm text-gray-600 dark:text-gray-300">
+								Controlled via <code class="rounded bg-gray-100 px-1 dark:bg-gray-700"
+									>bind:open</code
+								>.
+							</p>
+						</Popover.Content>
+					</Popover.Root>
+				</div>
 
 				{#snippet controls()}
 					<div class="space-y-4">
@@ -136,85 +132,77 @@
 				title="Modal vs Non-Modal"
 				description="Modal popovers trap focus and lock scroll. Non-modal allows outside interaction."
 			>
-				{#snippet children()}
-					<div class="flex gap-8">
-						<div class="text-center">
-							<p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-								Modal (default)
-							</p>
-							<Popover.Root>
-								<Popover.Trigger>
-									<button
-										class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-									>
-										Open Modal
-									</button>
-								</Popover.Trigger>
-								<Popover.Content
-									isNonModal={false}
-									class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
+				<div class="flex gap-8">
+					<div class="text-center">
+						<p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Modal (default)</p>
+						<Popover.Root>
+							<Popover.Trigger>
+								<button
+									class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
 								>
-									<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Modal Popover</h3>
-									<p class="text-sm text-gray-600 dark:text-gray-300">
-										Focus trapped, scroll locked, outside elements hidden.
-									</p>
-								</Popover.Content>
-							</Popover.Root>
-						</div>
-
-						<div class="text-center">
-							<p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Non-Modal</p>
-							<Popover.Root>
-								<Popover.Trigger>
-									<button
-										class="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-									>
-										Open Non-Modal
-									</button>
-								</Popover.Trigger>
-								<Popover.Content
-									isNonModal={true}
-									class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
-								>
-									<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">
-										Non-Modal Popover
-									</h3>
-									<p class="text-sm text-gray-600 dark:text-gray-300">
-										Can interact with elements outside. Closes on blur.
-									</p>
-								</Popover.Content>
-							</Popover.Root>
-						</div>
+									Open Modal
+								</button>
+							</Popover.Trigger>
+							<Popover.Content
+								isNonModal={false}
+								class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
+							>
+								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Modal Popover</h3>
+								<p class="text-sm text-gray-600 dark:text-gray-300">
+									Focus trapped, scroll locked, outside elements hidden.
+								</p>
+							</Popover.Content>
+						</Popover.Root>
 					</div>
-				{/snippet}
+
+					<div class="text-center">
+						<p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Non-Modal</p>
+						<Popover.Root>
+							<Popover.Trigger>
+								<button
+									class="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+								>
+									Open Non-Modal
+								</button>
+							</Popover.Trigger>
+							<Popover.Content
+								isNonModal={true}
+								class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
+							>
+								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Non-Modal Popover</h3>
+								<p class="text-sm text-gray-600 dark:text-gray-300">
+									Can interact with elements outside. Closes on blur.
+								</p>
+							</Popover.Content>
+						</Popover.Root>
+					</div>
+				</div>
 			</DemoSection>
 
 			<!-- All Placements -->
 			<DemoSection title="All Placements" description="All 12 placement options">
-				{#snippet children()}
-					<div class="grid grid-cols-4 gap-4">
-						{#each ['top', 'bottom', 'left', 'right'] as side}
-							{#each ['', '-start', '-end'] as align}
-								{@const pl = `${side}${align}` as ExtendedPlacement}
-								<Popover.Root>
-									<Popover.Trigger>
-										<button
-											class="w-full rounded-lg bg-gray-600 px-3 py-2 text-sm text-white transition-colors hover:bg-gray-700"
-										>
-											{pl}
-										</button>
-									</Popover.Trigger>
-									<Popover.Content
-										placement={pl}
-										class="rounded-lg bg-white p-3 shadow-lg dark:bg-gray-800"
+				<div class="grid grid-cols-4 gap-4">
+					{#each ['top', 'bottom', 'left', 'right'] as side (side)}
+						{#each ['', '-start', '-end'] as align (align)}
+							{@const pl = `${side}${align}` as ExtendedPlacement}
+							<Popover.Root>
+								<Popover.Trigger>
+									<button
+										class="w-full rounded-lg bg-gray-600 px-3 py-2 text-sm text-white transition-colors hover:bg-gray-700"
 									>
-										<p class="text-sm text-gray-900 dark:text-white">{pl}</p>
-									</Popover.Content>
-								</Popover.Root>
-							{/each}
+										{pl}
+									</button>
+								</Popover.Trigger>
+								<Popover.Content
+									placement={pl}
+									class="rounded-lg bg-white p-3 shadow-lg dark:bg-gray-800"
+								>
+									<p class="text-sm text-gray-900 dark:text-white">{pl}</p>
+								</Popover.Content>
+							</Popover.Root>
 						{/each}
-					</div>
-				{/snippet}
+					{/each}
+				</div>
 			</DemoSection>
 
 			<!-- Rich Content -->
@@ -222,49 +210,47 @@
 				title="Rich Content"
 				description="Popovers can contain any content including forms and interactive elements"
 			>
-				{#snippet children()}
-					<Popover.Root>
-						<Popover.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								User Menu
-							</button>
-						</Popover.Trigger>
-						<Popover.Content class="w-75 rounded-xl bg-white shadow-xl dark:bg-gray-800">
-							<div class="border-b border-gray-200 p-4 dark:border-gray-700">
-								<div class="flex items-center gap-3">
-									<div
-										class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white"
-									>
-										JD
-									</div>
-									<div>
-										<p class="font-medium text-gray-900 dark:text-white">John Doe</p>
-										<p class="text-sm text-gray-500 dark:text-gray-400">john@example.com</p>
-									</div>
+				<Popover.Root>
+					<Popover.Trigger>
+						<button
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							User Menu
+						</button>
+					</Popover.Trigger>
+					<Popover.Content class="w-75 rounded-xl bg-white shadow-xl dark:bg-gray-800">
+						<div class="border-b border-gray-200 p-4 dark:border-gray-700">
+							<div class="flex items-center gap-3">
+								<div
+									class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white"
+								>
+									JD
+								</div>
+								<div>
+									<p class="font-medium text-gray-900 dark:text-white">John Doe</p>
+									<p class="text-sm text-gray-500 dark:text-gray-400">john@example.com</p>
 								</div>
 							</div>
-							<div class="p-2">
-								<button
-									class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-								>
-									Profile Settings
-								</button>
-								<button
-									class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-								>
-									Notifications
-								</button>
-								<button
-									class="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-								>
-									Sign Out
-								</button>
-							</div>
-						</Popover.Content>
-					</Popover.Root>
-				{/snippet}
+						</div>
+						<div class="p-2">
+							<button
+								class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+							>
+								Profile Settings
+							</button>
+							<button
+								class="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+							>
+								Notifications
+							</button>
+							<button
+								class="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+							>
+								Sign Out
+							</button>
+						</div>
+					</Popover.Content>
+				</Popover.Root>
 			</DemoSection>
 		</div>
 	</div>

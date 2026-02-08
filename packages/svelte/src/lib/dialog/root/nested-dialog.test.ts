@@ -125,11 +125,11 @@ describe('Nested Dialogs', () => {
 			await screen.getByTestId('trigger-1').click();
 			await expect.poll(() => document.querySelector('[data-testid="content-1"]')).toBeTruthy();
 
-			let trigger2 = document.querySelector('[data-testid="trigger-2"]') as HTMLElement;
+			const trigger2 = document.querySelector('[data-testid="trigger-2"]') as HTMLElement;
 			await trigger2.click();
 			await expect.poll(() => document.querySelector('[data-testid="content-2"]')).toBeTruthy();
 
-			let trigger3 = document.querySelector('[data-testid="trigger-3"]') as HTMLElement;
+			const trigger3 = document.querySelector('[data-testid="trigger-3"]') as HTMLElement;
 			await trigger3.click();
 			await expect.poll(() => document.querySelector('[data-testid="content-3"]')).toBeTruthy();
 
@@ -165,12 +165,10 @@ describe('Nested Dialogs', () => {
 			await trigger2.click();
 			await expect.poll(() => document.querySelector('[data-testid="content-2"]')).toBeTruthy();
 
-			const overlay1 = document.querySelector('[data-testid="overlay-1"]') as HTMLElement;
 			const content1 = document.querySelector('[data-testid="content-1"]') as HTMLElement;
 			const overlay2 = document.querySelector('[data-testid="overlay-2"]') as HTMLElement;
 			const content2 = document.querySelector('[data-testid="content-2"]') as HTMLElement;
 
-			const z1Overlay = parseInt(overlay1.style.zIndex);
 			const z1Content = parseInt(content1.style.zIndex);
 			const z2Overlay = parseInt(overlay2.style.zIndex);
 			const z2Content = parseInt(content2.style.zIndex);
@@ -188,11 +186,11 @@ describe('Nested Dialogs', () => {
 			await screen.getByTestId('trigger-1').click();
 			await expect.poll(() => document.querySelector('[data-testid="content-1"]')).toBeTruthy();
 
-			let trigger2 = document.querySelector('[data-testid="trigger-2"]') as HTMLElement;
+			const trigger2 = document.querySelector('[data-testid="trigger-2"]') as HTMLElement;
 			await trigger2.click();
 			await expect.poll(() => document.querySelector('[data-testid="content-2"]')).toBeTruthy();
 
-			let trigger3 = document.querySelector('[data-testid="trigger-3"]') as HTMLElement;
+			const trigger3 = document.querySelector('[data-testid="trigger-3"]') as HTMLElement;
 			await trigger3.click();
 			await expect.poll(() => document.querySelector('[data-testid="content-3"]')).toBeTruthy();
 
