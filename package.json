@@ -14,7 +14,8 @@
 		"typecheck": "bun --filter @human-kit/svelte-components check && bun --filter docs check",
 		"check": "bun run --filter '*' check",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint ."
+		"lint": "prettier --check . && eslint .",
+		"release": "bun run build && bunx changeset publish"
 	},
 	"devDependencies": {
 		"@changesets/changelog-github": "^0.5.2",

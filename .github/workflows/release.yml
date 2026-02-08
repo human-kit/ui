@@ -33,7 +33,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: bunx changeset version
-          publish: bash -c "bun run build && bunx changeset publish"
+          publish: bun run release
           title: 'chore: version packages'
           commit: 'chore: version packages'
         env:
