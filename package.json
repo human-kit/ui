@@ -1,90 +1,34 @@
 {
-  "name": "@agustin/svelte-components",
-  "version": "0.0.1",
-  "license": "MIT",
-  "type": "module",
-  "svelte": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "svelte": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./components/*": {
-      "types": "./dist/components/*/index.d.ts",
-      "svelte": "./dist/components/*/index.js",
-      "default": "./dist/components/*/index.js"
-    },
-    "./primitives": {
-      "types": "./dist/primitives/index.d.ts",
-      "default": "./dist/primitives/index.js"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "default": "./dist/utils/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "!dist/**/*.test.*",
-    "!dist/**/*.spec.*"
-  ],
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build && npm run package",
-    "preview": "vite preview",
-    "package": "svelte-kit sync && svelte-package && publint",
-    "prepublishOnly": "npm run package",
-    "prepare": "svelte-kit sync || echo ''",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "format": "prettier --write .",
-    "lint": "prettier --check . && eslint .",
-    "test": "vitest"
-  },
-  "devDependencies": {
-    "@eslint/compat": "^1.4.0",
-    "@eslint/js": "^9.38.0",
-    "@sveltejs/adapter-auto": "^7.0.0",
-    "@sveltejs/kit": "^2.49.1",
-    "@sveltejs/package": "^2.3.0",
-    "@sveltejs/vite-plugin-svelte": "^6.2.1",
-    "@tailwindcss/vite": "^4.1.14",
-    "@testing-library/svelte": "^5.3.1",
-    "@types/node": "^20",
-    "@vitest/browser": "^4.0.16",
-    "@vitest/browser-playwright": "^4.0.16",
-    "eslint": "^9.38.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-svelte": "^3.12.4",
-    "globals": "^16.4.0",
-    "happy-dom": "^20.0.11",
-    "jsdom": "^27.4.0",
-    "playwright": "^1.57.0",
-    "prettier": "^3.6.2",
-    "prettier-plugin-svelte": "^3.4.0",
-    "prettier-plugin-tailwindcss": "^0.7.1",
-    "publint": "^0.2.0",
-    "svelte": "^5.41.0",
-    "svelte-check": "^4.3.4",
-    "tailwindcss": "^4.1.14",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.1",
-    "vite": "^7.1.10",
-    "vitest": "^4.0.16",
-    "vitest-browser-svelte": "^2.0.1"
-  },
-  "dependencies": {
-    "@floating-ui/dom": "^1.7.4",
-    "@lucide/svelte": "^0.562.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.0",
-    "svelte-adapter-bun": "^1.0.1",
-    "tailwind-merge": "^3.4.0",
-    "vite-plugin-devtools-json": "^1.0.0"
-  },
-  "peerDependencies": {
-    "svelte": "^5.0.0"
-  }
+	"name": "@agustin/monorepo",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"packages/*",
+		"docs"
+	],
+	"scripts": {
+		"dev": "bun --filter docs dev",
+		"build": "bun --filter @human-kit/svelte-components package",
+		"build:docs": "bun --filter docs build",
+		"test": "bun --filter @human-kit/svelte-components test",
+		"typecheck": "bun --filter @human-kit/svelte-components check && bun --filter docs check",
+		"check": "bun run --filter '*' check",
+		"format": "prettier --write .",
+		"lint": "prettier --check . && eslint ."
+	},
+	"devDependencies": {
+		"@changesets/changelog-github": "^0.5.2",
+		"@changesets/cli": "^2.29.8",
+		"@eslint/compat": "^1.4.0",
+		"@eslint/js": "^9.38.0",
+		"eslint": "^9.38.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.12.4",
+		"globals": "^16.4.0",
+		"prettier": "^3.6.2",
+		"prettier-plugin-svelte": "^3.4.0",
+		"prettier-plugin-tailwindcss": "^0.7.1",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.46.1"
+	}
 }

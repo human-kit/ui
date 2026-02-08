@@ -6,5 +6,14 @@ build
 .env.*
 !.env.example
 
+# Monorepo
+**/node_modules
+**/.svelte-kit
+**/dist
+**/build
+
 *storybook.log
 storybook-static
+
+# Vercel
+.vercel
