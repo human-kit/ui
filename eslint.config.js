@@ -7,7 +7,7 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig(
 	{
-		ignores: ['build/**', '.svelte-kit/**', 'dist/**', 'node_modules/**']
+		ignores: ['**/build/**', '**/.svelte-kit/**', '**/dist/**', '**/node_modules/**']
 	},
 	js.configs.recommended,
 	...ts.configs.recommended,
