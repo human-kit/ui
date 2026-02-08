@@ -1,10 +1,8 @@
 {
-  "mode": "pre",
-  "tag": "alpha",
-  "initialVersions": {
-    "@human-kit/svelte-components": "1.0.0-alpha.0"
-  },
-  "changesets": [
-    "initial-release"
-  ]
+	"mode": "pre",
+	"tag": "alpha",
+	"initialVersions": {
+		"@human-kit/svelte-components": "1.0.0-alpha.0"
+	},
+	"changesets": ["initial-release"]
 }
