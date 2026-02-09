@@ -15,7 +15,8 @@
 		"check": "bun run --filter '*' check",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"release": "bun run build && bunx changeset publish"
+		"release": "bun run build && bunx changeset publish",
+		"pr": "bash scripts/pr.sh"
 	},
 	"devDependencies": {
 		"@changesets/changelog-github": "^0.5.2",

@@ -1,8 +1,8 @@
 import adapter from '@sveltejs/adapter-vercel';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import type { Config } from '@sveltejs/kit';
 
-const config: Config = {
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
   preprocess: vitePreprocess(),
   compilerOptions: {
     runes: true
