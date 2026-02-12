@@ -16,6 +16,11 @@
 			"svelte": "./dist/combobox/index.js",
 			"default": "./dist/combobox/index.js"
 		},
+		"./calendar": {
+			"types": "./dist/calendar/index.d.ts",
+			"svelte": "./dist/calendar/index.js",
+			"default": "./dist/calendar/index.js"
+		},
 		"./dialog": {
 			"types": "./dist/dialog/index.d.ts",
 			"svelte": "./dist/dialog/index.js",
@@ -40,6 +45,11 @@
 			"types": "./dist/label/index.d.ts",
 			"svelte": "./dist/label/index.js",
 			"default": "./dist/label/index.js"
+		},
+		"./locale-provider": {
+			"types": "./dist/locale-provider/index.d.ts",
+			"svelte": "./dist/locale-provider/index.js",
+			"default": "./dist/locale-provider/index.js"
 		},
 		"./portal": {
 			"types": "./dist/portal/index.d.ts",
