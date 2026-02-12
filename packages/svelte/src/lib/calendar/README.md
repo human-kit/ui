@@ -7,7 +7,10 @@
 ## Usage Guidelines
 
 - Usa `Calendar.Root` como contenedor principal.
+- `selectionMode` soporta `'single'` (default) o `'range'`.
 - En modo controlado, usa `value` + `onChange`; para no-controlado, usa `defaultValue`.
+- En `single`, `value/defaultValue` es `YYYY-MM-DD`.
+- En `range`, `value/defaultValue` es `{ start?: 'YYYY-MM-DD', end?: 'YYYY-MM-DD' }`.
 - `visibleMonths` define cuantos meses se muestran y la paginacion de triggers.
 - `isDateUnavailable` deshabilita dias concretos (no foco y no seleccion).
 - Usa `LocaleProvider` para adaptar nombres de mes/dia y primer dia de semana.
@@ -26,10 +29,14 @@
 - `Home/End`: mueve foco al primer/ultimo dia del mes.
 - `PageUp/PageDown`: cambia al mes anterior/siguiente intentando mantener el dia.
 - `Enter` o `Space`: selecciona la fecha enfocada (si es seleccionable).
+- En `selectionMode="range"`, `Shift + Arrow/Page/Home/End` extiende el rango en preview.
+- En `selectionMode="range"`, `Enter` o `Space` confirma el preview si hay rango pendiente.
 
 ## Internal Notes
 
 - `PageUp/PageDown` mantiene la implementacion actual: intenta conservar el dia al cambiar de mes, pero si ese dia no es focusable (por ejemplo `isDateUnavailable`), mueve al siguiente dia focusable en la direccion de la tecla. Debido a eso, en escenarios con dias bloqueados puede verse un "desfase" acumulado del numero de dia entre saltos consecutivos.
+- En `selectionMode="range"`, el primer click inicia rango (`start`) y el segundo click confirma (`end`), con normalizacion automatica si el usuario elige primero una fecha posterior.
+- En `selectionMode="range"`, el hover muestra preview en tiempo real antes de confirmar.
 
 ## Anatomy
 

@@ -20,6 +20,13 @@ import {
 const KEY = Symbol('calendar');
 const MAX_FOCUS_SEARCH_DAYS = 370;
 
+export type CalendarSelectionMode = 'single' | 'range';
+export type CalendarRangeValue = {
+  start?: CalendarDateValue;
+  end?: CalendarDateValue;
+};
+export type CalendarValue = CalendarDateValue | CalendarRangeValue;
+
 export type CalendarMonth = {
   monthIndex: number;
   monthStart: Date;
@@ -28,34 +35,41 @@ export type CalendarMonth = {
 };
 
 export type CreateCalendarContextOptions = {
+  selectionMode?: CalendarSelectionMode;
   visibleMonths?: number;
   locale?: string;
   isDisabled?: boolean;
   isReadOnly?: boolean;
-  value?: CalendarDateValue;
-  defaultValue?: CalendarDateValue;
+  value?: CalendarValue;
+  defaultValue?: CalendarValue;
   isDateUnavailable?: (date: CalendarDateValue) => boolean;
-  onChange?: (value: CalendarDateValue) => void;
+  onChange?: (value: CalendarValue) => void;
 };
 
 export type CalendarContext = {
   layoutVersion: Readable<number>;
   selectionVersion: Readable<number>;
   locale: string;
+  selectionMode: CalendarSelectionMode;
   firstDayOfWeek: number;
   visibleMonths: number;
   isDisabled: boolean;
   isReadOnly: boolean;
   months: CalendarMonth[];
   selectedValue: CalendarDateValue | undefined;
+  rangeValue: CalendarRangeValue | undefined;
   focusedValue: CalendarDateValue;
   weekdayLabels: string[];
   headingLabel: string;
   isSelected: (date: CalendarDateValue) => boolean;
+  isRangeStart: (date: CalendarDateValue) => boolean;
+  isRangeEnd: (date: CalendarDateValue) => boolean;
+  isInRange: (date: CalendarDateValue) => boolean;
   isDateUnavailable: (date: CalendarDateValue) => boolean;
   isDateDisabled: (date: CalendarDateValue) => boolean;
   isOutsideVisibleRange: (date: CalendarDateValue, monthIndex: number) => boolean;
   setFocusedValue: (date: CalendarDateValue) => void;
+  setHoveredValue: (date: CalendarDateValue | undefined) => void;
   selectDate: (date: CalendarDateValue) => void;
   goToNextPage: () => void;
   goToPreviousPage: () => void;
@@ -65,6 +79,7 @@ export type CalendarContext = {
 
 export function createCalendarContext(options: CreateCalendarContextOptions): CalendarContext {
   let {
+    selectionMode = 'single',
     visibleMonths = 1,
     locale = Intl.DateTimeFormat().resolvedOptions().locale,
     isDisabled = false,
@@ -75,15 +90,97 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
   const { value, defaultValue } = options;
 
-  const fallbackToday = formatCalendarDate(getTodayUtcDate());
-  const initialSelected = isValidCalendarDateValue(value ?? '')
-    ? value
-    : isValidCalendarDateValue(defaultValue ?? '')
-      ? defaultValue
-      : undefined;
+  function isRangeValue(valueToCheck: CalendarValue | undefined): valueToCheck is CalendarRangeValue {
+    if (!valueToCheck || typeof valueToCheck === 'string') return false;
+    return true;
+  }
 
-  let currentSelected = initialSelected;
-  let currentFocused = initialSelected ?? fallbackToday;
+  function normalizeRange(start: CalendarDateValue, end: CalendarDateValue): CalendarRangeValue {
+    const parsedStart = parseCalendarDate(start);
+    const parsedEnd = parseCalendarDate(end);
+    if (!parsedStart || !parsedEnd) {
+      return { start, end };
+    }
+
+    if (compareDates(parsedStart, parsedEnd) <= 0) {
+      return { start, end };
+    }
+
+    return { start: end, end: start };
+  }
+
+  function isValueInsideRange(date: CalendarDateValue, range: CalendarRangeValue | undefined): boolean {
+    if (!range?.start || !range?.end) return false;
+    const parsedDate = parseCalendarDate(date);
+    const parsedStart = parseCalendarDate(range.start);
+    const parsedEnd = parseCalendarDate(range.end);
+    if (!parsedDate || !parsedStart || !parsedEnd) return false;
+    return compareDates(parsedDate, parsedStart) >= 0 && compareDates(parsedDate, parsedEnd) <= 0;
+  }
+
+  function isRangePathSelectable(start: CalendarDateValue, end: CalendarDateValue): boolean {
+    const normalized = normalizeRange(start, end);
+    if (!normalized.start || !normalized.end) return false;
+
+    const parsedStart = parseCalendarDate(normalized.start);
+    const parsedEnd = parseCalendarDate(normalized.end);
+    if (!parsedStart || !parsedEnd) return false;
+
+    for (
+      let current = parsedStart;
+      compareDates(current, parsedEnd) <= 0;
+      current = addDays(current, 1)
+    ) {
+      const currentValue = formatCalendarDate(current);
+      if (isUnavailable(currentValue)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function getEffectiveRange(): CalendarRangeValue | undefined {
+    if (currentRangeStart && currentRangeEnd) {
+      return normalizeRange(currentRangeStart, currentRangeEnd);
+    }
+
+    if (currentRangeStart && currentPreviewEnd) {
+      return normalizeRange(currentRangeStart, currentPreviewEnd);
+    }
+
+    if (currentRangeStart) {
+      return { start: currentRangeStart };
+    }
+
+    return undefined;
+  }
+
+  const fallbackToday = formatCalendarDate(getTodayUtcDate());
+  const initialSingleSelected =
+    selectionMode === 'single' && typeof value === 'string' && isValidCalendarDateValue(value)
+      ? value
+      : selectionMode === 'single' && typeof defaultValue === 'string' && isValidCalendarDateValue(defaultValue)
+        ? defaultValue
+        : undefined;
+
+  const initialRangeSelected =
+    selectionMode === 'range' && isRangeValue(value)
+      ? value
+      : selectionMode === 'range' && isRangeValue(defaultValue)
+        ? defaultValue
+        : undefined;
+
+  let currentSelected = initialSingleSelected;
+  let currentRangeStart = initialRangeSelected?.start;
+  let currentRangeEnd = initialRangeSelected?.end;
+  let currentRangeAnchor: CalendarDateValue | undefined;
+  let currentPreviewEnd: CalendarDateValue | undefined;
+  let currentHoveredDate: CalendarDateValue | undefined;
+  let previousCommittedRange: CalendarRangeValue | undefined;
+  let previousFocusedBeforeDraft: CalendarDateValue | undefined;
+  let currentFocused =
+    initialSingleSelected ?? initialRangeSelected?.end ?? initialRangeSelected?.start ?? fallbackToday;
   let currentVisibleMonth = startOfMonth(parseCalendarDate(currentFocused) ?? getTodayUtcDate());
   let cachedMonths: CalendarMonth[] = [];
   let hasCachedMonths = false;
@@ -112,6 +209,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     let shouldNotifyLayout = false;
     let shouldNotifySelection = false;
 
+    const nextSelectionMode = next.selectionMode ?? 'single';
     const nextVisibleMonths = Math.max(1, next.visibleMonths ?? 1);
     const nextLocale = next.locale ?? Intl.DateTimeFormat().resolvedOptions().locale;
     const nextUnavailableFn = next.isDateUnavailable;
@@ -129,6 +227,18 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     previousVisibleMonths = nextVisibleMonths;
     previousLocale = nextLocale;
 
+    if (selectionMode !== nextSelectionMode) {
+      selectionMode = nextSelectionMode;
+      currentSelected = undefined;
+      currentRangeStart = undefined;
+      currentRangeEnd = undefined;
+      currentRangeAnchor = undefined;
+      currentPreviewEnd = undefined;
+      currentHoveredDate = undefined;
+      shouldNotifySelection = true;
+      shouldNotifyLayout = true;
+    }
+
     visibleMonths = nextVisibleMonths;
     locale = nextLocale;
     cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
@@ -145,27 +255,111 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     const nextValue = next.value;
     const nextDefaultValue = next.defaultValue;
 
-    if (nextValue !== undefined) {
-      if (isValidCalendarDateValue(nextValue)) {
-        if (currentSelected !== nextValue || currentFocused !== nextValue) {
+    if (selectionMode === 'single') {
+      if (nextValue !== undefined) {
+        if (typeof nextValue === 'string' && isValidCalendarDateValue(nextValue)) {
+          if (currentSelected !== nextValue || currentFocused !== nextValue) {
+            shouldNotifySelection = true;
+          }
+          currentSelected = nextValue;
+          currentFocused = nextValue;
+          currentVisibleMonth = startOfMonth(parseCalendarDate(nextValue) ?? currentVisibleMonth);
+          shouldNotifyLayout = true;
+        } else if (currentSelected !== undefined) {
+          currentSelected = undefined;
           shouldNotifySelection = true;
         }
-        currentSelected = nextValue;
-        currentFocused = nextValue;
-        currentVisibleMonth = startOfMonth(parseCalendarDate(nextValue) ?? currentVisibleMonth);
+      } else if (
+        !currentSelected &&
+        typeof nextDefaultValue === 'string' &&
+        isValidCalendarDateValue(nextDefaultValue)
+      ) {
+        currentSelected = nextDefaultValue;
+        currentFocused = nextDefaultValue;
+        currentVisibleMonth = startOfMonth(
+          parseCalendarDate(nextDefaultValue) ?? currentVisibleMonth
+        );
+        shouldNotifySelection = true;
         shouldNotifyLayout = true;
-      } else if (currentSelected !== undefined) {
-        currentSelected = undefined;
+      }
+      currentRangeStart = undefined;
+      currentRangeEnd = undefined;
+      currentRangeAnchor = undefined;
+      currentPreviewEnd = undefined;
+      currentHoveredDate = undefined;
+    } else {
+      if (nextValue !== undefined) {
+        if (isRangeValue(nextValue)) {
+          const nextStart =
+            nextValue.start && isValidCalendarDateValue(nextValue.start) ? nextValue.start : undefined;
+          const nextEnd =
+            nextValue.end && isValidCalendarDateValue(nextValue.end) ? nextValue.end : undefined;
+          const nextRange = nextStart && nextEnd ? normalizeRange(nextStart, nextEnd) : undefined;
+          const shouldKeepFocused =
+            !!nextRange &&
+            isValidCalendarDateValue(currentFocused) &&
+            isValueInsideRange(currentFocused, nextRange);
+          const nextFocus = shouldKeepFocused
+            ? currentFocused
+            : nextRange?.end ?? nextRange?.start ?? nextEnd ?? nextStart;
+          if (
+            currentRangeStart !== nextStart ||
+            currentRangeEnd !== nextEnd ||
+            currentFocused !== (nextFocus ?? currentFocused)
+          ) {
+            shouldNotifySelection = true;
+          }
+          currentRangeStart = nextStart;
+          currentRangeEnd = nextEnd;
+          currentRangeAnchor = undefined;
+          currentPreviewEnd = undefined;
+          currentHoveredDate = undefined;
+          if (nextFocus) {
+            currentFocused = nextFocus;
+            currentVisibleMonth = startOfMonth(parseCalendarDate(nextFocus) ?? currentVisibleMonth);
+            shouldNotifyLayout = true;
+          }
+        } else if (currentRangeStart || currentRangeEnd) {
+          currentRangeStart = undefined;
+          currentRangeEnd = undefined;
+          currentRangeAnchor = undefined;
+          currentPreviewEnd = undefined;
+          currentHoveredDate = undefined;
+          shouldNotifySelection = true;
+        }
+      } else if (!currentRangeStart && !currentRangeEnd && isRangeValue(nextDefaultValue)) {
+        const nextStart =
+          nextDefaultValue.start && isValidCalendarDateValue(nextDefaultValue.start)
+            ? nextDefaultValue.start
+            : undefined;
+        const nextEnd =
+          nextDefaultValue.end && isValidCalendarDateValue(nextDefaultValue.end)
+            ? nextDefaultValue.end
+            : undefined;
+        const nextRange = nextStart && nextEnd ? normalizeRange(nextStart, nextEnd) : undefined;
+        const shouldKeepFocused =
+          !!nextRange &&
+          isValidCalendarDateValue(currentFocused) &&
+          isValueInsideRange(currentFocused, nextRange);
+        const nextFocus = shouldKeepFocused
+          ? currentFocused
+          : nextRange?.end ?? nextRange?.start ?? nextEnd ?? nextStart;
+
+        currentRangeStart = nextStart;
+        currentRangeEnd = nextEnd;
+        currentRangeAnchor = undefined;
+        currentPreviewEnd = undefined;
+        currentHoveredDate = undefined;
+
+        if (nextFocus) {
+          currentFocused = nextFocus;
+          currentVisibleMonth = startOfMonth(parseCalendarDate(nextFocus) ?? currentVisibleMonth);
+          shouldNotifyLayout = true;
+        }
         shouldNotifySelection = true;
       }
-    } else if (!currentSelected && nextDefaultValue && isValidCalendarDateValue(nextDefaultValue)) {
-      currentSelected = nextDefaultValue;
-      currentFocused = nextDefaultValue;
-      currentVisibleMonth = startOfMonth(
-        parseCalendarDate(nextDefaultValue) ?? currentVisibleMonth
-      );
-      shouldNotifySelection = true;
-      shouldNotifyLayout = true;
+
+      currentSelected = undefined;
     }
 
     if (shouldNotifyLayout) notifyLayout();
@@ -208,7 +402,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
       return cachedMonths;
     }
 
-    const firstDayOfWeek = getFirstDayOfWeek(locale);
+    const firstDayOfWeek = cachedFirstDayOfWeek;
     cachedMonths = Array.from({ length: visibleMonths }, (_, monthIndex) => {
       const monthStart = addMonths(startOfMonth(currentVisibleMonth), monthIndex);
       return {
@@ -230,7 +424,30 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
   }
 
   function isSelected(date: CalendarDateValue): boolean {
+    if (selectionMode === 'range') {
+      if (currentRangeStart && !currentRangeEnd && !currentPreviewEnd) {
+        return currentRangeStart === date;
+      }
+      return isInRange(date);
+    }
     return currentSelected === date;
+  }
+
+  function isRangeStart(date: CalendarDateValue): boolean {
+    if (selectionMode !== 'range') return false;
+    const range = getEffectiveRange();
+    return range?.start === date;
+  }
+
+  function isRangeEnd(date: CalendarDateValue): boolean {
+    if (selectionMode !== 'range') return false;
+    const range = getEffectiveRange();
+    return range?.end === date;
+  }
+
+  function isInRange(date: CalendarDateValue): boolean {
+    if (selectionMode !== 'range') return false;
+    return isValueInsideRange(date, getEffectiveRange());
   }
 
   function isUnavailable(date: CalendarDateValue): boolean {
@@ -244,7 +461,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
   }
 
   function isDateDisabled(date: CalendarDateValue): boolean {
-    return isDisabled || isUnavailable(date);
+    if (isDisabled || isUnavailable(date)) return true;
+
+    if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
+      return !isRangePathSelectable(currentRangeStart, date);
+    }
+
+    return false;
   }
 
   function isOutsideVisibleRange(date: CalendarDateValue, monthIndex: number): boolean {
@@ -269,9 +492,101 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     notifySelection();
   }
 
+  function setHoveredValue(date: CalendarDateValue | undefined) {
+    if (selectionMode !== 'range') return;
+    if (isDisabled || isReadOnly) return;
+    if (!currentRangeStart || currentRangeEnd) return;
+
+    const nextHovered = date && isValidCalendarDateValue(date) ? date : undefined;
+    if (nextHovered === currentHoveredDate) return;
+
+    if (!nextHovered) {
+      return;
+    }
+
+    if (nextHovered && !isRangePathSelectable(currentRangeStart, nextHovered)) {
+      return;
+    }
+
+    currentHoveredDate = nextHovered;
+    currentPreviewEnd = nextHovered;
+    notifySelection();
+  }
+
+  function beginRangeSelection(date: CalendarDateValue) {
+    previousCommittedRange =
+      currentRangeStart && currentRangeEnd
+        ? { start: currentRangeStart, end: currentRangeEnd }
+        : undefined;
+    previousFocusedBeforeDraft = currentFocused;
+    currentRangeStart = date;
+    currentRangeEnd = undefined;
+    currentRangeAnchor = date;
+    currentPreviewEnd = undefined;
+    currentHoveredDate = undefined;
+  }
+
+  function commitRangeSelection(start: CalendarDateValue, end: CalendarDateValue) {
+    if (!isRangePathSelectable(start, end)) {
+      return;
+    }
+
+    const normalized = normalizeRange(start, end);
+    currentRangeStart = normalized.start;
+    currentRangeEnd = normalized.end;
+    currentRangeAnchor = normalized.start;
+    currentPreviewEnd = undefined;
+    currentHoveredDate = undefined;
+    previousCommittedRange = { start: normalized.start, end: normalized.end };
+    previousFocusedBeforeDraft = undefined;
+    onChange?.({ start: normalized.start, end: normalized.end });
+  }
+
+  function cancelPendingRangeSelection() {
+    if (selectionMode !== 'range') return;
+    if (!currentRangeStart || currentRangeEnd) return;
+
+    currentRangeStart = previousCommittedRange?.start;
+    currentRangeEnd = previousCommittedRange?.end;
+    currentRangeAnchor = previousCommittedRange?.start;
+    currentPreviewEnd = undefined;
+    currentHoveredDate = undefined;
+
+    const restoredFocus = previousFocusedBeforeDraft ?? previousCommittedRange?.end ?? previousCommittedRange?.start;
+    if (restoredFocus && isValidCalendarDateValue(restoredFocus)) {
+      currentFocused = restoredFocus;
+      const didChangeMonth = ensureVisible(restoredFocus);
+      if (didChangeMonth) {
+        notifyLayout();
+      }
+    }
+
+    previousCommittedRange = undefined;
+    previousFocusedBeforeDraft = undefined;
+    notifySelection();
+  }
+
   function selectDate(date: CalendarDateValue) {
     if (!isValidCalendarDateValue(date)) return;
     if (isDisabled || isReadOnly || isUnavailable(date)) return;
+
+    if (selectionMode === 'range') {
+      currentFocused = date;
+      const didChangeMonth = ensureVisible(date);
+
+      if (!currentRangeStart || currentRangeEnd) {
+        beginRangeSelection(date);
+      } else {
+        commitRangeSelection(currentRangeStart, date);
+      }
+
+      if (didChangeMonth) {
+        notifyLayout();
+      }
+      notifySelection();
+      return;
+    }
+
     if (currentSelected === date && currentFocused === date) return;
 
     currentSelected = date;
@@ -306,30 +621,37 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     notifySelection();
   }
 
-  function moveFocusByDays(baseDate: CalendarDateValue, amount: number) {
+  function moveFocusByDays(baseDate: CalendarDateValue, amount: number): CalendarDateValue | undefined {
     const parsed = parseCalendarDate(baseDate);
-    if (!parsed) return;
+    if (!parsed) return undefined;
     const next = addDays(parsed, amount);
     const nextValue = formatCalendarDate(next);
     const focusableValue = findFocusableDate(nextValue, amount);
-    if (!focusableValue) return;
+    if (!focusableValue) return undefined;
     setFocusedValue(focusableValue);
+    return focusableValue;
   }
 
-  function moveFocusByMonths(baseDate: CalendarDateValue, amount: number) {
+  function moveFocusByMonths(baseDate: CalendarDateValue, amount: number): CalendarDateValue | undefined {
     const parsed = parseCalendarDate(baseDate);
-    if (!parsed) return;
+    if (!parsed) return undefined;
     const next = addMonths(parsed, amount);
     const nextValue = formatCalendarDate(next);
     const dayStep = amount >= 0 ? 1 : -1;
     const focusableValue = findFocusableDate(nextValue, dayStep);
-    if (!focusableValue) return;
+    if (!focusableValue) {
+      if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
+        return moveToMonthEdge(baseDate, amount >= 0 ? 'end' : 'start');
+      }
+      return undefined;
+    }
     setFocusedValue(focusableValue);
+    return focusableValue;
   }
 
-  function moveToMonthEdge(baseDate: CalendarDateValue, edge: 'start' | 'end') {
+  function moveToMonthEdge(baseDate: CalendarDateValue, edge: 'start' | 'end'): CalendarDateValue | undefined {
     const parsed = parseCalendarDate(baseDate);
-    if (!parsed) return;
+    if (!parsed) return undefined;
 
     const monthStart = startOfMonth(parsed);
     const monthEnd = addDays(addMonths(monthStart, 1), -1);
@@ -337,8 +659,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     const nextValue = formatCalendarDate(targetDate);
     const dayStep = edge === 'start' ? 1 : -1;
     const focusableValue = findFocusableDate(nextValue, dayStep);
-    if (!focusableValue) return;
+    if (!focusableValue) return undefined;
     setFocusedValue(focusableValue);
+    return focusableValue;
   }
 
   function findFocusableDate(
@@ -366,44 +689,83 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
   function handleCellKeydown(event: KeyboardEvent, date: CalendarDateValue) {
     const keyDate = isValidCalendarDateValue(currentFocused) ? currentFocused : date;
+    let movedDate: CalendarDateValue | undefined;
+
+    function extendRangeWithKeyboard(nextDate: CalendarDateValue | undefined) {
+      if (selectionMode !== 'range') return;
+      if (!nextDate) return;
+      if (isDisabled || isReadOnly) return;
+      if (!currentRangeStart || currentRangeEnd) return;
+
+      const anchor = currentRangeAnchor ?? currentRangeStart;
+      if (!isValidCalendarDateValue(anchor)) return;
+      if (!isRangePathSelectable(anchor, nextDate)) {
+        return;
+      }
+      currentPreviewEnd = nextDate;
+      currentHoveredDate = nextDate;
+      notifySelection();
+    }
 
     switch (event.key) {
       case 'ArrowRight':
         event.preventDefault();
-        moveFocusByDays(keyDate, 1);
+        movedDate = moveFocusByDays(keyDate, 1);
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'ArrowLeft':
         event.preventDefault();
-        moveFocusByDays(keyDate, -1);
+        movedDate = moveFocusByDays(keyDate, -1);
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'ArrowDown':
         event.preventDefault();
-        moveFocusByDays(keyDate, 7);
+        movedDate = moveFocusByDays(keyDate, 7);
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'ArrowUp':
         event.preventDefault();
-        moveFocusByDays(keyDate, -7);
+        movedDate = moveFocusByDays(keyDate, -7);
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'Home':
         event.preventDefault();
-        moveToMonthEdge(keyDate, 'start');
+        movedDate = moveToMonthEdge(keyDate, 'start');
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'End':
         event.preventDefault();
-        moveToMonthEdge(keyDate, 'end');
+        movedDate = moveToMonthEdge(keyDate, 'end');
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'PageUp':
         event.preventDefault();
-        moveFocusByMonths(keyDate, -1);
+        movedDate = moveFocusByMonths(keyDate, -1);
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'PageDown':
         event.preventDefault();
-        moveFocusByMonths(keyDate, 1);
+        movedDate = moveFocusByMonths(keyDate, 1);
+        extendRangeWithKeyboard(movedDate);
         break;
       case 'Enter':
       case ' ':
         event.preventDefault();
+        if (
+          selectionMode === 'range' &&
+          currentRangeStart &&
+          !currentRangeEnd &&
+          currentPreviewEnd
+        ) {
+          commitRangeSelection(currentRangeStart, currentPreviewEnd);
+          notifySelection();
+          break;
+        }
         selectDate(keyDate);
+        break;
+      case 'Escape':
+        event.preventDefault();
+        cancelPendingRangeSelection();
         break;
     }
   }
@@ -413,6 +775,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     selectionVersion,
     get locale() {
       return locale;
+    },
+    get selectionMode() {
+      return selectionMode;
     },
     get firstDayOfWeek() {
       return cachedFirstDayOfWeek;
@@ -432,6 +797,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     get selectedValue() {
       return currentSelected;
     },
+    get rangeValue() {
+      return selectionMode === 'range' ? getEffectiveRange() : undefined;
+    },
     get focusedValue() {
       return currentFocused;
     },
@@ -442,10 +810,14 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
       return getHeadingLabel();
     },
     isSelected,
+    isRangeStart,
+    isRangeEnd,
+    isInRange,
     isDateUnavailable: isUnavailable,
     isDateDisabled,
     isOutsideVisibleRange,
     setFocusedValue,
+    setHoveredValue,
     selectDate,
     goToNextPage,
     goToPreviousPage,

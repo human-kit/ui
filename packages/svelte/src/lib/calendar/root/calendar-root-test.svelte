@@ -1,15 +1,18 @@
 <script lang="ts">
 	import Calendar from '../index';
+	import type { CalendarSelectionMode, CalendarValue } from './context';
 
 	type Props = {
+		selectionMode?: CalendarSelectionMode;
 		visibleMonths?: number;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
-		defaultValue?: string;
+		defaultValue?: CalendarValue;
 		isDateUnavailable?: (date: string) => boolean;
 	};
 
 	let {
+		selectionMode = 'single',
 		visibleMonths = 1,
 		isDisabled = false,
 		isReadOnly = false,
@@ -19,6 +22,7 @@
 </script>
 
 <Calendar.Root
+	{selectionMode}
 	{visibleMonths}
 	{isDisabled}
 	{isReadOnly}

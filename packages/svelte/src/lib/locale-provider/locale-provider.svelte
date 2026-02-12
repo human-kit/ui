@@ -8,16 +8,16 @@
 		children?: Snippet;
 	};
 
-	let { locale, children }: LocaleProviderProps = $props();
+	let props: LocaleProviderProps = $props();
 
-	const localeStore = writable<string | undefined>(undefined);
+	const localeStore = writable<string | undefined>(props.locale);
 	setLocaleContext({ locale: localeStore });
 
 	$effect(() => {
-		localeStore.set(locale);
+		localeStore.set(props.locale);
 	});
 </script>
 
-{#if children}
-	{@render children()}
+{#if props.children}
+	{@render props.children()}
 {/if}

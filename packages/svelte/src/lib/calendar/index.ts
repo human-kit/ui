@@ -17,6 +17,9 @@ export {
   createCalendarContext,
   type CalendarContext,
   type CalendarMonth,
+  type CalendarSelectionMode,
+  type CalendarRangeValue,
+  type CalendarValue,
   type CreateCalendarContextOptions
 } from './root/context';
 

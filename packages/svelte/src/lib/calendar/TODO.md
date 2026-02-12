@@ -11,7 +11,7 @@
 
 ## Futuro
 
-- [ ] Seleccion de rango
+- [x] Seleccion de rango
 - [ ] Multi-select
 - [ ] Configuracion de calendarios no gregorianos
 - [ ] API avanzada de unavailable (rangos/colecciones)

@@ -4,8 +4,10 @@ import CalendarRootTest from './calendar-root-test.svelte';
 import CalendarRootBindValueTest from './calendar-root-bind-value-test.svelte';
 import CalendarRootControlledClearTest from './calendar-root-controlled-clear-test.svelte';
 
-function pressKey(element: Element, key: string) {
-  element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+function pressKey(element: Element, key: string, options?: { shiftKey?: boolean }) {
+  element.dispatchEvent(
+    new KeyboardEvent('keydown', { key, bubbles: true, shiftKey: options?.shiftKey ?? false })
+  );
 }
 
 describe('Calendar', () => {
@@ -160,5 +162,175 @@ describe('Calendar', () => {
     pressKey(dayElement, 'ArrowRight');
 
     await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-16');
+  });
+
+  it('confirms a date range with two clicks in range mode', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range'
+    });
+
+    const start = screen.getByRole('gridcell', { name: '2026-02-10' });
+    const end = screen.getByRole('gridcell', { name: '2026-02-14' });
+
+    await start.click();
+    await end.click();
+
+    await expect
+      .poll(() => document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-14"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-in-range] [role="gridcell"][aria-label="2026-02-12"]'))
+      .toBeTruthy();
+  });
+
+  it('extends range with Shift+Arrow and confirms with Enter', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      defaultValue: { start: '2026-02-10' }
+    });
+
+    const focused = screen.getByRole('gridcell', { name: '2026-02-10' });
+    const focusedElement = focused.element()!;
+    focusedElement.focus();
+
+    pressKey(focusedElement, 'ArrowRight', { shiftKey: true });
+    pressKey(document.activeElement!, 'ArrowRight', { shiftKey: true });
+    pressKey(document.activeElement!, 'Enter');
+
+    await expect
+      .poll(() => document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-12"]'))
+      .toBeTruthy();
+  });
+
+  it('does not confirm a range that crosses unavailable dates', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      isDateUnavailable: (date: string) => date === '2026-02-07'
+    });
+
+    const start = screen.getByRole('gridcell', { name: '2026-02-02' });
+    const blockedCrossingEnd = screen.getByRole('gridcell', { name: '2026-02-08' });
+
+    await start.click();
+    await expect.element(blockedCrossingEnd).toHaveAttribute('aria-disabled', 'true');
+
+    await expect
+      .poll(() => document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-02"]'))
+      .toBeTruthy();
+    expect(document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-08"]')).toBeFalsy();
+    expect(document.querySelector('[data-in-range]')).toBeFalsy();
+  });
+
+  it('disables unreachable dates while waiting for range end', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      isDateUnavailable: (date: string) => date === '2026-02-07'
+    });
+
+    const start = screen.getByRole('gridcell', { name: '2026-02-02' });
+    await start.click();
+
+    const reachable = screen.getByRole('gridcell', { name: '2026-02-06' });
+    const unreachable = screen.getByRole('gridcell', { name: '2026-02-08' });
+
+    await expect.element(reachable).not.toHaveAttribute('aria-disabled');
+    await expect.element(unreachable).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('cancels pending range with Escape and restores previous committed range', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      defaultValue: { start: '2026-02-10', end: '2026-02-12' }
+    });
+
+    const newStart = screen.getByRole('gridcell', { name: '2026-02-15' });
+    await newStart.click();
+
+    const focused = newStart.element()!;
+    pressKey(focused, 'Escape');
+
+    await expect
+      .poll(() => document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-12"]'))
+      .toBeTruthy();
+  });
+
+  it('shows range trace while moving with keyboard after selecting a range start', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range'
+    });
+
+    const start = screen.getByRole('gridcell', { name: '2026-02-10' });
+    const startElement = start.element()!;
+    startElement.focus();
+
+    pressKey(startElement, 'Enter');
+    pressKey(startElement, 'ArrowRight');
+
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-11"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-in-range] [role="gridcell"][aria-label="2026-02-10"]'))
+      .toBeTruthy();
+  });
+
+  it('marks new range start as selected immediately when restarting range', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      defaultValue: { start: '2026-02-03', end: '2026-02-03' }
+    });
+
+    const newStart = screen.getByRole('gridcell', { name: '2026-02-05' });
+    await newStart.click();
+
+    await expect.element(newStart).toHaveAttribute('aria-selected', 'true');
+    await expect
+      .poll(() => document.querySelector('[data-selected] [role="gridcell"][aria-label="2026-02-05"]'))
+      .toBeTruthy();
+  });
+
+  it('keeps focus on second click when selecting reverse range', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range'
+    });
+
+    const first = screen.getByRole('gridcell', { name: '2026-02-06' });
+    const second = screen.getByRole('gridcell', { name: '2026-02-03' });
+
+    await first.click();
+    await second.click();
+
+    await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-03');
+  });
+
+  it('clamps PageUp and PageDown to reachable range bounds while selecting range end', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      isDateUnavailable: (date: string) => {
+        if (!date.startsWith('2026-02-')) return true;
+        const day = Number(date.slice(-2));
+        return day < 9 || day > 13;
+      }
+    });
+
+    const start = screen.getByRole('gridcell', { name: '2026-02-09' });
+    await start.click();
+    const startElement = start.element()!;
+    startElement.focus();
+
+    pressKey(startElement, 'PageDown');
+    await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-13');
+
+    pressKey(document.activeElement!, 'PageUp');
+    await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-09');
   });
 });

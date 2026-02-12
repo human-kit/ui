@@ -75,4 +75,49 @@ describe('Calendar.BodyCell', () => {
 
     expect(document.activeElement).not.toBe(dayElement);
   });
+
+  it('shows range preview flags while hovering before range confirmation', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      defaultValue: { start: '2026-02-10' }
+    });
+
+    const endCandidate = screen.getByRole('gridcell', { name: '2026-02-13' });
+    endCandidate.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+
+    await expect
+      .poll(() => document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-13"]'))
+      .toBeTruthy();
+    await expect
+      .poll(() => document.querySelector('[data-in-range] [role="gridcell"][aria-label="2026-02-12"]'))
+      .toBeTruthy();
+  });
+
+  it('keeps the last valid preview when hovering an unreachable date', async () => {
+    const screen = render(CalendarRootTest, {
+      selectionMode: 'range',
+      defaultValue: { start: '2026-02-02' },
+      isDateUnavailable: (date: string) => date === '2026-02-07'
+    });
+
+    const validPreviewCell = screen.getByRole('gridcell', { name: '2026-02-05' });
+    validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-05"]'))
+      .toBeTruthy();
+
+    validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+
+    const unreachableCell = screen.getByRole('gridcell', { name: '2026-02-08' });
+    unreachableCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+
+    await expect
+      .poll(() => document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-05"]'))
+      .toBeTruthy();
+    expect(document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-08"]')).toBeFalsy();
+  });
 });

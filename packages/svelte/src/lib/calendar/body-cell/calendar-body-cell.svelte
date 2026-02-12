@@ -25,12 +25,31 @@
 		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isSelected(date);
 	});
+	const isRangeStart = $derived.by(() => {
+		$layoutVersion;
+		$selectionVersion;
+		if (calendar.isDisabled || calendar.isReadOnly) return false;
+		return calendar.isRangeStart(date);
+	});
+	const isRangeEnd = $derived.by(() => {
+		$layoutVersion;
+		$selectionVersion;
+		if (calendar.isDisabled || calendar.isReadOnly) return false;
+		return calendar.isRangeEnd(date);
+	});
+	const isInRange = $derived.by(() => {
+		$layoutVersion;
+		$selectionVersion;
+		if (calendar.isDisabled || calendar.isReadOnly) return false;
+		return calendar.isInRange(date);
+	});
 	const isFocused = $derived.by(() => {
 		$selectionVersion;
 		return calendar.focusedValue === date;
 	});
 	const isDisabled = $derived.by(() => {
 		$layoutVersion;
+		$selectionVersion;
 		return calendar.isDateDisabled(date);
 	});
 	const isUnavailable = $derived.by(() => {
@@ -76,6 +95,16 @@
 		event.preventDefault();
 	}
 
+	function handleMouseenter() {
+		if (isDisabled) return;
+		calendar.setHoveredValue(date);
+	}
+
+	function handleMouseleave() {
+		if (isDisabled) return;
+		calendar.setHoveredValue(undefined);
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		calendar.handleCellKeydown(event, date);
 	}
@@ -83,23 +112,36 @@
 
 <td
 	role="presentation"
-	class={className}
 	data-selected={isSelected || undefined}
 	data-focused={isFocused || undefined}
 	data-disabled={isDisabled || undefined}
 	data-unavailable={isUnavailable || undefined}
 	data-outside-month={isOutsideMonth || undefined}
+	data-range-start={isRangeStart || undefined}
+	data-range-end={isRangeEnd || undefined}
+	data-in-range={isInRange || undefined}
 	{...restProps}
 >
 	<div
 		bind:this={gridCellElement}
+		class={className}
 		role="gridcell"
 		tabindex={isDisabled ? -1 : isFocused ? 0 : -1}
+		data-selected={isSelected || undefined}
+		data-focused={isFocused || undefined}
+		data-disabled={isDisabled || undefined}
+		data-unavailable={isUnavailable || undefined}
+		data-outside-month={isOutsideMonth || undefined}
+		data-range-start={isRangeStart || undefined}
+		data-range-end={isRangeEnd || undefined}
+		data-in-range={isInRange || undefined}
 		aria-selected={isSelected}
 		aria-disabled={isDisabled || undefined}
 		aria-current={isToday ? 'date' : undefined}
 		aria-label={date}
 		onmousedown={handleMousedown}
+		onmouseenter={handleMouseenter}
+		onmouseleave={handleMouseleave}
 		onclick={handleClick}
 		onfocus={handleFocus}
 		onkeydown={handleKeydown}
