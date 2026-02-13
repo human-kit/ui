@@ -3,6 +3,7 @@
 ## API reference
 
 ### ComboBox.Tags
+
 Name: `ComboBox.Tags`  
 Description: Container that renders selected values as tags in multiple mode.
 
@@ -12,10 +13,11 @@ Description: Container that renders selected values as tags in multiple mode.
 | `class` | `string` | `''` | CSS class names for the tags container. |
 
 ### TagItem type
+
 Name: `TagItem`  
 Description: Item shape provided to `ComboBox.Tags` render snippet.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string | number` | `required` | Selected value id. |
+| `value` | `string \| number` | `required` | Selected value id. |
 | `label` | `string` | `required` | Display label for the selected value. |

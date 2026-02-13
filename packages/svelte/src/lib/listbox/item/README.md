@@ -3,12 +3,13 @@
 ## API reference
 
 ### ListBox.Item
+
 Name: `ListBox.Item`  
 Description: Selectable option element with built-in selected, focused, hovered, and disabled states.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | `string | number` | `required` | Unique id for option registration and selection. |
+| `id` | `string \| number` | `required` | Unique id for option registration and selection. |
 | `textValue` | `string` | `content text` | String used for text resolution and typeahead. |
 | `disabled` | `boolean` | `false` | Disables item interaction. |
 | `class` | `string` | `''` | CSS class names for the item. |

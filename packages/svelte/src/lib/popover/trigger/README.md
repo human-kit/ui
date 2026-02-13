@@ -3,6 +3,7 @@
 ## API reference
 
 ### Popover.Trigger
+
 Name: `Popover.Trigger`  
 Description: Wrapper trigger part that finds a button in its children, wires it as trigger, and toggles the popover on click.
 
@@ -11,6 +12,7 @@ Description: Wrapper trigger part that finds a button in its children, wires it 
 | `children` | `Snippet` | `undefined` | Child content that includes a trigger element (`button` or `[role="button"]`). |
 
 ### Popover.TriggerButton
+
 Name: `Popover.TriggerButton`  
 Description: Pre-wired trigger button part for popover toggling.
 

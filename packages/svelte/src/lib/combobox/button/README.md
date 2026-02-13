@@ -3,6 +3,7 @@
 ## API reference
 
 ### ComboBox.Button
+
 Name: `ComboBox.Button`  
 Description: Optional trigger button that toggles the combobox popover without stealing focus from the input.
 

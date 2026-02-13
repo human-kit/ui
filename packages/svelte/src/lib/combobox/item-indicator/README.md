@@ -3,6 +3,7 @@
 ## API reference
 
 ### ComboBox.ItemIndicator
+
 Name: `ComboBox.ItemIndicator`  
 Description: Visual selection indicator rendered inside `ComboBox.Item`.
 

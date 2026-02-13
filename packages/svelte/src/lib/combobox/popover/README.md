@@ -3,6 +3,7 @@
 ## API reference
 
 ### ComboBox.Popover
+
 Name: `ComboBox.Popover`  
 Description: Floating container for combobox options. Internally composes `Popover.Root` and `Popover.Content` in non-modal mode.
 

@@ -3,6 +3,7 @@
 ## API reference
 
 ### ComboBox.TagRemove
+
 Name: `ComboBox.TagRemove`  
 Description: Remove action button for a selected tag.
 

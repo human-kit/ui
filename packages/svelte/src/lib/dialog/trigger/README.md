@@ -3,6 +3,7 @@
 ## API reference
 
 ### Dialog.Trigger
+
 Name: `Dialog.Trigger`  
 Description: Wrapper trigger part that finds a button in its children, wires it as trigger, and toggles the dialog on click.
 

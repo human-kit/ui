@@ -3,6 +3,7 @@
 ## API reference
 
 ### Dialog.Overlay
+
 Name: `Dialog.Overlay`  
 Description: Backdrop layer behind dialog content. Z-index is derived from dialog stack level.
 

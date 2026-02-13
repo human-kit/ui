@@ -3,6 +3,7 @@
 ## API reference
 
 ### Dialog.Content
+
 Name: `Dialog.Content`  
 Description: Modal panel part that applies focus trapping, outside-click handling, scroll lock, aria outside hiding, and topmost stack guards.
 

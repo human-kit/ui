@@ -3,6 +3,7 @@
 ## API reference
 
 ### ComboBox.Input
+
 Name: `ComboBox.Input`  
 Description: Text input with `role="combobox"` that syncs typed value, active descendant, and keyboard handling with `ComboBox.Root`.
 

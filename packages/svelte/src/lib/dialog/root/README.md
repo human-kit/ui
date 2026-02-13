@@ -3,6 +3,7 @@
 ## API reference
 
 ### Dialog.Root
+
 Name: `Dialog.Root`  
 Description: Dialog state container for open state, trigger ref, and root-level open/close/toggle actions.
 
@@ -11,20 +12,22 @@ Description: Dialog state container for open state, trigger ref, and root-level 
 | `open` | `boolean` | `undefined` | Controlled open state. Supports `bind:open`. |
 | `defaultOpen` | `boolean` | `false` | Initial open state in uncontrolled mode. |
 | `onOpenChange` | `(open: boolean) => void` | `undefined` | Called whenever open state changes. |
-| `triggerRef` | `HTMLElement | null` | `null` | Trigger reference. Supports `bind:triggerRef`. |
+| `triggerRef` | `HTMLElement \| null` | `null` | Trigger reference. Supports `bind:triggerRef`. |
 | `children` | `Snippet<[DialogStateHelpers]>` | `undefined` | Root render snippet that receives dialog state helpers. |
 
 ### Context utilities
+
 Name: `context.ts` helpers  
 Description: Context APIs shared by trigger, portal, overlay, and content parts.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `setDialogContext` | `(ctx: DialogContext) => void` | `-` | Registers dialog context. |
-| `getDialogContext` | `() => DialogContext | undefined` | `-` | Returns dialog context when available. |
+| `getDialogContext` | `() => DialogContext \| undefined` | `-` | Returns dialog context when available. |
 | `DialogContext` | `type` | `-` | Context contract with dialog state and actions. |
 
 ### DialogStateHelpers type
+
 Name: `DialogStateHelpers`  
 Description: Helper object passed to the `children` snippet in `Dialog.Root`.
 
@@ -36,6 +39,7 @@ Description: Helper object passed to the `children` snippet in `Dialog.Root`.
 | `isOpen` | `boolean` | `-` | Current open state. |
 
 ### Stack utilities
+
 Name: `dialog-stack.ts`  
 Description: Internal global stack utilities used by `Dialog.Content` and `Dialog.Overlay` to support nested dialogs.
 
