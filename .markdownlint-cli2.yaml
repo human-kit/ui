@@ -1,0 +1,12 @@
+globs:
+  - docs/**/*.md
+  - packages/**/*.md
+ignores:
+  - '**/node_modules/**'
+  - '**/.svelte-kit/**'
+  - '**/.vercel/**'
+  - '**/dist/**'
+config:
+  MD013: false
+  MD024:
+    siblings: true

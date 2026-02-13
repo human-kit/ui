@@ -1,14 +1,17 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { getPopoverTriggerContext } from '../root/context';
 
-	type PopoverTriggerButtonProps = {
+	type PopoverTriggerButtonProps = Omit<
+		HTMLButtonAttributes,
+		// Keep the trigger semantics stable
+		'type' | 'class' | 'children' | 'onclick' | 'aria-haspopup' | 'aria-expanded'
+	> & {
 		/** Button content */
 		children?: Snippet;
 		/** Additional class */
 		class?: string;
-		/** Any other props */
-		[key: string]: unknown;
 	};
 
 	let { children, class: className = '', ...restProps }: PopoverTriggerButtonProps = $props();

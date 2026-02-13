@@ -102,6 +102,20 @@ Rules:
 
 # ─── Main Script ────────────────────────────────────────────────────────
 
+# Parse flags
+DRY_RUN=false
+SKIP_CHECKS=false
+COMMIT_MSG_ARG=""
+
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=true ;;
+    --skip-checks) SKIP_CHECKS=true ;;
+    -*) ;;
+    *) COMMIT_MSG_ARG="$arg" ;;
+  esac
+done
+
 # Ensure we're on a feature branch, not main
 BRANCH=$(git branch --show-current)
 if [[ "$BRANCH" == "main" ]]; then
@@ -137,6 +151,9 @@ echo -e "${BLUE}  Automated PR workflow${NC}"
 if [[ "$HAS_AI" == true ]]; then
   echo -e "${BLUE}  ${CYAN}✦ AI-powered (${AI_PROVIDER})${NC}"
 fi
+if [[ "$DRY_RUN" == true ]]; then
+  echo -e "${BLUE}  ${YELLOW}⚡ DRY RUN (no push, no PR)${NC}"
+fi
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -144,7 +161,37 @@ echo ""
 echo -e "${YELLOW}→ Formatting...${NC}"
 bun run format 2>/dev/null
 
-# 2. Changeset
+# 2. Validate (lint, typecheck, build)
+if [[ "$SKIP_CHECKS" == false ]]; then
+  echo ""
+  echo -e "${YELLOW}→ Running lint...${NC}"
+  if ! bun run lint; then
+    echo -e "${RED}✗ Lint failed. Fix errors and try again.${NC}"
+    exit 1
+  fi
+
+  echo ""
+  echo -e "${YELLOW}→ Running typecheck...${NC}"
+  if ! bun run typecheck; then
+    echo -e "${RED}✗ Typecheck failed. Fix errors and try again.${NC}"
+    exit 1
+  fi
+
+  echo ""
+  echo -e "${YELLOW}→ Running build...${NC}"
+  if ! bun run build; then
+    echo -e "${RED}✗ Build failed. Fix errors and try again.${NC}"
+    exit 1
+  fi
+
+  echo ""
+  echo -e "${GREEN}✓ All checks passed!${NC}"
+else
+  echo ""
+  echo -e "${YELLOW}⏭ Skipping checks (--skip-checks)${NC}"
+fi
+
+# 3. Changeset
 if [[ -n "$LIB_CHANGED" || -n "$UNTRACKED_LIB" ]]; then
   echo ""
   echo -e "${YELLOW}→ Library code changed — running changeset (pick bump type):${NC}"
@@ -155,16 +202,16 @@ else
   bunx changeset --empty
 fi
 
-# 3. Stage everything
+# 4. Stage everything
 git add -A
 
-# 4. Get the diff for AI analysis (staged diff against HEAD)
+# 5. Get the diff for AI analysis (staged diff against HEAD)
 DIFF=$(git diff --cached --stat && echo "---" && git diff --cached)
 
-# 5. Generate commit message
-if [[ -n "${1:-}" ]]; then
+# 6. Generate commit message
+if [[ -n "${COMMIT_MSG_ARG:-}" ]]; then
   # User provided explicit message
-  COMMIT_MSG="$1"
+  COMMIT_MSG="$COMMIT_MSG_ARG"
 elif [[ "$HAS_AI" == true ]]; then
   echo ""
   echo -e "${YELLOW}→ ${CYAN}✦ Generating commit message...${NC}"
@@ -196,12 +243,19 @@ echo ""
 echo -e "${YELLOW}→ Committing: ${NC}${COMMIT_MSG}"
 git commit -m "$COMMIT_MSG"
 
-# 6. Push
+if [[ "$DRY_RUN" == true ]]; then
+  echo ""
+  echo -e "${GREEN}✓ Dry run complete! Commit created locally but NOT pushed.${NC}"
+  echo -e "  To undo: ${CYAN}git reset --soft HEAD~1${NC}"
+  exit 0
+fi
+
+# 8. Push
 echo ""
 echo -e "${YELLOW}→ Pushing to origin/${BRANCH}...${NC}"
 git push origin "$BRANCH" 2>/dev/null || git push --set-upstream origin "$BRANCH"
 
-# 7. Create PR (if it doesn't already exist)
+# 9. Create PR (if it doesn't already exist)
 EXISTING_PR=$(gh pr view "$BRANCH" --json number 2>/dev/null | grep -o '"number":[0-9]*' | grep -o '[0-9]*' || true)
 
 if [[ -n "$EXISTING_PR" ]]; then

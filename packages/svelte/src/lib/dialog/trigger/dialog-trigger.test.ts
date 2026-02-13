@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DialogTest from '../root/dialog-test.svelte';
+import DialogTriggerMultiButtonTest from './dialog-trigger-multi-button-test.svelte';
 
 describe('Dialog.Trigger', () => {
 	// Clean up any portaled content after each test
@@ -78,6 +79,31 @@ describe('Dialog.Trigger', () => {
 			await userEvent.keyboard(' ');
 
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
+
+		it('uses the clicked button as the active trigger when multiple trigger buttons are present', async () => {
+			const screen = render(DialogTriggerMultiButtonTest);
+			const secondTrigger = screen.getByRole('button', { name: 'Second Dialog Trigger' });
+
+			await secondTrigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			const firstButton = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'First Dialog Trigger'
+			);
+			const secondButton = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'Second Dialog Trigger'
+			);
+
+			expect(secondButton?.getAttribute('aria-expanded')).toBe('true');
+			expect(secondButton?.getAttribute('aria-haspopup')).toBe('dialog');
+			expect(firstButton?.getAttribute('aria-expanded')).toBe('false');
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			const secondButtonAfterClose = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'Second Dialog Trigger'
+			);
+			expect(secondButtonAfterClose?.getAttribute('aria-expanded')).toBe('false');
 		});
 	});
 
