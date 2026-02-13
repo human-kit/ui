@@ -1,10 +1,12 @@
-﻿# ComboBox Popover API Reference
+﻿# ComboBox Popover
 
-## Section
-- Name: `ComboBox.Popover`
-- Description: Contenedor flotante del combobox. Internamente usa `Popover.Root` y `Popover.Content` en modo no modal.
+## API reference
+
+### ComboBox.Popover
+Name: `ComboBox.Popover`  
+Description: Floating container for combobox options. Internally composes `Popover.Root` and `Popover.Content` in non-modal mode.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `class` | `string` | `''` | Clases CSS del panel flotante. |
-| `children` | `Snippet` | `undefined` | Contenido interno del popover (normalmente `ComboBox.List`). |
+| `class` | `string` | `''` | CSS class names for the floating panel. |
+| `children` | `Snippet` | `undefined` | Popover content, typically `ComboBox.List`. |

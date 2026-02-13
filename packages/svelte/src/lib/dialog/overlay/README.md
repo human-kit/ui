@@ -1,10 +1,12 @@
-﻿# Dialog Overlay API Reference
+﻿# Dialog Overlay
 
-## Section
-- Name: `Dialog.Overlay`
-- Description: Backdrop del modal. Usa `stackLevel` del contexto para calcular z-index correcto en dialogs anidados.
+## API reference
+
+### Dialog.Overlay
+Name: `Dialog.Overlay`  
+Description: Backdrop layer behind dialog content. Z-index is derived from dialog stack level.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `class` | `string` | `''` | Clases CSS del overlay. |
-| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-` | Props HTML extra del overlay. |
+| `class` | `string` | `''` | CSS class names for the overlay. |
+| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-` | Additional overlay attributes. |

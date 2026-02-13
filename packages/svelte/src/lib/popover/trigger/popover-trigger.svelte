@@ -24,16 +24,25 @@
 	const popoverCtx = ctx;
 
 	let wrapperRef: HTMLElement | null = $state(null);
+	let activeTrigger: HTMLElement | null = null;
+
+	function setActiveTrigger(button: HTMLElement) {
+		if (activeTrigger && activeTrigger !== button) {
+			activeTrigger.setAttribute('aria-expanded', 'false');
+		}
+
+		activeTrigger = button;
+		popoverCtx.setTriggerRef(button);
+		button.setAttribute('aria-haspopup', 'dialog');
+		button.setAttribute('aria-expanded', String(popoverCtx.isOpen));
+	}
 
 	function handleClick(event: MouseEvent) {
 		const target = event.target as HTMLElement;
 		const button = target.closest('button, [role="button"]') as HTMLElement | null;
 
 		if (button && wrapperRef?.contains(button)) {
-			// Set trigger ref if not already set
-			if (!popoverCtx.triggerRef) {
-				popoverCtx.setTriggerRef(button);
-			}
+			setActiveTrigger(button);
 			popoverCtx.toggle();
 		}
 	}
@@ -43,8 +52,7 @@
 			// Find and set up the trigger button
 			const firstButton = wrapperRef.querySelector('button, [role="button"]') as HTMLElement | null;
 			if (firstButton) {
-				popoverCtx.setTriggerRef(firstButton);
-				firstButton.setAttribute('aria-haspopup', 'dialog');
+				setActiveTrigger(firstButton);
 			}
 		}
 
@@ -59,6 +67,10 @@
 
 	$effect(() => {
 		if (popoverCtx.triggerRef) {
+			if (activeTrigger !== popoverCtx.triggerRef) {
+				activeTrigger = popoverCtx.triggerRef;
+			}
+			popoverCtx.triggerRef.setAttribute('aria-haspopup', 'dialog');
 			popoverCtx.triggerRef.setAttribute('aria-expanded', String(popoverCtx.isOpen));
 		}
 	});

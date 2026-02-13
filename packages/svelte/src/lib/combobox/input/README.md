@@ -1,13 +1,15 @@
-﻿# ComboBox Input API Reference
+﻿# ComboBox Input
 
-## Section
-- Name: `ComboBox.Input`
-- Description: Input tipo combobox que sincroniza valor, apertura y navegacion con el contexto de `ComboBox.Root`.
+## API reference
+
+### ComboBox.Input
+Name: `ComboBox.Input`  
+Description: Text input with `role="combobox"` that syncs typed value, active descendant, and keyboard handling with `ComboBox.Root`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `aria-label` | `string` | `undefined` | Etiqueta accesible directa del input. |
-| `aria-labelledby` | `string` | `undefined` | Id del elemento que etiqueta al input. |
-| `aria-describedby` | `string` | `undefined` | Id del elemento descriptivo (ej. instrucciones). |
-| `class` | `string` | `undefined` | Clases CSS del input. |
-| `...restProps` | `HTMLInputAttributes` | `-` | Props HTML adicionales reenviadas al `<input>`. |
+| `aria-label` | `string` | `undefined` | Accessible label applied directly to the input. |
+| `aria-labelledby` | `string` | `undefined` | Element id that labels the input. |
+| `aria-describedby` | `string` | `undefined` | Element id that describes the input behavior. |
+| `class` | `string` | `undefined` | CSS class names for the input element. |
+| `...restProps` | `HTMLInputAttributes` | `-` | Additional native input attributes. |

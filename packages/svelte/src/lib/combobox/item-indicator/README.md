@@ -1,12 +1,14 @@
-﻿# ComboBox Item Indicator API Reference
+﻿# ComboBox Item Indicator
 
-## Section
-- Name: `ComboBox.ItemIndicator`
-- Description: Indicador visual de seleccion dentro de `ComboBox.Item`.
+## API reference
+
+### ComboBox.ItemIndicator
+Name: `ComboBox.ItemIndicator`  
+Description: Visual selection indicator rendered inside `ComboBox.Item`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `Snippet` | `check icon` | Contenido del indicador cuando esta montado. |
-| `forceMount` | `boolean` | `false` | Si es `true`, monta el indicador aunque el item no este seleccionado. |
-| `class` | `string` | `undefined` | Clases CSS del contenedor del indicador. |
-| `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-` | Props HTML adicionales del `<span>`. |
+| `children` | `Snippet` | `check icon` | Custom indicator content. |
+| `forceMount` | `boolean` | `false` | Forces rendering even when the item is not selected. |
+| `class` | `string` | `undefined` | CSS class names for the indicator wrapper. |
+| `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-` | Additional attributes passed to the wrapper span. |

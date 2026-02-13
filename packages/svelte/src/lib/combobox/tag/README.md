@@ -1,32 +1,34 @@
-﻿# ComboBox Tag API Reference
+﻿# ComboBox Tag
 
-## Section
-- Name: `ComboBox.Tag`
-- Description: Tag individual para representar una seleccion en modo multiple.
+## API reference
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `children` | `Snippet` | `required` | Contenido visual del tag. |
-| `class` | `string` | `undefined` | Clases CSS del tag. |
-| `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-` | Props HTML adicionales reenviadas al `<span>`. |
-
-## Section
-- Name: `TagContextProvider` (utility)
-- Description: Componente interno que inyecta en contexto `id`, `label`, `remove` y `disabled` para `ComboBox.Tag` y `ComboBox.TagRemove`.
+### ComboBox.Tag
+Name: `ComboBox.Tag`  
+Description: Visual token representing one selected value in multiple selection mode.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | `string | number` | `required` | Id del item seleccionado. |
-| `label` | `string` | `required` | Label del item seleccionado. |
-| `remove` | `() => void` | `required` | Funcion para remover el tag actual. |
-| `disabled` | `boolean` | `required` | Estado deshabilitado propagado al tag. |
-| `children` | `Snippet` | `required` | Contenido envuelto por el provider. |
+| `children` | `Snippet` | `required` | Tag content. |
+| `class` | `string` | `undefined` | CSS class names for the tag element. |
+| `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-` | Additional span attributes. |
 
-## Section
-- Name: `TAG_CONTEXT_KEY` / `TagContext`
-- Description: Clave y contrato de contexto compartido entre tag y boton de remove.
+### TagContextProvider (utility)
+Name: `TagContextProvider`  
+Description: Internal provider used by `ComboBox.Tags` to expose `id`, `label`, `remove`, and `disabled` to tag sub-parts.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `TAG_CONTEXT_KEY` | `symbol` | `Symbol.for('combobox-tag')` | Clave global de contexto de tag. |
-| `TagContext` | `type` | `-` | Tipo con `id`, `label`, `remove`, `disabled`. |
+| `id` | `string | number` | `required` | Selected item id. |
+| `label` | `string` | `required` | Selected item label. |
+| `remove` | `() => void` | `required` | Removes the selected item. |
+| `disabled` | `boolean` | `required` | Disabled state propagated to tag parts. |
+| `children` | `Snippet` | `required` | Wrapped tag subtree. |
+
+### Tag context exports
+Name: `TAG_CONTEXT_KEY` / `TagContext`  
+Description: Shared context key and type consumed by `ComboBox.Tag` and `ComboBox.TagRemove`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `TAG_CONTEXT_KEY` | `symbol` | `Symbol.for('combobox-tag')` | Global context key for tag state. |
+| `TagContext` | `type` | `-` | Type with `id`, `label`, `remove`, and `disabled`. |

@@ -1,19 +1,21 @@
-﻿# Popover Trigger API Reference
+﻿# Popover Trigger
 
-## Section
-- Name: `Popover.Trigger`
-- Description: Wrapper que detecta un boton en `children`, lo conecta como trigger y maneja toggle via click.
+## API reference
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `children` | `Snippet` | `undefined` | Contenido que incluye el elemento trigger real (`button` o `[role="button"]`). |
-
-## Section
-- Name: `Popover.TriggerButton`
-- Description: Boton trigger ya integrado con contexto de popover.
+### Popover.Trigger
+Name: `Popover.Trigger`  
+Description: Wrapper trigger part that finds a button in its children, wires it as trigger, and toggles the popover on click.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `Snippet` | `undefined` | Contenido interno del boton. |
-| `class` | `string` | `''` | Clases CSS del boton. |
-| `...restProps` | `Record<string, unknown>` | `-` | Props adicionales reenviadas al `<button>`. |
+| `children` | `Snippet` | `undefined` | Child content that includes a trigger element (`button` or `[role="button"]`). |
+
+### Popover.TriggerButton
+Name: `Popover.TriggerButton`  
+Description: Pre-wired trigger button part for popover toggling.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `Snippet` | `undefined` | Button content. |
+| `class` | `string` | `''` | CSS class names for the button. |
+| `...restProps` | `HTMLButtonAttributes` | `-` | Additional native button attributes, excluding reserved trigger semantics. |

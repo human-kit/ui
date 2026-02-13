@@ -1,19 +1,17 @@
 ﻿# Popover
 
 ## Description
-`Popover` renderiza contenido flotante anclado a un trigger, con soporte modal/no-modal, cierre por outside interaction y posicionamiento con floating.
+`Popover` renders floating content anchored to a trigger element. It supports modal and non-modal interaction patterns, outside interaction handling, and configurable positioning.
 
-## Usage Guidelines
-- Usa `Popover.Root` para estado compartido entre trigger y content.
-- Usa `Popover.Trigger` cuando quieras auto-vincular un boton existente en children.
-- Usa `Popover.TriggerButton` cuando prefieras un boton listo para usar.
-- Usa `Popover.Content` en modo contexto (dentro de Root) o standalone (pasando `open`, `triggerRef`, `onOpenChange`).
-- Ajusta `isNonModal`, `shouldCloseOnInteractOutside` y `shouldCloseOnBlur` segun comportamiento esperado.
+## Usage guidelines
+- Use `Popover.Root` to share open state and trigger reference.
+- Use `Popover.Trigger` when you want to auto-wire an existing button in children.
+- Use `Popover.TriggerButton` when you want a pre-wired trigger button component.
+- Use `Popover.Content` inside `Popover.Root`, or in standalone mode with `open`, `triggerRef`, and `onOpenChange`.
+- Configure `isNonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` to match your interaction model.
 
 ## Anatomy
-- `Popover.Root`
-- `Popover.Trigger` o `Popover.TriggerButton`
-- `Popover.Content`
+Import the component and compose its parts:
 
 ```svelte
 <Popover.Root>
@@ -21,7 +19,11 @@
 		<button>Open</button>
 	</Popover.Trigger>
 	<Popover.Content>
-		<div>Panel</div>
+		<div>Content</div>
 	</Popover.Content>
 </Popover.Root>
 ```
+
+- `Popover.Root`
+- `Popover.Trigger` or `Popover.TriggerButton`
+- `Popover.Content`

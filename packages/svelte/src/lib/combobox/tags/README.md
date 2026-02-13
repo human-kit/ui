@@ -1,19 +1,21 @@
-﻿# ComboBox Tags API Reference
+﻿# ComboBox Tags
 
-## Section
-- Name: `ComboBox.Tags`
-- Description: Contenedor de tags seleccionados para `selectionMode="multiple"`.
+## API reference
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `children` | `Snippet<[{ item: TagItem }]>` | `required` | Snippet que renderiza cada tag con `{ item: { value, label } }`. |
-| `class` | `string` | `''` | Clases CSS del contenedor de tags. |
-
-## Section
-- Name: `TagItem` (type)
-- Description: Tipo helper expuesto para el render de items seleccionados.
+### ComboBox.Tags
+Name: `ComboBox.Tags`  
+Description: Container that renders selected values as tags in multiple mode.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string | number` | `required` | Valor seleccionado. |
-| `label` | `string` | `required` | Label visible del tag. |
+| `children` | `Snippet<[{ item: TagItem }]>` | `required` | Render function that receives each selected item as `{ item: { value, label } }`. |
+| `class` | `string` | `''` | CSS class names for the tags container. |
+
+### TagItem type
+Name: `TagItem`  
+Description: Item shape provided to `ComboBox.Tags` render snippet.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string | number` | `required` | Selected value id. |
+| `label` | `string` | `required` | Display label for the selected value. |

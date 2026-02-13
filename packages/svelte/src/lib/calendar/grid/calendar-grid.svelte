@@ -15,6 +15,10 @@
 		$layoutVersion;
 		return calendar.months;
 	});
+	const selectionMode = $derived.by(() => {
+		$layoutVersion;
+		return calendar.selectionMode;
+	});
 	const isReadOnly = $derived.by(() => {
 		$layoutVersion;
 		return calendar.isReadOnly;
@@ -25,7 +29,12 @@
 	{#each months as month (month.monthIndex)}
 		<div role="group" aria-label={month.heading} data-calendar-month={month.monthIndex}>
 			<CalendarGridMonthScope monthIndex={month.monthIndex}>
-				<table role="grid" aria-label={month.heading} aria-readonly={isReadOnly || undefined}>
+				<table
+					role="grid"
+					aria-label={month.heading}
+					aria-readonly={isReadOnly || undefined}
+					aria-multiselectable={selectionMode === 'range' ? true : undefined}
+				>
 					{#if children}
 						{@render children()}
 					{/if}

@@ -1,21 +1,23 @@
 ﻿# ListBox
 
 ## Description
-`ListBox` maneja seleccion de opciones (single o multiple), foco y navegacion por teclado con soporte para render estatico o dinamico.
+`ListBox` is a headless selectable list primitive with keyboard navigation, single and multiple selection, and controlled or uncontrolled state.
 
-## Usage Guidelines
-- Usa `ListBox.Root` para definir modo de seleccion y colecciones.
-- Usa `ListBox.Item` para cada opcion seleccionable.
-- Si controlas el estado externamente, usa `value` y escucha `onChange`.
-- Usa `disabledIds` o `disabled` por item para bloquear interaccion.
-- Provee `aria-label` cuando no exista label visible asociado.
+## Usage guidelines
+- Use `ListBox.Root` as the container for selection state and keyboard interactions.
+- Render each option with `ListBox.Item`.
+- Use `value` and `onChange` for controlled selection.
+- Use `defaultValue` for uncontrolled initial selection.
+- Provide `aria-label` when there is no visible label.
 
 ## Anatomy
-- `ListBox.Root`
-- `ListBox.Item`
+Import the component and compose its parts:
 
 ```svelte
 <ListBox.Root aria-label="Options">
 	<ListBox.Item id="1">Option 1</ListBox.Item>
 </ListBox.Root>
 ```
+
+- `ListBox.Root`
+- `ListBox.Item`

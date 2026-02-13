@@ -1,9 +1,11 @@
-﻿# Dialog Trigger API Reference
+﻿# Dialog Trigger
 
-## Section
-- Name: `Dialog.Trigger`
-- Description: Wrapper que detecta un boton en `children`, lo vincula como trigger y hace toggle de `Dialog.Root`.
+## API reference
+
+### Dialog.Trigger
+Name: `Dialog.Trigger`  
+Description: Wrapper trigger part that finds a button in its children, wires it as trigger, and toggles the dialog on click.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `Snippet` | `undefined` | Contenido que incluye el elemento trigger real (`button` o `[role="button"]`). |
+| `children` | `Snippet` | `undefined` | Child content that includes a trigger element (`button` or `[role="button"]`). |

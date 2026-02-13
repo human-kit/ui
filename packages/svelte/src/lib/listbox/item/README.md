@@ -1,21 +1,23 @@
-﻿# ListBox Item API Reference
+﻿# ListBox Item
 
-## Section
-- Name: `ListBox.Item`
-- Description: Opcion individual del listbox con seleccion, foco, hover y soporte para composicion avanzada.
+## API reference
+
+### ListBox.Item
+Name: `ListBox.Item`  
+Description: Selectable option element with built-in selected, focused, hovered, and disabled states.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | `string | number` | `required` | Identificador unico del item. |
-| `textValue` | `string` | `content text` | Texto para busqueda/typeahead y labels internos. |
-| `disabled` | `boolean` | `false` | Marca el item como deshabilitado. |
-| `class` | `string` | `''` | Clases CSS del item. |
-| `children` | `Snippet` | `undefined` | Contenido visual del item. |
-| `customId` | `string` | ``listbox-item-${id}`` | Sobrescribe el id HTML generado. |
-| `disableFocusHandling` | `boolean` | `false` | Desactiva manejo de foco DOM del item. |
-| `isFocusedOverride` | `boolean` | `undefined` | Fuerza estado de foco desde composicion externa. |
-| `onItemSelect` | `(id, label) => void` | `undefined` | Handler custom de seleccion. |
-| `onResolvedTextValue` | `(label: string) => void` | `undefined` | Callback con texto resuelto del item al montar. |
-| `scrollOnFocus` | `boolean` | `false` | Hace scroll del item al enfocarse. |
-| `isParentDisabled` | `boolean` | `false` | Estado disabled adicional proveniente de componente padre. |
-| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-` | Props HTML extra del elemento option. |
+| `id` | `string | number` | `required` | Unique id for option registration and selection. |
+| `textValue` | `string` | `content text` | String used for text resolution and typeahead. |
+| `disabled` | `boolean` | `false` | Disables item interaction. |
+| `class` | `string` | `''` | CSS class names for the item. |
+| `children` | `Snippet` | `undefined` | Rendered item content. |
+| `customId` | `string` | ``listbox-item-${id}`` | Overrides generated DOM id. |
+| `disableFocusHandling` | `boolean` | `false` | Disables internal DOM focus behavior. |
+| `isFocusedOverride` | `boolean` | `undefined` | Forces focused state from parent composition. |
+| `onItemSelect` | `(id, label) => void` | `undefined` | Custom selection callback override. |
+| `onResolvedTextValue` | `(label: string) => void` | `undefined` | Called when item text value is resolved. |
+| `scrollOnFocus` | `boolean` | `false` | Scrolls item into view when focused. |
+| `isParentDisabled` | `boolean` | `false` | Additional disabled state inherited from parent wrapper. |
+| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-` | Additional option attributes. |

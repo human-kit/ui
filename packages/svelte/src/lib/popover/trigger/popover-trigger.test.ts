@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from '../root/popover-test.svelte';
 import PopoverTriggerInDialogTest from './popover-trigger-in-dialog-test.svelte';
+import PopoverTriggerMultiButtonTest from './popover-trigger-multi-button-test.svelte';
 
 describe('Popover.Trigger', () => {
 	// Clean up any portaled content after each test
@@ -97,6 +98,31 @@ describe('Popover.Trigger', () => {
 			expect(document.querySelector('.nested-popover-content')?.textContent).toContain(
 				'Nested popover content'
 			);
+		});
+
+		it('uses the clicked button as the active trigger when multiple trigger buttons are present', async () => {
+			const screen = render(PopoverTriggerMultiButtonTest);
+			const secondTrigger = screen.getByRole('button', { name: 'Second Popover Trigger' });
+
+			await secondTrigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			const firstButton = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'First Popover Trigger'
+			);
+			const secondButton = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'Second Popover Trigger'
+			);
+
+			expect(secondButton?.getAttribute('aria-expanded')).toBe('true');
+			expect(secondButton?.getAttribute('aria-haspopup')).toBe('dialog');
+			expect(firstButton?.getAttribute('aria-expanded')).toBe('false');
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			const secondButtonAfterClose = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'Second Popover Trigger'
+			);
+			expect(secondButtonAfterClose?.getAttribute('aria-expanded')).toBe('false');
 		});
 	});
 

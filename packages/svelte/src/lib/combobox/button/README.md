@@ -1,12 +1,14 @@
-﻿# ComboBox Button API Reference
+﻿# ComboBox Button
 
-## Section
-- Name: `ComboBox.Button`
-- Description: Boton opcional para abrir/cerrar el popover del combobox sin mover foco del input.
+## API reference
+
+### ComboBox.Button
+Name: `ComboBox.Button`  
+Description: Optional trigger button that toggles the combobox popover without stealing focus from the input.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `class` | `string` | `undefined` | Clases CSS del boton. |
-| `children` | `Snippet` | `undefined` | Contenido custom del boton. Si no se pasa, renderiza icono chevron. |
-| `tabindex` | `number` | `-1` | Indice de tabulacion del boton. |
-| `...restProps` | `HTMLButtonAttributes` | `-` | Props HTML adicionales reenviadas al `<button>`. |
+| `class` | `string` | `undefined` | CSS class names for the button element. |
+| `children` | `Snippet` | `undefined` | Custom trigger content. If omitted, a chevron icon is rendered. |
+| `tabindex` | `number` | `-1` | Tab index applied to the button. |
+| `...restProps` | `HTMLButtonAttributes` | `-` | Additional native button attributes. |

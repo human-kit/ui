@@ -1,23 +1,25 @@
-﻿# ComboBox List API Reference
+﻿# ComboBox List
 
-## Section
-- Name: `ComboBox.List`
-- Description: Envoltura de `ListBox.Root` controlada por `ComboBox.Root` para renderizar opciones estaticas o dinamicas.
+## API reference
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `aria-label` | `string` | `'Options'` | Etiqueta accesible del listbox interno. |
-| `items` | `Iterable<T>` | `ctx.items` | Coleccion de items para render dinamico. Si no se pasa, usa `items` del root. |
-| `children` | `Snippet<[T]> | Snippet` | `undefined` | Snippet de render de items o contenido estatico. |
-| `...listBoxProps` | `Omit<ComponentProps<ListBoxRoot>, controlled props>` | `-` | Props extra de ListBox (ej. `class`, `emptyPlaceholder`, `disabledIds`). |
-
-## Section
-- Name: Controlled internally
-- Description: Estas props se calculan en `ComboBox.List` y no deben pasarse manualmente.
+### ComboBox.List
+Name: `ComboBox.List`  
+Description: Listbox bridge for combobox options. It delegates selection state and mode to `ComboBox.Root`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `selectionMode` | `'single' | 'multiple'` | `ctx.selectionMode` | Modo de seleccion sincronizado con el root. |
-| `value` | `Set<string | number>` | `ctx.selectedValue` | Seleccion actual del combobox. |
-| `onChange` | `(selection) => void` | `internal handler` | Handler que delega seleccion al contexto de ComboBox. |
-| `id` | `string` | ``combobox-listbox-${instanceId}`` | Id ARIA generado automaticamente. |
+| `aria-label` | `string` | `'Options'` | Accessible label for the internal listbox. |
+| `items` | `Iterable<T>` | `ctx.items` | Dynamic data source. If omitted, uses items from root context. |
+| `children` | `Snippet<[T]> | Snippet` | `undefined` | Dynamic item renderer or static list content. |
+| `...listBoxProps` | `Omit<ComponentProps<ListBoxRoot>, internal props>` | `-` | Additional listbox props such as `class`, `emptyPlaceholder`, or `disabledIds`. |
+
+### Internally controlled props
+Name: Controlled by `ComboBox.Root`  
+Description: The following values are set by `ComboBox.List` and should not be overridden directly.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `selectionMode` | `'single' | 'multiple'` | `ctx.selectionMode` | Selection mode inherited from root. |
+| `value` | `Set<string | number>` | `ctx.selectedValue` | Current combobox selection state. |
+| `onChange` | `(selection) => void` | `internal handler` | Delegates selected item handling to combobox context. |
+| `id` | `string` | ``combobox-listbox-${instanceId}`` | Auto-generated listbox id for ARIA wiring. |

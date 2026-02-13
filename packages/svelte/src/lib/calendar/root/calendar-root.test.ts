@@ -186,7 +186,7 @@ describe('Calendar', () => {
       .toBeTruthy();
   });
 
-  it('extends range with Shift+Arrow and confirms with Enter', async () => {
+  it('extends range with Arrow and confirms with Enter', async () => {
     const screen = render(CalendarRootTest, {
       selectionMode: 'range',
       defaultValue: { start: '2026-02-10' }
@@ -196,8 +196,8 @@ describe('Calendar', () => {
     const focusedElement = focused.element()!;
     focusedElement.focus();
 
-    pressKey(focusedElement, 'ArrowRight', { shiftKey: true });
-    pressKey(document.activeElement!, 'ArrowRight', { shiftKey: true });
+    pressKey(focusedElement, 'ArrowRight');
+    pressKey(document.activeElement!, 'ArrowRight');
     pressKey(document.activeElement!, 'Enter');
 
     await expect

@@ -1,22 +1,24 @@
-﻿# Popover Content API Reference
+﻿# Popover Content
 
-## Section
-- Name: `Popover.Content`
-- Description: Panel flotante del popover. Puede funcionar con contexto (`Popover.Root`) o en modo standalone controlado por props.
+## API reference
+
+### Popover.Content
+Name: `Popover.Content`  
+Description: Floating panel rendered in a portal. Supports context mode (`Popover.Root`) and standalone controlled mode.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `offset` | `number` | `8` | Separacion sobre el eje principal respecto al anchor. |
-| `placement` | `ExtendedPlacement` | `'bottom'` | Posicion preferida del panel flotante. |
-| `shouldFlip` | `boolean` | `true` | Permite flip automatico cuando falta espacio. |
-| `boundaryElement` | `Element | null` | `null` | Limite de colision para posicionamiento. |
-| `children` | `Snippet` | `undefined` | Contenido del panel. |
-| `class` | `string` | `''` | Clases CSS del contenedor flotante. |
-| `isNonModal` | `boolean` | `false` | Si es `true`, no aplica focus trap/scroll lock/aria hide outside. |
-| `shouldCloseOnInteractOutside` | `boolean` | `true` | Cierra al interactuar fuera del panel. |
-| `shouldCloseOnEscape` | `boolean` | `true` | Cierra al presionar Escape. |
-| `shouldCloseOnBlur` | `boolean` | `undefined` | Si no se define, usa `true` cuando `isNonModal=true`. |
-| `open` | `boolean` | `undefined` | Estado abierto en modo standalone. |
-| `triggerRef` | `HTMLElement | null` | `null` | Referencia al trigger en modo standalone. |
-| `onOpenChange` | `(open: boolean) => void` | `undefined` | Callback de apertura en modo standalone. |
-| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-` | Props HTML extra del panel. |
+| `offset` | `number` | `8` | Main-axis offset from the anchor element. |
+| `placement` | `ExtendedPlacement` | `'bottom'` | Preferred floating placement. |
+| `shouldFlip` | `boolean` | `true` | Enables automatic fallback placement when space is limited. |
+| `boundaryElement` | `Element | null` | `null` | Optional boundary element for positioning constraints. |
+| `children` | `Snippet` | `undefined` | Rendered popover panel content. |
+| `class` | `string` | `''` | CSS class names for the panel element. |
+| `isNonModal` | `boolean` | `false` | Disables modal behaviors (focus trap, scroll lock, outside aria hiding). |
+| `shouldCloseOnInteractOutside` | `boolean` | `true` | Closes when interacting outside the panel. |
+| `shouldCloseOnEscape` | `boolean` | `true` | Closes on Escape key press. |
+| `shouldCloseOnBlur` | `boolean` | `undefined` | Closes on focus leaving trigger/content. Defaults to `true` in non-modal mode. |
+| `open` | `boolean` | `undefined` | Controlled open state in standalone mode. |
+| `triggerRef` | `HTMLElement | null` | `null` | Trigger reference in standalone mode. |
+| `onOpenChange` | `(open: boolean) => void` | `undefined` | Open-state callback in standalone mode. |
+| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-` | Additional panel attributes. |

@@ -1,24 +1,17 @@
 ﻿# ComboBox
 
 ## Description
-`ComboBox` combina input, popover y listbox para seleccion simple o multiple con filtrado, navegacion por teclado y soporte controlado/no-controlado.
+`ComboBox` combines text input, popover, and listbox behavior into a single accessible selection pattern. It supports single and multiple selection, controlled and uncontrolled state, and keyboard-first interaction.
 
-## Usage Guidelines
-- Usa `ComboBox.Root` como contenedor principal de todas las piezas.
-- Para modo controlado, maneja `value`, `inputValue` e `isOpen` junto con `onChange`, `onInputChange` y `onOpenChange`.
-- Define un `id` estable cuando renderizas con SSR para ids ARIA consistentes.
-- En seleccion multiple, renderiza `ComboBox.Tags`, `ComboBox.Tag` y `ComboBox.TagRemove` para feedback y borrado de seleccion.
-- Elige `trigger="focus" | "input" | "press"` segun UX esperada de apertura.
+## Usage guidelines
+- Wrap all parts in `ComboBox.Root`.
+- Use controlled props (`value`, `inputValue`, `isOpen`) only when external state management is needed.
+- Provide a stable `id` in SSR environments to keep ARIA ids deterministic.
+- Render `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove` in multiple mode to expose selected values.
+- Choose `trigger="focus"`, `trigger="input"`, or `trigger="press"` based on your opening behavior requirements.
 
 ## Anatomy
-- `ComboBox.Root`
-- `ComboBox.Input`
-- `ComboBox.Button` (opcional)
-- `ComboBox.Popover`
-- `ComboBox.List`
-- `ComboBox.Item`
-- `ComboBox.ItemIndicator` (opcional)
-- `ComboBox.Tags` / `ComboBox.Tag` / `ComboBox.TagRemove` (modo multiple)
+Import the component and compose its parts:
 
 ```svelte
 <ComboBox.Root>
@@ -31,3 +24,14 @@
 	</ComboBox.Popover>
 </ComboBox.Root>
 ```
+
+- `ComboBox.Root`
+- `ComboBox.Input`
+- `ComboBox.Button`
+- `ComboBox.Popover`
+- `ComboBox.List`
+- `ComboBox.Item`
+- `ComboBox.ItemIndicator`
+- `ComboBox.Tags`
+- `ComboBox.Tag`
+- `ComboBox.TagRemove`

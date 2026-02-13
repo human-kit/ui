@@ -1,11 +1,13 @@
-﻿# ComboBox Tag Remove API Reference
+﻿# ComboBox Tag Remove
 
-## Section
-- Name: `ComboBox.TagRemove`
-- Description: Boton para eliminar una seleccion dentro de `ComboBox.Tag`.
+## API reference
+
+### ComboBox.TagRemove
+Name: `ComboBox.TagRemove`  
+Description: Remove action button for a selected tag.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `Snippet` | `X icon` | Contenido custom del boton de remove. |
-| `class` | `string` | `undefined` | Clases CSS del boton. |
-| `...restProps` | `HTMLButtonAttributes` | `-` | Props HTML extra (excepto `type`, `onclick`, `aria-label`). |
+| `children` | `Snippet` | `X icon` | Custom button content. |
+| `class` | `string` | `undefined` | CSS class names for the remove button. |
+| `...restProps` | `HTMLButtonAttributes` | `-` | Additional button attributes, excluding reserved trigger props. |

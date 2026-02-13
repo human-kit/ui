@@ -1,9 +1,11 @@
-﻿# Dialog Portal API Reference
+﻿# Dialog Portal
 
-## Section
-- Name: `Dialog.Portal`
-- Description: Renderiza `children` en portal solo cuando `Dialog.Root` esta abierto.
+## API reference
+
+### Dialog.Portal
+Name: `Dialog.Portal`  
+Description: Portal wrapper that renders dialog layers only while `Dialog.Root` is open.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `Snippet` | `undefined` | Contenido portalizado (normalmente overlay y content). |
+| `children` | `Snippet` | `undefined` | Portaled content, usually `Dialog.Overlay` and `Dialog.Content`. |

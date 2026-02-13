@@ -2,41 +2,41 @@
 
 ## Description
 
-`Calendar` provee seleccion de fecha unica (ISO `YYYY-MM-DD`) con navegacion por teclado, soporte controlado/no-controlado y composicion por partes.
+`Calendar` provides single-date and range selection (ISO `YYYY-MM-DD`) with keyboard navigation, controlled/uncontrolled state, and part-based composition.
 
 ## Usage Guidelines
 
-- Usa `Calendar.Root` como contenedor principal.
-- `selectionMode` soporta `'single'` (default) o `'range'`.
-- En modo controlado, usa `value` + `onChange`; para no-controlado, usa `defaultValue`.
-- En `single`, `value/defaultValue` es `YYYY-MM-DD`.
-- En `range`, `value/defaultValue` es `{ start?: 'YYYY-MM-DD', end?: 'YYYY-MM-DD' }`.
-- `visibleMonths` define cuantos meses se muestran y la paginacion de triggers.
-- `isDateUnavailable` deshabilita dias concretos (no foco y no seleccion).
-- Usa `LocaleProvider` para adaptar nombres de mes/dia y primer dia de semana.
-- Teclado: `Arrow` mueve foco por dias/semanas y `Home/End` al inicio/fin del mes.
+- Use `Calendar.Root` as the stateful container.
+- `selectionMode` supports `'single'` (default) and `'range'`.
+- In controlled mode, use `value` with `onChange`; in uncontrolled mode, use `defaultValue`.
+- In `single` mode, `value/defaultValue` is `YYYY-MM-DD`.
+- In `range` mode, `value/defaultValue` is `{ start?: 'YYYY-MM-DD', end?: 'YYYY-MM-DD' }`.
+- `visibleMonths` controls how many months are rendered and how paging behaves.
+- `isDateUnavailable` marks specific days as non-focusable and non-selectable.
+- Use `LocaleProvider` to localize month/day labels and first day of week.
+- Keyboard navigation uses `Arrow` keys for day/week movement and `Home/End` for month edges.
 
 ## Accessibility
 
-- Cada `grid` publica nombre accesible con el heading del mes visible.
-- La fecha de hoy expone `aria-current="date"`.
-- Celdas unavailable exponen `aria-disabled="true"`, no se enfocan y no se seleccionan.
+- Each `grid` exposes an accessible name using the visible month heading.
+- Today exposes `aria-current="date"`.
+- Unavailable cells expose `aria-disabled="true"` and are neither focusable nor selectable.
 
 ### Keyboard
 
-- `ArrowRight/ArrowLeft`: mueve foco +/- 1 dia.
-- `ArrowDown/ArrowUp`: mueve foco +/- 7 dias.
-- `Home/End`: mueve foco al primer/ultimo dia del mes.
-- `PageUp/PageDown`: cambia al mes anterior/siguiente intentando mantener el dia.
-- `Enter` o `Space`: selecciona la fecha enfocada (si es seleccionable).
-- En `selectionMode="range"`, `Shift + Arrow/Page/Home/End` extiende el rango en preview.
-- En `selectionMode="range"`, `Enter` o `Space` confirma el preview si hay rango pendiente.
+- `ArrowRight/ArrowLeft`: move focus by +/- 1 day.
+- `ArrowDown/ArrowUp`: move focus by +/- 7 days.
+- `Home/End`: move focus to first/last day of month.
+- `PageUp/PageDown`: move to previous/next month while trying to preserve day number.
+- `Enter` or `Space`: select the focused date (if selectable).
+- In `selectionMode="range"`, `Arrow/Page/Home/End` extend preview range while a range is pending.
+- In `selectionMode="range"`, `Enter` or `Space` confirm the preview when pending.
 
 ## Internal Notes
 
-- `PageUp/PageDown` mantiene la implementacion actual: intenta conservar el dia al cambiar de mes, pero si ese dia no es focusable (por ejemplo `isDateUnavailable`), mueve al siguiente dia focusable en la direccion de la tecla. Debido a eso, en escenarios con dias bloqueados puede verse un "desfase" acumulado del numero de dia entre saltos consecutivos.
-- En `selectionMode="range"`, el primer click inicia rango (`start`) y el segundo click confirma (`end`), con normalizacion automatica si el usuario elige primero una fecha posterior.
-- En `selectionMode="range"`, el hover muestra preview en tiempo real antes de confirmar.
+- `PageUp/PageDown` try to preserve the day when crossing months; if no focusable target exists in the destination month and a range is pending, focus falls back to the reachable edge in the current month (aligned with `Home/End` behavior).
+- In `selectionMode="range"`, the first click starts the range (`start`) and the second click confirms it (`end`), with automatic normalization for reversed selection order.
+- In `selectionMode="range"`, hover updates a live preview before confirmation.
 
 ## Anatomy
 
@@ -52,14 +52,14 @@
 
 ```svelte
 <LocaleProvider locale="es-ES">
-  <Calendar.Root>
-    <Calendar.TriggerPrevious />
-    <Calendar.Heading />
-    <Calendar.TriggerNext />
-    <Calendar.Grid>
-      <Calendar.GridHeader />
-      <Calendar.GridBody />
-    </Calendar.Grid>
-  </Calendar.Root>
+ <Calendar.Root>
+  <Calendar.TriggerPrevious />
+  <Calendar.Heading />
+  <Calendar.TriggerNext />
+  <Calendar.Grid>
+   <Calendar.GridHeader />
+   <Calendar.GridBody />
+  </Calendar.Grid>
+ </Calendar.Root>
 </LocaleProvider>
 ```

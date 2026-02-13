@@ -185,6 +185,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
   let cachedMonths: CalendarMonth[] = [];
   let hasCachedMonths = false;
   let unavailableCache = new Map<CalendarDateValue, boolean>();
+  let pendingRangePathCache = new Map<CalendarDateValue, boolean>();
+  let pendingRangePathCacheStart: CalendarDateValue | undefined;
   let previousUnavailableFn = isDateUnavailable;
   let previousVisibleMonths = visibleMonths;
   let previousLocale = locale;
@@ -194,6 +196,32 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
   function clearUnavailableCache() {
     unavailableCache = new Map();
+    pendingRangePathCache = new Map();
+    pendingRangePathCacheStart = undefined;
+  }
+
+  function clearPendingRangePathCache() {
+    pendingRangePathCache = new Map();
+    pendingRangePathCacheStart = undefined;
+  }
+
+  function isPendingRangePathSelectable(date: CalendarDateValue): boolean {
+    if (!currentRangeStart || currentRangeEnd) {
+      return true;
+    }
+
+    if (pendingRangePathCacheStart !== currentRangeStart) {
+      pendingRangePathCache = new Map();
+      pendingRangePathCacheStart = currentRangeStart;
+    }
+
+    if (pendingRangePathCache.has(date)) {
+      return pendingRangePathCache.get(date)!;
+    }
+
+    const result = isRangePathSelectable(currentRangeStart, date);
+    pendingRangePathCache.set(date, result);
+    return result;
   }
 
   function notifyLayout() {
@@ -235,6 +263,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
       currentRangeAnchor = undefined;
       currentPreviewEnd = undefined;
       currentHoveredDate = undefined;
+      clearPendingRangePathCache();
       shouldNotifySelection = true;
       shouldNotifyLayout = true;
     }
@@ -287,6 +316,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
       currentRangeAnchor = undefined;
       currentPreviewEnd = undefined;
       currentHoveredDate = undefined;
+      clearPendingRangePathCache();
     } else {
       if (nextValue !== undefined) {
         if (isRangeValue(nextValue)) {
@@ -314,6 +344,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
           currentRangeAnchor = undefined;
           currentPreviewEnd = undefined;
           currentHoveredDate = undefined;
+          clearPendingRangePathCache();
           if (nextFocus) {
             currentFocused = nextFocus;
             currentVisibleMonth = startOfMonth(parseCalendarDate(nextFocus) ?? currentVisibleMonth);
@@ -325,6 +356,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
           currentRangeAnchor = undefined;
           currentPreviewEnd = undefined;
           currentHoveredDate = undefined;
+          clearPendingRangePathCache();
           shouldNotifySelection = true;
         }
       } else if (!currentRangeStart && !currentRangeEnd && isRangeValue(nextDefaultValue)) {
@@ -350,6 +382,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
         currentRangeAnchor = undefined;
         currentPreviewEnd = undefined;
         currentHoveredDate = undefined;
+        clearPendingRangePathCache();
 
         if (nextFocus) {
           currentFocused = nextFocus;
@@ -464,7 +497,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     if (isDisabled || isUnavailable(date)) return true;
 
     if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
-      return !isRangePathSelectable(currentRangeStart, date);
+      return !isPendingRangePathSelectable(date);
     }
 
     return false;
@@ -524,6 +557,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     currentRangeAnchor = date;
     currentPreviewEnd = undefined;
     currentHoveredDate = undefined;
+    clearPendingRangePathCache();
   }
 
   function commitRangeSelection(start: CalendarDateValue, end: CalendarDateValue) {
@@ -537,6 +571,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     currentRangeAnchor = normalized.start;
     currentPreviewEnd = undefined;
     currentHoveredDate = undefined;
+    clearPendingRangePathCache();
     previousCommittedRange = { start: normalized.start, end: normalized.end };
     previousFocusedBeforeDraft = undefined;
     onChange?.({ start: normalized.start, end: normalized.end });
@@ -551,6 +586,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
     currentRangeAnchor = previousCommittedRange?.start;
     currentPreviewEnd = undefined;
     currentHoveredDate = undefined;
+    clearPendingRangePathCache();
 
     const restoredFocus = previousFocusedBeforeDraft ?? previousCommittedRange?.end ?? previousCommittedRange?.start;
     if (restoredFocus && isValidCalendarDateValue(restoredFocus)) {
