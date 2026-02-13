@@ -4,134 +4,134 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 
 ---
 
-## 🔊 Accesibilidad
+## Accessibility
 
-### Completado ✅
+### Completed (Accessibility)
 
-- [x] ARIA pattern: `aria-activedescendant` para virtual focus
-- [x] `aria-expanded`, `aria-haspopup`, `aria-controls` en input
-- [x] `aria-label` en ListBox
+- [x] ARIA pattern: `aria-activedescendant` for virtual focus
+- [x] `aria-expanded`, `aria-haspopup`, `aria-controls` on input
+- [x] `aria-label` on ListBox
 - [x] `role="combobox"`, `role="listbox"`, `role="option"`
-- [x] `aria-selected` en items seleccionados
-- [x] `aria-disabled` en items/placeholder deshabilitados
-- [x] Input soporta `aria-label` y `aria-labelledby` props
-- [x] ListBox tiene ID para que `aria-controls` funcione correctamente
-- [x] Button tiene `aria-controls` apuntando al listbox
-- [x] Wrapper group soporta `aria-label` y `aria-labelledby`
-- [x] Input soporta `aria-describedby` para instrucciones de uso
+- [x] `aria-selected` on selected items
+- [x] `aria-disabled` on disabled items/placeholder
+- [x] Input supports `aria-label` and `aria-labelledby` props
+- [x] ListBox has an ID so `aria-controls` works correctly
+- [x] Button has `aria-controls` pointing to the listbox
+- [x] Wrapper group supports `aria-label` and `aria-labelledby`
+- [x] Input supports `aria-describedby` for usage instructions
 
-### Pendiente
+### Pending (Accessibility)
 
-- [ ] **Live regions para conteo de resultados**
-  - Agregar `<div aria-live="polite">` que anuncie "{N} resultados disponibles" al filtrar
-  - Importante para screen readers que no ven el cambio visual
+- [ ] **Live regions for result count**
+  - Add `<div aria-live="polite">` to announce "{N} results available" while filtering
+  - Important for screen readers that cannot see visual updates
 
-- [ ] **Anuncio de selección**
-  - Anunciar "Item seleccionado: {label}" cuando se selecciona
-  - Usar `aria-live="assertive"` para cambios importantes
+- [ ] **Selection announcement**
+  - Announce "Selected item: {label}" when an item is selected
+  - Use `aria-live="assertive"` for important changes
 
-- [ ] **Soporte para grupos (sections)**
-  - Implementar `role="group"` con `aria-labelledby` para secciones
-  - Agregar `ComboBox.Section` component
+- [ ] **Support for groups (sections)**
+  - Implement `role="group"` with `aria-labelledby` for sections
+  - Add `ComboBox.Section` component
 
 ---
 
-## 📈 Escalabilidad
+## Scalability
 
-### Completado ✅
+### Completed (Scalability)
 
-- [x] Hook `useVirtualFocus` reutilizable
+- [x] Reusable `useVirtualFocus` hook
 - [x] Controlled/uncontrolled mode
-- [x] Filtrado automático en items
-- [x] `emptyPlaceholder` reactivo
+- [x] Automatic item filtering
+- [x] Reactive `emptyPlaceholder`
 
-### Pendiente
+### Pending (Scalability)
 
-- [ ] **`filterFn` prop customizable**
-  - Actualmente filtrado es case-insensitive includes
-  - Permitir: fuzzy search, startsWith, exact match, async search
+- [ ] **Customizable `filterFn` prop**
+  - Filtering is currently case-insensitive includes
+  - Allow: fuzzy search, startsWith, exact match, async search
 
 - [ ] **`allowCreate` prop**
-  - Permitir crear nuevos items cuando no hay match
+  - Allow creating new items when there is no match
   - Callback `onCreate?: (value: string) => void`
 
 - [x] **Multiple selection UI**
-  - Chips/tags para items seleccionados ✅ `ComboBox.Tags`, `ComboBox.Tag`, `ComboBox.TagRemove`
-  - Clear all button (disponible via `clearSelection()` en context)
-  - Contador de seleccionados (disponible via `selectedValue.size`)
-  - Navegación de tags con teclado (ArrowLeft/Right, Delete/Backspace)
-  - `ComboBox.ItemIndicator` para mostrar checks en items seleccionados
+  - Chips/tags for selected items: `ComboBox.Tags`, `ComboBox.Tag`, `ComboBox.TagRemove`
+  - Clear-all button (available via `clearSelection()` in context)
+  - Selected-count indicator (available via `selectedValue.size`)
+  - Keyboard tag navigation (ArrowLeft/Right, Delete/Backspace)
+  - `ComboBox.ItemIndicator` to show checks for selected items
 
 - [ ] **Form integration**
-  - `name` prop para `<form>` nativo
-  - Hidden input con valor serializado
-  - Validación con `required`, `aria-invalid`
+  - `name` prop for native `<form>`
+  - Hidden input with serialized value
+  - Validation with `required`, `aria-invalid`
 
 - [ ] **Async data support**
   - Props: `isLoading`, `loadingPlaceholder`
-  - Callback: `onLoadMore` para infinite scroll
-  - Debounce integrado para búsqueda async
+  - Callback: `onLoadMore` for infinite scroll
+  - Built-in debounce for async search
 
 - [ ] **Virtualization**
-  - Para listas grandes (>100 items)
-  - Integrar con `@tanstack/virtual` o similar
+  - For large lists (>100 items)
+  - Integrate with `@tanstack/virtual` or similar
 
 ---
 
-## ⚡ Performance
+## Performance
 
-### Completado ✅
+### Completed (Performance)
 
-- [x] Cache de DOM queries con invalidación (`cachedItemOrder`)
-- [x] `untrack()` para evitar loops infinitos en effects
-- [x] Subscription pattern para `itemCount` reactivo
+- [x] DOM query cache with invalidation (`cachedItemOrder`)
+- [x] `untrack()` to avoid infinite effect loops
+- [x] Subscription pattern for reactive `itemCount`
 - [x] Scoped queries via `containerRef`
 
-### Pendiente
+### Pending (Performance)
 
-- [ ] **Memoización de `isVisible` en ListBoxItem**
-  - Actualmente se recalcula en cada render
-  - Considerar memoizar con `$derived` más granular
+- [ ] **`isVisible` memoization in ListBoxItem**
+  - It is currently recomputed on each render
+  - Consider more granular memoization with `$derived`
 
 - [ ] **Batch registration**
-  - `registerItem` se llama por cada item individualmente
-  - Para listas grandes, batch notifications
+  - `registerItem` runs once per individual item
+  - For large lists, consider batched notifications
 
-- [ ] **Lazy itemLabels**
-  - El Map `itemLabels` crece con cada item
-  - Limpiar en unmount está implementado, pero considerar WeakMap
+- [ ] **Lazy `itemLabels`**
+  - The `itemLabels` map grows with each item
+  - Cleanup on unmount is implemented, but consider `WeakMap`
 
 - [ ] **Effect cleanup optimizations**
-  - Revisar effects que podrían consolidarse
-  - `combobox-listboxitem.svelte` tiene 2 effects que podrían ser 1
+  - Review effects that could be consolidated
+  - `combobox-listboxitem.svelte` has 2 effects that might become 1
 
 ---
 
-## 🔧 Svelte 5 Runes Best Practices
+## Svelte 5 Runes Best Practices
 
-### Completado ✅
+### Completed (Runes)
 
-- [x] `$state` para estado reactivo
-- [x] `$derived` para valores computados
-- [x] `$effect` con cleanup functions
-- [x] `$bindable` para two-way binding
-- [x] `$props()` para destructuring
-- [x] `untrack()` para evitar re-runs innecesarios
-- [x] `$derived(expression)` en vez de `$derived(() => ...)` - Simplificado en `combobox-listboxitem.svelte`
-- [x] Effects consolidados - Usando 1 `$effect` + `onDestroy` en vez de 2 effects
+- [x] `$state` for reactive state
+- [x] `$derived` for computed values
+- [x] `$effect` with cleanup functions
+- [x] `$bindable` for two-way binding
+- [x] `$props()` for destructuring
+- [x] `untrack()` to avoid unnecessary re-runs
+- [x] `$derived(expression)` instead of `$derived(() => ...)` - simplified in `combobox-listboxitem.svelte`
+- [x] Consolidated effects - using 1 `$effect` + `onDestroy` instead of 2 effects
 
-### Revisado - No requiere cambios
+### Reviewed - No Changes Required
 
-- [x] **`$effect.pre`**: Revisado - no hay race conditions que lo requieran
-- [x] **Context typing**: El type único es apropiado - tree-shaking no aplica a context objects
+- [x] **`$effect.pre`**: Reviewed - no race conditions requiring it
+- [x] **Context typing**: Single shared type is appropriate - tree-shaking does not apply to context objects
 
 ---
 
-## 🧪 Testing
+## Testing
 
-### Completado ✅
+### Completed (Testing)
 
-- [x] 291 tests unitarios pasando
+- [x] 291 passing unit tests
 - [x] Keyboard navigation tests
 - [x] Selection tests
 - [x] Filtering tests
@@ -143,33 +143,33 @@ Comprehensive review based on: **Accessibility**, **Scalability**, **Performance
 - [x] Selection behavior (Enter, click, Escape restoration)
 - [x] Multi-select tests (12 tests)
 - [x] Tags component tests (4 tests)
-- [x] Tag component tests (13 tests) - incluye navegación por teclado
+- [x] Tag component tests (13 tests) - includes keyboard navigation
 - [x] TagRemove component tests (6 tests)
 - [x] ItemIndicator component tests (5 tests)
 
-### Pendiente
+### Pending (Testing)
 
-- [ ] **Tests con muchos items (100+)** - performance tests
-- [ ] **Visual regression tests** - screenshots de estados
+- [ ] **Tests with many items (100+)** - performance tests
+- [ ] **Visual regression tests** - state screenshots
 
 ---
 
-## 📝 Documentación
+## Documentation
 
-- [ ] **JSDoc completo**
-  - Documentar todas las props públicas
-  - Ejemplos de uso en comments
+- [ ] **Complete JSDoc**
+  - Document all public props
+  - Add usage examples in comments
 
 - [ ] **Storybook/Demo page**
-  - Ejemplos interactivos de todos los casos de uso
-  - Estados: loading, error, disabled, readonly
+  - Interactive examples for all use cases
+  - States: loading, error, disabled, readonly
 
 ---
 
-## 🎯 Próximos Pasos Priorizados
+## Prioritized Next Steps
 
-1. **Live regions** (accessibility - alto impacto)
-2. **Form integration** (usabilidad - casos comunes)
-3. **`filterFn` customizable** (escalabilidad)
-4. **Consolidar effects** (performance/best practices)
-5. **Async data support** (escalabilidad)
+1. **Live regions** (accessibility - high impact)
+2. **Form integration** (usability - common cases)
+3. **Customizable `filterFn`** (scalability)
+4. **Consolidate effects** (performance/best practices)
+5. **Async data support** (scalability)

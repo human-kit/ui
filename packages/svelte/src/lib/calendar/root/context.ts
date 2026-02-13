@@ -26,6 +26,8 @@ export type CalendarRangeValue = {
   end?: CalendarDateValue;
 };
 export type CalendarValue = CalendarDateValue | CalendarRangeValue;
+export type CalendarValueBySelectionMode<TSelectionMode extends CalendarSelectionMode> =
+  TSelectionMode extends 'range' ? CalendarRangeValue : CalendarDateValue;
 
 export type CalendarMonth = {
   monthIndex: number;
@@ -34,16 +36,18 @@ export type CalendarMonth = {
   weeks: CalendarDayCell[][];
 };
 
-export type CreateCalendarContextOptions = {
-  selectionMode?: CalendarSelectionMode;
+export type CreateCalendarContextOptions<
+  TSelectionMode extends CalendarSelectionMode = CalendarSelectionMode
+> = {
+  selectionMode?: TSelectionMode;
   visibleMonths?: number;
   locale?: string;
   isDisabled?: boolean;
   isReadOnly?: boolean;
-  value?: CalendarValue;
-  defaultValue?: CalendarValue;
+  value?: CalendarValueBySelectionMode<TSelectionMode>;
+  defaultValue?: CalendarValueBySelectionMode<TSelectionMode>;
   isDateUnavailable?: (date: CalendarDateValue) => boolean;
-  onChange?: (value: CalendarValue) => void;
+  onChange?: (value: CalendarValueBySelectionMode<TSelectionMode>) => void;
 };
 
 export type CalendarContext = {
@@ -77,6 +81,15 @@ export type CalendarContext = {
   sync: (next: CreateCalendarContextOptions) => void;
 };
 
+export function createCalendarContext(
+  options: CreateCalendarContextOptions<'single'>
+): CalendarContext;
+export function createCalendarContext(
+  options: CreateCalendarContextOptions<'range'>
+): CalendarContext;
+export function createCalendarContext(
+  options: CreateCalendarContextOptions
+): CalendarContext;
 export function createCalendarContext(options: CreateCalendarContextOptions): CalendarContext {
   let {
     selectionMode = 'single',

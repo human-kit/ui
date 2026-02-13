@@ -15,16 +15,11 @@
 	let selectionMode = $state<CalendarSelectionMode>('single');
 	let isDisabled = $state(false);
 	let isReadOnly = $state(false);
-	let value = $state<CalendarDemoValue>('');
-
-	$effect(() => {
-		if (selectionMode === 'single' && typeof value !== 'string') {
-			value = '';
-		}
-		if (selectionMode === 'range' && typeof value === 'string') {
-			value = {};
-		}
-	});
+	let singleValue = $state('');
+	let rangeValue = $state<CalendarDemoRange>({});
+	const value = $derived.by<CalendarDemoValue>(() =>
+		selectionMode === 'single' ? singleValue : rangeValue
+	);
 
 	const localeOptions = [
 		{ value: 'en-US', label: 'English (US)' },
@@ -51,49 +46,95 @@
 	description="Test all Calendar root props interactively"
 >
 	<LocaleProvider {locale}>
-		<Calendar.Root
-			bind:value
-			{selectionMode}
-			{visibleMonths}
-			{isDisabled}
-			{isReadOnly}
-			isDateUnavailable={isWeekend}
-			class="space-y-4"
-		>
-			<div class="flex items-center gap-3">
-				<Calendar.TriggerPrevious
-					class="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-				>
-					Previous
-				</Calendar.TriggerPrevious>
-				<Calendar.Heading class="text-lg font-semibold text-gray-900 dark:text-white" />
-				<Calendar.TriggerNext
-					class="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-				>
-					Next
-				</Calendar.TriggerNext>
-			</div>
+		{#if selectionMode === 'single'}
+			<Calendar.Root
+				bind:value={singleValue}
+				selectionMode="single"
+				{visibleMonths}
+				{isDisabled}
+				{isReadOnly}
+				isDateUnavailable={isWeekend}
+				class="space-y-4"
+			>
+				<div class="flex items-center gap-3">
+					<Calendar.TriggerPrevious
+						class="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+					>
+						Previous
+					</Calendar.TriggerPrevious>
+					<Calendar.Heading class="text-lg font-semibold text-gray-900 dark:text-white" />
+					<Calendar.TriggerNext
+						class="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+					>
+						Next
+					</Calendar.TriggerNext>
+				</div>
 
-			<Calendar.Grid class="flex gap-4 text-gray-900 dark:text-gray-100">
-				<Calendar.GridHeader>
-					{#snippet children(day)}
-						<Calendar.HeaderCell
-							class="px-2 py-1 text-center text-xs font-medium text-gray-600 dark:text-gray-300"
-						>
-							{day}
-						</Calendar.HeaderCell>
-					{/snippet}
-				</Calendar.GridHeader>
-				<Calendar.GridBody>
-					{#snippet children(date)}
-						<Calendar.BodyCell
-							{date}
-							class="p-1 text-center text-gray-900 data-disabled:text-red-600 data-in-range:bg-blue-100 data-outside-month:opacity-45 data-range-end:rounded-r data-range-start:rounded-l data-selected:rounded data-selected:bg-blue-600 data-selected:text-white dark:text-gray-100 dark:data-disabled:text-red-400 dark:data-in-range:bg-blue-900/40"
-						/>
-					{/snippet}
-				</Calendar.GridBody>
-			</Calendar.Grid>
-		</Calendar.Root>
+				<Calendar.Grid class="flex gap-4 text-gray-900 dark:text-gray-100">
+					<Calendar.GridHeader>
+						{#snippet children(day)}
+							<Calendar.HeaderCell
+								class="px-2 py-1 text-center text-xs font-medium text-gray-600 dark:text-gray-300"
+							>
+								{day}
+							</Calendar.HeaderCell>
+						{/snippet}
+					</Calendar.GridHeader>
+					<Calendar.GridBody>
+						{#snippet children(date)}
+							<Calendar.BodyCell
+								{date}
+								class="p-1 text-center text-gray-900 data-disabled:text-red-600 data-in-range:bg-blue-100 data-outside-month:opacity-45 data-range-end:rounded-r data-range-start:rounded-l data-selected:rounded data-selected:bg-blue-600 data-selected:text-white dark:text-gray-100 dark:data-disabled:text-red-400 dark:data-in-range:bg-blue-900/40"
+							/>
+						{/snippet}
+					</Calendar.GridBody>
+				</Calendar.Grid>
+			</Calendar.Root>
+		{:else}
+			<Calendar.Root
+				bind:value={rangeValue}
+				selectionMode="range"
+				{visibleMonths}
+				{isDisabled}
+				{isReadOnly}
+				isDateUnavailable={isWeekend}
+				class="space-y-4"
+			>
+				<div class="flex items-center gap-3">
+					<Calendar.TriggerPrevious
+						class="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+					>
+						Previous
+					</Calendar.TriggerPrevious>
+					<Calendar.Heading class="text-lg font-semibold text-gray-900 dark:text-white" />
+					<Calendar.TriggerNext
+						class="rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+					>
+						Next
+					</Calendar.TriggerNext>
+				</div>
+
+				<Calendar.Grid class="flex gap-4 text-gray-900 dark:text-gray-100">
+					<Calendar.GridHeader>
+						{#snippet children(day)}
+							<Calendar.HeaderCell
+								class="px-2 py-1 text-center text-xs font-medium text-gray-600 dark:text-gray-300"
+							>
+								{day}
+							</Calendar.HeaderCell>
+						{/snippet}
+					</Calendar.GridHeader>
+					<Calendar.GridBody>
+						{#snippet children(date)}
+							<Calendar.BodyCell
+								{date}
+								class="p-1 text-center text-gray-900 data-disabled:text-red-600 data-in-range:bg-blue-100 data-outside-month:opacity-45 data-range-end:rounded-r data-range-start:rounded-l data-selected:rounded data-selected:bg-blue-600 data-selected:text-white dark:text-gray-100 dark:data-disabled:text-red-400 dark:data-in-range:bg-blue-900/40"
+							/>
+						{/snippet}
+					</Calendar.GridBody>
+				</Calendar.Grid>
+			</Calendar.Root>
+		{/if}
 	</LocaleProvider>
 
 	{#snippet controls()}

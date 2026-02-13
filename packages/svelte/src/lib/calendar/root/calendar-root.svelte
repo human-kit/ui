@@ -8,7 +8,7 @@
 		type CalendarValue
 	} from './context';
 	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { isValidCalendarDateValue } from './date-utils';
+	import { isValidCalendarDateValue, type CalendarDateValue } from './date-utils';
 
 	function isRangeValue(
 		valueToCheck: CalendarValue | undefined
@@ -37,14 +37,27 @@
 		isDateUnavailable?: (date: string) => boolean;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
-		value?: CalendarValue;
-		defaultValue?: CalendarValue;
-		onChange?: (value: CalendarValue) => void;
 		children?: Snippet;
 		class?: string;
 		id?: string;
 		'aria-label'?: string;
 	};
+
+	type CalendarRootSingleProps = CalendarRootProps & {
+		selectionMode?: 'single';
+		value?: CalendarDateValue;
+		defaultValue?: CalendarDateValue;
+		onChange?: (value: CalendarDateValue) => void;
+	};
+
+	type CalendarRootRangeProps = CalendarRootProps & {
+		selectionMode: 'range';
+		value?: CalendarRangeValue;
+		defaultValue?: CalendarRangeValue;
+		onChange?: (value: CalendarRangeValue) => void;
+	};
+
+	type CalendarRootTypedProps = CalendarRootSingleProps | CalendarRootRangeProps;
 
 	let {
 		selectionMode = 'single',
@@ -59,7 +72,12 @@
 		class: className = '',
 		id,
 		'aria-label': ariaLabel
-	}: CalendarRootProps = $props();
+	}: CalendarRootTypedProps = $props();
+
+	function isCalendarRangeValue(valueToCheck: CalendarValue): valueToCheck is CalendarRangeValue {
+		if (!valueToCheck || typeof valueToCheck === 'string') return false;
+		return true;
+	}
 
 	const localeContext = useLocaleContextOptional();
 	const localeStore = localeContext?.locale;
@@ -89,7 +107,11 @@
 			value,
 			defaultValue: normalizedDefaultValue,
 			onChange: (nextValue: CalendarValue) => {
-				onChange?.(nextValue);
+				if (selectionMode === 'range' && isCalendarRangeValue(nextValue)) {
+					(onChange as ((value: CalendarRangeValue) => void) | undefined)?.(nextValue);
+				} else if (selectionMode !== 'range' && typeof nextValue === 'string') {
+					(onChange as ((value: CalendarDateValue) => void) | undefined)?.(nextValue);
+				}
 				value = nextValue;
 			}
 		};

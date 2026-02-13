@@ -14,6 +14,8 @@
 		"typecheck": "bun --filter @human-kit/svelte-components check && bun --filter docs check",
 		"check": "bun run --filter '*' check",
 		"format": "prettier --write .",
+		"lint:md": "npx markdownlint-cli2",
+		"lint:md:fix": "npx markdownlint-cli2 --fix",
 		"lint": "prettier --check . && eslint .",
 		"release": "bun run build && bunx changeset publish",
 		"pr": "bash scripts/pr.sh"

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Calendar from '../index';
-	import type { CalendarValue } from './context';
 
-	let value = $state<CalendarValue>('2026-02-10');
+	let value = $state('2026-02-10');
 </script>
 
 <Calendar.Root
+	selectionMode="single"
 	{value}
-	onChange={(nextValue) => (value = nextValue)}
+	onChange={(nextValue: string) => (value = nextValue)}
 	aria-label="Controlled clear test calendar"
 >
 	<Calendar.Grid>
