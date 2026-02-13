@@ -1,5 +1,14 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.2
+
+### Minor Changes
+
+- [#6](https://github.com/Agustin-Delgado/svelte-components/pull/6) [`9a72432`](https://github.com/Agustin-Delgado/svelte-components/commit/9a72432ef238e79834b07cb42cc22b471c229094) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add the new Calendar component as a public feature release.
+  - introduce single and range selection modes
+  - add keyboard navigation and accessibility improvements
+  - include docs/demo integration and supporting tests
+
 ## 1.0.0-alpha.1
 
 ### Major Changes
