@@ -11,17 +11,17 @@ export { default as CalendarGridBody } from './grid-body/calendar-grid-body.svel
 export { default as CalendarBodyCell } from './body-cell/calendar-body-cell.svelte';
 
 export {
-  getCalendarContext,
-  setCalendarContext,
-  useCalendarContext,
-  createCalendarContext,
-  type CalendarContext,
-  type CalendarMonth,
-  type CalendarSelectionMode,
-  type CalendarRangeValue,
-  type CalendarValueBySelectionMode,
-  type CalendarValue,
-  type CreateCalendarContextOptions
+	getCalendarContext,
+	setCalendarContext,
+	useCalendarContext,
+	createCalendarContext,
+	type CalendarContext,
+	type CalendarMonth,
+	type CalendarSelectionMode,
+	type CalendarRangeValue,
+	type CalendarValueBySelectionMode,
+	type CalendarValue,
+	type CreateCalendarContextOptions
 } from './root/context';
 
 import * as CalendarParts from './index.parts.ts';

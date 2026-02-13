@@ -15,16 +15,16 @@
 	const layoutVersion = calendar.layoutVersion;
 	const monthIndex = getCalendarMonthIndex();
 	const month = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.months[monthIndex];
 	});
 	const weeks = $derived(month?.weeks ?? []);
 </script>
 
 <tbody class={className}>
-	{#each weeks as week, weekIndex}
+	{#each weeks as week, weekIndex (weekIndex)}
 		<tr data-week={weekIndex}>
-			{#each week as day}
+			{#each week as day (day.date)}
 				{#if children}
 					{@render children(day.date)}
 				{:else}

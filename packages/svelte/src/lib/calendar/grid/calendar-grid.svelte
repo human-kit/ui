@@ -12,15 +12,15 @@
 	const calendar = useCalendarContext();
 	const layoutVersion = calendar.layoutVersion;
 	const months = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.months;
 	});
 	const selectionMode = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.selectionMode;
 	});
 	const isReadOnly = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.isReadOnly;
 	});
 </script>

@@ -20,44 +20,44 @@
 	const parsedDate = $derived(parseCalendarDate(date));
 	const dayLabel = $derived(parsedDate ? String(parsedDate.getUTCDate()) : '');
 	const isSelected = $derived.by(() => {
-		$layoutVersion;
-		$selectionVersion;
+		void $layoutVersion;
+		void $selectionVersion;
 		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isSelected(date);
 	});
 	const isRangeStart = $derived.by(() => {
-		$layoutVersion;
-		$selectionVersion;
+		void $layoutVersion;
+		void $selectionVersion;
 		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isRangeStart(date);
 	});
 	const isRangeEnd = $derived.by(() => {
-		$layoutVersion;
-		$selectionVersion;
+		void $layoutVersion;
+		void $selectionVersion;
 		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isRangeEnd(date);
 	});
 	const isInRange = $derived.by(() => {
-		$layoutVersion;
-		$selectionVersion;
+		void $layoutVersion;
+		void $selectionVersion;
 		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isInRange(date);
 	});
 	const isFocused = $derived.by(() => {
-		$selectionVersion;
+		void $selectionVersion;
 		return calendar.focusedValue === date;
 	});
 	const isDisabled = $derived.by(() => {
-		$layoutVersion;
-		$selectionVersion;
+		void $layoutVersion;
+		void $selectionVersion;
 		return calendar.isDateDisabled(date);
 	});
 	const isUnavailable = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.isDateUnavailable(date);
 	});
 	const isOutsideMonth = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.isOutsideVisibleRange(date, monthIndex);
 	});
 	const todayDate = formatCalendarDate(getTodayUtcDate());

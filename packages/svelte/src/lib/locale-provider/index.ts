@@ -4,9 +4,9 @@ export { LocaleProvider };
 export default LocaleProvider;
 
 export {
-  getLocaleContext,
-  setLocaleContext,
-  useLocaleContext,
-  useLocaleContextOptional,
-  type LocaleContext
+	getLocaleContext,
+	setLocaleContext,
+	useLocaleContext,
+	useLocaleContextOptional,
+	type LocaleContext
 } from './context';

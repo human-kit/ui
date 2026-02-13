@@ -3,19 +3,17 @@
 </script>
 
 <Dialog.Root>
-	{#snippet children()}
-		<Dialog.Trigger>
-			<div>
-				<button type="button">First Dialog Trigger</button>
-				<button type="button">Second Dialog Trigger</button>
-			</div>
-		</Dialog.Trigger>
+	<Dialog.Trigger>
+		<div>
+			<button type="button">First Dialog Trigger</button>
+			<button type="button">Second Dialog Trigger</button>
+		</div>
+	</Dialog.Trigger>
 
-		<Dialog.Portal>
-			<Dialog.Overlay />
-			<Dialog.Content>
-				<p>Dialog body</p>
-			</Dialog.Content>
-		</Dialog.Portal>
-	{/snippet}
+	<Dialog.Portal>
+		<Dialog.Overlay />
+		<Dialog.Content>
+			<p>Dialog body</p>
+		</Dialog.Content>
+	</Dialog.Portal>
 </Dialog.Root>

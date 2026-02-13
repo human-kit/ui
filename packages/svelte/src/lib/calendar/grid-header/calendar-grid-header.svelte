@@ -13,14 +13,14 @@
 	const calendar = useCalendarContext();
 	const layoutVersion = calendar.layoutVersion;
 	const weekdays = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.weekdayLabels;
 	});
 </script>
 
 <thead class={className}>
 	<tr>
-		{#each weekdays as day}
+		{#each weekdays as day (day)}
 			{#if children}
 				{@render children(day)}
 			{:else}

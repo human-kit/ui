@@ -9,7 +9,7 @@
 	const calendar = useCalendarContext();
 	const layoutVersion = calendar.layoutVersion;
 	const heading = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.headingLabel;
 	});
 </script>

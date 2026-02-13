@@ -12,7 +12,7 @@
 	const calendar = useCalendarContext();
 	const layoutVersion = calendar.layoutVersion;
 	const isDisabled = $derived.by(() => {
-		$layoutVersion;
+		void $layoutVersion;
 		return calendar.isDisabled;
 	});
 

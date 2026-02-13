@@ -18,12 +18,12 @@ Import the component and compose its parts:
 
 ```svelte
 <Popover.Root>
- <Popover.Trigger>
-  <button>Open</button>
- </Popover.Trigger>
- <Popover.Content>
-  <div>Content</div>
- </Popover.Content>
+	<Popover.Trigger>
+		<button>Open</button>
+	</Popover.Trigger>
+	<Popover.Content>
+		<div>Content</div>
+	</Popover.Content>
 </Popover.Root>
 ```
 
