@@ -47,6 +47,11 @@
 		void $selectionVersion;
 		return calendar.focusedValue === date;
 	});
+	const isFocusVisible = $derived.by(() => {
+		void $selectionVersion;
+		return calendar.focusVisible;
+	});
+	const isVisuallyFocused = $derived(isFocused && isFocusVisible);
 	const isDisabled = $derived.by(() => {
 		void $layoutVersion;
 		void $selectionVersion;
@@ -88,11 +93,20 @@
 	function handleFocus() {
 		if (isDisabled) return;
 		calendar.setFocusedValue(date);
+		const hasImplicitFocusMarker = gridCellElement?.dataset.implicitFocus === 'true';
+		calendar.setFocusVisible(
+			hasImplicitFocusMarker ? false : (gridCellElement?.matches(':focus-visible') ?? false)
+		);
+		if (hasImplicitFocusMarker && gridCellElement) {
+			delete gridCellElement.dataset.implicitFocus;
+		}
 	}
 
 	function handleMousedown(event: MouseEvent) {
-		if (!isDisabled) return;
-		event.preventDefault();
+		calendar.setFocusVisible(false);
+		if (isDisabled) {
+			event.preventDefault();
+		}
 	}
 
 	function handleMouseenter() {
@@ -113,7 +127,7 @@
 <td
 	role="presentation"
 	data-selected={isSelected || undefined}
-	data-focused={isFocused || undefined}
+	data-focused={isVisuallyFocused || undefined}
 	data-disabled={isDisabled || undefined}
 	data-unavailable={isUnavailable || undefined}
 	data-outside-month={isOutsideMonth || undefined}
@@ -128,7 +142,7 @@
 		role="gridcell"
 		tabindex={isDisabled ? -1 : isFocused ? 0 : -1}
 		data-selected={isSelected || undefined}
-		data-focused={isFocused || undefined}
+		data-focused={isVisuallyFocused || undefined}
 		data-disabled={isDisabled || undefined}
 		data-unavailable={isUnavailable || undefined}
 		data-outside-month={isOutsideMonth || undefined}
@@ -136,9 +150,10 @@
 		data-range-end={isRangeEnd || undefined}
 		data-in-range={isInRange || undefined}
 		aria-selected={isSelected}
-		aria-disabled={isDisabled || undefined}
+		aria-disabled={isDisabled || isUnavailable || undefined}
 		aria-current={isToday ? 'date' : undefined}
 		aria-label={date}
+		style={isVisuallyFocused ? undefined : 'outline: none;'}
 		onmousedown={handleMousedown}
 		onmouseenter={handleMouseenter}
 		onmouseleave={handleMouseleave}

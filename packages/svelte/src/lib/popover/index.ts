@@ -12,10 +12,11 @@ export {
 	getPopoverContext,
 	setPopoverContext,
 	type PopoverContext,
-	// Legacy aliases
-	getPopoverTriggerContext,
-	setPopoverTriggerContext,
-	type PopoverTriggerContext
+	type PopoverCanonicalCloseReason,
+	type PopoverCloseReason,
+	type PopoverOpenReason,
+	type PopoverChangeReason,
+	type PopoverOpenChangeDetails
 } from './root/context.ts';
 
 // Default export as namespace object

@@ -16,6 +16,12 @@
 				Calendar
 			</a>
 			<a
+				href={resolve('/docs/datepicker')}
+				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
+			>
+				DatePicker
+			</a>
+			<a
 				href={resolve('/docs/combobox')}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>

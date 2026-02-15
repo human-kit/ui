@@ -1,0 +1,275 @@
+<script lang="ts">
+	import type { DatePickerSegmentPart } from '../root/context';
+	import { useDatePickerContext } from '../root/context';
+
+	type DatePickerSegmentProps = {
+		segment: DatePickerSegmentPart;
+		class?: string;
+	};
+
+	let { segment, class: className = '' }: DatePickerSegmentProps = $props();
+	let isFocused = $state(false);
+
+	const datePicker = useDatePickerContext();
+
+	const isEditableSegment = $derived(segment.type !== 'literal');
+	const isActive = $derived(
+		isEditableSegment && (datePicker.activeSegment === segment.type || isFocused)
+	);
+	const isFocusVisible = $derived(isFocused && datePicker.focusVisible);
+	const segmentId = $props.id();
+
+	const currentNumericValue = $derived.by(() => {
+		if (segment.type === 'literal') return undefined;
+		const segmentValue = datePicker.getSegmentValue(segment.type);
+		if (segmentValue.length === 0) return undefined;
+		const value = Number(segmentValue);
+		return Number.isFinite(value) ? value : undefined;
+	});
+
+	const valueMin = $derived.by(() => {
+		if (segment.type === 'literal') return undefined;
+		if (segment.type === 'month') return 1;
+		if (segment.type === 'day') return 1;
+		return 1;
+	});
+
+	const valueMax = $derived.by(() => {
+		if (segment.type === 'literal') return undefined;
+		if (segment.type === 'month') return 12;
+		if (segment.type === 'day') return 31;
+		return 9999;
+	});
+
+	const valueText = $derived.by(() => {
+		if (segment.type === 'literal') return segment.text;
+		if (segment.type === 'month' && currentNumericValue) {
+			const monthLabel = new Intl.DateTimeFormat(datePicker.locale, {
+				month: 'long',
+				timeZone: 'UTC'
+			}).format(new Date(Date.UTC(2030, currentNumericValue - 1, 1)));
+			return `${currentNumericValue} – ${monthLabel}`;
+		}
+		return segment.text;
+	});
+
+	const labelledBy = $derived.by(() => {
+		if (segment.type === 'literal') return undefined;
+		return `${segmentId} ${datePicker.id}-input`;
+	});
+
+	function getSegmentMaxLength(type: Exclude<DatePickerSegmentPart['type'], 'literal'>): number {
+		return type === 'year' ? 4 : 2;
+	}
+
+	function focusSiblingSegment(current: HTMLElement, direction: 'next' | 'previous') {
+		const parent = current.parentElement;
+		if (!parent) return;
+		const segments = Array.from(
+			parent.querySelectorAll<HTMLElement>('[data-date-picker-segment="true"]')
+		);
+		const currentIndex = segments.indexOf(current);
+		if (currentIndex === -1) return;
+
+		const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+		const target = segments[nextIndex];
+		if (target) {
+			target.focus();
+			return;
+		}
+
+		if (direction === 'next') {
+			datePicker.triggerRef?.focus();
+		}
+	}
+
+	function handleFocus(event: FocusEvent) {
+		if (segment.type === 'literal') return;
+		isFocused = true;
+		datePicker.syncFocusWithin();
+		datePicker.setFocusVisible((event.currentTarget as HTMLElement).matches(':focus-visible'));
+		datePicker.setActiveSegment(segment.type);
+	}
+
+	function handleBlur(event: FocusEvent) {
+		if (segment.type === 'literal') return;
+		isFocused = false;
+		queueMicrotask(() => {
+			datePicker.syncFocusWithin();
+		});
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		if (segment.type === 'literal') return;
+		datePicker.setFocusVisible(false);
+		event.preventDefault();
+		const target = event.currentTarget as HTMLElement;
+		target.focus();
+		datePicker.setActiveSegment(segment.type);
+	}
+
+	function handleClick(event: MouseEvent) {
+		if (segment.type === 'literal') return;
+		const target = event.currentTarget as HTMLElement;
+		target.focus();
+		datePicker.setActiveSegment(segment.type);
+	}
+
+	function handleSelectStart(event: Event) {
+		if (!segment.isPlaceholder) return;
+		event.preventDefault();
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (segment.type === 'literal') return;
+		datePicker.setFocusVisible(true);
+		const current = event.currentTarget as HTMLElement;
+
+		if (event.key === 'ArrowRight') {
+			event.preventDefault();
+			focusSiblingSegment(current, 'next');
+			return;
+		}
+
+		if (event.key === 'ArrowLeft') {
+			event.preventDefault();
+			focusSiblingSegment(current, 'previous');
+			return;
+		}
+
+		if (event.key === 'ArrowUp') {
+			event.preventDefault();
+			datePicker.adjustSegmentValue(segment.type, 1);
+			return;
+		}
+
+		if (event.key === 'ArrowDown') {
+			event.preventDefault();
+			datePicker.adjustSegmentValue(segment.type, -1);
+			return;
+		}
+
+		if (event.key === 'PageUp') {
+			event.preventDefault();
+			const step = segment.type === 'year' ? 10 : 5;
+			datePicker.adjustSegmentValue(segment.type, step);
+			return;
+		}
+
+		if (event.key === 'PageDown') {
+			event.preventDefault();
+			const step = segment.type === 'year' ? 10 : 5;
+			datePicker.adjustSegmentValue(segment.type, -step);
+			return;
+		}
+
+		if (event.key === 'Home') {
+			event.preventDefault();
+			if (segment.type === 'month') {
+				datePicker.setSegmentValue('month', '1');
+			} else if (segment.type === 'day') {
+				datePicker.setSegmentValue('day', '1');
+			} else {
+				datePicker.setSegmentValue('year', '1');
+			}
+			return;
+		}
+
+		if (event.key === 'End') {
+			event.preventDefault();
+			if (segment.type === 'month') {
+				datePicker.setSegmentValue('month', '12');
+			} else if (segment.type === 'day') {
+				datePicker.setSegmentValue('day', '31');
+			} else {
+				datePicker.setSegmentValue('year', '9999');
+			}
+			return;
+		}
+
+		if (event.key === 'Delete' || event.key === 'Backspace') {
+			event.preventDefault();
+			const currentValue = datePicker.getSegmentValue(segment.type);
+			if (currentValue.length === 0) {
+				if (event.key === 'Backspace') {
+					focusSiblingSegment(current, 'previous');
+				}
+				return;
+			}
+			datePicker.setSegmentValue(segment.type, currentValue.slice(0, -1));
+			return;
+		}
+
+		if (event.key.length === 1 && /\d/.test(event.key)) {
+			event.preventDefault();
+			const didComplete = datePicker.typeSegmentDigit(segment.type, event.key);
+			if (didComplete) {
+				focusSiblingSegment(current, 'next');
+			}
+			return;
+		}
+
+		if (event.key === '/' || event.key === '-' || event.key === '.') {
+			event.preventDefault();
+			const currentValue = datePicker.getSegmentValue(segment.type);
+			if (currentValue.length === 0) {
+				return;
+			}
+			focusSiblingSegment(current, 'next');
+			return;
+		}
+
+		if (event.key === 'Tab') {
+			return;
+		}
+
+		event.preventDefault();
+	}
+</script>
+
+{#if segment.type === 'literal'}
+	<span
+		class={className}
+		data-placeholder={segment.isPlaceholder || undefined}
+		data-type={segment.type}
+		aria-hidden="true"
+	>
+		{segment.text}
+	</span>
+{:else}
+	<span
+		id={segmentId}
+		class={className}
+		data-date-picker-segment="true"
+		data-placeholder={segment.isPlaceholder || undefined}
+		data-type={segment.type}
+		data-focused={isActive ? 'true' : undefined}
+		data-focus-visible={isFocusVisible ? 'true' : undefined}
+		role="spinbutton"
+		aria-valuetext={valueText}
+		aria-valuemin={valueMin}
+		aria-valuemax={valueMax}
+		aria-valuenow={currentNumericValue}
+		aria-label={`${segment.type}, `}
+		aria-labelledby={labelledBy}
+		aria-readonly={datePicker.isReadOnly || undefined}
+		contenteditable={!datePicker.isDisabled && !datePicker.isReadOnly}
+		spellcheck="false"
+		enterkeyhint="next"
+		inputmode="numeric"
+		tabindex={datePicker.isDisabled ? -1 : 0}
+		style={segment.isPlaceholder
+			? 'caret-color: transparent; user-select: none;'
+			: 'caret-color: transparent;'}
+		data-rac=""
+		onfocus={handleFocus}
+		onblur={handleBlur}
+		onmousedown={handleMouseDown}
+		onclick={handleClick}
+		onselectstart={handleSelectStart}
+		onkeydown={handleKeydown}
+		aria-disabled={datePicker.isDisabled || undefined}
+	>
+		{segment.text}
+	</span>
+{/if}

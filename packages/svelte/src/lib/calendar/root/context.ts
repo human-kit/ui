@@ -63,6 +63,7 @@ export type CalendarContext = {
 	selectedValue: CalendarDateValue | undefined;
 	rangeValue: CalendarRangeValue | undefined;
 	focusedValue: CalendarDateValue;
+	focusVisible: boolean;
 	weekdayLabels: string[];
 	headingLabel: string;
 	isSelected: (date: CalendarDateValue) => boolean;
@@ -73,6 +74,7 @@ export type CalendarContext = {
 	isDateDisabled: (date: CalendarDateValue) => boolean;
 	isOutsideVisibleRange: (date: CalendarDateValue, monthIndex: number) => boolean;
 	setFocusedValue: (date: CalendarDateValue) => void;
+	setFocusVisible: (visible: boolean) => void;
 	setHoveredValue: (date: CalendarDateValue | undefined) => void;
 	selectDate: (date: CalendarDateValue) => void;
 	goToNextPage: () => void;
@@ -177,8 +179,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		selectionMode === 'single' && typeof value === 'string' && isValidCalendarDateValue(value)
 			? value
 			: selectionMode === 'single' &&
-				  typeof defaultValue === 'string' &&
-				  isValidCalendarDateValue(defaultValue)
+				typeof defaultValue === 'string' &&
+				isValidCalendarDateValue(defaultValue)
 				? defaultValue
 				: undefined;
 
@@ -202,6 +204,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		initialRangeSelected?.end ??
 		initialRangeSelected?.start ??
 		fallbackToday;
+	let currentFocusVisible = false;
 	let currentVisibleMonth = startOfMonth(parseCalendarDate(currentFocused) ?? getTodayUtcDate());
 	let cachedMonths: CalendarMonth[] = [];
 	let hasCachedMonths = false;
@@ -517,7 +520,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	function isDateDisabled(date: CalendarDateValue): boolean {
-		if (isDisabled || isUnavailable(date)) return true;
+		if (isDisabled) return true;
 
 		if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
 			return !isPendingRangePathSelectable(date);
@@ -545,6 +548,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (didChangeMonth) {
 			notifyLayout();
 		}
+		notifySelection();
+	}
+
+	function setFocusVisible(visible: boolean) {
+		if (currentFocusVisible === visible) return;
+		currentFocusVisible = visible;
 		notifySelection();
 	}
 
@@ -757,6 +766,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	function handleCellKeydown(event: KeyboardEvent, date: CalendarDateValue) {
+		setFocusVisible(true);
 		const keyDate = isValidCalendarDateValue(currentFocused) ? currentFocused : date;
 		let movedDate: CalendarDateValue | undefined;
 
@@ -872,6 +882,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		get focusedValue() {
 			return currentFocused;
 		},
+		get focusVisible() {
+			return currentFocusVisible;
+		},
 		get weekdayLabels() {
 			return getWeekdayLabels(locale, cachedFirstDayOfWeek);
 		},
@@ -886,6 +899,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		isDateDisabled,
 		isOutsideVisibleRange,
 		setFocusedValue,
+		setFocusVisible,
 		setHoveredValue,
 		selectDate,
 		goToNextPage,

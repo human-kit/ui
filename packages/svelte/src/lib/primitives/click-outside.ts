@@ -5,7 +5,7 @@
 
 export type ClickOutsideOptions = {
 	/** Callback when clicking outside. */
-	handler: () => void;
+	handler: (event: MouseEvent) => void;
 	/** Whether the listener is enabled. */
 	enabled?: boolean;
 	/** Elements to ignore (clicks on these won't trigger). */
@@ -54,7 +54,7 @@ export function clickOutside(node: HTMLElement, options: ClickOutsideOptions) {
 		// This prevents closing when clicking on nested popovers/dialogs
 		if (isInTopLayer(target)) return;
 
-		handler();
+		handler(event);
 	}
 
 	if (enabled) {

@@ -156,7 +156,7 @@ describe('Calendar', () => {
 		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-10-31');
 	});
 
-	it('skips unavailable dates during keyboard navigation', async () => {
+	it('focuses unavailable dates during keyboard navigation', async () => {
 		const screen = render(CalendarRootTest, {
 			defaultValue: '2026-02-14',
 			isDateUnavailable: (date: string) => date === '2026-02-15'
@@ -167,7 +167,17 @@ describe('Calendar', () => {
 		dayElement.focus();
 		pressKey(dayElement, 'ArrowRight');
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-16');
+		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-15');
+		await expect
+			.element(screen.getByRole('gridcell', { name: '2026-02-15' }))
+			.toHaveAttribute('aria-disabled', 'true');
+
+		pressKey(document.activeElement!, 'Enter');
+		await expect
+			.poll(() =>
+				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('aria-label')
+			)
+			.toBe('2026-02-14');
 	});
 
 	it('confirms a date range with two clicks in range mode', async () => {

@@ -143,7 +143,10 @@ describe('Popover.Trigger', () => {
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 			await trigger.click();
-			expect(onOpenChangeMock).toHaveBeenCalledWith(true);
+			expect(onOpenChangeMock).toHaveBeenCalledWith(
+				true,
+				expect.objectContaining({ reason: 'trigger-press' })
+			);
 		});
 	});
 

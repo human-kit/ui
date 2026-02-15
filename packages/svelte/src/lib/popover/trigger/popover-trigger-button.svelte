@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
-	import { getPopoverTriggerContext } from '../root/context';
+	import { getPopoverContext } from '../root/context';
 
 	type PopoverTriggerButtonProps = Omit<
 		HTMLButtonAttributes,
@@ -17,7 +17,7 @@
 	let { children, class: className = '', ...restProps }: PopoverTriggerButtonProps = $props();
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
-	const ctx = getPopoverTriggerContext();
+	const ctx = getPopoverContext();
 
 	$effect(() => {
 		if (buttonRef && ctx) {
@@ -25,8 +25,8 @@
 		}
 	});
 
-	function handleClick() {
-		ctx?.toggle();
+	function handleClick(event: MouseEvent) {
+		ctx?.toggle('trigger-press', event);
 	}
 </script>
 

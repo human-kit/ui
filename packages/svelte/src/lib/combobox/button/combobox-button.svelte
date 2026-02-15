@@ -24,6 +24,8 @@
 	}
 </script>
 
+<!-- * CHANGE: CHANGE NAME FROM BUTTON TO TRIGGER -->
+
 <button
 	type="button"
 	{tabindex}
