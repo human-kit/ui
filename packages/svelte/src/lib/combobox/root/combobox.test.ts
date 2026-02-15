@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from './combobox-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ComboBox', () => {
 	describe('Keyboard Navigation', () => {
@@ -1239,6 +1240,23 @@ describe('ComboBox', () => {
 
 			// Focus should move to the button
 			expect(document.activeElement).toBe(outsideButton.element());
+		});
+
+		it('exposes root focus contract attributes and never serializes false', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+			const root = document.querySelector('[data-combobox]') as HTMLElement | null;
+
+			expect(root).toBeTruthy();
+
+			await input.click();
+			await expect.poll(() => root?.getAttribute('data-focus-within')).toBe('true');
+			expectNoFalseFocusAttributes(root ?? document);
+
+			(input.element() as HTMLElement).blur();
+			await expect.poll(() => root?.getAttribute('data-focus-within')).toBeNull();
+			await expect.poll(() => root?.getAttribute('data-focus-visible')).toBeNull();
+			expectNoFalseFocusAttributes(root ?? document);
 		});
 	});
 });

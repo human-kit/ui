@@ -19,8 +19,10 @@
 	function focusNextAvailableSegment() {
 		if (!inputRef || datePicker.isDisabled) return;
 
-		const segmentElements = Array.from(
-			inputRef.querySelectorAll<HTMLElement>('[data-date-picker-segment="true"]')
+		const segmentElements = Array.from(inputRef.children).filter(
+			(element): element is HTMLElement =>
+				element instanceof HTMLElement &&
+				element.getAttribute('data-date-picker-segment') === 'true'
 		);
 		if (segmentElements.length === 0) return;
 

@@ -18,12 +18,20 @@
 	const datePicker = useDatePickerContext();
 
 	$effect(() => {
+		if (datePicker.isReadOnly) {
+			datePicker.setTriggerRef(null);
+			return;
+		}
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
 		}
 	});
 
 	function handleFocus() {
+		if (datePicker.isDisabled) {
+			isFocused = false;
+			return;
+		}
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
 			isFocused = true;
@@ -40,17 +48,17 @@
 	}
 
 	function handleMouseDown(event: MouseEvent) {
-		if (datePicker.isDisabled) return;
+		if (datePicker.isDisabled || datePicker.isReadOnly) return;
 		datePicker.setFocusVisible(false);
 		event.preventDefault();
 	}
 
-	function handleClick() {
-		if (datePicker.isDisabled) return;
+	function handleClick(event: MouseEvent) {
+		if (datePicker.isDisabled || datePicker.isReadOnly) return;
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
 		}
-		datePicker.togglePopover();
+		datePicker.togglePopover('trigger-press', event);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -71,25 +79,28 @@
 	}
 </script>
 
-<button
-	bind:this={buttonRef}
-	type="button"
-	class={className}
-	aria-haspopup="dialog"
-	aria-expanded={datePicker.open}
-	data-disabled={datePicker.isDisabled || undefined}
-	data-focused={isFocused || undefined}
-	data-focus-visible={isFocused && datePicker.focusVisible ? 'true' : undefined}
-	onmousedown={handleMouseDown}
-	onfocus={handleFocus}
-	onblur={handleBlur}
-	onkeydown={handleKeydown}
-	onclick={handleClick}
-	{...restProps}
->
-	{#if children}
-		{@render children()}
-	{:else}
-		<span aria-hidden="true">📅</span>
-	{/if}
-</button>
+{#if !datePicker.isReadOnly}
+	<button
+		bind:this={buttonRef}
+		type="button"
+		disabled={datePicker.isDisabled}
+		class={className}
+		aria-haspopup="dialog"
+		aria-expanded={datePicker.open}
+		data-disabled={datePicker.isDisabled || undefined}
+		data-focused={isFocused || undefined}
+		data-focus-visible={isFocused && datePicker.focusVisible ? 'true' : undefined}
+		onmousedown={handleMouseDown}
+		onfocus={handleFocus}
+		onblur={handleBlur}
+		onkeydown={handleKeydown}
+		onclick={handleClick}
+		{...restProps}
+	>
+		{#if children}
+			{@render children()}
+		{:else}
+			<span aria-hidden="true">📅</span>
+		{/if}
+	</button>
+{/if}

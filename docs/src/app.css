@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@source '../../packages/svelte/src/lib/**/*.{svelte,ts}';
+
 @theme {
 	--font-sans: 'Inter', sans-serif;
 }

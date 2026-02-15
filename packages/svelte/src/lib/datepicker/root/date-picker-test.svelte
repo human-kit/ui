@@ -8,6 +8,7 @@
 		isReadOnly?: boolean;
 		minValue?: string;
 		maxValue?: string;
+		popoverAriaLabel?: string;
 	};
 
 	let {
@@ -16,11 +17,13 @@
 		isDisabled = false,
 		isReadOnly = false,
 		minValue,
-		maxValue
+		maxValue,
+		popoverAriaLabel = 'Calendar'
 	}: Props = $props();
 
 	let selectedValue = $state<string | null>('');
 	let openState = $state((() => defaultOpen)());
+	let openReason = $state('');
 </script>
 
 <DatePicker.Root
@@ -33,8 +36,9 @@
 	onChange={(nextValue) => {
 		selectedValue = nextValue;
 	}}
-	onOpenChange={(nextOpen) => {
+	onOpenChange={(nextOpen, details) => {
 		openState = nextOpen;
+		openReason = details.reason;
 	}}
 >
 	<DatePicker.Input class="date-picker-input" aria-label="Date input">
@@ -44,11 +48,12 @@
 	</DatePicker.Input>
 	<DatePicker.Trigger class="date-picker-trigger">Open calendar</DatePicker.Trigger>
 
-	<DatePicker.Popover class="date-picker-popover">
+	<DatePicker.Popover class="date-picker-popover" aria-label={popoverAriaLabel}>
 		<DatePicker.Calendar class="date-picker-calendar" />
 	</DatePicker.Popover>
 </DatePicker.Root>
 
 <p data-testid="date-picker-value">{selectedValue}</p>
 <p data-testid="date-picker-open">{String(openState)}</p>
+<p data-testid="date-picker-open-reason">{openReason}</p>
 <button type="button" data-testid="outside-button">Outside</button>

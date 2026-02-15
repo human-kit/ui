@@ -41,6 +41,7 @@ export type CreateCalendarContextOptions<
 > = {
 	selectionMode?: TSelectionMode;
 	visibleMonths?: number;
+	showOutsideDays?: boolean;
 	locale?: string;
 	isDisabled?: boolean;
 	isReadOnly?: boolean;
@@ -57,6 +58,7 @@ export type CalendarContext = {
 	selectionMode: CalendarSelectionMode;
 	firstDayOfWeek: number;
 	visibleMonths: number;
+	showOutsideDays: boolean;
 	isDisabled: boolean;
 	isReadOnly: boolean;
 	months: CalendarMonth[];
@@ -94,6 +96,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let {
 		selectionMode = 'single',
 		visibleMonths = 1,
+		showOutsideDays = false,
 		locale = Intl.DateTimeFormat().resolvedOptions().locale,
 		isDisabled = false,
 		isReadOnly = false,
@@ -213,6 +216,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let pendingRangePathCacheStart: CalendarDateValue | undefined;
 	let previousUnavailableFn = isDateUnavailable;
 	let previousVisibleMonths = visibleMonths;
+	let previousShowOutsideDays = showOutsideDays;
 	let previousLocale = locale;
 	let cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
 	const layoutVersion = writable(0);
@@ -263,12 +267,14 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		const nextSelectionMode = next.selectionMode ?? 'single';
 		const nextVisibleMonths = Math.max(1, next.visibleMonths ?? 1);
+		const nextShowOutsideDays = next.showOutsideDays ?? false;
 		const nextLocale = next.locale ?? Intl.DateTimeFormat().resolvedOptions().locale;
 		const nextUnavailableFn = next.isDateUnavailable;
 
 		if (
 			nextUnavailableFn !== previousUnavailableFn ||
 			nextVisibleMonths !== previousVisibleMonths ||
+			nextShowOutsideDays !== previousShowOutsideDays ||
 			nextLocale !== previousLocale
 		) {
 			clearUnavailableCache();
@@ -277,6 +283,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		previousUnavailableFn = nextUnavailableFn;
 		previousVisibleMonths = nextVisibleMonths;
+		previousShowOutsideDays = nextShowOutsideDays;
 		previousLocale = nextLocale;
 
 		if (selectionMode !== nextSelectionMode) {
@@ -293,6 +300,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		}
 
 		visibleMonths = nextVisibleMonths;
+		showOutsideDays = nextShowOutsideDays;
 		locale = nextLocale;
 		cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
 
@@ -468,7 +476,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				monthIndex,
 				monthStart,
 				heading: formatMonthHeading(monthStart, locale),
-				weeks: buildMonthGrid(monthStart, firstDayOfWeek)
+				weeks: buildMonthGrid(monthStart, firstDayOfWeek, showOutsideDays)
 			};
 		});
 
@@ -863,6 +871,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		},
 		get visibleMonths() {
 			return visibleMonths;
+		},
+		get showOutsideDays() {
+			return showOutsideDays;
 		},
 		get isDisabled() {
 			return isDisabled;

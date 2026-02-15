@@ -61,37 +61,44 @@
 		void $layoutVersion;
 		return calendar.isDateUnavailable(date);
 	});
+	const isAriaDisabled = $derived(isDisabled || isUnavailable);
 	const isOutsideMonth = $derived.by(() => {
 		void $layoutVersion;
 		return calendar.isOutsideVisibleRange(date, monthIndex);
 	});
+	const showOutsideDays = $derived.by(() => {
+		void $layoutVersion;
+		return calendar.showOutsideDays;
+	});
+	const hidesOutsideDay = $derived(isOutsideMonth && !showOutsideDays);
+	const isInteractionDisabled = $derived(isDisabled || hidesOutsideDay);
 	const todayDate = formatCalendarDate(getTodayUtcDate());
 	const isToday = $derived(date === todayDate);
 
-	let gridCellElement: HTMLDivElement | undefined;
+	let gridCellElement = $state<HTMLDivElement | undefined>(undefined);
 
 	$effect(() => {
-		if (!isFocused || isDisabled) return;
+		if (!isFocused || isInteractionDisabled) return;
 		if (!gridCellElement) return;
 		if (document.activeElement === gridCellElement) return;
 		gridCellElement.focus();
 	});
 
 	$effect(() => {
-		if (!isDisabled) return;
+		if (!isInteractionDisabled) return;
 		if (!gridCellElement) return;
 		if (document.activeElement !== gridCellElement) return;
 		gridCellElement.blur();
 	});
 
 	function handleClick() {
-		if (isDisabled) return;
+		if (isInteractionDisabled) return;
 		calendar.setFocusedValue(date);
 		calendar.selectDate(date);
 	}
 
 	function handleFocus() {
-		if (isDisabled) return;
+		if (isInteractionDisabled) return;
 		calendar.setFocusedValue(date);
 		const hasImplicitFocusMarker = gridCellElement?.dataset.implicitFocus === 'true';
 		calendar.setFocusVisible(
@@ -104,22 +111,23 @@
 
 	function handleMousedown(event: MouseEvent) {
 		calendar.setFocusVisible(false);
-		if (isDisabled) {
+		if (isInteractionDisabled) {
 			event.preventDefault();
 		}
 	}
 
 	function handleMouseenter() {
-		if (isDisabled) return;
+		if (isInteractionDisabled) return;
 		calendar.setHoveredValue(date);
 	}
 
 	function handleMouseleave() {
-		if (isDisabled) return;
+		if (isInteractionDisabled) return;
 		calendar.setHoveredValue(undefined);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		if (isInteractionDisabled) return;
 		calendar.handleCellKeydown(event, date);
 	}
 </script>
@@ -128,7 +136,7 @@
 	role="presentation"
 	data-selected={isSelected || undefined}
 	data-focused={isVisuallyFocused || undefined}
-	data-disabled={isDisabled || undefined}
+	data-disabled={isAriaDisabled || undefined}
 	data-unavailable={isUnavailable || undefined}
 	data-outside-month={isOutsideMonth || undefined}
 	data-range-start={isRangeStart || undefined}
@@ -136,35 +144,45 @@
 	data-in-range={isInRange || undefined}
 	{...restProps}
 >
-	<div
-		bind:this={gridCellElement}
-		class={className}
-		role="gridcell"
-		tabindex={isDisabled ? -1 : isFocused ? 0 : -1}
-		data-selected={isSelected || undefined}
-		data-focused={isVisuallyFocused || undefined}
-		data-disabled={isDisabled || undefined}
-		data-unavailable={isUnavailable || undefined}
-		data-outside-month={isOutsideMonth || undefined}
-		data-range-start={isRangeStart || undefined}
-		data-range-end={isRangeEnd || undefined}
-		data-in-range={isInRange || undefined}
-		aria-selected={isSelected}
-		aria-disabled={isDisabled || isUnavailable || undefined}
-		aria-current={isToday ? 'date' : undefined}
-		aria-label={date}
-		style={isVisuallyFocused ? undefined : 'outline: none;'}
-		onmousedown={handleMousedown}
-		onmouseenter={handleMouseenter}
-		onmouseleave={handleMouseleave}
-		onclick={handleClick}
-		onfocus={handleFocus}
-		onkeydown={handleKeydown}
-	>
-		{#if children}
-			{@render children(date)}
-		{:else}
-			{dayLabel}
-		{/if}
-	</div>
+	{#if hidesOutsideDay}
+		<div
+			class={className}
+			role="presentation"
+			data-disabled={true}
+			data-outside-month={true}
+			aria-hidden="true"
+		></div>
+	{:else}
+		<div
+			bind:this={gridCellElement}
+			class={className}
+			role="gridcell"
+			tabindex={isInteractionDisabled ? -1 : isFocused ? 0 : -1}
+			data-selected={isSelected || undefined}
+			data-focused={isVisuallyFocused || undefined}
+			data-disabled={isAriaDisabled || hidesOutsideDay || undefined}
+			data-unavailable={isUnavailable || undefined}
+			data-outside-month={isOutsideMonth || undefined}
+			data-range-start={isRangeStart || undefined}
+			data-range-end={isRangeEnd || undefined}
+			data-in-range={isInRange || undefined}
+			aria-selected={isSelected}
+			aria-disabled={isAriaDisabled || hidesOutsideDay || undefined}
+			aria-current={isToday ? 'date' : undefined}
+			aria-label={date}
+			style={isVisuallyFocused ? undefined : 'outline: none;'}
+			onmousedown={handleMousedown}
+			onmouseenter={handleMouseenter}
+			onmouseleave={handleMouseleave}
+			onclick={handleClick}
+			onfocus={handleFocus}
+			onkeydown={handleKeydown}
+		>
+			{#if children}
+				{@render children(date)}
+			{:else}
+				{dayLabel}
+			{/if}
+		</div>
+	{/if}
 </td>

@@ -10,6 +10,11 @@
 		type PopoverOpenReason,
 		type PopoverContext
 	} from './context';
+	import {
+		addTriggerBlurCleanup,
+		applyTriggerCloseFocusState,
+		clearTriggerFocusState
+	} from './focus-state';
 
 	/**
 	 * Popover.Root - State management wrapper for Popover components.
@@ -45,7 +50,10 @@
 	const isControlled = $derived(open !== undefined);
 	const isOpen = $derived(isControlled ? open! : isOpenInternal);
 
-	function setOpenWithDetails(value: boolean, incomingDetails: { reason: PopoverChangeReason; event?: Event }) {
+	function setOpenWithDetails(
+		value: boolean,
+		incomingDetails: { reason: PopoverChangeReason; event?: Event }
+	) {
 		let canceled = false;
 		const details: PopoverOpenChangeDetails = {
 			reason: incomingDetails.reason,
@@ -88,17 +96,7 @@
 		pendingTriggerCloseFocusFrame = requestAnimationFrame(() => {
 			pendingTriggerCloseFocusFrame = undefined;
 			if (!trigger.isConnected) return;
-			trigger.focus();
-			if (reason === 'outside-press' || reason === 'escape-key') {
-				trigger.dataset.focused = 'true';
-			} else {
-				delete trigger.dataset.focused;
-			}
-			if (reason === 'escape-key') {
-				trigger.dataset.focusVisible = 'true';
-			} else {
-				delete trigger.dataset.focusVisible;
-			}
+			applyTriggerCloseFocusState(trigger, reason);
 		});
 	}
 
@@ -116,22 +114,12 @@
 		cleanupTriggerBlurListener?.();
 		cleanupTriggerBlurListener = undefined;
 		if (triggerRef && triggerRef !== el) {
-			delete triggerRef.dataset.focused;
-			delete triggerRef.dataset.focusVisible;
+			clearTriggerFocusState(triggerRef);
 		}
 		triggerRef = el;
 		if (!triggerRef) return;
 		const currentTrigger = triggerRef;
-
-		const handleBlur = () => {
-			delete currentTrigger.dataset.focused;
-			delete currentTrigger.dataset.focusVisible;
-		};
-
-		currentTrigger.addEventListener('blur', handleBlur);
-		cleanupTriggerBlurListener = () => {
-			currentTrigger.removeEventListener('blur', handleBlur);
-		};
+		cleanupTriggerBlurListener = addTriggerBlurCleanup(currentTrigger);
 	}
 
 	function handleOpenChange(newOpen: boolean, details: PopoverOpenChangeDetails) {

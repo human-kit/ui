@@ -1,3 +1,19 @@
+<script module lang="ts">
+	const monthFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+	function getMonthFormatter(locale: string): Intl.DateTimeFormat {
+		let formatter = monthFormatterCache.get(locale);
+		if (!formatter) {
+			formatter = new Intl.DateTimeFormat(locale, {
+				month: 'long',
+				timeZone: 'UTC'
+			});
+			monthFormatterCache.set(locale, formatter);
+		}
+		return formatter;
+	}
+</script>
+
 <script lang="ts">
 	import type { DatePickerSegmentPart } from '../root/context';
 	import { useDatePickerContext } from '../root/context';
@@ -44,10 +60,9 @@
 	const valueText = $derived.by(() => {
 		if (segment.type === 'literal') return segment.text;
 		if (segment.type === 'month' && currentNumericValue) {
-			const monthLabel = new Intl.DateTimeFormat(datePicker.locale, {
-				month: 'long',
-				timeZone: 'UTC'
-			}).format(new Date(Date.UTC(2030, currentNumericValue - 1, 1)));
+			const monthLabel = getMonthFormatter(datePicker.locale).format(
+				new Date(Date.UTC(2030, currentNumericValue - 1, 1))
+			);
 			return `${currentNumericValue} – ${monthLabel}`;
 		}
 		return segment.text;
@@ -63,28 +78,30 @@
 	}
 
 	function focusSiblingSegment(current: HTMLElement, direction: 'next' | 'previous') {
-		const parent = current.parentElement;
-		if (!parent) return;
-		const segments = Array.from(
-			parent.querySelectorAll<HTMLElement>('[data-date-picker-segment="true"]')
-		);
-		const currentIndex = segments.indexOf(current);
-		if (currentIndex === -1) return;
+		let candidate: Element | null =
+			direction === 'next' ? current.nextElementSibling : current.previousElementSibling;
 
-		const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-		const target = segments[nextIndex];
-		if (target) {
-			target.focus();
-			return;
+		while (candidate) {
+			if (
+				candidate instanceof HTMLElement &&
+				candidate.getAttribute('data-date-picker-segment') === 'true'
+			) {
+				candidate.focus();
+				return;
+			}
+			candidate =
+				direction === 'next' ? candidate.nextElementSibling : candidate.previousElementSibling;
 		}
 
-		if (direction === 'next') {
-			datePicker.triggerRef?.focus();
-		}
+		if (direction === 'next') datePicker.triggerRef?.focus();
 	}
 
 	function handleFocus(event: FocusEvent) {
 		if (segment.type === 'literal') return;
+		if (datePicker.isDisabled) {
+			isFocused = false;
+			return;
+		}
 		isFocused = true;
 		datePicker.syncFocusWithin();
 		datePicker.setFocusVisible((event.currentTarget as HTMLElement).matches(':focus-visible'));
@@ -101,6 +118,10 @@
 
 	function handleMouseDown(event: MouseEvent) {
 		if (segment.type === 'literal') return;
+		if (datePicker.isDisabled) {
+			event.preventDefault();
+			return;
+		}
 		datePicker.setFocusVisible(false);
 		event.preventDefault();
 		const target = event.currentTarget as HTMLElement;
@@ -110,6 +131,10 @@
 
 	function handleClick(event: MouseEvent) {
 		if (segment.type === 'literal') return;
+		if (datePicker.isDisabled) {
+			event.preventDefault();
+			return;
+		}
 		const target = event.currentTarget as HTMLElement;
 		target.focus();
 		datePicker.setActiveSegment(segment.type);
@@ -122,6 +147,7 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (segment.type === 'literal') return;
+		if (datePicker.isDisabled) return;
 		datePicker.setFocusVisible(true);
 		const current = event.currentTarget as HTMLElement;
 

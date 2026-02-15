@@ -29,3 +29,4 @@ export * from './primitives/index.ts';
 
 // Utilities
 export { cn } from './utils/index.ts';
+export * from './utils/index.ts';

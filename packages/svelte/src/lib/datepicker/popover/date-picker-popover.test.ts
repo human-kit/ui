@@ -24,4 +24,11 @@ describe('DatePicker.Popover', () => {
 		const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
 		expect(dialog?.getAttribute('aria-modal')).toBe('true');
 	});
+
+	it('supports dialog accessible name', async () => {
+		const screen = render(DatePickerTest, { defaultOpen: true, popoverAriaLabel: 'Date picker calendar' });
+		await expect.poll(() => document.querySelector<HTMLElement>('[role="dialog"]')).toBeTruthy();
+		const dialog = screen.getByRole('dialog', { name: 'Date picker calendar' });
+		expect(dialog.element()).toBeTruthy();
+	});
 });

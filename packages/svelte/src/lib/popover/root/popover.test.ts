@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from './popover-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Popover', () => {
 	// Clean up any portaled content after each test
@@ -104,6 +105,45 @@ describe('Popover', () => {
 			} finally {
 				externalButton.remove();
 			}
+		});
+
+		it('cleans transient trigger focus attrs on blur after restore', async () => {
+			const screen = render(PopoverTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+			const outside = document.createElement('button');
+			document.body.appendChild(outside);
+
+			try {
+				await trigger.click();
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+				await userEvent.keyboard('{Escape}');
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+				await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+				await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
+
+				outside.focus();
+
+				await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBeNull();
+				await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
+			} finally {
+				outside.remove();
+			}
+		});
+
+		it('never serializes false focus-state attributes', async () => {
+			const screen = render(PopoverTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			expectNoFalseFocusAttributes();
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			expectNoFalseFocusAttributes();
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			expectNoFalseFocusAttributes();
 		});
 	});
 

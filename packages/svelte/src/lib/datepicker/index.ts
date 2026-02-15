@@ -12,6 +12,8 @@ export {
 	setDatePickerContext,
 	useDatePickerContext,
 	type DatePickerContext,
+	type DatePickerOpenChangeDetails,
+	type DatePickerOpenChangeReason,
 	type DatePickerSegmentPart,
 	type DatePickerSegmentType
 } from './root/context.ts';

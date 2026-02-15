@@ -98,6 +98,8 @@
 
 	// Virtual focus for tag navigation in multiple mode
 	let focusedTagId: string | number | null = $state(null);
+	let focusWithin = $state(false);
+	let focusVisible = $state(false);
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -333,6 +335,23 @@
 		} else {
 			openPopover();
 		}
+	}
+
+	function syncFocusWithin() {
+		focusWithin =
+			!!wrapperRef && !!document.activeElement && wrapperRef.contains(document.activeElement);
+		if (!focusWithin) {
+			focusVisible = false;
+		}
+	}
+
+	function handleFocusIn(event: FocusEvent) {
+		focusWithin = true;
+		focusVisible = (event.target as HTMLElement | null)?.matches(':focus-visible') ?? false;
+	}
+
+	function handleFocusOut() {
+		queueMicrotask(syncFocusWithin);
 	}
 
 	// Use navigation hook methods for keyboard navigation
@@ -688,7 +707,11 @@
 	data-combobox
 	data-disabled={isDisabled || undefined}
 	data-readonly={isReadOnly || undefined}
+	data-focus-within={focusWithin || undefined}
+	data-focus-visible={focusVisible || undefined}
 	use:setWrapperAsTrigger
+	onfocusin={handleFocusIn}
+	onfocusout={handleFocusOut}
 >
 	{#if children}
 		{@render children()}

@@ -14,6 +14,11 @@
 		type PopoverOpenChangeDetails,
 		type PopoverCloseReason
 	} from '../root/context';
+	import {
+		addTriggerBlurCleanup,
+		applyTriggerCloseFocusState,
+		clearTriggerFocusState
+	} from '../root/focus-state';
 
 	/**
 	 * Popover.Content - The floating content panel.
@@ -80,27 +85,29 @@
 	const shouldCloseOnBlurResolved = $derived(shouldCloseOnBlur ?? isNonModal);
 
 	let popoverRef: HTMLElement | undefined = $state();
+	let cleanupStandaloneTriggerBlurListener: (() => void) | undefined;
+	let pendingStandaloneTriggerCloseFocusFrame: number | undefined;
+	let trackedStandaloneTrigger: HTMLElement | null = null;
+
+	function clearPendingStandaloneTriggerCloseFocus() {
+		if (pendingStandaloneTriggerCloseFocusFrame === undefined) return;
+		cancelAnimationFrame(pendingStandaloneTriggerCloseFocusFrame);
+		pendingStandaloneTriggerCloseFocusFrame = undefined;
+	}
+
+	function clearStandaloneTriggerTracking() {
+		clearPendingStandaloneTriggerCloseFocus();
+		cleanupStandaloneTriggerBlurListener?.();
+		cleanupStandaloneTriggerBlurListener = undefined;
+	}
 
 	function applyStandaloneTriggerCloseState(trigger: HTMLElement, reason: PopoverCloseReason) {
-		requestAnimationFrame(() => {
+		clearStandaloneTriggerTracking();
+		pendingStandaloneTriggerCloseFocusFrame = requestAnimationFrame(() => {
+			pendingStandaloneTriggerCloseFocusFrame = undefined;
 			if (!trigger.isConnected) return;
-			trigger.focus();
-			if (reason === 'outside-press' || reason === 'escape-key') {
-				trigger.dataset.focused = 'true';
-			} else {
-				delete trigger.dataset.focused;
-			}
-			if (reason === 'escape-key') {
-				trigger.dataset.focusVisible = 'true';
-			} else {
-				delete trigger.dataset.focusVisible;
-			}
-
-			const clearFocusData = () => {
-				delete trigger.dataset.focused;
-				delete trigger.dataset.focusVisible;
-			};
-			trigger.addEventListener('blur', clearFocusData, { once: true });
+			applyTriggerCloseFocusState(trigger, reason);
+			cleanupStandaloneTriggerBlurListener = addTriggerBlurCleanup(trigger, true);
 		});
 	}
 
@@ -162,6 +169,24 @@
 		}
 	}
 
+	$effect(() => {
+		if (!isStandalone) {
+			if (trackedStandaloneTrigger) {
+				clearTriggerFocusState(trackedStandaloneTrigger);
+			}
+			trackedStandaloneTrigger = null;
+			clearStandaloneTriggerTracking();
+			return;
+		}
+
+		if (trackedStandaloneTrigger && trackedStandaloneTrigger !== triggerRefProp) {
+			clearTriggerFocusState(trackedStandaloneTrigger);
+			clearStandaloneTriggerTracking();
+		}
+
+		trackedStandaloneTrigger = triggerRefProp;
+	});
+
 	onMount(() => {
 		if (!browser) return;
 		document.addEventListener('keydown', handleKeydown);
@@ -171,6 +196,10 @@
 
 	onDestroy(() => {
 		if (!browser) return;
+		if (trackedStandaloneTrigger) {
+			clearTriggerFocusState(trackedStandaloneTrigger);
+		}
+		clearStandaloneTriggerTracking();
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
 		document.removeEventListener('scroll', handleScroll, true);

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from '../root/combobox-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ComboBox.List', () => {
 	describe('Accessibility', () => {
@@ -79,6 +80,19 @@ describe('ComboBox.List', () => {
 			// Input should have selected value
 			const inputValue = (input.element() as HTMLInputElement).value;
 			expect(inputValue).toBeTruthy();
+		});
+
+		it('never serializes false focus attributes while navigating options', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			const listbox = screen.getByRole('listbox');
+			expectNoFalseFocusAttributes(listbox.element() ?? document);
+
+			await userEvent.keyboard('{ArrowDown}');
+			expectNoFalseFocusAttributes(listbox.element() ?? document);
 		});
 	});
 });

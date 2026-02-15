@@ -19,6 +19,7 @@
 
 <Calendar.Root
 	selectionMode="single"
+	showOutsideDays={false}
 	value={datePicker.value}
 	onChange={handleChange}
 	isDisabled={datePicker.isDisabled}
@@ -50,7 +51,7 @@
 				{#snippet children(date: string)}
 					<Calendar.BodyCell
 						{date}
-						class="h-8 w-8 rounded-md text-sm text-gray-900 hover:bg-gray-100 data-[disabled=true]:opacity-50 data-[outside=true]:text-gray-400 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-white dark:hover:bg-gray-700"
+						class="h-8 w-8 rounded-md text-sm text-gray-900 hover:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[disabled=true]:hover:bg-transparent data-[selected=true]:bg-blue-600 data-[selected=true]:text-white data-[unavailable=true]:opacity-50 dark:text-white dark:hover:bg-gray-700 dark:data-[disabled=true]:hover:bg-transparent"
 					/>
 				{/snippet}
 			</Calendar.GridBody>

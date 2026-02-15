@@ -1,7 +1,15 @@
 import { getContext, setContext } from 'svelte';
 import type { DatePickerDateValue, DatePickerSegmentPart, DatePickerSegmentType } from './date-utils';
+import type {
+	PopoverChangeReason,
+	PopoverOpenChangeDetails
+} from '../../popover/root/context';
 
 const KEY = Symbol('date-picker');
+
+export type DatePickerOpenChangeReason = PopoverChangeReason;
+
+export type DatePickerOpenChangeDetails = PopoverOpenChangeDetails;
 
 export type DatePickerContext = {
 	id: string;
@@ -18,10 +26,10 @@ export type DatePickerContext = {
 	setFocusVisible: (visible: boolean) => void;
 	syncFocusWithin: () => void;
 	setActiveSegment: (segment: Exclude<DatePickerSegmentType, 'literal'> | null) => void;
-	openPopover: () => void;
-	closePopover: () => void;
-	togglePopover: () => void;
-	onOpenChange: (open: boolean) => void;
+	openPopover: (reason?: DatePickerOpenChangeReason, event?: Event) => void;
+	closePopover: (reason?: DatePickerOpenChangeReason, event?: Event) => void;
+	togglePopover: (reason?: DatePickerOpenChangeReason, event?: Event) => void;
+	onOpenChange: (open: boolean, details: DatePickerOpenChangeDetails) => void;
 	setValue: (nextValue: DatePickerDateValue, source?: 'calendar' | 'input') => void;
 	typeSegmentDigit: (type: Exclude<DatePickerSegmentType, 'literal'>, digit: string) => boolean;
 	adjustSegmentValue: (type: Exclude<DatePickerSegmentType, 'literal'>, step: number) => void;

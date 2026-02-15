@@ -46,4 +46,24 @@ describe('DatePicker.Trigger', () => {
 		await expect.poll(() => document.activeElement?.getAttribute('data-type')).toBe('year');
 		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
 	});
+
+	it('does not open when disabled', async () => {
+		const screen = render(DatePickerTest, { isDisabled: true });
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+
+		trigger
+			.element()
+			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		expect(trigger.element()?.getAttribute('data-disabled')).toBe('true');
+		expect(trigger.element()?.hasAttribute('disabled')).toBe(true);
+		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
+	});
+
+	it('is not rendered when readOnly', async () => {
+		render(DatePickerTest, { isReadOnly: true });
+
+		expect(document.querySelector('button[aria-haspopup="dialog"]')).toBeNull();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+	});
 });

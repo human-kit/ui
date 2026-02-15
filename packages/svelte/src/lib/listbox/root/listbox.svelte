@@ -114,6 +114,38 @@
 
 	const itemsArray = $derived(items ? Array.from(items) : []);
 	const hasItems = $derived(itemsArray.length > 0 || itemCount > 0);
+
+	let focusWithin = $state(false);
+	let focusVisible = $state(false);
+
+	function syncFocusWithin() {
+		focusWithin =
+			!!listboxElement &&
+			!!document.activeElement &&
+			listboxElement.contains(document.activeElement);
+		if (!focusWithin) {
+			focusVisible = false;
+		}
+	}
+
+	function handleFocusIn(event: FocusEvent) {
+		focusWithin = true;
+		focusVisible = (event.target as HTMLElement | null)?.matches(':focus-visible') ?? false;
+	}
+
+	function handleFocusOut() {
+		queueMicrotask(syncFocusWithin);
+	}
+
+	function handleMouseDown() {
+		focusVisible = false;
+	}
+
+	function handleKeyDown() {
+		if (focusWithin) {
+			focusVisible = true;
+		}
+	}
 </script>
 
 <div
@@ -124,7 +156,13 @@
 	aria-label={ariaLabel}
 	class={className}
 	tabindex="0"
+	data-focus-within={focusWithin || undefined}
+	data-focus-visible={focusVisible || undefined}
 	use:keyboardAction
+	onfocusin={handleFocusIn}
+	onfocusout={handleFocusOut}
+	onmousedown={handleMouseDown}
+	onkeydown={handleKeyDown}
 >
 	{#if items && children}
 		{#each itemsArray as item (item)}

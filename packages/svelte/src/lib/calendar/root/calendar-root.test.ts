@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import CalendarRootTest from './calendar-root-test.svelte';
 import CalendarRootBindValueTest from './calendar-root-bind-value-test.svelte';
 import CalendarRootControlledClearTest from './calendar-root-controlled-clear-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 function pressKey(element: Element, key: string, options?: { shiftKey?: boolean }) {
 	element.dispatchEvent(
@@ -24,6 +25,18 @@ describe('Calendar', () => {
 		render(CalendarRootTest, { visibleMonths: 2 });
 		const grids = document.querySelectorAll('[role="grid"]');
 		expect(grids.length).toBe(2);
+	});
+
+	it('hides outside days by default and removes fully outside rows', async () => {
+		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const rows = document.querySelectorAll('tbody tr');
+		expect(rows.length).toBe(4);
+	});
+
+	it('renders a 6-row grid when showOutsideDays is true', async () => {
+		render(CalendarRootTest, { defaultValue: '2026-02-10', showOutsideDays: true });
+		const rows = document.querySelectorAll('tbody tr');
+		expect(rows.length).toBe(6);
 	});
 
 	it('navigates months with next trigger', async () => {
@@ -117,6 +130,17 @@ describe('Calendar', () => {
 		pressKey(dayElement, 'ArrowRight');
 
 		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-11');
+	});
+
+	it('never serializes false focus attributes during keyboard navigation', async () => {
+		const screen = render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const day = screen.getByRole('gridcell', { name: '2026-02-10' });
+		const grid = screen.getByRole('grid');
+
+		day.element()?.focus();
+		pressKey(day.element()!, 'ArrowRight');
+		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-11');
+		expectNoFalseFocusAttributes(grid.element() ?? document);
 	});
 
 	it('moves focus across month boundary with arrows', async () => {

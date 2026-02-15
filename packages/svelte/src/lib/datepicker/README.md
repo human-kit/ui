@@ -30,16 +30,16 @@
 
 ## Root API
 
-- `value?: string` (`YYYY-MM-DD`)
+- `value?: string | null` (`YYYY-MM-DD`)
 - `defaultValue?: string` (`YYYY-MM-DD`)
-- `onChange?: (value: string) => void`
+- `onChange?: (value: string | null) => void`
 - `isDisabled?: boolean`
 - `isReadOnly?: boolean`
 - `minValue?: string` (`YYYY-MM-DD`)
 - `maxValue?: string` (`YYYY-MM-DD`)
 - `open?: boolean`
 - `defaultOpen?: boolean`
-- `onOpenChange?: (open: boolean) => void`
+- `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`
 - `closeOnSelect?: boolean`
 
 ## Notes

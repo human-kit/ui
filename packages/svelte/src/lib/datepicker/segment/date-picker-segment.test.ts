@@ -20,6 +20,16 @@ describe('DatePicker.Segment', () => {
 		expect(literal?.tagName.toLowerCase()).toBe('span');
 	});
 
+	it('exposes spinbutton ARIA contract', async () => {
+		const screen = render(DatePickerTest);
+		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+
+		expect(monthSegment.element()?.getAttribute('aria-valuemin')).toBe('1');
+		expect(monthSegment.element()?.getAttribute('aria-valuemax')).toBe('12');
+		expect(monthSegment.element()?.getAttribute('aria-valuenow')).toBe('2');
+		expect(monthSegment.element()?.getAttribute('aria-valuetext')).toContain('February');
+	});
+
 	it('sets focused state when a segment receives focus', async () => {
 		const screen = render(DatePickerTest);
 		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
@@ -48,6 +58,36 @@ describe('DatePicker.Segment', () => {
 
 		outsideButton.element()?.focus();
 		await expect.poll(() => document.querySelector('[data-focus-within="true"]')).toBeNull();
+	});
+
+	it('marks segment as readonly in readOnly mode', async () => {
+		const screen = render(DatePickerTest, { isReadOnly: true });
+		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+
+		expect(monthSegment.element()?.getAttribute('aria-readonly')).toBe('true');
+		expect(monthSegment.element()?.getAttribute('contenteditable')).toBe('false');
+	});
+
+	it('disables segment interaction in disabled mode', async () => {
+		const screen = render(DatePickerTest, { isDisabled: true });
+		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+
+		expect(monthSegment.element()?.getAttribute('aria-disabled')).toBe('true');
+		expect(monthSegment.element()?.getAttribute('tabindex')).toBe('-1');
+	});
+
+	it('does not set focus states when clicking a disabled segment', async () => {
+		const screen = render(DatePickerTest, { isDisabled: true });
+		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+
+		monthSegment
+			.element()
+			?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+		monthSegment
+			.element()
+			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		expect(monthSegment.element()?.getAttribute('data-focused')).toBeNull();
+		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
 	});
 
 	it('focuses segment immediately on click', async () => {

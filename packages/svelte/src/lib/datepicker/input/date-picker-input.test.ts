@@ -84,4 +84,19 @@ describe('DatePicker.Input', () => {
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
 		await expect.poll(() => yearSegment.element()?.getAttribute('data-focus-visible')).toBeNull();
 	});
+
+	it('uses a group role with provided accessible label', async () => {
+		const screen = render(DatePickerTest);
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+
+		expect(inputGroup.element()?.getAttribute('id')).toContain('-input');
+	});
+
+	it('does not move focus into segments when disabled', async () => {
+		const screen = render(DatePickerTest, { isDisabled: true });
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+
+		await inputGroup.click();
+		expect(document.activeElement?.getAttribute('data-date-picker-segment')).not.toBe('true');
+	});
 });

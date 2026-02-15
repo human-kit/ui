@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ListBoxTest from './listbox-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ListBox', () => {
 	describe('Accessibility', () => {
@@ -36,6 +37,21 @@ describe('ListBox', () => {
 			const listbox = screen.getByRole('listbox');
 
 			await expect.element(listbox).toHaveAttribute('tabindex', '0');
+		});
+
+		it('exposes root focus contract attributes during keyboard flow', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await expect.element(listbox).toHaveAttribute('data-focus-within', 'true');
+
+			await userEvent.keyboard('{Home}');
+			await expect.element(listbox).toHaveAttribute('data-focus-visible', 'true');
+
+			(document.activeElement as HTMLElement | null)?.blur();
+			await expect.poll(() => listbox.element()?.getAttribute('data-focus-within')).toBeNull();
+			await expect.poll(() => listbox.element()?.getAttribute('data-focus-visible')).toBeNull();
 		});
 	});
 
@@ -101,6 +117,19 @@ describe('ListBox', () => {
 
 			const focusedOption = listbox.element().querySelector('[data-focused]');
 			expect(focusedOption?.textContent).toContain('Orange');
+			expectNoFalseFocusAttributes(listbox.element() ?? document);
+		});
+
+		it('never serializes false focus attributes during keyboard focus flow', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}');
+			expectNoFalseFocusAttributes(listbox.element() ?? document);
+
+			await userEvent.keyboard('{ArrowDown}');
+			expectNoFalseFocusAttributes(listbox.element() ?? document);
 		});
 	});
 

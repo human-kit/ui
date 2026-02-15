@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverContentTest from './popover-content-test.svelte';
 import PopoverContentStandaloneTest from './popover-content-standalone-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Popover.Content', () => {
 	// Clean up any portaled content after each test
@@ -86,6 +87,40 @@ describe('Popover.Content', () => {
 
 			await userEvent.keyboard('{Escape}');
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
+
+		it('restores standalone trigger focus attrs by close reason and clears on blur', async () => {
+			render(PopoverContentStandaloneTest, { preventClose: false });
+			const trigger = document.querySelector('button[type="button"]') as HTMLElement | null;
+			expect(trigger).toBeTruthy();
+
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const outside = document.createElement('button');
+			document.body.appendChild(outside);
+			try {
+				await userEvent.keyboard('{Escape}');
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+				await expect.poll(() => trigger?.getAttribute('data-focused')).toBe('true');
+				await expect.poll(() => trigger?.getAttribute('data-focus-visible')).toBe('true');
+
+				outside.focus();
+				await expect.poll(() => trigger?.getAttribute('data-focused')).toBeNull();
+				await expect.poll(() => trigger?.getAttribute('data-focus-visible')).toBeNull();
+			} finally {
+				outside.remove();
+			}
+		});
+
+		it('never serializes false focus-state attributes', async () => {
+			render(PopoverContentStandaloneTest, { preventClose: false });
+			expectNoFalseFocusAttributes();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			expectNoFalseFocusAttributes();
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			expectNoFalseFocusAttributes();
 		});
 	});
 

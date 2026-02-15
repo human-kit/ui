@@ -32,6 +32,7 @@ describe('Calendar.BodyCell', () => {
 
 		const unavailableCell = screen.getByRole('gridcell', { name: '2026-02-15' });
 		await expect.element(unavailableCell).toHaveAttribute('aria-disabled', 'true');
+		await expect.element(unavailableCell).toHaveAttribute('data-disabled', 'true');
 		await expect.element(unavailableCell).toHaveAttribute('data-unavailable', 'true');
 	});
 
