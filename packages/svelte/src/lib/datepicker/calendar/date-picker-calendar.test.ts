@@ -6,6 +6,30 @@ import DatePickerEmptyTest from '../root/date-picker-empty-test.svelte';
 import DatePickerLocaleTypingTest from '../root/date-picker-locale-typing-test.svelte';
 import { addDays, formatCalendarDate, getTodayUtcDate } from '../../calendar/root/date-utils';
 
+function getSegment(type: 'day' | 'month' | 'year') {
+	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
+	if (!element) {
+		throw new Error(`Segment "${type}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
+function getGridCellByDate(date: string) {
+	const element = document.querySelector<HTMLElement>(`[role="gridcell"][data-date="${date}"]`);
+	if (!element) {
+		throw new Error(`Grid cell "${date}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
 describe('DatePicker.Calendar', () => {
 	afterEach(() => {
 		const dialogs = document.querySelectorAll('[role="dialog"]');
@@ -13,22 +37,22 @@ describe('DatePicker.Calendar', () => {
 	});
 
 	it('marks dates outside min/max as unavailable', async () => {
-		const screen = render(DatePickerTest, {
+		render(DatePickerTest, {
 			defaultOpen: true,
 			minValue: '2026-02-10',
 			maxValue: '2026-02-20'
 		});
 
-		const beforeMin = screen.getByRole('gridcell', { name: '2026-02-09' });
-		const withinRange = screen.getByRole('gridcell', { name: '2026-02-12' });
+		const beforeMin = getGridCellByDate('2026-02-09');
+		const withinRange = getGridCellByDate('2026-02-12');
 
-		await expect.element(beforeMin).toHaveAttribute('aria-disabled', 'true');
-		await expect.element(withinRange).not.toHaveAttribute('aria-disabled', 'true');
+		expect(beforeMin.element()?.getAttribute('aria-disabled')).toBe('true');
+		expect(withinRange.element()?.getAttribute('aria-disabled')).toBeNull();
 	});
 
 	it('updates root value when selecting a valid calendar date', async () => {
-		const screen = render(DatePickerTest, { defaultOpen: true });
-		const dateCell = screen.getByRole('gridcell', { name: '2026-02-15' });
+		render(DatePickerTest, { defaultOpen: true });
+		const dateCell = getGridCellByDate('2026-02-15');
 
 		await dateCell.click();
 		await expect
@@ -36,9 +60,24 @@ describe('DatePicker.Calendar', () => {
 			.toBe('2026-02-15');
 	});
 
+	it('applies custom date unavailability with min/max constraints', async () => {
+		render(DatePickerTest, {
+			defaultOpen: true,
+			minValue: '2026-02-10',
+			maxValue: '2026-02-20',
+			isDateUnavailable: (date: string) => date === '2026-02-12'
+		});
+
+		const customUnavailable = getGridCellByDate('2026-02-12');
+		const validDate = getGridCellByDate('2026-02-13');
+
+		expect(customUnavailable.element()?.getAttribute('aria-disabled')).toBe('true');
+		expect(validDate.element()?.getAttribute('aria-disabled')).toBeNull();
+	});
+
 	it('opens calendar on the typed short-year value instead of fallback month', async () => {
 		const screen = render(DatePickerLocaleTypingTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 
 		daySegment.element()?.focus();
@@ -56,8 +95,8 @@ describe('DatePicker.Calendar', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const typedDateCell = screen.getByRole('gridcell', { name: '0002-01-20' });
-		await expect.element(typedDateCell).toHaveAttribute('aria-selected', 'true');
+		const typedDateCell = getGridCellByDate('0002-01-20');
+		expect(typedDateCell.element()?.getAttribute('aria-selected')).toBe('true');
 	});
 
 	it('keeps initial focus implicit on selected date until arrow navigation', async () => {
@@ -66,14 +105,14 @@ describe('DatePicker.Calendar', () => {
 
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-10');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
 		expect(document.activeElement?.getAttribute('data-focused')).toBeNull();
 
 		document.activeElement?.dispatchEvent(
 			new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
 		);
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-11');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
 	});
 
@@ -83,7 +122,7 @@ describe('DatePicker.Calendar', () => {
 
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-10');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
 		expect(document.activeElement?.getAttribute('aria-label')).not.toBe('Previous page');
 	});
 
@@ -95,14 +134,15 @@ describe('DatePicker.Calendar', () => {
 
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe(today);
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe(today);
 		expect(document.activeElement?.getAttribute('data-focused')).toBeNull();
 
 		document.activeElement?.dispatchEvent(
 			new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
 		);
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe(tomorrow);
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe(tomorrow);
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
 	});
 });
+

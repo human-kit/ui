@@ -6,9 +6,9 @@
 	type DatePickerCalendarProps = {
 		class?: string;
 		children?: Snippet;
-	};
+	} & Record<string, unknown>;
 
-	let { class: className = '', children }: DatePickerCalendarProps = $props();
+	let { class: className = '', children, ...restProps }: DatePickerCalendarProps = $props();
 
 	const datePicker = useDatePickerContext();
 
@@ -26,6 +26,7 @@
 	isReadOnly={datePicker.isReadOnly}
 	isDateUnavailable={datePicker.isDateUnavailable}
 	class={className}
+	{...restProps}
 >
 	{#if children}
 		{@render children()}

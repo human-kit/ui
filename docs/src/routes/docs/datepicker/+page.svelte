@@ -58,6 +58,7 @@
 								class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-2 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-gray-600 dark:bg-gray-700"
 							>
 								<DatePicker.Input
+									aria-label="Date input"
 									class="flex min-w-0 flex-1 items-center gap-1 text-gray-900 dark:text-white"
 								>
 									{#snippet children(segment)}
@@ -109,6 +110,7 @@
 								class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-2 transition-colors group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-blue-500 group-data-[focus-within=true]:border-blue-500 dark:border-gray-600 dark:bg-gray-700"
 							>
 								<DatePicker.Input
+									aria-label="Date input"
 									class="flex min-w-0 flex-1 items-center gap-1 text-gray-900 dark:text-white"
 								>
 									{#snippet children(segment)}
@@ -153,6 +155,7 @@
 								class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-2 transition-colors group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-blue-500 group-data-[focus-within=true]:border-blue-500 dark:border-gray-600 dark:bg-gray-700"
 							>
 								<DatePicker.Input
+									aria-label="Date input"
 									class="flex min-w-0 flex-1 items-center gap-1 text-gray-900 dark:text-white"
 								>
 									{#snippet children(segment)}

@@ -6,6 +6,18 @@ import DatePickerEmptyTest from '../root/date-picker-empty-test.svelte';
 import DatePickerLocaleTypingTest from '../root/date-picker-locale-typing-test.svelte';
 import DatePickerBindableTest from '../root/date-picker-bindable-test.svelte';
 
+function getSegment(type: 'day' | 'month' | 'year') {
+	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
+	if (!element) {
+		throw new Error(`Segment "${type}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
 describe('DatePicker.Segment', () => {
 	afterEach(() => {
 		const dialogs = document.querySelectorAll('[role="dialog"]');
@@ -21,18 +33,20 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('exposes spinbutton ARIA contract', async () => {
-		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		render(DatePickerTest);
+		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-valuemin')).toBe('1');
 		expect(monthSegment.element()?.getAttribute('aria-valuemax')).toBe('12');
 		expect(monthSegment.element()?.getAttribute('aria-valuenow')).toBe('2');
 		expect(monthSegment.element()?.getAttribute('aria-valuetext')).toContain('February');
+		expect(monthSegment.element()?.getAttribute('aria-labelledby')).toBeNull();
+		expect(monthSegment.element()?.getAttribute('aria-label')).toMatch(/month/i);
 	});
 
 	it('sets focused state when a segment receives focus', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
 		await expect.poll(() => monthSegment.element()?.getAttribute('data-focused')).toBe('true');
@@ -40,7 +54,7 @@ describe('DatePicker.Segment', () => {
 
 	it('sets data-focus-visible on keyboard interaction', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
 		await userEvent.keyboard('{ArrowUp}');
@@ -50,7 +64,7 @@ describe('DatePicker.Segment', () => {
 
 	it('toggles root data-focus-within when focus enters and leaves date picker', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 		const outsideButton = screen.getByTestId('outside-button');
 
 		monthSegment.element()?.focus();
@@ -62,7 +76,7 @@ describe('DatePicker.Segment', () => {
 
 	it('marks segment as readonly in readOnly mode', async () => {
 		const screen = render(DatePickerTest, { isReadOnly: true });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-readonly')).toBe('true');
 		expect(monthSegment.element()?.getAttribute('contenteditable')).toBe('false');
@@ -70,7 +84,7 @@ describe('DatePicker.Segment', () => {
 
 	it('disables segment interaction in disabled mode', async () => {
 		const screen = render(DatePickerTest, { isDisabled: true });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-disabled')).toBe('true');
 		expect(monthSegment.element()?.getAttribute('tabindex')).toBe('-1');
@@ -78,7 +92,7 @@ describe('DatePicker.Segment', () => {
 
 	it('does not set focus states when clicking a disabled segment', async () => {
 		const screen = render(DatePickerTest, { isDisabled: true });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		monthSegment
 			.element()
@@ -92,7 +106,7 @@ describe('DatePicker.Segment', () => {
 
 	it('focuses segment immediately on click', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		await monthSegment.click();
 		expect(document.activeElement).toBe(monthSegment.element());
@@ -100,7 +114,7 @@ describe('DatePicker.Segment', () => {
 
 	it('increments segment value with ArrowUp', async () => {
 		const screen = render(DatePickerTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('{ArrowUp}');
@@ -112,7 +126,7 @@ describe('DatePicker.Segment', () => {
 
 	it('increments year segment value with ArrowUp', async () => {
 		const screen = render(DatePickerTest);
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const yearSegment = getSegment('year');
 
 		yearSegment.element()?.focus();
 		await userEvent.keyboard('{ArrowUp}');
@@ -124,7 +138,7 @@ describe('DatePicker.Segment', () => {
 
 	it('supports Home and End keys for boundaries', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
 		await userEvent.keyboard('{Home}');
@@ -138,9 +152,9 @@ describe('DatePicker.Segment', () => {
 			.toBe('2026-12-10');
 	});
 
-	it('clears bound value when draft becomes incomplete', async () => {
-		const screen = render(DatePickerBindableTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+	it('clears committed value when draft becomes incomplete', async () => {
+		render(DatePickerBindableTest);
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('{Backspace}');
@@ -153,7 +167,7 @@ describe('DatePicker.Segment', () => {
 
 	it('supports PageUp and PageDown steps', async () => {
 		const screen = render(DatePickerTest);
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const yearSegment = getSegment('year');
 
 		yearSegment.element()?.focus();
 		await userEvent.keyboard('{PageUp}');
@@ -169,7 +183,7 @@ describe('DatePicker.Segment', () => {
 
 	it('clears segment with Delete', async () => {
 		const screen = render(DatePickerTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('{Delete}');
@@ -178,7 +192,7 @@ describe('DatePicker.Segment', () => {
 
 	it('removes one character with Backspace', async () => {
 		const screen = render(DatePickerTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('{Backspace}');
@@ -187,7 +201,7 @@ describe('DatePicker.Segment', () => {
 
 	it('does not commit full date when only one segment is edited', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('1');
@@ -200,7 +214,7 @@ describe('DatePicker.Segment', () => {
 
 	it('auto-advances focus when a segment is completed', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('1');
@@ -211,7 +225,7 @@ describe('DatePicker.Segment', () => {
 
 	it('auto-advances when entering 01 in day segment', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('0');
@@ -223,7 +237,7 @@ describe('DatePicker.Segment', () => {
 
 	it('auto-advances day on first digit when second digit cannot be valid', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('7');
@@ -234,7 +248,7 @@ describe('DatePicker.Segment', () => {
 
 	it('auto-advances month on first digit when second digit cannot be valid', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('7');
@@ -245,8 +259,8 @@ describe('DatePicker.Segment', () => {
 
 	it('prevents impossible two-digit month/day typing by auto-completing first digit', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const daySegment = getSegment('day');
+		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
 		await userEvent.keyboard('3');
@@ -261,9 +275,9 @@ describe('DatePicker.Segment', () => {
 
 	it('auto-adjusts day to leap-year max when month or year changes', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const daySegment = getSegment('day');
+		const monthSegment = getSegment('month');
+		const yearSegment = getSegment('year');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('3');
@@ -289,9 +303,9 @@ describe('DatePicker.Segment', () => {
 
 	it('commits value when all segments become valid', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const daySegment = getSegment('day');
+		const monthSegment = getSegment('month');
+		const yearSegment = getSegment('year');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('0');
@@ -314,7 +328,7 @@ describe('DatePicker.Segment', () => {
 
 	it('commits 20/01/2000 when typing in day-first locale', async () => {
 		const screen = render(DatePickerLocaleTypingTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('2');
@@ -334,7 +348,7 @@ describe('DatePicker.Segment', () => {
 
 	it('commits 2/1/2 as 0002-01-02 in day-first locale', async () => {
 		const screen = render(DatePickerLocaleTypingTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('2');
@@ -350,9 +364,9 @@ describe('DatePicker.Segment', () => {
 
 	it('shows segments with minimal digits after committing a valid date', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const daySegment = getSegment('day');
+		const monthSegment = getSegment('month');
+		const yearSegment = getSegment('year');
 
 		daySegment.element()?.focus();
 		await userEvent.keyboard('0');
@@ -377,7 +391,7 @@ describe('DatePicker.Segment', () => {
 
 	it('moves focus to previous segment on backspace when current segment is empty', async () => {
 		const screen = render(DatePickerTest);
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const yearSegment = getSegment('year');
 
 		yearSegment.element()?.focus();
 		await userEvent.keyboard('{Backspace}');
@@ -391,7 +405,7 @@ describe('DatePicker.Segment', () => {
 
 	it('cancels selectstart on placeholder segment', async () => {
 		const screen = render(DatePickerEmptyTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 		const event = new Event('selectstart', { cancelable: true });
 
 		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
@@ -399,3 +413,4 @@ describe('DatePicker.Segment', () => {
 		expect(wasNotCanceled).toBe(false);
 	});
 });
+

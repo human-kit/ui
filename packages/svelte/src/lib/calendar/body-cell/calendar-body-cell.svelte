@@ -1,3 +1,35 @@
+<script module lang="ts">
+	const ariaDateFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+	function getAriaDateFormatter(locale: string): Intl.DateTimeFormat {
+		let formatter = ariaDateFormatterCache.get(locale);
+		if (!formatter) {
+			formatter = new Intl.DateTimeFormat(locale, {
+				dateStyle: 'full',
+				timeZone: 'UTC'
+			});
+			ariaDateFormatterCache.set(locale, formatter);
+		}
+		return formatter;
+	}
+
+	function formatAriaDateLabel(locale: string, date: string): string {
+		const [yearText, monthText, dayText] = date.split('-');
+		const year = Number(yearText);
+		const month = Number(monthText);
+		const day = Number(dayText);
+
+		if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+			return date;
+		}
+
+		const parsed = new Date(Date.UTC(year, month - 1, day));
+		if (Number.isNaN(parsed.getTime())) return date;
+
+		return getAriaDateFormatter(locale).format(parsed);
+	}
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -74,6 +106,10 @@
 	const isInteractionDisabled = $derived(isDisabled || hidesOutsideDay);
 	const todayDate = formatCalendarDate(getTodayUtcDate());
 	const isToday = $derived(date === todayDate);
+	const ariaDateLabel = $derived.by(() => {
+		void $layoutVersion;
+		return formatAriaDateLabel(calendar.locale, date);
+	});
 
 	let gridCellElement = $state<HTMLDivElement | undefined>(undefined);
 
@@ -166,10 +202,11 @@
 			data-range-start={isRangeStart || undefined}
 			data-range-end={isRangeEnd || undefined}
 			data-in-range={isInRange || undefined}
+			data-date={date}
 			aria-selected={isSelected}
 			aria-disabled={isAriaDisabled || hidesOutsideDay || undefined}
 			aria-current={isToday ? 'date' : undefined}
-			aria-label={date}
+			aria-label={ariaDateLabel}
 			style={isVisuallyFocused ? undefined : 'outline: none;'}
 			onmousedown={handleMousedown}
 			onmouseenter={handleMouseenter}

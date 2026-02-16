@@ -1,37 +1,36 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { useDatePickerContext, type DatePickerSegmentPart } from '../root/context';
 	import DatePickerSegment from '../segment/date-picker-segment.svelte';
 
-	type DatePickerInputProps = {
+	type DatePickerInputProps = Omit<
+		HTMLAttributes<HTMLDivElement>,
+		| 'children'
+		| 'class'
+		| 'id'
+		| 'role'
+		| 'tabindex'
+		| 'onmousedown'
+		| 'onfocus'
+		| 'onblur'
+		| 'onkeydown'
+	> & {
 		children?: Snippet<[DatePickerSegmentPart]>;
 		class?: string;
 		'aria-label'?: string;
 	};
 
-	let { children, class: className = '', 'aria-label': ariaLabel }: DatePickerInputProps = $props();
+	let {
+		children,
+		class: className = '',
+		'aria-label': ariaLabel,
+		...restProps
+	}: DatePickerInputProps = $props();
 
 	const datePicker = useDatePickerContext();
 	const segments = $derived(datePicker.getSegments());
 	const inputId = $derived(`${datePicker.id}-input`);
-	let inputRef: HTMLDivElement | null = $state(null);
-
-	function focusNextAvailableSegment() {
-		if (!inputRef || datePicker.isDisabled) return;
-
-		const segmentElements = Array.from(inputRef.children).filter(
-			(element): element is HTMLElement =>
-				element instanceof HTMLElement &&
-				element.getAttribute('data-date-picker-segment') === 'true'
-		);
-		if (segmentElements.length === 0) return;
-
-		const nextAvailable =
-			segmentElements.find((segment) => segment.getAttribute('data-placeholder') === 'true') ??
-			segmentElements[segmentElements.length - 1];
-
-		nextAvailable?.focus();
-	}
 
 	function handleMouseDown(event: MouseEvent) {
 		if (datePicker.isDisabled) return;
@@ -43,7 +42,7 @@
 		}
 
 		event.preventDefault();
-		focusNextAvailableSegment();
+		datePicker.focusNextPlaceholderOrLastSegment();
 	}
 
 	function handleFocus(event: FocusEvent) {
@@ -56,7 +55,7 @@
 		if (target?.closest('[data-date-picker-segment="true"]')) {
 			return;
 		}
-		focusNextAvailableSegment();
+		datePicker.focusNextPlaceholderOrLastSegment();
 	}
 
 	function handleBlur() {
@@ -69,16 +68,16 @@
 		if (datePicker.isDisabled) return;
 		if (event.key !== 'Enter' && event.key !== ' ') return;
 		event.preventDefault();
-		focusNextAvailableSegment();
+		datePicker.focusNextPlaceholderOrLastSegment();
 	}
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex: Group container is intentionally focusable to forward focus into segmented field. -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions: Pointer/keyboard handlers are required to delegate focus to date segments. -->
 <div
-	bind:this={inputRef}
 	id={inputId}
 	class={className}
+	{...restProps}
 	role="group"
 	aria-label={ariaLabel}
 	tabindex={datePicker.isDisabled ? -1 : 0}

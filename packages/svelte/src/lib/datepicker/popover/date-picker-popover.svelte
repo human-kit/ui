@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { useDatePickerContext } from '../root/context';
 	import { Popover } from '../../popover';
 	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
 
-	type DatePickerPopoverProps = {
+	type DatePickerPopoverProps = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> & {
 		class?: string;
 		children?: Snippet;
 		'aria-label'?: string;
@@ -13,7 +14,8 @@
 	let {
 		class: className = '',
 		children,
-		'aria-label': ariaLabel = 'Calendar'
+		'aria-label': ariaLabel = 'Calendar',
+		...restProps
 	}: DatePickerPopoverProps = $props();
 
 	const datePicker = useDatePickerContext();
@@ -44,6 +46,7 @@
 		class={className}
 		aria-label={ariaLabel}
 		initialFocus={resolveInitialCalendarFocus}
+		{...restProps}
 	>
 		{#if children}
 			{@render children()}

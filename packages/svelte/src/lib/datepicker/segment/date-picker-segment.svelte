@@ -15,16 +15,40 @@
 </script>
 
 <script lang="ts">
+	import type { HTMLAttributes } from 'svelte/elements';
 	import type { DatePickerSegmentPart } from '../root/context';
 	import { useDatePickerContext } from '../root/context';
 
-	type DatePickerSegmentProps = {
+	type DatePickerSegmentProps = Omit<
+		HTMLAttributes<HTMLSpanElement>,
+		| 'children'
+		| 'class'
+		| 'id'
+		| 'role'
+		| 'contenteditable'
+		| 'tabindex'
+		| 'aria-label'
+		| 'aria-labelledby'
+		| 'aria-valuemin'
+		| 'aria-valuemax'
+		| 'aria-valuenow'
+		| 'aria-valuetext'
+		| 'aria-readonly'
+		| 'aria-disabled'
+		| 'onfocus'
+		| 'onblur'
+		| 'onmousedown'
+		| 'onclick'
+		| 'onselectstart'
+		| 'onkeydown'
+	> & {
 		segment: DatePickerSegmentPart;
 		class?: string;
 	};
 
-	let { segment, class: className = '' }: DatePickerSegmentProps = $props();
+	let { segment, class: className = '', ...restProps }: DatePickerSegmentProps = $props();
 	let isFocused = $state(false);
+	let segmentRef: HTMLSpanElement | null = $state(null);
 
 	const datePicker = useDatePickerContext();
 
@@ -63,38 +87,24 @@
 			const monthLabel = getMonthFormatter(datePicker.locale).format(
 				new Date(Date.UTC(2030, currentNumericValue - 1, 1))
 			);
-			return `${currentNumericValue} – ${monthLabel}`;
+			return `${currentNumericValue} - ${monthLabel}`;
 		}
 		return segment.text;
 	});
 
-	const labelledBy = $derived.by(() => {
+	const segmentLabel = $derived.by(() => {
 		if (segment.type === 'literal') return undefined;
-		return `${segmentId} ${datePicker.id}-input`;
+		return datePicker.getSegmentLabel(segment.type);
 	});
 
-	function getSegmentMaxLength(type: Exclude<DatePickerSegmentPart['type'], 'literal'>): number {
-		return type === 'year' ? 4 : 2;
-	}
-
-	function focusSiblingSegment(current: HTMLElement, direction: 'next' | 'previous') {
-		let candidate: Element | null =
-			direction === 'next' ? current.nextElementSibling : current.previousElementSibling;
-
-		while (candidate) {
-			if (
-				candidate instanceof HTMLElement &&
-				candidate.getAttribute('data-date-picker-segment') === 'true'
-			) {
-				candidate.focus();
-				return;
-			}
-			candidate =
-				direction === 'next' ? candidate.nextElementSibling : candidate.previousElementSibling;
-		}
-
-		if (direction === 'next') datePicker.triggerRef?.focus();
-	}
+	$effect(() => {
+		if (segment.type === 'literal') return;
+		const segmentType = segment.type;
+		datePicker.registerSegmentRef(segmentType, segmentRef);
+		return () => {
+			datePicker.registerSegmentRef(segmentType, null);
+		};
+	});
 
 	function handleFocus(event: FocusEvent) {
 		if (segment.type === 'literal') return;
@@ -108,7 +118,7 @@
 		datePicker.setActiveSegment(segment.type);
 	}
 
-	function handleBlur(event: FocusEvent) {
+	function handleBlur() {
 		if (segment.type === 'literal') return;
 		isFocused = false;
 		queueMicrotask(() => {
@@ -149,17 +159,18 @@
 		if (segment.type === 'literal') return;
 		if (datePicker.isDisabled) return;
 		datePicker.setFocusVisible(true);
-		const current = event.currentTarget as HTMLElement;
 
 		if (event.key === 'ArrowRight') {
 			event.preventDefault();
-			focusSiblingSegment(current, 'next');
+			if (!datePicker.focusNextSegment(segment.type)) {
+				datePicker.triggerRef?.focus();
+			}
 			return;
 		}
 
 		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
-			focusSiblingSegment(current, 'previous');
+			datePicker.focusPreviousSegment(segment.type);
 			return;
 		}
 
@@ -218,7 +229,7 @@
 			const currentValue = datePicker.getSegmentValue(segment.type);
 			if (currentValue.length === 0) {
 				if (event.key === 'Backspace') {
-					focusSiblingSegment(current, 'previous');
+					datePicker.focusPreviousSegment(segment.type);
 				}
 				return;
 			}
@@ -229,8 +240,8 @@
 		if (event.key.length === 1 && /\d/.test(event.key)) {
 			event.preventDefault();
 			const didComplete = datePicker.typeSegmentDigit(segment.type, event.key);
-			if (didComplete) {
-				focusSiblingSegment(current, 'next');
+			if (didComplete && !datePicker.focusNextSegment(segment.type)) {
+				datePicker.triggerRef?.focus();
 			}
 			return;
 		}
@@ -241,7 +252,9 @@
 			if (currentValue.length === 0) {
 				return;
 			}
-			focusSiblingSegment(current, 'next');
+			if (!datePicker.focusNextSegment(segment.type)) {
+				datePicker.triggerRef?.focus();
+			}
 			return;
 		}
 
@@ -256,6 +269,7 @@
 {#if segment.type === 'literal'}
 	<span
 		class={className}
+		{...restProps}
 		data-placeholder={segment.isPlaceholder || undefined}
 		data-type={segment.type}
 		aria-hidden="true"
@@ -264,8 +278,10 @@
 	</span>
 {:else}
 	<span
+		bind:this={segmentRef}
 		id={segmentId}
 		class={className}
+		{...restProps}
 		data-date-picker-segment="true"
 		data-placeholder={segment.isPlaceholder || undefined}
 		data-type={segment.type}
@@ -276,9 +292,9 @@
 		aria-valuemin={valueMin}
 		aria-valuemax={valueMax}
 		aria-valuenow={currentNumericValue}
-		aria-label={`${segment.type}, `}
-		aria-labelledby={labelledBy}
+		aria-label={segmentLabel}
 		aria-readonly={datePicker.isReadOnly || undefined}
+		aria-disabled={datePicker.isDisabled || undefined}
 		contenteditable={!datePicker.isDisabled && !datePicker.isReadOnly}
 		spellcheck="false"
 		enterkeyhint="next"
@@ -294,7 +310,6 @@
 		onclick={handleClick}
 		onselectstart={handleSelectStart}
 		onkeydown={handleKeydown}
-		aria-disabled={datePicker.isDisabled || undefined}
 	>
 		{segment.text}
 	</span>

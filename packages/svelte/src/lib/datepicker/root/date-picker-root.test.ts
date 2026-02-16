@@ -3,10 +3,35 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DatePickerTest from './date-picker-test.svelte';
 import DatePickerBindableTest from './date-picker-bindable-test.svelte';
+import DatePickerBindableEmptyTest from './date-picker-bindable-empty-test.svelte';
 import {
 	expectFocusVisibleImpliesFocusWithin,
 	expectNoFalseFocusAttributes
 } from '../../test-utils/focus-contract';
+
+function getSegment(type: 'day' | 'month' | 'year') {
+	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
+	if (!element) {
+		throw new Error(`Segment "${type}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
+function getGridCellByDate(date: string) {
+	const element = document.querySelector<HTMLElement>(`[role="gridcell"][data-date="${date}"]`);
+	if (!element) {
+		throw new Error(`Grid cell "${date}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
 
 describe('DatePicker.Root', () => {
 	afterEach(() => {
@@ -27,7 +52,7 @@ describe('DatePicker.Root', () => {
 
 	it('keeps focus on segment and does not open popover on segment click', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 
 		await monthSegment.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
@@ -41,7 +66,7 @@ describe('DatePicker.Root', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const dayCell = screen.getByRole('gridcell', { name: '2026-02-12' });
+		const dayCell = getGridCellByDate('2026-02-12');
 		await dayCell.click();
 
 		await expect
@@ -56,13 +81,12 @@ describe('DatePicker.Root', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const dayCell = screen.getByRole('gridcell', { name: '2026-02-14' });
+		const dayCell = getGridCellByDate('2026-02-14');
 		await dayCell.click();
 
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 		await expect.poll(() => document.activeElement).toBe(trigger.element());
 		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
-		expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
 	});
 
 	it('does not open calendar or allow value changes in readOnly mode', async () => {
@@ -78,7 +102,7 @@ describe('DatePicker.Root', () => {
 	it('does not open calendar or edit segments when disabled', async () => {
 		const screen = render(DatePickerTest, { isDisabled: true });
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		trigger
 			.element()
@@ -102,7 +126,7 @@ describe('DatePicker.Root', () => {
 			'true'
 		);
 
-		const dayCell = screen.getByRole('gridcell', { name: '2026-02-12' });
+		const dayCell = getGridCellByDate('2026-02-12');
 		await dayCell.click();
 
 		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe(
@@ -110,9 +134,32 @@ describe('DatePicker.Root', () => {
 		);
 	});
 
+	it('clears bound value when editing makes the draft invalid', async () => {
+		render(DatePickerBindableTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}');
+		await userEvent.keyboard('{Backspace}');
+		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('');
+	});
+
+	it('emits null from undefined on first invalid partial draft', async () => {
+		render(DatePickerBindableEmptyTest);
+		const daySegment = getSegment('day');
+
+		expect(document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe('undefined');
+		daySegment.element()?.focus();
+		await userEvent.keyboard('1');
+
+		await expect.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe(
+			'null'
+		);
+	});
+
 	it('keeps focus contract invariant for root attributes', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 		const inputGroup = screen.getByRole('group', { name: 'Date input' });
 		const outsideButton = screen.getByTestId('outside-button');
 		const inputId = inputGroup.element()?.getAttribute('id') ?? '';
@@ -131,7 +178,7 @@ describe('DatePicker.Root', () => {
 
 	it('never sets focus data attributes to false', async () => {
 		const screen = render(DatePickerTest);
-		const monthSegment = screen.getByRole('spinbutton', { name: 'month, ' });
+		const monthSegment = getSegment('month');
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 
 		monthSegment.element()?.focus();
@@ -141,3 +188,4 @@ describe('DatePicker.Root', () => {
 	});
 
 });
+

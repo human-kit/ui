@@ -5,8 +5,11 @@
 	import {
 		buildDatePickerSegments,
 		compareDatePickerValues,
+		getDatePickerSegmentLabel,
+		getDatePickerSegmentOrder,
 		isValidDatePickerValue,
 		type DatePickerDateValue,
+		type DatePickerEditableSegmentType,
 		type DatePickerSegmentType
 	} from './date-utils';
 	import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context';
@@ -32,6 +35,7 @@
 		isReadOnly?: boolean;
 		minValue?: DatePickerDateValue;
 		maxValue?: DatePickerDateValue;
+		isDateUnavailable?: (date: DatePickerDateValue) => boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
 		onOpenChange?: (open: boolean, details: DatePickerOpenChangeDetails) => void;
@@ -52,6 +56,7 @@
 		isReadOnly = false,
 		minValue,
 		maxValue,
+		isDateUnavailable,
 		open = $bindable(),
 		defaultOpen = false,
 		onOpenChange,
@@ -79,6 +84,11 @@
 		month: '',
 		year: ''
 	});
+	let segmentRefs: Record<DatePickerEditableSegmentType, HTMLElement | null> = {
+		day: null,
+		month: null,
+		year: null
+	};
 
 	const localeContext = useLocaleContextOptional();
 	const localeStore = localeContext?.locale;
@@ -111,6 +121,11 @@
 
 	const normalizedMinValue = $derived(isValidDatePickerValue(minValue) ? minValue : undefined);
 	const normalizedMaxValue = $derived(isValidDatePickerValue(maxValue) ? maxValue : undefined);
+	const segmentOrder = $derived(getDatePickerSegmentOrder(resolvedLocale));
+
+	function isDraftEmpty(draft: DatePickerSegmentDraft): boolean {
+		return draft.day.length === 0 && draft.month.length === 0 && draft.year.length === 0;
+	}
 
 	function clearValue() {
 		if (isDisabled || isReadOnly) return;
@@ -133,8 +148,12 @@
 
 	function syncValueFromDraft(draft: DatePickerSegmentDraft) {
 		const candidate = getCandidateValueFromDraft(draft);
-		if (!candidate || isDateOutOfRange(candidate)) {
+		if (!candidate) {
 			clearValue();
+			return;
+		}
+
+		if (isDateUnavailableInternal(candidate)) {
 			return;
 		}
 
@@ -152,6 +171,11 @@
 		return false;
 	}
 
+	function isDateUnavailableInternal(valueToCheck: DatePickerDateValue): boolean {
+		if (isDateOutOfRange(valueToCheck)) return true;
+		return isDateUnavailable?.(valueToCheck) ?? false;
+	}
+
 	function setOpen(
 		nextOpen: boolean,
 		details?: { reason?: DatePickerOpenChangeReason; event?: Event }
@@ -167,7 +191,7 @@
 	}
 
 	function setValue(nextValue: DatePickerDateValue, source: 'calendar' | 'input' = 'calendar') {
-		if (!isValidDatePickerValue(nextValue) || isDateOutOfRange(nextValue)) return;
+		if (!isValidDatePickerValue(nextValue) || isDateUnavailableInternal(nextValue)) return;
 		if (isDisabled || isReadOnly) return;
 		if (valueInternal === nextValue) {
 			if (source === 'calendar' && closeOnSelect) {
@@ -260,6 +284,72 @@
 
 	function setSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>, nextValue: string) {
 		setSegmentValueInternal(type, nextValue, false);
+	}
+
+	function getSegmentOrderIndex(type: DatePickerEditableSegmentType): number {
+		return segmentOrder.indexOf(type);
+	}
+
+	function registerSegmentRef(type: DatePickerEditableSegmentType, element: HTMLElement | null) {
+		if (segmentRefs[type] === element) return;
+		segmentRefs[type] = element;
+	}
+
+	function focusSegmentByType(type: DatePickerEditableSegmentType): boolean {
+		const target = segmentRefs[type];
+		if (!target) return false;
+		target.focus();
+		return true;
+	}
+
+	function focusNextSegment(type: DatePickerEditableSegmentType): boolean {
+		const index = getSegmentOrderIndex(type);
+		if (index < 0) return false;
+		for (let nextIndex = index + 1; nextIndex < segmentOrder.length; nextIndex += 1) {
+			const nextType = segmentOrder[nextIndex];
+			if (focusSegmentByType(nextType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function focusPreviousSegment(type: DatePickerEditableSegmentType): boolean {
+		const index = getSegmentOrderIndex(type);
+		if (index < 0) return false;
+		for (let previousIndex = index - 1; previousIndex >= 0; previousIndex -= 1) {
+			const previousType = segmentOrder[previousIndex];
+			if (focusSegmentByType(previousType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function focusLastSegment(): boolean {
+		for (let index = segmentOrder.length - 1; index >= 0; index -= 1) {
+			const type = segmentOrder[index];
+			if (focusSegmentByType(type)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function focusNextPlaceholderOrLastSegment(): boolean {
+		for (const type of segmentOrder) {
+			const element = segmentRefs[type];
+			if (!element) continue;
+			if (element.dataset.placeholder === 'true') {
+				element.focus();
+				return true;
+			}
+		}
+		return focusLastSegment();
+	}
+
+	function getSegmentLabel(type: DatePickerEditableSegmentType): string {
+		return getDatePickerSegmentLabel(resolvedLocale, type);
 	}
 
 	function formatSegment(
@@ -375,10 +465,16 @@
 		typeSegmentDigit,
 		adjustSegmentValue,
 		isDateOutOfRange,
-		isDateUnavailable: isDateOutOfRange,
+		isDateUnavailable: isDateUnavailableInternal,
 		getSegments,
 		getSegmentValue,
-		setSegmentValue
+		setSegmentValue,
+		getSegmentLabel,
+		registerSegmentRef,
+		focusNextPlaceholderOrLastSegment,
+		focusNextSegment,
+		focusPreviousSegment,
+		focusLastSegment
 	};
 
 	setDatePickerContext(context);

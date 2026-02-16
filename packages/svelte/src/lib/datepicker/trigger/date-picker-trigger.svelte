@@ -66,16 +66,8 @@
 		if (event.key !== 'ArrowLeft') return;
 		datePicker.setFocusVisible(true);
 
-		const root = document.getElementById(datePicker.id);
-		if (!root) return;
-		const segments = Array.from(
-			root.querySelectorAll<HTMLElement>('[data-date-picker-segment="true"]')
-		);
-		const target = segments[segments.length - 1];
-		if (!target) return;
-
 		event.preventDefault();
-		target.focus();
+		datePicker.focusLastSegment();
 	}
 </script>
 

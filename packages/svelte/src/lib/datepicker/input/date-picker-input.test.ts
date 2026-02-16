@@ -4,6 +4,18 @@ import { userEvent } from 'vitest/browser';
 import DatePickerTest from '../root/date-picker-test.svelte';
 import DatePickerEmptyTest from '../root/date-picker-empty-test.svelte';
 
+function getSegment(type: 'day' | 'month' | 'year') {
+	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
+	if (!element) {
+		throw new Error(`Segment "${type}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
 describe('DatePicker.Input', () => {
 	afterEach(() => {
 		const dialogs = document.querySelectorAll('[role="dialog"]');
@@ -24,7 +36,7 @@ describe('DatePicker.Input', () => {
 
 	it('does not open popover when segment is clicked', async () => {
 		const screen = render(DatePickerTest);
-		const daySegment = screen.getByRole('spinbutton', { name: 'day, ' });
+		const daySegment = getSegment('day');
 
 		await daySegment.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
@@ -72,7 +84,7 @@ describe('DatePicker.Input', () => {
 
 	it('moves focus to trigger with ArrowRight from last segment', async () => {
 		const screen = render(DatePickerTest);
-		const yearSegment = screen.getByRole('spinbutton', { name: 'year, ' });
+		const yearSegment = getSegment('year');
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 
 		yearSegment.element()?.focus();
@@ -100,3 +112,4 @@ describe('DatePicker.Input', () => {
 		expect(document.activeElement?.getAttribute('data-date-picker-segment')).not.toBe('true');
 	});
 });
+

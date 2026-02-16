@@ -15,7 +15,7 @@
 
 ```svelte
 <DatePicker.Root>
- <DatePicker.Input>
+ <DatePicker.Input aria-label="Date input">
   {#snippet children(segment)}
    <DatePicker.Segment {segment} />
   {/snippet}
@@ -37,6 +37,7 @@
 - `isReadOnly?: boolean`
 - `minValue?: string` (`YYYY-MM-DD`)
 - `maxValue?: string` (`YYYY-MM-DD`)
+- `isDateUnavailable?: (date: string) => boolean`
 - `open?: boolean`
 - `defaultOpen?: boolean`
 - `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`
@@ -45,4 +46,6 @@
 ## Notes
 
 - Locale is read from `LocaleProvider` when available.
+- Segment accessible names are resolved automatically from the active locale.
+- During segment editing, `onChange(null)` is emitted whenever the draft is invalid.
 - Current MVP focuses on date-only values.

@@ -8,6 +8,7 @@
 		isReadOnly?: boolean;
 		minValue?: string;
 		maxValue?: string;
+		isDateUnavailable?: (date: string) => boolean;
 		popoverAriaLabel?: string;
 	};
 
@@ -18,6 +19,7 @@
 		isReadOnly = false,
 		minValue,
 		maxValue,
+		isDateUnavailable,
 		popoverAriaLabel = 'Calendar'
 	}: Props = $props();
 
@@ -33,6 +35,7 @@
 	{isReadOnly}
 	{minValue}
 	{maxValue}
+	{isDateUnavailable}
 	onChange={(nextValue) => {
 		selectedValue = nextValue;
 	}}

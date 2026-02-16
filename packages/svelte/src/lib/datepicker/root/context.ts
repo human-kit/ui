@@ -1,5 +1,10 @@
 import { getContext, setContext } from 'svelte';
-import type { DatePickerDateValue, DatePickerSegmentPart, DatePickerSegmentType } from './date-utils';
+import type {
+	DatePickerDateValue,
+	DatePickerEditableSegmentType,
+	DatePickerSegmentPart,
+	DatePickerSegmentType
+} from './date-utils';
 import type {
 	PopoverChangeReason,
 	PopoverOpenChangeDetails
@@ -38,6 +43,12 @@ export type DatePickerContext = {
 	getSegments: () => DatePickerSegmentPart[];
 	getSegmentValue: (type: Exclude<DatePickerSegmentType, 'literal'>) => string;
 	setSegmentValue: (type: Exclude<DatePickerSegmentType, 'literal'>, nextValue: string) => void;
+	getSegmentLabel: (type: DatePickerEditableSegmentType) => string;
+	registerSegmentRef: (type: DatePickerEditableSegmentType, element: HTMLElement | null) => void;
+	focusNextPlaceholderOrLastSegment: () => boolean;
+	focusNextSegment: (type: DatePickerEditableSegmentType) => boolean;
+	focusPreviousSegment: (type: DatePickerEditableSegmentType) => boolean;
+	focusLastSegment: () => boolean;
 };
 
 export function setDatePickerContext(context: DatePickerContext) {

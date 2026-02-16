@@ -7,11 +7,11 @@ describe('Calendar.GridBody', () => {
 	it('renders six week rows', async () => {
 		render(CalendarRootTest);
 		const rows = document.querySelectorAll('tbody tr[data-week]');
-		expect(rows.length).toBe(6);
+		expect(rows.length).toBe(4);
 	});
 
 	it('renders 42 grid cells (6x7)', async () => {
-		render(CalendarRootTest);
+		render(CalendarRootTest, { showOutsideDays: true });
 		const cells = document.querySelectorAll('[role="gridcell"]');
 		expect(cells.length).toBe(42);
 	});

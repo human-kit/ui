@@ -11,6 +11,18 @@ function pressKey(element: Element, key: string, options?: { shiftKey?: boolean 
 	);
 }
 
+function getGridCellByDate(date: string) {
+	const element = document.querySelector<HTMLElement>(`[role="gridcell"][data-date="${date}"]`);
+	if (!element) {
+		throw new Error(`Grid cell "${date}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
 describe('Calendar', () => {
 	it('renders heading and grid', async () => {
 		const screen = render(CalendarRootTest);
@@ -52,17 +64,14 @@ describe('Calendar', () => {
 	});
 
 	it('selects a date when clicking a day cell', async () => {
-		render(CalendarRootTest);
-		const cells = Array.from(document.querySelectorAll('[role="gridcell"]'));
-		const dayCell = cells.find((cell: Element) =>
-			/\d{4}-\d{2}-\d{2}/.test(cell.getAttribute('aria-label') ?? '')
-		);
+		render(CalendarRootTest, { defaultValue: '2026-02-09' });
+		const dayCell = getGridCellByDate('2026-02-10');
 
-		expect(dayCell).toBeTruthy();
-		await (dayCell as HTMLElement).click();
+		await dayCell.click();
 
-		const selectedCell = document.querySelector('[data-selected]');
-		expect(selectedCell).toBeTruthy();
+		await expect
+			.poll(() => document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date'))
+			.toBe('2026-02-10');
 	});
 
 	it('prevents selecting unavailable dates', async () => {
@@ -72,18 +81,18 @@ describe('Calendar', () => {
 			isDateUnavailable: (date: string) => date === unavailableDate
 		});
 
-		const unavailableCell = screen.getByRole('gridcell', { name: unavailableDate });
-		await expect.element(unavailableCell).toHaveAttribute('aria-disabled', 'true');
+		const unavailableCell = getGridCellByDate(unavailableDate);
+		expect(unavailableCell.element()?.getAttribute('aria-disabled')).toBe('true');
 
 		const selectedCell = document.querySelector(
-			`[data-selected] [role="gridcell"][aria-label="${unavailableDate}"]`
+			`[data-selected] [role="gridcell"][data-date="${unavailableDate}"]`
 		);
 		expect(selectedCell).toBeFalsy();
 	});
 
 	it('updates bind:value when selecting a date', async () => {
 		const screen = render(CalendarRootBindValueTest);
-		const day = screen.getByRole('gridcell', { name: '2026-02-12' });
+		const day = getGridCellByDate('2026-02-12');
 
 		await day.click();
 		expect(document.querySelector('[data-testid="calendar-value"]')?.textContent).toBe(
@@ -96,7 +105,7 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"][aria-label="2026-02-10"]')
+				document.querySelector('[data-selected] [role="gridcell"][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 
@@ -115,7 +124,7 @@ describe('Calendar', () => {
 		});
 
 		const initialCalls = isDateUnavailable.mock.calls.length;
-		const day = screen.getByRole('gridcell', { name: '2026-02-12' });
+		const day = getGridCellByDate('2026-02-12');
 		await day.click();
 
 		expect(isDateUnavailable.mock.calls.length).toBe(initialCalls);
@@ -123,61 +132,61 @@ describe('Calendar', () => {
 
 	it('moves focus with arrow keys across dates', async () => {
 		const screen = render(CalendarRootTest, { defaultValue: '2026-02-10' });
-		const day = screen.getByRole('gridcell', { name: '2026-02-10' });
+		const day = getGridCellByDate('2026-02-10');
 		const dayElement = day.element()!;
 
 		dayElement.focus();
 		pressKey(dayElement, 'ArrowRight');
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-11');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
 	});
 
 	it('never serializes false focus attributes during keyboard navigation', async () => {
 		const screen = render(CalendarRootTest, { defaultValue: '2026-02-10' });
-		const day = screen.getByRole('gridcell', { name: '2026-02-10' });
+		const day = getGridCellByDate('2026-02-10');
 		const grid = screen.getByRole('grid');
 
 		day.element()?.focus();
 		pressKey(day.element()!, 'ArrowRight');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-11');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
 		expectNoFalseFocusAttributes(grid.element() ?? document);
 	});
 
 	it('moves focus across month boundary with arrows', async () => {
 		const screen = render(CalendarRootTest, { defaultValue: '2026-02-28' });
-		const day = screen.getByRole('gridcell', { name: '2026-02-28' });
+		const day = getGridCellByDate('2026-02-28');
 		const dayElement = day.element()!;
 
 		dayElement.focus();
 		pressKey(dayElement, 'ArrowRight');
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-03-01');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-03-01');
 	});
 
 	it('moves by month with PageUp and PageDown keeping day number', async () => {
 		const screen = render(CalendarRootTest, { defaultValue: '2026-10-10' });
-		const day = screen.getByRole('gridcell', { name: '2026-10-10' });
+		const day = getGridCellByDate('2026-10-10');
 		const dayElement = day.element()!;
 
 		dayElement.focus();
 		pressKey(dayElement, 'PageUp');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-09-10');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-09-10');
 
 		pressKey(document.activeElement!, 'PageDown');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-10-10');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-10-10');
 	});
 
 	it('moves to month start/end with Home and End', async () => {
 		const screen = render(CalendarRootTest, { defaultValue: '2026-10-10' });
-		const day = screen.getByRole('gridcell', { name: '2026-10-10' });
+		const day = getGridCellByDate('2026-10-10');
 		const dayElement = day.element()!;
 
 		dayElement.focus();
 		pressKey(dayElement, 'Home');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-10-01');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-10-01');
 
 		pressKey(document.activeElement!, 'End');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-10-31');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-10-31');
 	});
 
 	it('focuses unavailable dates during keyboard navigation', async () => {
@@ -185,21 +194,19 @@ describe('Calendar', () => {
 			defaultValue: '2026-02-14',
 			isDateUnavailable: (date: string) => date === '2026-02-15'
 		});
-		const day = screen.getByRole('gridcell', { name: '2026-02-14' });
+		const day = getGridCellByDate('2026-02-14');
 		const dayElement = day.element()!;
 
 		dayElement.focus();
 		pressKey(dayElement, 'ArrowRight');
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-15');
-		await expect
-			.element(screen.getByRole('gridcell', { name: '2026-02-15' }))
-			.toHaveAttribute('aria-disabled', 'true');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-15');
+		expect(getGridCellByDate('2026-02-15').element()?.getAttribute('aria-disabled')).toBe('true');
 
 		pressKey(document.activeElement!, 'Enter');
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('aria-label')
+				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date')
 			)
 			.toBe('2026-02-14');
 	});
@@ -209,25 +216,25 @@ describe('Calendar', () => {
 			selectionMode: 'range'
 		});
 
-		const start = screen.getByRole('gridcell', { name: '2026-02-10' });
-		const end = screen.getByRole('gridcell', { name: '2026-02-14' });
+		const start = getGridCellByDate('2026-02-10');
+		const end = getGridCellByDate('2026-02-14');
 
 		await start.click();
 		await end.click();
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]')
+				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-14"]')
+				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-14"]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-in-range] [role="gridcell"][aria-label="2026-02-12"]')
+				document.querySelector('[data-in-range] [role="gridcell"][data-date="2026-02-12"]')
 			)
 			.toBeTruthy();
 	});
@@ -238,7 +245,7 @@ describe('Calendar', () => {
 			defaultValue: { start: '2026-02-10' }
 		});
 
-		const focused = screen.getByRole('gridcell', { name: '2026-02-10' });
+		const focused = getGridCellByDate('2026-02-10');
 		const focusedElement = focused.element()!;
 		focusedElement.focus();
 
@@ -248,12 +255,12 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]')
+				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-12"]')
+				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-12"]')
 			)
 			.toBeTruthy();
 	});
@@ -264,19 +271,19 @@ describe('Calendar', () => {
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
 
-		const start = screen.getByRole('gridcell', { name: '2026-02-02' });
-		const blockedCrossingEnd = screen.getByRole('gridcell', { name: '2026-02-08' });
+		const start = getGridCellByDate('2026-02-02');
+		const blockedCrossingEnd = getGridCellByDate('2026-02-08');
 
 		await start.click();
-		await expect.element(blockedCrossingEnd).toHaveAttribute('aria-disabled', 'true');
+		expect(blockedCrossingEnd.element()?.getAttribute('aria-disabled')).toBe('true');
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-02"]')
+				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-02"]')
 			)
 			.toBeTruthy();
 		expect(
-			document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-08"]')
+			document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-08"]')
 		).toBeFalsy();
 		expect(document.querySelector('[data-in-range]')).toBeFalsy();
 	});
@@ -287,14 +294,14 @@ describe('Calendar', () => {
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
 
-		const start = screen.getByRole('gridcell', { name: '2026-02-02' });
+		const start = getGridCellByDate('2026-02-02');
 		await start.click();
 
-		const reachable = screen.getByRole('gridcell', { name: '2026-02-06' });
-		const unreachable = screen.getByRole('gridcell', { name: '2026-02-08' });
+		const reachable = getGridCellByDate('2026-02-06');
+		const unreachable = getGridCellByDate('2026-02-08');
 
-		await expect.element(reachable).not.toHaveAttribute('aria-disabled');
-		await expect.element(unreachable).toHaveAttribute('aria-disabled', 'true');
+		expect(reachable.element()?.getAttribute('aria-disabled')).toBeNull();
+		expect(unreachable.element()?.getAttribute('aria-disabled')).toBe('true');
 	});
 
 	it('cancels pending range with Escape and restores previous committed range', async () => {
@@ -303,7 +310,7 @@ describe('Calendar', () => {
 			defaultValue: { start: '2026-02-10', end: '2026-02-12' }
 		});
 
-		const newStart = screen.getByRole('gridcell', { name: '2026-02-15' });
+		const newStart = getGridCellByDate('2026-02-15');
 		await newStart.click();
 
 		const focused = newStart.element()!;
@@ -311,12 +318,12 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][aria-label="2026-02-10"]')
+				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-12"]')
+				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-12"]')
 			)
 			.toBeTruthy();
 	});
@@ -326,7 +333,7 @@ describe('Calendar', () => {
 			selectionMode: 'range'
 		});
 
-		const start = screen.getByRole('gridcell', { name: '2026-02-10' });
+		const start = getGridCellByDate('2026-02-10');
 		const startElement = start.element()!;
 		startElement.focus();
 
@@ -335,12 +342,12 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][aria-label="2026-02-11"]')
+				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-11"]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-in-range] [role="gridcell"][aria-label="2026-02-10"]')
+				document.querySelector('[data-in-range] [role="gridcell"][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 	});
@@ -351,13 +358,13 @@ describe('Calendar', () => {
 			defaultValue: { start: '2026-02-03', end: '2026-02-03' }
 		});
 
-		const newStart = screen.getByRole('gridcell', { name: '2026-02-05' });
+		const newStart = getGridCellByDate('2026-02-05');
 		await newStart.click();
 
-		await expect.element(newStart).toHaveAttribute('aria-selected', 'true');
+		expect(newStart.element()?.getAttribute('aria-selected')).toBe('true');
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"][aria-label="2026-02-05"]')
+				document.querySelector('[data-selected] [role="gridcell"][data-date="2026-02-05"]')
 			)
 			.toBeTruthy();
 	});
@@ -367,13 +374,13 @@ describe('Calendar', () => {
 			selectionMode: 'range'
 		});
 
-		const first = screen.getByRole('gridcell', { name: '2026-02-06' });
-		const second = screen.getByRole('gridcell', { name: '2026-02-03' });
+		const first = getGridCellByDate('2026-02-06');
+		const second = getGridCellByDate('2026-02-03');
 
 		await first.click();
 		await second.click();
 
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-03');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-03');
 	});
 
 	it('clamps PageUp and PageDown to reachable range bounds while selecting range end', async () => {
@@ -386,15 +393,16 @@ describe('Calendar', () => {
 			}
 		});
 
-		const start = screen.getByRole('gridcell', { name: '2026-02-09' });
+		const start = getGridCellByDate('2026-02-09');
 		await start.click();
 		const startElement = start.element()!;
 		startElement.focus();
 
 		pressKey(startElement, 'PageDown');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-13');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-13');
 
 		pressKey(document.activeElement!, 'PageUp');
-		await expect.poll(() => document.activeElement?.getAttribute('aria-label')).toBe('2026-02-09');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-09');
 	});
 });
+
