@@ -51,7 +51,6 @@ describe('DatePicker.Root', () => {
 	});
 
 	it('keeps focus on segment and does not open popover on segment click', async () => {
-		const screen = render(DatePickerTest);
 		const monthSegment = getSegment('month');
 
 		await monthSegment.click();
@@ -81,12 +80,48 @@ describe('DatePicker.Root', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const dayCell = getGridCellByDate('2026-02-14');
-		await dayCell.click();
+		await expect
+			.poll(() => document.querySelector('[role="gridcell"][data-date="2026-02-14"]'))
+			.toBeTruthy();
+		const dayCell = document.querySelector<HTMLElement>('[role="gridcell"][data-date="2026-02-14"]');
+		expect(dayCell).toBeTruthy();
+		dayCell?.click();
 
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 		await expect.poll(() => document.activeElement).toBe(trigger.element());
 		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
+	});
+
+	it('restores trigger as focus-visible when calendar selection is confirmed via keyboard', async () => {
+		const screen = render(DatePickerTest);
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+
+		await trigger.click();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		const activeCell = document.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]');
+		expect(activeCell).toBeTruthy();
+		activeCell?.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		await expect.poll(() => document.activeElement).toBe(trigger.element());
+		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
+	});
+
+	it('clears active segment focused state when focus moves outside date picker', async () => {
+		const screen = render(DatePickerTest);
+		const monthSegment = getSegment('month');
+		const outsideButton = screen.getByTestId('outside-button');
+
+		monthSegment.element()?.focus();
+		await expect.poll(() => monthSegment.element()?.getAttribute('data-focused')).toBe('true');
+
+		outsideButton.element()?.focus();
+		await expect.poll(() => monthSegment.element()?.getAttribute('data-focused')).toBeNull();
 	});
 
 	it('does not open calendar or allow value changes in readOnly mode', async () => {

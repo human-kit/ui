@@ -301,7 +301,6 @@
 		style={segment.isPlaceholder
 			? 'caret-color: transparent; user-select: none;'
 			: 'caret-color: transparent;'}
-		data-rac=""
 		onfocus={handleFocus}
 		onblur={handleBlur}
 		onmousedown={handleMouseDown}

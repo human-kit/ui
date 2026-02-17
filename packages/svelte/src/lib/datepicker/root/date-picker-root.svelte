@@ -70,6 +70,9 @@
 
 	let triggerRef: HTMLElement | null = $state(null);
 	let openInternal = $state((() => defaultOpen)());
+	let calendarInteractionModality = $state<'pointer' | 'keyboard' | 'none'>('none');
+	let triggerInteractionModality = $state<'pointer' | 'keyboard' | 'none'>('none');
+	let suppressNextTriggerFocusVisible = $state(false);
 	let focusVisible = $state(false);
 	let focusWithin = $state(false);
 	let valueInternal = $state(
@@ -188,13 +191,23 @@
 
 		openInternal = nextOpen;
 		open = nextOpen;
+		if (nextOpen) {
+			calendarInteractionModality = 'none';
+		} else {
+			triggerInteractionModality = 'none';
+		}
 	}
 
 	function setValue(nextValue: DatePickerDateValue, source: 'calendar' | 'input' = 'calendar') {
 		if (!isValidDatePickerValue(nextValue) || isDateUnavailableInternal(nextValue)) return;
 		if (isDisabled || isReadOnly) return;
+		const selectionFocusVisible = calendarInteractionModality === 'keyboard';
 		if (valueInternal === nextValue) {
 			if (source === 'calendar' && closeOnSelect) {
+				if (!selectionFocusVisible) {
+					suppressNextTriggerFocusVisible = true;
+				}
+				setFocusVisible(selectionFocusVisible);
 				setOpen(false, { reason: 'close-press' });
 				applyTriggerSelectionCloseState(triggerRef);
 			}
@@ -211,6 +224,10 @@
 		}
 
 		if (source === 'calendar' && closeOnSelect) {
+			if (!selectionFocusVisible) {
+				suppressNextTriggerFocusVisible = true;
+			}
+			setFocusVisible(selectionFocusVisible);
 			setOpen(false, { reason: 'close-press' });
 			applyTriggerSelectionCloseState(triggerRef);
 		}
@@ -235,6 +252,26 @@
 		triggerRef = element;
 	}
 
+	function setCalendarInteractionModality(modality: 'pointer' | 'keyboard' | 'none') {
+		if (calendarInteractionModality === modality) return;
+		calendarInteractionModality = modality;
+	}
+
+	function setTriggerInteractionModality(modality: 'pointer' | 'keyboard' | 'none') {
+		if (triggerInteractionModality === modality) return;
+		triggerInteractionModality = modality;
+	}
+
+	function suppressNextTriggerFocusVisibleState() {
+		suppressNextTriggerFocusVisible = true;
+	}
+
+	function consumeTriggerFocusVisibleSuppression(): boolean {
+		if (!suppressNextTriggerFocusVisible) return false;
+		suppressNextTriggerFocusVisible = false;
+		return true;
+	}
+
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
@@ -244,6 +281,10 @@
 		const nextWithin = computeFocusWithin(instanceId);
 		if (!nextWithin && focusVisible) {
 			focusVisible = false;
+		}
+		if (!nextWithin && activeSegment !== null) {
+			activeSegment = null;
+			segmentTypeBuffer = { day: '', month: '', year: '' };
 		}
 		if (focusWithin === nextWithin) return;
 		focusWithin = nextWithin;
@@ -421,6 +462,12 @@
 	}
 
 	const context: DatePickerContext = {
+		get calendarInteractionModality() {
+			return calendarInteractionModality;
+		},
+		get triggerInteractionModality() {
+			return triggerInteractionModality;
+		},
 		get id() {
 			return instanceId;
 		},
@@ -452,6 +499,10 @@
 			return triggerRef;
 		},
 		setTriggerRef,
+		setCalendarInteractionModality,
+		setTriggerInteractionModality,
+		suppressNextTriggerFocusVisible: suppressNextTriggerFocusVisibleState,
+		consumeTriggerFocusVisibleSuppression,
 		setFocusVisible,
 		syncFocusWithin,
 		setActiveSegment,

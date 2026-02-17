@@ -106,7 +106,8 @@ describe('DatePicker.Calendar', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
-		expect(document.activeElement?.getAttribute('data-focused')).toBeNull();
+		expect(document.activeElement?.getAttribute('data-focused')).toBe('true');
+		expect(document.activeElement?.getAttribute('data-focus-visible')).toBeNull();
 
 		document.activeElement?.dispatchEvent(
 			new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
@@ -114,6 +115,20 @@ describe('DatePicker.Calendar', () => {
 
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
+	});
+
+	it('shows initial calendar focus as focus-visible when opened from keyboard', async () => {
+		const screen = render(DatePickerTest);
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+
+		trigger.element()?.focus();
+		await userEvent.keyboard('{Enter}');
+
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
+		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
 	});
 
 	it('does not focus previous trigger while opening popover', async () => {
@@ -135,7 +150,8 @@ describe('DatePicker.Calendar', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe(today);
-		expect(document.activeElement?.getAttribute('data-focused')).toBeNull();
+		expect(document.activeElement?.getAttribute('data-focused')).toBe('true');
+		expect(document.activeElement?.getAttribute('data-focus-visible')).toBeNull();
 
 		document.activeElement?.dispatchEvent(
 			new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
@@ -143,6 +159,7 @@ describe('DatePicker.Calendar', () => {
 
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe(tomorrow);
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
 	});
 });
 

@@ -34,9 +34,14 @@
 		}
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
+			datePicker.setActiveSegment(null);
 			isFocused = true;
 			datePicker.syncFocusWithin();
-			datePicker.setFocusVisible(buttonRef.matches(':focus-visible'));
+			if (datePicker.consumeTriggerFocusVisibleSuppression()) {
+				datePicker.setFocusVisible(false);
+			} else {
+				datePicker.setFocusVisible(buttonRef.matches(':focus-visible'));
+			}
 		}
 	}
 
@@ -49,12 +54,16 @@
 
 	function handleMouseDown(event: MouseEvent) {
 		if (datePicker.isDisabled || datePicker.isReadOnly) return;
+		datePicker.setTriggerInteractionModality('pointer');
 		datePicker.setFocusVisible(false);
 		event.preventDefault();
 	}
 
 	function handleClick(event: MouseEvent) {
 		if (datePicker.isDisabled || datePicker.isReadOnly) return;
+		if (event.detail === 0) {
+			datePicker.setTriggerInteractionModality('keyboard');
+		}
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
 		}
@@ -63,7 +72,13 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (datePicker.isDisabled) return;
+		if (event.key === 'Enter' || event.key === ' ') {
+			datePicker.setTriggerInteractionModality('keyboard');
+			datePicker.setFocusVisible(true);
+			return;
+		}
 		if (event.key !== 'ArrowLeft') return;
+		datePicker.setTriggerInteractionModality('keyboard');
 		datePicker.setFocusVisible(true);
 
 		event.preventDefault();
@@ -91,8 +106,6 @@
 	>
 		{#if children}
 			{@render children()}
-		{:else}
-			<span aria-hidden="true">📅</span>
 		{/if}
 	</button>
 {/if}

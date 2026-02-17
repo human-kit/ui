@@ -12,6 +12,14 @@
 - `DatePicker.Trigger`
 - `DatePicker.Popover`
 - `DatePicker.Calendar`
+- `DatePicker.CalendarTriggerPrevious`
+- `DatePicker.CalendarHeading`
+- `DatePicker.CalendarTriggerNext`
+- `DatePicker.CalendarGrid`
+- `DatePicker.CalendarGridHeader`
+- `DatePicker.CalendarHeaderCell`
+- `DatePicker.CalendarGridBody`
+- `DatePicker.CalendarBodyCell`
 
 ```svelte
 <DatePicker.Root>
@@ -23,7 +31,17 @@
  <DatePicker.Trigger />
 
  <DatePicker.Popover>
-  <DatePicker.Calendar />
+  <DatePicker.Calendar>
+   <div>
+    <DatePicker.CalendarTriggerPrevious />
+    <DatePicker.CalendarHeading />
+    <DatePicker.CalendarTriggerNext />
+   </div>
+   <DatePicker.CalendarGrid>
+    <DatePicker.CalendarGridHeader />
+    <DatePicker.CalendarGridBody />
+   </DatePicker.CalendarGrid>
+  </DatePicker.Calendar>
  </DatePicker.Popover>
 </DatePicker.Root>
 ```
@@ -42,6 +60,15 @@
 - `defaultOpen?: boolean`
 - `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`
 - `closeOnSelect?: boolean`
+
+## Popover API
+
+- `DatePicker.Popover` forwards `Popover.Content` props (for example `placement`, `offset`, `shouldFlip`, `boundaryElement`, `isNonModal`, and close behavior props).
+- The following are controlled internally by `DatePicker` and are not accepted on `DatePicker.Popover`: `open`, `triggerRef`, `onOpenChange`, `id`.
+- Defaults:
+  - `placement` defaults to `bottom-start`.
+  - `aria-label` defaults to `Calendar`.
+  - `initialFocus` defaults to focusing the current active day cell in the calendar grid.
 
 ## Notes
 

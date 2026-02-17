@@ -35,7 +35,6 @@ describe('DatePicker.Input', () => {
 	});
 
 	it('does not open popover when segment is clicked', async () => {
-		const screen = render(DatePickerTest);
 		const daySegment = getSegment('day');
 
 		await daySegment.click();
@@ -94,6 +93,7 @@ describe('DatePicker.Input', () => {
 
 		expect(document.activeElement).toBe(trigger.element());
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
+		await expect.poll(() => yearSegment.element()?.getAttribute('data-focused')).toBeNull();
 		await expect.poll(() => yearSegment.element()?.getAttribute('data-focus-visible')).toBeNull();
 	});
 

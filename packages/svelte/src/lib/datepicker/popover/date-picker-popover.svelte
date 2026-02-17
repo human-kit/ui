@@ -1,20 +1,19 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ComponentProps } from 'svelte';
 	import { useDatePickerContext } from '../root/context';
 	import { Popover } from '../../popover';
 	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
 
-	type DatePickerPopoverProps = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> & {
-		class?: string;
-		children?: Snippet;
-		'aria-label'?: string;
-	};
+	type DatePickerPopoverProps = Omit<
+		ComponentProps<typeof Popover.Content>,
+		'open' | 'triggerRef' | 'onOpenChange' | 'id'
+	>;
 
 	let {
 		class: className = '',
 		children,
 		'aria-label': ariaLabel = 'Calendar',
+		initialFocus = resolveInitialCalendarFocus,
 		...restProps
 	}: DatePickerPopoverProps = $props();
 
@@ -29,9 +28,23 @@
 		const dialog = document.getElementById(dialogId);
 		const activeDayCell = dialog?.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]');
 		if (activeDayCell) {
-			activeDayCell.dataset.implicitFocus = 'true';
+			if (datePicker.triggerInteractionModality === 'keyboard') {
+				delete activeDayCell.dataset.implicitFocus;
+			} else {
+				activeDayCell.dataset.implicitFocus = 'true';
+			}
 		}
+		datePicker.setTriggerInteractionModality('none');
 		return activeDayCell ?? null;
+	}
+
+	function handlePointerDown() {
+		datePicker.setCalendarInteractionModality('pointer');
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		datePicker.setCalendarInteractionModality('keyboard');
 	}
 </script>
 
@@ -42,10 +55,11 @@
 >
 	<Popover.Content
 		id={dialogId}
-		placement="bottom-start"
 		class={className}
 		aria-label={ariaLabel}
-		initialFocus={resolveInitialCalendarFocus}
+		onmousedown={handlePointerDown}
+		onkeydowncapture={handleKeydown}
+		{initialFocus}
 		{...restProps}
 	>
 		{#if children}

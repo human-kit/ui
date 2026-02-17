@@ -52,7 +52,31 @@
 	<DatePicker.Trigger class="date-picker-trigger">Open calendar</DatePicker.Trigger>
 
 	<DatePicker.Popover class="date-picker-popover" aria-label={popoverAriaLabel}>
-		<DatePicker.Calendar class="date-picker-calendar" />
+		<DatePicker.Calendar class="date-picker-calendar">
+			<div class="flex items-center justify-between gap-2 p-2">
+				<DatePicker.CalendarTriggerPrevious
+					class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+				/>
+				<DatePicker.CalendarHeading class="text-sm font-medium" />
+				<DatePicker.CalendarTriggerNext
+					class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+				/>
+			</div>
+			<DatePicker.CalendarGrid class="w-full border-separate border-spacing-1 px-2 pb-2">
+				<DatePicker.CalendarGridHeader>
+					{#snippet children(dayLabel: string)}
+						<DatePicker.CalendarHeaderCell>
+							{#snippet children()}{dayLabel}{/snippet}
+						</DatePicker.CalendarHeaderCell>
+					{/snippet}
+				</DatePicker.CalendarGridHeader>
+				<DatePicker.CalendarGridBody>
+					{#snippet children(date: string)}
+						<DatePicker.CalendarBodyCell {date} />
+					{/snippet}
+				</DatePicker.CalendarGridBody>
+			</DatePicker.CalendarGrid>
+		</DatePicker.Calendar>
 	</DatePicker.Popover>
 </DatePicker.Root>
 

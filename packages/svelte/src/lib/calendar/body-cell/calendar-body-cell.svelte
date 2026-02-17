@@ -171,7 +171,8 @@
 <td
 	role="presentation"
 	data-selected={isSelected || undefined}
-	data-focused={isVisuallyFocused || undefined}
+	data-focused={isFocused || undefined}
+	data-focus-visible={isVisuallyFocused || undefined}
 	data-disabled={isAriaDisabled || undefined}
 	data-unavailable={isUnavailable || undefined}
 	data-outside-month={isOutsideMonth || undefined}
@@ -195,7 +196,8 @@
 			role="gridcell"
 			tabindex={isInteractionDisabled ? -1 : isFocused ? 0 : -1}
 			data-selected={isSelected || undefined}
-			data-focused={isVisuallyFocused || undefined}
+			data-focused={isFocused || undefined}
+			data-focus-visible={isVisuallyFocused || undefined}
 			data-disabled={isAriaDisabled || hidesOutsideDay || undefined}
 			data-unavailable={isUnavailable || undefined}
 			data-outside-month={isOutsideMonth || undefined}
