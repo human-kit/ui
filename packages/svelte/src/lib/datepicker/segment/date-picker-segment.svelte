@@ -240,8 +240,8 @@
 		if (event.key.length === 1 && /\d/.test(event.key)) {
 			event.preventDefault();
 			const didComplete = datePicker.typeSegmentDigit(segment.type, event.key);
-			if (didComplete && !datePicker.focusNextSegment(segment.type)) {
-				datePicker.triggerRef?.focus();
+			if (didComplete) {
+				datePicker.focusNextSegment(segment.type);
 			}
 			return;
 		}
@@ -252,9 +252,7 @@
 			if (currentValue.length === 0) {
 				return;
 			}
-			if (!datePicker.focusNextSegment(segment.type)) {
-				datePicker.triggerRef?.focus();
-			}
+			datePicker.focusNextSegment(segment.type);
 			return;
 		}
 

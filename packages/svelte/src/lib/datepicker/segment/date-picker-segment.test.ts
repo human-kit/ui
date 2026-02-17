@@ -346,6 +346,28 @@ describe('DatePicker.Segment', () => {
 			.toBe('2000-01-20');
 	});
 
+	it('keeps focus on year after completion and loops typing instead of focusing trigger', async () => {
+		render(DatePickerLocaleTypingTest);
+		const daySegment = getSegment('day');
+		const yearSegment = getSegment('year');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('2');
+		await userEvent.keyboard('0');
+		await userEvent.keyboard('/');
+		await userEvent.keyboard('1');
+		await userEvent.keyboard('/');
+		await userEvent.keyboard('2');
+		await userEvent.keyboard('0');
+		await userEvent.keyboard('0');
+		await userEvent.keyboard('0');
+
+		expect(document.activeElement?.getAttribute('data-type')).toBe('year');
+		await userEvent.keyboard('3');
+		expect(document.activeElement?.getAttribute('data-type')).toBe('year');
+		expect(yearSegment.element()?.textContent).toBe('3');
+	});
+
 	it('commits 2/1/2 as 0002-01-02 in day-first locale', async () => {
 		const screen = render(DatePickerLocaleTypingTest);
 		const daySegment = getSegment('day');
