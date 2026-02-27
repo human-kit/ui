@@ -49,7 +49,7 @@
 ## Root API
 
 - `value?: string | null` (`YYYY-MM-DD`)
-- `defaultValue?: string` (`YYYY-MM-DD`)
+- `defaultValue?: string | null` (`YYYY-MM-DD`)
 - `onChange?: (value: string | null) => void`
 - `isDisabled?: boolean`
 - `isReadOnly?: boolean`
@@ -60,6 +60,8 @@
 - `defaultOpen?: boolean`
 - `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`
 - `closeOnSelect?: boolean`
+- Null-first empty contract: when `value` and `defaultValue` are omitted, the empty state is `null`.
+- `DatePicker.Input` exposes `aria-invalid` and `data-invalid` when the current segment draft is not committeable.
 
 ## Popover API
 
@@ -70,9 +72,14 @@
   - `aria-label` defaults to `Calendar`.
   - `initialFocus` defaults to focusing the current active day cell in the calendar grid.
 
+## Calendar API
+
+- `DatePicker.Calendar` forwards `Calendar.Root` props except those controlled by `DatePicker.Root`.
+- The following are controlled internally by `DatePicker` and are not accepted on `DatePicker.Calendar`: `selectionMode`, `value`, `defaultValue`, `onChange`, `isDisabled`, `isReadOnly`, `isDateUnavailable`.
+
 ## Notes
 
 - Locale is read from `LocaleProvider` when available.
 - Segment accessible names are resolved automatically from the active locale.
-- During segment editing, `onChange(null)` is emitted whenever the draft is invalid.
+- During segment editing, the committed value is set to `null` when the draft is incomplete, invalid, out-of-range, or unavailable.
 - Current MVP focuses on date-only values.

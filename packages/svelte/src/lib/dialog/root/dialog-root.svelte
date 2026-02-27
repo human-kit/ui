@@ -2,6 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
+	import { focusWithModality, resolveCloseInteractionModality } from '../../primitives/input-modality';
+	import type { DialogCloseReason } from './context';
 
 	/**
 	 * Dialog.Root - State management wrapper for Dialog components.
@@ -56,9 +58,11 @@
 		setOpen(true);
 	}
 
-	function closeDialog() {
+	function closeDialog(reason: DialogCloseReason = 'imperative-action', event?: Event) {
 		setOpen(false);
-		triggerRef?.focus();
+		if (triggerRef) {
+			focusWithModality(triggerRef, resolveCloseInteractionModality(reason, event));
+		}
 	}
 
 	function setTriggerRef(el: HTMLElement | null) {

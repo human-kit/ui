@@ -17,23 +17,18 @@ export type DatePickerOpenChangeReason = PopoverChangeReason;
 export type DatePickerOpenChangeDetails = PopoverOpenChangeDetails;
 
 export type DatePickerContext = {
-	calendarInteractionModality: 'pointer' | 'keyboard' | 'none';
-	triggerInteractionModality: 'pointer' | 'keyboard' | 'none';
 	id: string;
 	isDisabled: boolean;
 	isReadOnly: boolean;
 	open: boolean;
 	focusVisible: boolean;
 	focusWithin: boolean;
+	isInvalidDraft: boolean;
 	activeSegment: Exclude<DatePickerSegmentType, 'literal'> | null;
-	value: DatePickerDateValue | undefined;
+	value: DatePickerDateValue | null;
 	locale: string;
 	triggerRef: HTMLElement | null;
 	setTriggerRef: (element: HTMLElement | null) => void;
-	setCalendarInteractionModality: (modality: 'pointer' | 'keyboard' | 'none') => void;
-	setTriggerInteractionModality: (modality: 'pointer' | 'keyboard' | 'none') => void;
-	suppressNextTriggerFocusVisible: () => void;
-	consumeTriggerFocusVisibleSuppression: () => boolean;
 	setFocusVisible: (visible: boolean) => void;
 	syncFocusWithin: () => void;
 	setActiveSegment: (segment: Exclude<DatePickerSegmentType, 'literal'> | null) => void;

@@ -101,12 +101,16 @@
 		cleanupStandaloneTriggerBlurListener = undefined;
 	}
 
-	function applyStandaloneTriggerCloseState(trigger: HTMLElement, reason: PopoverCloseReason) {
+	function applyStandaloneTriggerCloseState(
+		trigger: HTMLElement,
+		reason: PopoverCloseReason,
+		event?: Event
+	) {
 		clearStandaloneTriggerTracking();
 		pendingStandaloneTriggerCloseFocusFrame = requestAnimationFrame(() => {
 			pendingStandaloneTriggerCloseFocusFrame = undefined;
 			if (!trigger.isConnected) return;
-			applyTriggerCloseFocusState(trigger, reason);
+			applyTriggerCloseFocusState(trigger, reason, event);
 			cleanupStandaloneTriggerBlurListener = addTriggerBlurCleanup(trigger, true);
 		});
 	}
@@ -128,7 +132,7 @@
 			onOpenChangeProp?.(false, details);
 			if (details.isCanceled) return;
 			if (triggerRefProp) {
-				applyStandaloneTriggerCloseState(triggerRefProp, reason);
+				applyStandaloneTriggerCloseState(triggerRefProp, reason, event);
 			}
 		} else {
 			ctx!.close(reason, event);

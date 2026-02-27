@@ -35,6 +35,7 @@ describe('DatePicker.Input', () => {
 	});
 
 	it('does not open popover when segment is clicked', async () => {
+		render(DatePickerTest);
 		const daySegment = getSegment('day');
 
 		await daySegment.click();

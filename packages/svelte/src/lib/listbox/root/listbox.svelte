@@ -1,6 +1,10 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
 	import { createListBoxContext, type ListBoxContext } from './context';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	/**
 	 * Props for the ListBox component.
@@ -130,18 +134,20 @@
 
 	function handleFocusIn(event: FocusEvent) {
 		focusWithin = true;
-		focusVisible = (event.target as HTMLElement | null)?.matches(':focus-visible') ?? false;
+		focusVisible = shouldShowFocusVisible(event.target as HTMLElement | null);
 	}
 
 	function handleFocusOut() {
 		queueMicrotask(syncFocusWithin);
 	}
 
-	function handleMouseDown() {
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, event.target as HTMLElement | null);
 		focusVisible = false;
 	}
 
-	function handleKeyDown() {
+	function handleKeyDown(event: KeyboardEvent) {
+		trackInteractionModality(event, event.target as HTMLElement | null);
 		if (focusWithin) {
 			focusVisible = true;
 		}

@@ -16,20 +16,33 @@
 	import {
 		clampSegment,
 		clampSegmentDraft,
-		getCandidateValueFromDraft,
+		createEmptySegmentDraft,
 		getSegmentNumericValue,
 		normalizeSegmentInput,
 		toDraftFromValue,
 		type DatePickerSegmentDraft,
 		type EditableSegmentType
 	} from './segment-state';
-	import { applyTriggerSelectionCloseState, computeFocusWithin } from './focus-manager';
-	import { createDatePickerOpenChangeDetails } from './open-change';
+	import { evaluateDatePickerDraft } from './draft-evaluation';
+	import {
+		applyTriggerSelectionCloseState,
+		computeDatePickerFocusWithin
+	} from './focus-controller';
+	import { getInteractionModality } from '../../primitives/input-modality';
+	import { resolveDatePickerOpenChangeDetails } from './open-controller';
+	import { normalizeBindableDatePickerValue, normalizeDatePickerValue } from './value-commit';
+	import {
+		createDatePickerSegmentRefs,
+		focusLastDatePickerSegment,
+		focusNextDatePickerSegment,
+		focusPreviousDatePickerSegment,
+		registerDatePickerSegmentRef
+	} from './segment-controller';
 
 	type DatePickerRootProps = {
 		id?: string;
 		value?: DatePickerDateValue | null;
-		defaultValue?: DatePickerDateValue;
+		defaultValue?: DatePickerDateValue | null;
 		onChange?: (value: DatePickerDateValue | null) => void;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
@@ -70,28 +83,32 @@
 
 	let triggerRef: HTMLElement | null = $state(null);
 	let openInternal = $state((() => defaultOpen)());
-	let calendarInteractionModality = $state<'pointer' | 'keyboard' | 'none'>('none');
-	let triggerInteractionModality = $state<'pointer' | 'keyboard' | 'none'>('none');
-	let suppressNextTriggerFocusVisible = $state(false);
 	let focusVisible = $state(false);
 	let focusWithin = $state(false);
-	let valueInternal = $state(
-		(() => (isValidDatePickerValue(defaultValue) ? defaultValue : undefined))()
+
+	const initialValueProp = untrack(() => value);
+	const initialDefaultValue = untrack(() =>
+		normalizeDatePickerValue(defaultValue, isValidDatePickerValue)
 	);
+	const initialPropValue =
+		initialValueProp === undefined
+			? initialDefaultValue
+			: normalizeDatePickerValue(initialValueProp, isValidDatePickerValue);
+
+	let valueInternal = $state<DatePickerDateValue | null>(initialPropValue);
 	let segmentDraft = $state<DatePickerSegmentDraft>(
-		(() => (valueInternal ? toDraftFromValue(valueInternal) : { day: '', month: '', year: '' }))()
+		initialPropValue ? toDraftFromValue(initialPropValue) : createEmptySegmentDraft()
 	);
 	let activeSegment = $state<Exclude<DatePickerSegmentType, 'literal'> | null>(null);
-	let segmentTypeBuffer = $state<DatePickerSegmentDraft>({
-		day: '',
-		month: '',
-		year: ''
-	});
-	let segmentRefs: Record<DatePickerEditableSegmentType, HTMLElement | null> = {
-		day: null,
-		month: null,
-		year: null
-	};
+	let segmentTypeBuffer = $state<DatePickerSegmentDraft>(createEmptySegmentDraft());
+	let segmentRefs = createDatePickerSegmentRefs();
+	let lastPublishedValue = $state<DatePickerDateValue | null>(initialPropValue);
+
+	if (initialValueProp === undefined) {
+		value = initialPropValue;
+	} else if (initialValueProp !== initialPropValue) {
+		value = initialPropValue;
+	}
 
 	const localeContext = useLocaleContextOptional();
 	const localeStore = localeContext?.locale;
@@ -110,57 +127,56 @@
 	});
 
 	$effect(() => {
-		if (value !== undefined) {
-			const nextValue = value && isValidDatePickerValue(value) ? value : undefined;
-			if (nextValue !== valueInternal) {
-				valueInternal = nextValue;
-				if (nextValue) {
-					segmentDraft = toDraftFromValue(nextValue);
-					segmentTypeBuffer = { day: '', month: '', year: '' };
-				}
-			}
-		}
+		if (value === undefined) return;
+		const nextValue = normalizeDatePickerValue(value, isValidDatePickerValue);
+		if (nextValue === lastPublishedValue) return;
+		lastPublishedValue = nextValue;
+		valueInternal = nextValue;
+		segmentDraft = nextValue ? toDraftFromValue(nextValue) : createEmptySegmentDraft();
+		segmentTypeBuffer = createEmptySegmentDraft();
 	});
 
 	const normalizedMinValue = $derived(isValidDatePickerValue(minValue) ? minValue : undefined);
 	const normalizedMaxValue = $derived(isValidDatePickerValue(maxValue) ? maxValue : undefined);
 	const segmentOrder = $derived(getDatePickerSegmentOrder(resolvedLocale));
+	const draftEvaluation = $derived.by(() =>
+		evaluateDatePickerDraft(segmentDraft, {
+			isDateOutOfRange,
+			isDateUnavailable: isDateUnavailableInternal
+		})
+	);
+	const isInvalidDraft = $derived(draftEvaluation.isInvalid);
 
-	function isDraftEmpty(draft: DatePickerSegmentDraft): boolean {
-		return draft.day.length === 0 && draft.month.length === 0 && draft.year.length === 0;
+	function publishCommittedValue(
+		nextValue: DatePickerDateValue | null,
+		emitChange: boolean
+	): boolean {
+		const normalizedBindableValue = normalizeBindableDatePickerValue(value);
+		const didInternalChange = valueInternal !== nextValue;
+		const didBindableValueChange = normalizedBindableValue !== nextValue;
+
+		if (!didInternalChange && !didBindableValueChange) return false;
+
+		valueInternal = nextValue;
+		if (didBindableValueChange) {
+			value = nextValue;
+		}
+		lastPublishedValue = nextValue;
+
+		if (emitChange && didInternalChange) {
+			onChange?.(nextValue);
+		}
+
+		return true;
 	}
 
-	function clearValue() {
-		if (isDisabled || isReadOnly) return;
-		let changed = false;
-
-		if (valueInternal !== undefined) {
-			valueInternal = undefined;
-			changed = true;
-		}
-
-		if (value !== null) {
-			value = null;
-			changed = true;
-		}
-
-		if (changed) {
-			onChange?.(null);
-		}
-	}
-
-	function syncValueFromDraft(draft: DatePickerSegmentDraft) {
-		const candidate = getCandidateValueFromDraft(draft);
-		if (!candidate) {
-			clearValue();
-			return;
-		}
-
-		if (isDateUnavailableInternal(candidate)) {
-			return;
-		}
-
-		setValue(candidate, 'input');
+	function closeCalendarAfterSelection(selectionFocusVisible: boolean) {
+		setFocusVisible(selectionFocusVisible);
+		setOpen(false, { reason: 'close-press' });
+		applyTriggerSelectionCloseState(
+			triggerRef,
+			selectionFocusVisible ? 'keyboard' : 'pointer'
+		);
 	}
 
 	function isDateOutOfRange(valueToCheck: DatePickerDateValue): boolean {
@@ -181,55 +197,39 @@
 
 	function setOpen(
 		nextOpen: boolean,
-		details?: { reason?: DatePickerOpenChangeReason; event?: Event }
+		details?: DatePickerOpenChangeDetails | { reason?: DatePickerOpenChangeReason; event?: Event }
 	) {
 		if (openInternal === nextOpen) return;
-		const eventDetails = createDatePickerOpenChangeDetails(details);
+		const eventDetails = resolveDatePickerOpenChangeDetails(details);
 
 		onOpenChange?.(nextOpen, eventDetails);
 		if (eventDetails.isCanceled) return;
 
 		openInternal = nextOpen;
 		open = nextOpen;
-		if (nextOpen) {
-			calendarInteractionModality = 'none';
-		} else {
-			triggerInteractionModality = 'none';
-		}
 	}
 
 	function setValue(nextValue: DatePickerDateValue, source: 'calendar' | 'input' = 'calendar') {
 		if (!isValidDatePickerValue(nextValue) || isDateUnavailableInternal(nextValue)) return;
 		if (isDisabled || isReadOnly) return;
-		const selectionFocusVisible = calendarInteractionModality === 'keyboard';
+		const selectionFocusVisible = getInteractionModality() === 'keyboard';
+
 		if (valueInternal === nextValue) {
 			if (source === 'calendar' && closeOnSelect) {
-				if (!selectionFocusVisible) {
-					suppressNextTriggerFocusVisible = true;
-				}
-				setFocusVisible(selectionFocusVisible);
-				setOpen(false, { reason: 'close-press' });
-				applyTriggerSelectionCloseState(triggerRef);
+				closeCalendarAfterSelection(selectionFocusVisible);
 			}
 			return;
 		}
 
-		valueInternal = nextValue;
-		value = nextValue;
-		onChange?.(nextValue);
+		publishCommittedValue(nextValue, true);
 
 		if (source === 'calendar') {
 			segmentDraft = toDraftFromValue(nextValue);
-			segmentTypeBuffer = { day: '', month: '', year: '' };
+			segmentTypeBuffer = createEmptySegmentDraft();
 		}
 
 		if (source === 'calendar' && closeOnSelect) {
-			if (!selectionFocusVisible) {
-				suppressNextTriggerFocusVisible = true;
-			}
-			setFocusVisible(selectionFocusVisible);
-			setOpen(false, { reason: 'close-press' });
-			applyTriggerSelectionCloseState(triggerRef);
+			closeCalendarAfterSelection(selectionFocusVisible);
 		}
 	}
 
@@ -252,39 +252,19 @@
 		triggerRef = element;
 	}
 
-	function setCalendarInteractionModality(modality: 'pointer' | 'keyboard' | 'none') {
-		if (calendarInteractionModality === modality) return;
-		calendarInteractionModality = modality;
-	}
-
-	function setTriggerInteractionModality(modality: 'pointer' | 'keyboard' | 'none') {
-		if (triggerInteractionModality === modality) return;
-		triggerInteractionModality = modality;
-	}
-
-	function suppressNextTriggerFocusVisibleState() {
-		suppressNextTriggerFocusVisible = true;
-	}
-
-	function consumeTriggerFocusVisibleSuppression(): boolean {
-		if (!suppressNextTriggerFocusVisible) return false;
-		suppressNextTriggerFocusVisible = false;
-		return true;
-	}
-
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
 	}
 
 	function syncFocusWithin() {
-		const nextWithin = computeFocusWithin(instanceId);
+		const nextWithin = computeDatePickerFocusWithin(instanceId);
 		if (!nextWithin && focusVisible) {
 			focusVisible = false;
 		}
 		if (!nextWithin && activeSegment !== null) {
 			activeSegment = null;
-			segmentTypeBuffer = { day: '', month: '', year: '' };
+			segmentTypeBuffer = createEmptySegmentDraft();
 		}
 		if (focusWithin === nextWithin) return;
 		focusWithin = nextWithin;
@@ -293,7 +273,7 @@
 	function setActiveSegment(segment: Exclude<DatePickerSegmentType, 'literal'> | null) {
 		if (activeSegment === segment) return;
 		activeSegment = segment;
-		segmentTypeBuffer = { day: '', month: '', year: '' };
+		segmentTypeBuffer = createEmptySegmentDraft();
 	}
 
 	function getSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>): string {
@@ -320,61 +300,38 @@
 		if (!fromTyping) {
 			segmentTypeBuffer = { ...segmentTypeBuffer, [type]: '' };
 		}
-		syncValueFromDraft(nextDraft);
+
+		const evaluation = evaluateDatePickerDraft(nextDraft, {
+			isDateOutOfRange,
+			isDateUnavailable: isDateUnavailableInternal
+		});
+
+		if (evaluation.isCommitable && evaluation.value) {
+			setValue(evaluation.value, 'input');
+			return;
+		}
+
+		publishCommittedValue(null, true);
 	}
 
 	function setSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>, nextValue: string) {
 		setSegmentValueInternal(type, nextValue, false);
 	}
 
-	function getSegmentOrderIndex(type: DatePickerEditableSegmentType): number {
-		return segmentOrder.indexOf(type);
-	}
-
 	function registerSegmentRef(type: DatePickerEditableSegmentType, element: HTMLElement | null) {
-		if (segmentRefs[type] === element) return;
-		segmentRefs[type] = element;
-	}
-
-	function focusSegmentByType(type: DatePickerEditableSegmentType): boolean {
-		const target = segmentRefs[type];
-		if (!target) return false;
-		target.focus();
-		return true;
+		registerDatePickerSegmentRef(segmentRefs, type, element);
 	}
 
 	function focusNextSegment(type: DatePickerEditableSegmentType): boolean {
-		const index = getSegmentOrderIndex(type);
-		if (index < 0) return false;
-		for (let nextIndex = index + 1; nextIndex < segmentOrder.length; nextIndex += 1) {
-			const nextType = segmentOrder[nextIndex];
-			if (focusSegmentByType(nextType)) {
-				return true;
-			}
-		}
-		return false;
+		return focusNextDatePickerSegment(segmentRefs, segmentOrder, type);
 	}
 
 	function focusPreviousSegment(type: DatePickerEditableSegmentType): boolean {
-		const index = getSegmentOrderIndex(type);
-		if (index < 0) return false;
-		for (let previousIndex = index - 1; previousIndex >= 0; previousIndex -= 1) {
-			const previousType = segmentOrder[previousIndex];
-			if (focusSegmentByType(previousType)) {
-				return true;
-			}
-		}
-		return false;
+		return focusPreviousDatePickerSegment(segmentRefs, segmentOrder, type);
 	}
 
 	function focusLastSegment(): boolean {
-		for (let index = segmentOrder.length - 1; index >= 0; index -= 1) {
-			const type = segmentOrder[index];
-			if (focusSegmentByType(type)) {
-				return true;
-			}
-		}
-		return false;
+		return focusLastDatePickerSegment(segmentRefs, segmentOrder);
 	}
 
 	function focusNextPlaceholderOrLastSegment(): boolean {
@@ -440,7 +397,7 @@
 	}
 
 	function getSegments() {
-		const baseSegments = buildDatePickerSegments(resolvedLocale, valueInternal);
+		const baseSegments = buildDatePickerSegments(resolvedLocale, valueInternal ?? undefined);
 		return baseSegments.map((segment) => {
 			if (segment.type === 'literal') return segment;
 			const draftValue = segmentDraft[segment.type];
@@ -462,12 +419,6 @@
 	}
 
 	const context: DatePickerContext = {
-		get calendarInteractionModality() {
-			return calendarInteractionModality;
-		},
-		get triggerInteractionModality() {
-			return triggerInteractionModality;
-		},
 		get id() {
 			return instanceId;
 		},
@@ -486,6 +437,9 @@
 		get focusWithin() {
 			return focusWithin;
 		},
+		get isInvalidDraft() {
+			return isInvalidDraft;
+		},
 		get activeSegment() {
 			return activeSegment;
 		},
@@ -499,10 +453,6 @@
 			return triggerRef;
 		},
 		setTriggerRef,
-		setCalendarInteractionModality,
-		setTriggerInteractionModality,
-		suppressNextTriggerFocusVisible: suppressNextTriggerFocusVisibleState,
-		consumeTriggerFocusVisibleSuppression,
 		setFocusVisible,
 		syncFocusWithin,
 		setActiveSegment,
@@ -539,6 +489,7 @@
 	data-open={openInternal || undefined}
 	data-focus-visible={focusVisible || undefined}
 	data-focus-within={focusWithin || undefined}
+	data-invalid={isInvalidDraft || undefined}
 	aria-label={ariaLabel}
 >
 	{#if children}

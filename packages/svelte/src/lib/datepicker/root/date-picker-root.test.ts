@@ -4,6 +4,7 @@ import { userEvent } from 'vitest/browser';
 import DatePickerTest from './date-picker-test.svelte';
 import DatePickerBindableTest from './date-picker-bindable-test.svelte';
 import DatePickerBindableEmptyTest from './date-picker-bindable-empty-test.svelte';
+import DatePickerOpenCancelTest from './date-picker-open-cancel-test.svelte';
 import {
 	expectFocusVisibleImpliesFocusWithin,
 	expectNoFalseFocusAttributes
@@ -51,6 +52,7 @@ describe('DatePicker.Root', () => {
 	});
 
 	it('keeps focus on segment and does not open popover on segment click', async () => {
+		render(DatePickerTest);
 		const monthSegment = getSegment('month');
 
 		await monthSegment.click();
@@ -110,6 +112,27 @@ describe('DatePicker.Root', () => {
 		await expect.poll(() => document.activeElement).toBe(trigger.element());
 		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
+	});
+
+	it('keeps trigger focused without focus-visible when closed by outside pointer press', async () => {
+		const screen = render(DatePickerTest);
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+		const outside = screen.getByTestId('outside-button');
+
+		await trigger.click();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		outside.element()?.dispatchEvent(
+			new MouseEvent('mousedown', {
+				bubbles: true,
+				cancelable: true
+			})
+		);
+
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		await expect.poll(() => document.activeElement).toBe(trigger.element());
+		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
 	});
 
 	it('clears active segment focused state when focus moves outside date picker', async () => {
@@ -179,17 +202,73 @@ describe('DatePicker.Root', () => {
 		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('');
 	});
 
-	it('emits null from undefined on first invalid partial draft', async () => {
+	it('initializes bind:value as null without emitting onChange on mount', async () => {
+		render(DatePickerBindableEmptyTest);
+		await expect.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe(
+			'null'
+		);
+		expect(document.querySelector('[data-testid="on-change-calls"]')?.textContent).toBe('0');
+	});
+
+	it('keeps null state during invalid partial draft after null-first initialization', async () => {
 		render(DatePickerBindableEmptyTest);
 		const daySegment = getSegment('day');
 
-		expect(document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe('undefined');
+		expect(document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe('null');
 		daySegment.element()?.focus();
 		await userEvent.keyboard('1');
 
 		await expect.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe(
 			'null'
 		);
+		expect(document.querySelector('[data-testid="on-change-calls"]')?.textContent).toBe('0');
+	});
+
+	it('toggles invalid draft attributes when draft becomes invalid and valid again', async () => {
+		const screen = render(DatePickerBindableTest);
+		const daySegment = getSegment('day');
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+		const inputId = inputGroup.element()?.getAttribute('id') ?? '';
+		const rootId = inputId.endsWith('-input') ? inputId.slice(0, -'-input'.length) : '';
+		const root = rootId ? document.getElementById(rootId) : null;
+
+		expect(inputGroup.element()?.getAttribute('aria-invalid')).toBeNull();
+		expect(root?.getAttribute('data-invalid')).toBeNull();
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}');
+		await userEvent.keyboard('{Backspace}');
+
+		await expect.poll(() => inputGroup.element()?.getAttribute('aria-invalid')).toBe('true');
+		await expect.poll(() => inputGroup.element()?.getAttribute('data-invalid')).toBe('true');
+		await expect.poll(() => root?.getAttribute('data-invalid')).toBe('true');
+		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('');
+
+		await userEvent.keyboard('1');
+		await userEvent.keyboard('0');
+
+		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe(
+			'2026-02-10'
+		);
+		await expect.poll(() => inputGroup.element()?.getAttribute('aria-invalid')).toBeNull();
+		await expect.poll(() => inputGroup.element()?.getAttribute('data-invalid')).toBeNull();
+		await expect.poll(() => root?.getAttribute('data-invalid')).toBeNull();
+	});
+
+	it('respects onOpenChange cancellation when opening', async () => {
+		const screen = render(DatePickerOpenCancelTest, { cancelOpen: true });
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+
+		await trigger.click();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+	});
+
+	it('respects onOpenChange cancellation when closing', async () => {
+		render(DatePickerOpenCancelTest, { defaultOpen: true, cancelClose: true });
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		await userEvent.keyboard('{Escape}');
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 	});
 
 	it('keeps focus contract invariant for root attributes', async () => {

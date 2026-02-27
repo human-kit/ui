@@ -3,6 +3,10 @@
 	import { setComboBoxContext, type ComboBoxContext } from './context';
 	import type { ListBoxContext } from '../../listbox/root/context';
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	type ComboBoxProps<T> = {
 		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
@@ -347,7 +351,7 @@
 
 	function handleFocusIn(event: FocusEvent) {
 		focusWithin = true;
-		focusVisible = (event.target as HTMLElement | null)?.matches(':focus-visible') ?? false;
+		focusVisible = shouldShowFocusVisible(event.target as HTMLElement | null);
 	}
 
 	function handleFocusOut() {
@@ -404,6 +408,7 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (isDisabled) return;
+		trackInteractionModality(event, event.target as HTMLElement | null);
 
 		// Handle tag virtual focus navigation in multiple mode
 		if (focusedTagId !== null && selectionMode === 'multiple') {
@@ -578,6 +583,8 @@
 					event.stopImmediatePropagation();
 				}
 				handleInputBlur();
+				// Escape is a keyboard-only path, so focus-visible remains enabled for the input.
+				focusVisible = true;
 				event.preventDefault();
 				break;
 			case 'Backspace':

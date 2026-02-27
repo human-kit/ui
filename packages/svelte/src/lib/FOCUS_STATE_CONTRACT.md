@@ -26,6 +26,13 @@ Focus-state contract for composed and interactive library components.
 - Keyboard/SR: may activate `data-focus-visible`.
 - Pointer: should not activate `data-focus-visible` by default.
 
+Canonical implementation lives in `primitives/input-modality.ts`:
+
+- `trackInteractionModality(event, target)` records input modality transitions.
+- `shouldShowFocusVisible(target)` resolves whether `data-focus-visible` should be shown.
+- `focusWithModality(target, modality)` atomically sets modality + programmatic focus restore.
+- Keep explicit `trackInteractionModality` calls in component keyboard/pointer handlers to guarantee deterministic modality updates before local focus-state logic runs.
+
 ## Restore focus
 
 On overlay/popover close, transient trigger state is allowed:

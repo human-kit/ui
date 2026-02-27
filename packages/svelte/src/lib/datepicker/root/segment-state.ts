@@ -12,6 +12,14 @@ export type DatePickerSegmentDraft = {
   year: string;
 };
 
+export function createEmptySegmentDraft(): DatePickerSegmentDraft {
+  return {
+    day: '',
+    month: '',
+    year: ''
+  };
+}
+
 export function toDraftFromValue(nextValue: DatePickerDateValue): DatePickerSegmentDraft {
   const [year, month, day] = nextValue.split('-');
   return {
@@ -137,7 +145,7 @@ export function getSegmentBounds(type: EditableSegmentType): { min: number; max:
 export function getSegmentNumericValue(
   type: EditableSegmentType,
   draft: DatePickerSegmentDraft,
-  valueInternal: DatePickerDateValue | undefined
+  valueInternal: DatePickerDateValue | null
 ): number {
   const draftValue = draft[type];
   if (draftValue.length > 0) {

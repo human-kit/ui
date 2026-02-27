@@ -3,22 +3,49 @@
 	import { useDatePickerContext } from '../root/context';
 	import { Popover } from '../../popover';
 	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
+	import { composeEventHandlers, sanitizeDatePickerProps } from '../internal/strict-props';
+	import { trackInteractionModality } from '../../primitives/input-modality';
 
-	type DatePickerPopoverProps = Omit<
-		ComponentProps<typeof Popover.Content>,
-		'open' | 'triggerRef' | 'onOpenChange' | 'id'
-	>;
+	type ForbiddenPopoverProp = 'open' | 'triggerRef' | 'onOpenChange' | 'id';
+
+	type DatePickerPopoverProps = Omit<ComponentProps<typeof Popover.Content>, ForbiddenPopoverProp>;
+
+	const forbiddenPopoverProps: ForbiddenPopoverProp[] = [
+		'open',
+		'triggerRef',
+		'onOpenChange',
+		'id'
+	];
 
 	let {
 		class: className = '',
 		children,
 		'aria-label': ariaLabel = 'Calendar',
-		initialFocus = resolveInitialCalendarFocus,
-		...restProps
+		initialFocus,
+		onmousedown: onMouseDownExternal,
+		onkeydowncapture: onKeydownCaptureExternal,
+		...unsafeRestProps
 	}: DatePickerPopoverProps = $props();
 
 	const datePicker = useDatePickerContext();
 	const dialogId = `${datePicker.id}-popover`;
+	const restProps = $derived.by(
+		() =>
+			sanitizeDatePickerProps(
+				'Popover',
+				unsafeRestProps as Record<string, unknown>,
+				forbiddenPopoverProps
+			) as Omit<ComponentProps<typeof Popover.Content>, ForbiddenPopoverProp>
+	);
+	const resolvedInitialFocus = $derived.by(() => {
+		if (typeof initialFocus === 'function') {
+			return () => initialFocus() ?? resolveInitialCalendarFocus();
+		}
+		if (initialFocus !== undefined) {
+			return initialFocus;
+		}
+		return resolveInitialCalendarFocus;
+	});
 
 	function handleOpenChange(nextOpen: boolean, details: PopoverOpenChangeDetails) {
 		datePicker.onOpenChange(nextOpen, details);
@@ -27,24 +54,15 @@
 	function resolveInitialCalendarFocus(): HTMLElement | null {
 		const dialog = document.getElementById(dialogId);
 		const activeDayCell = dialog?.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]');
-		if (activeDayCell) {
-			if (datePicker.triggerInteractionModality === 'keyboard') {
-				delete activeDayCell.dataset.implicitFocus;
-			} else {
-				activeDayCell.dataset.implicitFocus = 'true';
-			}
-		}
-		datePicker.setTriggerInteractionModality('none');
 		return activeDayCell ?? null;
 	}
 
-	function handlePointerDown() {
-		datePicker.setCalendarInteractionModality('pointer');
+	function handlePointerDown(event: MouseEvent) {
+		trackInteractionModality(event);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key !== 'Enter' && event.key !== ' ') return;
-		datePicker.setCalendarInteractionModality('keyboard');
+		trackInteractionModality(event);
 	}
 </script>
 
@@ -57,9 +75,9 @@
 		id={dialogId}
 		class={className}
 		aria-label={ariaLabel}
-		onmousedown={handlePointerDown}
-		onkeydowncapture={handleKeydown}
-		{initialFocus}
+		onmousedown={composeEventHandlers(handlePointerDown, onMouseDownExternal ?? undefined)}
+		onkeydowncapture={composeEventHandlers(handleKeydown, onKeydownCaptureExternal ?? undefined)}
+		initialFocus={resolvedInitialFocus}
 		{...restProps}
 	>
 		{#if children}

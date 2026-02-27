@@ -18,6 +18,10 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { DatePickerSegmentPart } from '../root/context';
 	import { useDatePickerContext } from '../root/context';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	type DatePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,
@@ -114,7 +118,7 @@
 		}
 		isFocused = true;
 		datePicker.syncFocusWithin();
-		datePicker.setFocusVisible((event.currentTarget as HTMLElement).matches(':focus-visible'));
+		datePicker.setFocusVisible(shouldShowFocusVisible(event.currentTarget as HTMLElement));
 		datePicker.setActiveSegment(segment.type);
 	}
 
@@ -132,6 +136,7 @@
 			event.preventDefault();
 			return;
 		}
+		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		datePicker.setFocusVisible(false);
 		event.preventDefault();
 		const target = event.currentTarget as HTMLElement;
@@ -158,6 +163,7 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (segment.type === 'literal') return;
 		if (datePicker.isDisabled) return;
+		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		datePicker.setFocusVisible(true);
 
 		if (event.key === 'ArrowRight') {

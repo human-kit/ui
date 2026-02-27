@@ -91,12 +91,16 @@
 		pendingTriggerCloseFocusFrame = undefined;
 	}
 
-	function scheduleTriggerCloseFocus(trigger: HTMLElement, reason: PopoverCanonicalCloseReason) {
+	function scheduleTriggerCloseFocus(
+		trigger: HTMLElement,
+		reason: PopoverCanonicalCloseReason,
+		event?: Event
+	) {
 		clearPendingTriggerCloseFocus();
 		pendingTriggerCloseFocusFrame = requestAnimationFrame(() => {
 			pendingTriggerCloseFocusFrame = undefined;
 			if (!trigger.isConnected) return;
-			applyTriggerCloseFocusState(trigger, reason);
+			applyTriggerCloseFocusState(trigger, reason, event);
 		});
 	}
 
@@ -106,7 +110,7 @@
 		setOpenWithDetails(false, { reason, event });
 		if (!wasOpen || isOpen) return;
 		if (!triggerRef) return;
-		scheduleTriggerCloseFocus(triggerRef, reason);
+		scheduleTriggerCloseFocus(triggerRef, reason, event);
 	}
 
 	function setTriggerRef(el: HTMLElement | null) {

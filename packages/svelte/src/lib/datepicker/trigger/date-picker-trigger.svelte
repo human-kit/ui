@@ -2,6 +2,10 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { useDatePickerContext } from '../root/context';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	type DatePickerTriggerProps = Omit<
 		HTMLButtonAttributes,
@@ -37,11 +41,7 @@
 			datePicker.setActiveSegment(null);
 			isFocused = true;
 			datePicker.syncFocusWithin();
-			if (datePicker.consumeTriggerFocusVisibleSuppression()) {
-				datePicker.setFocusVisible(false);
-			} else {
-				datePicker.setFocusVisible(buttonRef.matches(':focus-visible'));
-			}
+			datePicker.setFocusVisible(shouldShowFocusVisible(buttonRef));
 		}
 	}
 
@@ -54,15 +54,15 @@
 
 	function handleMouseDown(event: MouseEvent) {
 		if (datePicker.isDisabled || datePicker.isReadOnly) return;
-		datePicker.setTriggerInteractionModality('pointer');
+		trackInteractionModality(event, buttonRef);
 		datePicker.setFocusVisible(false);
 		event.preventDefault();
 	}
 
 	function handleClick(event: MouseEvent) {
 		if (datePicker.isDisabled || datePicker.isReadOnly) return;
-		if (event.detail === 0) {
-			datePicker.setTriggerInteractionModality('keyboard');
+		if (event.detail > 0) {
+			trackInteractionModality(event, buttonRef);
 		}
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
@@ -72,13 +72,12 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (datePicker.isDisabled) return;
+		trackInteractionModality(event, buttonRef);
 		if (event.key === 'Enter' || event.key === ' ') {
-			datePicker.setTriggerInteractionModality('keyboard');
 			datePicker.setFocusVisible(true);
 			return;
 		}
 		if (event.key !== 'ArrowLeft') return;
-		datePicker.setTriggerInteractionModality('keyboard');
 		datePicker.setFocusVisible(true);
 
 		event.preventDefault();

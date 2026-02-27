@@ -4,18 +4,18 @@
 	import { DemoSection, DemoCheckbox, DemoState } from '$lib/demo';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 
-	let playgroundValue = $state<string | null | undefined>();
+	let playgroundValue = $state<string | null>(null);
 	let playgroundOpen = $state(false);
 	let isDisabled = $state(false);
 	let isReadOnly = $state(false);
 	let closeOnSelect = $state(true);
 
-	let boundedValue = $state<string | null | undefined>();
+	let boundedValue = $state<string | null>(null);
 	let boundedOpen = $state(false);
 	const minValue = '2026-02-10';
 	const maxValue = '2026-02-20';
 
-	let enUsValue = $state<string | null | undefined>();
+	let enUsValue = $state<string | null>(null);
 	let enUsOpen = $state(false);
 
 	$inspect({

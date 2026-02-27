@@ -36,6 +36,10 @@
 	import { useCalendarContext } from '../root/context';
 	import { getCalendarMonthIndex } from '../grid/month-scope';
 	import { formatCalendarDate, getTodayUtcDate, parseCalendarDate } from '../root/date-utils';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	type CalendarBodyCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
 		date: string;
@@ -136,16 +140,11 @@
 	function handleFocus() {
 		if (isInteractionDisabled) return;
 		calendar.setFocusedValue(date);
-		const hasImplicitFocusMarker = gridCellElement?.dataset.implicitFocus === 'true';
-		calendar.setFocusVisible(
-			hasImplicitFocusMarker ? false : (gridCellElement?.matches(':focus-visible') ?? false)
-		);
-		if (hasImplicitFocusMarker && gridCellElement) {
-			delete gridCellElement.dataset.implicitFocus;
-		}
+		calendar.setFocusVisible(shouldShowFocusVisible(gridCellElement ?? null));
 	}
 
 	function handleMousedown(event: MouseEvent) {
+		trackInteractionModality(event, gridCellElement ?? null);
 		calendar.setFocusVisible(false);
 		if (isInteractionDisabled) {
 			event.preventDefault();
@@ -164,6 +163,7 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (isInteractionDisabled) return;
+		trackInteractionModality(event, gridCellElement ?? null);
 		calendar.handleCellKeydown(event, date);
 	}
 </script>

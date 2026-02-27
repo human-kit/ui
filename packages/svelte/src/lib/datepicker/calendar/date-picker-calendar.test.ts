@@ -4,6 +4,7 @@ import { userEvent } from 'vitest/browser';
 import DatePickerTest from '../root/date-picker-test.svelte';
 import DatePickerEmptyTest from '../root/date-picker-empty-test.svelte';
 import DatePickerLocaleTypingTest from '../root/date-picker-locale-typing-test.svelte';
+import DatePickerCalendarUnsafePropsTest from './date-picker-calendar-unsafe-props-test.svelte';
 import { addDays, formatCalendarDate, getTodayUtcDate } from '../../calendar/root/date-utils';
 
 function getSegment(type: 'day' | 'month' | 'year') {
@@ -161,5 +162,29 @@ describe('DatePicker.Calendar', () => {
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
 		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
 	});
-});
 
+	it('ignores unsafe forbidden Calendar props and keeps DatePicker invariants', async () => {
+		const { vi } = await import('vitest');
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+		try {
+			render(DatePickerCalendarUnsafePropsTest);
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const dayCell = getGridCellByDate('2026-02-12');
+			await dayCell.click();
+
+			await expect.poll(() => document.querySelector('[data-testid="selected-value"]')?.textContent).toBe(
+				'2026-02-12'
+			);
+			expect(document.querySelector('[data-testid="unsafe-on-change-calls"]')?.textContent).toBe('0');
+			expect(
+				warnSpy.mock.calls.some(
+					(args) => typeof args[0] === 'string' && args[0].includes('DatePicker.Calendar')
+				)
+			).toBe(true);
+		} finally {
+			warnSpy.mockRestore();
+		}
+	});
+});
