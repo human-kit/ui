@@ -1,0 +1,44 @@
+# GitHub Copilot Instructions
+
+## Project Map
+
+- This is a Bun monorepo: publishable library in `packages/svelte`, docs/playground app in `docs`.
+- Main public entrypoint is `packages/svelte/src/lib/index.ts`; each component also has subpath exports (see `packages/svelte/package.json` `exports`).
+- Docs intentionally import source, not built dist: `docs/vite.config.ts` aliases `@human-kit/svelte-components` to `../packages/svelte/src/lib`.
+
+## Core Dev Workflows
+
+- Install dependencies: `bun install`.
+- Run docs playground: `bun run dev` (root script filters to `docs`).
+- Package library (sync + package + publint): `bun run build`.
+- Run library tests: `bun run test -- --run`.
+- Run type checks: `bun run typecheck`.
+- Run formatting/lint checks: `bun run format`, `bun run lint`.
+- Browser tests use Playwright Chromium (`packages/svelte/vitest.config.ts`); if missing locally run `cd packages/svelte && bunx playwright install chromium`.
+
+## Component Architecture Patterns
+
+- Components are part-based and namespaced: `index.parts.ts` + `index.ts` pattern (example: `packages/svelte/src/lib/popover/index.ts`).
+- Typical structure: `root` owns state/context, child parts consume it (`trigger`, `content`, etc.).
+- Use Svelte 5 runes everywhere (`$props`, `$state`, `$derived`, `$effect`, `$bindable`); keep new code in this style.
+- Controlled/uncontrolled pattern is standard: bindable prop + internal state + callback sync (example: `packages/svelte/src/lib/popover/root/popover-root.svelte`).
+- Context contracts are explicit and typed in `root/context.ts`; child parts throw when used outside root where required (example: `packages/svelte/src/lib/dialog/content/dialog-content.svelte`).
+
+## Cross-Component Integrations
+
+- Dialog/Popover behavior is built from shared primitives in `packages/svelte/src/lib/primitives` (`floating`, `focus-trap`, `click-outside`, `scroll-lock`, `aria-hide-outside`).
+- `DatePicker` composes existing parts instead of duplicating behavior: it wraps `Popover` and `Calendar` (`packages/svelte/src/lib/datepicker/popover/date-picker-popover.svelte`, `packages/svelte/src/lib/datepicker/calendar/date-picker-calendar.svelte`).
+- `ComboBox` delegates option selection to `ListBox` and virtual focus hook (`packages/svelte/src/lib/combobox/list/combobox-listbox.svelte`, `packages/svelte/src/lib/hooks/use-virtual-focus.svelte.ts`).
+- `Dialog` supports nested stacks via global stack helpers; only topmost handles escape/outside close (`packages/svelte/src/lib/dialog/root/dialog-stack.ts`).
+
+## Testing Conventions
+
+- Tests live next to components as `*.test.ts`, with local Svelte harness files `*-test.svelte` (example: `packages/svelte/src/lib/popover/root/popover.test.ts` + `popover-test.svelte`).
+- Use `render` from `vitest-browser-svelte` and `expect.poll(...)` for portal/RAF-driven async UI updates.
+- Portaled elements are commonly cleaned up in `afterEach` by removing `[role="dialog"]`.
+- Vitest aliases `$app/*` to mocks in `packages/svelte/src/lib/test-mocks`; preserve these imports in component code.
+
+## Contribution/CI Expectations
+
+- CI runs lint, typecheck, tests, build (`.github/workflows/ci.yml`).
+- If `packages/svelte/src/**` changes, CI expects a changeset markdown file in `.changeset` (non-README).

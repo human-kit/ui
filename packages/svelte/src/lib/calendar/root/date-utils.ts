@@ -1,42 +1,30 @@
 export type CalendarDateValue = string;
 
-const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+import {
+	createUtcDate,
+	formatDateOnlyValue,
+	isValidDateOnlyValue,
+	parseDateOnlyValue
+} from '../../utils/date-only';
 
 export function isValidCalendarDateValue(value: string): boolean {
-	const match = DATE_RE.exec(value);
-	if (!match) return false;
-
-	const year = Number(match[1]);
-	const month = Number(match[2]);
-	const day = Number(match[3]);
-
-	if (month < 1 || month > 12 || day < 1 || day > 31) return false;
-
-	const date = new Date(Date.UTC(year, month - 1, day));
-	return (
-		date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
-	);
+	return isValidDateOnlyValue(value);
 }
 
 export function parseCalendarDate(value: CalendarDateValue): Date | null {
-	if (!isValidCalendarDateValue(value)) return null;
-	const [year, month, day] = value.split('-').map(Number);
-	return new Date(Date.UTC(year, month - 1, day));
+	return parseDateOnlyValue(value);
 }
 
 export function formatCalendarDate(date: Date): CalendarDateValue {
-	const year = date.getUTCFullYear();
-	const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-	const day = String(date.getUTCDate()).padStart(2, '0');
-	return `${year}-${month}-${day}`;
+	return formatDateOnlyValue(date);
 }
 
 export function startOfMonth(date: Date): Date {
-	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+	return createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), 1);
 }
 
 function getDaysInMonthUtc(year: number, monthIndex: number): number {
-	return new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+	return createUtcDate(year, monthIndex + 1, 0).getUTCDate();
 }
 
 export function addMonths(date: Date, amount: number): Date {
@@ -44,11 +32,11 @@ export function addMonths(date: Date, amount: number): Date {
 	const targetYear = date.getUTCFullYear() + Math.floor(targetMonth / 12);
 	const normalizedMonth = ((targetMonth % 12) + 12) % 12;
 	const targetDay = Math.min(date.getUTCDate(), getDaysInMonthUtc(targetYear, normalizedMonth));
-	return new Date(Date.UTC(targetYear, normalizedMonth, targetDay));
+	return createUtcDate(targetYear, normalizedMonth, targetDay);
 }
 
 export function addDays(date: Date, amount: number): Date {
-	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + amount));
+	return createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + amount);
 }
 
 export function compareDates(a: Date, b: Date): number {
@@ -61,7 +49,7 @@ export function compareDates(a: Date, b: Date): number {
 
 export function getTodayUtcDate(): Date {
 	const now = new Date();
-	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+	return createUtcDate(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 }
 
 export function getFirstDayOfWeek(locale: string): number {
@@ -96,14 +84,23 @@ export type CalendarDayCell = {
 	isOutsideMonth: boolean;
 };
 
-export function buildMonthGrid(monthStart: Date, firstDayOfWeek: number): CalendarDayCell[][] {
+export function buildMonthGrid(
+	monthStart: Date,
+	firstDayOfWeek: number,
+	showOutsideDays = true
+): CalendarDayCell[][] {
 	const firstOfMonth = startOfMonth(monthStart);
 	const firstWeekday = firstOfMonth.getUTCDay();
 	const startOffset = (firstWeekday - firstDayOfWeek + 7) % 7;
 	const gridStart = addDays(firstOfMonth, -startOffset);
+	const lastOfMonth = addDays(addMonths(firstOfMonth, 1), -1);
+	const lastWeekday = lastOfMonth.getUTCDay();
+	const endOffset = (firstDayOfWeek + 6 - lastWeekday + 7) % 7;
+	const visibleDays = startOffset + lastOfMonth.getUTCDate() + endOffset;
+	const weekCount = showOutsideDays ? 6 : Math.max(1, Math.ceil(visibleDays / 7));
 
 	const weeks: CalendarDayCell[][] = [];
-	for (let weekIndex = 0; weekIndex < 6; weekIndex++) {
+	for (let weekIndex = 0; weekIndex < weekCount; weekIndex++) {
 		const week: CalendarDayCell[] = [];
 		for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
 			const date = addDays(gridStart, weekIndex * 7 + dayIndex);

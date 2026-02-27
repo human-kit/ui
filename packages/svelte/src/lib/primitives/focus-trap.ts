@@ -13,6 +13,36 @@ const FOCUSABLE_SELECTOR = [
 	'[contenteditable="true"]'
 ].join(', ');
 
+export type FocusTrapOptions = {
+	enabled?: boolean;
+	restoreFocus?: boolean;
+	initialFocus?: HTMLElement | string | (() => HTMLElement | null | undefined);
+};
+
+function resolveEnabled(options: boolean | FocusTrapOptions): boolean {
+	if (typeof options === 'boolean') return options;
+	return options.enabled ?? true;
+}
+
+function resolveRestoreFocus(options: boolean | FocusTrapOptions): boolean {
+	if (typeof options === 'boolean') return true;
+	return options.restoreFocus ?? true;
+}
+
+function resolveInitialFocus(
+	container: HTMLElement,
+	initialFocus: FocusTrapOptions['initialFocus']
+): HTMLElement | null {
+	if (!initialFocus) return null;
+	if (typeof initialFocus === 'function') {
+		return initialFocus() ?? null;
+	}
+	if (typeof initialFocus === 'string') {
+		return container.querySelector<HTMLElement>(initialFocus);
+	}
+	return initialFocus;
+}
+
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
 		(el) => el.offsetParent !== null
@@ -30,8 +60,11 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
  * </div>
  * ```
  */
-export function focusTrap(node: HTMLElement, enabled: boolean = true) {
+export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions = true) {
 	let previousActiveElement: HTMLElement | null = null;
+	let enabled = resolveEnabled(options);
+	let restoreFocus = resolveRestoreFocus(options);
+	let initialFocus = typeof options === 'boolean' ? undefined : options.initialFocus;
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key !== 'Tab') return;
@@ -77,6 +110,11 @@ export function focusTrap(node: HTMLElement, enabled: boolean = true) {
 
 		// Focus first focusable element, or the container if none
 		requestAnimationFrame(() => {
+			const initialFocusTarget = resolveInitialFocus(node, initialFocus);
+			if (initialFocusTarget && initialFocusTarget.isConnected) {
+				initialFocusTarget.focus();
+				return;
+			}
 			const focusableElements = getFocusableElements(node);
 			if (focusableElements.length > 0) {
 				focusableElements[0].focus();
@@ -91,7 +129,7 @@ export function focusTrap(node: HTMLElement, enabled: boolean = true) {
 	function deactivate() {
 		document.removeEventListener('keydown', handleKeydown, true);
 
-		if (previousActiveElement && previousActiveElement.focus) {
+		if (restoreFocus && previousActiveElement && previousActiveElement.focus) {
 			previousActiveElement.focus();
 		}
 	}
@@ -101,13 +139,18 @@ export function focusTrap(node: HTMLElement, enabled: boolean = true) {
 	}
 
 	return {
-		update(newEnabled: boolean) {
-			if (newEnabled && !enabled) {
+		update(newOptions: boolean | FocusTrapOptions) {
+			const nextEnabled = resolveEnabled(newOptions);
+			const nextRestoreFocus = resolveRestoreFocus(newOptions);
+			if (nextEnabled && !enabled) {
 				activate();
-			} else if (!newEnabled && enabled) {
+			} else if (!nextEnabled && enabled) {
 				deactivate();
 			}
-			enabled = newEnabled;
+			options = newOptions;
+			enabled = nextEnabled;
+			restoreFocus = nextRestoreFocus;
+			initialFocus = typeof newOptions === 'boolean' ? undefined : newOptions.initialFocus;
 		},
 		destroy() {
 			if (enabled) {

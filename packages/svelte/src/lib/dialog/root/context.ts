@@ -1,5 +1,7 @@
 import { setContext, getContext } from 'svelte';
 
+export type DialogCloseReason = 'escape-key' | 'outside-press' | 'imperative-action' | 'none';
+
 /**
  * Context shared between Dialog components (Root, Trigger, Content).
  */
@@ -15,7 +17,7 @@ export type DialogContext = {
 	/** Open the dialog */
 	open: () => void;
 	/** Close the dialog and return focus to trigger */
-	close: () => void;
+	close: (reason?: DialogCloseReason, event?: Event) => void;
 	/** Called when dialog open state changes */
 	onOpenChange: (open: boolean) => void;
 	/** Stack level for z-index calculation (set by Content) */

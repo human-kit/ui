@@ -24,11 +24,19 @@ describe('calendar date utils', () => {
 		expect(formatCalendarDate(parsed!)).toBe('2026-02-10');
 	});
 
-	it('builds a 6x7 month grid', () => {
+	it('builds a 6x7 month grid when showOutsideDays is true', () => {
 		const month = startOfMonth(parseCalendarDate('2026-02-10')!);
-		const grid = buildMonthGrid(month, 0);
+		const grid = buildMonthGrid(month, 0, true);
 
 		expect(grid.length).toBe(6);
+		expect(grid.every((week) => week.length === 7)).toBe(true);
+	});
+
+	it('trims physical rows when showOutsideDays is false', () => {
+		const month = startOfMonth(parseCalendarDate('2026-02-10')!);
+		const grid = buildMonthGrid(month, 0, false);
+
+		expect(grid.length).toBe(4);
 		expect(grid.every((week) => week.length === 7)).toBe(true);
 	});
 

@@ -34,6 +34,7 @@
 	type CalendarRootProps = {
 		selectionMode?: CalendarSelectionMode;
 		visibleMonths?: number;
+		showOutsideDays?: boolean;
 		isDateUnavailable?: (date: string) => boolean;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
@@ -62,6 +63,7 @@
 	let {
 		selectionMode = 'single',
 		visibleMonths = 1,
+		showOutsideDays = false,
 		isDateUnavailable,
 		isDisabled = false,
 		isReadOnly = false,
@@ -100,6 +102,7 @@
 		return {
 			selectionMode,
 			visibleMonths,
+			showOutsideDays,
 			locale: resolvedLocale,
 			isDateUnavailable,
 			isDisabled,

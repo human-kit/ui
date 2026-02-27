@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Popover } from '../index';
+	import type { PopoverOpenChangeDetails } from '../root/context';
 
 	type Props = {
 		open?: boolean;
@@ -8,7 +9,7 @@
 		shouldCloseOnInteractOutside?: boolean;
 		shouldCloseOnEscape?: boolean;
 		shouldCloseOnBlur?: boolean;
-		onOpenChange?: (open: boolean) => void;
+		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
 	};
 
 	let {

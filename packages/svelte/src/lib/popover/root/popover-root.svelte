@@ -1,6 +1,20 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { setPopoverContext, type PopoverContext } from './context';
+	import { onDestroy } from 'svelte';
+	import {
+		setPopoverContext,
+		type PopoverCanonicalCloseReason,
+		type PopoverChangeReason,
+		type PopoverCloseReason,
+		type PopoverOpenChangeDetails,
+		type PopoverOpenReason,
+		type PopoverContext
+	} from './context';
+	import {
+		addTriggerBlurCleanup,
+		applyTriggerCloseFocusState,
+		clearTriggerFocusState
+	} from './focus-state';
 
 	/**
 	 * Popover.Root - State management wrapper for Popover components.
@@ -12,7 +26,7 @@
 		/** Initial open state for uncontrolled mode. */
 		defaultOpen?: boolean;
 		/** Callback when open state changes. */
-		onOpenChange?: (open: boolean) => void;
+		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
 		/** Reference to the trigger element. Can be set manually or via Popover.Trigger. */
 		triggerRef?: HTMLElement | null;
 		/** Children (Trigger and Content) */
@@ -26,6 +40,9 @@
 		triggerRef = $bindable<HTMLElement | null>(null),
 		children
 	}: PopoverRootProps = $props();
+	let closeReason: PopoverCanonicalCloseReason = $state('none');
+	let cleanupTriggerBlurListener: (() => void) | undefined;
+	let pendingTriggerCloseFocusFrame: number | undefined;
 
 	// Use function to capture initial value only (not reactive)
 	let isOpenInternal = $state((() => defaultOpen)());
@@ -33,39 +50,90 @@
 	const isControlled = $derived(open !== undefined);
 	const isOpen = $derived(isControlled ? open! : isOpenInternal);
 
-	function setOpen(value: boolean) {
-		if (isControlled) {
-			onOpenChange?.(value);
-		} else {
+	function setOpenWithDetails(
+		value: boolean,
+		incomingDetails: { reason: PopoverChangeReason; event?: Event }
+	) {
+		let canceled = false;
+		const details: PopoverOpenChangeDetails = {
+			reason: incomingDetails.reason,
+			event: incomingDetails.event,
+			cancel: () => {
+				canceled = true;
+			},
+			get isCanceled() {
+				return canceled;
+			}
+		};
+
+		onOpenChange?.(value, details);
+		if (details.isCanceled) return;
+
+		if (!isControlled) {
 			isOpenInternal = value;
-			onOpenChange?.(value);
 		}
-		// Sync bindable prop
+
 		open = value;
 	}
 
-	function toggle() {
-		setOpen(!isOpen);
+	function toggle(reason: PopoverOpenReason = 'trigger-press', event?: Event) {
+		setOpenWithDetails(!isOpen, { reason, event });
 	}
 
-	function openPopover() {
-		setOpen(true);
+	function openPopover(reason: PopoverOpenReason = 'imperative-action', event?: Event) {
+		closeReason = 'none';
+		setOpenWithDetails(true, { reason, event });
 	}
 
-	function closePopover() {
-		setOpen(false);
-		triggerRef?.focus();
+	function clearPendingTriggerCloseFocus() {
+		if (pendingTriggerCloseFocusFrame === undefined) return;
+		cancelAnimationFrame(pendingTriggerCloseFocusFrame);
+		pendingTriggerCloseFocusFrame = undefined;
+	}
+
+	function scheduleTriggerCloseFocus(
+		trigger: HTMLElement,
+		reason: PopoverCanonicalCloseReason,
+		event?: Event
+	) {
+		clearPendingTriggerCloseFocus();
+		pendingTriggerCloseFocusFrame = requestAnimationFrame(() => {
+			pendingTriggerCloseFocusFrame = undefined;
+			if (!trigger.isConnected) return;
+			applyTriggerCloseFocusState(trigger, reason, event);
+		});
+	}
+
+	function closePopover(reason: PopoverCloseReason = 'imperative-action', event?: Event) {
+		closeReason = reason;
+		const wasOpen = isOpen;
+		setOpenWithDetails(false, { reason, event });
+		if (!wasOpen || isOpen) return;
+		if (!triggerRef) return;
+		scheduleTriggerCloseFocus(triggerRef, reason, event);
 	}
 
 	function setTriggerRef(el: HTMLElement | null) {
+		clearPendingTriggerCloseFocus();
+		cleanupTriggerBlurListener?.();
+		cleanupTriggerBlurListener = undefined;
+		if (triggerRef && triggerRef !== el) {
+			clearTriggerFocusState(triggerRef);
+		}
 		triggerRef = el;
+		if (!triggerRef) return;
+		const currentTrigger = triggerRef;
+		cleanupTriggerBlurListener = addTriggerBlurCleanup(currentTrigger);
 	}
 
-	function handleOpenChange(newOpen: boolean) {
-		setOpen(newOpen);
+	function handleOpenChange(newOpen: boolean, details: PopoverOpenChangeDetails) {
+		setOpenWithDetails(newOpen, { reason: details.reason, event: details.event });
 	}
 
 	const ctx: PopoverContext = {
+		get closeReason() {
+			return closeReason;
+		},
 		get isOpen() {
 			return isOpen;
 		},
@@ -80,6 +148,11 @@
 	};
 
 	setPopoverContext(ctx);
+
+	onDestroy(() => {
+		clearPendingTriggerCloseFocus();
+		cleanupTriggerBlurListener?.();
+	});
 </script>
 
 {#if children}

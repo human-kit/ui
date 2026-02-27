@@ -45,16 +45,16 @@
 	let dialogId: symbol | null = null;
 	let dialogLevel = $state(0);
 
-	function close() {
-		dialogCtx.close();
+	function close(reason: 'escape-key' | 'outside-press' | 'imperative-action', event?: Event) {
+		dialogCtx.close(reason, event);
 	}
 
 	/**
 	 * Wrapper for close that only executes if this is the topmost dialog.
 	 */
-	function closeIfTopmost() {
+	function closeIfTopmost(event: MouseEvent) {
 		if (dialogId && isTopmostDialog(dialogId)) {
-			close();
+			close('outside-press', event);
 		}
 	}
 
@@ -63,7 +63,7 @@
 			// Only handle if this is the topmost dialog
 			if (dialogId && isTopmostDialog(dialogId)) {
 				event.preventDefault();
-				close();
+				close('escape-key', event);
 			}
 		}
 	}
@@ -71,7 +71,7 @@
 	onMount(() => {
 		if (!browser) return;
 		// Register this dialog in the stack
-		const { id, level } = pushDialog(close);
+		const { id, level } = pushDialog(() => close('imperative-action'));
 		dialogId = id;
 		dialogLevel = level;
 		// Share level with overlay via context

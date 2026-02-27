@@ -12,6 +12,7 @@
 - In `single` mode, `value/defaultValue` is `YYYY-MM-DD`.
 - In `range` mode, `value/defaultValue` is `{ start?: 'YYYY-MM-DD', end?: 'YYYY-MM-DD' }`.
 - `visibleMonths` controls how many months are rendered and how paging behaves.
+- `showOutsideDays` controls whether days outside the current month are shown; default is `false`.
 - `isDateUnavailable` marks specific days as non-focusable and non-selectable.
 - Use `LocaleProvider` to localize month/day labels and first day of week.
 - Keyboard navigation uses `Arrow` keys for day/week movement and `Home/End` for month edges.
@@ -20,7 +21,7 @@
 
 - Each `grid` exposes an accessible name using the visible month heading.
 - Today exposes `aria-current="date"`.
-- Unavailable cells expose `aria-disabled="true"` and are neither focusable nor selectable.
+- Unavailable cells expose `aria-disabled="true"`. According to ARIA Grid specifications, disabled cells remain focusable so that screen reader users can spatially navigate and discover them, but they are not selectable.
 
 ### Keyboard
 

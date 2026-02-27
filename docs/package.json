@@ -16,9 +16,11 @@
 		"vite-plugin-devtools-json": "^1.0.0"
 	},
 	"devDependencies": {
+		"@lucide/svelte": "^0.574.0",
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/vite": "^4.1.14",
+		"@toolwind/corner-shape": "^0.0.8-3",
 		"svelte": "^5.41.0",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.14",

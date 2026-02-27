@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+@plugin "@toolwind/corner-shape";
+
+@source '../../packages/svelte/src/lib/**/*.{svelte,ts}';
+
 @theme {
 	--font-sans: 'Inter', sans-serif;
 }

@@ -8,5 +8,6 @@ ignores:
   - '**/dist/**'
 config:
   MD013: false
+  MD052: false
   MD024:
     siblings: true

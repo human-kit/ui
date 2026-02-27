@@ -18,7 +18,6 @@ import {
 } from './date-utils';
 
 const KEY = Symbol('calendar');
-const MAX_FOCUS_SEARCH_DAYS = 370;
 
 export type CalendarSelectionMode = 'single' | 'range';
 export type CalendarRangeValue = {
@@ -41,6 +40,7 @@ export type CreateCalendarContextOptions<
 > = {
 	selectionMode?: TSelectionMode;
 	visibleMonths?: number;
+	showOutsideDays?: boolean;
 	locale?: string;
 	isDisabled?: boolean;
 	isReadOnly?: boolean;
@@ -57,12 +57,14 @@ export type CalendarContext = {
 	selectionMode: CalendarSelectionMode;
 	firstDayOfWeek: number;
 	visibleMonths: number;
+	showOutsideDays: boolean;
 	isDisabled: boolean;
 	isReadOnly: boolean;
 	months: CalendarMonth[];
 	selectedValue: CalendarDateValue | undefined;
 	rangeValue: CalendarRangeValue | undefined;
 	focusedValue: CalendarDateValue;
+	focusVisible: boolean;
 	weekdayLabels: string[];
 	headingLabel: string;
 	isSelected: (date: CalendarDateValue) => boolean;
@@ -73,6 +75,7 @@ export type CalendarContext = {
 	isDateDisabled: (date: CalendarDateValue) => boolean;
 	isOutsideVisibleRange: (date: CalendarDateValue, monthIndex: number) => boolean;
 	setFocusedValue: (date: CalendarDateValue) => void;
+	setFocusVisible: (visible: boolean) => void;
 	setHoveredValue: (date: CalendarDateValue | undefined) => void;
 	selectDate: (date: CalendarDateValue) => void;
 	goToNextPage: () => void;
@@ -92,6 +95,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let {
 		selectionMode = 'single',
 		visibleMonths = 1,
+		showOutsideDays = false,
 		locale = Intl.DateTimeFormat().resolvedOptions().locale,
 		isDisabled = false,
 		isReadOnly = false,
@@ -202,6 +206,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		initialRangeSelected?.end ??
 		initialRangeSelected?.start ??
 		fallbackToday;
+	let currentFocusVisible = false;
 	let currentVisibleMonth = startOfMonth(parseCalendarDate(currentFocused) ?? getTodayUtcDate());
 	let cachedMonths: CalendarMonth[] = [];
 	let hasCachedMonths = false;
@@ -210,6 +215,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let pendingRangePathCacheStart: CalendarDateValue | undefined;
 	let previousUnavailableFn = isDateUnavailable;
 	let previousVisibleMonths = visibleMonths;
+	let previousShowOutsideDays = showOutsideDays;
 	let previousLocale = locale;
 	let cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
 	const layoutVersion = writable(0);
@@ -260,12 +266,14 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		const nextSelectionMode = next.selectionMode ?? 'single';
 		const nextVisibleMonths = Math.max(1, next.visibleMonths ?? 1);
+		const nextShowOutsideDays = next.showOutsideDays ?? false;
 		const nextLocale = next.locale ?? Intl.DateTimeFormat().resolvedOptions().locale;
 		const nextUnavailableFn = next.isDateUnavailable;
 
 		if (
 			nextUnavailableFn !== previousUnavailableFn ||
 			nextVisibleMonths !== previousVisibleMonths ||
+			nextShowOutsideDays !== previousShowOutsideDays ||
 			nextLocale !== previousLocale
 		) {
 			clearUnavailableCache();
@@ -274,6 +282,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		previousUnavailableFn = nextUnavailableFn;
 		previousVisibleMonths = nextVisibleMonths;
+		previousShowOutsideDays = nextShowOutsideDays;
 		previousLocale = nextLocale;
 
 		if (selectionMode !== nextSelectionMode) {
@@ -290,6 +299,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		}
 
 		visibleMonths = nextVisibleMonths;
+		showOutsideDays = nextShowOutsideDays;
 		locale = nextLocale;
 		cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
 
@@ -465,7 +475,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				monthIndex,
 				monthStart,
 				heading: formatMonthHeading(monthStart, locale),
-				weeks: buildMonthGrid(monthStart, firstDayOfWeek)
+				weeks: buildMonthGrid(monthStart, firstDayOfWeek, showOutsideDays)
 			};
 		});
 
@@ -517,7 +527,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	function isDateDisabled(date: CalendarDateValue): boolean {
-		if (isDisabled || isUnavailable(date)) return true;
+		if (isDisabled) return true;
 
 		if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
 			return !isPendingRangePathSelectable(date);
@@ -545,6 +555,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (didChangeMonth) {
 			notifyLayout();
 		}
+		notifySelection();
+	}
+
+	function setFocusVisible(visible: boolean) {
+		if (currentFocusVisible === visible) return;
+		currentFocusVisible = visible;
 		notifySelection();
 	}
 
@@ -689,7 +705,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (!parsed) return undefined;
 		const next = addDays(parsed, amount);
 		const nextValue = formatCalendarDate(next);
-		const focusableValue = findFocusableDate(nextValue, amount);
+		const focusableValue = findFocusableDate(nextValue);
 		if (!focusableValue) return undefined;
 		setFocusedValue(focusableValue);
 		return focusableValue;
@@ -703,8 +719,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (!parsed) return undefined;
 		const next = addMonths(parsed, amount);
 		const nextValue = formatCalendarDate(next);
-		const dayStep = amount >= 0 ? 1 : -1;
-		const focusableValue = findFocusableDate(nextValue, dayStep);
+		const focusableValue = findFocusableDate(nextValue);
 		if (!focusableValue) {
 			if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
 				return moveToMonthEdge(baseDate, amount >= 0 ? 'end' : 'start');
@@ -726,37 +741,19 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		const monthEnd = addDays(addMonths(monthStart, 1), -1);
 		const targetDate = edge === 'start' ? monthStart : monthEnd;
 		const nextValue = formatCalendarDate(targetDate);
-		const dayStep = edge === 'start' ? 1 : -1;
-		const focusableValue = findFocusableDate(nextValue, dayStep);
+		const focusableValue = findFocusableDate(nextValue);
 		if (!focusableValue) return undefined;
 		setFocusedValue(focusableValue);
 		return focusableValue;
 	}
 
-	function findFocusableDate(
-		targetDate: CalendarDateValue,
-		dayStep: number
-	): CalendarDateValue | undefined {
+	function findFocusableDate(targetDate: CalendarDateValue): CalendarDateValue | undefined {
 		if (isDisabled) return undefined;
-		if (!isDateDisabled(targetDate)) return targetDate;
-
-		if (dayStep === 0) return undefined;
-
-		let current = parseCalendarDate(targetDate);
-		if (!current) return undefined;
-
-		for (let index = 0; index < MAX_FOCUS_SEARCH_DAYS; index++) {
-			current = addDays(current, dayStep > 0 ? 1 : -1);
-			const candidate = formatCalendarDate(current);
-			if (!isDateDisabled(candidate)) {
-				return candidate;
-			}
-		}
-
-		return undefined;
+		return targetDate;
 	}
 
 	function handleCellKeydown(event: KeyboardEvent, date: CalendarDateValue) {
+		setFocusVisible(true);
 		const keyDate = isValidCalendarDateValue(currentFocused) ? currentFocused : date;
 		let movedDate: CalendarDateValue | undefined;
 
@@ -854,6 +851,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		get visibleMonths() {
 			return visibleMonths;
 		},
+		get showOutsideDays() {
+			return showOutsideDays;
+		},
 		get isDisabled() {
 			return isDisabled;
 		},
@@ -872,6 +872,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		get focusedValue() {
 			return currentFocused;
 		},
+		get focusVisible() {
+			return currentFocusVisible;
+		},
 		get weekdayLabels() {
 			return getWeekdayLabels(locale, cachedFirstDayOfWeek);
 		},
@@ -886,6 +889,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		isDateDisabled,
 		isOutsideVisibleRange,
 		setFocusedValue,
+		setFocusVisible,
 		setHoveredValue,
 		selectDate,
 		goToNextPage,

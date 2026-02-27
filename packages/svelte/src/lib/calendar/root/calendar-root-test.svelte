@@ -5,6 +5,7 @@
 	type Props = {
 		selectionMode?: CalendarSelectionMode;
 		visibleMonths?: number;
+		showOutsideDays?: boolean;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
 		defaultValue?: CalendarValue;
@@ -14,6 +15,7 @@
 	let {
 		selectionMode = 'single',
 		visibleMonths = 1,
+		showOutsideDays = false,
 		isDisabled = false,
 		isReadOnly = false,
 		defaultValue,
@@ -32,6 +34,7 @@
 	<Calendar.Root
 		selectionMode="range"
 		{visibleMonths}
+		{showOutsideDays}
 		{isDisabled}
 		{isReadOnly}
 		defaultValue={rangeDefaultValue}
@@ -50,6 +53,7 @@
 	<Calendar.Root
 		selectionMode="single"
 		{visibleMonths}
+		{showOutsideDays}
 		{isDisabled}
 		{isReadOnly}
 		defaultValue={singleDefaultValue}

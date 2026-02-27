@@ -77,20 +77,21 @@ bun run dev
 
 ### Scripts (What Each One Does)
 
-| Script        | What it does                                                    |
-| ------------- | --------------------------------------------------------------- |
-| `dev`         | Starts the `docs` development environment using Bun filter.     |
-| `build`       | Packages the `@human-kit/svelte-components` library.            |
-| `build:docs`  | Builds the `docs` site for production.                          |
-| `test`        | Runs library tests (`packages/svelte`).                         |
-| `typecheck`   | Runs type checking for library and docs.                        |
-| `check`       | Runs `check` in all workspaces (`--filter '*'`).                |
-| `format`      | Formats the whole repo with Prettier.                           |
-| `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                    |
-| `lint:md:fix` | Attempts to auto-fix Markdown issues.                           |
-| `lint`        | Validates formatting (`prettier --check`) and then runs ESLint. |
-| `release`     | Builds and publishes with Changesets (`changeset publish`).     |
-| `pr`          | Runs `scripts/pr.sh` for automated PR workflow.                 |
+| Script        | What it does                                                |
+| ------------- | ----------------------------------------------------------- |
+| `dev`         | Starts the `docs` development environment using Bun filter. |
+| `build`       | Packages the `@human-kit/svelte-components` library.        |
+| `build:docs`  | Builds the `docs` site for production.                      |
+| `test`        | Runs library tests (`packages/svelte`).                     |
+| `typecheck`   | Runs type checking for library and docs.                    |
+| `check`       | Runs `check` in all workspaces (`--filter '*'`).            |
+| `format`      | Formats the whole repo with Prettier.                       |
+| `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                |
+| `lint:md:fix` | Attempts to auto-fix Markdown issues.                       |
+| `todo:check`  | Validates required TODO checklist metadata format.          |
+| `lint`        | Validates formatting, ESLint, and TODO metadata format.     |
+| `release`     | Builds and publishes with Changesets (`changeset publish`). |
+| `pr`          | Runs `scripts/pr.sh` for automated PR workflow.             |
 
 ### Root Dev Dependencies (Purpose)
 
@@ -135,10 +136,46 @@ bun run dev
 
 ## Release Workflow
 
-1. Make changes in `packages/svelte` or `docs`.
-2. Create a changeset (`bunx changeset`).
-3. Merge to the main branch.
-4. Run `bun run release` to publish through Changesets.
+1. Work on a feature branch and run `bun run pr`.
+   - The script formats, validates, creates/updates changeset, commits, pushes, and opens/updates the PR.
+2. CI validates lint/typecheck/tests/build and enforces changeset presence for `packages/svelte/src/**` changes.
+3. Merge the PR into `main`.
+4. Release is automated by GitHub Actions (`.github/workflows/release.yml`) using Changesets:
+   - It opens/updates a version PR (`chore: version packages`) or
+   - publishes to npm when version changes are ready.
+
+### Optional: AI-assisted changeset generation (confirm-first)
+
+- Add label `changeset:auto` to a PR to enable automatic changeset generation in CI.
+- Workflow: `.github/workflows/changeset-autogen.yml`.
+- The automation only writes a changeset when missing; maintainers still review/confirm bump type and notes in PR.
+- Provider order: `GEMINI_API_KEY` (preferred) -> `OPENAI_API_KEY` (fallback) -> deterministic non-AI summary.
+- Local helpers:
+  - `bun run changeset:auto:draft` (preview generated markdown)
+  - `bun run changeset:auto:apply` (write generated file if missing)
+
+## TODO Standard
+
+All repository TODO files (`*TODO.md`) must use one consistent, English checklist format.
+
+Required fields per checkbox item:
+
+- `Status`: `[ ]` (pending) or `[x]` (done)
+- `MoSCoW priority`: `[M]`, `[S]`, `[C]`, `[W]`
+- `Execution priority`: `[P0]`, `[P1]`, `[P2]`, `[P3]`
+- `Area/component`: `[Area: ...]`
+- `Owner`: `[Owner: ...]`
+- `Target date/milestone`: `[Target: ...]`
+- `Description`: short English sentence
+
+Canonical line template:
+
+`- [ ] [M][P0][Area: Accessibility][Owner: @username][Target: 2026-04-30] Ensure keyboard trap works in nested dialogs.`
+
+Validation:
+
+- Run `bun run todo:check` to validate TODO formatting.
+- `bun run lint` includes TODO validation and will fail on format violations.
 
 ## Tech Stack
 

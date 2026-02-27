@@ -3,6 +3,10 @@
 	import { setComboBoxContext, type ComboBoxContext } from './context';
 	import type { ListBoxContext } from '../../listbox/root/context';
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	type ComboBoxProps<T> = {
 		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
@@ -98,6 +102,8 @@
 
 	// Virtual focus for tag navigation in multiple mode
 	let focusedTagId: string | number | null = $state(null);
+	let focusWithin = $state(false);
+	let focusVisible = $state(false);
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -335,6 +341,23 @@
 		}
 	}
 
+	function syncFocusWithin() {
+		focusWithin =
+			!!wrapperRef && !!document.activeElement && wrapperRef.contains(document.activeElement);
+		if (!focusWithin) {
+			focusVisible = false;
+		}
+	}
+
+	function handleFocusIn(event: FocusEvent) {
+		focusWithin = true;
+		focusVisible = shouldShowFocusVisible(event.target as HTMLElement | null);
+	}
+
+	function handleFocusOut() {
+		queueMicrotask(syncFocusWithin);
+	}
+
 	// Use navigation hook methods for keyboard navigation
 	function selectFocusedItem() {
 		if (navigation.focusedId !== null) {
@@ -385,6 +408,7 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (isDisabled) return;
+		trackInteractionModality(event, event.target as HTMLElement | null);
 
 		// Handle tag virtual focus navigation in multiple mode
 		if (focusedTagId !== null && selectionMode === 'multiple') {
@@ -559,6 +583,8 @@
 					event.stopImmediatePropagation();
 				}
 				handleInputBlur();
+				// Escape is a keyboard-only path, so focus-visible remains enabled for the input.
+				focusVisible = true;
 				event.preventDefault();
 				break;
 			case 'Backspace':
@@ -688,7 +714,11 @@
 	data-combobox
 	data-disabled={isDisabled || undefined}
 	data-readonly={isReadOnly || undefined}
+	data-focus-within={focusWithin || undefined}
+	data-focus-visible={focusVisible || undefined}
 	use:setWrapperAsTrigger
+	onfocusin={handleFocusIn}
+	onfocusout={handleFocusOut}
 >
 	{#if children}
 		{@render children()}

@@ -124,15 +124,23 @@ if [[ "$BRANCH" == "main" ]]; then
   exit 1
 fi
 
-# Ensure there are changes
-if git diff --quiet && git diff --cached --quiet && [[ -z "$(git ls-files --others --exclude-standard)" ]]; then
-  echo -e "${RED}✗ No changes detected. Make some changes first.${NC}"
+# Require committed-only workflow
+if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+  echo -e "${RED}✗ Uncommitted changes detected.${NC}"
+  echo "  Commit your changes first, then run: bun pr"
+  echo "  (or stash/discard local changes if they should not be included)"
   exit 1
 fi
 
-# Check if library source code was changed (needs version bump)
-LIB_CHANGED=$(git diff --name-only HEAD -- 'packages/svelte/src/' 2>/dev/null || true)
-UNTRACKED_LIB=$(git ls-files --others --exclude-standard -- 'packages/svelte/src/' 2>/dev/null || true)
+git fetch origin --quiet || true
+
+BASE_REF="origin/main"
+AHEAD_COUNT=$(git rev-list --count "${BASE_REF}..HEAD" 2>/dev/null || echo "0")
+if [[ "${AHEAD_COUNT}" == "0" ]]; then
+  echo -e "${RED}✗ No committed changes ahead of ${BASE_REF}.${NC}"
+  echo "  Create at least one commit on this branch before running bun pr."
+  exit 1
+fi
 
 HAS_AI=false
 AI_PROVIDER=""
@@ -148,6 +156,7 @@ fi
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}  Automated PR workflow${NC}"
+echo -e "${BLUE}  ${CYAN}Mode: committed changes only${NC}"
 if [[ "$HAS_AI" == true ]]; then
   echo -e "${BLUE}  ${CYAN}✦ AI-powered (${AI_PROVIDER})${NC}"
 fi
@@ -157,11 +166,7 @@ fi
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# 1. Format
-echo -e "${YELLOW}→ Formatting...${NC}"
-bun run format 2>/dev/null
-
-# 2. Validate (lint, typecheck, build)
+# 1. Validate committed branch state (lint, typecheck, build)
 if [[ "$SKIP_CHECKS" == false ]]; then
   echo ""
   echo -e "${YELLOW}→ Running lint...${NC}"
@@ -191,71 +196,30 @@ else
   echo -e "${YELLOW}⏭ Skipping checks (--skip-checks)${NC}"
 fi
 
-# 3. Changeset
-if [[ -n "$LIB_CHANGED" || -n "$UNTRACKED_LIB" ]]; then
-  echo ""
-  echo -e "${YELLOW}→ Library code changed — running changeset (pick bump type):${NC}"
-  bunx changeset
-else
-  echo ""
-  echo -e "${YELLOW}→ No library code changes — creating empty changeset${NC}"
-  bunx changeset --empty
-fi
+# 2. Build diff from committed changes for AI summary
+DIFF=$(git diff --stat "${BASE_REF}...HEAD" && echo "---" && git diff "${BASE_REF}...HEAD")
 
-# 4. Stage everything
-git add -A
-
-# 5. Get the diff for AI analysis (staged diff against HEAD)
-DIFF=$(git diff --cached --stat && echo "---" && git diff --cached)
-
-# 6. Generate commit message
+# 3. Resolve PR title
 if [[ -n "${COMMIT_MSG_ARG:-}" ]]; then
-  # User provided explicit message
+  # User provided explicit title
   COMMIT_MSG="$COMMIT_MSG_ARG"
-elif [[ "$HAS_AI" == true ]]; then
-  echo ""
-  echo -e "${YELLOW}→ ${CYAN}✦ Generating commit message...${NC}"
-  AI_MSG=$(generate_commit_message "$DIFF")
-
-  if [[ -n "$AI_MSG" ]]; then
-    echo -e "  ${GREEN}${AI_MSG}${NC}"
-    echo ""
-    read -r -p "  Use this message? [Y/n/e(dit)] " CONFIRM
-    CONFIRM=${CONFIRM:-y}
-
-    if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
-      COMMIT_MSG="$AI_MSG"
-    elif [[ "$CONFIRM" =~ ^[Ee]$ ]]; then
-      read -r -p "  Enter commit message: " COMMIT_MSG
-    else
-      COMMIT_MSG=$(echo "$BRANCH" | sed 's|/|: |' | sed 's|-| |g')
-    fi
-  else
-    echo -e "  ${YELLOW}AI unavailable, using branch name${NC}"
-    COMMIT_MSG=$(echo "$BRANCH" | sed 's|/|: |' | sed 's|-| |g')
-  fi
 else
-  # No AI, no explicit message — use branch name
-  COMMIT_MSG=$(echo "$BRANCH" | sed 's|/|: |' | sed 's|-| |g')
+  COMMIT_MSG=$(git log -1 --pretty=%s)
 fi
-
-echo ""
-echo -e "${YELLOW}→ Committing: ${NC}${COMMIT_MSG}"
-git commit -m "$COMMIT_MSG"
 
 if [[ "$DRY_RUN" == true ]]; then
   echo ""
-  echo -e "${GREEN}✓ Dry run complete! Commit created locally but NOT pushed.${NC}"
-  echo -e "  To undo: ${CYAN}git reset --soft HEAD~1${NC}"
+  echo -e "${GREEN}✓ Dry run complete! Branch validated and PR metadata prepared.${NC}"
+  echo -e "  No push and no PR were created."
   exit 0
 fi
 
-# 8. Push
+# 4. Push
 echo ""
 echo -e "${YELLOW}→ Pushing to origin/${BRANCH}...${NC}"
 git push origin "$BRANCH" 2>/dev/null || git push --set-upstream origin "$BRANCH"
 
-# 9. Create PR (if it doesn't already exist)
+# 5. Create PR (if it doesn't already exist)
 EXISTING_PR=$(gh pr view "$BRANCH" --json number 2>/dev/null | grep -o '"number":[0-9]*' | grep -o '[0-9]*' || true)
 
 if [[ -n "$EXISTING_PR" ]]; then

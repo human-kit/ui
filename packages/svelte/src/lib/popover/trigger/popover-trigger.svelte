@@ -43,7 +43,7 @@
 
 		if (button && wrapperRef?.contains(button)) {
 			setActiveTrigger(button);
-			popoverCtx.toggle();
+			popoverCtx.toggle('trigger-press', event);
 		}
 	}
 

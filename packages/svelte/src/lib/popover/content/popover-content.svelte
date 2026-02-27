@@ -4,12 +4,21 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
-	import { focusTrap } from '../../primitives/focus-trap';
+	import { focusTrap, type FocusTrapOptions } from '../../primitives/focus-trap';
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
 	import { Portal } from '../../portal';
-	import { getPopoverContext } from '../root/context';
+	import {
+		getPopoverContext,
+		type PopoverOpenChangeDetails,
+		type PopoverCloseReason
+	} from '../root/context';
+	import {
+		addTriggerBlurCleanup,
+		applyTriggerCloseFocusState,
+		clearTriggerFocusState
+	} from '../root/focus-state';
 
 	/**
 	 * Popover.Content - The floating content panel.
@@ -36,13 +45,15 @@
 		shouldCloseOnEscape?: boolean;
 		/** Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers. */
 		shouldCloseOnBlur?: boolean;
+		/** Element or selector to focus first when modal trap activates. */
+		initialFocus?: FocusTrapOptions['initialFocus'];
 		// Standalone mode props (used when not inside Popover.Root)
 		/** Controlled open state (standalone mode). */
 		open?: boolean;
 		/** Reference to the trigger element (standalone mode). */
 		triggerRef?: HTMLElement | null;
 		/** Callback when open state changes (standalone mode). */
-		onOpenChange?: (open: boolean) => void;
+		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 
 	let {
@@ -56,6 +67,7 @@
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		shouldCloseOnBlur,
+		initialFocus,
 		// Standalone mode props
 		open: openProp,
 		triggerRef: triggerRefProp = null,
@@ -73,28 +85,64 @@
 	const shouldCloseOnBlurResolved = $derived(shouldCloseOnBlur ?? isNonModal);
 
 	let popoverRef: HTMLElement | undefined = $state();
+	let cleanupStandaloneTriggerBlurListener: (() => void) | undefined;
+	let pendingStandaloneTriggerCloseFocusFrame: number | undefined;
+	let trackedStandaloneTrigger: HTMLElement | null = null;
 
-	function close() {
-		if (isStandalone) {
-			onOpenChangeProp?.(false);
-			triggerRefProp?.focus();
-		} else {
-			ctx!.close();
-		}
+	function clearPendingStandaloneTriggerCloseFocus() {
+		if (pendingStandaloneTriggerCloseFocusFrame === undefined) return;
+		cancelAnimationFrame(pendingStandaloneTriggerCloseFocusFrame);
+		pendingStandaloneTriggerCloseFocusFrame = undefined;
 	}
 
-	function handleOpenChange(value: boolean) {
+	function clearStandaloneTriggerTracking() {
+		clearPendingStandaloneTriggerCloseFocus();
+		cleanupStandaloneTriggerBlurListener?.();
+		cleanupStandaloneTriggerBlurListener = undefined;
+	}
+
+	function applyStandaloneTriggerCloseState(
+		trigger: HTMLElement,
+		reason: PopoverCloseReason,
+		event?: Event
+	) {
+		clearStandaloneTriggerTracking();
+		pendingStandaloneTriggerCloseFocusFrame = requestAnimationFrame(() => {
+			pendingStandaloneTriggerCloseFocusFrame = undefined;
+			if (!trigger.isConnected) return;
+			applyTriggerCloseFocusState(trigger, reason, event);
+			cleanupStandaloneTriggerBlurListener = addTriggerBlurCleanup(trigger, true);
+		});
+	}
+
+	function close(reason: PopoverCloseReason = 'imperative-action', event?: Event) {
 		if (isStandalone) {
-			onOpenChangeProp?.(value);
+			let canceled = false;
+			const details: PopoverOpenChangeDetails = {
+				reason,
+				event,
+				cancel: () => {
+					canceled = true;
+				},
+				get isCanceled() {
+					return canceled;
+				}
+			};
+
+			onOpenChangeProp?.(false, details);
+			if (details.isCanceled) return;
+			if (triggerRefProp) {
+				applyStandaloneTriggerCloseState(triggerRefProp, reason, event);
+			}
 		} else {
-			ctx!.onOpenChange(value);
+			ctx!.close(reason, event);
 		}
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape' && isOpen && shouldCloseOnEscape) {
 			event.preventDefault();
-			close();
+			close('escape-key', event);
 		}
 	}
 
@@ -107,7 +155,7 @@
 		const focusInTrigger = triggerRef?.contains(target) || target === triggerRef;
 
 		if (!focusInPopover && !focusInTrigger) {
-			handleOpenChange(false);
+			close('focus-out', event);
 		}
 	}
 
@@ -121,9 +169,27 @@
 
 		// Only close on external scroll
 		if (!isInsidePopover && !isInsideTrigger) {
-			close();
+			close('outside-press', event);
 		}
 	}
+
+	$effect(() => {
+		if (!isStandalone) {
+			if (trackedStandaloneTrigger) {
+				clearTriggerFocusState(trackedStandaloneTrigger);
+			}
+			trackedStandaloneTrigger = null;
+			clearStandaloneTriggerTracking();
+			return;
+		}
+
+		if (trackedStandaloneTrigger && trackedStandaloneTrigger !== triggerRefProp) {
+			clearTriggerFocusState(trackedStandaloneTrigger);
+			clearStandaloneTriggerTracking();
+		}
+
+		trackedStandaloneTrigger = triggerRefProp;
+	});
 
 	onMount(() => {
 		if (!browser) return;
@@ -134,6 +200,10 @@
 
 	onDestroy(() => {
 		if (!browser) return;
+		if (trackedStandaloneTrigger) {
+			clearTriggerFocusState(trackedStandaloneTrigger);
+		}
+		clearStandaloneTriggerTracking();
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
 		document.removeEventListener('scroll', handleScroll, true);
@@ -149,11 +219,14 @@
 			aria-modal={isModal}
 			use:floating={{ anchor: triggerRef, offset, placement, shouldFlip, boundaryElement }}
 			use:clickOutside={{
-				handler: close,
+				handler: (event) => {
+					event.preventDefault();
+					close('outside-press', event);
+				},
 				enabled: shouldCloseOnInteractOutside,
 				ignore: [triggerRef]
 			}}
-			use:focusTrap={isModal}
+			use:focusTrap={{ enabled: isModal, restoreFocus: false, initialFocus }}
 			use:scrollLock={isModal}
 			use:ariaHideOutside={isModal}
 			style="position: fixed; z-index: 9999;"

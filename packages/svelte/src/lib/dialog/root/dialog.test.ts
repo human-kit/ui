@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DialogTest from './dialog-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Dialog', () => {
 	// Clean up any portaled content after each test
@@ -129,6 +130,7 @@ describe('Dialog', () => {
 
 			// Focus should return to trigger
 			await expect.poll(() => document.activeElement?.textContent).toContain('Open Dialog');
+			expectNoFalseFocusAttributes(document);
 		});
 	});
 

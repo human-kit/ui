@@ -18,6 +18,8 @@
 		if (!browser || !wrapper) return;
 
 		await tick();
+		const wrapperNode = wrapper;
+		if (!wrapperNode) return;
 
 		const targetEl = document.querySelector(target);
 		if (!targetEl) {
@@ -25,7 +27,7 @@
 			return;
 		}
 
-		targetEl.appendChild(wrapper);
+		targetEl.appendChild(wrapperNode);
 	});
 
 	onDestroy(() => {

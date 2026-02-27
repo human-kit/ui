@@ -2,6 +2,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverContentTest from './popover-content-test.svelte';
+import PopoverContentStandaloneTest from './popover-content-standalone-test.svelte';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Popover.Content', () => {
 	// Clean up any portaled content after each test
@@ -38,6 +40,30 @@ describe('Popover.Content', () => {
 			await userEvent.keyboard('{Escape}');
 
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+			await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
+			await expect.poll(() => document.activeElement).toBe(trigger.element());
+		});
+
+		it('closes on outside click and marks trigger focused without focus-visible', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+			const outside = document.createElement('button');
+			document.body.appendChild(outside);
+
+			try {
+				await trigger.click();
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+				outside.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+				await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+				expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
+				await expect.poll(() => document.activeElement).toBe(trigger.element());
+			} finally {
+				outside.remove();
+			}
 		});
 
 		it('respects shouldCloseOnEscape=false', async () => {
@@ -53,6 +79,48 @@ describe('Popover.Content', () => {
 			await new Promise((r) => setTimeout(r, 100));
 			const dialog = document.querySelector('[role="dialog"]');
 			expect(dialog).toBeTruthy();
+		});
+
+		it('allows cancel() to prevent close in standalone mode', async () => {
+			render(PopoverContentStandaloneTest);
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
+
+		it('restores standalone trigger focus attrs by close reason and clears on blur', async () => {
+			render(PopoverContentStandaloneTest, { preventClose: false });
+			const trigger = document.querySelector('button[type="button"]') as HTMLElement | null;
+			expect(trigger).toBeTruthy();
+
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const outside = document.createElement('button');
+			document.body.appendChild(outside);
+			try {
+				await userEvent.keyboard('{Escape}');
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+				await expect.poll(() => trigger?.getAttribute('data-focused')).toBe('true');
+				await expect.poll(() => trigger?.getAttribute('data-focus-visible')).toBe('true');
+
+				outside.focus();
+				await expect.poll(() => trigger?.getAttribute('data-focused')).toBeNull();
+				await expect.poll(() => trigger?.getAttribute('data-focus-visible')).toBeNull();
+			} finally {
+				outside.remove();
+			}
+		});
+
+		it('never serializes false focus-state attributes', async () => {
+			render(PopoverContentStandaloneTest, { preventClose: false });
+			expectNoFalseFocusAttributes();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			expectNoFalseFocusAttributes();
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			expectNoFalseFocusAttributes();
 		});
 	});
 
@@ -113,6 +181,7 @@ describe('Popover.Content', () => {
 
 				// Non-modal with shouldCloseOnBlur should close
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+				await expect.poll(() => document.activeElement).toBe(trigger.element());
 			} finally {
 				externalButton.remove();
 			}
