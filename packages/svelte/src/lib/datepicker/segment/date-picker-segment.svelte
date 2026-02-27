@@ -1,16 +1,14 @@
 <script module lang="ts">
-	import { SvelteMap } from 'svelte/reactivity';
-
-	const monthFormatterCache = new SvelteMap<string, Intl.DateTimeFormat>();
+	const monthFormatterCache: Record<string, Intl.DateTimeFormat> = Object.create(null);
 
 	function getMonthFormatter(locale: string): Intl.DateTimeFormat {
-		let formatter = monthFormatterCache.get(locale);
+		let formatter = monthFormatterCache[locale];
 		if (!formatter) {
 			formatter = new Intl.DateTimeFormat(locale, {
 				month: 'long',
 				timeZone: 'UTC'
 			});
-			monthFormatterCache.set(locale, formatter);
+			monthFormatterCache[locale] = formatter;
 		}
 		return formatter;
 	}

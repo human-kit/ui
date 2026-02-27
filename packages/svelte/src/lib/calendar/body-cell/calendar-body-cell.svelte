@@ -1,16 +1,14 @@
 <script module lang="ts">
-	import { SvelteMap } from 'svelte/reactivity';
-
-	const ariaDateFormatterCache = new SvelteMap<string, Intl.DateTimeFormat>();
+	const ariaDateFormatterCache: Record<string, Intl.DateTimeFormat> = Object.create(null);
 
 	function getAriaDateFormatter(locale: string): Intl.DateTimeFormat {
-		let formatter = ariaDateFormatterCache.get(locale);
+		let formatter = ariaDateFormatterCache[locale];
 		if (!formatter) {
 			formatter = new Intl.DateTimeFormat(locale, {
 				dateStyle: 'full',
 				timeZone: 'UTC'
 			});
-			ariaDateFormatterCache.set(locale, formatter);
+			ariaDateFormatterCache[locale] = formatter;
 		}
 		return formatter;
 	}
