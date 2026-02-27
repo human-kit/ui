@@ -23,26 +23,26 @@
 
 ```svelte
 <DatePicker.Root>
- <DatePicker.Input aria-label="Date input">
-  {#snippet children(segment)}
-   <DatePicker.Segment {segment} />
-  {/snippet}
- </DatePicker.Input>
- <DatePicker.Trigger />
+	<DatePicker.Input aria-label="Date input">
+		{#snippet children(segment)}
+			<DatePicker.Segment {segment} />
+		{/snippet}
+	</DatePicker.Input>
+	<DatePicker.Trigger />
 
- <DatePicker.Popover>
-  <DatePicker.Calendar>
-   <div>
-    <DatePicker.TriggerPrevious />
-    <DatePicker.Heading />
-    <DatePicker.TriggerNext />
-   </div>
-   <DatePicker.Grid>
-    <DatePicker.GridHeader />
-    <DatePicker.GridBody />
-   </DatePicker.Grid>
-  </DatePicker.Calendar>
- </DatePicker.Popover>
+	<DatePicker.Popover>
+		<DatePicker.Calendar>
+			<div>
+				<DatePicker.TriggerPrevious />
+				<DatePicker.Heading />
+				<DatePicker.TriggerNext />
+			</div>
+			<DatePicker.Grid>
+				<DatePicker.GridHeader />
+				<DatePicker.GridBody />
+			</DatePicker.Grid>
+		</DatePicker.Calendar>
+	</DatePicker.Popover>
 </DatePicker.Root>
 ```
 

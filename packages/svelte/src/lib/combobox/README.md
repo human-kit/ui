@@ -18,13 +18,13 @@ Import the component and compose its parts:
 
 ```svelte
 <ComboBox.Root>
- <ComboBox.Input />
- <ComboBox.Button />
- <ComboBox.Popover>
-  <ComboBox.List>
-   <ComboBox.Item id="1">Option 1</ComboBox.Item>
-  </ComboBox.List>
- </ComboBox.Popover>
+	<ComboBox.Input />
+	<ComboBox.Button />
+	<ComboBox.Popover>
+		<ComboBox.List>
+			<ComboBox.Item id="1">Option 1</ComboBox.Item>
+		</ComboBox.List>
+	</ComboBox.Popover>
 </ComboBox.Root>
 ```
 

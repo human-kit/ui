@@ -181,8 +181,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		selectionMode === 'single' && typeof value === 'string' && isValidCalendarDateValue(value)
 			? value
 			: selectionMode === 'single' &&
-				typeof defaultValue === 'string' &&
-				isValidCalendarDateValue(defaultValue)
+				  typeof defaultValue === 'string' &&
+				  isValidCalendarDateValue(defaultValue)
 				? defaultValue
 				: undefined;
 
