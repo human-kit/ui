@@ -46,7 +46,7 @@ Quick usage:
 
 ```svelte
 <script lang="ts">
-	import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
+ import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
 </script>
 ```
 
@@ -135,10 +135,23 @@ bun run dev
 
 ## Release Workflow
 
-1. Make changes in `packages/svelte` or `docs`.
-2. Create a changeset (`bunx changeset`).
-3. Merge to the main branch.
-4. Run `bun run release` to publish through Changesets.
+1. Work on a feature branch and run `bun run pr`.
+   - The script formats, validates, creates/updates changeset, commits, pushes, and opens/updates the PR.
+2. CI validates lint/typecheck/tests/build and enforces changeset presence for `packages/svelte/src/**` changes.
+3. Merge the PR into `main`.
+4. Release is automated by GitHub Actions (`.github/workflows/release.yml`) using Changesets:
+   - It opens/updates a version PR (`chore: version packages`) or
+   - publishes to npm when version changes are ready.
+
+### Optional: AI-assisted changeset generation (confirm-first)
+
+- Add label `changeset:auto` to a PR to enable automatic changeset generation in CI.
+- Workflow: `.github/workflows/changeset-autogen.yml`.
+- The automation only writes a changeset when missing; maintainers still review/confirm bump type and notes in PR.
+- Provider order: `GEMINI_API_KEY` (preferred) -> `OPENAI_API_KEY` (fallback) -> deterministic non-AI summary.
+- Local helpers:
+  - `bun run changeset:auto:draft` (preview generated markdown)
+  - `bun run changeset:auto:apply` (write generated file if missing)
 
 ## Tech Stack
 

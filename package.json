@@ -17,6 +17,8 @@
 		"lint:md": "npx markdownlint-cli2",
 		"lint:md:fix": "npx markdownlint-cli2 --fix",
 		"lint": "prettier --check . && eslint .",
+		"changeset:auto:draft": "node scripts/changeset-auto.mjs --draft --only-if-missing",
+		"changeset:auto:apply": "node scripts/changeset-auto.mjs --apply --only-if-missing",
 		"release": "bun run build && bunx changeset publish",
 		"pr": "bash scripts/pr.sh"
 	},

@@ -83,3 +83,13 @@
 - Segment accessible names are resolved automatically from the active locale.
 - During segment editing, the committed value is set to `null` when the draft is incomplete, invalid, out-of-range, or unavailable.
 - Current MVP focuses on date-only values.
+
+## Focus behavior decisions
+
+- DatePicker aligns with the shared modality primitive (`primitives/input-modality.ts`) for `keyboard`, `pointer`, and `virtual` interactions.
+- `data-focus-visible` is modality-driven; `data-focused` and `data-focus-within` continue to represent real DOM focus state.
+- Trigger focus restore after calendar close is modality-aware:
+  - keyboard close paths keep visible focus,
+  - pointer outside close restores focus without visible focus.
+- The component keeps explicit `trackInteractionModality(...)` calls in local handlers to ensure deterministic modality updates before local focus-state logic runs.
+- Cross-component focus contract and invariants are documented in `FOCUS_STATE_CONTRACT.md`.

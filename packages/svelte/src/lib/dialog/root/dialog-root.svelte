@@ -2,7 +2,10 @@
 	import type { Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
-	import { focusWithModality, resolveCloseInteractionModality } from '../../primitives/input-modality';
+	import {
+		focusWithModality,
+		resolveCloseInteractionModality
+	} from '../../primitives/input-modality';
 	import type { DialogCloseReason } from './context';
 
 	/**

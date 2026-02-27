@@ -173,10 +173,7 @@
 	function closeCalendarAfterSelection(selectionFocusVisible: boolean) {
 		setFocusVisible(selectionFocusVisible);
 		setOpen(false, { reason: 'close-press' });
-		applyTriggerSelectionCloseState(
-			triggerRef,
-			selectionFocusVisible ? 'keyboard' : 'pointer'
-		);
+		applyTriggerSelectionCloseState(triggerRef, selectionFocusVisible ? 'keyboard' : 'pointer');
 	}
 
 	function isDateOutOfRange(valueToCheck: DatePickerDateValue): boolean {
