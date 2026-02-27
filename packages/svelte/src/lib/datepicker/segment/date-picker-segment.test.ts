@@ -24,8 +24,9 @@ function getSegment(type: 'day' | 'month' | 'year') {
 function getEditableSegmentOrder(): Array<'day' | 'month' | 'year'> {
 	return Array.from(document.querySelectorAll<HTMLElement>('[role="spinbutton"][data-type]'))
 		.map((element) => element.getAttribute('data-type'))
-		.filter((type): type is 'day' | 'month' | 'year' =>
-			type === 'day' || type === 'month' || type === 'year'
+		.filter(
+			(type): type is 'day' | 'month' | 'year' =>
+				type === 'day' || type === 'month' || type === 'year'
 		);
 }
 
