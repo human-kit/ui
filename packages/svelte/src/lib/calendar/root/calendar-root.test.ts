@@ -70,13 +70,15 @@ describe('Calendar', () => {
 		await dayCell.click();
 
 		await expect
-			.poll(() => document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date'))
+			.poll(() =>
+				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date')
+			)
 			.toBe('2026-02-10');
 	});
 
 	it('prevents selecting unavailable dates', async () => {
 		const unavailableDate = '2026-02-15';
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
 			isDateUnavailable: (date: string) => date === unavailableDate
 		});
@@ -91,7 +93,7 @@ describe('Calendar', () => {
 	});
 
 	it('updates bind:value when selecting a date', async () => {
-		const screen = render(CalendarRootBindValueTest);
+		render(CalendarRootBindValueTest);
 		const day = getGridCellByDate('2026-02-12');
 
 		await day.click();
@@ -118,7 +120,7 @@ describe('Calendar', () => {
 
 	it('does not recompute unavailable predicate for cached visible dates on selection', async () => {
 		const isDateUnavailable = vi.fn((date: string) => date === '2026-02-15');
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
 			isDateUnavailable
 		});
@@ -131,7 +133,7 @@ describe('Calendar', () => {
 	});
 
 	it('moves focus with arrow keys across dates', async () => {
-		const screen = render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		render(CalendarRootTest, { defaultValue: '2026-02-10' });
 		const day = getGridCellByDate('2026-02-10');
 		const dayElement = day.element()!;
 
@@ -153,7 +155,7 @@ describe('Calendar', () => {
 	});
 
 	it('moves focus across month boundary with arrows', async () => {
-		const screen = render(CalendarRootTest, { defaultValue: '2026-02-28' });
+		render(CalendarRootTest, { defaultValue: '2026-02-28' });
 		const day = getGridCellByDate('2026-02-28');
 		const dayElement = day.element()!;
 
@@ -164,7 +166,7 @@ describe('Calendar', () => {
 	});
 
 	it('moves by month with PageUp and PageDown keeping day number', async () => {
-		const screen = render(CalendarRootTest, { defaultValue: '2026-10-10' });
+		render(CalendarRootTest, { defaultValue: '2026-10-10' });
 		const day = getGridCellByDate('2026-10-10');
 		const dayElement = day.element()!;
 
@@ -177,7 +179,7 @@ describe('Calendar', () => {
 	});
 
 	it('moves to month start/end with Home and End', async () => {
-		const screen = render(CalendarRootTest, { defaultValue: '2026-10-10' });
+		render(CalendarRootTest, { defaultValue: '2026-10-10' });
 		const day = getGridCellByDate('2026-10-10');
 		const dayElement = day.element()!;
 
@@ -190,7 +192,7 @@ describe('Calendar', () => {
 	});
 
 	it('focuses unavailable dates during keyboard navigation', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			defaultValue: '2026-02-14',
 			isDateUnavailable: (date: string) => date === '2026-02-15'
 		});
@@ -211,8 +213,30 @@ describe('Calendar', () => {
 			.toBe('2026-02-14');
 	});
 
+	it('focuses disabled dates (out of min/max bounds) during keyboard navigation', async () => {
+		render(CalendarRootTest, {
+			defaultValue: '2026-02-14',
+			isDateUnavailable: (date: string) => date > '2026-02-14'
+		});
+		const day = getGridCellByDate('2026-02-14');
+		const dayElement = day.element()!;
+
+		dayElement.focus();
+		pressKey(dayElement, 'ArrowRight');
+
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-15');
+		expect(getGridCellByDate('2026-02-15').element()?.getAttribute('aria-disabled')).toBe('true');
+
+		pressKey(document.activeElement!, 'Enter');
+		await expect
+			.poll(() =>
+				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date')
+			)
+			.toBe('2026-02-14');
+	});
+
 	it('confirms a date range with two clicks in range mode', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range'
 		});
 
@@ -240,7 +264,7 @@ describe('Calendar', () => {
 	});
 
 	it('extends range with Arrow and confirms with Enter', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range',
 			defaultValue: { start: '2026-02-10' }
 		});
@@ -266,7 +290,7 @@ describe('Calendar', () => {
 	});
 
 	it('does not confirm a range that crosses unavailable dates', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range',
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
@@ -289,7 +313,7 @@ describe('Calendar', () => {
 	});
 
 	it('disables unreachable dates while waiting for range end', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range',
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
@@ -305,7 +329,7 @@ describe('Calendar', () => {
 	});
 
 	it('cancels pending range with Escape and restores previous committed range', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range',
 			defaultValue: { start: '2026-02-10', end: '2026-02-12' }
 		});
@@ -329,7 +353,7 @@ describe('Calendar', () => {
 	});
 
 	it('shows range trace while moving with keyboard after selecting a range start', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range'
 		});
 
@@ -353,7 +377,7 @@ describe('Calendar', () => {
 	});
 
 	it('marks new range start as selected immediately when restarting range', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range',
 			defaultValue: { start: '2026-02-03', end: '2026-02-03' }
 		});
@@ -370,7 +394,7 @@ describe('Calendar', () => {
 	});
 
 	it('keeps focus on second click when selecting reverse range', async () => {
-		const screen = render(CalendarRootTest, {
+		render(CalendarRootTest, {
 			selectionMode: 'range'
 		});
 
@@ -383,8 +407,8 @@ describe('Calendar', () => {
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-03');
 	});
 
-	it('clamps PageUp and PageDown to reachable range bounds while selecting range end', async () => {
-		const screen = render(CalendarRootTest, {
+	it('allows focus to move past reachable range bounds but keeps it disabled', async () => {
+		render(CalendarRootTest, {
 			selectionMode: 'range',
 			isDateUnavailable: (date: string) => {
 				if (!date.startsWith('2026-02-')) return true;
@@ -399,10 +423,10 @@ describe('Calendar', () => {
 		startElement.focus();
 
 		pressKey(startElement, 'PageDown');
-		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-13');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-03-09');
+		expect(document.activeElement?.getAttribute('aria-disabled')).toBe('true');
 
 		pressKey(document.activeElement!, 'PageUp');
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-09');
 	});
 });
-

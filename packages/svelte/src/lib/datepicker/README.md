@@ -23,26 +23,26 @@
 
 ```svelte
 <DatePicker.Root>
- <DatePicker.Input aria-label="Date input">
-  {#snippet children(segment)}
-   <DatePicker.Segment {segment} />
-  {/snippet}
- </DatePicker.Input>
- <DatePicker.Trigger />
+	<DatePicker.Input aria-label="Date input">
+		{#snippet children(segment)}
+			<DatePicker.Segment {segment} />
+		{/snippet}
+	</DatePicker.Input>
+	<DatePicker.Trigger />
 
- <DatePicker.Popover>
-  <DatePicker.Calendar>
-   <div>
-    <DatePicker.TriggerPrevious />
-    <DatePicker.Heading />
-    <DatePicker.TriggerNext />
-   </div>
-   <DatePicker.Grid>
-    <DatePicker.GridHeader />
-    <DatePicker.GridBody />
-   </DatePicker.Grid>
-  </DatePicker.Calendar>
- </DatePicker.Popover>
+	<DatePicker.Popover>
+		<DatePicker.Calendar>
+			<div>
+				<DatePicker.TriggerPrevious />
+				<DatePicker.Heading />
+				<DatePicker.TriggerNext />
+			</div>
+			<DatePicker.Grid>
+				<DatePicker.GridHeader />
+				<DatePicker.GridBody />
+			</DatePicker.Grid>
+		</DatePicker.Calendar>
+	</DatePicker.Popover>
 </DatePicker.Root>
 ```
 
@@ -83,6 +83,11 @@
 - Segment accessible names are resolved automatically from the active locale.
 - During segment editing, the committed value is set to `null` when the draft is incomplete, invalid, out-of-range, or unavailable.
 - Current MVP focuses on date-only values.
+
+## UX Decisions
+
+- **No Date Auto-Correction:** When users manually type dates out of the configured bounds (`minValue`/`maxValue`) or dates that are unavailable, the DatePicker **does not auto-correct** the typed value. Instead, it exposes `aria-invalid="true"` and `data-invalid` on the input, allowing the user to see what they typed incorrectly. The underlying committed value is kept as `null` until a valid date is completed. Auto-correcting input without explicit user consent is an inaccessible anti-pattern.
+- **Navigable Disabled Dates:** When using the Calendar, disabled dates remain focusable via keyboard navigation. This ensures ARIA Grid spatial navigation parity so that screen readers can consistently announce all calendar cells and report them as "disabled", rather than skipping over them and disorienting the user.
 
 ## Focus behavior decisions
 

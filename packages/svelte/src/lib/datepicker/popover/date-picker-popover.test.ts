@@ -88,7 +88,7 @@ describe('DatePicker.Popover', () => {
 
 	it('ignores unsafe forbidden Popover props and preserves internal dialog id', async () => {
 		const { vi } = await import('vitest');
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
 		try {
 			render(DatePickerPopoverUnsafePropsTest);

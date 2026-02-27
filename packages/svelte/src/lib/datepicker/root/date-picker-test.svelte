@@ -66,7 +66,7 @@
 				<DatePicker.GridHeader>
 					{#snippet children(dayLabel: string)}
 						<DatePicker.HeaderCell>
-							{#snippet children()}{dayLabel}{/snippet}
+							{dayLabel}
 						</DatePicker.HeaderCell>
 					{/snippet}
 				</DatePicker.GridHeader>

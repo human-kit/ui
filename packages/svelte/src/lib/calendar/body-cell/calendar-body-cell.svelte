@@ -107,7 +107,8 @@
 		return calendar.showOutsideDays;
 	});
 	const hidesOutsideDay = $derived(isOutsideMonth && !showOutsideDays);
-	const isInteractionDisabled = $derived(isDisabled || hidesOutsideDay);
+	const isSelectionDisabled = $derived(isDisabled || hidesOutsideDay);
+	const isFocusDisabled = $derived(calendar.isDisabled || hidesOutsideDay);
 	const todayDate = formatCalendarDate(getTodayUtcDate());
 	const isToday = $derived(date === todayDate);
 	const ariaDateLabel = $derived.by(() => {
@@ -118,27 +119,29 @@
 	let gridCellElement = $state<HTMLDivElement | undefined>(undefined);
 
 	$effect(() => {
-		if (!isFocused || isInteractionDisabled) return;
+		if (!isFocused || isFocusDisabled) return;
 		if (!gridCellElement) return;
 		if (document.activeElement === gridCellElement) return;
 		gridCellElement.focus();
 	});
 
 	$effect(() => {
-		if (!isInteractionDisabled) return;
+		if (!isFocusDisabled) return;
 		if (!gridCellElement) return;
 		if (document.activeElement !== gridCellElement) return;
 		gridCellElement.blur();
 	});
 
 	function handleClick() {
-		if (isInteractionDisabled) return;
+		if (isFocusDisabled) return;
 		calendar.setFocusedValue(date);
-		calendar.selectDate(date);
+		if (!isSelectionDisabled) {
+			calendar.selectDate(date);
+		}
 	}
 
 	function handleFocus() {
-		if (isInteractionDisabled) return;
+		if (isFocusDisabled) return;
 		calendar.setFocusedValue(date);
 		calendar.setFocusVisible(shouldShowFocusVisible(gridCellElement ?? null));
 	}
@@ -146,23 +149,23 @@
 	function handleMousedown(event: MouseEvent) {
 		trackInteractionModality(event, gridCellElement ?? null);
 		calendar.setFocusVisible(false);
-		if (isInteractionDisabled) {
+		if (isSelectionDisabled) {
 			event.preventDefault();
 		}
 	}
 
 	function handleMouseenter() {
-		if (isInteractionDisabled) return;
+		if (isFocusDisabled) return;
 		calendar.setHoveredValue(date);
 	}
 
 	function handleMouseleave() {
-		if (isInteractionDisabled) return;
+		if (isFocusDisabled) return;
 		calendar.setHoveredValue(undefined);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (isInteractionDisabled) return;
+		if (isFocusDisabled) return;
 		trackInteractionModality(event, gridCellElement ?? null);
 		calendar.handleCellKeydown(event, date);
 	}
@@ -194,7 +197,7 @@
 			bind:this={gridCellElement}
 			class={className}
 			role="gridcell"
-			tabindex={isInteractionDisabled ? -1 : isFocused ? 0 : -1}
+			tabindex={isFocusDisabled ? -1 : isFocused ? 0 : -1}
 			data-selected={isSelected || undefined}
 			data-focused={isFocused || undefined}
 			data-focus-visible={isVisuallyFocused || undefined}

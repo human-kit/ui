@@ -126,7 +126,7 @@ function sentenceCase(value: string): string {
 }
 
 function getSegmentLabels(locale: string): Record<DatePickerEditableSegmentType, string> {
-	let labels = segmentLabelCache.get(locale);
+	const labels = segmentLabelCache.get(locale);
 	if (labels) return labels;
 
 	const nextLabels: Record<DatePickerEditableSegmentType, string> = { ...fallbackSegmentLabels };

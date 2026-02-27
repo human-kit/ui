@@ -46,7 +46,7 @@ Quick usage:
 
 ```svelte
 <script lang="ts">
- import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
+	import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
 </script>
 ```
 
@@ -77,21 +77,21 @@ bun run dev
 
 ### Scripts (What Each One Does)
 
-| Script        | What it does                                                    |
-| ------------- | --------------------------------------------------------------- |
-| `dev`         | Starts the `docs` development environment using Bun filter.     |
-| `build`       | Packages the `@human-kit/svelte-components` library.            |
-| `build:docs`  | Builds the `docs` site for production.                          |
-| `test`        | Runs library tests (`packages/svelte`).                         |
-| `typecheck`   | Runs type checking for library and docs.                        |
-| `check`       | Runs `check` in all workspaces (`--filter '*'`).                |
-| `format`      | Formats the whole repo with Prettier.                           |
-| `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                    |
-| `lint:md:fix` | Attempts to auto-fix Markdown issues.                           |
-| `todo:check`  | Validates required TODO checklist metadata format.              |
-| `lint`        | Validates formatting, ESLint, and TODO metadata format.         |
-| `release`     | Builds and publishes with Changesets (`changeset publish`).     |
-| `pr`          | Runs `scripts/pr.sh` for automated PR workflow.                 |
+| Script        | What it does                                                |
+| ------------- | ----------------------------------------------------------- |
+| `dev`         | Starts the `docs` development environment using Bun filter. |
+| `build`       | Packages the `@human-kit/svelte-components` library.        |
+| `build:docs`  | Builds the `docs` site for production.                      |
+| `test`        | Runs library tests (`packages/svelte`).                     |
+| `typecheck`   | Runs type checking for library and docs.                    |
+| `check`       | Runs `check` in all workspaces (`--filter '*'`).            |
+| `format`      | Formats the whole repo with Prettier.                       |
+| `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                |
+| `lint:md:fix` | Attempts to auto-fix Markdown issues.                       |
+| `todo:check`  | Validates required TODO checklist metadata format.          |
+| `lint`        | Validates formatting, ESLint, and TODO metadata format.     |
+| `release`     | Builds and publishes with Changesets (`changeset publish`). |
+| `pr`          | Runs `scripts/pr.sh` for automated PR workflow.             |
 
 ### Root Dev Dependencies (Purpose)
 

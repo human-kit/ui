@@ -20,14 +20,14 @@ Fill this out for PRs that modify interaction, keyboard navigation, overlays, or
 
 > Mark **OK/NA/FAIL** and add a short note when failing.
 
-| Scenario | What to validate | Status | Note |
-|---|---|---|---|
-| Keyboard (Tab/Arrow/Home/End/Page) | `data-*` and ARIA stay in sync with logical focus |  |  |
-| Pointer (click/mousedown) | do not elevate `data-focus-visible` by default |  |  |
-| External blur | transient state cleanup (`data-focus-within`, `data-focus-visible`) |  |  |
-| Close restore (`escape-key`) | trigger: `data-focused=true`, `data-focus-visible=true` (when applicable) |  |  |
-| Close restore (`outside-press`) | trigger: `data-focused=true`, `data-focus-visible` absent (when applicable) |  |  |
-| Programmatic focus | does not break invariants or leave stale state |  |  |
+| Scenario                           | What to validate                                                            | Status | Note |
+| ---------------------------------- | --------------------------------------------------------------------------- | ------ | ---- |
+| Keyboard (Tab/Arrow/Home/End/Page) | `data-*` and ARIA stay in sync with logical focus                           |        |      |
+| Pointer (click/mousedown)          | do not elevate `data-focus-visible` by default                              |        |      |
+| External blur                      | transient state cleanup (`data-focus-within`, `data-focus-visible`)         |        |      |
+| Close restore (`escape-key`)       | trigger: `data-focused=true`, `data-focus-visible=true` (when applicable)   |        |      |
+| Close restore (`outside-press`)    | trigger: `data-focused=true`, `data-focus-visible` absent (when applicable) |        |      |
+| Programmatic focus                 | does not break invariants or leave stale state                              |        |      |
 
 ## 3) Required Invariants
 
@@ -40,14 +40,14 @@ Fill this out for PRs that modify interaction, keyboard navigation, overlays, or
 
 > Use one row per component touched or audited.
 
-| Component | Status | Current coverage | Residual risk | Owner |
-|---|---|---|---|---|
-| DatePicker | Contract-ready / Partial / Legacy | tests + manual | low/medium/high |  |
-| Popover | Contract-ready / Partial / Legacy | tests + manual | low/medium/high |  |
-| ListBox | Contract-ready / Partial / Legacy | tests + manual | low/medium/high |  |
-| ComboBox | Contract-ready / Partial / Legacy | tests + manual | low/medium/high |  |
-| Dialog | Contract-ready / Partial / Legacy | tests + manual | low/medium/high |  |
-| Calendar | Contract-ready / Partial / Legacy | tests + manual | low/medium/high |  |
+| Component  | Status                            | Current coverage | Residual risk   | Owner |
+| ---------- | --------------------------------- | ---------------- | --------------- | ----- |
+| DatePicker | Contract-ready / Partial / Legacy | tests + manual   | low/medium/high |       |
+| Popover    | Contract-ready / Partial / Legacy | tests + manual   | low/medium/high |       |
+| ListBox    | Contract-ready / Partial / Legacy | tests + manual   | low/medium/high |       |
+| ComboBox   | Contract-ready / Partial / Legacy | tests + manual   | low/medium/high |       |
+| Dialog     | Contract-ready / Partial / Legacy | tests + manual   | low/medium/high |       |
+| Calendar   | Contract-ready / Partial / Legacy | tests + manual   | low/medium/high |       |
 
 ## 5) PR Checklist
 

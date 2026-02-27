@@ -226,6 +226,19 @@ describe('DatePicker.Root', () => {
 		expect(document.querySelector('[data-testid="on-change-calls"]')?.textContent).toBe('0');
 	});
 
+	it('does not auto-correct when typing a date out of range but sets invalid attributes', async () => {
+		const screen = render(DatePickerTest, { defaultValue: '2026-02-14', maxValue: '2026-02-14' });
+		const daySegment = getSegment('day');
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+
+		expect(inputGroup.element()?.getAttribute('aria-invalid')).toBeNull();
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}{Backspace}15'); // 2026-02-15 is out of range
+
+		await expect.poll(() => inputGroup.element()?.getAttribute('aria-invalid')).toBe('true');
+	});
+
 	it('toggles invalid draft attributes when draft becomes invalid and valid again', async () => {
 		const screen = render(DatePickerBindableTest);
 		const daySegment = getSegment('day');

@@ -45,7 +45,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('sets focused state when a segment receives focus', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
@@ -53,7 +53,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('sets data-focus-visible on keyboard interaction', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
@@ -77,7 +77,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('marks segment as readonly in readOnly mode', async () => {
-		const screen = render(DatePickerTest, { isReadOnly: true });
+		render(DatePickerTest, { isReadOnly: true });
 		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-readonly')).toBe('true');
@@ -85,7 +85,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('disables segment interaction in disabled mode', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+		render(DatePickerTest, { isDisabled: true });
 		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-disabled')).toBe('true');
@@ -93,7 +93,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('does not set focus states when clicking a disabled segment', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+		render(DatePickerTest, { isDisabled: true });
 		const monthSegment = getSegment('month');
 
 		monthSegment
@@ -107,7 +107,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('focuses segment immediately on click', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const monthSegment = getSegment('month');
 
 		await monthSegment.click();
@@ -115,7 +115,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('increments segment value with ArrowUp', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -127,7 +127,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('increments year segment value with ArrowUp', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const yearSegment = getSegment('year');
 
 		yearSegment.element()?.focus();
@@ -139,7 +139,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('supports Home and End keys for boundaries', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const monthSegment = getSegment('month');
 
 		monthSegment.element()?.focus();
@@ -168,7 +168,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('supports PageUp and PageDown steps', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const yearSegment = getSegment('year');
 
 		yearSegment.element()?.focus();
@@ -184,7 +184,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('clears segment with Delete', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -193,7 +193,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('removes one character with Backspace', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -202,7 +202,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('does not commit full date when only one segment is edited', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -215,7 +215,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('auto-advances focus when a segment is completed', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -226,7 +226,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('auto-advances when entering 01 in day segment', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -238,7 +238,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('auto-advances day on first digit when second digit cannot be valid', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -249,7 +249,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('auto-advances month on first digit when second digit cannot be valid', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -260,7 +260,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('prevents impossible two-digit month/day typing by auto-completing first digit', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 		const monthSegment = getSegment('month');
 
@@ -276,7 +276,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('auto-adjusts day to leap-year max when month or year changes', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 		const monthSegment = getSegment('month');
 		const yearSegment = getSegment('year');
@@ -304,7 +304,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('commits value when all segments become valid', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 		const monthSegment = getSegment('month');
 		const yearSegment = getSegment('year');
@@ -329,7 +329,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('commits 20/01/2000 when typing in day-first locale', async () => {
-		const screen = render(DatePickerLocaleTypingTest);
+		render(DatePickerLocaleTypingTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -371,7 +371,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('commits 2/1/2 as 0002-01-02 in day-first locale', async () => {
-		const screen = render(DatePickerLocaleTypingTest);
+		render(DatePickerLocaleTypingTest);
 		const daySegment = getSegment('day');
 
 		daySegment.element()?.focus();
@@ -387,7 +387,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('shows segments with minimal digits after committing a valid date', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 		const monthSegment = getSegment('month');
 		const yearSegment = getSegment('year');
@@ -414,7 +414,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('moves focus to previous segment on backspace when current segment is empty', async () => {
-		const screen = render(DatePickerTest);
+		render(DatePickerTest);
 		const yearSegment = getSegment('year');
 
 		yearSegment.element()?.focus();
@@ -428,7 +428,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('cancels selectstart on placeholder segment', async () => {
-		const screen = render(DatePickerEmptyTest);
+		render(DatePickerEmptyTest);
 		const daySegment = getSegment('day');
 		const event = new Event('selectstart', { cancelable: true });
 

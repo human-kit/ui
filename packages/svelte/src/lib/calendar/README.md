@@ -21,7 +21,7 @@
 
 - Each `grid` exposes an accessible name using the visible month heading.
 - Today exposes `aria-current="date"`.
-- Unavailable cells expose `aria-disabled="true"` and are neither focusable nor selectable.
+- Unavailable cells expose `aria-disabled="true"`. According to ARIA Grid specifications, disabled cells remain focusable so that screen reader users can spatially navigate and discover them, but they are not selectable.
 
 ### Keyboard
 
@@ -53,14 +53,14 @@
 
 ```svelte
 <LocaleProvider locale="es-ES">
- <Calendar.Root>
-  <Calendar.TriggerPrevious />
-  <Calendar.Heading />
-  <Calendar.TriggerNext />
-  <Calendar.Grid>
-   <Calendar.GridHeader />
-   <Calendar.GridBody />
-  </Calendar.Grid>
- </Calendar.Root>
+	<Calendar.Root>
+		<Calendar.TriggerPrevious />
+		<Calendar.Heading />
+		<Calendar.TriggerNext />
+		<Calendar.Grid>
+			<Calendar.GridHeader />
+			<Calendar.GridBody />
+		</Calendar.Grid>
+	</Calendar.Root>
 </LocaleProvider>
 ```

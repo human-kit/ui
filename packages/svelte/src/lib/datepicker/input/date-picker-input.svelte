@@ -77,9 +77,8 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex: Group container is intentionally focusable to forward focus into segmented field. -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions: Pointer/keyboard handlers are required to delegate focus to date segments. -->
-<!-- svelte-ignore a11y_role_supports_aria_props: Exposes invalid state contract on the composed input container. -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_role_supports_aria_props -->
 <div
 	id={inputId}
 	class={className}

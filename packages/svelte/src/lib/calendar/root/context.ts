@@ -18,7 +18,6 @@ import {
 } from './date-utils';
 
 const KEY = Symbol('calendar');
-const MAX_FOCUS_SEARCH_DAYS = 370;
 
 export type CalendarSelectionMode = 'single' | 'range';
 export type CalendarRangeValue = {
@@ -706,7 +705,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (!parsed) return undefined;
 		const next = addDays(parsed, amount);
 		const nextValue = formatCalendarDate(next);
-		const focusableValue = findFocusableDate(nextValue, amount);
+		const focusableValue = findFocusableDate(nextValue);
 		if (!focusableValue) return undefined;
 		setFocusedValue(focusableValue);
 		return focusableValue;
@@ -720,8 +719,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (!parsed) return undefined;
 		const next = addMonths(parsed, amount);
 		const nextValue = formatCalendarDate(next);
-		const dayStep = amount >= 0 ? 1 : -1;
-		const focusableValue = findFocusableDate(nextValue, dayStep);
+		const focusableValue = findFocusableDate(nextValue);
 		if (!focusableValue) {
 			if (selectionMode === 'range' && currentRangeStart && !currentRangeEnd) {
 				return moveToMonthEdge(baseDate, amount >= 0 ? 'end' : 'start');
@@ -743,34 +741,15 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		const monthEnd = addDays(addMonths(monthStart, 1), -1);
 		const targetDate = edge === 'start' ? monthStart : monthEnd;
 		const nextValue = formatCalendarDate(targetDate);
-		const dayStep = edge === 'start' ? 1 : -1;
-		const focusableValue = findFocusableDate(nextValue, dayStep);
+		const focusableValue = findFocusableDate(nextValue);
 		if (!focusableValue) return undefined;
 		setFocusedValue(focusableValue);
 		return focusableValue;
 	}
 
-	function findFocusableDate(
-		targetDate: CalendarDateValue,
-		dayStep: number
-	): CalendarDateValue | undefined {
+	function findFocusableDate(targetDate: CalendarDateValue): CalendarDateValue | undefined {
 		if (isDisabled) return undefined;
-		if (!isDateDisabled(targetDate)) return targetDate;
-
-		if (dayStep === 0) return undefined;
-
-		let current = parseCalendarDate(targetDate);
-		if (!current) return undefined;
-
-		for (let index = 0; index < MAX_FOCUS_SEARCH_DAYS; index++) {
-			current = addDays(current, dayStep > 0 ? 1 : -1);
-			const candidate = formatCalendarDate(current);
-			if (!isDateDisabled(candidate)) {
-				return candidate;
-			}
-		}
-
-		return undefined;
+		return targetDate;
 	}
 
 	function handleCellKeydown(event: KeyboardEvent, date: CalendarDateValue) {
