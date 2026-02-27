@@ -1,5 +1,7 @@
 <script module lang="ts">
-	const ariaDateFormatterCache = new Map<string, Intl.DateTimeFormat>();
+	import { SvelteMap } from 'svelte/reactivity';
+
+	const ariaDateFormatterCache = new SvelteMap<string, Intl.DateTimeFormat>();
 
 	function getAriaDateFormatter(locale: string): Intl.DateTimeFormat {
 		let formatter = ariaDateFormatterCache.get(locale);

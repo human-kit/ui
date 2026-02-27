@@ -1,5 +1,7 @@
 <script module lang="ts">
-	const monthFormatterCache = new Map<string, Intl.DateTimeFormat>();
+	import { SvelteMap } from 'svelte/reactivity';
+
+	const monthFormatterCache = new SvelteMap<string, Intl.DateTimeFormat>();
 
 	function getMonthFormatter(locale: string): Intl.DateTimeFormat {
 		let formatter = monthFormatterCache.get(locale);
