@@ -1,6 +1,6 @@
 {
 	"name": "@human-kit/svelte-components",
-	"version": "1.0.0-alpha.1",
+	"version": "1.0.0-alpha.2",
 	"license": "MIT",
 	"type": "module",
 	"svelte": "./dist/index.js",
