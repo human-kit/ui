@@ -7,7 +7,10 @@ import DatePickerLocaleTypingTest from '../root/date-picker-locale-typing-test.s
 import DatePickerBindableTest from '../root/date-picker-bindable-test.svelte';
 
 function getSegment(type: 'day' | 'month' | 'year') {
-	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
+	const elements = document.querySelectorAll<HTMLElement>(
+		`[role="spinbutton"][data-type="${type}"]`
+	);
+	const element = elements.item(elements.length - 1);
 	if (!element) {
 		throw new Error(`Segment "${type}" was not rendered.`);
 	}
