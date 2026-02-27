@@ -21,6 +21,14 @@ function getSegment(type: 'day' | 'month' | 'year') {
 	};
 }
 
+function getEditableSegmentOrder(): Array<'day' | 'month' | 'year'> {
+	return Array.from(document.querySelectorAll<HTMLElement>('[role="spinbutton"][data-type]'))
+		.map((element) => element.getAttribute('data-type'))
+		.filter((type): type is 'day' | 'month' | 'year' =>
+			type === 'day' || type === 'month' || type === 'year'
+		);
+}
+
 describe('DatePicker.Segment', () => {
 	afterEach(() => {
 		const dialogs = document.querySelectorAll('[role="dialog"]');
@@ -419,6 +427,9 @@ describe('DatePicker.Segment', () => {
 	it('moves focus to previous segment on backspace when current segment is empty', async () => {
 		render(DatePickerTest);
 		const yearSegment = getSegment('year');
+		const segmentOrder = getEditableSegmentOrder();
+		const yearIndex = segmentOrder.indexOf('year');
+		const expectedPreviousType = yearIndex > 0 ? segmentOrder[yearIndex - 1] : 'year';
 
 		yearSegment.element()?.focus();
 		await userEvent.keyboard('{Backspace}');
@@ -427,7 +438,7 @@ describe('DatePicker.Segment', () => {
 		await userEvent.keyboard('{Backspace}');
 		await userEvent.keyboard('{Backspace}');
 
-		expect(document.activeElement?.getAttribute('data-type')).toBe('month');
+		expect(document.activeElement?.getAttribute('data-type')).toBe(expectedPreviousType);
 	});
 
 	it('cancels selectstart on placeholder segment', async () => {
