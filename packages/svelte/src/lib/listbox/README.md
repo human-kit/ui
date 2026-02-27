@@ -18,7 +18,7 @@ Import the component and compose its parts:
 
 ```svelte
 <ListBox.Root aria-label="Options">
-	<ListBox.Item id="1">Option 1</ListBox.Item>
+ <ListBox.Item id="1">Option 1</ListBox.Item>
 </ListBox.Root>
 ```
 

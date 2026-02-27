@@ -18,13 +18,13 @@ Import the component and compose its parts:
 
 ```svelte
 <Dialog.Root>
-	<Dialog.Trigger>
-		<button>Open</button>
-	</Dialog.Trigger>
-	<Dialog.Portal>
-		<Dialog.Overlay />
-		<Dialog.Content>...</Dialog.Content>
-	</Dialog.Portal>
+ <Dialog.Trigger>
+  <button>Open</button>
+ </Dialog.Trigger>
+ <Dialog.Portal>
+  <Dialog.Overlay />
+  <Dialog.Content>...</Dialog.Content>
+ </Dialog.Portal>
 </Dialog.Root>
 ```
 
