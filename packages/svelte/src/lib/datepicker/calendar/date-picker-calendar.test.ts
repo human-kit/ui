@@ -116,7 +116,9 @@ describe('DatePicker.Calendar', () => {
 
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
-		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
+		await expect
+			.poll(() => document.activeElement?.getAttribute('data-focus-visible'))
+			.toBe('true');
 	});
 
 	it('shows initial calendar focus as focus-visible when opened from keyboard', async () => {
@@ -129,7 +131,9 @@ describe('DatePicker.Calendar', () => {
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
-		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
+		await expect
+			.poll(() => document.activeElement?.getAttribute('data-focus-visible'))
+			.toBe('true');
 	});
 
 	it('does not focus previous trigger while opening popover', async () => {
@@ -160,7 +164,9 @@ describe('DatePicker.Calendar', () => {
 
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe(tomorrow);
 		await expect.poll(() => document.activeElement?.getAttribute('data-focused')).toBe('true');
-		await expect.poll(() => document.activeElement?.getAttribute('data-focus-visible')).toBe('true');
+		await expect
+			.poll(() => document.activeElement?.getAttribute('data-focus-visible'))
+			.toBe('true');
 	});
 
 	it('ignores unsafe forbidden Calendar props and keeps DatePicker invariants', async () => {
@@ -174,10 +180,12 @@ describe('DatePicker.Calendar', () => {
 			const dayCell = getGridCellByDate('2026-02-12');
 			await dayCell.click();
 
-			await expect.poll(() => document.querySelector('[data-testid="selected-value"]')?.textContent).toBe(
-				'2026-02-12'
+			await expect
+				.poll(() => document.querySelector('[data-testid="selected-value"]')?.textContent)
+				.toBe('2026-02-12');
+			expect(document.querySelector('[data-testid="unsafe-on-change-calls"]')?.textContent).toBe(
+				'0'
 			);
-			expect(document.querySelector('[data-testid="unsafe-on-change-calls"]')?.textContent).toBe('0');
 			expect(
 				warnSpy.mock.calls.some(
 					(args) => typeof args[0] === 'string' && args[0].includes('DatePicker.Calendar')

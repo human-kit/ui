@@ -50,7 +50,10 @@ export function formatDatePickerValue(date: Date): DatePickerDateValue {
 	return formatDateOnlyValue(date);
 }
 
-export function compareDatePickerValues(left: DatePickerDateValue, right: DatePickerDateValue): number {
+export function compareDatePickerValues(
+	left: DatePickerDateValue,
+	right: DatePickerDateValue
+): number {
 	return compareDateOnlyValues(left, right);
 }
 
@@ -93,7 +96,10 @@ function getSegmentTemplate(locale: string): DatePickerSegmentTemplatePart[] {
 	template = parts
 		.filter(
 			(part) =>
-				part.type === 'literal' || part.type === 'day' || part.type === 'month' || part.type === 'year'
+				part.type === 'literal' ||
+				part.type === 'day' ||
+				part.type === 'month' ||
+				part.type === 'year'
 		)
 		.map((part) => {
 			if (part.type === 'literal') {

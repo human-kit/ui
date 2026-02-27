@@ -81,35 +81,33 @@
 							>
 								<DatePicker.Calendar>
 									<div class="flex items-center justify-between gap-2 p-2">
-										<DatePicker.CalendarTriggerPrevious
+										<DatePicker.TriggerPrevious
 											class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
 										/>
-										<DatePicker.CalendarHeading class="text-sm font-medium" />
-										<DatePicker.CalendarTriggerNext
+										<DatePicker.Heading class="text-sm font-medium" />
+										<DatePicker.TriggerNext
 											class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
 										/>
 									</div>
-									<DatePicker.CalendarGrid
-										class="w-full border-separate border-spacing-1 px-2 pb-2"
-									>
-										<DatePicker.CalendarGridHeader>
+									<DatePicker.Grid class="w-full border-separate border-spacing-1 px-2 pb-2">
+										<DatePicker.GridHeader>
 											{#snippet children(dayLabel: string)}
-												<DatePicker.CalendarHeaderCell
+												<DatePicker.HeaderCell
 													class="h-8 text-xs font-medium text-gray-500 dark:text-gray-400"
 												>
 													{#snippet children()}{dayLabel}{/snippet}
-												</DatePicker.CalendarHeaderCell>
+												</DatePicker.HeaderCell>
 											{/snippet}
-										</DatePicker.CalendarGridHeader>
-										<DatePicker.CalendarGridBody>
+										</DatePicker.GridHeader>
+										<DatePicker.GridBody>
 											{#snippet children(date: string)}
-												<DatePicker.CalendarBodyCell
+												<DatePicker.BodyCell
 													{date}
 													class="h-8 w-8 rounded-md text-sm text-gray-900 hover:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[disabled=true]:hover:bg-transparent data-[selected=true]:bg-blue-600 data-[selected=true]:text-white data-[unavailable=true]:opacity-50 dark:text-white dark:hover:bg-gray-700 dark:data-[disabled=true]:hover:bg-transparent"
 												/>
 											{/snippet}
-										</DatePicker.CalendarGridBody>
-									</DatePicker.CalendarGrid>
+										</DatePicker.GridBody>
+									</DatePicker.Grid>
 								</DatePicker.Calendar>
 							</DatePicker.Popover>
 						</DatePicker.Root>
@@ -164,24 +162,24 @@
 							>
 								<DatePicker.Calendar>
 									<div class="flex items-center justify-between gap-2 p-2">
-										<DatePicker.CalendarTriggerPrevious />
-										<DatePicker.CalendarHeading />
-										<DatePicker.CalendarTriggerNext />
+										<DatePicker.TriggerPrevious />
+										<DatePicker.Heading />
+										<DatePicker.TriggerNext />
 									</div>
-									<DatePicker.CalendarGrid>
-										<DatePicker.CalendarGridHeader>
+									<DatePicker.Grid>
+										<DatePicker.GridHeader>
 											{#snippet children(dayLabel: string)}
-												<DatePicker.CalendarHeaderCell>
+												<DatePicker.HeaderCell>
 													{#snippet children()}{dayLabel}{/snippet}
-												</DatePicker.CalendarHeaderCell>
+												</DatePicker.HeaderCell>
 											{/snippet}
-										</DatePicker.CalendarGridHeader>
-										<DatePicker.CalendarGridBody>
+										</DatePicker.GridHeader>
+										<DatePicker.GridBody>
 											{#snippet children(date: string)}
-												<DatePicker.CalendarBodyCell {date} />
+												<DatePicker.BodyCell {date} />
 											{/snippet}
-										</DatePicker.CalendarGridBody>
-									</DatePicker.CalendarGrid>
+										</DatePicker.GridBody>
+									</DatePicker.Grid>
 								</DatePicker.Calendar>
 							</DatePicker.Popover>
 						</DatePicker.Root>
@@ -229,24 +227,24 @@
 							>
 								<DatePicker.Calendar>
 									<div class="flex items-center justify-between gap-2 p-2">
-										<DatePicker.CalendarTriggerPrevious />
-										<DatePicker.CalendarHeading />
-										<DatePicker.CalendarTriggerNext />
+										<DatePicker.TriggerPrevious />
+										<DatePicker.Heading />
+										<DatePicker.TriggerNext />
 									</div>
-									<DatePicker.CalendarGrid>
-										<DatePicker.CalendarGridHeader>
+									<DatePicker.Grid>
+										<DatePicker.GridHeader>
 											{#snippet children(dayLabel: string)}
-												<DatePicker.CalendarHeaderCell>
+												<DatePicker.HeaderCell>
 													{#snippet children()}{dayLabel}{/snippet}
-												</DatePicker.CalendarHeaderCell>
+												</DatePicker.HeaderCell>
 											{/snippet}
-										</DatePicker.CalendarGridHeader>
-										<DatePicker.CalendarGridBody>
+										</DatePicker.GridHeader>
+										<DatePicker.GridBody>
 											{#snippet children(date: string)}
-												<DatePicker.CalendarBodyCell {date} />
+												<DatePicker.BodyCell {date} />
 											{/snippet}
-										</DatePicker.CalendarGridBody>
-									</DatePicker.CalendarGrid>
+										</DatePicker.GridBody>
+									</DatePicker.Grid>
 								</DatePicker.Calendar>
 							</DatePicker.Popover>
 						</DatePicker.Root>

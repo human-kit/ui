@@ -12,14 +12,14 @@
 - `DatePicker.Trigger`
 - `DatePicker.Popover`
 - `DatePicker.Calendar`
-- `DatePicker.CalendarTriggerPrevious`
-- `DatePicker.CalendarHeading`
-- `DatePicker.CalendarTriggerNext`
-- `DatePicker.CalendarGrid`
-- `DatePicker.CalendarGridHeader`
-- `DatePicker.CalendarHeaderCell`
-- `DatePicker.CalendarGridBody`
-- `DatePicker.CalendarBodyCell`
+- `DatePicker.TriggerPrevious`
+- `DatePicker.Heading`
+- `DatePicker.TriggerNext`
+- `DatePicker.Grid`
+- `DatePicker.GridHeader`
+- `DatePicker.HeaderCell`
+- `DatePicker.GridBody`
+- `DatePicker.BodyCell`
 
 ```svelte
 <DatePicker.Root>
@@ -33,14 +33,14 @@
  <DatePicker.Popover>
   <DatePicker.Calendar>
    <div>
-    <DatePicker.CalendarTriggerPrevious />
-    <DatePicker.CalendarHeading />
-    <DatePicker.CalendarTriggerNext />
+    <DatePicker.TriggerPrevious />
+    <DatePicker.Heading />
+    <DatePicker.TriggerNext />
    </div>
-   <DatePicker.CalendarGrid>
-    <DatePicker.CalendarGridHeader />
-    <DatePicker.CalendarGridBody />
-   </DatePicker.CalendarGrid>
+   <DatePicker.Grid>
+    <DatePicker.GridHeader />
+    <DatePicker.GridBody />
+   </DatePicker.Grid>
   </DatePicker.Calendar>
  </DatePicker.Popover>
 </DatePicker.Root>

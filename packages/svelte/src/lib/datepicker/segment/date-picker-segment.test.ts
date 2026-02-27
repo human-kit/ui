@@ -59,7 +59,9 @@ describe('DatePicker.Segment', () => {
 		monthSegment.element()?.focus();
 		await userEvent.keyboard('{ArrowUp}');
 
-		await expect.poll(() => monthSegment.element()?.getAttribute('data-focus-visible')).toBe('true');
+		await expect
+			.poll(() => monthSegment.element()?.getAttribute('data-focus-visible'))
+			.toBe('true');
 	});
 
 	it('toggles root data-focus-within when focus enters and leaves date picker', async () => {
@@ -435,4 +437,3 @@ describe('DatePicker.Segment', () => {
 		expect(wasNotCanceled).toBe(false);
 	});
 });
-

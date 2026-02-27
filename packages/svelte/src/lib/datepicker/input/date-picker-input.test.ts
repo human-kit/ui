@@ -57,7 +57,9 @@ describe('DatePicker.Input', () => {
 	it('focuses the next available segment when clicking input container', async () => {
 		const screen = render(DatePickerEmptyTest);
 		const inputGroup = screen.getByRole('group', { name: 'Date input' });
-		const segments = Array.from(document.querySelectorAll<HTMLElement>('[data-date-picker-segment="true"]'));
+		const segments = Array.from(
+			document.querySelectorAll<HTMLElement>('[data-date-picker-segment="true"]')
+		);
 
 		segments[0]?.focus();
 		await userEvent.keyboard('1');
@@ -113,4 +115,3 @@ describe('DatePicker.Input', () => {
 		expect(document.activeElement?.getAttribute('data-date-picker-segment')).not.toBe('true');
 	});
 });
-

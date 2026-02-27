@@ -10,6 +10,8 @@ export function normalizeDatePickerValue(
 	return isValid(value) ? value : null;
 }
 
-export function normalizeBindableDatePickerValue(value: DatePickerValueLike): DatePickerDateValue | null {
+export function normalizeBindableDatePickerValue(
+	value: DatePickerValueLike
+): DatePickerDateValue | null {
 	return value === undefined ? null : value;
 }

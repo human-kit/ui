@@ -88,7 +88,8 @@ bun run dev
 | `format`      | Formats the whole repo with Prettier.                           |
 | `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                    |
 | `lint:md:fix` | Attempts to auto-fix Markdown issues.                           |
-| `lint`        | Validates formatting (`prettier --check`) and then runs ESLint. |
+| `todo:check`  | Validates required TODO checklist metadata format.              |
+| `lint`        | Validates formatting, ESLint, and TODO metadata format.         |
 | `release`     | Builds and publishes with Changesets (`changeset publish`).     |
 | `pr`          | Runs `scripts/pr.sh` for automated PR workflow.                 |
 
@@ -152,6 +153,29 @@ bun run dev
 - Local helpers:
   - `bun run changeset:auto:draft` (preview generated markdown)
   - `bun run changeset:auto:apply` (write generated file if missing)
+
+## TODO Standard
+
+All repository TODO files (`*TODO.md`) must use one consistent, English checklist format.
+
+Required fields per checkbox item:
+
+- `Status`: `[ ]` (pending) or `[x]` (done)
+- `MoSCoW priority`: `[M]`, `[S]`, `[C]`, `[W]`
+- `Execution priority`: `[P0]`, `[P1]`, `[P2]`, `[P3]`
+- `Area/component`: `[Area: ...]`
+- `Owner`: `[Owner: ...]`
+- `Target date/milestone`: `[Target: ...]`
+- `Description`: short English sentence
+
+Canonical line template:
+
+`- [ ] [M][P0][Area: Accessibility][Owner: @username][Target: 2026-04-30] Ensure keyboard trap works in nested dialogs.`
+
+Validation:
+
+- Run `bun run todo:check` to validate TODO formatting.
+- `bun run lint` includes TODO validation and will fail on format violations.
 
 ## Tech Stack
 

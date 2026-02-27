@@ -21,24 +21,24 @@
 		<DatePicker.Popover class="date-picker-popover">
 			<DatePicker.Calendar class="date-picker-calendar">
 				<div class="flex items-center justify-between gap-2 p-2">
-					<DatePicker.CalendarTriggerPrevious />
-					<DatePicker.CalendarHeading />
-					<DatePicker.CalendarTriggerNext />
+					<DatePicker.TriggerPrevious />
+					<DatePicker.Heading />
+					<DatePicker.TriggerNext />
 				</div>
-				<DatePicker.CalendarGrid>
-					<DatePicker.CalendarGridHeader>
+				<DatePicker.Grid>
+					<DatePicker.GridHeader>
 						{#snippet children(dayLabel: string)}
-							<DatePicker.CalendarHeaderCell>
+							<DatePicker.HeaderCell>
 								{#snippet children()}{dayLabel}{/snippet}
-							</DatePicker.CalendarHeaderCell>
+							</DatePicker.HeaderCell>
 						{/snippet}
-					</DatePicker.CalendarGridHeader>
-					<DatePicker.CalendarGridBody>
+					</DatePicker.GridHeader>
+					<DatePicker.GridBody>
 						{#snippet children(date: string)}
-							<DatePicker.CalendarBodyCell {date} />
+							<DatePicker.BodyCell {date} />
 						{/snippet}
-					</DatePicker.CalendarGridBody>
-				</DatePicker.CalendarGrid>
+					</DatePicker.GridBody>
+				</DatePicker.Grid>
 			</DatePicker.Calendar>
 		</DatePicker.Popover>
 	</DatePicker.Root>

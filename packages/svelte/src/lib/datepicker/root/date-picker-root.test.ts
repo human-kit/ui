@@ -85,7 +85,9 @@ describe('DatePicker.Root', () => {
 		await expect
 			.poll(() => document.querySelector('[role="gridcell"][data-date="2026-02-14"]'))
 			.toBeTruthy();
-		const dayCell = document.querySelector<HTMLElement>('[role="gridcell"][data-date="2026-02-14"]');
+		const dayCell = document.querySelector<HTMLElement>(
+			'[role="gridcell"][data-date="2026-02-14"]'
+		);
 		expect(dayCell).toBeTruthy();
 		dayCell?.click();
 
@@ -162,9 +164,7 @@ describe('DatePicker.Root', () => {
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 		const daySegment = getSegment('day');
 
-		trigger
-			.element()
-			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		trigger.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 
 		daySegment.element()?.focus();
@@ -180,16 +180,16 @@ describe('DatePicker.Root', () => {
 		expect(document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('2026-02-10');
 
 		await trigger.click();
-		await expect.poll(() => document.querySelector('[data-testid="bind-open"]')?.textContent).toBe(
-			'true'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-open"]')?.textContent)
+			.toBe('true');
 
 		const dayCell = getGridCellByDate('2026-02-12');
 		await dayCell.click();
 
-		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe(
-			'2026-02-12'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+			.toBe('2026-02-12');
 	});
 
 	it('clears bound value when editing makes the draft invalid', async () => {
@@ -199,14 +199,16 @@ describe('DatePicker.Root', () => {
 		daySegment.element()?.focus();
 		await userEvent.keyboard('{Backspace}');
 		await userEvent.keyboard('{Backspace}');
-		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('');
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+			.toBe('');
 	});
 
 	it('initializes bind:value as null without emitting onChange on mount', async () => {
 		render(DatePickerBindableEmptyTest);
-		await expect.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe(
-			'null'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent)
+			.toBe('null');
 		expect(document.querySelector('[data-testid="on-change-calls"]')?.textContent).toBe('0');
 	});
 
@@ -218,9 +220,9 @@ describe('DatePicker.Root', () => {
 		daySegment.element()?.focus();
 		await userEvent.keyboard('1');
 
-		await expect.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent).toBe(
-			'null'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value-state"]')?.textContent)
+			.toBe('null');
 		expect(document.querySelector('[data-testid="on-change-calls"]')?.textContent).toBe('0');
 	});
 
@@ -242,14 +244,16 @@ describe('DatePicker.Root', () => {
 		await expect.poll(() => inputGroup.element()?.getAttribute('aria-invalid')).toBe('true');
 		await expect.poll(() => inputGroup.element()?.getAttribute('data-invalid')).toBe('true');
 		await expect.poll(() => root?.getAttribute('data-invalid')).toBe('true');
-		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('');
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+			.toBe('');
 
 		await userEvent.keyboard('1');
 		await userEvent.keyboard('0');
 
-		await expect.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent).toBe(
-			'2026-02-10'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+			.toBe('2026-02-10');
 		await expect.poll(() => inputGroup.element()?.getAttribute('aria-invalid')).toBeNull();
 		await expect.poll(() => inputGroup.element()?.getAttribute('data-invalid')).toBeNull();
 		await expect.poll(() => root?.getAttribute('data-invalid')).toBeNull();
@@ -300,6 +304,4 @@ describe('DatePicker.Root', () => {
 		await trigger.click();
 		expectNoFalseFocusAttributes(document);
 	});
-
 });
-

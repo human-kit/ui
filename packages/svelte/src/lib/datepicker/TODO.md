@@ -1,44 +1,28 @@
 # DatePicker TODO
 
-## Objetivo
+## Goal
 
-Backlog priorizado para cerrar gaps de DatePicker detectados en la auditoria tecnica.
+Track DatePicker work with a single mandatory TODO format.
 
-## Bugs
+## Backlog
 
-### P0
-
-- [x] Corregir contrato en docs para `value`/`onChange` nullable.
-- [x] Adoptar contrato null-first (`null` como estado vacio por defecto).
-
-### P1
-
-- [x] Agregar nombre accesible explicito al dialog del calendario (`aria-label` o `aria-labelledby`).
-- [x] Reemplazar resolucion de foco inicial con selector global por foco scoped al popover actual.
-- [x] Agregar cobertura de tests en modo disabled (`root`, `input`, `trigger`, `segment`).
-- [x] Corregir cancelacion real de `onOpenChange` (encadenada con Popover).
-
-## Improvements
-
-### P2
-
-- [x] Agregar tests de contrato ARIA (`aria-valuenow`, `aria-valuetext`, naming del dialog).
-- [x] Cachear `Intl.DateTimeFormat` por locale en utilidades de DatePicker.
-- [x] Reducir `querySelectorAll` frecuentes en rutas de foco/teclado.
-- [x] Exponer details/reason en `onOpenChange` de DatePicker (alineado con Popover).
-- [x] Exponer `data-invalid`/`aria-invalid` para draft no committeable.
-- [x] Endurecer encapsulacion de `DatePicker.Calendar` y `DatePicker.Popover` (type + runtime guards).
-- [x] Eliminar flakiness de tests por dependencia de orden/estado previo.
-
-## Features
-
-### P3
-
-- [x] Refactor modular de `date-picker-root` (state orchestration separada en modulos).
-- [ ] Extender API para reglas de unavailability custom (mas alla de `minValue`/`maxValue`).
-
-## Orden sugerido
-
-1. Resolver todos los Bugs (P0/P1).
-2. Ejecutar Improvements (P2).
-3. Planificar e implementar Features (P3).
+- [x] [M][P0][Area: Context][Owner: Unassigned][Target: Done] Complete core context wiring.
+- [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Implement root state and value handling.
+- [x] [M][P0][Area: Parsing][Owner: Unassigned][Target: Done] Integrate segment parser and formatter.
+- [x] [M][P0][Area: Input][Owner: Unassigned][Target: Done] Deliver baseline segmented input rendering.
+- [x] [M][P0][Area: Composition][Owner: Unassigned][Target: Done] Integrate calendar popover behavior.
+- [x] [M][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Implement keyboard navigation baseline.
+- [x] [M][P0][Area: Validation][Owner: Unassigned][Target: Done] Implement min/max and unavailable date validation baseline.
+- [x] [M][P0][Area: API][Owner: Unassigned][Target: Done] Ship public exports and baseline docs/tests.
+- [x] [M][P0][Area: Forms][Owner: Unassigned][Target: Done] Support rich object values and hidden input synchronization.
+- [x] [M][P0][Area: Focus][Owner: Unassigned][Target: Done] Unify focus-visible behavior with shared modality semantics.
+- [x] [S][P1][Area: Focus][Owner: Unassigned][Target: Done] Remove DatePicker-local modality tracking in favor of shared primitive.
+- [x] [S][P1][Area: Documentation][Owner: Unassigned][Target: Done] Document focus contract updates and DatePicker rationale.
+- [ ] [S][P1][Area: Calendar][Owner: Unassigned][Target: TBD] Add multi-month calendar display.
+- [ ] [S][P1][Area: Time][Owner: Unassigned][Target: TBD] Add time selection integration.
+- [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Decide and implement date-range mode strategy.
+- [ ] [S][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Run deep accessibility audit (SR + keyboard edge cases).
+- [ ] [C][P2][Area: Input][Owner: Unassigned][Target: TBD] Add input mask helper utilities.
+- [ ] [C][P2][Area: Mobile][Owner: Unassigned][Target: TBD] Add mobile-optimized interaction pass.
+- [ ] [C][P2][Area: UX][Owner: Unassigned][Target: TBD] Add preset shortcuts (today, next week, custom).
+- [ ] [C][P2][Area: Performance][Owner: Unassigned][Target: TBD] Add segment update micro-benchmarks and optimizations.

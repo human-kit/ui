@@ -29,7 +29,10 @@ describe('DatePicker.Popover', () => {
 	});
 
 	it('supports dialog accessible name', async () => {
-		const screen = render(DatePickerTest, { defaultOpen: true, popoverAriaLabel: 'Date picker calendar' });
+		const screen = render(DatePickerTest, {
+			defaultOpen: true,
+			popoverAriaLabel: 'Date picker calendar'
+		});
 		await expect.poll(() => document.querySelector<HTMLElement>('[role="dialog"]')).toBeTruthy();
 		const dialog = screen.getByRole('dialog', { name: 'Date picker calendar' });
 		expect(dialog.element()).toBeTruthy();
@@ -42,17 +45,21 @@ describe('DatePicker.Popover', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const dayCell = document.querySelector<HTMLElement>('[role="gridcell"][data-date="2026-02-12"]');
+		const dayCell = document.querySelector<HTMLElement>(
+			'[role="gridcell"][data-date="2026-02-12"]'
+		);
 		expect(dayCell).toBeTruthy();
 		dayCell?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
 		dayCell?.click();
 
-		await expect.poll(() => document.querySelector('[data-testid="selected-value"]')?.textContent).toBe(
-			'2026-02-12'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-value"]')?.textContent)
+			.toBe('2026-02-12');
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 		await expect
-			.poll(() => Number(document.querySelector('[data-testid="pointer-down-calls"]')?.textContent ?? '0'))
+			.poll(() =>
+				Number(document.querySelector('[data-testid="pointer-down-calls"]')?.textContent ?? '0')
+			)
 			.toBeGreaterThan(0);
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
 	});
@@ -72,8 +79,8 @@ describe('DatePicker.Popover', () => {
 
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 		await expect
-			.poll(
-				() => Number(document.querySelector('[data-testid="keydown-capture-calls"]')?.textContent ?? '0')
+			.poll(() =>
+				Number(document.querySelector('[data-testid="keydown-capture-calls"]')?.textContent ?? '0')
 			)
 			.toBeGreaterThan(0);
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
