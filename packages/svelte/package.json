@@ -26,6 +26,11 @@
 			"svelte": "./dist/datepicker/index.js",
 			"default": "./dist/datepicker/index.js"
 		},
+		"./timepicker": {
+			"types": "./dist/timepicker/index.d.ts",
+			"svelte": "./dist/timepicker/index.js",
+			"default": "./dist/timepicker/index.js"
+		},
 		"./dialog": {
 			"types": "./dist/dialog/index.d.ts",
 			"svelte": "./dist/dialog/index.js",
