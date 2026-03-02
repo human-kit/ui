@@ -8,10 +8,12 @@ describe('TimePicker.TimePanel', () => {
     dialogs.forEach((dialog) => dialog.remove());
   });
 
-  it('renders default listbox columns when no snippet is provided', async () => {
+  it('renders default wheel columns when no snippet is provided', async () => {
     render(TimePickerTimePanelTest, { defaultOpen: true });
-    const listboxes = document.querySelectorAll('[role="listbox"]');
-    expect(listboxes.length).toBe(2);
+    const panel = document.querySelector<HTMLElement>('[data-time-picker-time-panel="true"]');
+    expect(panel).toBeTruthy();
+    const spinbuttons = panel?.querySelectorAll('[role="spinbutton"]') ?? [];
+    expect(spinbuttons.length).toBe(2);
   });
 
   it('renders columns in stable order for second granularity with 12h cycle', async () => {

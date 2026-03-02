@@ -14,8 +14,8 @@
 	<TimePicker.Trigger>Open time picker</TimePicker.Trigger>
 	<TimePicker.Popover>
 		<div>
-			<TimePicker.Column type="hour" />
-			<TimePicker.Column type="minute" />
+			<TimePicker.WheelColumn type="hour" class="h-44" />
+			<TimePicker.WheelColumn type="minute" class="h-44" />
 		</div>
 	</TimePicker.Popover>
 </TimePicker.Root>

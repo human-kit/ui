@@ -24,6 +24,8 @@ function getGridCellByDate(date: string) {
 }
 
 describe('Calendar', () => {
+	const februaryRangeAnchor = { start: '2026-02-10', end: '2026-02-10' };
+
 	it('renders heading and grid', async () => {
 		const screen = render(CalendarRootTest);
 		const heading = screen.getByRole('heading');
@@ -237,7 +239,8 @@ describe('Calendar', () => {
 
 	it('confirms a date range with two clicks in range mode', async () => {
 		render(CalendarRootTest, {
-			selectionMode: 'range'
+			selectionMode: 'range',
+			defaultValue: februaryRangeAnchor
 		});
 
 		const start = getGridCellByDate('2026-02-10');
@@ -292,6 +295,7 @@ describe('Calendar', () => {
 	it('does not confirm a range that crosses unavailable dates', async () => {
 		render(CalendarRootTest, {
 			selectionMode: 'range',
+			defaultValue: februaryRangeAnchor,
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
 
@@ -315,6 +319,7 @@ describe('Calendar', () => {
 	it('disables unreachable dates while waiting for range end', async () => {
 		render(CalendarRootTest, {
 			selectionMode: 'range',
+			defaultValue: februaryRangeAnchor,
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
 
@@ -354,7 +359,8 @@ describe('Calendar', () => {
 
 	it('shows range trace while moving with keyboard after selecting a range start', async () => {
 		render(CalendarRootTest, {
-			selectionMode: 'range'
+			selectionMode: 'range',
+			defaultValue: februaryRangeAnchor
 		});
 
 		const start = getGridCellByDate('2026-02-10');
@@ -395,7 +401,8 @@ describe('Calendar', () => {
 
 	it('keeps focus on second click when selecting reverse range', async () => {
 		render(CalendarRootTest, {
-			selectionMode: 'range'
+			selectionMode: 'range',
+			defaultValue: februaryRangeAnchor
 		});
 
 		const first = getGridCellByDate('2026-02-06');
@@ -410,6 +417,7 @@ describe('Calendar', () => {
 	it('allows focus to move past reachable range bounds but keeps it disabled', async () => {
 		render(CalendarRootTest, {
 			selectionMode: 'range',
+			defaultValue: februaryRangeAnchor,
 			isDateUnavailable: (date: string) => {
 				if (!date.startsWith('2026-02-')) return true;
 				const day = Number(date.slice(-2));

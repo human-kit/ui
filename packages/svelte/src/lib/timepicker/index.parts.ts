@@ -4,5 +4,5 @@ export { default as Segment } from './segment/time-picker-segment.svelte';
 export { default as Trigger } from './trigger/time-picker-trigger.svelte';
 export { default as Popover } from './popover/time-picker-popover.svelte';
 export { default as TimePanel } from './time-panel/time-picker-time-panel.svelte';
-export { default as Column } from './column/time-picker-column.svelte';
-export { default as ColumnCell } from './column-cell/time-picker-column-cell.svelte';
+export { default as WheelColumn } from './wheel-column/time-picker-wheel-column.svelte';
+export { default as WheelItem } from './wheel-item/time-picker-wheel-item.svelte';

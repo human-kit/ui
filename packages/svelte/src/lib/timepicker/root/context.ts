@@ -48,10 +48,11 @@ export type TimePickerContext = {
   focusNextSegment: (type: TimePickerEditableSegmentType) => boolean;
   focusPreviousSegment: (type: TimePickerEditableSegmentType) => boolean;
   focusLastSegment: () => boolean;
-  selectColumnOption: (type: TimePickerEditableSegmentType, value: string) => void;
-  getColumnOptions: (
+  selectWheelValue: (type: TimePickerEditableSegmentType, value: string) => void;
+  getSelectedWheelValue: (type: TimePickerEditableSegmentType) => string | null;
+  getWheelOptions: (
     type: TimePickerEditableSegmentType
-  ) => Array<{ value: string; label: string; disabled: boolean; selected: boolean }>;
+  ) => Array<{ value: string; label: string; disabled: boolean }>;
 };
 
 export function setTimePickerContext(context: TimePickerContext) {

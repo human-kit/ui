@@ -8,17 +8,11 @@
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 
+	import { composeEventHandlers } from '../internal/strict-props';
+
 	type TimePickerInputProps = Omit<
 		HTMLAttributes<HTMLDivElement>,
-		| 'children'
-		| 'class'
-		| 'id'
-		| 'role'
-		| 'tabindex'
-		| 'onmousedown'
-		| 'onfocus'
-		| 'onblur'
-		| 'onkeydown'
+		'children' | 'class' | 'id' | 'role' | 'tabindex'
 	> & {
 		children?: Snippet<[TimePickerSegmentPart]>;
 		class?: string;
@@ -29,6 +23,10 @@
 		children,
 		class: className = '',
 		'aria-label': ariaLabel,
+		onmousedown: onMouseDownExternal,
+		onfocus: onFocusExternal,
+		onblur: onBlurExternal,
+		onkeydown: onKeydownExternal,
 		...restProps
 	}: TimePickerInputProps = $props();
 

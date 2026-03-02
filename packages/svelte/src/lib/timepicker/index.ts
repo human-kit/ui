@@ -6,8 +6,8 @@ export { default as TimePickerSegment } from './segment/time-picker-segment.svel
 export { default as TimePickerTrigger } from './trigger/time-picker-trigger.svelte';
 export { default as TimePickerPopover } from './popover/time-picker-popover.svelte';
 export { default as TimePickerTimePanel } from './time-panel/time-picker-time-panel.svelte';
-export { default as TimePickerColumn } from './column/time-picker-column.svelte';
-export { default as TimePickerColumnCell } from './column-cell/time-picker-column-cell.svelte';
+export { default as TimePickerWheelColumn } from './wheel-column/time-picker-wheel-column.svelte';
+export { default as TimePickerWheelItem } from './wheel-item/time-picker-wheel-item.svelte';
 
 export {
   getTimePickerContext,

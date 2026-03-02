@@ -23,7 +23,7 @@
 	<div class="mx-auto max-w-5xl">
 		<h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">TimePicker</h1>
 		<p class="mb-8 text-gray-600 dark:text-gray-400">
-			Composable time picker with segmented input, trigger, and scrollable columns.
+			Composable time picker with segmented input, trigger, and wheel-based panel columns.
 		</p>
 
 		<div class="space-y-8">
@@ -68,18 +68,7 @@
 							>
 								<TimePicker.TimePanel class="flex gap-2">
 									{#snippet column(col)}
-										<TimePicker.Column
-											type={col.type}
-											class="max-h-44 space-y-1 overflow-auto rounded-md"
-										>
-											{#snippet children(option)}
-												<TimePicker.ColumnCell
-													type={col.type}
-													{option}
-													class="block w-full rounded-md px-2 py-1 text-left text-sm outline-none hover:bg-gray-100 data-focused:bg-gray-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 aria-selected:bg-blue-600 aria-selected:text-white disabled:opacity-40 dark:hover:bg-gray-700 dark:data-focused:bg-gray-700"
-												/>
-											{/snippet}
-										</TimePicker.Column>
+										<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md" />
 									{/snippet}
 								</TimePicker.TimePanel>
 							</TimePicker.Popover>
@@ -147,18 +136,7 @@
 						>
 							<TimePicker.TimePanel class="flex gap-2">
 								{#snippet column(col)}
-									<TimePicker.Column
-										type={col.type}
-										class="max-h-44 space-y-1 overflow-auto rounded-md"
-									>
-										{#snippet children(option)}
-											<TimePicker.ColumnCell
-												type={col.type}
-												{option}
-												class="block w-full rounded-md px-2 py-1 text-left text-sm outline-none hover:bg-gray-100 data-focused:bg-gray-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 aria-selected:bg-blue-600 aria-selected:text-white disabled:opacity-40 dark:hover:bg-gray-700 dark:data-focused:bg-gray-700"
-											/>
-										{/snippet}
-									</TimePicker.Column>
+									<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md" />
 								{/snippet}
 							</TimePicker.TimePanel>
 						</TimePicker.Popover>
@@ -211,18 +189,7 @@
 							>
 								<TimePicker.TimePanel class="flex gap-2">
 									{#snippet column(col)}
-										<TimePicker.Column
-											type={col.type}
-											class="max-h-44 space-y-1 overflow-auto rounded-md"
-										>
-											{#snippet children(option)}
-												<TimePicker.ColumnCell
-													type={col.type}
-													{option}
-													class="block w-full rounded-md px-2 py-1 text-left text-sm outline-none hover:bg-gray-100 data-focused:bg-gray-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 aria-selected:bg-blue-600 aria-selected:text-white disabled:opacity-40 dark:hover:bg-gray-700 dark:data-focused:bg-gray-700"
-												/>
-											{/snippet}
-										</TimePicker.Column>
+										<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md" />
 									{/snippet}
 								</TimePicker.TimePanel>
 							</TimePicker.Popover>

@@ -11,8 +11,6 @@
 		minValue?: string;
 		maxValue?: string;
 		popoverAriaLabel?: string;
-		shouldCloseOnSelect?: boolean;
-		closeOnSelect?: boolean;
 	};
 
 	let {
@@ -24,9 +22,7 @@
 		granularity = 'minute',
 		minValue,
 		maxValue,
-		popoverAriaLabel = 'Time picker',
-		shouldCloseOnSelect,
-		closeOnSelect
+		popoverAriaLabel = 'Time picker'
 	}: Props = $props();
 
 	let selectedValue = $state<string | null>('');
@@ -43,8 +39,6 @@
 	{granularity}
 	{minValue}
 	{maxValue}
-	{shouldCloseOnSelect}
-	{closeOnSelect}
 	onChange={(nextValue) => {
 		selectedValue = nextValue;
 	}}
@@ -63,7 +57,7 @@
 	<TimePicker.Popover class="time-picker-popover" aria-label={popoverAriaLabel}>
 		<TimePicker.TimePanel class="time-picker-columns">
 			{#snippet column(col)}
-				<TimePicker.Column type={col.type} class="time-picker-column" />
+				<TimePicker.WheelColumn type={col.type} class="time-picker-column h-44" />
 			{/snippet}
 		</TimePicker.TimePanel>
 	</TimePicker.Popover>

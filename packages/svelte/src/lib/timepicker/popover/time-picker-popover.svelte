@@ -39,22 +39,18 @@
 
 	const resolvedInitialFocus = $derived.by(() => {
 		if (typeof initialFocus === 'function') {
-			return () => initialFocus() ?? resolveInitialColumnFocus();
+			return () => initialFocus() ?? resolveInitialWheelFocus();
 		}
 		if (initialFocus !== undefined) {
 			return initialFocus;
 		}
-		return resolveInitialColumnFocus;
+		return resolveInitialWheelFocus;
 	});
 
-	function resolveInitialColumnFocus(): HTMLElement | null {
+	function resolveInitialWheelFocus(): HTMLElement | null {
 		const dialog = document.getElementById(dialogId);
-		const selectedOption = dialog?.querySelector<HTMLElement>(
-			'[role="option"][aria-selected="true"]'
-		);
-		if (selectedOption) return selectedOption;
-		const firstOption = dialog?.querySelector<HTMLElement>('[role="option"]');
-		return firstOption ?? null;
+		const firstSpinbutton = dialog?.querySelector<HTMLElement>('[role="spinbutton"]');
+		return firstSpinbutton ?? null;
 	}
 
 	function handleOpenChange(nextOpen: boolean, details: PopoverOpenChangeDetails) {

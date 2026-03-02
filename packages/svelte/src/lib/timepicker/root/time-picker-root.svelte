@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { getInteractionModality } from '../../primitives/input-modality';
 	import type { TimePickerOpenChangeDetails, TimePickerOpenChangeReason } from './context';
 	import { setTimePickerContext, type TimePickerContext } from './context';
 	import {
@@ -44,8 +43,6 @@
 		open?: boolean;
 		defaultOpen?: boolean;
 		onOpenChange?: (open: boolean, details: TimePickerOpenChangeDetails) => void;
-		shouldCloseOnSelect?: boolean;
-		closeOnSelect?: boolean;
 		children?: Snippet;
 		class?: string;
 		'aria-label'?: string;
@@ -70,14 +67,10 @@
 		open = $bindable(),
 		defaultOpen = false,
 		onOpenChange,
-		shouldCloseOnSelect,
-		closeOnSelect,
 		children,
 		class: className = '',
 		'aria-label': ariaLabel
 	}: TimePickerRootProps = $props();
-
-	const effectiveShouldCloseOnSelect = $derived(shouldCloseOnSelect ?? closeOnSelect ?? false);
 
 	const instanceId = untrack(() => id) ?? generatedInstanceId;
 	const localeContext = useLocaleContextOptional();
@@ -503,7 +496,7 @@
 		return getSegmentLabel(type, resolvedLocale);
 	}
 
-	function selectColumnOption(type: TimePickerEditableSegmentType, optionValue: string) {
+	function selectWheelValue(type: TimePickerEditableSegmentType, optionValue: string) {
 		if (isDisabled || isReadOnly) return;
 
 		if (type === 'dayPeriod') {
@@ -511,25 +504,15 @@
 		} else {
 			setSegmentValue(type, optionValue);
 		}
-
-		const nextParts = buildTimePartsFromDraft(segmentDraft, granularity, resolvedHourCycle);
-		if (!nextParts) return;
-
-		if (effectiveShouldCloseOnSelect) {
-			const required = requiredSegments;
-			const isComplete = required.every(
-				(segmentType) => !isSegmentValueEmpty(getSegmentValue(segmentType))
-			);
-			if (isComplete) {
-				setFocusVisible(getInteractionModality() === 'keyboard');
-				closePopover('close-press');
-			}
-		}
 	}
 
-	function getColumnOptions(type: TimePickerEditableSegmentType) {
-		const options: Array<{ value: string; label: string; disabled: boolean; selected: boolean }> =
-			[];
+	function getSelectedWheelValue(type: TimePickerEditableSegmentType): string | null {
+		const selected = getSegmentValue(type);
+		return selected.trim().length > 0 ? selected : null;
+	}
+
+	function getWheelOptions(type: TimePickerEditableSegmentType) {
+		const options: Array<{ value: string; label: string; disabled: boolean }> = [];
 
 		const getCandidateFromPartial = (
 			partial: Partial<TimePickerDraft>
@@ -554,8 +537,7 @@
 				options.push({
 					value: option,
 					label: option,
-					disabled,
-					selected: (segmentDraft.dayPeriod || '').toUpperCase() === option
+					disabled
 				});
 			}
 			return options;
@@ -599,8 +581,7 @@
 			options.push({
 				value: valueString,
 				label: String(current).padStart(2, '0'),
-				disabled,
-				selected: getSegmentValue(type) === valueString
+				disabled
 			});
 		}
 
@@ -667,8 +648,9 @@
 		focusNextSegment,
 		focusPreviousSegment,
 		focusLastSegment,
-		selectColumnOption,
-		getColumnOptions
+		selectWheelValue,
+		getSelectedWheelValue,
+		getWheelOptions
 	};
 
 	setTimePickerContext(context);

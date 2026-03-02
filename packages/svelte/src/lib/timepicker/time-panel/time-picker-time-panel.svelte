@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useTimePickerContext } from '../root/context';
 	import { resolveVisibleColumns, type TimePanelColumnInfo } from './resolve-visible-columns';
-	import TimePickerColumn from '../column/time-picker-column.svelte';
+	import TimePickerWheelColumn from '../wheel-column/time-picker-wheel-column.svelte';
 
 	type TimePickerTimePanelProps = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> & {
 		column?: Snippet<[TimePanelColumnInfo]>;
@@ -22,12 +22,16 @@
 	);
 </script>
 
-<div class={className || 'flex gap-2'} data-time-picker-time-panel="true" {...restProps}>
+<div
+	class={className || 'flex items-stretch gap-2'}
+	data-time-picker-time-panel="true"
+	{...restProps}
+>
 	{#each visibleColumns as col (col.type)}
 		{#if columnSnippet}
 			{@render columnSnippet(col)}
 		{:else}
-			<TimePickerColumn type={col.type} />
+			<TimePickerWheelColumn type={col.type} />
 		{/if}
 	{/each}
 </div>
