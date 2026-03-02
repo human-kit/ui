@@ -215,16 +215,6 @@ export function isTimeOutOfRange(
     }
   }
 
-  if (minValue && maxValue) {
-    const minRaw = parseTimePickerValue(minValue);
-    const maxRaw = parseTimePickerValue(maxValue);
-    if (minRaw && maxRaw) {
-      const min = truncateToGranularity(minRaw, granularity);
-      const max = truncateToGranularity(maxRaw, granularity);
-      if (compareTimeParts(min, max) > 0) return true;
-    }
-  }
-
   return false;
 }
 
@@ -295,8 +285,9 @@ export function buildTimePickerSegments(params: {
   hourCycle: TimePickerHourCycle;
   granularity: TimePickerGranularity;
   draft: TimePickerDraft;
+  formatter?: Intl.DateTimeFormat;
 }): TimePickerSegmentPart[] {
-  const { locale, hourCycle, granularity, draft } = params;
+  const { locale, hourCycle, granularity, draft, formatter } = params;
   const formatOptions: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
     minute: granularity !== 'hour' ? '2-digit' : undefined,
@@ -306,8 +297,8 @@ export function buildTimePickerSegments(params: {
   };
 
   const sampleDate = new Date(Date.UTC(2024, 0, 1, 14, 30, 45));
-  const formatter = new Intl.DateTimeFormat(locale, formatOptions);
-  const parts = formatter.formatToParts(sampleDate);
+  const resolvedFormatter = formatter ?? new Intl.DateTimeFormat(locale, formatOptions);
+  const parts = resolvedFormatter.formatToParts(sampleDate);
 
   return parts
     .map((part): TimePickerSegmentPart | null => {

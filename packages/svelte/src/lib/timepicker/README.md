@@ -58,6 +58,7 @@
 - `secondStep?: number`
 - `isDisabled?: boolean`
 - `isReadOnly?: boolean`
+- `isRequired?: boolean`
 - `open?: boolean`
 - `defaultOpen?: boolean`
 - `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`
@@ -76,7 +77,7 @@
 ## Wheel API
 
 - `TimePicker.WheelColumn` renders one wheel (`role="spinbutton"`) for one editable segment (`hour`, `minute`, `second`, or `dayPeriod`).
-- `TimePicker.WheelItem` renders one snap-aligned item (`data-wheel-item`) and is handled by the wheel container focus/selection model.
+- `TimePicker.WheelItem` is headless: it renders one item (`data-wheel-item`) with state attributes (`data-selected`, `data-disabled`, `data-centered`) and leaves all visual styling to consumers.
 
 ## TimePanel API
 

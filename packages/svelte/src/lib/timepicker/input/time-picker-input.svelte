@@ -84,6 +84,7 @@
 	role="group"
 	aria-label={ariaLabel}
 	aria-invalid={timePicker.isInvalidDraft || undefined}
+	aria-required={timePicker.isRequired || undefined}
 	tabindex={timePicker.isDisabled ? -1 : 0}
 	data-disabled={timePicker.isDisabled || undefined}
 	data-readonly={timePicker.isReadOnly || undefined}
@@ -91,10 +92,10 @@
 	data-focus-visible={timePicker.focusVisible || undefined}
 	data-focus-within={timePicker.focusWithin || undefined}
 	data-invalid={timePicker.isInvalidDraft || undefined}
-	onmousedown={handleMouseDown}
-	onfocus={handleFocus}
-	onblur={handleBlur}
-	onkeydown={handleKeydown}
+	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
+	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
+	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
+	onkeydown={composeEventHandlers(handleKeydown, onKeydownExternal ?? undefined)}
 >
 	{#each segments as segment, index (index)}
 		{#if children}

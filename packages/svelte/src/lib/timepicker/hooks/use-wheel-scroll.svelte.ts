@@ -1,7 +1,11 @@
 export type WheelScrollBehavior = 'smooth' | 'instant';
 
 export type WheelScrollApi = {
-  scrollToIndex: (index: number, behavior?: WheelScrollBehavior) => void;
+  scrollToIndex: (
+    index: number,
+    behavior?: WheelScrollBehavior,
+    options?: { silent?: boolean }
+  ) => void;
   destroy: () => void;
 };
 
@@ -18,8 +22,10 @@ export function useWheelScroll(
   onSnap: (centeredIndex: number) => void
 ): WheelScrollApi {
   let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
+  let silentScrollTimer: ReturnType<typeof setTimeout> | null = null;
   let snapRafId: number | null = null;
   let isSnapping = false;
+  let isSilentScroll = false;
   const supportsScrollEnd = 'onscrollend' in window;
   const wheelDebugWindow = window as Window & { __HK_TIMEPICKER_WHEEL_DEBUG__?: boolean };
 
@@ -45,6 +51,24 @@ export function useWheelScroll(
       supportsScrollEnd,
       ...details
     });
+  }
+
+  function clearSilentScroll() {
+    isSilentScroll = false;
+    if (silentScrollTimer) {
+      clearTimeout(silentScrollTimer);
+      silentScrollTimer = null;
+    }
+  }
+
+  function startSilentScrollWindow() {
+    isSilentScroll = true;
+    if (silentScrollTimer) {
+      clearTimeout(silentScrollTimer);
+    }
+    silentScrollTimer = setTimeout(() => {
+      clearSilentScroll();
+    }, 600);
   }
 
   function getItemElements(): HTMLElement[] {
@@ -138,14 +162,13 @@ export function useWheelScroll(
    * 3. Animate to perfectly centre the item (120 ms).
    */
   function snapToCenter(source: 'scrollend' | 'fallback-timeout' | 'inactivity-timeout') {
-    if (isSnapping) return;
+    if (isSnapping || isSilentScroll) return;
 
     const now = performance.now();
     const idleBeforeSnapMs = lastScrollAt > 0 ? now - lastScrollAt : null;
     debugLog('snap-evaluate', {
       source,
-      idleBeforeSnapMs:
-        idleBeforeSnapMs === null ? null : Number(idleBeforeSnapMs.toFixed(1)),
+      idleBeforeSnapMs: idleBeforeSnapMs === null ? null : Number(idleBeforeSnapMs.toFixed(1)),
       scrollEventsInGesture
     });
 
@@ -158,8 +181,7 @@ export function useWheelScroll(
 
     onSnap(centeredIndex);
 
-    const idealScrollTop =
-      target.offsetTop - (container.clientHeight - target.offsetHeight) / 2;
+    const idealScrollTop = target.offsetTop - (container.clientHeight - target.offsetHeight) / 2;
     const clamped = Math.max(0, idealScrollTop);
     const diff = Math.abs(container.scrollTop - clamped);
 
@@ -203,12 +225,17 @@ export function useWheelScroll(
       return;
     }
 
+    if (isSilentScroll) {
+      debugLog('scroll-ignored-while-silent-scroll');
+      return;
+    }
+
     // Always debounce by scroll inactivity so we don't rely solely on
     // potentially late `scrollend` dispatch.
     clearScrollEndTimer();
     scrollEndTimer = setTimeout(
       () => snapToCenter(supportsScrollEnd ? 'inactivity-timeout' : 'fallback-timeout'),
-      64
+      120
     );
   }
 
@@ -216,6 +243,12 @@ export function useWheelScroll(
     const now = performance.now();
     if (isSnapping) {
       debugLog('scrollend-ignored-while-snapping');
+      return;
+    }
+
+    if (isSilentScroll) {
+      debugLog('scrollend-ignored-while-silent-scroll');
+      clearSilentScroll();
       return;
     }
 
@@ -236,16 +269,26 @@ export function useWheelScroll(
 
   /* ── public API ─────────────────────────────────────────────────── */
 
-  function scrollToIndex(index: number, behavior: WheelScrollBehavior = 'smooth') {
+  function scrollToIndex(
+    index: number,
+    behavior: WheelScrollBehavior = 'smooth',
+    options?: { silent?: boolean }
+  ) {
     cancelSnap();
     clearScrollEndTimer();
+
+    const shouldUseSilentScroll = options?.silent === true && behavior === 'smooth';
+    if (shouldUseSilentScroll) {
+      startSilentScrollWindow();
+    } else {
+      clearSilentScroll();
+    }
 
     const items = getItemElements();
     if (index < 0 || index >= items.length) return;
 
     const target = items[index];
-    const idealScrollTop =
-      target.offsetTop - (container.clientHeight - target.offsetHeight) / 2;
+    const idealScrollTop = target.offsetTop - (container.clientHeight - target.offsetHeight) / 2;
 
     if (behavior === 'instant') {
       // Direct assignment – no animation.  Suppress the ensuing scrollend
@@ -268,6 +311,7 @@ export function useWheelScroll(
     destroy: () => {
       cancelSnap();
       clearScrollEndTimer();
+      clearSilentScroll();
       container.removeEventListener('scroll', handleScroll);
       if (supportsScrollEnd) {
         container.removeEventListener('scrollend', handleScrollEnd as EventListener);

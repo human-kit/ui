@@ -1,8 +1,8 @@
 <script lang="ts">
 	import TimePicker from '../index';
 
-	let value = $state<string | null | undefined>('14:30');
-	let open = $state(false);
+	let value = $state<string | null>('14:30');
+	let open = $state(true);
 </script>
 
 <TimePicker.Root bind:value bind:open>
@@ -13,13 +13,15 @@
 	</TimePicker.Input>
 	<TimePicker.Trigger>Open time picker</TimePicker.Trigger>
 	<TimePicker.Popover>
-		<TimePicker.TimePanel />
+		<TimePicker.TimePanel>
+			{#snippet column(col)}
+				<TimePicker.WheelColumn type={col.type} class="h-44 w-16" />
+			{/snippet}
+		</TimePicker.TimePanel>
 	</TimePicker.Popover>
 </TimePicker.Root>
 
 <p data-testid="bind-value">{value}</p>
-<p data-testid="bind-open">{String(open)}</p>
-<button type="button" data-testid="clear-undefined" onclick={() => (value = undefined)}
-	>Clear undefined</button
+<button type="button" data-testid="set-value-16-45" onclick={() => (value = '16:45')}
+	>Set value</button
 >
-<button type="button" data-testid="clear-null" onclick={() => (value = null)}>Clear null</button>

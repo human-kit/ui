@@ -44,6 +44,7 @@
 	let wheelRef: HTMLElement | null = null;
 	let wheelApi: ReturnType<typeof useWheelScroll> | null = null;
 	let resizeObserver: ResizeObserver | null = null;
+	let resizeFrameId: number | null = null;
 	let itemHeight = $state(0);
 	let spacerHeight = $state(0);
 	let focusWithin = $state(false);
@@ -326,7 +327,7 @@
 			timePicker.selectWheelValue(type, option.value);
 		}
 
-		wheelApi?.scrollToIndex(index, 'smooth');
+		wheelApi?.scrollToIndex(index, 'smooth', { silent: true });
 	}
 
 	$effect(() => {
@@ -337,15 +338,33 @@
 
 		resizeObserver?.disconnect();
 		resizeObserver = new ResizeObserver(() => {
-			syncMeasurements();
+			if (resizeFrameId !== null) {
+				cancelAnimationFrame(resizeFrameId);
+			}
+			resizeFrameId = requestAnimationFrame(() => {
+				resizeFrameId = null;
+				syncMeasurements();
+			});
 		});
 		resizeObserver.observe(wheelRef);
 
 		return () => {
+			if (resizeFrameId !== null) {
+				cancelAnimationFrame(resizeFrameId);
+				resizeFrameId = null;
+			}
 			resizeObserver?.disconnect();
 			resizeObserver = null;
 			destroyWheelApi();
 		};
+	});
+
+	$effect(() => {
+		if (!timePicker.open || !wheelApi) return;
+		if (selectedIndex < 0) return;
+		if (selectedIndex === lastCenteredIndex) return;
+		lastCenteredIndex = selectedIndex;
+		wheelApi.scrollToIndex(selectedIndex, 'instant');
 	});
 
 	$effect(() => {
@@ -384,6 +403,7 @@
 	aria-valuemax={maxValue}
 	aria-valuenow={valueNow}
 	aria-valuetext={valueText}
+	aria-roledescription="wheel picker"
 	aria-disabled={timePicker.isDisabled || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}
@@ -396,6 +416,7 @@
 	{...restProps}
 >
 	<div data-wheel-spacer="top" style={`height:${spacerHeight}px`}></div>
+	<span role="status" aria-live="polite" class="sr-only">{valueText}</span>
 	{#each options as option, index (option.value)}
 		{#if children}
 			{@render children(option)}

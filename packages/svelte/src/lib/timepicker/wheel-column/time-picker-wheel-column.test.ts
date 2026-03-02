@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TimePickerTest from '../root/time-picker-test.svelte';
+import TimePickerWheelColumnBindableTest from './time-picker-wheel-column-bindable-test.svelte';
 
 function getPanelColumns(): HTMLElement[] {
   const panel = document.querySelector<HTMLElement>('[data-time-picker-time-panel="true"]');
@@ -57,5 +58,59 @@ describe('TimePicker.WheelColumn', () => {
 
     expect(topSpacer).toBeTruthy();
     expect(bottomSpacer).toBeTruthy();
+  });
+
+  it('updates value with ArrowDown keyboard navigation', async () => {
+    render(TimePickerTest, { defaultOpen: true });
+    const firstColumn = getPanelColumns().at(0);
+    expect(firstColumn).toBeTruthy();
+
+    firstColumn?.focus();
+    firstColumn?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    await expect
+      .poll(() => document.querySelector('[data-testid="time-picker-value"]')?.textContent)
+      .toBe('15:30');
+  });
+
+  it('sets focus data attributes on keyboard focus', async () => {
+    render(TimePickerTest, { defaultOpen: true });
+    const firstColumn = getPanelColumns().at(0);
+    expect(firstColumn).toBeTruthy();
+
+    firstColumn?.focus();
+    firstColumn?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    await expect.poll(() => firstColumn?.getAttribute('data-focus-within')).toBe('true');
+    await expect.poll(() => firstColumn?.getAttribute('data-focus-visible')).toBe('true');
+  });
+
+  it('marks out-of-range options as disabled with min/max', async () => {
+    render(TimePickerTest, {
+      defaultOpen: true,
+      defaultValue: '09:30',
+      minValue: '09:00',
+      maxValue: '17:00'
+    });
+
+    const firstColumn = getPanelColumns().at(0);
+    const disabledItems =
+      firstColumn?.querySelectorAll('[data-wheel-item][data-disabled="true"]') ?? [];
+    expect(disabledItems.length).toBeGreaterThan(0);
+  });
+
+  it('syncs wheel position when value changes externally while open', async () => {
+    render(TimePickerWheelColumnBindableTest);
+    const firstColumn = getPanelColumns().at(0);
+    expect(firstColumn).toBeTruthy();
+
+    const setValueButton = document.querySelector<HTMLElement>('[data-testid="set-value-16-45"]');
+    expect(setValueButton).toBeTruthy();
+    setValueButton?.click();
+
+    await expect.poll(() => firstColumn?.getAttribute('aria-valuetext')).toBe('16');
+    await expect
+      .poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+      .toBe('16:45');
   });
 });

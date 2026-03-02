@@ -8,6 +8,7 @@
 		isReadOnly?: boolean;
 		hourCycle?: 12 | 24;
 		granularity?: 'hour' | 'minute' | 'second';
+		isRequired?: boolean;
 		minValue?: string;
 		maxValue?: string;
 		popoverAriaLabel?: string;
@@ -20,6 +21,7 @@
 		isReadOnly = false,
 		hourCycle,
 		granularity = 'minute',
+		isRequired = false,
 		minValue,
 		maxValue,
 		popoverAriaLabel = 'Time picker'
@@ -37,6 +39,7 @@
 	{isReadOnly}
 	{hourCycle}
 	{granularity}
+	{isRequired}
 	{minValue}
 	{maxValue}
 	onChange={(nextValue) => {

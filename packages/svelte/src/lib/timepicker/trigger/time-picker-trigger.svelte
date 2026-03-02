@@ -6,16 +6,26 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { composeEventHandlers } from '../internal/strict-props';
 
 	type TimePickerTriggerProps = Omit<
 		HTMLButtonAttributes,
-		'type' | 'children' | 'class' | 'onclick' | 'aria-haspopup' | 'aria-expanded'
+		'type' | 'children' | 'class' | 'aria-haspopup' | 'aria-expanded'
 	> & {
 		children?: Snippet;
 		class?: string;
 	};
 
-	let { children, class: className = '', ...restProps }: TimePickerTriggerProps = $props();
+	let {
+		children,
+		class: className = '',
+		onmousedown: onMouseDownExternal,
+		onfocus: onFocusExternal,
+		onblur: onBlurExternal,
+		onkeydown: onKeydownExternal,
+		onclick: onClickExternal,
+		...restProps
+	}: TimePickerTriggerProps = $props();
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
 	let isFocused = $state(false);
@@ -94,12 +104,12 @@
 		data-disabled={timePicker.isDisabled || undefined}
 		data-focused={isFocused || undefined}
 		data-focus-visible={isFocused && timePicker.focusVisible ? 'true' : undefined}
-		onmousedown={handleMouseDown}
-		onfocus={handleFocus}
-		onblur={handleBlur}
-		onkeydown={handleKeydown}
-		onclick={handleClick}
 		{...restProps}
+		onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
+		onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
+		onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
+		onkeydown={composeEventHandlers(handleKeydown, onKeydownExternal ?? undefined)}
+		onclick={composeEventHandlers(handleClick, onClickExternal ?? undefined)}
 	>
 		{#if children}
 			{@render children()}

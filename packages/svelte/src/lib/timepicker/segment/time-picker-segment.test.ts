@@ -55,9 +55,7 @@ describe('TimePicker.Segment', () => {
     hourSegment.element()?.focus();
     await userEvent.keyboard('{ArrowUp}');
 
-    await expect
-      .poll(() => getLatestTestIdText('time-picker-value'))
-      .toBe('15:30');
+    await expect.poll(() => getLatestTestIdText('time-picker-value')).toBe('15:30');
   });
 
   it('renders minutes with leading zero while keeping hour unpadded', async () => {
@@ -89,9 +87,7 @@ describe('TimePicker.Segment', () => {
     await userEvent.keyboard('1');
     await userEvent.keyboard('4');
 
-    await expect
-      .poll(() => getLatestTestIdText('bind-value'))
-      .toBe('');
+    await expect.poll(() => getLatestTestIdText('bind-value')).toBe('');
   });
 
   it('keeps partial hour draft when focus leaves input without completing minute', async () => {
@@ -118,9 +114,7 @@ describe('TimePicker.Segment', () => {
     await userEvent.keyboard('5');
 
     await expect.poll(() => minuteSegment.element()?.textContent).toBe('25');
-    await expect
-      .poll(() => getLatestTestIdText('time-picker-value'))
-      .toBe('14:25');
+    await expect.poll(() => getLatestTestIdText('time-picker-value')).toBe('14:25');
   });
 
   it('updates dayPeriod with keyboard in 12h mode', async () => {
@@ -130,9 +124,7 @@ describe('TimePicker.Segment', () => {
     dayPeriodSegment.element()?.focus();
     await userEvent.keyboard('a');
 
-    await expect
-      .poll(() => getLatestTestIdText('bind-value'))
-      .toBe('02:30');
+    await expect.poll(() => getLatestTestIdText('bind-value')).toBe('02:30');
   });
 
   it('clears dayPeriod on backspace and auto-sets AM when editing hour again', async () => {
@@ -151,5 +143,41 @@ describe('TimePicker.Segment', () => {
 
     await expect.poll(() => dayPeriodSegment.element()?.textContent).toBe('AM');
     await expect.poll(() => getLatestTestIdText('bind-value')).toBe('01:30');
+  });
+
+  it('uses correct Home/End boundaries for hour in 12h mode', async () => {
+    render(TimePicker12hTest);
+    const hourSegment = getSegment('hour');
+
+    hourSegment.element()?.focus();
+    await userEvent.keyboard('{Home}');
+    await expect.poll(() => hourSegment.element()?.textContent).toBe('1');
+
+    await userEvent.keyboard('{End}');
+    await expect.poll(() => hourSegment.element()?.textContent).toBe('12');
+  });
+
+  it('prevents paste from mutating contenteditable segment text', async () => {
+    render(TimePickerTest, { defaultValue: '14:30' });
+    const hourSegment = getSegment('hour');
+    const element = hourSegment.element();
+
+    element.focus();
+    element.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true }));
+
+    await expect.poll(() => element.textContent).toBe('14');
+    await expect.poll(() => getLatestTestIdText('time-picker-value')).toBe('');
+  });
+
+  it('restores segment text on unexpected input event drift', async () => {
+    render(TimePickerTest, { defaultValue: '14:30' });
+    const hourSegment = getSegment('hour');
+    const element = hourSegment.element();
+
+    element.focus();
+    element.textContent = '99';
+    element.dispatchEvent(new InputEvent('input', { bubbles: true }));
+
+    await expect.poll(() => getSegment('hour').element()?.textContent).toBe('14');
   });
 });

@@ -18,6 +18,7 @@ export type TimePickerContext = {
   id: string;
   isDisabled: boolean;
   isReadOnly: boolean;
+  isRequired: boolean;
   granularity: TimePickerGranularity;
   hourCycle: TimePickerHourCycle;
   open: boolean;

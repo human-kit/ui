@@ -28,6 +28,10 @@
 		| 'onclick'
 		| 'onselectstart'
 		| 'onkeydown'
+		| 'onbeforeinput'
+		| 'oninput'
+		| 'onpaste'
+		| 'oncompositionend'
 	> & {
 		segment: TimePickerSegmentPart;
 		class?: string;
@@ -36,6 +40,7 @@
 	let { segment, class: className = '', ...restProps }: TimePickerSegmentProps = $props();
 	let isFocused = $state(false);
 	let segmentRef: HTMLSpanElement | null = $state(null);
+	let segmentTextVersion = $state(0);
 
 	const timePicker = useTimePickerContext();
 	const segmentId = $props.id();
@@ -140,6 +145,37 @@
 		event.preventDefault();
 	}
 
+	function restoreSegmentText() {
+		if (segment.type === 'literal') return;
+		segmentTextVersion += 1;
+	}
+
+	function handleBeforeInput(event: InputEvent) {
+		if (segment.type === 'literal') return;
+		if (timePicker.isDisabled || timePicker.isReadOnly) {
+			event.preventDefault();
+			return;
+		}
+
+		// Segment edits are keyboard-driven through `onkeydown` and root state.
+		// Block direct DOM mutations from paste/drop/IME/beforeinput paths.
+		event.preventDefault();
+	}
+
+	function handleInput() {
+		restoreSegmentText();
+	}
+
+	function handlePaste(event: ClipboardEvent) {
+		if (segment.type === 'literal') return;
+		event.preventDefault();
+		restoreSegmentText();
+	}
+
+	function handleCompositionEnd() {
+		restoreSegmentText();
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (segment.type === 'literal') return;
 		if (timePicker.isDisabled) return;
@@ -202,7 +238,7 @@
 		if (event.key === 'Home') {
 			event.preventDefault();
 			if (segment.type === 'hour') {
-				timePicker.setSegmentValue('hour', '0');
+				timePicker.setSegmentValue('hour', timePicker.hourCycle === 12 ? '1' : '0');
 			} else if (segment.type === 'minute') {
 				timePicker.setSegmentValue('minute', '0');
 			} else if (segment.type === 'second') {
@@ -216,7 +252,7 @@
 		if (event.key === 'End') {
 			event.preventDefault();
 			if (segment.type === 'hour') {
-				timePicker.setSegmentValue('hour', '23');
+				timePicker.setSegmentValue('hour', timePicker.hourCycle === 12 ? '12' : '23');
 			} else if (segment.type === 'minute') {
 				timePicker.setSegmentValue('minute', '59');
 			} else if (segment.type === 'second') {
@@ -276,39 +312,45 @@
 		{segment.text}
 	</span>
 {:else}
-	<span
-		bind:this={segmentRef}
-		id={segmentId}
-		class={className}
-		{...restProps}
-		data-time-picker-segment="true"
-		data-placeholder={segment.isPlaceholder || undefined}
-		data-type={segment.type}
-		data-focused={isActive ? 'true' : undefined}
-		data-focus-visible={isFocusVisible ? 'true' : undefined}
-		role="spinbutton"
-		aria-valuetext={valueText}
-		aria-valuemin={valueMin}
-		aria-valuemax={valueMax}
-		aria-valuenow={valueNow}
-		aria-label={segmentLabel}
-		aria-readonly={timePicker.isReadOnly || undefined}
-		aria-disabled={timePicker.isDisabled || undefined}
-		contenteditable={!timePicker.isDisabled && !timePicker.isReadOnly}
-		spellcheck="false"
-		enterkeyhint="next"
-		inputmode={segment.type === 'dayPeriod' ? 'text' : 'numeric'}
-		tabindex={timePicker.isDisabled ? -1 : 0}
-		style={segment.isPlaceholder
-			? 'caret-color: transparent; user-select: none;'
-			: 'caret-color: transparent;'}
-		onfocus={handleFocus}
-		onblur={handleBlur}
-		onmousedown={handleMouseDown}
-		onclick={handleClick}
-		onselectstart={handleSelectStart}
-		onkeydown={handleKeydown}
-	>
-		{segment.text}
-	</span>
+	{#key segmentTextVersion}
+		<span
+			bind:this={segmentRef}
+			id={segmentId}
+			class={className}
+			{...restProps}
+			data-time-picker-segment="true"
+			data-placeholder={segment.isPlaceholder || undefined}
+			data-type={segment.type}
+			data-focused={isActive ? 'true' : undefined}
+			data-focus-visible={isFocusVisible ? 'true' : undefined}
+			role="spinbutton"
+			aria-valuetext={valueText}
+			aria-valuemin={valueMin}
+			aria-valuemax={valueMax}
+			aria-valuenow={valueNow}
+			aria-label={segmentLabel}
+			aria-readonly={timePicker.isReadOnly || undefined}
+			aria-disabled={timePicker.isDisabled || undefined}
+			contenteditable={!timePicker.isDisabled && !timePicker.isReadOnly}
+			spellcheck="false"
+			enterkeyhint="next"
+			inputmode={segment.type === 'dayPeriod' ? 'text' : 'numeric'}
+			tabindex={timePicker.isDisabled ? -1 : 0}
+			style={segment.isPlaceholder
+				? 'caret-color: transparent; user-select: none;'
+				: 'caret-color: transparent;'}
+			onfocus={handleFocus}
+			onblur={handleBlur}
+			onmousedown={handleMouseDown}
+			onclick={handleClick}
+			onselectstart={handleSelectStart}
+			onkeydown={handleKeydown}
+			onbeforeinput={handleBeforeInput}
+			oninput={handleInput}
+			onpaste={handlePaste}
+			oncompositionend={handleCompositionEnd}
+		>
+			{segment.text}
+		</span>
+	{/key}
 {/if}

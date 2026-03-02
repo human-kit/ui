@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TimePickerTest from '../root/time-picker-test.svelte';
+import TimePickerTriggerForwardingTest from './time-picker-trigger-forwarding-test.svelte';
 
 describe('TimePicker.Trigger', () => {
   afterEach(() => {
@@ -55,5 +56,29 @@ describe('TimePicker.Trigger', () => {
 
     expect(document.querySelector('button[aria-haspopup="dialog"]')).toBeNull();
     await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+  });
+
+  it('composes external trigger handlers with internal behavior', async () => {
+    const screen = render(TimePickerTriggerForwardingTest);
+    const trigger = screen.getByRole('button', { name: 'Open time picker' });
+
+    trigger
+      .element()
+      ?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+    trigger.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    trigger
+      .element()
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+
+    await expect
+      .poll(() => document.querySelector('[data-testid="trigger-mousedown-count"]')?.textContent)
+      .toBe('1');
+    await expect
+      .poll(() => document.querySelector('[data-testid="trigger-click-count"]')?.textContent)
+      .toBe('1');
+    await expect
+      .poll(() => document.querySelector('[data-testid="trigger-key-count"]')?.textContent)
+      .toBe('1');
+    await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
   });
 });

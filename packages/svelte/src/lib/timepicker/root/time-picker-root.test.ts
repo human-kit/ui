@@ -81,4 +81,49 @@ describe('TimePicker.Root', () => {
       .poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
       .toBe('');
   });
+
+  it('clears value when bound value is set to undefined externally', async () => {
+    const screen = render(TimePickerBindableTest);
+
+    const clearUndefined = screen.getByTestId('clear-undefined');
+    await clearUndefined.click();
+
+    await expect
+      .poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+      .toBe('');
+    await expect
+      .poll(() => getSegment('hour').element()?.getAttribute('data-placeholder'))
+      .toBe('true');
+  });
+
+  it('clears value when bound value is set to null externally', async () => {
+    const screen = render(TimePickerBindableTest);
+
+    const clearNull = screen.getByTestId('clear-null');
+    await clearNull.click();
+
+    await expect
+      .poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+      .toBe('');
+  });
+
+  it('syncs wheel interaction through root commit into bound value', async () => {
+    const screen = render(TimePickerBindableTest);
+    const trigger = screen.getByRole('button', { name: 'Open time picker' });
+
+    await trigger.click();
+    await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+    const panel = document.querySelector<HTMLElement>('[data-time-picker-time-panel="true"]');
+    const hourColumn = panel?.querySelectorAll<HTMLElement>('[role="spinbutton"]').item(0);
+    const nextItem = hourColumn?.querySelector<HTMLElement>('[data-wheel-item][data-value="15"]');
+    expect(nextItem).toBeTruthy();
+
+    nextItem?.click();
+
+    await expect
+      .poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+      .toBe('15:30');
+    await expect.poll(() => getSegment('hour').element()?.textContent).toBe('15');
+  });
 });

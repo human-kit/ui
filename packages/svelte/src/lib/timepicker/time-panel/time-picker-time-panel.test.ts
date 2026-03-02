@@ -3,44 +3,44 @@ import { render } from 'vitest-browser-svelte';
 import TimePickerTimePanelTest from './time-picker-time-panel-test.svelte';
 
 describe('TimePicker.TimePanel', () => {
-  afterEach(() => {
-    const dialogs = document.querySelectorAll('[role="dialog"]');
-    dialogs.forEach((dialog) => dialog.remove());
-  });
+	afterEach(() => {
+		const dialogs = document.querySelectorAll('[role="dialog"]');
+		dialogs.forEach((dialog) => dialog.remove());
+	});
 
-  it('renders default wheel columns when no snippet is provided', async () => {
-    render(TimePickerTimePanelTest, { defaultOpen: true });
-    const panel = document.querySelector<HTMLElement>('[data-time-picker-time-panel="true"]');
-    expect(panel).toBeTruthy();
-    const spinbuttons = panel?.querySelectorAll('[role="spinbutton"]') ?? [];
-    expect(spinbuttons.length).toBe(2);
-  });
+	it('renders default wheel columns when no snippet is provided', async () => {
+		render(TimePickerTimePanelTest, { defaultOpen: true });
+		const panel = document.querySelector<HTMLElement>('[data-time-picker-time-panel="true"]');
+		expect(panel).toBeTruthy();
+		const spinbuttons = panel?.querySelectorAll('[role="spinbutton"]') ?? [];
+		expect(spinbuttons.length).toBe(2);
+	});
 
-  it('renders columns in stable order for second granularity with 12h cycle', async () => {
-    render(TimePickerTimePanelTest, {
-      defaultOpen: true,
-      granularity: 'second',
-      hourCycle: 12,
-      useSnippet: true
-    });
+	it('renders columns in stable order for second granularity with 12h cycle', async () => {
+		render(TimePickerTimePanelTest, {
+			defaultOpen: true,
+			granularity: 'second',
+			hourCycle: 12,
+			useSnippet: true
+		});
 
-    const columnTypes = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="panel-column"]')).map(
-      (column) => column.getAttribute('data-type')
-    );
-    expect(columnTypes).toEqual(['hour', 'minute', 'second', 'dayPeriod']);
-  });
+		const columnTypes = Array.from(
+			document.querySelectorAll<HTMLElement>('[data-testid="panel-column"]')
+		).map((column) => column.getAttribute('data-type'));
+		expect(columnTypes).toEqual(['hour', 'minute', 'second', 'dayPeriod']);
+	});
 
-  it('omits minute and second columns when granularity is hour', async () => {
-    render(TimePickerTimePanelTest, {
-      defaultOpen: true,
-      granularity: 'hour',
-      hourCycle: 24,
-      useSnippet: true
-    });
+	it('omits minute and second columns when granularity is hour', async () => {
+		render(TimePickerTimePanelTest, {
+			defaultOpen: true,
+			granularity: 'hour',
+			hourCycle: 24,
+			useSnippet: true
+		});
 
-    const columnTypes = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="panel-column"]')).map(
-      (column) => column.getAttribute('data-type')
-    );
-    expect(columnTypes).toEqual(['hour']);
-  });
+		const columnTypes = Array.from(
+			document.querySelectorAll<HTMLElement>('[data-testid="panel-column"]')
+		).map((column) => column.getAttribute('data-type'));
+		expect(columnTypes).toEqual(['hour']);
+	});
 });

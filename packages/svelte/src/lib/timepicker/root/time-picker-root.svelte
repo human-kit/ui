@@ -40,6 +40,7 @@
 		secondStep?: number;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
+		isRequired?: boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
 		onOpenChange?: (open: boolean, details: TimePickerOpenChangeDetails) => void;
@@ -64,6 +65,7 @@
 		secondStep = 1,
 		isDisabled = false,
 		isReadOnly = false,
+		isRequired = false,
 		open = $bindable(),
 		defaultOpen = false,
 		onOpenChange,
@@ -79,9 +81,8 @@
 		if (!localeStore) return undefined;
 		return $localeStore;
 	});
-	const resolvedLocale = $derived(
-		localeFromContext ?? Intl.DateTimeFormat().resolvedOptions().locale
-	);
+	const systemLocale = untrack(() => Intl.DateTimeFormat().resolvedOptions().locale);
+	const resolvedLocale = $derived(localeFromContext ?? systemLocale);
 	const resolvedHourCycle = $derived.by<TimePickerHourCycle>(() => {
 		if (hourCycle) return hourCycle;
 		const localeCycle = new Intl.DateTimeFormat(resolvedLocale, {
@@ -143,23 +144,33 @@
 	});
 
 	$effect(() => {
-		if (value === undefined) return;
-		const nextValue = isValidTimePickerValue(value) ? value : null;
+		const nextValue = value === undefined ? null : isValidTimePickerValue(value) ? value : null;
 		if (nextValue === lastPublishedValue) return;
-		lastPublishedValue = nextValue;
-		valueInternal = nextValue;
+		publishCommittedValue(nextValue, false);
 		segmentDraft = nextValue
 			? toDraftFromTimeValue(nextValue, resolvedHourCycle)
 			: createEmptyTimePickerDraft();
 		segmentTypeBuffer = createEmptyTimePickerDraft();
 	});
 
+	const segmentFormatter = $derived.by(
+		() =>
+			new Intl.DateTimeFormat(resolvedLocale, {
+				hour: 'numeric',
+				minute: granularity !== 'hour' ? '2-digit' : undefined,
+				second: granularity === 'second' ? '2-digit' : undefined,
+				hourCycle: resolvedHourCycle === 12 ? 'h12' : 'h23',
+				timeZone: 'UTC'
+			})
+	);
+
 	const segments = $derived.by(() =>
 		buildTimePickerSegments({
 			locale: resolvedLocale,
 			hourCycle: resolvedHourCycle,
 			granularity,
-			draft: segmentDraft
+			draft: segmentDraft,
+			formatter: segmentFormatter
 		})
 	);
 	const segmentOrder = $derived(getEditableSegmentOrder(segments));
@@ -271,7 +282,7 @@
 				segmentDraft.dayPeriod = '';
 			}
 		} else {
-			const maxDigits = type === 'hour' ? 2 : 2;
+			const maxDigits = 2;
 			let normalized = normalizeSegmentNumberInput(nextValue, maxDigits);
 			if (normalized.length > 0) {
 				const numeric = Number(normalized);
@@ -303,16 +314,9 @@
 	}
 
 	function commitFromDraft() {
-		const hasAnyRequiredValue = requiredSegments.some((type) => {
-			const value = getSegmentValue(type);
-			return !isSegmentValueEmpty(value);
-		});
-
 		const nextParts = buildTimePartsFromDraft(segmentDraft, granularity, resolvedHourCycle);
 		if (!nextParts) {
-			if (hasAnyRequiredValue) {
-				publishCommittedValue(null, true);
-			}
+			publishCommittedValue(null, true);
 			return;
 		}
 
@@ -513,6 +517,7 @@
 
 	function getWheelOptions(type: TimePickerEditableSegmentType) {
 		const options: Array<{ value: string; label: string; disabled: boolean }> = [];
+		const hasRangeBounds = normalizedMinValue !== undefined || normalizedMaxValue !== undefined;
 
 		const getCandidateFromPartial = (
 			partial: Partial<TimePickerDraft>
@@ -530,9 +535,13 @@
 
 		if (type === 'dayPeriod') {
 			for (const option of ['AM', 'PM']) {
-				const candidate = getCandidateFromPartial({ dayPeriod: option });
-				const disabled = candidate
-					? isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+				const disabled = hasRangeBounds
+					? (() => {
+							const candidate = getCandidateFromPartial({ dayPeriod: option });
+							return candidate
+								? isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+								: false;
+						})()
 					: false;
 				options.push({
 					value: option,
@@ -567,15 +576,19 @@
 
 		for (let current = min; current <= max; current += step) {
 			const valueString = String(current);
-			const candidate = getCandidateFromPartial(
-				type === 'hour'
-					? { hour: valueString }
-					: type === 'minute'
-						? { minute: valueString }
-						: { second: valueString }
-			);
-			const disabled = candidate
-				? isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+			const disabled = hasRangeBounds
+				? (() => {
+						const candidate = getCandidateFromPartial(
+							type === 'hour'
+								? { hour: valueString }
+								: type === 'minute'
+									? { minute: valueString }
+									: { second: valueString }
+						);
+						return candidate
+							? isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+							: false;
+					})()
 				: false;
 
 			options.push({
@@ -597,6 +610,9 @@
 		},
 		get isReadOnly() {
 			return isReadOnly;
+		},
+		get isRequired() {
+			return isRequired;
 		},
 		get granularity() {
 			return granularity;

@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TimePickerTest from '../root/time-picker-test.svelte';
+import TimePickerInputForwardingTest from './time-picker-input-forwarding-test.svelte';
 
 function getSegment(type: 'hour' | 'minute' | 'second' | 'dayPeriod') {
   const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
@@ -63,5 +64,36 @@ describe('TimePicker.Input', () => {
 
     await inputGroup.click();
     expect(document.activeElement?.getAttribute('data-time-picker-segment')).not.toBe('true');
+  });
+
+  it('reflects aria-required when root isRequired is true', async () => {
+    const screen = render(TimePickerTest, { isRequired: true });
+    const inputGroup = screen.getByRole('group', { name: 'Time input' });
+
+    expect(inputGroup.element()?.getAttribute('aria-required')).toBe('true');
+  });
+
+  it('composes external input event handlers', async () => {
+    const screen = render(TimePickerInputForwardingTest);
+    const inputGroup = screen.getByRole('group', { name: 'Forwarding input' });
+    const inputGroupEl = inputGroup.element();
+
+    inputGroupEl?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+    inputGroupEl?.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+    inputGroupEl?.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+    inputGroupEl?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    await expect
+      .poll(() => document.querySelector('[data-testid="input-down-count"]')?.textContent)
+      .toBe('1');
+    await expect
+      .poll(() => document.querySelector('[data-testid="input-focus-count"]')?.textContent)
+      .toBe('1');
+    await expect
+      .poll(() => document.querySelector('[data-testid="input-blur-count"]')?.textContent)
+      .toBe('1');
+    await expect
+      .poll(() => document.querySelector('[data-testid="input-key-count"]')?.textContent)
+      .toBe('1');
   });
 });
