@@ -64,16 +64,16 @@
 							</div>
 							<TimePicker.Popover
 								placement="bottom"
-								class="mt-1 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+								class="rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
 							>
 								<TimePicker.TimePanel class="flex gap-2">
 									{#snippet column(col)}
-										<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md">
+										<TimePicker.WheelColumn type={col.type} class="rounded-md">
 											{#snippet children(option)}
 												<TimePicker.WheelItem
 													type={col.type}
 													{option}
-													class="flex min-h-8 items-center justify-center rounded-md px-2 text-sm opacity-50 transition-opacity data-[selected=true]:opacity-100 data-[selected=true]:font-medium data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-30"
+													class="data-selected:bg-neutral-200 flex min-h-8 items-center justify-center rounded-md px-2 text-sm opacity-50 transition-opacity data-[selected=true]:opacity-100 data-[selected=true]:font-medium data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-30"
 												/>
 											{/snippet}
 										</TimePicker.WheelColumn>

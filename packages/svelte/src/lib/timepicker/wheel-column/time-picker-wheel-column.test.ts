@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TimePickerTest from '../root/time-picker-test.svelte';
 import TimePickerWheelColumnBindableTest from './time-picker-wheel-column-bindable-test.svelte';
+import TimePickerWheelColumnDefaultHeightTest from './time-picker-wheel-column-default-height-test.svelte';
 
 function getPanelColumns(): HTMLElement[] {
   const panel = document.querySelector<HTMLElement>('[data-time-picker-time-panel="true"]');
@@ -20,6 +21,23 @@ describe('TimePicker.WheelColumn', () => {
 
     const spinbuttons = getPanelColumns();
     expect(spinbuttons.length).toBe(2);
+  });
+
+  it('applies default h-55 when no explicit height class is provided', async () => {
+    render(TimePickerWheelColumnDefaultHeightTest);
+
+    const firstColumn = getPanelColumns().at(0);
+    expect(firstColumn).toBeTruthy();
+    expect(firstColumn?.className).toContain('h-55');
+  });
+
+  it('preserves explicit height class without adding default height', async () => {
+    render(TimePickerTest, { defaultOpen: true });
+
+    const firstColumn = getPanelColumns().at(0);
+    expect(firstColumn).toBeTruthy();
+    expect(firstColumn?.className).toContain('h-44');
+    expect(firstColumn?.className).not.toContain('h-55');
   });
 
   it('exposes aria values for selected option', async () => {
@@ -97,6 +115,31 @@ describe('TimePicker.WheelColumn', () => {
     const disabledItems =
       firstColumn?.querySelectorAll('[data-wheel-item][data-disabled="true"]') ?? [];
     expect(disabledItems.length).toBeGreaterThan(0);
+  });
+
+  it('does not snap when clicking a disabled option', async () => {
+    render(TimePickerTest, {
+      defaultOpen: true,
+      defaultValue: '09:30',
+      minValue: '09:00',
+      maxValue: '17:00'
+    });
+
+    const firstColumn = getPanelColumns().at(0);
+    expect(firstColumn).toBeTruthy();
+
+    await expect.poll(() => firstColumn?.scrollTop ?? 0).toBeGreaterThanOrEqual(0);
+    const initialScrollTop = firstColumn?.scrollTop ?? 0;
+
+    const disabledHour = firstColumn?.querySelector<HTMLElement>(
+      '[data-wheel-item][data-value="8"][data-disabled="true"]'
+    );
+    expect(disabledHour).toBeTruthy();
+    disabledHour?.click();
+
+    await expect
+      .poll(() => Math.abs((firstColumn?.scrollTop ?? 0) - initialScrollTop) < 1)
+      .toBe(true);
   });
 
   it('syncs wheel position when value changes externally while open', async () => {

@@ -115,6 +115,55 @@ describe('useWheelScroll', () => {
     expect(onSnap).toHaveBeenCalledWith(getExpectedCenteredIndex(container));
   });
 
+  it('snaps to corrected index returned by onSnap', () => {
+    vi.useFakeTimers();
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      callback(performance.now() + 120);
+      return 1;
+    });
+
+    const { container } = createWheelFixture();
+    const onSnap = vi.fn((centeredIndex: number) => {
+      return centeredIndex === 1 ? 2 : centeredIndex;
+    });
+    useWheelScroll(container, onSnap);
+
+    container.scrollTop = 30;
+    container.dispatchEvent(new Event('scroll'));
+    vi.advanceTimersByTime(120);
+
+    const items = container.querySelectorAll<HTMLElement>('[data-wheel-item]');
+    const target = items[2];
+    const expectedTop = Math.max(
+      0,
+      target.offsetTop - (container.clientHeight - target.offsetHeight) / 2
+    );
+
+    expect(onSnap).toHaveBeenCalledWith(1);
+    expect(container.scrollTop).toBe(expectedTop);
+
+    rafSpy.mockRestore();
+  });
+
+  it('defers snap while pointer is held and snaps on release', () => {
+    vi.useFakeTimers();
+    const { container } = createWheelFixture();
+    const onSnap = vi.fn();
+    useWheelScroll(container, onSnap);
+
+    container.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+    container.scrollTop = 30;
+    container.dispatchEvent(new Event('scroll'));
+    vi.advanceTimersByTime(200);
+
+    expect(onSnap).not.toHaveBeenCalled();
+
+    window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+
+    expect(onSnap).toHaveBeenCalledTimes(1);
+    expect(onSnap).toHaveBeenCalledWith(1);
+  });
+
   it('scrolls instantly to centered target when behavior is instant', () => {
     const { container } = createWheelFixture();
     const onSnap = vi.fn();

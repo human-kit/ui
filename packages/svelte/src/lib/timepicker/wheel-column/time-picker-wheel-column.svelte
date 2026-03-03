@@ -34,6 +34,16 @@
 		...restProps
 	}: TimePickerWheelColumnProps = $props();
 
+	function hasExplicitHeightClass(value: string): boolean {
+		return /(^|\s)(?:[\w-]+:)*(?:h-|min-h-|max-h-|size-)/.test(value);
+	}
+
+	const resolvedClassName = $derived.by(() => {
+		const trimmed = className.trim();
+		if (hasExplicitHeightClass(trimmed)) return trimmed;
+		return trimmed.length > 0 ? `${trimmed} h-55` : 'h-55';
+	});
+
 	const timePicker = useTimePickerContext();
 	const options = $derived.by(() => timePicker.getWheelOptions(type));
 	const selectedValue = $derived(timePicker.getSelectedWheelValue(type));
@@ -146,24 +156,29 @@
 		return -1;
 	}
 
-	function handleSnapToIndex(nextIndex: number) {
-		if (nextIndex < 0 || nextIndex >= options.length) return;
+	function handleSnapToIndex(nextIndex: number): number | null {
+		if (nextIndex < 0 || nextIndex >= options.length) return null;
 		const option = options[nextIndex];
-		if (!option) return;
+		if (!option) return null;
 
 		const direction: 1 | -1 = lastCenteredIndex >= 0 && nextIndex < lastCenteredIndex ? -1 : 1;
-		lastCenteredIndex = nextIndex;
 
 		if (option.disabled) {
 			const fallbackIndex = findClosestEnabledIndex(nextIndex, direction);
 			if (fallbackIndex >= 0 && fallbackIndex !== nextIndex) {
-				wheelApi?.scrollToIndex(fallbackIndex, 'smooth');
+				lastCenteredIndex = fallbackIndex;
+				return fallbackIndex;
 			}
-			return;
+			return null;
 		}
 
-		if (selectedValue === option.value) return;
-		timePicker.selectWheelValue(type, option.value);
+		lastCenteredIndex = nextIndex;
+
+		if (selectedValue !== option.value) {
+			timePicker.selectWheelValue(type, option.value);
+		}
+
+		return nextIndex;
 	}
 
 	function scrollToSelected(behavior: 'smooth' | 'instant') {
@@ -260,6 +275,16 @@
 		focusVisible = false;
 	}
 
+	function handleClick(event: MouseEvent) {
+		const target = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-wheel-item]');
+		if (!target || !wheelRef) return;
+		const items = Array.from(wheelRef.querySelectorAll<HTMLElement>('[data-wheel-item]'));
+		const index = items.indexOf(target);
+		if (index >= 0) {
+			handleCenterRequest(index);
+		}
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
 		if (focusWithin) {
@@ -320,10 +345,12 @@
 
 	function handleCenterRequest(index: number) {
 		if (index < 0 || index >= options.length) return;
+		const option = options[index];
+		if (!option || option.disabled) return;
+
 		lastCenteredIndex = index;
 
-		const option = options[index];
-		if (option && !option.disabled && selectedValue !== option.value) {
+		if (selectedValue !== option.value) {
 			timePicker.selectWheelValue(type, option.value);
 		}
 
@@ -407,11 +434,12 @@
 	aria-disabled={timePicker.isDisabled || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}
-	class={className}
+	class={resolvedClassName}
 	style="overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch"
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
 	onmousedown={handleMouseDown}
+	onclick={handleClick}
 	onkeydown={handleKeydown}
 	{...restProps}
 >

@@ -19,13 +19,15 @@ export type WheelScrollApi = {
  */
 export function useWheelScroll(
   container: HTMLElement,
-  onSnap: (centeredIndex: number) => void
+  onSnap: (centeredIndex: number) => number | null | void
 ): WheelScrollApi {
   let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
   let silentScrollTimer: ReturnType<typeof setTimeout> | null = null;
   let snapRafId: number | null = null;
   let isSnapping = false;
   let isSilentScroll = false;
+  let isPointerInteracting = false;
+  let hasPendingPointerReleaseSnap = false;
   const supportsScrollEnd = 'onscrollend' in window;
   const wheelDebugWindow = window as Window & { __HK_TIMEPICKER_WHEEL_DEBUG__?: boolean };
 
@@ -161,7 +163,9 @@ export function useWheelScroll(
    * 2. Emit `onSnap` so the consumer can update the selected value.
    * 3. Animate to perfectly centre the item (120 ms).
    */
-  function snapToCenter(source: 'scrollend' | 'fallback-timeout' | 'inactivity-timeout') {
+  function snapToCenter(
+    source: 'scrollend' | 'fallback-timeout' | 'inactivity-timeout' | 'pointer-release'
+  ) {
     if (isSnapping || isSilentScroll) return;
 
     const now = performance.now();
@@ -175,11 +179,13 @@ export function useWheelScroll(
     const centeredIndex = getCenteredIndex();
     if (centeredIndex < 0) return;
 
-    const items = getItemElements();
-    const target = items[centeredIndex];
-    if (!target) return;
+    const resolvedIndex = onSnap(centeredIndex);
+    const snapIndex = typeof resolvedIndex === 'number' ? resolvedIndex : centeredIndex;
+    if (!Number.isInteger(snapIndex) || snapIndex < 0) return;
 
-    onSnap(centeredIndex);
+    const items = getItemElements();
+    const target = items[snapIndex];
+    if (!target) return;
 
     const idealScrollTop = target.offsetTop - (container.clientHeight - target.offsetHeight) / 2;
     const clamped = Math.max(0, idealScrollTop);
@@ -187,6 +193,7 @@ export function useWheelScroll(
 
     debugLog('snap-target', {
       centeredIndex,
+      snapIndex,
       diffPx: Number(diff.toFixed(2)),
       currentScrollTop: Number(container.scrollTop.toFixed(2)),
       targetScrollTop: Number(clamped.toFixed(2))
@@ -230,6 +237,13 @@ export function useWheelScroll(
       return;
     }
 
+    if (isPointerInteracting) {
+      hasPendingPointerReleaseSnap = true;
+      clearScrollEndTimer();
+      debugLog('scroll-deferred-until-pointer-release');
+      return;
+    }
+
     // Always debounce by scroll inactivity so we don't rely solely on
     // potentially late `scrollend` dispatch.
     clearScrollEndTimer();
@@ -262,10 +276,29 @@ export function useWheelScroll(
     snapToCenter('scrollend');
   }
 
+  function handlePointerDown(event: MouseEvent) {
+    if (event.button !== 0) return;
+    isPointerInteracting = true;
+    hasPendingPointerReleaseSnap = false;
+  }
+
+  function handlePointerRelease() {
+    if (!isPointerInteracting) return;
+    isPointerInteracting = false;
+
+    if (hasPendingPointerReleaseSnap) {
+      hasPendingPointerReleaseSnap = false;
+      clearScrollEndTimer();
+      snapToCenter('pointer-release');
+    }
+  }
+
   container.addEventListener('scroll', handleScroll, { passive: true });
+  container.addEventListener('mousedown', handlePointerDown);
   if (supportsScrollEnd) {
     container.addEventListener('scrollend', handleScrollEnd as EventListener);
   }
+  window.addEventListener('mouseup', handlePointerRelease);
 
   /* ── public API ─────────────────────────────────────────────────── */
 
@@ -313,9 +346,11 @@ export function useWheelScroll(
       clearScrollEndTimer();
       clearSilentScroll();
       container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('mousedown', handlePointerDown);
       if (supportsScrollEnd) {
         container.removeEventListener('scrollend', handleScrollEnd as EventListener);
       }
+      window.removeEventListener('mouseup', handlePointerRelease);
     }
   };
 }
