@@ -42,3 +42,12 @@
 
 - CI runs lint, typecheck, tests, build (`.github/workflows/ci.yml`).
 - If `packages/svelte/src/**` changes, CI expects a changeset markdown file in `.changeset` (non-README).
+
+## Skills
+
+- Reusable skills live in `.github/skills`.
+- Apply `.github/skills/part-readme-standard.md` whenever adding or updating public composable parts.
+- Apply `.github/skills/component-readme-base-standard.md` whenever adding or updating `packages/svelte/src/lib/<component>/README.md`.
+- Apply `.github/skills/todo-standard.md` whenever adding or updating component `TODO.md` files.
+- Requirement: every exported public part folder must include a `README.md` that follows the skill template (`API reference` section, part subsection, Name/Description, props table, and optional context utilities).
+- Requirement: component-level TODO checkboxes must follow the repository format enforced by `scripts/check-todo-format.mjs`.
