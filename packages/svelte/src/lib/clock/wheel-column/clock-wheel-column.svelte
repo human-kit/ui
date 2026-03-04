@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useTimePickerContext, type TimePickerEditableSegmentType } from '../root/context';
-	import TimePickerWheelItem from '../wheel-item/time-picker-wheel-item.svelte';
+	import { useClockContext, type ClockEditableSegmentType } from '../root/context';
+	import TimePickerWheelItem from '../wheel-item/clock-wheel-item.svelte';
 	import { useWheelScroll, type WheelScrollBehavior } from '../hooks/use-wheel-scroll.svelte';
 	import {
 		focusWithModality,
@@ -20,7 +20,7 @@
 		HTMLAttributes<HTMLDivElement>,
 		'children' | 'class' | 'role' | 'tabindex' | 'aria-label' | 'onkeydown'
 	> & {
-		type: TimePickerEditableSegmentType;
+		type: ClockEditableSegmentType;
 		children?: Snippet<[TimePickerWheelOption]>;
 		class?: string;
 		'aria-label'?: string;
@@ -44,11 +44,11 @@
 		return trimmed.length > 0 ? `${trimmed} h-55` : 'h-55';
 	});
 
-	const timePicker = useTimePickerContext();
-	const options = $derived.by(() => timePicker.getWheelOptions(type));
-	const selectedValue = $derived(timePicker.getSelectedWheelValue(type));
+	const clock = useClockContext();
+	const options = $derived.by(() => clock.getWheelOptions(type));
+	const selectedValue = $derived(clock.getSelectedWheelValue(type));
 	const label = $derived(
-		ariaLabel ?? (type === 'dayPeriod' ? 'Day period' : timePicker.getSegmentLabel(type))
+		ariaLabel ?? (type === 'dayPeriod' ? 'Day period' : clock.getSegmentLabel(type))
 	);
 
 	let wheelRef: HTMLElement | null = null;
@@ -175,7 +175,7 @@
 		lastCenteredIndex = nextIndex;
 
 		if (selectedValue !== option.value) {
-			timePicker.selectWheelValue(type, option.value);
+			clock.selectWheelValue(type, option.value);
 		}
 
 		return nextIndex;
@@ -207,7 +207,7 @@
 	}
 
 	function focusSiblingColumn(direction: 1 | -1): boolean {
-		const panel = wheelRef?.closest<HTMLElement>('[data-time-picker-time-panel="true"]');
+		const panel = wheelRef?.closest<HTMLElement>('[data-clock="true"]');
 		if (!panel || !wheelRef) return false;
 		const columns = Array.from(panel.querySelectorAll<HTMLElement>('[role="spinbutton"]'));
 		const currentIndex = columns.findIndex((column) => column === wheelRef);
@@ -238,7 +238,7 @@
 		// Immediately update value so the UI reacts without waiting for scrollend.
 		const option = options[target];
 		if (option && !option.disabled && selectedValue !== option.value) {
-			timePicker.selectWheelValue(type, option.value);
+			clock.selectWheelValue(type, option.value);
 		}
 
 		wheelApi?.scrollToIndex(target, behavior);
@@ -254,7 +254,7 @@
 
 		const option = options[target];
 		if (option && !option.disabled && selectedValue !== option.value) {
-			timePicker.selectWheelValue(type, option.value);
+			clock.selectWheelValue(type, option.value);
 		}
 
 		wheelApi?.scrollToIndex(target, behavior);
@@ -351,7 +351,7 @@
 		lastCenteredIndex = index;
 
 		if (selectedValue !== option.value) {
-			timePicker.selectWheelValue(type, option.value);
+			clock.selectWheelValue(type, option.value);
 		}
 
 		wheelApi?.scrollToIndex(index, 'smooth', { silent: true });
@@ -387,7 +387,7 @@
 	});
 
 	$effect(() => {
-		if (!timePicker.open || !wheelApi) return;
+		if (!clock.open || !wheelApi) return;
 		if (selectedIndex < 0) return;
 		if (selectedIndex === lastCenteredIndex) return;
 		lastCenteredIndex = selectedIndex;
@@ -396,7 +396,7 @@
 
 	$effect(() => {
 		if (!wheelRef || !wheelApi) return;
-		if (!timePicker.open) {
+		if (!clock.open) {
 			didAlignForCurrentOpen = false;
 			return;
 		}
@@ -424,14 +424,14 @@
 <div
 	bind:this={wheelRef}
 	role="spinbutton"
-	tabindex={timePicker.isDisabled ? -1 : 0}
+	tabindex={clock.isDisabled ? -1 : 0}
 	aria-label={label}
 	aria-valuemin={minValue}
 	aria-valuemax={maxValue}
 	aria-valuenow={valueNow}
 	aria-valuetext={valueText}
 	aria-roledescription="wheel picker"
-	aria-disabled={timePicker.isDisabled || undefined}
+	aria-disabled={clock.isDisabled || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}
 	class={resolvedClassName}
@@ -454,7 +454,7 @@
 				{option}
 				selected={selectedValue === option.value}
 				onrequestcenter={() => handleCenterRequest(index)}
-				id={`${timePicker.id}-wheel-${type}-${option.value}`}
+				id={`${clock.id}-wheel-${type}-${option.value}`}
 			/>
 		{/if}
 	{/each}

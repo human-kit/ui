@@ -58,11 +58,11 @@
 	<TimePicker.Trigger class="time-picker-trigger">Open time picker</TimePicker.Trigger>
 
 	<TimePicker.Popover class="time-picker-popover" aria-label={popoverAriaLabel}>
-		<TimePicker.TimePanel class="time-picker-columns">
+		<TimePicker.Clock class="time-picker-columns">
 			{#snippet column(col)}
 				<TimePicker.WheelColumn type={col.type} class="time-picker-column h-44" />
 			{/snippet}
-		</TimePicker.TimePanel>
+		</TimePicker.Clock>
 	</TimePicker.Popover>
 </TimePicker.Root>
 

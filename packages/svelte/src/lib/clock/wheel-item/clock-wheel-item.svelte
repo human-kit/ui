@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { TimePickerEditableSegmentType } from '../root/context';
+	import type { ClockEditableSegmentType } from '../root/context';
 
 	type TimePickerWheelOption = {
 		value: string;
@@ -12,7 +12,7 @@
 		HTMLAttributes<HTMLDivElement>,
 		'class' | 'children' | 'onclick'
 	> & {
-		type: TimePickerEditableSegmentType;
+		type: ClockEditableSegmentType;
 		option: TimePickerWheelOption;
 		selected?: boolean;
 		onrequestcenter?: () => void;

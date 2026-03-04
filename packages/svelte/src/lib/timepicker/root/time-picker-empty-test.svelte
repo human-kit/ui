@@ -12,7 +12,7 @@
 	</TimePicker.Input>
 	<TimePicker.Trigger>Open time picker</TimePicker.Trigger>
 	<TimePicker.Popover>
-		<TimePicker.TimePanel />
+		<TimePicker.Clock />
 	</TimePicker.Popover>
 </TimePicker.Root>
 

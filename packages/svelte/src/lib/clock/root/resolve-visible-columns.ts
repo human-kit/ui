@@ -1,17 +1,17 @@
-import type { TimePickerEditableSegmentType } from '../root/context';
-import type { TimePickerGranularity, TimePickerHourCycle } from '../root/time-utils';
+import type { ClockEditableSegmentType } from './context';
+import type { TimePickerGranularity, TimePickerHourCycle } from './time-utils';
 
-export type TimePanelColumnInfo = {
-	type: TimePickerEditableSegmentType;
+export type ClockColumnInfo = {
+	type: ClockEditableSegmentType;
 	label?: string;
 };
 
 export function resolveVisibleColumns(
 	granularity: TimePickerGranularity,
 	hourCycle: TimePickerHourCycle,
-	getSegmentLabel?: (type: TimePickerEditableSegmentType) => string
-): TimePanelColumnInfo[] {
-	const columns: TimePickerEditableSegmentType[] = ['hour'];
+	getSegmentLabel?: (type: ClockEditableSegmentType) => string
+): ClockColumnInfo[] {
+	const columns: ClockEditableSegmentType[] = ['hour'];
 
 	if (granularity !== 'hour') {
 		columns.push('minute');

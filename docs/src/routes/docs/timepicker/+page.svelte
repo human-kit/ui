@@ -66,7 +66,7 @@
 								placement="bottom"
 								class="rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
 							>
-								<TimePicker.TimePanel class="flex gap-2">
+								<TimePicker.Clock class="flex gap-2">
 									{#snippet column(col)}
 										<TimePicker.WheelColumn type={col.type} class="rounded-md">
 											{#snippet children(option)}
@@ -78,7 +78,7 @@
 											{/snippet}
 										</TimePicker.WheelColumn>
 									{/snippet}
-								</TimePicker.TimePanel>
+								</TimePicker.Clock>
 							</TimePicker.Popover>
 						</TimePicker.Root>
 					</LocaleProvider>
@@ -142,7 +142,7 @@
 							placement="bottom"
 							class="mt-1 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
 						>
-							<TimePicker.TimePanel class="flex gap-2">
+							<TimePicker.Clock class="flex gap-2">
 								{#snippet column(col)}
 									<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md">
 										{#snippet children(option)}
@@ -154,7 +154,7 @@
 										{/snippet}
 									</TimePicker.WheelColumn>
 								{/snippet}
-							</TimePicker.TimePanel>
+							</TimePicker.Clock>
 						</TimePicker.Popover>
 					</TimePicker.Root>
 				</div>
@@ -203,7 +203,7 @@
 								placement="bottom"
 								class="mt-1 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
 							>
-								<TimePicker.TimePanel class="flex gap-2">
+								<TimePicker.Clock class="flex gap-2">
 									{#snippet column(col)}
 										<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md">
 											{#snippet children(option)}
@@ -215,7 +215,7 @@
 											{/snippet}
 										</TimePicker.WheelColumn>
 									{/snippet}
-								</TimePicker.TimePanel>
+								</TimePicker.Clock>
 							</TimePicker.Popover>
 						</TimePicker.Root>
 					</LocaleProvider>

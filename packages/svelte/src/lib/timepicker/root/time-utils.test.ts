@@ -3,6 +3,7 @@ import {
 	isValidTimePickerValue,
 	parseTimePickerValue,
 	formatTimePickerValue,
+	buildTimePickerSegments,
 	buildTimePartsFromDraft,
 	clampToStep,
 	isTimeOutOfRange,
@@ -83,6 +84,32 @@ describe('formatTimePickerValue', () => {
 
 	it('forces :00 for hour granularity regardless of minute value', () => {
 		expect(formatTimePickerValue({ hour: 14, minute: 45, second: 30 }, 'hour')).toBe('14:00');
+	});
+});
+
+describe('buildTimePickerSegments', () => {
+	it('shows 00:00 when draft hour is 0 in 24h mode', () => {
+		const segments = buildTimePickerSegments({
+			locale: 'en-US',
+			hourCycle: 24,
+			granularity: 'minute',
+			draft: { hour: '0', minute: '0', second: '', dayPeriod: '' }
+		});
+
+		expect(segments.find((segment) => segment.type === 'hour')?.text).toBe('00');
+		expect(segments.find((segment) => segment.type === 'minute')?.text).toBe('00');
+	});
+
+	it('shows 1:00 when draft hour is 1 in 24h mode', () => {
+		const segments = buildTimePickerSegments({
+			locale: 'en-US',
+			hourCycle: 24,
+			granularity: 'minute',
+			draft: { hour: '1', minute: '0', second: '', dayPeriod: '' }
+		});
+
+		expect(segments.find((segment) => segment.type === 'hour')?.text).toBe('1');
+		expect(segments.find((segment) => segment.type === 'minute')?.text).toBe('00');
 	});
 });
 

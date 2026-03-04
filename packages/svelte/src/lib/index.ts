@@ -3,6 +3,7 @@
 // Components (namespace exports)
 export { ComboBox } from './combobox/index.ts';
 export { Calendar } from './calendar/index.ts';
+export { Clock } from './clock/index.ts';
 export { DatePicker } from './datepicker/index.ts';
 export { TimePicker } from './timepicker/index.ts';
 export { Dialog } from './dialog/index.ts';
@@ -20,6 +21,7 @@ export * from './locale-provider/index.ts';
 // Re-export named exports from components
 export * from './combobox/index.ts';
 export * from './calendar/index.ts';
+export * from './clock/index.ts';
 export * from './datepicker/index.ts';
 export * from './timepicker/index.ts';
 export * from './dialog/index.ts';

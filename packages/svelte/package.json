@@ -21,6 +21,11 @@
 			"svelte": "./dist/calendar/index.js",
 			"default": "./dist/calendar/index.js"
 		},
+		"./clock": {
+			"types": "./dist/clock/index.d.ts",
+			"svelte": "./dist/clock/index.js",
+			"default": "./dist/clock/index.js"
+		},
 		"./datepicker": {
 			"types": "./dist/datepicker/index.d.ts",
 			"svelte": "./dist/datepicker/index.js",

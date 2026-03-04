@@ -58,55 +58,31 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 
 - `input/time-picker-input.svelte`
 - `trigger/time-picker-trigger.svelte`
-- `internal/strict-props.ts`
-
-**Changes**
+  **Changes**
 
 - Compose external/internal handlers consistently.
-- Avoid prop spread order that overrides internal behavior.
-
-**Risk**
 
 - User handlers accidentally suppress internal logic.
 
-**Validation**
-
 - `bun run test -- --run src/lib/timepicker/input/time-picker-input.test.ts src/lib/timepicker/trigger/time-picker-trigger.test.ts`
 
-### 3) Segment mutation guard (contenteditable)
-
-**Files**
-
-- `segment/time-picker-segment.svelte`
-
-**Changes**
-
-- Add protection against non-keyboard DOM mutations.
 - Add safety restoration to current draft value when drift is detected.
 
 **Policy**
 
 - Implement guard + restore strategy aligned with TODO note.
-
-**Risk**
+  **Risk**
 
 - IME/paste edge cases and cross-browser input events.
-
-**Validation**
+  **Validation**
 
 - `bun run test -- --run src/lib/timepicker/segment/time-picker-segment.test.ts`
-
-### 4) 12h Home/End boundaries
 
 **Files**
 
 - `segment/time-picker-segment.svelte`
 
-**Changes**
-
 - Use explicit 12h boundaries (`1`/`12`) instead of relying on clamping side effects.
-
-**Validation**
 
 - Segment keyboard tests in same run as above.
 
@@ -117,52 +93,36 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 ### 5) Wheel settle behavior and anchor sync
 
 **Files**
-
-- `hooks/use-wheel-scroll.svelte.ts`
-- `wheel-column/time-picker-wheel-column.svelte`
-
 **Changes**
 
 - Increase scroll debounce fallback from 64ms to 120ms. The debounce only fires in browsers without native `scrollend` support, so higher values do not affect perceived latency. 120ms is conservative enough to avoid interrupting touch momentum on iOS Safari.
-- Sync `lastCenteredIndex` when external value changes while popover is open. Add a `$effect` that observes `selectedValue` + `timePicker.open`: when `selectedIndex` changes, update `lastCenteredIndex = selectedIndex` and scroll to it.
-- Implement silent smooth path for click-centered moves: add an `isSilentScroll` flag to `use-wheel-scroll` that suppresses `snapToCenter` during smooth scrolls initiated by `handleCenterRequest` (where the value is already committed). Do NOT use this flag for corrective disabled-skip scrolls.
-
-**Risk**
+  **Risk**
 
 - Async timing loops (`scroll`, `scrollend`, debounce). The silent flag must be cleared reliably (on `scrollend` or animation completion).
+  **Validation**
 
-**Validation**
-
-- `bun run test -- --run src/lib/timepicker/wheel-column/time-picker-wheel-column.test.ts src/lib/timepicker/time-panel/time-picker-time-panel.test.ts`
+- `bun run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/clock/panel/clock-panel.test.ts`
 
 ### 6) ResizeObserver loop mitigation
 
 **Files**
 
-- `wheel-column/time-picker-wheel-column.svelte`
-
-**Changes**
-
+- `../clock/wheel-column/clock-wheel-column.svelte`
 - Batch measurement updates through `requestAnimationFrame` to reduce observer-loop warnings.
 
 **Validation**
 
 - Re-run wheel and root tests:
-- `bun run test -- --run src/lib/timepicker/wheel-column/time-picker-wheel-column.test.ts src/lib/timepicker/root/time-picker-root.test.ts`
-
----
+- `bun run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/timepicker/root/time-picker-root.test.ts`
 
 ## Phase 3 — Accessibility and API surface
 
 ### 7) Wheel announcements and semantics
 
-**Files**
-
-- `wheel-column/time-picker-wheel-column.svelte`
+- `../clock/wheel-column/clock-wheel-column.svelte`
 
 **Changes**
 
-- Add polite live region for wheel value updates.
 - Add `aria-roledescription` on wheel spinbutton.
 
 **Risk**
@@ -178,57 +138,34 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 - `input/time-picker-input.svelte`
 - `README.md`
 
-**Changes**
-
 - Add `isRequired` to root API and context.
 - Expose `aria-required` on input group.
 - Document API addition.
 
-**Validation**
-
 - Input/root tests + typecheck.
 
-### 9) WheelItem headless style consistency
-
-**Files**
-
-- `wheel-item/time-picker-wheel-item.svelte`
+- `../clock/wheel-item/clock-wheel-item.svelte`
 
 **Changes**
 
 - Remove default visual inline styles (opacity, cursor, font-weight, etc.) entirely. The component becomes fully headless — consumers style via `data-selected`, `data-disabled`, `data-centered` attributes.
 - This aligns WheelItem with the rest of the library where components ship zero visual opinions.
-- Update docs page examples to apply equivalent styles via Tailwind classes on `WheelItem`.
-
-**Risk**
+  **Risk**
 
 - Technically breaking for anyone relying on the default inline styles. Acceptable at current maturity — the component is new and the old styles were inconsistent (all dropped when `class` was passed).
-
-**Validation**
-
-- Visual check on docs page + wheel tests.
-
----
 
 ## Phase 4 — Performance and code cleanup
 
 ### 10) Formatter and locale caching
 
-**Files**
-
 - `root/time-picker-root.svelte`
 - `root/time-utils.ts`
-
-**Changes**
+  **Changes**
 
 - Cache `Intl.DateTimeFormat` by `locale` + `hourCycle` + `granularity`.
 - Cache system-locale fallback once per component lifetime.
 
-### 11) Wheel options fast path
-
 **Files**
-
-- `root/time-picker-root.svelte`
 
 **Changes**
 
@@ -248,24 +185,12 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 
 **Validation**
 
-- `bun run test -- --run src/lib/timepicker/root/time-utils.test.ts src/lib/timepicker/root/time-picker-root.test.ts`
-
----
-
 ## Phase 5 — Test hardening
 
 ### 13) Wheel test matrix expansion
 
-**Files**
-
-- `wheel-column/time-picker-wheel-column.test.ts`
-- relevant test harnesses under `root/`
-
 **Add coverage for**
 
-- ArrowUp/ArrowDown value changes.
-- Disabled skip path.
-- PageUp/PageDown/Home/End.
 - Open alignment and external value sync.
 - Focus contract (`data-focus-within`, `data-focus-visible`).
 - Min/max disabled behavior.
@@ -310,7 +235,7 @@ This order minimizes risk: behavior correctness first, wheel timing second, API/
 - `bun run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
 - `bun run test -- --run src/lib/timepicker/input/time-picker-input.test.ts src/lib/timepicker/trigger/time-picker-trigger.test.ts`
 - `bun run test -- --run src/lib/timepicker/segment/time-picker-segment.test.ts`
-- `bun run test -- --run src/lib/timepicker/wheel-column/time-picker-wheel-column.test.ts src/lib/timepicker/time-panel/time-picker-time-panel.test.ts`
+- `bun run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/clock/panel/clock-panel.test.ts`
 - `bun run test -- --run src/lib/timepicker/root/time-utils.test.ts`
 
 ### Final gate

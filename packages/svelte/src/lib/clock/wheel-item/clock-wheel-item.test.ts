@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import TimePickerWheelItem from './time-picker-wheel-item.svelte';
+import ClockWheelItem from './clock-wheel-item.svelte';
 
-describe('TimePicker.WheelItem', () => {
+describe('Clock.WheelItem', () => {
 	it('renders as wheel item with correct attributes', async () => {
-		render(TimePickerWheelItem, {
+		render(ClockWheelItem, {
 			type: 'hour',
 			option: { value: '14', label: '14', disabled: false }
 		});
@@ -17,7 +17,7 @@ describe('TimePicker.WheelItem', () => {
 	});
 
 	it('reflects selected and disabled data attributes', async () => {
-		render(TimePickerWheelItem, {
+		render(ClockWheelItem, {
 			type: 'minute',
 			option: { value: '30', label: '30', disabled: true },
 			selected: true
@@ -31,7 +31,7 @@ describe('TimePicker.WheelItem', () => {
 	it('invokes onrequestcenter when clicked', async () => {
 		let called = false;
 
-		render(TimePickerWheelItem, {
+		render(ClockWheelItem, {
 			type: 'second',
 			option: { value: '45', label: '45', disabled: false },
 			onrequestcenter: () => {

@@ -11,7 +11,7 @@
 - `TimePicker.Segment`
 - `TimePicker.Trigger`
 - `TimePicker.Popover`
-- `TimePicker.TimePanel`
+- `TimePicker.Clock`
 - `TimePicker.WheelColumn`
 - `TimePicker.WheelItem`
 
@@ -25,14 +25,14 @@
  <TimePicker.Trigger />
 
  <TimePicker.Popover>
-  <TimePicker.TimePanel />
+  <TimePicker.Clock />
  </TimePicker.Popover>
 </TimePicker.Root>
 ```
 
 ```svelte
 <TimePicker.Popover>
- <TimePicker.TimePanel class="flex gap-2">
+ <TimePicker.Clock class="flex gap-2">
   {#snippet column(col)}
    <TimePicker.WheelColumn type={col.type} class="h-44 rounded-md">
     {#snippet children(option)}
@@ -40,7 +40,7 @@
     {/snippet}
    </TimePicker.WheelColumn>
   {/snippet}
- </TimePicker.TimePanel>
+ </TimePicker.Clock>
 </TimePicker.Popover>
 ```
 
@@ -79,12 +79,12 @@
 - `TimePicker.WheelColumn` renders one wheel (`role="spinbutton"`) for one editable segment (`hour`, `minute`, `second`, or `dayPeriod`).
 - `TimePicker.WheelItem` is headless: it renders one item (`data-wheel-item`) with state attributes (`data-selected`, `data-disabled`, `data-centered`) and leaves all visual styling to consumers.
 
-## TimePanel API
+## Clock API
 
-- `TimePicker.TimePanel` resolves visible wheel columns from root state (`granularity`, `hourCycle`) in stable order: `hour → minute? → second? → dayPeriod?`.
+- `TimePicker.Clock` resolves visible wheel columns from root state (`granularity`, `hourCycle`) in stable order: `hour → minute? → second? → dayPeriod?`.
 - `class?: string` uses default layout (`flex gap-2`) when omitted.
-- `column?: Snippet<[TimePanelColumnInfo]>` allows custom per-column rendering.
-- `TimePanelColumnInfo` shape:
+- `column?: Snippet<[ClockColumnInfo]>` allows custom per-column rendering.
+- `ClockColumnInfo` shape:
   - `type: 'hour' | 'minute' | 'second' | 'dayPeriod'`
   - `label?: string`
 
