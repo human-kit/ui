@@ -13,6 +13,8 @@ const FOCUSABLE_SELECTOR = [
 	'[contenteditable="true"]'
 ].join(', ');
 
+import { focusWithModality, getInteractionModality } from './input-modality';
+
 export type FocusTrapOptions = {
 	enabled?: boolean;
 	restoreFocus?: boolean;
@@ -111,15 +113,16 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 		// Focus first focusable element, or the container if none
 		requestAnimationFrame(() => {
 			const initialFocusTarget = resolveInitialFocus(node, initialFocus);
+			const modality = getInteractionModality();
 			if (initialFocusTarget && initialFocusTarget.isConnected) {
-				initialFocusTarget.focus();
+				focusWithModality(initialFocusTarget, modality);
 				return;
 			}
 			const focusableElements = getFocusableElements(node);
 			if (focusableElements.length > 0) {
-				focusableElements[0].focus();
+				focusWithModality(focusableElements[0], modality);
 			} else {
-				node.focus();
+				focusWithModality(node, modality);
 			}
 		});
 

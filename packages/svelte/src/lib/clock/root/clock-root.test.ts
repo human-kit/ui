@@ -60,6 +60,18 @@ describe('Clock.Root', () => {
 		expect(types).toEqual(['hour', 'minute', 'second', 'dayPeriod']);
 	});
 
+	it('renders overlay children together with column snippet', async () => {
+		render(ClockRootTest, {
+			granularity: 'minute',
+			hourCycle: 24,
+			useSnippet: true,
+			showAxis: true
+		});
+
+		await expect.poll(() => document.querySelector('[data-testid="clock-axis"]')).toBeTruthy();
+		await expect.poll(() => document.querySelectorAll('[data-testid="clock-column"]').length).toBe(2);
+	});
+
 	it('omits minute and second columns when granularity is hour with snippet', async () => {
 		render(ClockRootTest, {
 			granularity: 'hour',

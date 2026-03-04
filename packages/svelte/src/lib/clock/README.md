@@ -7,6 +7,7 @@
 ## Anatomy
 
 - `Clock.Root`
+- `Clock.Axis`
 - `Clock.WheelColumn`
 - `Clock.WheelItem`
 
@@ -19,6 +20,7 @@
    {/snippet}
   </Clock.WheelColumn>
  {/snippet}
+ <Clock.Axis class="rounded-md ring-1 ring-inset" />
 </Clock.Root>
 ```
 
@@ -42,7 +44,7 @@ Default columns are rendered automatically when no `column` snippet is provided:
 - `secondStep?: number`
 - `isDisabled?: boolean`
 - `column?: Snippet<[ClockColumnInfo]>` — custom per-column rendering
-- `children?: Snippet` — arbitrary children (when `column` is not used)
+- `children?: Snippet` — arbitrary children. When `column` is used, children render after columns (useful for overlays like `Clock.Axis`).
 - `class?: string`
 - `aria-label?: string`
 
@@ -50,6 +52,7 @@ Visible columns are resolved automatically in stable order: `hour → minute? �
 
 ## Wheel API
 
+- `Clock.Axis` renders a root-level visual overlay (for example, a central selection band) across all columns.
 - `Clock.WheelColumn` renders one wheel (`role="spinbutton"`) for one editable segment (`hour`, `minute`, `second`, or `dayPeriod`).
 - `Clock.WheelItem` is headless: it renders one item (`data-wheel-item`) with state attributes (`data-selected`, `data-disabled`, `data-centered`) and leaves all visual styling to consumers.
 - `ClockColumnInfo` shape:

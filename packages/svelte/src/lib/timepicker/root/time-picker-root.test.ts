@@ -33,6 +33,19 @@ describe('TimePicker.Root', () => {
 			.toBe('trigger-press');
 	});
 
+	it('does not mark initial wheel focus as focus-visible on mouse open', async () => {
+		const screen = render(TimePickerTest);
+		const trigger = screen.getByRole('button', { name: 'Open time picker' });
+
+		await trigger.click();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		const firstWheel = document.querySelector<HTMLElement>('[role="spinbutton"][data-type="hour"]');
+		await expect.poll(() => firstWheel).toBeTruthy();
+		expect(firstWheel?.getAttribute('data-focus-visible')).toBeNull();
+		expect(firstWheel?.matches(':focus-visible')).toBe(false);
+	});
+
 	it('keeps focus on segment and does not open popover on segment click', async () => {
 		render(TimePickerTest);
 		const hourSegment = getSegment('hour');

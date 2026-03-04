@@ -64,6 +64,17 @@
 		...restProps
 	}: ClockRootProps = $props();
 
+	function hasExplicitPositionClass(value: string): boolean {
+		return /(^|\s)(?:[\w-]+:)*(?:static|fixed|absolute|relative|sticky)(?:\s|$)/.test(value);
+	}
+
+	const resolvedClassName = $derived.by(() => {
+		const trimmed = className.trim();
+		if (trimmed.length === 0) return 'relative';
+		if (hasExplicitPositionClass(trimmed)) return trimmed;
+		return `${trimmed} relative`;
+	});
+
 	const instanceId = untrack(() => id) ?? generatedInstanceId;
 	const localeContext = useLocaleContextOptional();
 	const localeStore = localeContext?.locale;
@@ -344,11 +355,20 @@
 	);
 </script>
 
-<div id={instanceId} class={className} aria-label={ariaLabel} data-clock="true" {...restProps}>
+<div
+	id={instanceId}
+	class={resolvedClassName}
+	aria-label={ariaLabel}
+	data-clock="true"
+	{...restProps}
+>
 	{#if columnSnippet}
 		{#each visibleColumns as col (col.type)}
 			{@render columnSnippet(col)}
 		{/each}
+		{#if children}
+			{@render children()}
+		{/if}
 	{:else if children}
 		{@render children()}
 	{:else}
