@@ -7,8 +7,12 @@
 		height?: number;
 	};
 
-	let { class: className = '', height, style: styleProp = '', ...restProps }: ClockAxisProps =
-		$props();
+	let {
+		class: className = '',
+		height,
+		style: styleProp = '',
+		...restProps
+	}: ClockAxisProps = $props();
 
 	const resolvedStyle = $derived.by(() => {
 		const base = styleProp?.trim() ?? '';

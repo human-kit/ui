@@ -70,14 +70,14 @@
 	let lastOpenOptionsSignature = '';
 
 	function getWheelItemElements(): HTMLElement[] {
-		const taggedItems = Array.from(wheelRef?.querySelectorAll<HTMLElement>('[data-wheel-item]') ?? []);
+		const taggedItems = Array.from(
+			wheelRef?.querySelectorAll<HTMLElement>('[data-wheel-item]') ?? []
+		);
 		if (taggedItems.length > 0) return taggedItems;
 		if (!wheelRef) return [];
 		return Array.from(wheelRef.children).filter((child): child is HTMLElement => {
 			if (!(child instanceof HTMLElement)) return false;
-			if (
-				child.matches('[data-wheel-spacer], [data-wheel-highlight], [role="status"], .sr-only')
-			) {
+			if (child.matches('[data-wheel-spacer], [data-wheel-highlight], [role="status"], .sr-only')) {
 				return false;
 			}
 			return true;
