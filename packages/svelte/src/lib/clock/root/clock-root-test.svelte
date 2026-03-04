@@ -12,6 +12,7 @@
 		isDisabled?: boolean;
 		useSnippet?: boolean;
 		showAxis?: boolean;
+		axisHeight?: number;
 	};
 
 	let {
@@ -22,7 +23,8 @@
 		maxValue,
 		isDisabled = false,
 		useSnippet = false,
-		showAxis = false
+		showAxis = false,
+		axisHeight
 	}: Props = $props();
 
 	let value = $state<string | null>(untrack(() => defaultValue ?? null));
@@ -42,7 +44,7 @@
 			<div data-testid="clock-column" data-type={col.type}>{col.label}</div>
 		{/snippet}
 		{#if showAxis}
-			<Clock.Axis data-testid="clock-axis" />
+			<Clock.Axis data-testid="clock-axis" height={axisHeight} />
 		{/if}
 	</Clock.Root>
 {:else}

@@ -72,6 +72,20 @@ describe('Clock.Root', () => {
 		await expect.poll(() => document.querySelectorAll('[data-testid="clock-column"]').length).toBe(2);
 	});
 
+	it('applies axis height when provided', async () => {
+		render(ClockRootTest, {
+			granularity: 'minute',
+			hourCycle: 24,
+			useSnippet: true,
+			showAxis: true,
+			axisHeight: 32
+		});
+
+		const axis = document.querySelector<HTMLElement>('[data-testid="clock-axis"]');
+		await expect.poll(() => axis).toBeTruthy();
+		expect(axis?.style.height).toBe('32px');
+	});
+
 	it('omits minute and second columns when granularity is hour with snippet', async () => {
 		render(ClockRootTest, {
 			granularity: 'hour',

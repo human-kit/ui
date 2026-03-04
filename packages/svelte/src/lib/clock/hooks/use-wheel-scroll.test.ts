@@ -64,6 +64,85 @@ function createWheelFixture() {
 	return { container };
 }
 
+function createWheelFixtureWithoutTaggedItems() {
+	const container = document.createElement('div');
+	container.dataset.wheelDebug = 'false';
+	document.body.appendChild(container);
+	let currentScrollTop = 0;
+
+	Object.defineProperty(container, 'clientHeight', {
+		configurable: true,
+		value: 100
+	});
+
+	Object.defineProperty(container, 'scrollTop', {
+		configurable: true,
+		get: () => currentScrollTop,
+		set: (value: number) => {
+			currentScrollTop = value;
+		}
+	});
+
+	Object.defineProperty(container, 'scrollTo', {
+		configurable: true,
+		value: vi.fn(({ top }: { top: number }) => {
+			container.scrollTop = top;
+		})
+	});
+
+	for (let index = 0; index < 4; index += 1) {
+		const item = document.createElement('div');
+		item.textContent = `option-${index}`;
+		Object.defineProperty(item, 'offsetTop', {
+			configurable: true,
+			value: index * 40
+		});
+		Object.defineProperty(item, 'offsetHeight', {
+			configurable: true,
+			value: 40
+		});
+		container.appendChild(item);
+	}
+
+	const topSpacer = document.createElement('div');
+	topSpacer.setAttribute('data-wheel-spacer', 'top');
+	container.appendChild(topSpacer);
+
+	const highlight = document.createElement('div');
+	highlight.setAttribute('data-wheel-highlight', 'true');
+	container.appendChild(highlight);
+
+	return { container };
+}
+
+function dispatchPressStart(target: HTMLElement) {
+	if (typeof PointerEvent !== 'undefined') {
+		target.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				pointerType: 'touch'
+			})
+		);
+		return;
+	}
+	target.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+}
+
+function dispatchPressEnd() {
+	if (typeof PointerEvent !== 'undefined') {
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				button: 0,
+				pointerType: 'touch'
+			})
+		);
+		return;
+	}
+	window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+}
+
 describe('useWheelScroll', () => {
 	afterEach(() => {
 		vi.useRealTimers();
@@ -151,14 +230,14 @@ describe('useWheelScroll', () => {
 		const onSnap = vi.fn();
 		useWheelScroll(container, onSnap);
 
-		container.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+		dispatchPressStart(container);
 		container.scrollTop = 30;
 		container.dispatchEvent(new Event('scroll'));
 		vi.advanceTimersByTime(200);
 
 		expect(onSnap).not.toHaveBeenCalled();
 
-		window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+		dispatchPressEnd();
 
 		expect(onSnap).toHaveBeenCalledTimes(1);
 		expect(onSnap).toHaveBeenCalledWith(1);
@@ -193,5 +272,16 @@ describe('useWheelScroll', () => {
 		vi.advanceTimersByTime(200);
 
 		expect(onSnap).not.toHaveBeenCalled();
+	});
+
+	it('supports direct child items when data-wheel-item is not present', () => {
+		vi.useFakeTimers();
+		const { container } = createWheelFixtureWithoutTaggedItems();
+		const onSnap = vi.fn();
+		const api = useWheelScroll(container, onSnap);
+
+		api.scrollToIndex(2, 'instant');
+
+		expect(container.scrollTop).toBe(50);
 	});
 });

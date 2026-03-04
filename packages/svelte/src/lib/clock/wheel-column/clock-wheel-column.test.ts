@@ -4,6 +4,7 @@ import ClockRootTest from './clock-wheel-column-test.svelte';
 import ClockWheelColumnBindableTest from './clock-wheel-column-bindable-test.svelte';
 import ClockWheelColumnCustomSnippetTest from './clock-wheel-column-custom-snippet-test.svelte';
 import ClockWheelColumnDefaultHeightTest from './clock-wheel-column-default-height-test.svelte';
+import ClockWheelColumnUntaggedSnippetTest from './clock-wheel-column-untagged-snippet-test.svelte';
 
 function getClockColumns(): HTMLElement[] {
 	const clock = document.querySelector<HTMLElement>('[data-clock="true"]');
@@ -149,5 +150,19 @@ describe('Clock.WheelColumn', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
 			.toBe('16:45');
+	});
+
+	it('supports custom snippet items without data-wheel-item attribute', async () => {
+		render(ClockWheelColumnUntaggedSnippetTest);
+
+		const firstColumn = getClockColumns().at(0);
+		expect(firstColumn).toBeTruthy();
+
+		firstColumn?.focus();
+		firstColumn?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('15:30');
 	});
 });

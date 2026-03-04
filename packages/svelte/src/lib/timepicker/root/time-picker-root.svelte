@@ -3,6 +3,7 @@
 	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import type { TimePickerOpenChangeDetails, TimePickerOpenChangeReason } from './context';
 	import { setTimePickerContext, type TimePickerContext } from './context';
+	import { buildWheelOptions } from '../../clock/root/wheel-options';
 	import {
 		adjustSegmentWithStep,
 		buildTimePartsFromDraft,
@@ -516,7 +517,6 @@
 	}
 
 	function getWheelOptions(type: TimePickerEditableSegmentType) {
-		const options: Array<{ value: string; label: string; disabled: boolean }> = [];
 		const hasRangeBounds = normalizedMinValue !== undefined || normalizedMaxValue !== undefined;
 
 		const getCandidateFromPartial = (
@@ -533,72 +533,18 @@
 			return formatTimePickerValue(parts, granularity);
 		};
 
-		if (type === 'dayPeriod') {
-			for (const option of ['AM', 'PM']) {
-				const disabled = hasRangeBounds
-					? (() => {
-							const candidate = getCandidateFromPartial({ dayPeriod: option });
-							return candidate
-								? isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
-								: false;
-						})()
-					: false;
-				options.push({
-					value: option,
-					label: option,
-					disabled
-				});
-			}
-			return options;
-		}
-
-		let min = 0;
-		let max = 59;
-		let step = 1;
-		if (type === 'hour') {
-			if (resolvedHourCycle === 12) {
-				min = 1;
-				max = 12;
-			} else {
-				min = 0;
-				max = 23;
-			}
-			step = Math.max(1, hourStep);
-		} else if (type === 'minute') {
-			min = 0;
-			max = 59;
-			step = Math.max(1, minuteStep);
-		} else if (type === 'second') {
-			min = 0;
-			max = 59;
-			step = Math.max(1, secondStep);
-		}
-
-		for (let current = min; current <= max; current += step) {
-			const valueString = String(current);
-			const disabled = hasRangeBounds
-				? (() => {
-						const candidate = getCandidateFromPartial(
-							type === 'hour'
-								? { hour: valueString }
-								: type === 'minute'
-									? { minute: valueString }
-									: { second: valueString }
-						);
-						return candidate
-							? isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
-							: false;
-					})()
-				: false;
-
-			options.push({
-				value: valueString,
-				label: String(current).padStart(2, '0'),
-				disabled
-			});
-		}
-
-		return options;
+		return buildWheelOptions({
+			type,
+			granularity,
+			hourCycle: resolvedHourCycle,
+			hourStep,
+			minuteStep,
+			secondStep,
+			hasRangeBounds,
+			getCandidateFromPartial,
+			isOutOfRange: (candidate) =>
+				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+		});
 	}
 
 	const context: TimePickerContext = {

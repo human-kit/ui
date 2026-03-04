@@ -76,7 +76,11 @@
 		class={className}
 		aria-label={ariaLabel}
 		onmousedown={composeEventHandlers(handlePointerDown, onMouseDownExternal ?? undefined)}
-		onkeydowncapture={composeEventHandlers(handleKeydown, onKeydownCaptureExternal ?? undefined)}
+		onkeydowncapture={composeEventHandlers(
+			handleKeydown,
+			onKeydownCaptureExternal ?? undefined,
+			{ skipExternalOnDefaultPrevented: true }
+		)}
 		initialFocus={resolvedInitialFocus}
 		{...restProps}
 	>

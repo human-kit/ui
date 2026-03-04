@@ -7,6 +7,7 @@ Composable wheel column part for `Clock` and `TimePicker.Clock`.
 - Renders one spinbutton column for a single segment (`hour`, `minute`, `second`, `dayPeriod`).
 - Handles keyboard navigation and wheel snapping behavior.
 - Exposes focus state via `data-focus-within` and `data-focus-visible`.
+- Supports custom option snippets both with `Clock.WheelItem` and with plain direct child elements.
 
 ## Usage
 

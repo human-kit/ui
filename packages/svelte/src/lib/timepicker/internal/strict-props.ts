@@ -1,4 +1,5 @@
 const warnedMessages = new Set<string>();
+const sanitizeCache = new WeakMap<object, Map<string, Record<string, unknown>>>();
 
 function warnOnce(message: string) {
 	if (!import.meta.env.DEV) return;
@@ -13,6 +14,11 @@ export function sanitizeTimePickerProps(
 	forbiddenProps: string[]
 ): Record<string, unknown> {
 	if (props === null || typeof props !== 'object') return {};
+	const forbiddenKey = [...forbiddenProps].sort().join('|');
+	const cachedByProps = sanitizeCache.get(props);
+	const cached = cachedByProps?.get(forbiddenKey);
+	if (cached) return cached;
+
 	const sanitized: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(props)) {
@@ -25,15 +31,36 @@ export function sanitizeTimePickerProps(
 		sanitized[key] = value;
 	}
 
+	let cacheBucket = cachedByProps;
+	if (!cacheBucket) {
+		cacheBucket = new Map<string, Record<string, unknown>>();
+		sanitizeCache.set(props, cacheBucket);
+	}
+	cacheBucket.set(forbiddenKey, sanitized);
+
 	return sanitized;
 }
 
 export function composeEventHandlers<TEvent extends Event>(
 	internalHandler: ((event: TEvent) => void) | undefined,
-	externalHandler: ((event: TEvent) => void) | undefined
+	externalHandler: ((event: TEvent) => void) | undefined,
+	options?: { skipExternalOnDefaultPrevented?: boolean }
 ): (event: TEvent) => void {
 	return (event: TEvent) => {
+		let preventDefaultCalled = false;
+		const originalPreventDefault = event.preventDefault.bind(event);
+		event.preventDefault = () => {
+			preventDefaultCalled = true;
+			originalPreventDefault();
+		};
 		internalHandler?.(event);
+		event.preventDefault = originalPreventDefault;
+		if (
+			options?.skipExternalOnDefaultPrevented &&
+			(event.defaultPrevented || preventDefaultCalled)
+		) {
+			return;
+		}
 		externalHandler?.(event);
 	};
 }

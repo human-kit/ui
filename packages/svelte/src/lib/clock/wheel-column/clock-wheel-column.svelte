@@ -50,6 +50,12 @@
 	const label = $derived(
 		ariaLabel ?? (type === 'dayPeriod' ? 'Day period' : clock.getSegmentLabel(type))
 	);
+	const wheelRoleDescription = $derived.by(() => {
+		const normalizedLocale = clock.locale.toLowerCase();
+		if (normalizedLocale.startsWith('es')) return 'selector en rueda';
+		if (normalizedLocale.startsWith('pt')) return 'seletor em roda';
+		return 'wheel picker';
+	});
 
 	let wheelRef: HTMLElement | null = null;
 	let wheelApi: ReturnType<typeof useWheelScroll> | null = null;
@@ -61,6 +67,22 @@
 	let focusVisible = $state(false);
 	let lastCenteredIndex = -1;
 	let didAlignForCurrentOpen = false;
+	let lastOpenOptionsSignature = '';
+
+	function getWheelItemElements(): HTMLElement[] {
+		const taggedItems = Array.from(wheelRef?.querySelectorAll<HTMLElement>('[data-wheel-item]') ?? []);
+		if (taggedItems.length > 0) return taggedItems;
+		if (!wheelRef) return [];
+		return Array.from(wheelRef.children).filter((child): child is HTMLElement => {
+			if (!(child instanceof HTMLElement)) return false;
+			if (
+				child.matches('[data-wheel-spacer], [data-wheel-highlight], [role="status"], .sr-only')
+			) {
+				return false;
+			}
+			return true;
+		});
+	}
 
 	const enabledOptionIndexes = $derived.by(() => {
 		const indexes: number[] = [];
@@ -110,7 +132,7 @@
 
 	function syncMeasurements() {
 		if (!wheelRef) return;
-		const firstItem = wheelRef.querySelector<HTMLElement>('[data-wheel-item]');
+		const firstItem = getWheelItemElements()[0] ?? null;
 		if (!firstItem) return;
 
 		const nextItemHeight = firstItem.offsetHeight;
@@ -276,10 +298,10 @@
 	}
 
 	function handleClick(event: MouseEvent) {
-		const target = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-wheel-item]');
-		if (!target || !wheelRef) return;
-		const items = Array.from(wheelRef.querySelectorAll<HTMLElement>('[data-wheel-item]'));
-		const index = items.indexOf(target);
+		const target = event.target as Node | null;
+		if (!target) return;
+		const items = getWheelItemElements();
+		const index = items.findIndex((item) => item === target || item.contains(target));
 		if (index >= 0) {
 			handleCenterRequest(index);
 		}
@@ -395,6 +417,17 @@
 	});
 
 	$effect(() => {
+		const optionsSignature = options
+			.map((option) => `${option.value}:${option.disabled ? 1 : 0}`)
+			.join('|');
+		const nextSignature = `${clock.open ? 1 : 0}::${optionsSignature}`;
+		if (lastOpenOptionsSignature !== nextSignature) {
+			lastOpenOptionsSignature = nextSignature;
+			didAlignForCurrentOpen = false;
+		}
+	});
+
+	$effect(() => {
 		if (!wheelRef || !wheelApi) return;
 		if (!clock.open) {
 			didAlignForCurrentOpen = false;
@@ -430,7 +463,7 @@
 	aria-valuemax={maxValue}
 	aria-valuenow={valueNow}
 	aria-valuetext={valueText}
-	aria-roledescription="wheel picker"
+	aria-roledescription={wheelRoleDescription}
 	aria-disabled={clock.isDisabled || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}

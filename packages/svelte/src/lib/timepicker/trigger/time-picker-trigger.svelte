@@ -108,8 +108,12 @@
 		onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
 		onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 		onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
-		onkeydown={composeEventHandlers(handleKeydown, onKeydownExternal ?? undefined)}
-		onclick={composeEventHandlers(handleClick, onClickExternal ?? undefined)}
+		onkeydown={composeEventHandlers(handleKeydown, onKeydownExternal ?? undefined, {
+			skipExternalOnDefaultPrevented: true
+		})}
+		onclick={composeEventHandlers(handleClick, onClickExternal ?? undefined, {
+			skipExternalOnDefaultPrevented: true
+		})}
 	>
 		{#if children}
 			{@render children()}

@@ -9,6 +9,7 @@ const KEY = Symbol('clock');
 
 export type ClockContext = {
 	id: string;
+	locale: string;
 	isDisabled: boolean;
 	granularity: TimePickerGranularity;
 	hourCycle: TimePickerHourCycle;

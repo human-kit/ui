@@ -78,7 +78,7 @@ describe('TimePicker.Trigger', () => {
 			.toBe('1');
 		await expect
 			.poll(() => document.querySelector('[data-testid="trigger-key-count"]')?.textContent)
-			.toBe('1');
+			.toBe('0');
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 	});
 });

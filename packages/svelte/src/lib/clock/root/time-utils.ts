@@ -59,6 +59,23 @@ function formatDraftTwoDigits(value: string): string {
 	return pad2(Math.trunc(numeric));
 }
 
+function getDayPeriodPlaceholder(locale: string): string {
+	try {
+		const formatter = new Intl.DateTimeFormat(locale, {
+			hour: 'numeric',
+			hourCycle: 'h12',
+			timeZone: 'UTC'
+		});
+		const dayPeriod = formatter
+			.formatToParts(new Date(Date.UTC(2024, 0, 1, 9, 0, 0)))
+			.find((part) => part.type === 'dayPeriod')?.value
+			?.trim();
+		return dayPeriod && dayPeriod.length > 0 ? dayPeriod : 'AM';
+	} catch {
+		return 'AM';
+	}
+}
+
 export function formatTimePickerValue(
 	parts: TimeParts,
 	granularity: TimePickerGranularity
@@ -343,7 +360,7 @@ export function buildTimePickerSegments(params: {
 				const isPlaceholder = isSegmentValueEmpty(draft.dayPeriod);
 				return {
 					type: 'dayPeriod',
-					text: isPlaceholder ? 'AM' : draft.dayPeriod,
+					text: isPlaceholder ? getDayPeriodPlaceholder(locale) : draft.dayPeriod,
 					isPlaceholder
 				};
 			}
@@ -362,10 +379,6 @@ export function getEditableSegmentOrder(
 }
 
 export function getSegmentLabel(type: TimePickerEditableSegmentType, locale: string): string {
-	if (type === 'dayPeriod') {
-		return locale.toLowerCase().startsWith('es') ? 'Período del día' : 'Day period';
-	}
-
 	try {
 		const displayNames = new Intl.DisplayNames([locale], { type: 'dateTimeField' });
 		return displayNames.of(type) ?? type;

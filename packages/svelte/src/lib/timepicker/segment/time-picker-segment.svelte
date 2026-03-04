@@ -40,7 +40,6 @@
 	let { segment, class: className = '', ...restProps }: TimePickerSegmentProps = $props();
 	let isFocused = $state(false);
 	let segmentRef: HTMLSpanElement | null = $state(null);
-	let segmentTextVersion = $state(0);
 
 	const timePicker = useTimePickerContext();
 	const segmentId = $props.id();
@@ -97,6 +96,13 @@
 		};
 	});
 
+	$effect(() => {
+		if (segment.type === 'literal') return;
+		if (!segmentRef) return;
+		if (segmentRef.textContent === segment.text) return;
+		segmentRef.textContent = segment.text;
+	});
+
 	function handleFocus(event: FocusEvent) {
 		if (segment.type === 'literal') return;
 		if (timePicker.isDisabled) {
@@ -147,7 +153,8 @@
 
 	function restoreSegmentText() {
 		if (segment.type === 'literal') return;
-		segmentTextVersion += 1;
+		if (!segmentRef) return;
+		segmentRef.textContent = segment.text;
 	}
 
 	function handleBeforeInput(event: InputEvent) {
@@ -312,45 +319,43 @@
 		{segment.text}
 	</span>
 {:else}
-	{#key segmentTextVersion}
-		<span
-			bind:this={segmentRef}
-			id={segmentId}
-			class={className}
-			{...restProps}
-			data-time-picker-segment="true"
-			data-placeholder={segment.isPlaceholder || undefined}
-			data-type={segment.type}
-			data-focused={isActive ? 'true' : undefined}
-			data-focus-visible={isFocusVisible ? 'true' : undefined}
-			role="spinbutton"
-			aria-valuetext={valueText}
-			aria-valuemin={valueMin}
-			aria-valuemax={valueMax}
-			aria-valuenow={valueNow}
-			aria-label={segmentLabel}
-			aria-readonly={timePicker.isReadOnly || undefined}
-			aria-disabled={timePicker.isDisabled || undefined}
-			contenteditable={!timePicker.isDisabled && !timePicker.isReadOnly}
-			spellcheck="false"
-			enterkeyhint="next"
-			inputmode={segment.type === 'dayPeriod' ? 'text' : 'numeric'}
-			tabindex={timePicker.isDisabled ? -1 : 0}
-			style={segment.isPlaceholder
-				? 'caret-color: transparent; user-select: none;'
-				: 'caret-color: transparent;'}
-			onfocus={handleFocus}
-			onblur={handleBlur}
-			onmousedown={handleMouseDown}
-			onclick={handleClick}
-			onselectstart={handleSelectStart}
-			onkeydown={handleKeydown}
-			onbeforeinput={handleBeforeInput}
-			oninput={handleInput}
-			onpaste={handlePaste}
-			oncompositionend={handleCompositionEnd}
-		>
-			{segment.text}
-		</span>
-	{/key}
+	<span
+		bind:this={segmentRef}
+		id={segmentId}
+		class={className}
+		{...restProps}
+		data-time-picker-segment="true"
+		data-placeholder={segment.isPlaceholder || undefined}
+		data-type={segment.type}
+		data-focused={isActive ? 'true' : undefined}
+		data-focus-visible={isFocusVisible ? 'true' : undefined}
+		role="spinbutton"
+		aria-valuetext={valueText}
+		aria-valuemin={valueMin}
+		aria-valuemax={valueMax}
+		aria-valuenow={valueNow}
+		aria-label={segmentLabel}
+		aria-readonly={timePicker.isReadOnly || undefined}
+		aria-disabled={timePicker.isDisabled || undefined}
+		contenteditable={!timePicker.isDisabled && !timePicker.isReadOnly}
+		spellcheck="false"
+		enterkeyhint="next"
+		inputmode={segment.type === 'dayPeriod' ? 'text' : 'numeric'}
+		tabindex={timePicker.isDisabled ? -1 : 0}
+		style={segment.isPlaceholder
+			? 'caret-color: transparent; user-select: none;'
+			: 'caret-color: transparent;'}
+		onfocus={handleFocus}
+		onblur={handleBlur}
+		onmousedown={handleMouseDown}
+		onclick={handleClick}
+		onselectstart={handleSelectStart}
+		onkeydown={handleKeydown}
+		onbeforeinput={handleBeforeInput}
+		oninput={handleInput}
+		onpaste={handlePaste}
+		oncompositionend={handleCompositionEnd}
+	>
+		{segment.text}
+	</span>
 {/if}

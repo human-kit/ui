@@ -24,11 +24,14 @@ export function useWheelScroll(
 	let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
 	let silentScrollTimer: ReturnType<typeof setTimeout> | null = null;
 	let snapRafId: number | null = null;
+	let releaseSnapRafId: number | null = null;
+	let instantReleaseRafId: number | null = null;
 	let isSnapping = false;
 	let isSilentScroll = false;
 	let isPointerInteracting = false;
 	let hasPendingPointerReleaseSnap = false;
 	const supportsScrollEnd = 'onscrollend' in window;
+	const supportsPointerEvents = 'onpointerdown' in window;
 	const wheelDebugWindow = window as Window & { __HK_CLOCK_WHEEL_DEBUG__?: boolean };
 
 	let lastScrollAt = 0;
@@ -74,7 +77,18 @@ export function useWheelScroll(
 	}
 
 	function getItemElements(): HTMLElement[] {
-		return Array.from(container.querySelectorAll<HTMLElement>('[data-wheel-item]'));
+		const taggedItems = Array.from(container.querySelectorAll<HTMLElement>('[data-wheel-item]'));
+		if (taggedItems.length > 0) return taggedItems;
+
+		return Array.from(container.children).filter((child): child is HTMLElement => {
+			if (!(child instanceof HTMLElement)) return false;
+			if (
+				child.matches('[data-wheel-spacer], [data-wheel-highlight], [role="status"], .sr-only')
+			) {
+				return false;
+			}
+			return true;
+		});
 	}
 
 	function getCenteredIndex(): number {
@@ -104,6 +118,14 @@ export function useWheelScroll(
 		if (snapRafId !== null) {
 			cancelAnimationFrame(snapRafId);
 			snapRafId = null;
+		}
+		if (releaseSnapRafId !== null) {
+			cancelAnimationFrame(releaseSnapRafId);
+			releaseSnapRafId = null;
+		}
+		if (instantReleaseRafId !== null) {
+			cancelAnimationFrame(instantReleaseRafId);
+			instantReleaseRafId = null;
 		}
 		isSnapping = false;
 	}
@@ -146,7 +168,8 @@ export function useWheelScroll(
 				});
 				// Keep the flag only until next frame so trailing animation
 				// events are ignored without creating a visible dead-zone.
-				requestAnimationFrame(() => {
+				releaseSnapRafId = requestAnimationFrame(() => {
+					releaseSnapRafId = null;
 					isSnapping = false;
 				});
 			}
@@ -276,8 +299,13 @@ export function useWheelScroll(
 		snapToCenter('scrollend');
 	}
 
-	function handlePointerDown(event: MouseEvent) {
-		if (event.button !== 0) return;
+	function handlePointerDown(event: PointerEvent | MouseEvent) {
+		if ('pointerType' in event && event.pointerType === 'mouse' && event.button !== 0) {
+			return;
+		}
+		if (!('pointerType' in event) && event.button !== 0) {
+			return;
+		}
 		isPointerInteracting = true;
 		hasPendingPointerReleaseSnap = false;
 	}
@@ -294,11 +322,19 @@ export function useWheelScroll(
 	}
 
 	container.addEventListener('scroll', handleScroll, { passive: true });
-	container.addEventListener('mousedown', handlePointerDown);
+	if (supportsPointerEvents) {
+		container.addEventListener('pointerdown', handlePointerDown as EventListener, {
+			passive: true
+		});
+		window.addEventListener('pointerup', handlePointerRelease, { passive: true });
+		window.addEventListener('pointercancel', handlePointerRelease, { passive: true });
+	} else {
+		container.addEventListener('mousedown', handlePointerDown as EventListener);
+		window.addEventListener('mouseup', handlePointerRelease);
+	}
 	if (supportsScrollEnd) {
 		container.addEventListener('scrollend', handleScrollEnd as EventListener);
 	}
-	window.addEventListener('mouseup', handlePointerRelease);
 
 	/* ── public API ─────────────────────────────────────────────────── */
 
@@ -328,7 +364,8 @@ export function useWheelScroll(
 			// so it doesn't trigger an unnecessary snapToCenter cycle.
 			isSnapping = true;
 			container.scrollTop = Math.max(0, idealScrollTop);
-			requestAnimationFrame(() => {
+			instantReleaseRafId = requestAnimationFrame(() => {
+				instantReleaseRafId = null;
 				isSnapping = false;
 			});
 		} else {
@@ -346,11 +383,17 @@ export function useWheelScroll(
 			clearScrollEndTimer();
 			clearSilentScroll();
 			container.removeEventListener('scroll', handleScroll);
-			container.removeEventListener('mousedown', handlePointerDown);
+			if (supportsPointerEvents) {
+				container.removeEventListener('pointerdown', handlePointerDown as EventListener);
+				window.removeEventListener('pointerup', handlePointerRelease);
+				window.removeEventListener('pointercancel', handlePointerRelease);
+			} else {
+				container.removeEventListener('mousedown', handlePointerDown as EventListener);
+				window.removeEventListener('mouseup', handlePointerRelease);
+			}
 			if (supportsScrollEnd) {
 				container.removeEventListener('scrollend', handleScrollEnd as EventListener);
 			}
-			window.removeEventListener('mouseup', handlePointerRelease);
 		}
 	};
 }

@@ -26,6 +26,9 @@
 		get id() {
 			return timePicker.id;
 		},
+		get locale() {
+			return timePicker.locale;
+		},
 		get isDisabled() {
 			return timePicker.isDisabled;
 		},

@@ -94,6 +94,6 @@ describe('TimePicker.Input', () => {
 			.toBe('1');
 		await expect
 			.poll(() => document.querySelector('[data-testid="input-key-count"]')?.textContent)
-			.toBe('1');
+			.toBe('0');
 	});
 });

@@ -95,9 +95,11 @@
 	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
-	onkeydown={composeEventHandlers(handleKeydown, onKeydownExternal ?? undefined)}
+	onkeydown={composeEventHandlers(handleKeydown, onKeydownExternal ?? undefined, {
+		skipExternalOnDefaultPrevented: true
+	})}
 >
-	{#each segments as segment, index (index)}
+	{#each segments as segment, index (segment.type === 'literal' ? `literal-${index}` : segment.type)}
 		{#if children}
 			{@render children(segment)}
 		{:else}
