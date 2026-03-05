@@ -17,30 +17,30 @@
 
 ```svelte
 <TimePicker.Root>
- <TimePicker.Input aria-label="Time input">
-  {#snippet children(segment)}
-   <TimePicker.Segment {segment} />
-  {/snippet}
- </TimePicker.Input>
- <TimePicker.Trigger />
+	<TimePicker.Input aria-label="Time input">
+		{#snippet children(segment)}
+			<TimePicker.Segment {segment} />
+		{/snippet}
+	</TimePicker.Input>
+	<TimePicker.Trigger />
 
- <TimePicker.Popover>
-  <TimePicker.Clock />
- </TimePicker.Popover>
+	<TimePicker.Popover>
+		<TimePicker.Clock />
+	</TimePicker.Popover>
 </TimePicker.Root>
 ```
 
 ```svelte
 <TimePicker.Popover>
- <TimePicker.Clock class="flex gap-2">
-  {#snippet column(col)}
-   <TimePicker.WheelColumn type={col.type} class="h-44 rounded-md">
-    {#snippet children(option)}
-     <TimePicker.WheelItem type={col.type} {option} class="..." />
-    {/snippet}
-   </TimePicker.WheelColumn>
-  {/snippet}
- </TimePicker.Clock>
+	<TimePicker.Clock class="flex gap-2">
+		{#snippet column(col)}
+			<TimePicker.WheelColumn type={col.type} class="h-44 rounded-md">
+				{#snippet children(option)}
+					<TimePicker.WheelItem type={col.type} {option} class="..." />
+				{/snippet}
+			</TimePicker.WheelColumn>
+		{/snippet}
+	</TimePicker.Clock>
 </TimePicker.Popover>
 ```
 

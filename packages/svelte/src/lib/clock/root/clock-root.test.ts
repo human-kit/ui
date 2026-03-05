@@ -69,7 +69,9 @@ describe('Clock.Root', () => {
 		});
 
 		await expect.poll(() => document.querySelector('[data-testid="clock-axis"]')).toBeTruthy();
-		await expect.poll(() => document.querySelectorAll('[data-testid="clock-column"]').length).toBe(2);
+		await expect
+			.poll(() => document.querySelectorAll('[data-testid="clock-column"]').length)
+			.toBe(2);
 	});
 
 	it('applies axis height when provided', async () => {

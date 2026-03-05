@@ -13,14 +13,14 @@
 
 ```svelte
 <Clock.Root value="14:30" granularity="minute" hourCycle={24} class="flex gap-2">
- {#snippet column(col)}
-  <Clock.WheelColumn type={col.type} class="h-44 w-16">
-   {#snippet children(option)}
-    <Clock.WheelItem type={col.type} {option} class="..." />
-   {/snippet}
-  </Clock.WheelColumn>
- {/snippet}
- <Clock.Axis class="rounded-md ring-1 ring-inset" />
+	{#snippet column(col)}
+		<Clock.WheelColumn type={col.type} class="h-44 w-16">
+			{#snippet children(option)}
+				<Clock.WheelItem type={col.type} {option} class="..." />
+			{/snippet}
+		</Clock.WheelColumn>
+	{/snippet}
+	<Clock.Axis class="rounded-md ring-1 ring-inset" />
 </Clock.Root>
 ```
 

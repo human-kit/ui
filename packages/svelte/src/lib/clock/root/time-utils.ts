@@ -68,8 +68,8 @@ function getDayPeriodPlaceholder(locale: string): string {
 		});
 		const dayPeriod = formatter
 			.formatToParts(new Date(Date.UTC(2024, 0, 1, 9, 0, 0)))
-			.find((part) => part.type === 'dayPeriod')?.value
-			?.trim();
+			.find((part) => part.type === 'dayPeriod')
+			?.value?.trim();
 		return dayPeriod && dayPeriod.length > 0 ? dayPeriod : 'AM';
 	} catch {
 		return 'AM';
@@ -329,8 +329,7 @@ export function buildTimePickerSegments(params: {
 
 			if (part.type === 'hour') {
 				const isPlaceholder = isSegmentValueEmpty(draft.hour);
-				const hourText =
-					hourCycle === 24 && draft.hour.trim() === '0' ? '00' : draft.hour;
+				const hourText = hourCycle === 24 && draft.hour.trim() === '0' ? '00' : draft.hour;
 				return {
 					type: 'hour',
 					text: isPlaceholder ? (hourCycle === 12 ? 'hh' : 'HH') : hourText,

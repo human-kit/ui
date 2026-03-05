@@ -41,8 +41,7 @@ export function useWheelScroll(
 
 	function isDebugEnabled(): boolean {
 		return (
-			wheelDebugWindow.__HK_CLOCK_WHEEL_DEBUG__ === true ||
-			container.dataset.wheelDebug === 'true'
+			wheelDebugWindow.__HK_CLOCK_WHEEL_DEBUG__ === true || container.dataset.wheelDebug === 'true'
 		);
 	}
 
@@ -82,9 +81,7 @@ export function useWheelScroll(
 
 		return Array.from(container.children).filter((child): child is HTMLElement => {
 			if (!(child instanceof HTMLElement)) return false;
-			if (
-				child.matches('[data-wheel-spacer], [data-wheel-highlight], [role="status"], .sr-only')
-			) {
+			if (child.matches('[data-wheel-spacer], [data-wheel-highlight], [role="status"], .sr-only')) {
 				return false;
 			}
 			return true;
