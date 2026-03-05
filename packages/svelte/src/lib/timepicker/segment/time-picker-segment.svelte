@@ -149,6 +149,13 @@
 		domResetVersion += 1;
 	}
 
+	function shouldResetDomForDrift(target: EventTarget | null | undefined): boolean {
+		if (segment.type === 'literal') return false;
+		const element = target instanceof HTMLElement ? target : segmentRef;
+		if (!element) return false;
+		return (element.textContent ?? '') !== segment.text;
+	}
+
 	function handleBeforeInput(event: InputEvent) {
 		if (segment.type === 'literal') return;
 		if (timePicker.isDisabled || timePicker.isReadOnly) {
@@ -161,17 +168,20 @@
 		event.preventDefault();
 	}
 
-	function handleInput() {
+	function handleInput(event: Event) {
+		if (!shouldResetDomForDrift(event.currentTarget)) return;
 		requestDomReset();
 	}
 
 	function handlePaste(event: ClipboardEvent) {
 		if (segment.type === 'literal') return;
 		event.preventDefault();
+		if (!shouldResetDomForDrift(event.currentTarget)) return;
 		requestDomReset();
 	}
 
-	function handleCompositionEnd() {
+	function handleCompositionEnd(event: CompositionEvent) {
+		if (!shouldResetDomForDrift(event.currentTarget)) return;
 		requestDomReset();
 	}
 
@@ -311,7 +321,7 @@
 		{segment.text}
 	</span>
 {:else}
-	{#key `${segmentId}-${segment.text}-${segment.isPlaceholder ? 'placeholder' : 'value'}-${domResetVersion}`}
+	{#key `${segmentId}-${domResetVersion}`}
 		<span
 			bind:this={segmentRef}
 			id={segmentId}
