@@ -1,5 +1,16 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.3
+
+### Patch Changes
+
+- [#11](https://github.com/Agustin-Delgado/svelte-components/pull/11) [`9189203`](https://github.com/Agustin-Delgado/svelte-components/commit/918920301f9d9bc34ee80047ff73ccbcd4dbd6c8) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Standardize focus-visible modality behavior across overlay flows.
+  - Remove DatePicker local interaction modality state and rely on shared input-modality primitive.
+  - Restore DatePicker trigger focus via `focusWithModality` for consistent pointer/keyboard semantics.
+  - Unify close-modality resolution between Popover and Dialog through shared primitive helper.
+  - Align DatePicker input modality handling with shared focus-visible contract.
+  - Expand input-modality tests and document primitive usage in the focus-state contract.
+
 ## 1.0.0-alpha.2
 
 ### Minor Changes

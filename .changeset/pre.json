@@ -4,5 +4,5 @@
 	"initialVersions": {
 		"@human-kit/svelte-components": "1.0.0-alpha.0"
 	},
-	"changesets": ["initial-release", "kind-paths-judge"]
+	"changesets": ["initial-release", "kind-paths-judge", "polite-hotels-knock"]
 }

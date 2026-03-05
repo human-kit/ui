@@ -238,9 +238,8 @@ describe('Calendar', () => {
 	});
 
 	it('confirms a date range with two clicks in range mode', async () => {
-		render(CalendarRootTest, {
-			selectionMode: 'range',
-			defaultValue: februaryRangeAnchor
+		const screen = render(CalendarRootTest, {
+			selectionMode: 'range'
 		});
 
 		const start = getGridCellByDate('2026-02-10');
@@ -358,9 +357,8 @@ describe('Calendar', () => {
 	});
 
 	it('shows range trace while moving with keyboard after selecting a range start', async () => {
-		render(CalendarRootTest, {
-			selectionMode: 'range',
-			defaultValue: februaryRangeAnchor
+		const screen = render(CalendarRootTest, {
+			selectionMode: 'range'
 		});
 
 		const start = getGridCellByDate('2026-02-10');
@@ -400,9 +398,8 @@ describe('Calendar', () => {
 	});
 
 	it('keeps focus on second click when selecting reverse range', async () => {
-		render(CalendarRootTest, {
-			selectionMode: 'range',
-			defaultValue: februaryRangeAnchor
+		const screen = render(CalendarRootTest, {
+			selectionMode: 'range'
 		});
 
 		const first = getGridCellByDate('2026-02-06');
