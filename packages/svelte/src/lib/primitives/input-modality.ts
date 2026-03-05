@@ -116,7 +116,15 @@ export function focusWithModality(
 	forcedFocusModality = modality;
 	currentModality = modality;
 
-	target.focus(options);
+	if (modality === 'pointer') {
+		const pointerFocusOptions = {
+			...(options ?? {}),
+			focusVisible: false
+		} as FocusOptions & { focusVisible?: boolean };
+		target.focus(pointerFocusOptions);
+	} else {
+		target.focus(options);
+	}
 
 	queueMicrotask(() => {
 		if (forcedFocusTarget !== target) return;

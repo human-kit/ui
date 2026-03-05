@@ -49,3 +49,15 @@ On overlay/popover close, transient trigger state is allowed:
 ## Operational Template
 
 - Use `FOCUS_STATE_REVIEW_TEMPLATE.md` for PR/release reviews (modality matrix + component status + checklist).
+
+## Component Coverage
+
+The following components implement this contract:
+
+- **Popover** — trigger + content, restore focus on close.
+- **Dialog** — trigger + overlay/content, nested stack support.
+- **DatePicker** — segment spinbuttons, trigger, popover (calendar).
+- **TimePicker** — segment spinbuttons, trigger, popover (scrollable columns). Follows the same contract as DatePicker.
+- **Calendar** — grid cells with roving tabindex.
+- **ComboBox** — input + listbox with virtual focus.
+- **ListBox** — items with roving tabindex.

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
 	focusWithModality,
 	getInteractionModality,
@@ -107,6 +107,23 @@ describe('input-modality primitive', () => {
 		focusWithModality(button, 'virtual');
 		expect(document.activeElement).toBe(button);
 		expect(getInteractionModality()).toBe('virtual');
+
+		button.remove();
+	});
+
+	it('passes focusVisible=false to native focus for pointer modality', () => {
+		const button = document.createElement('button');
+		document.body.appendChild(button);
+
+		const focusSpy = vi.fn();
+		Object.defineProperty(button, 'focus', {
+			value: focusSpy,
+			configurable: true
+		});
+
+		focusWithModality(button, 'pointer');
+
+		expect(focusSpy).toHaveBeenCalledWith(expect.objectContaining({ focusVisible: false }));
 
 		button.remove();
 	});

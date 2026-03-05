@@ -19,9 +19,9 @@ Track DatePicker work with a single mandatory TODO format.
 - [x] [S][P1][Area: Focus][Owner: Unassigned][Target: Done] Remove DatePicker-local modality tracking in favor of shared primitive.
 - [x] [S][P1][Area: Documentation][Owner: Unassigned][Target: Done] Document focus contract updates and DatePicker rationale.
 - [ ] [S][P1][Area: Calendar][Owner: Unassigned][Target: TBD] Add multi-month calendar display.
-- [ ] [S][P1][Area: Time][Owner: Unassigned][Target: TBD] Add time selection integration.
-- [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Decide and implement date-range mode strategy.
 - [ ] [S][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Run deep accessibility audit (SR + keyboard edge cases).
+- [ ] [C][P2][Area: Time][Owner: Unassigned][Target: TBD] Add time selection integration.
+- [ ] [C][P2][Area: API][Owner: Unassigned][Target: TBD] Decide and implement date-range mode strategy.
 - [ ] [C][P2][Area: Input][Owner: Unassigned][Target: TBD] Add input mask helper utilities.
 - [ ] [C][P2][Area: Mobile][Owner: Unassigned][Target: TBD] Add mobile-optimized interaction pass.
 - [ ] [C][P2][Area: UX][Owner: Unassigned][Target: TBD] Add preset shortcuts (today, next week, custom).

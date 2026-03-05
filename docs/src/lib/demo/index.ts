@@ -5,3 +5,4 @@ export { default as DemoSelect } from './demo-select.svelte';
 export { default as DemoInput } from './demo-input.svelte';
 export { default as DemoState } from './demo-state.svelte';
 export { default as DemoCalendar } from './demo-calendar.svelte';
+export { default as DemoClock } from './demo-clock.svelte';

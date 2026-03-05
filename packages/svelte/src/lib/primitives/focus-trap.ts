@@ -3,6 +3,8 @@
  * Traps keyboard focus within a container element.
  */
 
+import { focusWithModality, getInteractionModality } from './input-modality';
+
 const FOCUSABLE_SELECTOR = [
 	'a[href]',
 	'button:not([disabled])',
@@ -45,7 +47,7 @@ function resolveInitialFocus(
 
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-		(el) => el.offsetParent !== null
+		(element) => element.offsetParent !== null
 	);
 }
 
@@ -70,7 +72,6 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 		if (event.key !== 'Tab') return;
 
 		const focusableElements = getFocusableElements(node);
-
 		if (focusableElements.length === 0) {
 			event.preventDefault();
 			node.focus();
@@ -79,7 +80,6 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 
 		const firstElement = focusableElements[0];
 		const lastElement = focusableElements[focusableElements.length - 1];
-
 		const focusIsInside = node.contains(document.activeElement);
 
 		if (!focusIsInside) {
@@ -93,11 +93,12 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 				event.preventDefault();
 				lastElement.focus();
 			}
-		} else {
-			if (document.activeElement === lastElement || document.activeElement === node) {
-				event.preventDefault();
-				firstElement.focus();
-			}
+			return;
+		}
+
+		if (document.activeElement === lastElement || document.activeElement === node) {
+			event.preventDefault();
+			firstElement.focus();
 		}
 	}
 
@@ -108,19 +109,21 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 			node.setAttribute('tabindex', '-1');
 		}
 
-		// Focus first focusable element, or the container if none
 		requestAnimationFrame(() => {
 			const initialFocusTarget = resolveInitialFocus(node, initialFocus);
+			const modality = getInteractionModality();
 			if (initialFocusTarget && initialFocusTarget.isConnected) {
-				initialFocusTarget.focus();
+				focusWithModality(initialFocusTarget, modality);
 				return;
 			}
+
 			const focusableElements = getFocusableElements(node);
 			if (focusableElements.length > 0) {
-				focusableElements[0].focus();
-			} else {
-				node.focus();
+				focusWithModality(focusableElements[0], modality);
+				return;
 			}
+
+			focusWithModality(node, modality);
 		});
 
 		document.addEventListener('keydown', handleKeydown, true);
@@ -142,11 +145,13 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 		update(newOptions: boolean | FocusTrapOptions) {
 			const nextEnabled = resolveEnabled(newOptions);
 			const nextRestoreFocus = resolveRestoreFocus(newOptions);
+
 			if (nextEnabled && !enabled) {
 				activate();
 			} else if (!nextEnabled && enabled) {
 				deactivate();
 			}
+
 			options = newOptions;
 			enabled = nextEnabled;
 			restoreFocus = nextRestoreFocus;
