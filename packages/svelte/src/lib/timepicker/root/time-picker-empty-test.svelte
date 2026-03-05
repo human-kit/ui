@@ -4,7 +4,7 @@
 	let value = $state<string | null>(null);
 </script>
 
-<TimePicker.Root bind:value>
+<TimePicker.Root bind:value hourCycle={24}>
 	<TimePicker.Input aria-label="Time input">
 		{#snippet children(segment)}
 			<TimePicker.Segment {segment} />

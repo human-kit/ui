@@ -5,7 +5,7 @@
 	let open = $state(false);
 </script>
 
-<TimePicker.Root bind:value bind:open>
+<TimePicker.Root bind:value bind:open hourCycle={24}>
 	<TimePicker.Input aria-label="Time input">
 		{#snippet children(segment)}
 			<TimePicker.Segment {segment} />

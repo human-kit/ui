@@ -19,7 +19,7 @@
 		defaultOpen = false,
 		isDisabled = false,
 		isReadOnly = false,
-		hourCycle,
+		hourCycle = 24,
 		granularity = 'minute',
 		isRequired = false,
 		minValue,
