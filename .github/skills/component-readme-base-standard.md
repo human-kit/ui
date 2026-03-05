@@ -42,6 +42,7 @@ Use this structure (in order):
 - Base README covers high-level composition and behavior.
 - Per-part README files cover part-level API details.
 - Keep terminology and part names consistent across both.
+- Every public part listed in Anatomy must have a part folder with both a `README.md` and colocated tests (`*.test.ts`, plus `*-test.svelte` harness when needed).
 
 ## Delivery checklist
 

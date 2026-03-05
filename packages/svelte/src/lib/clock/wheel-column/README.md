@@ -1,22 +1,25 @@
-# Clock.WheelColumn
+# Clock WheelColumn
 
-Composable wheel column part for `Clock` and `TimePicker.Clock`.
+## API reference
 
-## Responsibility
+### Clock.WheelColumn
 
-- Renders one spinbutton column for a single segment (`hour`, `minute`, `second`, `dayPeriod`).
-- Handles keyboard navigation and wheel snapping behavior.
-- Exposes focus state via `data-focus-within` and `data-focus-visible`.
-- Supports custom option snippets both with `Clock.WheelItem` and with plain direct child elements.
+Name: `Clock.WheelColumn`  
+Description: Scrollable spinbutton column for a single editable segment (`hour`, `minute`, `second`, `dayPeriod`).
 
-## Usage
+| Prop           | Type                                                             | Default         | Description                                                 |
+| -------------- | ---------------------------------------------------------------- | --------------- | ----------------------------------------------------------- |
+| `type`         | `'hour' \| 'minute' \| 'second' \| 'dayPeriod'`                  | `required`      | Segment represented by this wheel column.                   |
+| `children`     | `Snippet<[{ value: string; label: string; disabled: boolean }]>` | `undefined`     | Optional custom item renderer for each wheel option.        |
+| `class`        | `string`                                                         | `'h-55'`        | CSS class names for the spinbutton column.                  |
+| `aria-label`   | `string`                                                         | `segment label` | Overrides the computed accessible column label.             |
+| `...restProps` | `HTMLAttributes<HTMLDivElement>`                                 | `-`             | Additional attributes forwarded to the column root element. |
 
-```svelte
-<Clock.WheelColumn type="hour" class="h-44 w-16 rounded-md">
- {#snippet children(option)}
-  <Clock.WheelItem type="hour" {option} class="..." />
- {/snippet}
-</Clock.WheelColumn>
-```
+### Context utilities
 
-See parent docs: `../README.md`.
+Name: `useClockContext`  
+Description: Reads shared state and operations from `Clock.Root`.
+
+| Prop              | Type                 | Default | Description                                      |
+| ----------------- | -------------------- | ------- | ------------------------------------------------ |
+| `useClockContext` | `() => ClockContext` | `-`     | Returns context and throws outside `Clock.Root`. |

@@ -17,6 +17,12 @@
 
 	let usValue = $state<string | null>('14:45');
 	let usOpen = $state(false);
+
+	let steppedValue = $state<string | null>('10:30:30');
+	let steppedOpen = $state(false);
+	const hourStep = 2;
+	const minuteStep = 15;
+	const secondStep = 30;
 </script>
 
 <div class="min-h-screen bg-gray-100 p-8 dark:bg-gray-950">
@@ -228,6 +234,73 @@
 						<hr class="border-gray-200 dark:border-gray-700" />
 						<DemoState label="value" value={usValue} />
 						<DemoState label="open" value={usOpen} />
+					</div>
+				{/snippet}
+			</DemoSection>
+
+			<DemoSection
+				title="With Steps"
+				description="Restrict selectable values with hourStep, minuteStep, and secondStep"
+			>
+				<div class="w-full max-w-xs">
+					<TimePicker.Root
+						bind:value={steppedValue}
+						bind:open={steppedOpen}
+						granularity="second"
+						{hourStep}
+						{minuteStep}
+						{secondStep}
+						class="group space-y-2"
+					>
+						<div
+							class="corner-squircle flex h-8 items-center gap-1 rounded-xl border border-gray-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-gray-600 dark:bg-gray-700"
+						>
+							<TimePicker.Input
+								aria-label="Stepped time input"
+								class="flex min-w-0 flex-1 items-center gap-0.5 text-sm text-gray-900 dark:text-white"
+							>
+								{#snippet children(segment)}
+									<TimePicker.Segment
+										{segment}
+										class="data-focused:data-placeholder:text-foreground data-focused:text-foreground inline rounded px-0.5 caret-transparent outline-hidden transition-all data-disabled:cursor-not-allowed data-focused:scale-115 data-focused:ring data-focused:inset-shadow-2xs data-focused:ring-white data-focused:backdrop-blur-md data-placeholder:text-neutral-400 data-[type=literal]:px-0 data-[type=literal]:text-neutral-400"
+									/>
+								{/snippet}
+							</TimePicker.Input>
+							<TimePicker.Trigger
+								class="corner-squircle inline-flex size-5 items-center justify-center rounded-md text-gray-500 outline-none hover:bg-gray-100 data-[focus-visible=true]:ring-1 data-[focus-visible=true]:ring-blue-500 dark:text-gray-300 dark:hover:bg-gray-600"
+							>
+								⏰
+							</TimePicker.Trigger>
+						</div>
+						<TimePicker.Popover
+							placement="bottom"
+							class="mt-1 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+						>
+							<TimePicker.Clock class="flex gap-2">
+								{#snippet column(col)}
+									<TimePicker.WheelColumn type={col.type} class="h-44 w-16 rounded-md">
+										{#snippet children(option)}
+											<TimePicker.WheelItem
+												type={col.type}
+												{option}
+												class="flex min-h-8 items-center justify-center rounded-md px-2 text-sm opacity-50 transition-opacity data-[selected=true]:opacity-100 data-[selected=true]:font-medium data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-30"
+											/>
+										{/snippet}
+									</TimePicker.WheelColumn>
+								{/snippet}
+							</TimePicker.Clock>
+						</TimePicker.Popover>
+					</TimePicker.Root>
+				</div>
+
+				{#snippet controls()}
+					<div class="space-y-4">
+						<DemoState label="hourStep" value={String(hourStep)} />
+						<DemoState label="minuteStep" value={String(minuteStep)} />
+						<DemoState label="secondStep" value={String(secondStep)} />
+						<hr class="border-gray-200 dark:border-gray-700" />
+						<DemoState label="value" value={steppedValue} />
+						<DemoState label="open" value={steppedOpen} />
 					</div>
 				{/snippet}
 			</DemoSection>

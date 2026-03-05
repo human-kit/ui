@@ -1,22 +1,24 @@
-# Clock.Axis
+# Clock Axis
 
-Visual overlay part for `Clock`.
+## API reference
 
-## Responsibility
+### Clock.Axis
 
-- Renders a root-level absolute overlay, typically as the central selection band.
-- Is purely visual (`aria-hidden`, `pointer-events: none`).
-- Does not own or modify selection logic.
+Name: `Clock.Axis`  
+Description: Visual overlay band for `Clock.Root`; it is presentational (`aria-hidden`) and does not manage selection.
 
-## Usage
+| Prop           | Type                             | Default     | Description                                          |
+| -------------- | -------------------------------- | ----------- | ---------------------------------------------------- |
+| `height`       | `number`                         | `undefined` | Optional overlay height in pixels.                   |
+| `class`        | `string`                         | `''`        | CSS class names for the overlay element.             |
+| `style`        | `string`                         | `''`        | Inline styles merged with the optional height style. |
+| `...restProps` | `HTMLAttributes<HTMLDivElement>` | `-`         | Additional attributes forwarded to the overlay div.  |
 
-```svelte
-<Clock.Root class="flex gap-2">
- {#snippet column(col)}
-  <Clock.WheelColumn type={col.type} class="h-44 w-16" />
- {/snippet}
- <Clock.Axis class="rounded-md ring-1 ring-inset" height={32} />
-</Clock.Root>
-```
+### Context utilities
 
-See parent docs: `../README.md`.
+Name: `useClockContext`  
+Description: Ensures `Clock.Axis` is used within `Clock.Root`.
+
+| Prop              | Type                 | Default | Description                                      |
+| ----------------- | -------------------- | ------- | ------------------------------------------------ |
+| `useClockContext` | `() => ClockContext` | `-`     | Returns context and throws outside `Clock.Root`. |

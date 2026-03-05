@@ -1,19 +1,20 @@
-# DatePicker.Popover
+# DatePicker Popover
 
-Popover content part for `DatePicker`.
+## API reference
 
-## Responsibility
+### DatePicker.Popover
 
-- Hosts calendar dialog content linked to `DatePicker.Trigger`.
-- Delegates positioning/interaction behavior to shared `Popover` primitives.
-- Applies safe prop forwarding while keeping root-controlled props internal.
+Name: `DatePicker.Popover`  
+Description: Popover content wrapper for calendar and optional time controls, synchronized with `DatePicker.Root` open state.
 
-## Usage
+| Prop           | Type                                     | Default      | Description                                                      |
+| -------------- | ---------------------------------------- | ------------ | ---------------------------------------------------------------- |
+| `aria-label`   | `string`                                 | `'Calendar'` | Accessible name for the popover content.                         |
+| `initialFocus` | `() => HTMLElement \| null \| undefined` | `active day` | Optional initial focus resolver for popover open.                |
+| `class`        | `string`                                 | `''`         | CSS class names for popover content.                             |
+| `...restProps` | `ComponentProps<typeof Popover.Content>` | `-`          | Forwarded popover content props, excluding root-controlled keys. |
 
-```svelte
-<DatePicker.Popover>
- <DatePicker.Calendar />
-</DatePicker.Popover>
-```
+### Notes
 
-See parent docs: `../README.md`.
+Name: Root-controlled props  
+Description: `open`, `triggerRef`, `onOpenChange`, and `id` are controlled by `DatePicker.Root` and ignored when passed to this part.

@@ -15,6 +15,8 @@ Examples:
 ## Required rule
 
 Every exported public part folder **must** contain a `README.md`.
+Every exported public part folder **must** include at least one colocated `*.test.ts` file for that part (with `*-test.svelte` harness when required by interaction setup).
+Part `README.md` structure/style should mirror the canonical examples in `packages/svelte/src/lib/combobox/*/README.md`.
 
 ## README structure (required)
 
@@ -45,6 +47,7 @@ Use this structure in order:
 ## Delivery checklist
 
 - [ ] README exists for each touched public part.
+- [ ] At least one colocated `*.test.ts` exists for each touched public part.
 - [ ] README follows the required structure.
 - [ ] Props table matches current implementation.
 - [ ] Parent component README anatomy includes the part.

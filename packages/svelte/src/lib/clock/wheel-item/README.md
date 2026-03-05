@@ -1,23 +1,17 @@
-# Clock.WheelItem
+# Clock WheelItem
 
-Headless item part for wheel columns.
+## API reference
 
-## Responsibility
+### Clock.WheelItem
 
-- Renders one selectable wheel option.
-- Publishes state attributes such as `data-selected`, `data-disabled`, and `data-centered`.
-- Leaves final visual styling to consumers.
+Name: `Clock.WheelItem`  
+Description: Headless item renderer for wheel options used by `Clock.WheelColumn` and `TimePicker.WheelColumn`.
 
-## Usage
-
-```svelte
-<Clock.WheelItem
- type={col.type}
- {option}
- class="flex min-h-8 items-center justify-center rounded-md px-2"
-/>
-```
-
-Typically used inside `Clock.WheelColumn` or `TimePicker.WheelColumn` snippet overrides.
-
-See parent docs: `../README.md`.
+| Prop              | Type                                                  | Default     | Description                                                  |
+| ----------------- | ----------------------------------------------------- | ----------- | ------------------------------------------------------------ |
+| `type`            | `'hour' \| 'minute' \| 'second' \| 'dayPeriod'`       | `required`  | Segment type associated with the option.                     |
+| `option`          | `{ value: string; label: string; disabled: boolean }` | `required`  | Option payload rendered by this item.                        |
+| `selected`        | `boolean`                                             | `false`     | Marks the item as currently selected.                        |
+| `onrequestcenter` | `() => void`                                          | `undefined` | Callback invoked to request centering/selecting this option. |
+| `class`           | `string`                                              | `''`        | CSS class names for the item element.                        |
+| `...restProps`    | `HTMLAttributes<HTMLDivElement>`                      | `-`         | Additional attributes forwarded to the item element.         |

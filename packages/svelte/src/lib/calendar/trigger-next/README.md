@@ -1,11 +1,11 @@
-# DatePicker Trigger
+# Calendar TriggerNext
 
 ## API reference
 
-### DatePicker.Trigger
+### Calendar.TriggerNext
 
-Name: `DatePicker.Trigger`  
-Description: Button part that toggles `DatePicker.Popover` and anchors positioning/focus behavior.
+Name: `Calendar.TriggerNext`  
+Description: Button part that advances the visible calendar period.
 
 | Prop           | Type                   | Default     | Description                                            |
 | -------------- | ---------------------- | ----------- | ------------------------------------------------------ |

@@ -37,6 +37,7 @@
 - Use `render` from `vitest-browser-svelte` and `expect.poll(...)` for portal/RAF-driven async UI updates.
 - Portaled elements are commonly cleaned up in `afterEach` by removing `[role="dialog"]`.
 - Vitest aliases `$app/*` to mocks in `packages/svelte/src/lib/test-mocks`; preserve these imports in component code.
+- Requirement: every exported public part folder must include at least one colocated `*.test.ts` file validating part behavior (and a `*-test.svelte` harness where needed).
 
 ## Contribution/CI Expectations
 
@@ -50,4 +51,6 @@
 - Apply `.github/skills/component-readme-base-standard.md` whenever adding or updating `packages/svelte/src/lib/<component>/README.md`.
 - Apply `.github/skills/todo-standard.md` whenever adding or updating component `TODO.md` files.
 - Requirement: every exported public part folder must include a `README.md` that follows the skill template (`API reference` section, part subsection, Name/Description, props table, and optional context utilities).
+- Requirement: every exported public part folder must include colocated tests (`*.test.ts`, plus `*-test.svelte` harness if interaction setup is required).
+- Requirement: part `README.md` files must follow the same structure and style used in `packages/svelte/src/lib/combobox/*/README.md` (canonical reference format).
 - Requirement: component-level TODO checkboxes must follow the repository format enforced by `scripts/check-todo-format.mjs`.

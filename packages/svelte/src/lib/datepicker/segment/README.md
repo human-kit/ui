@@ -1,21 +1,14 @@
-# DatePicker.Segment
+# DatePicker Segment
 
-Editable segment part used inside `DatePicker.Input`.
+## API reference
 
-## Responsibility
+### DatePicker.Segment
 
-- Renders one date segment (`day`, `month`, `year`, or literal).
-- Handles keyboard editing and segment-level focus behavior.
-- Reflects placeholder/value/invalid states from root context.
+Name: `DatePicker.Segment`  
+Description: Editable (or literal) date segment renderer used inside `DatePicker.Input`.
 
-## Usage
-
-```svelte
-<DatePicker.Input>
- {#snippet children(segment)}
-  <DatePicker.Segment {segment} class="date-picker-segment" />
- {/snippet}
-</DatePicker.Input>
-```
-
-See parent docs: `../README.md`.
+| Prop           | Type                              | Default    | Description                                             |
+| -------------- | --------------------------------- | ---------- | ------------------------------------------------------- |
+| `segment`      | `DatePickerSegmentPart`           | `required` | Segment metadata and text payload.                      |
+| `class`        | `string`                          | `''`       | CSS class names for the segment span element.           |
+| `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-`        | Additional attributes forwarded to the segment element. |

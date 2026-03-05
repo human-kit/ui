@@ -67,18 +67,18 @@
 			class="flex gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
 		>
 			{#snippet column(col)}
-				<Clock.WheelColumn type={col.type} class="h-44 w-16 rounded-md">
+				<Clock.WheelColumn type={col.type} class="h-44 w-16 rounded-md z-20">
 					{#snippet children(option)}
 						<Clock.WheelItem
 							type={col.type}
 							{option}
-							class="flex min-h-8 relative z-10 items-center justify-center rounded-md px-2 text-sm opacity-50 transition-opacity data-[selected=true]:bg-neutral-200 data-[selected=true]:opacity-100 data-[selected=true]:font-medium data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-30 dark:data-[selected=true]:bg-neutral-700"
+							class="flex min-h-8 relative z-30 items-center justify-center rounded-md px-2 text-sm opacity-50 transition-opacity data-[selected=true]:bg-neutral-200 data-[selected=true]:opacity-100 data-[selected=true]:font-medium data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-30 dark:data-[selected=true]:bg-neutral-700"
 						/>
 					{/snippet}
 				</Clock.WheelColumn>
 			{/snippet}
 			<Clock.Axis
-				class="bg-neutral-100 h-6 z-0 ring-neutral-300/80 dark:bg-neutral-700/35 dark:ring-neutral-600"
+				class="bg-neutral-100 h-6 z-10 ring-neutral-300/80 dark:bg-neutral-700/35 dark:ring-neutral-600"
 			/>
 		</Clock.Root>
 	</LocaleProvider>

@@ -1,19 +1,20 @@
-# TimePicker.Popover
+# TimePicker Popover
 
-Popover content part for `TimePicker`.
+## API reference
 
-## Responsibility
+### TimePicker.Popover
 
-- Hosts popover dialog content linked to `TimePicker.Trigger`.
-- Delegates positioning/interaction behavior to shared `Popover` primitives.
-- Applies safe prop forwarding while keeping root-controlled props internal.
+Name: `TimePicker.Popover`  
+Description: Popover content wrapper integrated with `TimePicker.Root` controlled open state and trigger reference.
 
-## Usage
+| Prop           | Type                                     | Default         | Description                                                      |
+| -------------- | ---------------------------------------- | --------------- | ---------------------------------------------------------------- |
+| `aria-label`   | `string`                                 | `'Time picker'` | Accessible name for the popover dialog content.                  |
+| `initialFocus` | `() => HTMLElement \| null \| undefined` | `first wheel`   | Optional initial focus resolver for popover open.                |
+| `class`        | `string`                                 | `''`            | CSS class names applied to popover content.                      |
+| `...restProps` | `ComponentProps<typeof Popover.Content>` | `-`             | Forwarded popover content props, excluding root-controlled keys. |
 
-```svelte
-<TimePicker.Popover>
- <TimePicker.Clock />
-</TimePicker.Popover>
-```
+### Notes
 
-See parent docs: `../README.md`.
+Name: Root-controlled props  
+Description: `open`, `triggerRef`, `onOpenChange`, and `id` are controlled by `TimePicker.Root` and ignored when passed to this part.

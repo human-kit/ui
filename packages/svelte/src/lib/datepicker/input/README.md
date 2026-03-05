@@ -1,21 +1,15 @@
-# DatePicker.Input
+# DatePicker Input
 
-Segment container part for `DatePicker`.
+## API reference
 
-## Responsibility
+### DatePicker.Input
 
-- Wraps date segments in input-like structure.
-- Exposes validity/focus states from root context.
-- Supports snippet-driven custom segment rendering.
+Name: `DatePicker.Input`  
+Description: Segmented date input group tied to `DatePicker.Root` value and focus management.
 
-## Usage
-
-```svelte
-<DatePicker.Input aria-label="Date input">
- {#snippet children(segment)}
-  <DatePicker.Segment {segment} />
- {/snippet}
-</DatePicker.Input>
-```
-
-See parent docs: `../README.md`.
+| Prop           | Type                               | Default     | Description                                           |
+| -------------- | ---------------------------------- | ----------- | ----------------------------------------------------- |
+| `children`     | `Snippet<[DatePickerSegmentPart]>` | `undefined` | Optional custom renderer for each date segment part.  |
+| `class`        | `string`                           | `''`        | CSS class names for the input group element.          |
+| `aria-label`   | `string`                           | `undefined` | Accessible label for the segmented input group.       |
+| `...restProps` | `HTMLAttributes<HTMLDivElement>`   | `-`         | Additional attributes forwarded to the group element. |

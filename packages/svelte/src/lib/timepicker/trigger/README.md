@@ -1,17 +1,14 @@
-# TimePicker.Trigger
+# TimePicker Trigger
 
-Button part that opens/closes the time popover.
+## API reference
 
-## Responsibility
+### TimePicker.Trigger
 
-- Toggles `TimePicker` popover state.
-- Integrates with shared interaction-modality focus behavior.
-- Exposes focus attributes aligned with root state.
+Name: `TimePicker.Trigger`  
+Description: Button part that toggles `TimePicker.Popover` and synchronizes focus modality with root state.
 
-## Usage
-
-```svelte
-<TimePicker.Trigger>Open time picker</TimePicker.Trigger>
-```
-
-See parent docs: `../README.md`.
+| Prop           | Type                   | Default     | Description                                            |
+| -------------- | ---------------------- | ----------- | ------------------------------------------------------ |
+| `children`     | `Snippet`              | `undefined` | Optional trigger content.                              |
+| `class`        | `string`               | `''`        | CSS class names for the trigger button.                |
+| `...restProps` | `HTMLButtonAttributes` | `-`         | Additional button attributes forwarded to the trigger. |

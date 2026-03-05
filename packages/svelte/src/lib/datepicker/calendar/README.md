@@ -1,27 +1,19 @@
-# DatePicker.Calendar
+# DatePicker Calendar
 
-Calendar composition part for `DatePicker.Popover`.
+## API reference
 
-## Responsibility
+### DatePicker.Calendar
 
-- Adapts `Calendar` primitive behavior to `DatePicker.Root` state.
-- Exposes slots/snippets for header, grid, and body composition.
-- Supports child parts such as `DatePicker.TriggerPrevious`, `DatePicker.Heading`, and `DatePicker.BodyCell`.
+Name: `DatePicker.Calendar`  
+Description: Calendar composition part connected to `DatePicker.Root` selected date and navigation state.
 
-## Usage
+| Prop           | Type                                                                                                                                                            | Default     | Description                                            |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------ |
+| `children`     | `Snippet`                                                                                                                                                       | `undefined` | Optional custom calendar content.                      |
+| `class`        | `string`                                                                                                                                                        | `''`        | CSS class names for the calendar wrapper.              |
+| `...restProps` | `Omit<ComponentProps<typeof Calendar.Root>, 'selectionMode' \| 'value' \| 'defaultValue' \| 'onChange' \| 'isDisabled' \| 'isReadOnly' \| 'isDateUnavailable'>` | `-`         | Additional calendar root props forwarded by this part. |
 
-```svelte
-<DatePicker.Calendar>
- <div>
-  <DatePicker.TriggerPrevious />
-  <DatePicker.Heading />
-  <DatePicker.TriggerNext />
- </div>
- <DatePicker.Grid>
-  <DatePicker.GridHeader />
-  <DatePicker.GridBody />
- </DatePicker.Grid>
-</DatePicker.Calendar>
-```
+### Notes
 
-See parent docs: `../README.md`.
+Name: Root-controlled calendar props  
+Description: `selectionMode`, `value`, `defaultValue`, `onChange`, `isDisabled`, `isReadOnly`, and `isDateUnavailable` are controlled by `DatePicker.Root` and ignored when passed to this part.

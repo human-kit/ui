@@ -1,11 +1,11 @@
-# DatePicker Trigger
+# Calendar TriggerPrevious
 
 ## API reference
 
-### DatePicker.Trigger
+### Calendar.TriggerPrevious
 
-Name: `DatePicker.Trigger`  
-Description: Button part that toggles `DatePicker.Popover` and anchors positioning/focus behavior.
+Name: `Calendar.TriggerPrevious`  
+Description: Button part that moves the visible calendar period backward.
 
 | Prop           | Type                   | Default     | Description                                            |
 | -------------- | ---------------------- | ----------- | ------------------------------------------------------ |

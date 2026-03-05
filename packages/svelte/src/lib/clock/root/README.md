@@ -1,19 +1,38 @@
-# Clock.Root
+# Clock Root
 
-Composable root part for `Clock`.
+## API reference
 
-## Responsibility
+### Clock.Root
 
-- Owns clock state (`value`, `granularity`, `hourCycle`, range checks).
-- Resolves visible columns (`hour`, `minute`, `second`, `dayPeriod`).
-- Provides context consumed by `Clock.WheelColumn`, `Clock.WheelItem`, and `Clock.Axis`.
+Name: `Clock.Root`  
+Description: Standalone wheel-based time state container that resolves visible columns and publishes selection context for child parts.
 
-## Usage
+| Prop           | Type                              | Default     | Description                                                |
+| -------------- | --------------------------------- | ----------- | ---------------------------------------------------------- |
+| `value`        | `string \| null`                  | `bindable`  | Controlled time value (`HH:mm` or `HH:mm:ss`).             |
+| `defaultValue` | `string \| null`                  | `undefined` | Initial value for uncontrolled usage.                      |
+| `onChange`     | `(value: string \| null) => void` | `undefined` | Called when a committed wheel selection changes the value. |
+| `hourCycle`    | `12 \| 24`                        | `locale`    | Hour cycle used for rendering and validation.              |
+| `granularity`  | `'hour' \| 'minute' \| 'second'`  | `'minute'`  | Controls visible wheel columns and emitted precision.      |
+| `hourStep`     | `number`                          | `1`         | Hour increment used by wheel and keyboard navigation.      |
+| `minuteStep`   | `number`                          | `1`         | Minute increment used by wheel and keyboard navigation.    |
+| `secondStep`   | `number`                          | `1`         | Second increment used by wheel and keyboard navigation.    |
+| `minValue`     | `string`                          | `undefined` | Optional lower bound for selectable values.                |
+| `maxValue`     | `string`                          | `undefined` | Optional upper bound for selectable values.                |
+| `isDisabled`   | `boolean`                         | `false`     | Disables wheel interaction and value updates.              |
+| `column`       | `Snippet<[ClockColumnInfo]>`      | `undefined` | Optional custom renderer for each resolved column.         |
+| `children`     | `Snippet`                         | `undefined` | Optional additional content rendered inside the root.      |
+| `class`        | `string`                          | `''`        | CSS class names for the root element.                      |
+| `aria-label`   | `string`                          | `undefined` | Accessible label for the root group.                       |
 
-```svelte
-<Clock.Root value="14:30" granularity="minute" hourCycle={24} class="flex gap-2" />
-```
+### Context utilities
 
-Use the `column` snippet for custom column rendering, and `children` for overlays (for example `Clock.Axis`).
+Name: `setClockContext` / `getClockContext` / `useClockContext`  
+Description: Context helpers used by `Clock.Axis`, `Clock.WheelColumn`, and other clock parts.
 
-See parent docs: `../README.md`.
+| Prop              | Type                              | Default | Description                                              |
+| ----------------- | --------------------------------- | ------- | -------------------------------------------------------- |
+| `setClockContext` | `(ctx: ClockContext) => void`     | `-`     | Publishes clock context from root.                       |
+| `getClockContext` | `() => ClockContext \| undefined` | `-`     | Reads clock context when available.                      |
+| `useClockContext` | `() => ClockContext`              | `-`     | Reads context and throws outside `Clock.Root`.           |
+| `ClockContext`    | `type`                            | `-`     | Shared contract for state, labels, and wheel operations. |
