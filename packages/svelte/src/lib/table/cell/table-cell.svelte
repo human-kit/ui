@@ -63,10 +63,10 @@
 		return cellIndex >= 0 ? table.getColumnAt(cellIndex) : undefined;
 	});
 	const tagName = $derived(row.section === 'body' && column?.isRowHeader ? 'th' : 'td');
-		const role = $derived.by(() => {
-			if (row.section !== 'body') return undefined;
-			return column?.isRowHeader ? 'rowheader' : 'gridcell';
-		});
+	const role = $derived.by(() => {
+		if (row.section !== 'body') return undefined;
+		return column?.isRowHeader ? 'rowheader' : 'gridcell';
+	});
 	const isFocused = $derived.by(() => {
 		void $focusVersion;
 		return row.section === 'body' ? table.isCellFocused(key) : false;
@@ -196,7 +196,13 @@
 	bind:this={element}
 	{role}
 	class={className}
-	tabindex={row.section === 'body' ? (isCellFocusable ? (table.isCellTabStop(key) ? 0 : -1) : undefined) : undefined}
+	tabindex={row.section === 'body'
+		? isCellFocusable
+			? table.isCellTabStop(key)
+				? 0
+				: -1
+			: undefined
+		: undefined}
 	scope={row.section === 'body' && column?.isRowHeader ? 'row' : undefined}
 	aria-disabled={row.section === 'body' && isRowDisabled ? true : undefined}
 	data-focused={isFocused ? 'true' : undefined}

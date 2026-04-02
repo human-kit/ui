@@ -90,10 +90,7 @@
 		return new Set<TableSelectionKey>(keys ?? []);
 	}
 
-	function hasSameSelection(
-		left: Set<TableSelectionKey>,
-		right: Set<TableSelectionKey>
-	) {
+	function hasSameSelection(left: Set<TableSelectionKey>, right: Set<TableSelectionKey>) {
 		if (left.size !== right.size) return false;
 		for (const key of left) {
 			if (!right.has(key)) return false;
@@ -134,7 +131,10 @@
 	$effect(() => {
 		if (selectedKeys !== undefined) {
 			const nextSelection = parseSelection(selectedKeys);
-			if (pendingControlledSelection && hasSameSelection(pendingControlledSelection, nextSelection)) {
+			if (
+				pendingControlledSelection &&
+				hasSameSelection(pendingControlledSelection, nextSelection)
+			) {
 				pendingControlledSelection = null;
 				return;
 			}
