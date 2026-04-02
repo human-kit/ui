@@ -30,6 +30,7 @@
 		initialSortDescriptor?: TableSortDescriptor;
 		showSelectionModeToggle?: boolean;
 		showSingleSelectionModeToggle?: boolean;
+		showSortClearButton?: boolean;
 	};
 
 	let {
@@ -42,7 +43,8 @@
 		initialSelectedKeys,
 		initialSortDescriptor,
 		showSelectionModeToggle = false,
-		showSingleSelectionModeToggle = false
+		showSingleSelectionModeToggle = false,
+		showSortClearButton = false
 	}: TableTestProps = $props();
 
 	let currentSelectionMode = $state((() => selectionMode)());
@@ -82,10 +84,10 @@
 >
 	<Table.Header>
 		<Table.Row>
-			<Table.Column id="email" isRowHeader>
+			<Table.Column id="email" isRowHeader textValue="Email">
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="group" allowsSorting>
+			<Table.Column id="group" allowsSorting textValue="Group">
 				<Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
 			</Table.Column>
 		</Table.Row>
@@ -129,6 +131,16 @@
 		onclick={() => (currentSelectionMode = 'single')}
 	>
 		Selection single
+	</button>
+{/if}
+
+{#if showSortClearButton}
+	<button
+		type="button"
+		data-testid="clear-sort"
+		onclick={() => (currentSortDescriptor = undefined)}
+	>
+		Clear sort
 	</button>
 {/if}
 

@@ -342,6 +342,11 @@ describe('Table.Root', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
 			.toBe('group:ascending');
+		await expect
+			.poll(
+				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+			)
+			.toBe('Group sorted ascending.');
 	});
 
 	it('toggles sorting from a sortable header cell', async () => {
@@ -358,6 +363,64 @@ describe('Table.Root', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
 			.toBe('group:descending');
+	});
+
+	it('does not announce the initial sort state on mount', async () => {
+		render(TableTest, {
+			initialSortDescriptor: { column: 'group', direction: 'ascending' }
+		});
+
+		await expect
+			.poll(
+				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+			)
+			.toBe('');
+	});
+
+	it('announces sort changes through a polite live region', async () => {
+		render(TableTest);
+		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
+		const [, groupHeader] = getHeaderCells(grid);
+
+		await groupHeader.click();
+		await expect
+			.poll(
+				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+			)
+			.toBe('Group sorted ascending.');
+
+		await groupHeader.click();
+		await expect
+			.poll(
+				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+			)
+			.toBe('Group sorted descending.');
+	});
+
+	it('clears controlled sorting when sortDescriptor becomes undefined', async () => {
+		const screen = render(TableTest, {
+			initialSortDescriptor: { column: 'group', direction: 'ascending' },
+			showSortClearButton: true
+		});
+
+		const [, groupHeader] = getHeaderCells(document.body);
+
+		await expect.element(groupHeader).toHaveAttribute('aria-sort', 'ascending');
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:ascending');
+
+		await screen.getByTestId('clear-sort').click();
+
+		await expect.element(groupHeader).toHaveAttribute('aria-sort', 'none');
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('');
+		await expect
+			.poll(
+				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+			)
+			.toBe('Sorting cleared.');
 	});
 
 	it('cycles keyboard sorting between ascending and descending without a clear state', async () => {

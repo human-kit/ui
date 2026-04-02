@@ -80,6 +80,7 @@ export type TableContext = {
 	getColumnCount: () => number;
 	getColumnAt: (index: number) => TableColumnRegistration | undefined;
 	getColumnIndexByToken: (token: string) => number;
+	getColumnTextValue: (columnId: string) => string | undefined;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
 	getHeaderRowCount: () => number;
@@ -258,6 +259,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getColumnIndexByToken(token: string) {
 		return columnOrder.indexOf(token);
+	}
+
+	function getColumnTextValue(columnId: string) {
+		return Array.from(columns.values()).find((column) => column.id === columnId)?.textValue;
 	}
 
 	function registerRow(row: TableRowRegistration) {
@@ -859,6 +864,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getColumnCount,
 		getColumnAt,
 		getColumnIndexByToken,
+		getColumnTextValue,
 		registerRow,
 		unregisterRow,
 		getHeaderRowCount,

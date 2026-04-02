@@ -25,7 +25,7 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [ ] [M][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Validate screen reader announcements for `rowheader`, `columnheader`, and `aria-sort` across NVDA and VoiceOver.
 - [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Resolve footer grid semantics — footer cells live inside `role="grid"` but are unreachable by keyboard; either include footer in navigation or mark `<tfoot>` with `role="none"` to exclude it from the grid.
 - [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Add `aria-rowcount` and `aria-colcount` to the grid element for screen reader dimension announcements.
-- [ ] [S][P2][Area: Accessibility][Owner: Unassigned][Target: TBD] Add an `aria-live="polite"` visually-hidden region to announce sort changes (NVDA/JAWS do not always announce `aria-sort` updates).
+- [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Add an `aria-live="polite"` visually-hidden region to announce sort changes (NVDA/JAWS do not always announce `aria-sort` updates).
 - [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Add explicit `role="row"` to the `Table.EmptyState` `<tr>` for strict ARIA parent-child validation (`gridcell` requires `row` parent).
 
 ### Performance
@@ -50,7 +50,7 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 
 ### API Design
 
-- [ ] [M][P1][Area: API][Owner: Unassigned][Target: TBD] Decide whether controlled clearing of `sortDescriptor` should accept `undefined` explicitly or require an additional API.
+- [x] [M][P1][Area: API][Owner: Unassigned][Target: Done] Decide whether controlled clearing of `sortDescriptor` should accept `undefined` explicitly or require an additional API.
 - [x] [S][P2][Area: Behavior][Owner: Unassigned][Target: Done] Confirm whether disabled body rows should remain keyboard-focusable or be skipped by navigation.
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether `Table.Column` should hard-enforce a single `Table.ColumnHeaderCell` child.
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether clipboard-related behavior should remain fully browser-native in v1 or be deferred behind a future explicit cell-selection model.

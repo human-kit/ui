@@ -11,6 +11,7 @@
 </script>
 
 <script lang="ts">
+	import { tick } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import {
@@ -66,6 +67,9 @@
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
 	let pendingControlledSelection = $state<Set<TableSelectionKey> | null>(null);
+	let sortAnnouncement = $state('');
+	let hasObservedSortState = $state(false);
+	let hasInitializedSortSync = $state(false);
 
 	const ctx = setTableContext(
 		createTableContext({
@@ -99,6 +103,7 @@
 	}
 
 	const layoutVersion = ctx.layoutVersion;
+	const sortVersion = ctx.sortVersion;
 	const ariaColCount = $derived.by(() => {
 		void $layoutVersion;
 		const columnCount = ctx.getColumnCount();
@@ -111,6 +116,29 @@
 	});
 
 	context = ctx;
+
+	function formatColumnAnnouncementLabel(columnId: string) {
+		const normalized = columnId
+			.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+			.replace(/[-_]+/g, ' ')
+			.trim();
+		if (!normalized) return 'Column';
+		return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+	}
+
+	function getSortAnnouncement(descriptor: TableSortDescriptor | undefined) {
+		if (!descriptor) return 'Sorting cleared.';
+		const label =
+			ctx.getColumnTextValue(descriptor.column)?.trim() ||
+			formatColumnAnnouncementLabel(descriptor.column);
+		return `${label} sorted ${descriptor.direction}.`;
+	}
+
+	async function announceSortChange(descriptor: TableSortDescriptor | undefined) {
+		sortAnnouncement = '';
+		await tick();
+		sortAnnouncement = getSortAnnouncement(descriptor);
+	}
 
 	$effect(() => {
 		element = tableElement;
@@ -144,9 +172,24 @@
 	});
 
 	$effect(() => {
-		if (sortDescriptor !== undefined) {
-			ctx.setSortDescriptor(sortDescriptor);
+		if (!hasInitializedSortSync) {
+			hasInitializedSortSync = true;
+			if (sortDescriptor === undefined) {
+				return;
+			}
 		}
+
+		ctx.setSortDescriptor(sortDescriptor);
+	});
+
+	$effect(() => {
+		void $sortVersion;
+		const descriptor = ctx.sortDescriptor;
+		if (!hasObservedSortState) {
+			hasObservedSortState = true;
+			return;
+		}
+		void announceSortChange(descriptor);
 	});
 
 	if (import.meta.env.DEV) {
@@ -211,3 +254,5 @@
 		{@render children()}
 	{/if}
 </table>
+
+<span role="status" aria-live="polite" aria-atomic="true" class="sr-only">{sortAnnouncement}</span>

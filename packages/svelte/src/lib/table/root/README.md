@@ -15,7 +15,7 @@ Description: State container for interactive table behavior, including roving fo
 | `selectionBehavior`     | `'toggle' \| 'replace'`                                      | `'toggle'`  | `toggle` uses checkbox-style selection. `replace` makes click replace selection, vertical arrows move selection, and `Shift+ArrowUp/Down` extend it. |
 | `selectedKeys`          | `Iterable<string \| number>`                                 | `undefined` | Controlled selected row ids. Supports `bind:selectedKeys`.                             |
 | `defaultSelectedKeys`   | `Iterable<string \| number>`                                 | `undefined` | Initial selected row ids for uncontrolled usage. When `selectionMode` later becomes `none`, the internal selection is cleared. |
-| `sortDescriptor`        | `{ column: string; direction: 'ascending' \| 'descending' }` | `undefined` | Controlled sort state. Supports `bind:sortDescriptor`.                                 |
+| `sortDescriptor`        | `{ column: string; direction: 'ascending' \| 'descending' }` | `undefined` | Controlled sort state. Supports `bind:sortDescriptor`. Setting it back to `undefined` clears the sort. |
 | `defaultSortDescriptor` | `{ column: string; direction: 'ascending' \| 'descending' }` | `undefined` | Initial sort state for uncontrolled usage.                                             |
 | `disabledKeys`          | `Iterable<string \| number>`                                 | `undefined` | Row ids that should be non-selectable.                                                 |
 | `onSelectionChange`     | `(keys: Set<string \| number>) => void`                      | `undefined` | Called when row selection changes.                                                     |
@@ -35,6 +35,7 @@ Description: Current v1 interaction constraints that affect consumer expectation
 | `selectionMode="none"` | Clears existing row selection internally and prevents further row selection until another mode is set. |
 | Text selection and copy | Browser-native text selection and `Ctrl+C` behavior are preserved; the component does not implement custom clipboard logic. |
 | `replace` mode blur | Clicking or tabbing outside the table clears focus state but does not clear row selection. |
+| Sort announcements | Sort changes are mirrored into a polite live region. Use `Table.Column.textValue` when the announced label should differ from the column `id`. |
 
 ### Context utilities
 

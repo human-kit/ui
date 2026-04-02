@@ -59,6 +59,8 @@
 - Use `defaultSelectedKeys` for uncontrolled initial row selection.
 - Use `sortDescriptor` / `onSortChange` for controlled sorting state.
 - Use `defaultSortDescriptor` for uncontrolled initial sort state.
+- Setting `sortDescriptor` back to `undefined` clears the controlled sort state, matching React Aria Table semantics.
+- Set `Table.Column.textValue` when the spoken column label should differ from the column id; `Table.Root` uses it for polite sort announcements.
 - Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
 - When `selectionMode` changes to `none`, the component clears any existing row selection internally.
 - v1 leaves text selection and `Ctrl+C` behavior browser-native; the table does not implement custom copy handling or force a text-selection policy.
@@ -71,3 +73,4 @@
 - Keyboard navigation uses roving `tabindex` across header and body cells.
 - First-column body cells become `rowheader` when their associated column has `isRowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
+- Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.

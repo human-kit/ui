@@ -1,0 +1,76 @@
+$ bun --filter @human-kit/svelte-components test --run src/lib/table/root/table-root.test.ts -t "renders a grid with header, body and footer groups"
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: [1m[46m RUN [49m[22m [36mv4.0.17 [39m[90mC:/Users/Agustin Delgado/Desktop/Agustin/svelte-components/packages/svelte[39m
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test:  [31m❯[39m [30m[43m chromium [49m[39m src/lib/table/root/table-root.test.ts [2m([22m[2m41 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m40 skipped[39m[2m)[22m[32m 17[2mms[22m[39m
+@human-kit/svelte-components test: [31m     [31m×[31m renders a grid with header, body and footer groups[39m[32m 15[2mms[22m[39m
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m exposes aria row and column counts on the grid
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m excludes footer cells from grid semantics
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m warns in dev when the grid has no accessible name
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m makes the first header cell the initial tab stop
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m moves focus horizontally with arrow keys
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m moves focus vertically from header to body cells
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m moves to row boundaries with Home and End
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m moves to grid boundaries with Ctrl+Home and Ctrl+End
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m selects a body row with keyboard
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m toggles off an already selected row when selectionBehavior is toggle
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m clears selection when selectionMode changes to none
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m collapses selection to one row when selectionMode changes to single
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m keeps an already selected row selected when selectionBehavior is replace
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m replaces selection on click when selectionBehavior is replace
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m adds a non-contiguous row with Ctrl+Space when selectionBehavior is replace
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m moves focus and selection together with vertical arrows in replace mode
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m extends selection with Shift+ArrowDown in replace mode
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m preserves the bottom anchor when extending upward with Shift+ArrowUp in replace mode
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m extends selection with Shift+ArrowDown in toggle multiple mode
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m ignores repeated Space keydown when toggling row selection
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m ignores repeated Space keydown when toggling sorting
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m toggles sorting from a sortable header cell
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m does not announce the initial sort state on mount
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m announces sort changes through a polite live region
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m clears controlled sorting when sortDescriptor becomes undefined
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m cycles keyboard sorting between ascending and descending without a clear state
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m keeps vertical navigation aligned with DOM order after sorting
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m renders the empty state when there are no body rows
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m does not render the empty state alongside body rows
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m prevents selection on disabled rows
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m does not make disabled body cells focusable
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m marks disabled body cells with aria-disabled
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m skips disabled rows when arrow-navigating in replace mode
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m does not serialize false focus attributes during keyboard navigation
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m does not inject inline outline styles into cells or header cells
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m shows focus-visible only for keyboard navigation, not pointer clicks
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m marks focused rows with focus-within semantics instead of row-focused semantics
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m clears focused cell state when focus leaves the table
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m supports Ctrl+A for multiple row selection
+@human-kit/svelte-components test:      [2m[90m↓[39m[22m renders body value cells as gridcells
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: [31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: [41m[1m FAIL [22m[49m [30m[43m chromium [49m[39m src/lib/table/root/table-root.test.ts[2m > [22mTable.Root[2m > [22mrenders a grid with header, body and footer groups
+@human-kit/svelte-components test: [31m[1mSvelte error[22m: props_invalid_value
+@human-kit/svelte-components test: Cannot do `bind:sortDescriptor={undefined}` when `sortDescriptor` has a fallback value
+@human-kit/svelte-components test: https://svelte.dev/e/props_invalid_value
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: 	in <unknown>
+@human-kit/svelte-components test: 	in table-test.svelte
+@human-kit/svelte-components test: [39m
+@human-kit/svelte-components test: [36m [2m❯[22m Table_root src/lib/table/root/table-root.svelte:[2m63:16[22m[39m
+@human-kit/svelte-components test:     [90m 61| [39m  selectedKeys = $bindable(),
+@human-kit/svelte-components test:     [90m 62| [39m  defaultSelectedKeys,
+@human-kit/svelte-components test:     [90m 63| [39m  sortDescriptor = $bindable(UNCONTROLLED_SORT_DESCRIPTOR as InternalS…
+@human-kit/svelte-components test:     [90m   | [39m               [31m^[39m
+@human-kit/svelte-components test:     [90m 64| [39m  defaultSortDescriptor,
+@human-kit/svelte-components test:     [90m 65| [39m  'aria-label': ariaLabel,
+@human-kit/svelte-components test: [90m [2m❯[22m src/lib/table/root/table-test.svelte:[2m75:1[22m[39m
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: [2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+@human-kit/svelte-components test: [2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m40 skipped[39m[90m (41)[39m
+@human-kit/svelte-components test: [2m   Start at [22m 18:51:22
+@human-kit/svelte-components test: [2m   Duration [22m 3.25s[2m (transform 0ms, setup 0ms, import 630ms, tests 17ms, environment 0ms)[22m
+@human-kit/svelte-components test: 
+@human-kit/svelte-components test: Exited with code 1
+error: script "test" exited with code 1
