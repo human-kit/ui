@@ -63,7 +63,10 @@
 		return cellIndex >= 0 ? table.getColumnAt(cellIndex) : undefined;
 	});
 	const tagName = $derived(row.section === 'body' && column?.isRowHeader ? 'th' : 'td');
-	const role = $derived(row.section === 'body' && column?.isRowHeader ? 'rowheader' : 'gridcell');
+		const role = $derived.by(() => {
+			if (row.section !== 'body') return undefined;
+			return column?.isRowHeader ? 'rowheader' : 'gridcell';
+		});
 	const isFocused = $derived.by(() => {
 		void $focusVersion;
 		return row.section === 'body' ? table.isCellFocused(key) : false;
@@ -80,9 +83,10 @@
 		void $selectionVersion;
 		return row.section === 'body' ? table.isRowDisabled(row.rowId, row.isDisabled) : row.isDisabled;
 	});
+	const isCellFocusable = $derived(row.section !== 'body' || !isRowDisabled);
 
 	function handleFocus() {
-		if (row.section !== 'body') return;
+		if (row.section !== 'body' || isRowDisabled) return;
 		table.setFocusedCell(key);
 		table.setFocusVisible(shouldShowFocusVisible(element ?? null));
 	}
@@ -94,15 +98,14 @@
 
 	function handleClick(event: MouseEvent) {
 		if (row.section !== 'body') return;
+		if (isRowDisabled) return;
 		table.focusCellByKey(key);
-		if (!isRowDisabled) {
-			table.pressRow(row.rowId as TableSelectionKey | undefined, {
-				shiftKey: event.shiftKey,
-				ctrlKey: event.ctrlKey,
-				metaKey: event.metaKey,
-				altKey: event.altKey
-			});
-		}
+		table.pressRow(row.rowId as TableSelectionKey | undefined, {
+			shiftKey: event.shiftKey,
+			ctrlKey: event.ctrlKey,
+			metaKey: event.metaKey,
+			altKey: event.altKey
+		});
 	}
 
 	function handleMouseDown(event: MouseEvent) {
@@ -193,14 +196,14 @@
 	bind:this={element}
 	{role}
 	class={className}
-	tabindex={row.section === 'body' ? (table.isCellTabStop(key) ? 0 : -1) : undefined}
+	tabindex={row.section === 'body' ? (isCellFocusable ? (table.isCellTabStop(key) ? 0 : -1) : undefined) : undefined}
 	scope={row.section === 'body' && column?.isRowHeader ? 'row' : undefined}
+	aria-disabled={row.section === 'body' && isRowDisabled ? true : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-row-selected={isRowSelected ? 'true' : undefined}
 	data-disabled={isRowDisabled || undefined}
 	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
-	style={row.section === 'body' && !isFocusVisible ? 'outline: none;' : undefined}
 	onfocus={handleFocus}
 	onclick={handleClick}
 	onmousedown={handleMouseDown}

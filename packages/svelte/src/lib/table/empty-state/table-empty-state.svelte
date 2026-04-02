@@ -27,7 +27,8 @@
 </script>
 
 {#if isVisible}
-	<tr data-empty class={className}>
+	<!-- svelte-ignore a11y_no_redundant_roles -->
+	<tr role="row" data-empty class={className}>
 		<td role="gridcell" colspan={columnCount} aria-disabled="true">
 			{#if children}
 				{@render children()}

@@ -82,6 +82,7 @@ export type TableContext = {
 	getColumnIndexByToken: (token: string) => number;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
+	getHeaderRowCount: () => number;
 	getBodyRowCount: () => number;
 	isRowSelected: (id: TableSelectionKey | undefined) => boolean;
 	isRowFocused: (token: string) => boolean;
@@ -152,13 +153,30 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const bodyRowOrder: string[] = [];
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
+	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
+		header: null,
+		body: null
+	};
+	let navigableCellsCache:
+		| Array<{ cell: TableCellRegistration; coord: TableGridCoord }>
+		| null = null;
+	let rowsWithCellsCache:
+		| Map<number, { col: number; key: string; element: HTMLElement }[]>
+		| null = null;
 
 	const layoutVersion = writable(0);
 	const selectionVersion = writable(0);
 	const focusVersion = writable(0);
 	const sortVersion = writable(0);
 
+	function invalidateLayoutCaches() {
+		orderedRowTokensCache = { header: null, body: null };
+		navigableCellsCache = null;
+		rowsWithCellsCache = null;
+	}
+
 	function notifyLayout() {
+		invalidateLayoutCaches();
 		layoutVersion.update((value) => value + 1);
 	}
 
@@ -171,12 +189,50 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function notifySort() {
+		invalidateLayoutCaches();
 		sortVersion.update((value) => value + 1);
 	}
 
+	function sameColumnRegistration(
+		left: TableColumnRegistration,
+		right: TableColumnRegistration
+	) {
+		return (
+			left.token === right.token &&
+			left.id === right.id &&
+			left.allowsSorting === right.allowsSorting &&
+			left.isRowHeader === right.isRowHeader &&
+			left.textValue === right.textValue
+		);
+	}
+
+	function sameRowRegistration(left: TableRowRegistration, right: TableRowRegistration) {
+		return (
+			left.token === right.token &&
+			left.section === right.section &&
+			left.id === right.id &&
+			left.disabled === right.disabled &&
+			left.element === right.element
+		);
+	}
+
+	function sameCellRegistration(left: TableCellRegistration, right: TableCellRegistration) {
+		return (
+			left.key === right.key &&
+			left.rowToken === right.rowToken &&
+			left.section === right.section &&
+			left.columnIndex === right.columnIndex &&
+			left.columnToken === right.columnToken &&
+			left.element === right.element
+		);
+	}
+
 	function registerColumn(column: TableColumnRegistration) {
+		const existing = columns.get(column.token);
+		const alreadyOrdered = columnOrder.includes(column.token);
+		if (existing && sameColumnRegistration(existing, column) && alreadyOrdered) return;
 		columns.set(column.token, column);
-		if (!columnOrder.includes(column.token)) {
+		if (!alreadyOrdered) {
 			columnOrder.push(column.token);
 		}
 		notifyLayout();
@@ -205,11 +261,28 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function registerRow(row: TableRowRegistration) {
-		rows.set(row.token, row);
-		const order =
+		const existing = rows.get(row.token);
+		const targetOrder =
 			row.section === 'header' ? headerRowOrder : row.section === 'body' ? bodyRowOrder : null;
-		if (order && !order.includes(row.token)) {
-			order.push(row.token);
+		const alreadyOrdered = targetOrder ? targetOrder.includes(row.token) : false;
+		const wasInHeader = headerRowOrder.includes(row.token);
+		const wasInBody = bodyRowOrder.includes(row.token);
+		if (
+			existing &&
+			sameRowRegistration(existing, row) &&
+			(targetOrder ? alreadyOrdered : !wasInHeader && !wasInBody)
+		) {
+			return;
+		}
+		if (wasInHeader) {
+			headerRowOrder.splice(headerRowOrder.indexOf(row.token), 1);
+		}
+		if (wasInBody) {
+			bodyRowOrder.splice(bodyRowOrder.indexOf(row.token), 1);
+		}
+		rows.set(row.token, row);
+		if (targetOrder && !targetOrder.includes(row.token)) {
+			targetOrder.push(row.token);
 		}
 		notifyLayout();
 	}
@@ -242,6 +315,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return getOrderedRowTokens('body').length;
 	}
 
+	function getHeaderRowCount() {
+		return getOrderedRowTokens('header').length;
+	}
+
 	function compareRowsByDocumentOrder(leftToken: string, rightToken: string, fallback: string[]) {
 		const leftIndex = fallback.indexOf(leftToken);
 		const rightIndex = fallback.indexOf(rightToken);
@@ -259,10 +336,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getOrderedRowTokens(section: 'header' | 'body') {
+		const cached = orderedRowTokensCache[section];
+		if (cached) return cached;
 		const fallback = section === 'header' ? headerRowOrder : bodyRowOrder;
-		return [...fallback].sort((leftToken, rightToken) =>
+		const sorted = [...fallback].sort((leftToken, rightToken) =>
 			compareRowsByDocumentOrder(leftToken, rightToken, fallback)
 		);
+		orderedRowTokensCache[section] = sorted;
+		return sorted;
 	}
 
 	function getOrderedSelectableRowIds() {
@@ -293,8 +374,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function registerCell(cell: TableCellRegistration) {
+		const existing = cells.get(cell.key);
+		const alreadyOrdered = cellOrder.includes(cell.key);
+		if (existing && sameCellRegistration(existing, cell) && alreadyOrdered) return;
 		cells.set(cell.key, cell);
-		if (!cellOrder.includes(cell.key)) {
+		if (!alreadyOrdered) {
 			cellOrder.push(cell.key);
 		}
 		notifyLayout();
@@ -317,11 +401,33 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return focusedCellKey === key;
 	}
 
+	function getDefaultFocusKey() {
+		for (const rowToken of getOrderedRowTokens('header')) {
+			const headerCells = Array.from(cells.values())
+				.filter((cell) => cell.section === 'header' && cell.rowToken === rowToken)
+				.sort((left, right) => getColumnIndex(left) - getColumnIndex(right));
+			const firstHeaderCell = headerCells[0]?.key;
+			if (firstHeaderCell) return firstHeaderCell;
+		}
+
+		for (const rowToken of getOrderedRowTokens('body')) {
+			const row = rows.get(rowToken);
+			if (isRowDisabled(row?.id, row?.disabled)) continue;
+			const bodyCells = Array.from(cells.values())
+				.filter((cell) => cell.section === 'body' && cell.rowToken === rowToken)
+				.sort((left, right) => (left.columnIndex ?? -1) - (right.columnIndex ?? -1));
+			const firstBodyCell = bodyCells[0]?.key;
+			if (firstBodyCell) return firstBodyCell;
+		}
+
+		return null;
+	}
+
 	function isCellTabStop(key: string) {
 		if (focusedCellKey) {
 			return focusedCellKey === key;
 		}
-		return cellOrder[0] === key;
+		return getDefaultFocusKey() === key;
 	}
 
 	function getGlobalRowIndex(rowToken: string) {
@@ -349,14 +455,27 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getNavigableCells() {
-		return Array.from(cells.values())
+		if (navigableCellsCache) return navigableCellsCache;
+		navigableCellsCache = Array.from(cells.values())
 			.map((cell) => ({ cell, coord: getCellCoord(cell) }))
 			.filter((entry): entry is { cell: TableCellRegistration; coord: TableGridCoord } =>
-				Boolean(entry.coord && entry.cell.element)
+				Boolean(
+					entry.coord &&
+					entry.cell.element &&
+					(entry.cell.section !== 'body' ||
+						!isRowDisabled(rows.get(entry.cell.rowToken)?.id, rows.get(entry.cell.rowToken)?.disabled))
+				)
+			)
+			.sort((left, right) =>
+				left.coord.row === right.coord.row
+					? left.coord.col - right.coord.col
+					: left.coord.row - right.coord.row
 			);
+		return navigableCellsCache;
 	}
 
 	function getRowsWithCells() {
+		if (rowsWithCellsCache) return rowsWithCellsCache;
 		const rowsByIndex = new Map<number, { col: number; key: string; element: HTMLElement }[]>();
 		for (const { cell, coord } of getNavigableCells()) {
 			const rowCells = rowsByIndex.get(coord.row) ?? [];
@@ -366,7 +485,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		for (const rowCells of rowsByIndex.values()) {
 			rowCells.sort((a, b) => a.col - b.col);
 		}
-		return rowsByIndex;
+		rowsWithCellsCache = rowsByIndex;
+		return rowsWithCellsCache;
 	}
 
 	function getClosestCellKey(rowIndex: number, preferredCol: number) {
@@ -383,6 +503,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (!key) return;
 		const cell = cells.get(key);
 		if (!cell?.element) return;
+		if (
+			cell.section === 'body' &&
+			isRowDisabled(rows.get(cell.rowToken)?.id, rows.get(cell.rowToken)?.disabled)
+		) {
+			return;
+		}
 		focusedCellKey = key;
 		notifyFocus();
 		cell.element.focus();
@@ -735,6 +861,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getColumnIndexByToken,
 		registerRow,
 		unregisterRow,
+		getHeaderRowCount,
 		getBodyRowCount,
 		isRowSelected,
 		isRowFocused,

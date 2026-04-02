@@ -11,10 +11,14 @@
 	const users = [
 		{ id: 'danilo', email: 'danilo@example.com', group: 'Developer' },
 		{ id: 'zahra', email: 'zahra@example.com', group: 'Admin' },
-		{ id: 'jasper', email: 'jasper@example.com', group: 'Developer' }
+		{ id: 'jasper', email: 'jasper@example.com', group: 'Developer' },
+		{ id: 'marta', email: 'marta@example.com', group: 'Support' },
+		{ id: 'nora', email: 'nora@example.com', group: 'Finance' },
+		{ id: 'liam', email: 'liam@example.com', group: 'Ops' }
 	];
+	const disabledUserIds = ['zahra', 'nora'];
 
-	let selectedKeys = $state<Set<TableSelectionKey>>(new Set(['zahra']));
+	let selectedKeys = $state<Set<TableSelectionKey>>(new Set(['danilo']));
 	let selectionMode = $state<TableSelectionMode>('multiple');
 	let selectionBehavior = $state<TableSelectionBehavior>('toggle');
 	let sortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
@@ -32,11 +36,6 @@
 		if (sortDescriptor && !sortableColumns.includes(sortDescriptor.column)) {
 			sortDescriptor = undefined;
 		}
-	});
-
-	$effect(() => {
-		if (selectionMode !== 'single' || selectedKeys.size <= 1) return;
-		selectedKeys = new Set([selectedKeys.values().next().value as TableSelectionKey]);
 	});
 
 	const sortedUsers = $derived.by(() => {
@@ -63,7 +62,7 @@
 		<div class="space-y-8">
 			<DemoSection
 				title="Interactive Table"
-				description="Use arrow keys to move between cells, Space to select rows, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down."
+				description="Use arrow keys to move between cells, Space to select rows, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down. Switching to none clears selection internally, while text selection and copy stay browser-native in v1."
 			>
 				<div
 					class="overflow-x-auto rounded-xl border border-gray-300 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
@@ -72,6 +71,7 @@
 						aria-label="Users table"
 						{selectionMode}
 						{selectionBehavior}
+						disabledKeys={disabledUserIds}
 						bind:selectedKeys
 						bind:sortDescriptor
 						class="min-w-full border-collapse text-left"
@@ -84,7 +84,7 @@
 									allowsSorting={sortableColumns.includes('email')}
 								>
 									<Table.ColumnHeaderCell
-										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:cursor-pointer data-[sortable=true]:select-none data-focus-visible:ring-2 data-focus-visible:ring-blue-500 dark:text-white"
+										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-focus-visible:ring-2 data-focus-visible:ring-blue-500 dark:text-white"
 										data-sortable={sortableColumns.includes('email') ? 'true' : undefined}
 									>
 										Email
@@ -92,7 +92,7 @@
 								</Table.Column>
 								<Table.Column id="group" allowsSorting={sortableColumns.includes('group')}>
 									<Table.ColumnHeaderCell
-										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:cursor-pointer data-[sortable=true]:select-none data-focus-visible:ring-2 data-focus-visible:ring-blue-500 dark:text-white"
+										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-focus-visible:ring-2 data-focus-visible:ring-blue-500 dark:text-white"
 										data-sortable={sortableColumns.includes('group') ? 'true' : undefined}
 									>
 										Group
@@ -104,15 +104,15 @@
 							{#each sortedUsers as user (user.id)}
 								<Table.Row
 									id={user.id}
-									class="border-b border-gray-100 data-selected:bg-blue-50 dark:border-gray-800 dark:data-selected:bg-blue-950/40"
+									class="border-b border-gray-100 data-selected:bg-blue-50 data-disabled:bg-gray-100/80 data-disabled:text-gray-400 data-disabled:opacity-70 dark:border-gray-800 dark:data-selected:bg-blue-950/40 dark:data-disabled:bg-gray-800/70 dark:data-disabled:text-gray-500"
 								>
 									<Table.Cell
-										class="px-3 py-2 text-sm font-normal text-gray-900 outline-none data-focus-visible:ring-2 data-focus-visible:ring-inset data-focus-visible:ring-blue-500 dark:text-white"
+										class="px-3 py-2 text-sm font-normal text-gray-900 outline-none data-focus-visible:ring-2 data-focus-visible:ring-inset data-focus-visible:ring-blue-500 data-disabled:line-through data-disabled:decoration-gray-400 dark:text-white dark:data-disabled:decoration-gray-600"
 									>
 										{user.email}
 									</Table.Cell>
 									<Table.Cell
-										class="px-3 py-2 text-sm font-normal text-gray-600 outline-none data-focus-visible:ring-2 data-focus-visible:ring-inset data-focus-visible:ring-blue-500 dark:text-gray-300"
+										class="px-3 py-2 text-sm font-normal text-gray-600 outline-none data-focus-visible:ring-2 data-focus-visible:ring-inset data-focus-visible:ring-blue-500 data-disabled:italic dark:text-gray-300"
 									>
 										{user.group}
 									</Table.Cell>
@@ -252,7 +252,7 @@
 					</div>
 					<div class="flex items-center gap-2">
 						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">← ↑ ↓ →</kbd><span
-							>Move between header and body cells</span
+							>Move between header and enabled body cells</span
 						>
 					</div>
 					<div class="flex items-center gap-2">
@@ -268,6 +268,29 @@
 						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Shift + ↑/↓</kbd
 						><span>Extend row selection in `replace` mode</span>
 					</div>
+				</div>
+			</DemoSection>
+
+			<DemoSection
+				title="Behavior Notes"
+				description="Current v1 interaction constraints that are intentional."
+			>
+				<div class="grid gap-3 text-sm text-gray-700 dark:text-gray-300">
+					<p>
+						`selectionMode="none"` clears any existing row selection internally.
+					</p>
+					<p>
+						`defaultSelectedKeys` and `defaultSortDescriptor` set uncontrolled initial state only.
+					</p>
+					<p>
+						Text selection and `Ctrl+C` remain browser-native; `Table` does not implement custom copy behavior in v1.
+					</p>
+					<p>
+						In `replace` mode, leaving the table clears focus state but keeps the current selection.
+					</p>
+					<p>
+						Disabled rows stay visible but are skipped by keyboard focus and navigation.
+					</p>
 				</div>
 			</DemoSection>
 		</div>

@@ -12,7 +12,7 @@
 	setTableSectionContext({ section: 'footer' });
 </script>
 
-<tfoot class={className} data-table-footer {...restProps}>
+<tfoot role="none" class={className} data-table-footer {...restProps}>
 	{#if children}
 		{@render children()}
 	{/if}

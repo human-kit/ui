@@ -147,7 +147,6 @@
 	data-sortable={column.allowsSorting || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
-	style={isFocusVisible ? undefined : 'outline: none;'}
 	onfocus={handleFocus}
 	onclick={handleClick}
 	onmousedown={handleMouseDown}

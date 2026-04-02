@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import TableTest from './table-test.svelte';
@@ -25,6 +25,40 @@ describe('Table.Root', () => {
 		expect(document.querySelector('thead')).toBeTruthy();
 		expect(document.querySelector('tbody')).toBeTruthy();
 		expect(document.querySelector('tfoot')).toBeTruthy();
+	});
+
+	it('exposes aria row and column counts on the grid', async () => {
+		const screen = render(TableTest);
+		const grid = screen.getByRole('grid');
+
+		await expect.element(grid).toHaveAttribute('aria-colcount', '2');
+		await expect.element(grid).toHaveAttribute('aria-rowcount', '4');
+	});
+
+	it('excludes footer cells from grid semantics', async () => {
+		render(TableTest);
+
+		expect(document.querySelector('tfoot')?.getAttribute('role')).toBe('none');
+		for (const cell of document.querySelectorAll('tfoot td, tfoot th')) {
+			expect(cell.getAttribute('role')).toBeNull();
+		}
+	});
+
+	it('warns in dev when the grid has no accessible name', async () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+		try {
+			render(TableTest, {
+				ariaLabel: '',
+				ariaLabelledby: undefined
+			});
+
+			await expect.poll(() => warnSpy.mock.calls).toContainEqual([
+				'[Table.Root]: Provide either "aria-label" or "aria-labelledby" so the grid has an accessible name.'
+			]);
+		} finally {
+			warnSpy.mockRestore();
+		}
 	});
 
 	it('makes the first header cell the initial tab stop', async () => {
@@ -55,6 +89,33 @@ describe('Table.Root', () => {
 		await userEvent.keyboard('{ArrowDown}');
 
 		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('danilo@example.com');
+	});
+
+	it('moves to row boundaries with Home and End', async () => {
+		render(TableTest);
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+
+		await userEvent.keyboard('{Home}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('danilo@example.com');
+
+		await userEvent.keyboard('{End}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+	});
+
+	it('moves to grid boundaries with Ctrl+Home and Ctrl+End', async () => {
+		render(TableTest);
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{Control>}{End}{/Control}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+
+		await userEvent.keyboard('{Control>}{Home}{/Control}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Email');
 	});
 
 	it('selects a body row with keyboard', async () => {
@@ -103,6 +164,21 @@ describe('Table.Root', () => {
 			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
 			.toBe('[]');
 		expect(document.querySelector('tbody tr[data-selected="true"]')).toBeNull();
+	});
+
+	it('collapses selection to one row when selectionMode changes to single', async () => {
+		const screen = render(TableTest, {
+			selectionMode: 'multiple',
+			initialSelectedKeys: ['danilo', 'zahra'],
+			showSingleSelectionModeToggle: true
+		});
+
+		await screen.getByTestId('set-selection-mode-single').click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+		expect(document.querySelectorAll('tbody tr[data-selected="true"]')).toHaveLength(1);
 	});
 
 	it('keeps an already selected row selected when selectionBehavior is replace', async () => {
@@ -284,6 +360,28 @@ describe('Table.Root', () => {
 			.toBe('group:descending');
 	});
 
+	it('cycles keyboard sorting between ascending and descending without a clear state', async () => {
+		render(TableTest);
+		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
+		const [, groupHeader] = getHeaderCells(grid);
+
+		groupHeader.focus();
+		await userEvent.keyboard('{Enter}');
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:ascending');
+
+		await userEvent.keyboard('{Enter}');
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:descending');
+
+		await userEvent.keyboard('{Enter}');
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:ascending');
+	});
+
 	it('keeps vertical navigation aligned with DOM order after sorting', async () => {
 		render(TableTest);
 		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
@@ -310,6 +408,7 @@ describe('Table.Root', () => {
 		render(TableTest, { rows: [] });
 		const emptyCell = document.querySelector<HTMLElement>('tbody td[aria-disabled="true"]');
 		expect(emptyCell?.textContent).toContain('No users found.');
+		expect(document.querySelector('tbody tr[data-empty]')?.getAttribute('role')).toBe('row');
 	});
 
 	it('does not render the empty state alongside body rows', async () => {
@@ -331,6 +430,50 @@ describe('Table.Root', () => {
 		expect(document.querySelectorAll('tbody tr')[1]?.getAttribute('data-disabled')).toBe('true');
 	});
 
+	it('does not make disabled body cells focusable', async () => {
+		render(TableTest, {
+			disabledKeys: ['zahra']
+		});
+
+		const disabledRowCells = Array.from(document.querySelectorAll<HTMLElement>('tbody tr')[1].children);
+		for (const cell of disabledRowCells) {
+			expect(cell.getAttribute('tabindex')).toBeNull();
+		}
+	});
+
+	it('marks disabled body cells with aria-disabled', async () => {
+		render(TableTest, {
+			disabledKeys: ['zahra']
+		});
+
+		const disabledRowCells = Array.from(document.querySelectorAll<HTMLElement>('tbody tr')[1].children);
+
+		expect(disabledRowCells).toHaveLength(2);
+		for (const cell of disabledRowCells) {
+			expect(cell.getAttribute('aria-disabled')).toBe('true');
+		}
+	});
+
+	it('skips disabled rows when arrow-navigating in replace mode', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'replace',
+			disabledKeys: ['zahra']
+		});
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+
+		await userEvent.click(firstBodyCell);
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+
+		await userEvent.keyboard('{ArrowDown}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('jasper@example.com');
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["jasper"]');
+	});
+
 	it('does not serialize false focus attributes during keyboard navigation', async () => {
 		const screen = render(TableTest);
 		const grid = screen.getByRole('grid').element() as HTMLElement;
@@ -341,6 +484,18 @@ describe('Table.Root', () => {
 		await userEvent.keyboard('{ArrowRight}');
 
 		expectNoFalseFocusAttributes(grid);
+	});
+
+	it('does not inject inline outline styles into cells or header cells', async () => {
+		render(TableTest);
+		const headerCell = document.querySelector<HTMLElement>('thead [role="columnheader"]')!;
+		const bodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		headerCell.focus();
+		bodyCell.focus();
+
+		expect(headerCell.getAttribute('style')).toBeNull();
+		expect(bodyCell.getAttribute('style')).toBeNull();
 	});
 
 	it('shows focus-visible only for keyboard navigation, not pointer clicks', async () => {
@@ -358,9 +513,25 @@ describe('Table.Root', () => {
 		expect(secondBodyCell.getAttribute('data-focus-visible')).toBe('true');
 	});
 
+	it('marks focused rows with focus-within semantics instead of row-focused semantics', async () => {
+		render(TableTest);
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+		const firstRow = document.querySelector<HTMLElement>('tbody tr')!;
+
+		firstBodyCell.focus();
+
+		await expect.poll(() => firstRow.getAttribute('data-focus-within')).toBe('true');
+		expect(firstRow.getAttribute('data-focused')).toBeNull();
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => firstRow.getAttribute('data-focus-visible-within')).toBe('true');
+		expect(firstRow.getAttribute('data-focus-visible')).toBeNull();
+	});
+
 	it('clears focused cell state when focus leaves the table', async () => {
 		render(TableTest);
 		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+		const firstRow = document.querySelector<HTMLElement>('tbody tr')!;
 		const outsideButton = document.createElement('button');
 		outsideButton.textContent = 'Outside';
 		document.body.appendChild(outsideButton);
@@ -368,10 +539,12 @@ describe('Table.Root', () => {
 		try {
 			firstBodyCell.focus();
 			await expect.poll(() => firstBodyCell.getAttribute('data-focused')).toBe('true');
+			await expect.poll(() => firstRow.getAttribute('data-focus-within')).toBe('true');
 
 			outsideButton.focus();
 
 			await expect.poll(() => firstBodyCell.getAttribute('data-focused')).toBeNull();
+			await expect.poll(() => firstRow.getAttribute('data-focus-within')).toBeNull();
 		} finally {
 			outsideButton.remove();
 		}

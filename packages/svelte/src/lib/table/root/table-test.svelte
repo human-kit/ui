@@ -21,22 +21,28 @@
 
 	type TableTestProps = {
 		rows?: DemoRow[];
+		ariaLabel?: string;
+		ariaLabelledby?: string;
 		selectionMode?: TableSelectionMode;
 		selectionBehavior?: TableSelectionBehavior;
 		disabledKeys?: Iterable<TableSelectionKey>;
 		initialSelectedKeys?: Iterable<TableSelectionKey>;
 		initialSortDescriptor?: TableSortDescriptor;
 		showSelectionModeToggle?: boolean;
+		showSingleSelectionModeToggle?: boolean;
 	};
 
 	let {
 		rows = defaultRows,
+		ariaLabel = 'Users table',
+		ariaLabelledby,
 		selectionMode = 'multiple',
 		selectionBehavior = 'toggle',
 		disabledKeys,
 		initialSelectedKeys,
 		initialSortDescriptor,
-		showSelectionModeToggle = false
+		showSelectionModeToggle = false,
+		showSingleSelectionModeToggle = false
 	}: TableTestProps = $props();
 
 	let currentSelectionMode = $state((() => selectionMode)());
@@ -65,7 +71,8 @@
 </script>
 
 <Table.Root
-	aria-label="Users table"
+	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledby}
 	selectionMode={currentSelectionMode}
 	{selectionBehavior}
 	bind:selectedKeys={currentSelectedKeys}
@@ -112,6 +119,16 @@
 		onclick={() => (currentSelectionMode = 'none')}
 	>
 		Selection none
+	</button>
+{/if}
+
+{#if showSingleSelectionModeToggle}
+	<button
+		type="button"
+		data-testid="set-selection-mode-single"
+		onclick={() => (currentSelectionMode = 'single')}
+	>
+		Selection single
 	</button>
 {/if}
 

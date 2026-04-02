@@ -6,8 +6,68 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 
 ## Backlog
 
+### Bugs / Correctness
+
+- [x] [M][P0][Area: Correctness][Owner: Unassigned][Target: Done] Deduplicate sync registration calls — `syncXxxRegistration()` runs both synchronously at mount and inside `$effect`, causing a redundant `notifyLayout()` per part on initial render (Column, Row, Cell, ColumnHeaderCell).
+- [ ] [S][P0][Area: Correctness][Owner: Unassigned][Target: TBD] Make `cellIndex` in `Table.Cell` reactive — currently captured once via `row.registerCellToken(key)` and never updated if cells are dynamically reordered within a row.
+- [ ] [C][P1][Area: Correctness][Owner: Unassigned][Target: TBD] Evaluate module-level monotonic counters (`columnInstanceId`, `rowInstanceId`, etc.) for SSR and test determinism — tokens grow indefinitely across renders and never reset.
+
+### Behavior
+
+- [x] [M][P1][Area: Behavior][Owner: Unassigned][Target: Done] Align row focus state semantics — current row-level `data-focused` behaves more like `focus-within`; either rename/expose a distinct `data-focus-within` contract or implement true row focus semantics.
+- [x] [M][P1][Area: Behavior][Owner: Unassigned][Target: Done] Define and document the text-selection policy when row selection is enabled — keep browser-native behavior or add an explicit opt-in/opt-out API instead of ad hoc styling in examples.
+- [x] [S][P2][Area: Behavior][Owner: Unassigned][Target: Done] Verify that changing `selectionMode` between `multiple`, `single`, and `none` preserves the intended normalization rules in all controlled and uncontrolled flows.
+
+### Accessibility
+
+- [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Enforce accessible name on `Table.Root` — warn in dev when neither `aria-label` nor `aria-labelledby` is provided (WCAG 4.1.2).
+- [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Add `aria-disabled` to focusable body cells inside disabled rows — currently only the `<tr>` carries `aria-disabled`, leaving screen readers unaware at the cell level.
 - [ ] [M][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Validate screen reader announcements for `rowheader`, `columnheader`, and `aria-sort` across NVDA and VoiceOver.
+- [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Resolve footer grid semantics — footer cells live inside `role="grid"` but are unreachable by keyboard; either include footer in navigation or mark `<tfoot>` with `role="none"` to exclude it from the grid.
+- [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Add `aria-rowcount` and `aria-colcount` to the grid element for screen reader dimension announcements.
+- [ ] [S][P2][Area: Accessibility][Owner: Unassigned][Target: TBD] Add an `aria-live="polite"` visually-hidden region to announce sort changes (NVDA/JAWS do not always announce `aria-sort` updates).
+- [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Add explicit `role="row"` to the `Table.EmptyState` `<tr>` for strict ARIA parent-child validation (`gridcell` requires `row` parent).
+
+### Performance
+
+- [x] [M][P1][Area: Performance][Owner: Unassigned][Target: Done] Cache `getOrderedRowTokens` result and invalidate on `notifyLayout` — currently re-sorts with `compareDocumentPosition` on every focus move, selection, and row count query.
+- [x] [M][P2][Area: Performance][Owner: Unassigned][Target: Done] Cache `getNavigableCells()` / `getRowsWithCells()` and invalidate on layout changes — currently reconstructs full cell map on every `moveFocus` call.
+- [ ] [S][P2][Area: Performance][Owner: Unassigned][Target: TBD] Migrate version stores from `writable` (svelte/store) to `$state` runes for idiomatic Svelte 5 reactivity and potential batching improvements.
+
+### DX
+
+- [x] [M][P1][Area: DX][Owner: Unassigned][Target: Done] Break the controlled `selectedKeys` feedback loop — the `$effect` that syncs `selectedKeys` to `ctx.setSelection` also fires after internal selection changes via `onSelectionChange`, causing a redundant `notifySelection`.
+- [x] [S][P2][Area: DX][Owner: Unassigned][Target: Done] Remove inline `style="outline: none;"` from Cell and ColumnHeaderCell — it overrides consumer inline styles; let consumers handle focus-visible styling via `data-focus-visible` / `data-focused` attributes instead.
+- [x] [S][P2][Area: DX][Owner: Unassigned][Target: Done] Document `defaultSelectedKeys` and `defaultSortDescriptor` props in the README and docs page.
+- [ ] [C][P2][Area: DX][Owner: Unassigned][Target: TBD] Export component prop types (`TableRootProps`, `TableRowProps`, `TableCellProps`, etc.) so consumers can type wrapper components.
+- [ ] [C][P2][Area: DX][Owner: Unassigned][Target: TBD] Evaluate whether exposing `context` as a `$bindable` prop on `Table.Root` is necessary or if a narrower public API would be safer.
+- [ ] [C][P3][Area: DX][Owner: Unassigned][Target: TBD] Extract a shared registration helper to eliminate the duplicated sync-then-effect pattern across Column, Row, Cell, and ColumnHeaderCell.
+
+### UX
+
+- [x] [S][P2][Area: UX][Owner: Unassigned][Target: Done] Document the intentional behavior that clicking outside the table does not clear selection in `replace` mode.
+- [ ] [C][P3][Area: UX][Owner: Unassigned][Target: TBD] Consider exposing `cursor` guidance via data attributes so sortable headers get `cursor: pointer` and non-sortable headers get `cursor: default` without custom CSS.
+
+### API Design
+
 - [ ] [M][P1][Area: API][Owner: Unassigned][Target: TBD] Decide whether controlled clearing of `sortDescriptor` should accept `undefined` explicitly or require an additional API.
-- [ ] [S][P2][Area: Behavior][Owner: Unassigned][Target: TBD] Confirm whether disabled body rows should remain keyboard-focusable or be skipped by navigation.
+- [x] [S][P2][Area: Behavior][Owner: Unassigned][Target: Done] Confirm whether disabled body rows should remain keyboard-focusable or be skipped by navigation.
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether `Table.Column` should hard-enforce a single `Table.ColumnHeaderCell` child.
+- [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether clipboard-related behavior should remain fully browser-native in v1 or be deferred behind a future explicit cell-selection model.
+
+### Tests
+
+- [x] [M][P1][Area: Tests][Owner: Unassigned][Target: Done] Add tests for `Home`, `End`, `Ctrl+Home`, and `Ctrl+End` keyboard navigation.
+- [x] [S][P2][Area: Tests][Owner: Unassigned][Target: Done] Add test for full sort cycle via keyboard (ascending → descending) and verify no way to clear sort with keyboard is intentional.
+- [x] [S][P2][Area: Tests][Owner: Unassigned][Target: Done] Add test verifying disabled rows are not selected when arrow-navigated in `replace` mode.
+- [x] [S][P2][Area: Tests][Owner: Unassigned][Target: Done] Add tests covering `selectionMode` transitions after mount, including collapsing multiple selections to one on `single`.
+
+### Docs
+
 - [ ] [C][P2][Area: Docs][Owner: Unassigned][Target: TBD] Add richer styling examples and sorting guidance to the docs page.
+- [x] [C][P3][Area: Docs][Owner: Unassigned][Target: Done] Document that `Table.Column` is a logical-only wrapper (no DOM output) prominently in the README anatomy section.
+- [x] [S][P2][Area: Docs][Owner: Unassigned][Target: Done] Document `selectionMode="none"` normalization behavior and clarify that selection is cleared internally when selection is disabled.
+
+### Code Quality
+
+- [ ] [C][P3][Area: Code Quality][Owner: Unassigned][Target: TBD] Remove unused keyboard/click handlers from `Table.Cell` when rendering in footer scope — currently handlers are bound but short-circuit via guards.

@@ -111,8 +111,8 @@
 <tr
 	bind:this={rowElement}
 	class={className}
-	data-focused={isFocused ? 'true' : undefined}
-	data-focus-visible={isFocusVisible ? 'true' : undefined}
+	data-focus-within={isFocused ? 'true' : undefined}
+	data-focus-visible-within={isFocusVisible ? 'true' : undefined}
 	data-selected={isSelected ? 'true' : undefined}
 	data-disabled={isAriaDisabled || undefined}
 	aria-selected={section.section === 'body' && table.selectionMode !== 'none'

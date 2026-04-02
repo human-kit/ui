@@ -1,3 +1,15 @@
+<script module lang="ts">
+	let warnedMissingAccessibleName = false;
+
+	function warnMissingAccessibleName() {
+		if (!import.meta.env.DEV || warnedMissingAccessibleName) return;
+		warnedMissingAccessibleName = true;
+		console.warn(
+			'[Table.Root]: Provide either "aria-label" or "aria-labelledby" so the grid has an accessible name.'
+		);
+	}
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -38,6 +50,8 @@
 		defaultSelectedKeys,
 		sortDescriptor = $bindable(),
 		defaultSortDescriptor,
+		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledby,
 		disabledKeys,
 		onSelectionChange,
 		onSortChange,
@@ -51,10 +65,7 @@
 	let tableElement = $state<HTMLTableElement | undefined>(undefined);
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
-
-	function parseSelection(keys: Iterable<TableSelectionKey> | undefined) {
-		return new Set<TableSelectionKey>(keys ?? []);
-	}
+	let pendingControlledSelection = $state<Set<TableSelectionKey> | null>(null);
 
 	const ctx = setTableContext(
 		createTableContext({
@@ -64,6 +75,7 @@
 			initialSortDescriptor: (() => sortDescriptor ?? defaultSortDescriptor)(),
 			disabledKeys: (() => disabledKeys)(),
 			onSelectionChange: (keys) => {
+				pendingControlledSelection = new Set(keys);
 				selectedKeys = new Set(keys);
 				onSelectionChange?.(new Set(keys));
 			},
@@ -73,6 +85,33 @@
 			}
 		})
 	);
+
+	function parseSelection(keys: Iterable<TableSelectionKey> | undefined) {
+		return new Set<TableSelectionKey>(keys ?? []);
+	}
+
+	function hasSameSelection(
+		left: Set<TableSelectionKey>,
+		right: Set<TableSelectionKey>
+	) {
+		if (left.size !== right.size) return false;
+		for (const key of left) {
+			if (!right.has(key)) return false;
+		}
+		return true;
+	}
+
+	const layoutVersion = ctx.layoutVersion;
+	const ariaColCount = $derived.by(() => {
+		void $layoutVersion;
+		const columnCount = ctx.getColumnCount();
+		return columnCount > 0 ? columnCount : undefined;
+	});
+	const ariaRowCount = $derived.by(() => {
+		void $layoutVersion;
+		const rowCount = ctx.getHeaderRowCount() + ctx.getBodyRowCount();
+		return rowCount > 0 ? rowCount : undefined;
+	});
 
 	context = ctx;
 
@@ -94,7 +133,13 @@
 
 	$effect(() => {
 		if (selectedKeys !== undefined) {
-			ctx.setSelection(parseSelection(selectedKeys));
+			const nextSelection = parseSelection(selectedKeys);
+			if (pendingControlledSelection && hasSameSelection(pendingControlledSelection, nextSelection)) {
+				pendingControlledSelection = null;
+				return;
+			}
+			pendingControlledSelection = null;
+			ctx.setSelection(nextSelection);
 		}
 	});
 
@@ -103,6 +148,14 @@
 			ctx.setSortDescriptor(sortDescriptor);
 		}
 	});
+
+	if (import.meta.env.DEV) {
+		$effect(() => {
+			if (!ariaLabel && !ariaLabelledby) {
+				warnMissingAccessibleName();
+			}
+		});
+	}
 
 	function syncFocusWithin() {
 		focusWithin =
@@ -139,6 +192,10 @@
 	bind:this={tableElement}
 	role="grid"
 	class={className}
+	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledby}
+	aria-colcount={ariaColCount}
+	aria-rowcount={ariaRowCount}
 	aria-multiselectable={selectionMode === 'multiple' ? true : undefined}
 	data-selection-mode={selectionMode}
 	data-selection-behavior={selectionBehavior}
