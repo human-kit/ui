@@ -57,6 +57,12 @@
 			>
 				Dialog
 			</a>
+			<a
+				href={resolve('/docs/table')}
+				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
+			>
+				Table
+			</a>
 		</nav>
 	</div>
 </main>

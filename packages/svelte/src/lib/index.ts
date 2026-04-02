@@ -9,6 +9,7 @@ export { TimePicker } from './timepicker/index.ts';
 export { Dialog } from './dialog/index.ts';
 export { ListBox } from './listbox/index.ts';
 export { Popover } from './popover/index.ts';
+export { Table } from './table/index.ts';
 
 // Simple components
 export { default as Input } from './input/index.ts';
@@ -27,6 +28,7 @@ export * from './timepicker/index.ts';
 export * from './dialog/index.ts';
 export * from './listbox/index.ts';
 export * from './popover/index.ts';
+export * from './table/index.ts';
 
 // Primitives
 export * from './primitives/index.ts';
