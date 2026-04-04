@@ -18,6 +18,12 @@
 			<Table.Column id="group" allowsSorting>
 				<Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
 			</Table.Column>
+			<Table.Column id="size" allowsResizing minWidth={120}>
+				<Table.ColumnHeaderCell>
+					Size
+					<Table.ColumnResizer />
+				</Table.ColumnHeaderCell>
+			</Table.Column>
 		</Table.Row>
 	</Table.Header>
 
@@ -46,6 +52,7 @@
 - `Table.Footer`
 - `Table.Row`
 - `Table.ColumnHeaderCell`
+- `Table.ColumnResizer`
 - `Table.Cell`
 
 ## Usage guidelines
@@ -54,11 +61,14 @@
 - Use `selectionBehavior="toggle"` to allow deselecting an already selected row, or `selectionBehavior="replace"` to keep selected rows selected when pressed again.
 - `Table.Column` is a logical-only wrapper for column metadata; it does not render DOM by itself and should wrap a single `Table.ColumnHeaderCell`.
 - Wrap each header cell in `Table.Column` so the table can register stable column metadata.
+- Add `Table.ColumnResizer` inside `Table.ColumnHeaderCell` to resize the owning `Table.Column`.
 - Provide `aria-label` or `aria-labelledby` on `Table.Root`.
 - Use `selectedKeys` / `onSelectionChange` for controlled row selection.
 - Use `defaultSelectedKeys` for uncontrolled initial row selection.
 - Use `sortDescriptor` / `onSortChange` for controlled sorting state.
 - Use `defaultSortDescriptor` for uncontrolled initial sort state.
+- Use `columnWidths` / `onColumnWidthsChange` for controlled column width state.
+- Use `defaultColumnWidths`, `Table.Column.defaultWidth`, and `Table.Column.width` to seed explicit widths.
 - Setting `sortDescriptor` back to `undefined` clears the controlled sort state, matching React Aria Table semantics.
 - Set `Table.Column.textValue` when the spoken column label should differ from the column id; `Table.Root` uses it for polite sort announcements.
 - Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
@@ -74,3 +84,4 @@
 - First-column body cells become `rowheader` when their associated column has `isRowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
 - Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.
+- Column resize handles are keyboard accessible separators and resize only the `Table.Column` they are composed within.

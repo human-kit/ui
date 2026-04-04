@@ -35,9 +35,14 @@
 		defaultSelectedKeys?: Iterable<TableSelectionKey>;
 		sortDescriptor?: TableSortDescriptor;
 		defaultSortDescriptor?: TableSortDescriptor;
+		columnWidths?: Map<string, number>;
+		defaultColumnWidths?: Iterable<readonly [string, number]>;
 		disabledKeys?: Iterable<TableSelectionKey>;
 		onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 		onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
+		onColumnWidthsChange?: (widths: Map<string, number>) => void;
+		onColumnResizeStart?: (columnId: string) => void;
+		onColumnResizeEnd?: (widths: Map<string, number>) => void;
 		children?: Snippet;
 		class?: string;
 		context?: TableContext;
@@ -51,11 +56,16 @@
 		defaultSelectedKeys,
 		sortDescriptor = $bindable(),
 		defaultSortDescriptor,
+		columnWidths = $bindable(),
+		defaultColumnWidths,
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby,
 		disabledKeys,
 		onSelectionChange,
 		onSortChange,
+		onColumnWidthsChange,
+		onColumnResizeStart,
+		onColumnResizeEnd,
 		children,
 		class: className = '',
 		context = $bindable(),
@@ -67,9 +77,11 @@
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
 	let pendingControlledSelection = $state<Set<TableSelectionKey> | null>(null);
+	let pendingControlledColumnWidths = $state<Map<string, number> | null>(null);
 	let sortAnnouncement = $state('');
 	let hasObservedSortState = $state(false);
 	let hasInitializedSortSync = $state(false);
+	let hasInitializedColumnWidthsSync = $state(false);
 
 	const ctx = setTableContext(
 		createTableContext({
@@ -77,6 +89,7 @@
 			selectionBehavior: (() => selectionBehavior)(),
 			initialSelectedKeys: (() => selectedKeys ?? defaultSelectedKeys)(),
 			initialSortDescriptor: (() => sortDescriptor ?? defaultSortDescriptor)(),
+			initialColumnWidths: (() => columnWidths ?? defaultColumnWidths)(),
 			disabledKeys: (() => disabledKeys)(),
 			onSelectionChange: (keys) => {
 				pendingControlledSelection = new Set(keys);
@@ -86,6 +99,17 @@
 			onSortChange: (descriptor) => {
 				sortDescriptor = descriptor;
 				onSortChange?.(descriptor);
+			},
+			onColumnWidthsChange: (widths) => {
+				pendingControlledColumnWidths = new Map(widths);
+				columnWidths = new Map(widths);
+				onColumnWidthsChange?.(new Map(widths));
+			},
+			onColumnResizeStart: (columnId) => {
+				onColumnResizeStart?.(columnId);
+			},
+			onColumnResizeEnd: (widths) => {
+				onColumnResizeEnd?.(new Map(widths));
 			}
 		})
 	);
@@ -102,8 +126,17 @@
 		return true;
 	}
 
+	function hasSameColumnWidths(left: Map<string, number>, right: Map<string, number>) {
+		if (left.size !== right.size) return false;
+		for (const [key, value] of left) {
+			if (right.get(key) !== value) return false;
+		}
+		return true;
+	}
+
 	const layoutVersion = ctx.layoutVersion;
 	const sortVersion = ctx.sortVersion;
+	const widthVersion = ctx.widthVersion;
 	const ariaColCount = $derived.by(() => {
 		void $layoutVersion;
 		const columnCount = ctx.getColumnCount();
@@ -114,6 +147,40 @@
 		const rowCount = ctx.getHeaderRowCount() + ctx.getBodyRowCount();
 		return rowCount > 0 ? rowCount : undefined;
 	});
+
+	const hasResizable = $derived.by(() => {
+		void $layoutVersion;
+		return ctx.hasResizableColumns();
+	});
+
+	const explicitManagedTableWidth = $derived.by(() => {
+		const widths = columnWidths ?? defaultColumnWidths;
+		if (!widths) return undefined;
+
+		let total = 0;
+		let hasAnyWidth = false;
+		for (const [, width] of widths) {
+			if (!Number.isFinite(width)) continue;
+			total += width;
+			hasAnyWidth = true;
+		}
+
+		return hasAnyWidth ? total : undefined;
+	});
+
+	const managedTableWidth = $derived.by(() => {
+		void $widthVersion;
+		void $layoutVersion;
+		if (!hasResizable) return undefined;
+		const widths = ctx.getColumnWidths();
+		const columnCount = ctx.getColumnCount();
+		if (widths.size === 0 || widths.size < columnCount) return undefined;
+		let total = 0;
+		for (const w of widths.values()) total += w;
+		return total;
+	});
+
+	const resolvedTableWidth = $derived(managedTableWidth ?? explicitManagedTableWidth);
 
 	context = ctx;
 
@@ -183,6 +250,31 @@
 	});
 
 	$effect(() => {
+		if (!hasInitializedColumnWidthsSync) {
+			hasInitializedColumnWidthsSync = true;
+			if (columnWidths === undefined) {
+				return;
+			}
+		}
+
+		if (columnWidths !== undefined) {
+			const nextWidths = new Map(columnWidths);
+			if (
+				pendingControlledColumnWidths &&
+				hasSameColumnWidths(pendingControlledColumnWidths, nextWidths)
+			) {
+				pendingControlledColumnWidths = null;
+				return;
+			}
+			pendingControlledColumnWidths = null;
+			ctx.setColumnWidths(nextWidths);
+			return;
+		}
+
+		ctx.setColumnWidths(undefined);
+	});
+
+	$effect(() => {
 		void $sortVersion;
 		const descriptor = ctx.sortDescriptor;
 		if (!hasObservedSortState) {
@@ -235,6 +327,9 @@
 	bind:this={tableElement}
 	role="grid"
 	class={className}
+	style:table-layout={hasResizable || resolvedTableWidth !== undefined ? 'fixed' : undefined}
+	style:width={resolvedTableWidth !== undefined ? `${resolvedTableWidth}px` : undefined}
+	style:min-width={resolvedTableWidth !== undefined ? '0' : undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-colcount={ariaColCount}

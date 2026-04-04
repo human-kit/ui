@@ -30,6 +30,7 @@
 	const key = createHeaderCellKey();
 	const focusVersion = table.focusVersion;
 	const sortVersion = table.sortVersion;
+	const widthVersion = table.widthVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
 	const cellIndex = row.registerCellToken(key);
@@ -67,6 +68,11 @@
 		void $sortVersion;
 		return table.getSortDirection(column.id);
 	});
+	const columnWidth = $derived.by(() => {
+		void $widthVersion;
+		return table.getColumnWidth(column.id);
+	});
+	const isResizable = $derived(column.allowsResizing);
 
 	function handleFocus() {
 		table.setFocusedCell(key);
@@ -75,6 +81,9 @@
 
 	function handleClick() {
 		table.focusCellByKey(key);
+		if (table.consumeHeaderClickSuppression()) {
+			return;
+		}
 		if (column.allowsSorting) {
 			table.toggleSort(column.id);
 		}
@@ -147,13 +156,24 @@
 	data-sortable={column.allowsSorting || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
+	style:position={isResizable ? 'relative' : undefined}
+	style:width={columnWidth !== undefined ? `${columnWidth}px` : undefined}
+	style:overflow={isResizable ? 'visible' : columnWidth !== undefined ? 'hidden' : undefined}
 	onfocus={handleFocus}
 	onclick={handleClick}
 	onmousedown={handleMouseDown}
 	onkeydown={handleKeyDown}
 	{...restProps}
 >
-	{#if children}
-		{@render children()}
-	{/if}
+	<div
+		data-table-header-content
+		style:overflow={columnWidth !== undefined ? 'hidden' : undefined}
+		style:min-width="0"
+		style:width="100%"
+		style:height="100%"
+	>
+		{#if children}
+			{@render children()}
+		{/if}
+	</div>
 </th>

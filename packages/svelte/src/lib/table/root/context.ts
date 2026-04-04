@@ -24,6 +24,8 @@ export type TableSortDescriptor = {
 	direction: TableSortDirection;
 };
 
+export type TableColumnWidth = number | `${number}px`;
+
 export type TableGridCoord = {
 	row: number;
 	col: number;
@@ -33,8 +35,13 @@ export type TableColumnRegistration = {
 	token: string;
 	id: string;
 	allowsSorting: boolean;
+	allowsResizing: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
+	width?: TableColumnWidth;
+	defaultWidth?: TableColumnWidth;
+	minWidth?: number;
+	maxWidth?: number;
 };
 
 type TableRowRegistration = {
@@ -59,9 +66,13 @@ export type CreateTableContextOptions = {
 	selectionBehavior?: TableSelectionBehavior;
 	initialSelectedKeys?: Iterable<TableSelectionKey>;
 	initialSortDescriptor?: TableSortDescriptor;
+	initialColumnWidths?: Iterable<readonly [string, number]>;
 	disabledKeys?: Iterable<TableSelectionKey>;
 	onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 	onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
+	onColumnWidthsChange?: (widths: Map<string, number>) => void;
+	onColumnResizeStart?: (columnId: string) => void;
+	onColumnResizeEnd?: (widths: Map<string, number>) => void;
 };
 
 export type TableContext = {
@@ -69,18 +80,34 @@ export type TableContext = {
 	selectionVersion: Readable<number>;
 	focusVersion: Readable<number>;
 	sortVersion: Readable<number>;
+	widthVersion: Readable<number>;
+	resizeVersion: Readable<number>;
 	selectionMode: TableSelectionMode;
 	selectionBehavior: TableSelectionBehavior;
 	disabledKeys: Set<TableSelectionKey>;
 	focusedCellKey: string | null;
 	focusVisible: boolean;
 	sortDescriptor: TableSortDescriptor | undefined;
+	resizingColumnId: string | null;
 	registerColumn: (column: TableColumnRegistration) => void;
 	unregisterColumn: (token: string) => void;
 	getColumnCount: () => number;
 	getColumnAt: (index: number) => TableColumnRegistration | undefined;
 	getColumnIndexByToken: (token: string) => number;
 	getColumnTextValue: (columnId: string) => string | undefined;
+	getColumnWidth: (columnId: string) => number | undefined;
+	getColumnMinWidth: (columnId: string) => number | undefined;
+	getColumnMaxWidth: (columnId: string) => number | undefined;
+	isColumnResizable: (columnId: string) => boolean;
+	getColumnWidths: () => Map<string, number>;
+	setColumnWidths: (widths?: Iterable<readonly [string, number]>) => void;
+	setColumnWidth: (columnId: string, width: number) => void;
+	measureColumnContentWidth: (columnId: string) => number | undefined;
+	startColumnResize: (columnId: string) => void;
+	endColumnResize: () => void;
+	suppressHeaderClickOnce: () => void;
+	consumeHeaderClickSuppression: () => boolean;
+	hasResizableColumns: () => boolean;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
 	getHeaderRowCount: () => number;
@@ -133,8 +160,13 @@ export type TableColumnContext = {
 	token: string;
 	id: string;
 	allowsSorting: boolean;
+	allowsResizing: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
+	width?: TableColumnWidth;
+	defaultWidth?: TableColumnWidth;
+	minWidth?: number;
+	maxWidth?: number;
 };
 
 export function createTableContext(options: CreateTableContextOptions = {}): TableContext {
@@ -146,9 +178,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let selectedKeys = new Set<TableSelectionKey>(options.initialSelectedKeys ?? []);
 	let selectionAnchorKey = selectedKeys.values().next().value ?? null;
 	const disabledKeys = new Set<TableSelectionKey>(options.disabledKeys ?? []);
+	let resizingColumnId: string | null = null;
+	let suppressNextHeaderClick = false;
 
 	const columns = new Map<string, TableColumnRegistration>();
 	const columnOrder: string[] = [];
+	const columnWidths = new Map<string, number>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
 	const bodyRowOrder: string[] = [];
@@ -169,6 +204,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const selectionVersion = writable(0);
 	const focusVersion = writable(0);
 	const sortVersion = writable(0);
+	const widthVersion = writable(0);
+	const resizeVersion = writable(0);
 
 	function invalidateLayoutCaches() {
 		orderedRowTokensCache = { header: null, body: null };
@@ -194,6 +231,63 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		sortVersion.update((value) => value + 1);
 	}
 
+	function notifyWidth() {
+		widthVersion.update((value) => value + 1);
+	}
+
+	function notifyResize() {
+		resizeVersion.update((value) => value + 1);
+	}
+
+	function normalizeColumnWidth(width: TableColumnWidth | undefined) {
+		if (typeof width === 'number') {
+			return Number.isFinite(width) ? width : undefined;
+		}
+
+		if (typeof width === 'string') {
+			const match = width.trim().match(/^(\d+(?:\.\d+)?)px$/i);
+			if (!match) return undefined;
+			const next = Number(match[1]);
+			return Number.isFinite(next) ? next : undefined;
+		}
+
+		return undefined;
+	}
+
+	function getColumnRegistrationById(columnId: string) {
+		return Array.from(columns.values()).find((column) => column.id === columnId);
+	}
+
+	function getColumnMinWidth(columnId: string) {
+		return getColumnRegistrationById(columnId)?.minWidth;
+	}
+
+	function getColumnMaxWidth(columnId: string) {
+		return getColumnRegistrationById(columnId)?.maxWidth;
+	}
+
+	function clampColumnWidth(columnId: string, width: number) {
+		const registration = getColumnRegistrationById(columnId);
+		const minWidth = registration?.minWidth ?? 75;
+		const maxWidth = registration?.maxWidth;
+		let next = Math.round(width);
+		if (Number.isNaN(next) || !Number.isFinite(next)) {
+			next = minWidth;
+		}
+		next = Math.max(minWidth, next);
+		if (maxWidth !== undefined) {
+			next = Math.min(maxWidth, next);
+		}
+		return next;
+	}
+
+	function hasResizableColumns() {
+		for (const column of columns.values()) {
+			if (column.allowsResizing) return true;
+		}
+		return false;
+	}
+
 	function sameColumnRegistration(
 		left: TableColumnRegistration,
 		right: TableColumnRegistration
@@ -202,8 +296,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			left.token === right.token &&
 			left.id === right.id &&
 			left.allowsSorting === right.allowsSorting &&
+			left.allowsResizing === right.allowsResizing &&
 			left.isRowHeader === right.isRowHeader &&
-			left.textValue === right.textValue
+			left.textValue === right.textValue &&
+			left.width === right.width &&
+			left.defaultWidth === right.defaultWidth &&
+			left.minWidth === right.minWidth &&
+			left.maxWidth === right.maxWidth
 		);
 	}
 
@@ -262,7 +361,205 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnTextValue(columnId: string) {
-		return Array.from(columns.values()).find((column) => column.id === columnId)?.textValue;
+		return getColumnRegistrationById(columnId)?.textValue;
+	}
+
+	function getColumnWidth(columnId: string) {
+		const managedWidth = columnWidths.get(columnId);
+		if (managedWidth !== undefined) {
+			return clampColumnWidth(columnId, managedWidth);
+		}
+
+		const registration = getColumnRegistrationById(columnId);
+		if (!registration) return undefined;
+
+		const nextWidth =
+			normalizeColumnWidth(registration.width) ??
+			normalizeColumnWidth(registration.defaultWidth);
+
+		return nextWidth !== undefined ? clampColumnWidth(columnId, nextWidth) : undefined;
+	}
+
+	function isColumnResizable(columnId: string) {
+		return getColumnRegistrationById(columnId)?.allowsResizing ?? false;
+	}
+
+	function getColumnWidths() {
+		const widths = new Map<string, number>();
+		for (const token of columnOrder) {
+			const column = columns.get(token);
+			if (!column) continue;
+			const width = getColumnWidth(column.id);
+			if (width !== undefined) {
+				widths.set(column.id, width);
+			}
+		}
+		return widths;
+	}
+
+	function getMeasuredHeaderWidth(columnToken: string) {
+		const headerCell = Array.from(cells.values()).find(
+			(cell) => cell.section === 'header' && cell.columnToken === columnToken && cell.element
+		);
+		const width = headerCell?.element?.getBoundingClientRect().width;
+		if (width === undefined || width <= 0 || !Number.isFinite(width)) {
+			return undefined;
+		}
+		return Math.round(width);
+	}
+
+	function freezeColumnWidthsFromLayout() {
+		const next = new Map<string, number>();
+		let changed = false;
+
+		for (const token of columnOrder) {
+			const column = columns.get(token);
+			if (!column) continue;
+
+			const measuredWidth = getMeasuredHeaderWidth(token);
+			const resolvedWidth = measuredWidth ?? getColumnWidth(column.id);
+			if (resolvedWidth === undefined) continue;
+
+			const clampedWidth = clampColumnWidth(column.id, resolvedWidth);
+			next.set(column.id, clampedWidth);
+			if (columnWidths.get(column.id) !== clampedWidth) {
+				changed = true;
+			}
+		}
+
+		if (!changed || next.size === 0) return;
+
+		columnWidths.clear();
+		for (const [columnId, width] of next) {
+			columnWidths.set(columnId, width);
+		}
+
+		options.onColumnWidthsChange?.(getColumnWidths());
+		notifyWidth();
+	}
+
+	function setColumnWidths(widths?: Iterable<readonly [string, number]>) {
+		const next = new Map<string, number>();
+		for (const token of columnOrder) {
+			const column = columns.get(token);
+			if (!column) continue;
+			const incomingWidth = widths
+				? new Map<string, number>(widths).get(column.id)
+				: undefined;
+			if (incomingWidth !== undefined) {
+				next.set(column.id, clampColumnWidth(column.id, incomingWidth));
+			}
+		}
+
+		columnWidths.clear();
+		for (const [columnId, width] of next) {
+			columnWidths.set(columnId, width);
+		}
+		notifyWidth();
+	}
+
+	function setColumnWidth(columnId: string, width: number) {
+		if (!isColumnResizable(columnId)) return;
+		const nextWidth = clampColumnWidth(columnId, width);
+		if (columnWidths.get(columnId) === nextWidth) return;
+		columnWidths.set(columnId, nextWidth);
+		const nextWidths = getColumnWidths();
+		options.onColumnWidthsChange?.(nextWidths);
+		notifyWidth();
+	}
+
+	function measureIntrinsicElementWidth(cell: HTMLElement) {
+		const target =
+			cell.querySelector<HTMLElement>('[data-table-header-content]') ??
+			cell.firstElementChild ??
+			cell;
+		const clone = target.cloneNode(true) as HTMLElement;
+		for (const separator of clone.querySelectorAll('[role="separator"]')) {
+			separator.remove();
+		}
+
+		// Copy the cell's computed font so the clone inherits correct text metrics
+		// (the clone is appended to document.body which may have different font styles)
+		const cellFont = getComputedStyle(cell);
+		clone.style.font = cellFont.font;
+		clone.style.letterSpacing = cellFont.letterSpacing;
+		clone.style.wordSpacing = cellFont.wordSpacing;
+
+		clone.style.position = 'absolute';
+		clone.style.visibility = 'hidden';
+		clone.style.pointerEvents = 'none';
+		clone.style.left = '-99999px';
+		clone.style.top = '0';
+		clone.style.width = 'max-content';
+		clone.style.maxWidth = 'none';
+		clone.style.minWidth = '0';
+		clone.style.overflow = 'visible';
+		clone.style.whiteSpace = 'nowrap';
+		document.body.appendChild(clone);
+
+		const width = Math.ceil(clone.getBoundingClientRect().width);
+		clone.remove();
+		return width;
+	}
+
+	function measureColumnContentWidth(columnId: string) {
+		const registration = getColumnRegistrationById(columnId);
+		if (!registration) return undefined;
+
+		const columnIndex = getColumnIndexByToken(registration.token);
+		if (columnIndex < 0) return undefined;
+
+		const measuredWidths: number[] = [];
+		for (const cell of cells.values()) {
+			const matchesHeader =
+				cell.section === 'header' && cell.columnToken === registration.token && cell.element;
+			const matchesBody =
+				cell.section === 'body' && cell.columnIndex === columnIndex && cell.element;
+			if (!matchesHeader && !matchesBody) continue;
+
+			const element = cell.element;
+			if (!element) continue;
+
+			const computedStyle = getComputedStyle(element);
+			const paddingX =
+				parseFloat(computedStyle.paddingLeft || '0') +
+				parseFloat(computedStyle.paddingRight || '0');
+			const borderX =
+				parseFloat(computedStyle.borderLeftWidth || '0') +
+				parseFloat(computedStyle.borderRightWidth || '0');
+			const contentWidth = measureIntrinsicElementWidth(element);
+
+			if (contentWidth <= 0) continue;
+			measuredWidths.push(Math.ceil(contentWidth + paddingX + borderX));
+		}
+
+		if (measuredWidths.length === 0) return undefined;
+		return clampColumnWidth(columnId, Math.max(...measuredWidths));
+	}
+
+	function startColumnResize(columnId: string) {
+		if (!isColumnResizable(columnId) || resizingColumnId === columnId) return;
+		freezeColumnWidthsFromLayout();
+		resizingColumnId = columnId;
+		options.onColumnResizeStart?.(columnId);
+		notifyResize();
+	}
+
+	function endColumnResize() {
+		if (!resizingColumnId) return;
+		resizingColumnId = null;
+		options.onColumnResizeEnd?.(getColumnWidths());
+		notifyResize();
+	}
+
+	function suppressHeaderClickOnce() {
+		suppressNextHeaderClick = true;
+	}
+
+	function consumeHeaderClickSuppression() {
+		const shouldSuppress = suppressNextHeaderClick;
+		suppressNextHeaderClick = false;
+		return shouldSuppress;
 	}
 
 	function registerRow(row: TableRowRegistration) {
@@ -843,6 +1140,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		selectionVersion,
 		focusVersion,
 		sortVersion,
+		widthVersion,
+		resizeVersion,
 		get selectionMode() {
 			return selectionMode;
 		},
@@ -859,12 +1158,28 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		get sortDescriptor() {
 			return sortDescriptor;
 		},
+		get resizingColumnId() {
+			return resizingColumnId;
+		},
 		registerColumn,
 		unregisterColumn,
 		getColumnCount,
 		getColumnAt,
 		getColumnIndexByToken,
 		getColumnTextValue,
+		getColumnWidth,
+		getColumnMinWidth,
+		getColumnMaxWidth,
+		isColumnResizable,
+		getColumnWidths,
+		setColumnWidths,
+		setColumnWidth,
+		measureColumnContentWidth,
+		startColumnResize,
+		endColumnResize,
+		suppressHeaderClickOnce,
+		consumeHeaderClickSuppression,
+		hasResizableColumns,
 		registerRow,
 		unregisterRow,
 		getHeaderRowCount,

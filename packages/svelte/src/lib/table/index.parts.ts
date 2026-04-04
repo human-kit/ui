@@ -6,4 +6,5 @@ export { default as EmptyState } from './empty-state/table-empty-state.svelte';
 export { default as Footer } from './footer/table-footer.svelte';
 export { default as Row } from './row/table-row.svelte';
 export { default as ColumnHeaderCell } from './column-header-cell/table-column-header-cell.svelte';
+export { default as ColumnResizer } from './column-resizer/table-column-resizer.svelte';
 export { default as Cell } from './cell/table-cell.svelte';

@@ -224,16 +224,21 @@ Responsibilities:
 
 - define stable column identity
 - register column metadata in context (sorting, row header)
+- register column resize metadata in context when enabled
 - serve as the anchor for sorting and row header semantics
-- leave a future path for width/resizing
+- serve as the anchor for width/resizing behavior
 
 Tentative API:
 
 - `id: string` — stable column identity
 - `allowsSorting?: boolean`
+- `allowsResizing?: boolean`
 - `isRowHeader?: boolean`
 - `textValue?: string`
-- possible future space for `width`, `minWidth`, `maxWidth`
+- `width?: number | string`
+- `defaultWidth?: number | string`
+- `minWidth?: number`
+- `maxWidth?: number`
 
 ### `Table.Header`
 
@@ -316,6 +321,23 @@ Responsibilities:
 - sorting trigger when the column allows it
 - apply `aria-sort` automatically from `Root.sortDescriptor` and `Column.allowsSorting`
 - `aria-sort` values: `ascending` | `descending` | `none`
+- host the resize affordance when the consumer composes a `Table.ColumnResizer` inside it
+
+### `Table.ColumnResizer`
+
+Responsibilities:
+
+- interactive resize handle for the current `Table.Column`
+- consume column identity from `Table.Column` context rather than matching by visual position
+- support pointer drag and keyboard resizing
+- expose resize state for styling through data attributes
+
+Tentative API:
+
+- `step?: number` — keyboard delta in px, default `16`
+- `shiftStep?: number` — larger keyboard delta in px, default `48`
+- `children?`
+- `class?`
 
 ### `Table.Cell`
 
@@ -365,7 +387,6 @@ Responsibilities:
 
 ### Out of Scope
 
-- column resizing
 - drag and drop
 - async loading / load more
 - API pública dinámica con `items` y `columns`
@@ -387,7 +408,7 @@ Responsibilities:
 
 | Feature                                | Main Complexity                                            | Risk       | Recommendation     |
 | -------------------------------------- | ---------------------------------------------------------- | ---------- | ------------------ |
-| Column resizing                        | width state, handles, pointer + keyboard, persistence      | high       | keep out of v1     |
+| Column resizing                        | width state, handles, pointer + keyboard, persistence      | high       | next planned phase |
 | Drag and drop                          | reorder, drop targets, SR + keyboard + pointer            | very high  | keep out of v1     |
 | Async loading / load more              | scroll state, sentinel rows, partial states                | high       | keep out of v1     |
 | Dynamic `items` / `columns` API        | collection, stable ids, render functions, memoization      | high       | defer              |
@@ -518,6 +539,293 @@ interface GridNavigation {
 - `packages/svelte/src/lib/table/column/table-column.svelte`
 - `packages/svelte/src/lib/table/column/README.md`
 - `packages/svelte/src/lib/table/column/table-column.test.ts`
+
+## Phase 2: Column Resizing Plan
+
+### Resize Goal
+
+Add column resizing in a way that follows the React Aria Components mental model while preserving the repository's existing `Table` architecture: logical `Table.Column`, state in `Table.Root`, typed context, native table semantics, and composable parts.
+
+### Functional Contract
+
+- Resizing must target the column whose composition includes the resize handle.
+- The resize handle must live inside the header composition for that column, not in a parallel list of handlers.
+- The active column is resolved from `Table.Column` context, never by visual index guessing alone.
+- Functional behavior should mirror RAC:
+	- a column opts into resizing via column metadata
+	- a dedicated resizer part provides the interactive affordance
+	- widths can be controlled or uncontrolled
+	- pointer and keyboard resizing are both supported
+
+### Recommended Public Composition
+
+```svelte
+<Table.Root aria-label="Users" bind:columnWidths>
+	<Table.Header>
+		<Table.Row>
+			<Table.Column
+				id="email"
+				isRowHeader
+				allowsSorting
+				allowsResizing
+				defaultWidth={280}
+				minWidth={180}
+			>
+				<Table.ColumnHeaderCell>
+					<span>Email</span>
+					<Table.ColumnResizer />
+				</Table.ColumnHeaderCell>
+			</Table.Column>
+
+			<Table.Column
+				id="group"
+				allowsSorting
+				allowsResizing
+				defaultWidth={180}
+				minWidth={140}
+			>
+				<Table.ColumnHeaderCell>
+					<span>Group</span>
+					<Table.ColumnResizer />
+				</Table.ColumnHeaderCell>
+			</Table.Column>
+		</Table.Row>
+	</Table.Header>
+
+	<Table.Body>
+		<!-- rows -->
+	</Table.Body>
+</Table.Root>
+```
+
+### API Recommendation
+
+#### Resize Props on `Table.Column`
+
+Add the following props:
+
+- `allowsResizing?: boolean`
+- `width?: number | string`
+- `defaultWidth?: number | string`
+- `minWidth?: number`
+- `maxWidth?: number`
+
+Notes:
+
+- `width` is the controlled width for the column.
+- `defaultWidth` is the uncontrolled initial width.
+- `allowsResizing` is required for resize behavior, even if a `Table.ColumnResizer` is rendered.
+- `Table.ColumnResizer` without `allowsResizing` should be ignored in production and warn in dev.
+
+#### Width State on `Table.Root`
+
+Add root-level width state APIs:
+
+- `columnWidths?: Map<string, number>`
+- `defaultColumnWidths?: Map<string, number>`
+- `onColumnWidthsChange?: (widths: Map<string, number>) => void`
+- `onColumnResizeStart?: (columnId: string) => void`
+- `onColumnResizeEnd?: (widths: Map<string, number>) => void`
+
+Notes:
+
+- Controlled/uncontrolled width state should mirror the existing `selectedKeys` and `sortDescriptor` contracts.
+- Widths in root state should be normalized to px numbers even if consumer input allows string forms.
+
+#### `Table.ColumnResizer` Part
+
+Public part to place inside `Table.ColumnHeaderCell`.
+
+Tentative props:
+
+- `step?: number`
+- `shiftStep?: number`
+- `class?: string`
+- `children?: Snippet`
+
+No `columnId` prop should be needed; it must use `Table.Column` context.
+
+### Why Not a Parallel `ColumnHandler`
+
+This API should explicitly avoid a separate sibling structure like:
+
+```svelte
+<Table.Column id="email" />
+<Table.Column id="group" />
+<Table.ColumnHandler index={0} />
+<Table.ColumnHandler index={1} />
+```
+
+Reasons:
+
+- position-based matching becomes fragile with dynamic columns
+- it duplicates the concept of column identity
+- it becomes harder to keep sorting, row-header semantics, and resizing anchored to the same column contract
+- it does not follow the RAC model, where resizing is column-owned and the handle is colocated with the header content
+
+### Width Model
+
+#### Effective Width Resolution
+
+For each registered column, compute the effective width from highest to lowest precedence:
+
+1. `Table.Root.columnWidths.get(columnId)`
+2. `Table.Column.width`
+3. `Table.Root.defaultColumnWidths.get(columnId)`
+4. `Table.Column.defaultWidth`
+5. no explicit width
+
+Then clamp the result against:
+
+- `minWidth`
+- `maxWidth`
+
+#### Initial Implementation Constraint
+
+For the first resizing implementation, normalize widths to px values.
+
+- Accept `number` as px.
+- Optionally accept `"123px"` and normalize it to `123`.
+- Defer `%`, `fr`, and more advanced layout math until the base feature is stable.
+
+This keeps the state model simple and reduces layout bugs.
+
+### Rendering Strategy
+
+The recommended implementation is to generate a `<colgroup>` inside `Table.Root` from the registered columns and the effective widths.
+
+Reasons:
+
+- widths apply consistently to both header and body cells
+- native table layout remains intact
+- it avoids pushing per-cell width styles into every `Table.Cell`
+- it scales better as the feature grows
+
+Planned approach:
+
+- `Table.Root` renders a managed `<colgroup>` before children
+- each registered column maps to one `<col>`
+- effective width is applied to the `<col>`
+- body and header cells keep their semantic markup unchanged
+
+Fallback if `<colgroup>` proves insufficient for some cases:
+
+- apply inline width/min-width styles to header cells and derived styles to body cells by column index
+
+But `<colgroup>` should be the default strategy.
+
+### Interaction Model
+
+#### Pointer
+
+- pointer down on `Table.ColumnResizer` starts resizing for its current column
+- movement computes a new width in px relative to the starting header width
+- width updates continuously during drag
+- pointer up finalizes the interaction and calls `onColumnResizeEnd`
+
+#### Keyboard
+
+- the resizer is focusable
+- `ArrowLeft` reduces width by `step`
+- `ArrowRight` increases width by `step`
+- `Shift+ArrowLeft` / `Shift+ArrowRight` use `shiftStep`
+- resize keyboard handling should not hijack the existing table cell navigation when the resizer itself is not focused
+
+### Accessibility Contract
+
+`Table.ColumnResizer` should behave like a column separator/resizer control.
+
+Recommended attributes:
+
+- `role="separator"`
+- `aria-orientation="vertical"`
+- `aria-valuenow`
+- `aria-valuemin`
+- `aria-valuemax`
+- accessible label derived from the current column, for example `Resize Email column`
+
+Derived data attributes:
+
+- `data-resizing`
+- `data-focused`
+- `data-focus-visible`
+- `data-resizable-direction="right"`
+
+### Internal Architecture Additions
+
+#### `root/context.ts`
+
+Extend column registration to include:
+
+- `allowsResizing`
+- `width`
+- `defaultWidth`
+- `minWidth`
+- `maxWidth`
+
+Add root-level APIs for:
+
+- resolving effective column widths
+- updating a column width by `columnId`
+- starting/ending resize interactions
+- reading resize state for a column
+
+#### New Part Context Usage
+
+`Table.ColumnResizer` should consume:
+
+- `Table.Column` context for `columnId`
+- `Table.Root` context for width state and resize actions
+
+It should not require positional props like `index` or `for`.
+
+### Planned File Additions
+
+- `packages/svelte/src/lib/table/column-resizer/table-column-resizer.svelte`
+- `packages/svelte/src/lib/table/column-resizer/README.md`
+- `packages/svelte/src/lib/table/column-resizer/table-column-resizer.test.ts`
+
+Planned touched files:
+
+- `packages/svelte/src/lib/table/index.parts.ts`
+- `packages/svelte/src/lib/table/index.ts`
+- `packages/svelte/src/lib/table/root/context.ts`
+- `packages/svelte/src/lib/table/root/table-root.svelte`
+- `packages/svelte/src/lib/table/column/table-column.svelte`
+- `packages/svelte/src/lib/table/column-header-cell/table-column-header-cell.svelte`
+- `packages/svelte/src/lib/table/root/table-root.test.ts`
+- `docs/src/routes/docs/table/+page.svelte`
+
+### Testing Plan
+
+Minimum regression coverage:
+
+- renders a resize handle only for columns composed with `Table.ColumnResizer`
+- dragging the resizer changes the associated column width only
+- resizing one column does not corrupt neighboring column identity
+- controlled `columnWidths` updates are reflected in the DOM
+- uncontrolled `defaultWidth` is honored on mount
+- keyboard resizing updates width in deterministic steps
+- min/max constraints are enforced
+- focus and pointer interactions on the resizer do not break table navigation
+
+### Recommended Implementation Order
+
+1. Add API fields to `Table.Column` and root context registration.
+2. Add root width state and effective width resolution.
+3. Render managed `<colgroup>` from `Table.Root`.
+4. Add `Table.ColumnResizer` pointer interaction.
+5. Add keyboard and ARIA support for the resizer.
+6. Add docs/demo and controlled/uncontrolled tests.
+
+### Non-Goals for the First Resize Release
+
+- percentage/fr width math
+- column resize persistence outside consumer-provided state
+- multi-column proportional redistribution
+- double-click auto-fit
+- resize in nested/grouped headers
+- resizable footer-specific behavior
 - `packages/svelte/src/lib/table/header/table-header.svelte`
 - `packages/svelte/src/lib/table/header/README.md`
 - `packages/svelte/src/lib/table/header/table-header.test.ts`
@@ -579,7 +887,7 @@ interface GridNavigation {
 - docs demo page
 - changeset
 
-## Testing Plan
+## Resize Testing Plan
 
 ### Minimum Cases
 

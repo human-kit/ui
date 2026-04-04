@@ -9,9 +9,13 @@
 	} from '@human-kit/svelte-components';
 
 	const users = [
-		{ id: 'danilo', email: 'danilo@example.com', group: 'Developer' },
+		{ id: 'danilo', email: 'danilo.fernandez+workspace-owner@example.com', group: 'Developer' },
 		{ id: 'zahra', email: 'zahra@example.com', group: 'Admin' },
-		{ id: 'jasper', email: 'jasper@example.com', group: 'Developer' },
+		{
+			id: 'jasper',
+			email: 'jasper.with-a-very-long-email-address@example.com',
+			group: 'Developer'
+		},
 		{ id: 'marta', email: 'marta@example.com', group: 'Support' },
 		{ id: 'nora', email: 'nora@example.com', group: 'Finance' },
 		{ id: 'liam', email: 'liam@example.com', group: 'Ops' }
@@ -22,6 +26,12 @@
 	let selectionMode = $state<TableSelectionMode>('multiple');
 	let selectionBehavior = $state<TableSelectionBehavior>('toggle');
 	let sortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
+	let columnWidths = $state<Map<string, number> | undefined>(
+		new Map([
+			['email', 260],
+			['group', 180]
+		])
+	);
 	let sortableColumns = $state<string[]>(['group']);
 
 	function toggleSortableColumn(columnId: string) {
@@ -62,7 +72,7 @@
 		<div class="space-y-8">
 			<DemoSection
 				title="Interactive Table"
-				description="Use arrow keys to move between cells, Space to select rows, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down. Switching to none clears selection internally, while text selection and copy stay browser-native in v1."
+				description="Use arrow keys to move between cells, Space to select rows, drag or keyboard-resize the header handles, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down. Long cell values truncate to preserve the column layout while resizing."
 			>
 				<div
 					class="overflow-x-auto rounded-xl border border-gray-300 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
@@ -74,6 +84,7 @@
 						disabledKeys={disabledUserIds}
 						bind:selectedKeys
 						bind:sortDescriptor
+						bind:columnWidths
 						class="min-w-full border-collapse text-left"
 					>
 						<Table.Header>
@@ -82,20 +93,41 @@
 									id="email"
 									isRowHeader
 									allowsSorting={sortableColumns.includes('email')}
+									allowsResizing
+									minWidth={30}
 								>
 									<Table.ColumnHeaderCell
-										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-focus-visible:ring-2 data-focus-visible:ring-blue-500 dark:text-white"
+										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
 										data-sortable={sortableColumns.includes('email') ? 'true' : undefined}
 									>
-										Email
+										<div class="flex min-w-0 items-center justify-between gap-3">
+											<span class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+												>Email</span
+											>
+											<Table.ColumnResizer
+												class="inline-flex w-3 shrink-0 cursor-col-resize justify-center text-gray-400 hover:text-gray-600 data-[focus-visible=true]:rounded-sm data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:text-gray-500 dark:hover:text-gray-300"
+											/>
+										</div>
 									</Table.ColumnHeaderCell>
 								</Table.Column>
-								<Table.Column id="group" allowsSorting={sortableColumns.includes('group')}>
+								<Table.Column
+									id="group"
+									allowsSorting={sortableColumns.includes('group')}
+									allowsResizing
+									maxWidth={320}
+								>
 									<Table.ColumnHeaderCell
-										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-focus-visible:ring-2 data-focus-visible:ring-blue-500 dark:text-white"
+										class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
 										data-sortable={sortableColumns.includes('group') ? 'true' : undefined}
 									>
-										Group
+										<div class="flex min-w-0 items-center justify-between gap-3">
+											<span class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+												>Group</span
+											>
+											<Table.ColumnResizer
+												class="inline-flex w-3 shrink-0 cursor-col-resize justify-center text-gray-400 hover:text-gray-600 data-[focus-visible=true]:rounded-sm data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:text-gray-500 dark:hover:text-gray-300"
+											/>
+										</div>
 									</Table.ColumnHeaderCell>
 								</Table.Column>
 							</Table.Row>
@@ -107,14 +139,18 @@
 									class="border-b border-gray-100 data-selected:bg-blue-50 data-disabled:bg-gray-100/80 data-disabled:text-gray-400 data-disabled:opacity-70 dark:border-gray-800 dark:data-selected:bg-blue-950/40 dark:data-disabled:bg-gray-800/70 dark:data-disabled:text-gray-500"
 								>
 									<Table.Cell
-										class="px-3 py-2 text-sm font-normal text-gray-900 outline-none data-focus-visible:ring-2 data-focus-visible:ring-inset data-focus-visible:ring-blue-500 data-disabled:line-through data-disabled:decoration-gray-400 dark:text-white dark:data-disabled:decoration-gray-600"
+										class="px-3 py-2 text-sm font-normal text-gray-900 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 data-disabled:line-through data-disabled:decoration-gray-400 dark:text-white dark:data-disabled:decoration-gray-600"
 									>
-										{user.email}
+										<div class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+											{user.email}
+										</div>
 									</Table.Cell>
 									<Table.Cell
-										class="px-3 py-2 text-sm font-normal text-gray-600 outline-none data-focus-visible:ring-2 data-focus-visible:ring-inset data-focus-visible:ring-blue-500 data-disabled:italic dark:text-gray-300"
+										class="px-3 py-2 text-sm font-normal text-gray-600 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 data-disabled:italic dark:text-gray-300"
 									>
-										{user.group}
+										<div class="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+											{user.group}
+										</div>
 									</Table.Cell>
 								</Table.Row>
 							{/each}
@@ -233,6 +269,10 @@
 							<DemoState label="selectionBehavior" value={selectionBehavior} />
 							<DemoState label="sortableColumns" value={sortableColumns} />
 							<DemoState
+								label="columnWidths"
+								value={columnWidths ? Object.fromEntries(columnWidths) : 'auto'}
+							/>
+							<DemoState
 								label="sortDescriptor"
 								value={sortDescriptor
 									? `${sortDescriptor.column}:${sortDescriptor.direction}`
@@ -268,6 +308,11 @@
 						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Shift + ↑/↓</kbd
 						><span>Extend row selection in `replace` mode</span>
 					</div>
+					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">← / →</kbd><span
+							>Resize the focused column handle</span
+						>
+					</div>
 				</div>
 			</DemoSection>
 
@@ -279,6 +324,10 @@
 					<p>`selectionMode="none"` clears any existing row selection internally.</p>
 					<p>
 						`defaultSelectedKeys` and `defaultSortDescriptor` set uncontrolled initial state only.
+					</p>
+					<p>
+						`columnWidths` can be controlled with `bind:columnWidths`; resize handles update the
+						owning column only.
 					</p>
 					<p>
 						Text selection and `Ctrl+C` remain browser-native; `Table` does not implement custom

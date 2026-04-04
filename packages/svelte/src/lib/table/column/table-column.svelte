@@ -10,21 +10,36 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import { setTableColumnContext, useTableContext, useTableSectionContext } from '../root/context';
+	import {
+		setTableColumnContext,
+		useTableContext,
+		useTableSectionContext,
+		type TableColumnWidth
+	} from '../root/context';
 
 	type TableColumnProps = {
 		id: string;
 		allowsSorting?: boolean;
+		allowsResizing?: boolean;
 		isRowHeader?: boolean;
 		textValue?: string;
+		width?: TableColumnWidth;
+		defaultWidth?: TableColumnWidth;
+		minWidth?: number;
+		maxWidth?: number;
 		children?: Snippet;
 	};
 
 	let {
 		id,
 		allowsSorting = false,
+		allowsResizing = false,
 		isRowHeader = false,
 		textValue,
+		width,
+		defaultWidth,
+		minWidth,
+		maxWidth,
 		children
 	}: TableColumnProps = $props();
 
@@ -44,11 +59,26 @@
 		get allowsSorting() {
 			return allowsSorting;
 		},
+		get allowsResizing() {
+			return allowsResizing;
+		},
 		get isRowHeader() {
 			return isRowHeader;
 		},
 		get textValue() {
 			return textValue;
+		},
+		get width() {
+			return width;
+		},
+		get defaultWidth() {
+			return defaultWidth;
+		},
+		get minWidth() {
+			return minWidth;
+		},
+		get maxWidth() {
+			return maxWidth;
 		}
 	});
 
@@ -57,8 +87,13 @@
 			token,
 			id,
 			allowsSorting,
+			allowsResizing,
 			isRowHeader,
-			textValue
+			textValue,
+			width,
+			defaultWidth,
+			minWidth,
+			maxWidth
 		});
 	}
 
