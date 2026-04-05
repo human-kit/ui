@@ -184,9 +184,7 @@ jobs:
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  reporter: process.env.CI
-    ? [['blob'], ['github']]
-    : [['html', { open: 'on-failure' }]],
+	reporter: process.env.CI ? [['blob'], ['github']] : [['html', { open: 'on-failure' }]]
 });
 ```
 
@@ -429,30 +427,30 @@ jobs:
 
 ## Scenario Guide
 
-| Scenario | Approach |
-|---|---|
-| Small suite (< 5 min) | Single job, no sharding |
-| Medium suite (5-20 min) | 2-4 shards with matrix |
-| Large suite (20+ min) | 4-8 shards + blob merge |
-| Cross-browser on PRs | Chromium only on PRs; all browsers on main |
-| Staging/prod smoke tests | Separate workflow with `environment:` |
-| Nightly full regression | `schedule` trigger + `workflow_dispatch` |
-| Multiple repos, same setup | Reusable workflow with `workflow_call` |
-| Reproducible env needed | Container job with Playwright image |
+| Scenario                   | Approach                                   |
+| -------------------------- | ------------------------------------------ |
+| Small suite (< 5 min)      | Single job, no sharding                    |
+| Medium suite (5-20 min)    | 2-4 shards with matrix                     |
+| Large suite (20+ min)      | 4-8 shards + blob merge                    |
+| Cross-browser on PRs       | Chromium only on PRs; all browsers on main |
+| Staging/prod smoke tests   | Separate workflow with `environment:`      |
+| Nightly full regression    | `schedule` trigger + `workflow_dispatch`   |
+| Multiple repos, same setup | Reusable workflow with `workflow_call`     |
+| Reproducible env needed    | Container job with Playwright image        |
 
 ## Common Mistakes
 
-| Mistake | Problem | Fix |
-|---|---|---|
-| No `concurrency` group | Duplicate runs waste minutes | Add `concurrency: { group: ..., cancel-in-progress: true }` |
-| `fail-fast: true` with sharding | One failure cancels others | Set `fail-fast: false` |
-| No browser caching | 60-90 seconds wasted per run | Cache `~/.cache/ms-playwright` |
-| No `timeout-minutes` | Stuck jobs run for 6 hours | Set explicit timeout: 20-30 minutes |
-| Artifacts only on failure | No report when tests pass | Use `if: ${{ !cancelled() }}` |
-| Hardcoded secrets | Security risk | Use GitHub Secrets and Environments |
-| All browsers on every PR | 3x CI cost | Chromium on PR; cross-browser on main |
-| No artifact retention | Default 90-day fills storage | Set `retention-days: 7-14` |
-| Missing `--with-deps` | Browser launch failures | Always use `npx playwright install --with-deps` |
+| Mistake                         | Problem                      | Fix                                                         |
+| ------------------------------- | ---------------------------- | ----------------------------------------------------------- |
+| No `concurrency` group          | Duplicate runs waste minutes | Add `concurrency: { group: ..., cancel-in-progress: true }` |
+| `fail-fast: true` with sharding | One failure cancels others   | Set `fail-fast: false`                                      |
+| No browser caching              | 60-90 seconds wasted per run | Cache `~/.cache/ms-playwright`                              |
+| No `timeout-minutes`            | Stuck jobs run for 6 hours   | Set explicit timeout: 20-30 minutes                         |
+| Artifacts only on failure       | No report when tests pass    | Use `if: ${{ !cancelled() }}`                               |
+| Hardcoded secrets               | Security risk                | Use GitHub Secrets and Environments                         |
+| All browsers on every PR        | 3x CI cost                   | Chromium on PR; cross-browser on main                       |
+| No artifact retention           | Default 90-day fills storage | Set `retention-days: 7-14`                                  |
+| Missing `--with-deps`           | Browser launch failures      | Always use `npx playwright install --with-deps`             |
 
 ## Troubleshooting
 
@@ -479,11 +477,11 @@ jobs:
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  workers: process.env.CI ? '50%' : undefined,
-  use: {
-    actionTimeout: process.env.CI ? 15_000 : 10_000,
-    navigationTimeout: process.env.CI ? 30_000 : 15_000,
-  },
+	workers: process.env.CI ? '50%' : undefined,
+	use: {
+		actionTimeout: process.env.CI ? 15_000 : 10_000,
+		navigationTimeout: process.env.CI ? 30_000 : 15_000
+	}
 });
 ```
 
@@ -530,9 +528,9 @@ export default defineConfig({
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  reporter: process.env.CI
-    ? [['html', { open: 'never' }], ['github']]
-    : [['html', { open: 'on-failure' }]],
+	reporter: process.env.CI
+		? [['html', { open: 'never' }], ['github']]
+		: [['html', { open: 'on-failure' }]]
 });
 ```
 

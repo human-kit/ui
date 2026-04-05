@@ -14,6 +14,16 @@ function readFrozenColumnWidths() {
 	return JSON.parse(text) as Record<string, number>;
 }
 
+function readResizeEndWidths() {
+	const text = document.querySelector('[data-testid="resize-end-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as Record<string, number>;
+}
+
+function readResizeAnnouncement(testId: string) {
+	const resizer = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+	return resizer?.querySelector('[data-testid="column-resize-status"]')?.textContent?.trim() ?? '';
+}
+
 describe('Table.ColumnResizer', () => {
 	it('renders a focusable separator and applies controlled widths on header cells', async () => {
 		render(ColumnResizerTest);
@@ -35,6 +45,11 @@ describe('Table.ColumnResizer', () => {
 
 		await expect.poll(() => readColumnWidths().email).toBe(216);
 		expect(readColumnWidths().group).toBe(160);
+		await expect
+			.poll(() => document.querySelector('[data-testid="resize-start-column"]')?.textContent)
+			.toBe('email');
+		await expect.poll(() => readResizeEndWidths().email).toBe(216);
+		await expect.poll(() => readResizeAnnouncement('email-resizer')).toBe('Email width 216px.');
 	});
 
 	it('does not trigger sorting when interacting with the resize handle', async () => {
@@ -53,12 +68,69 @@ describe('Table.ColumnResizer', () => {
 		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
 
 		groupResizer.dispatchEvent(
-			new MouseEvent('mousedown', { bubbles: true, button: 0, clientX: 100 })
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 1,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
 		);
-		window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 240 }));
-		window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: 240 }));
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 240,
+				pointerId: 1,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 240,
+				pointerId: 1,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
 
 		await expect.poll(() => readColumnWidths().group).toBe(260);
+		await expect.poll(() => readResizeAnnouncement('group-resizer')).toBe('Group width 260px.');
+	});
+
+	it('cancels an in-progress pointer resize with Escape', async () => {
+		render(ColumnResizerTest);
+		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
+
+		groupResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 11,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 220,
+				pointerId: 11,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readColumnWidths().group).toBe(260);
+
+		window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+
+		await expect.poll(() => readColumnWidths().group).toBe(160);
+		await expect.poll(() => readResizeEndWidths().group).toBe(160);
+		expect(readResizeAnnouncement('group-resizer')).toBe('');
 	});
 
 	it('suppresses the residual header click after a drag resize ends', async () => {
@@ -67,10 +139,33 @@ describe('Table.ColumnResizer', () => {
 		const groupHeader = groupResizer.closest('th') as HTMLElement;
 
 		groupResizer.dispatchEvent(
-			new MouseEvent('mousedown', { bubbles: true, button: 0, clientX: 100 })
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 2,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
 		);
-		window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 140 }));
-		window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: 140 }));
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 140,
+				pointerId: 2,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 140,
+				pointerId: 2,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
 
 		groupHeader.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		expect(document.querySelector('[data-testid="sort-descriptor"]')?.textContent).toBe('');
@@ -114,16 +209,24 @@ describe('Table.ColumnResizer', () => {
 
 	it('freezes measured widths for all columns when a drag starts', async () => {
 		render(ColumnResizerFreezeLayoutTest);
-		const emailResizer = document.querySelector<HTMLElement>('[data-testid="freeze-email-resizer"]')!;
+		const emailResizer = document.querySelector<HTMLElement>(
+			'[data-testid="freeze-email-resizer"]'
+		)!;
 
 		emailResizer.dispatchEvent(
-			new MouseEvent('mousedown', { bubbles: true, button: 0, clientX: 160 })
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 160,
+				pointerId: 3,
+				pointerType: 'touch',
+				isPrimary: true
+			})
 		);
 
-		await expect.poll(() => Object.keys(readFrozenColumnWidths()).sort()).toEqual([
-			'email',
-			'group'
-		]);
+		await expect
+			.poll(() => Object.keys(readFrozenColumnWidths()).sort())
+			.toEqual(['email', 'group']);
 	});
 
 	it('anchors the resize handle to the header cell edge', async () => {
@@ -152,12 +255,58 @@ describe('Table.ColumnResizer', () => {
 		render(ColumnResizerTest);
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
 
-		const groupBefore = readColumnWidths().group;
-
 		emailResizer.focus();
-		await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}');
+		await userEvent.keyboard('{ArrowRight}');
+		const groupAfterFirstResize = readColumnWidths().group;
+
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}');
 
 		await expect.poll(() => readColumnWidths().email).toBe(200 + 16 * 3);
-		expect(readColumnWidths().group).toBe(groupBefore);
+		expect(readColumnWidths().group).toBe(groupAfterFirstResize);
+	});
+
+	it('respects shift-step and Home/End keyboard resizing', async () => {
+		render(ColumnResizerTest);
+		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
+
+		groupResizer.focus();
+		await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}');
+		await expect.poll(() => readColumnWidths().group).toBe(208);
+
+		await userEvent.keyboard('{Home}');
+		await expect.poll(() => readColumnWidths().group).toBe(100);
+
+		await userEvent.keyboard('{End}');
+		await expect.poll(() => readColumnWidths().group).toBe(260);
+	});
+
+	it('inverts ArrowLeft and ArrowRight resizing in RTL layouts', async () => {
+		const previousDir = document.documentElement.dir;
+		document.documentElement.dir = 'rtl';
+
+		try {
+			render(ColumnResizerTest);
+			const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+
+			emailResizer.focus();
+			await userEvent.keyboard('{ArrowRight}');
+			await expect.poll(() => readColumnWidths().email).toBe(184);
+
+			await userEvent.keyboard('{ArrowLeft}');
+			await expect.poll(() => readColumnWidths().email).toBe(200);
+		} finally {
+			document.documentElement.dir = previousDir;
+		}
+	});
+
+	it('updates separator value attributes after resize', async () => {
+		render(ColumnResizerTest);
+		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+
+		emailResizer.focus();
+		await userEvent.keyboard('{ArrowRight}');
+
+		await expect.element(emailResizer).toHaveAttribute('aria-valuenow', '216');
+		await expect.element(emailResizer).toHaveAttribute('aria-valuetext', '216px wide');
 	});
 });

@@ -1,14 +1,7 @@
-<script module lang="ts">
-	let rowInstanceId = 0;
-
-	function createRowToken() {
-		rowInstanceId += 1;
-		return `table-row-${rowInstanceId}`;
-	}
-</script>
-
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
+	import { writable } from 'svelte/store';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import {
@@ -36,23 +29,54 @@
 
 	const table = useTableContext();
 	const section = useTableSectionContext();
-	const rowToken = createRowToken();
+	const rowToken = table.createInstanceToken('row');
 	const cellOrder: string[] = [];
+	const cellElements = new SvelteMap<string, () => HTMLElement | undefined>();
+	const cellOrderVersion = writable(0);
 
 	let rowElement = $state<HTMLTableRowElement | undefined>(undefined);
+	let childListObserver: MutationObserver | null = null;
 
-	function registerCellToken(token: string) {
+	function notifyCellOrderChange() {
+		cellOrderVersion.update((value) => value + 1);
+	}
+
+	function registerCellToken(token: string, getElement?: () => HTMLElement | undefined) {
 		if (!cellOrder.includes(token)) {
 			cellOrder.push(token);
+			notifyCellOrderChange();
 		}
-		return cellOrder.indexOf(token);
+		if (getElement) {
+			cellElements.set(token, getElement);
+		}
 	}
 
 	function unregisterCellToken(token: string) {
+		cellElements.delete(token);
 		const index = cellOrder.indexOf(token);
 		if (index >= 0) {
 			cellOrder.splice(index, 1);
+			notifyCellOrderChange();
 		}
+	}
+
+	function getCellIndex(token: string) {
+		if (rowElement) {
+			const directCells = Array.from(rowElement.children).filter(
+				(child): child is HTMLElement => child instanceof HTMLElement
+			);
+			for (let index = 0; index < directCells.length; index += 1) {
+				const directCell = directCells[index];
+				for (const registeredToken of cellOrder) {
+					if (registeredToken !== token) continue;
+					const element = cellElements.get(registeredToken)?.();
+					if (element === directCell) {
+						return index;
+					}
+				}
+			}
+		}
+		return cellOrder.indexOf(token);
 	}
 
 	setTableRowContext({
@@ -64,8 +88,10 @@
 		get isDisabled() {
 			return isDisabled;
 		},
+		cellOrderVersion,
 		registerCellToken,
-		unregisterCellToken
+		unregisterCellToken,
+		getCellIndex
 	});
 
 	function syncRowRegistration() {
@@ -84,7 +110,30 @@
 		syncRowRegistration();
 	});
 
+	$effect(() => {
+		childListObserver?.disconnect();
+		childListObserver = null;
+
+		if (!rowElement) {
+			return;
+		}
+
+		const observer = new MutationObserver(() => {
+			notifyCellOrderChange();
+		});
+		observer.observe(rowElement, { childList: true });
+		childListObserver = observer;
+
+		return () => {
+			observer.disconnect();
+			if (childListObserver === observer) {
+				childListObserver = null;
+			}
+		};
+	});
+
 	onDestroy(() => {
+		childListObserver?.disconnect();
 		table.unregisterRow(rowToken);
 	});
 

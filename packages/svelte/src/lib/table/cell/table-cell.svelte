@@ -1,12 +1,3 @@
-<script module lang="ts">
-	let bodyCellInstanceId = 0;
-
-	function createBodyCellKey() {
-		bodyCellInstanceId += 1;
-		return `table-cell-${bodyCellInstanceId}`;
-	}
-</script>
-
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
@@ -26,13 +17,18 @@
 
 	const table = useTableContext();
 	const row = useTableRowContext();
-	const key = createBodyCellKey();
+	const key = table.createInstanceToken('cell');
 	const layoutVersion = table.layoutVersion;
 	const focusVersion = table.focusVersion;
 	const selectionVersion = table.selectionVersion;
+	const cellOrderVersion = row.cellOrderVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
-	const cellIndex = row.registerCellToken(key);
+	row.registerCellToken(key, () => element);
+	const cellIndex = $derived.by(() => {
+		void $cellOrderVersion;
+		return row.getCellIndex(key);
+	});
 
 	function syncCellRegistration() {
 		if (row.section !== 'body') return;
@@ -89,11 +85,6 @@
 		if (row.section !== 'body' || isRowDisabled) return;
 		table.setFocusedCell(key);
 		table.setFocusVisible(shouldShowFocusVisible(element ?? null));
-	}
-
-	function toggleSelection() {
-		if (row.section !== 'body') return;
-		table.toggleRowSelection(row.rowId as TableSelectionKey | undefined);
 	}
 
 	function handleClick(event: MouseEvent) {

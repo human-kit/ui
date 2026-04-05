@@ -1,12 +1,3 @@
-<script module lang="ts">
-	let headerCellInstanceId = 0;
-
-	function createHeaderCellKey() {
-		headerCellInstanceId += 1;
-		return `table-header-cell-${headerCellInstanceId}`;
-	}
-</script>
-
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
@@ -27,13 +18,18 @@
 	const table = useTableContext();
 	const column = useTableColumnContext();
 	const row = useTableRowContext();
-	const key = createHeaderCellKey();
+	const key = table.createInstanceToken('header-cell');
 	const focusVersion = table.focusVersion;
 	const sortVersion = table.sortVersion;
 	const widthVersion = table.widthVersion;
+	const cellOrderVersion = row.cellOrderVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
-	const cellIndex = row.registerCellToken(key);
+	row.registerCellToken(key, () => element);
+	const cellIndex = $derived.by(() => {
+		void $cellOrderVersion;
+		return row.getCellIndex(key);
+	});
 
 	function syncHeaderCellRegistration() {
 		table.registerCell({

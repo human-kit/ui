@@ -294,17 +294,17 @@ pr:
       - main
 
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: 'ubuntu-latest'
 
 variables:
-  CI: "true"
+  CI: 'true'
   npm_config_cache: $(Pipeline.Workspace)/.npm
 
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "20.x"
-    displayName: "Install Node.js"
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
 
   - task: Cache@2
     inputs:
@@ -312,33 +312,33 @@ steps:
       restoreKeys: |
         npm | "$(Agent.OS)"
       path: $(npm_config_cache)
-    displayName: "Cache npm"
+    displayName: 'Cache npm'
 
   - script: npm ci
-    displayName: "Install dependencies"
+    displayName: 'Install dependencies'
 
   - script: npx playwright install --with-deps
-    displayName: "Install browsers"
+    displayName: 'Install browsers'
 
   - script: npx playwright test
-    displayName: "Run tests"
+    displayName: 'Run tests'
 
   - task: PublishTestResults@2
     condition: always()
     inputs:
-      testResultsFormat: "JUnit"
-      testResultsFiles: "results/junit.xml"
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'results/junit.xml'
       mergeTestResults: true
-      testRunTitle: "E2E Tests"
-    displayName: "Publish results"
+      testRunTitle: 'E2E Tests'
+    displayName: 'Publish results'
 
   - task: PublishPipelineArtifact@1
     condition: always()
     inputs:
       targetPath: pw-report
       artifact: pw-report
-      publishLocation: "pipeline"
-    displayName: "Upload report"
+      publishLocation: 'pipeline'
+    displayName: 'Upload report'
 ```
 
 ### With Sharding
@@ -356,44 +356,44 @@ pr:
       - main
 
 variables:
-  CI: "true"
+  CI: 'true'
 
 stages:
   - stage: Test
     jobs:
       - job: E2E
         pool:
-          vmImage: "ubuntu-latest"
+          vmImage: 'ubuntu-latest'
         strategy:
           matrix:
             shard1:
-              SHARD: "1/4"
+              SHARD: '1/4'
             shard2:
-              SHARD: "2/4"
+              SHARD: '2/4'
             shard3:
-              SHARD: "3/4"
+              SHARD: '3/4'
             shard4:
-              SHARD: "4/4"
+              SHARD: '4/4'
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: "20.x"
+              versionSpec: '20.x'
 
           - script: npm ci
-            displayName: "Install dependencies"
+            displayName: 'Install dependencies'
 
           - script: npx playwright install --with-deps
-            displayName: "Install browsers"
+            displayName: 'Install browsers'
 
           - script: npx playwright test --shard=$(SHARD)
-            displayName: "Run tests (shard $(SHARD))"
+            displayName: 'Run tests (shard $(SHARD))'
 
           - task: PublishPipelineArtifact@1
             condition: always()
             inputs:
               targetPath: blob-report
               artifact: blob-report-$(System.JobPositionInPhase)
-            displayName: "Upload blob report"
+            displayName: 'Upload blob report'
 
   - stage: Report
     dependsOn: Test
@@ -401,29 +401,29 @@ stages:
     jobs:
       - job: MergeReports
         pool:
-          vmImage: "ubuntu-latest"
+          vmImage: 'ubuntu-latest'
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: "20.x"
+              versionSpec: '20.x'
 
           - script: npm ci
-            displayName: "Install dependencies"
+            displayName: 'Install dependencies'
 
           - task: DownloadPipelineArtifact@2
             inputs:
-              patterns: "blob-report-*/**"
+              patterns: 'blob-report-*/**'
               path: all-blob-reports
-            displayName: "Download blob reports"
+            displayName: 'Download blob reports'
 
           - script: npx playwright merge-reports --reporter=html ./all-blob-reports
-            displayName: "Merge reports"
+            displayName: 'Merge reports'
 
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: pw-report
               artifact: pw-report
-            displayName: "Upload merged report"
+            displayName: 'Upload merged report'
 ```
 
 ## JUnit Reporter Config
@@ -432,16 +432,12 @@ All platforms benefit from JUnit output for native test result display:
 
 ```typescript
 // playwright.config.ts
-import { defineConfig } from "@playwright/test";
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  reporter: process.env.CI
-    ? [
-        ["dot"],
-        ["html", { open: "never" }],
-        ["junit", { outputFile: "results/junit.xml" }],
-      ]
-    : [["html", { open: "on-failure" }]],
+	reporter: process.env.CI
+		? [['dot'], ['html', { open: 'never' }], ['junit', { outputFile: 'results/junit.xml' }]]
+		: [['html', { open: 'on-failure' }]]
 });
 ```
 
@@ -496,8 +492,8 @@ reporter: [['junit', { outputFile: 'results/junit.xml' }]],
 - task: PublishTestResults@2
   condition: always()
   inputs:
-    testResultsFormat: "JUnit"
-    testResultsFiles: "results/junit.xml"
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'results/junit.xml'
 ```
 
 ### Shard index off by one

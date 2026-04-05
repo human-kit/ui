@@ -11,27 +11,27 @@ Build a library for distribution:
 
 ```ts
 // vite.config.ts
-import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  build: {
-    lib: {
-      entry: resolve(import.meta.dirname, 'lib/main.ts'),
-      name: 'MyLib',
-      fileName: 'my-lib',
-    },
-    rolldownOptions: {
-      external: ['vue', 'react'],
-      output: {
-        globals: {
-          vue: 'Vue',
-          react: 'React',
-        },
-      },
-    },
-  },
-})
+	build: {
+		lib: {
+			entry: resolve(import.meta.dirname, 'lib/main.ts'),
+			name: 'MyLib',
+			fileName: 'my-lib'
+		},
+		rolldownOptions: {
+			external: ['vue', 'react'],
+			output: {
+				globals: {
+					vue: 'Vue',
+					react: 'React'
+				}
+			}
+		}
+	}
+});
 ```
 
 ### Multiple Entries
@@ -57,18 +57,18 @@ build: {
 
 ```json
 {
-  "name": "my-lib",
-  "type": "module",
-  "files": ["dist"],
-  "main": "./dist/my-lib.umd.cjs",
-  "module": "./dist/my-lib.js",
-  "exports": {
-    ".": {
-      "import": "./dist/my-lib.js",
-      "require": "./dist/my-lib.umd.cjs"
-    },
-    "./style.css": "./dist/my-lib.css"
-  }
+	"name": "my-lib",
+	"type": "module",
+	"files": ["dist"],
+	"main": "./dist/my-lib.umd.cjs",
+	"module": "./dist/my-lib.js",
+	"exports": {
+		".": {
+			"import": "./dist/my-lib.js",
+			"require": "./dist/my-lib.umd.cjs"
+		},
+		"./style.css": "./dist/my-lib.css"
+	}
 }
 ```
 
@@ -76,15 +76,15 @@ build: {
 
 ```ts
 export default defineConfig({
-  build: {
-    rolldownOptions: {
-      input: {
-        main: resolve(import.meta.dirname, 'index.html'),
-        nested: resolve(import.meta.dirname, 'nested/index.html'),
-      },
-    },
-  },
-})
+	build: {
+		rolldownOptions: {
+			input: {
+				main: resolve(import.meta.dirname, 'index.html'),
+				nested: resolve(import.meta.dirname, 'nested/index.html')
+			}
+		}
+	}
+});
 ```
 
 ## SSR Development
@@ -105,54 +105,54 @@ These frameworks build on top of Vite's SSR primitives so you don't have to wire
 ### createServer
 
 ```ts
-import { createServer } from 'vite'
+import { createServer } from 'vite';
 
 const server = await createServer({
-  configFile: false,
-  root: import.meta.dirname,
-  server: { port: 1337 },
-})
+	configFile: false,
+	root: import.meta.dirname,
+	server: { port: 1337 }
+});
 
-await server.listen()
-server.printUrls()
+await server.listen();
+server.printUrls();
 ```
 
 ### build
 
 ```ts
-import { build } from 'vite'
+import { build } from 'vite';
 
 await build({
-  root: './project',
-  build: { outDir: 'dist' },
-})
+	root: './project',
+	build: { outDir: 'dist' }
+});
 ```
 
 ### preview
 
 ```ts
-import { preview } from 'vite'
+import { preview } from 'vite';
 
 const previewServer = await preview({
-  preview: { port: 8080, open: true },
-})
-previewServer.printUrls()
+	preview: { port: 8080, open: true }
+});
+previewServer.printUrls();
 ```
 
 ### resolveConfig
 
 ```ts
-import { resolveConfig } from 'vite'
+import { resolveConfig } from 'vite';
 
-const config = await resolveConfig({}, 'build')
+const config = await resolveConfig({}, 'build');
 ```
 
 ### loadEnv
 
 ```ts
-import { loadEnv } from 'vite'
+import { loadEnv } from 'vite';
 
-const env = loadEnv('development', process.cwd(), '')
+const env = loadEnv('development', process.cwd(), '');
 // Loads all env vars (empty prefix = no filtering)
 ```
 

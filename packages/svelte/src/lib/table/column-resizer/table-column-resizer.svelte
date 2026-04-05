@@ -32,6 +32,8 @@
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);
 	let removeListeners: (() => void) | null = null;
+	let resizeAnnouncement = $state('');
+	let announceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	const isResizing = $derived.by(() => {
 		void $resizeVersion;
@@ -53,9 +55,24 @@
 		const text = column.textValue?.trim() || column.id.replace(/[-_]+/g, ' ').trim();
 		return `Resize ${text || 'column'} column`;
 	});
+	const accessibleValueText = $derived.by(() => {
+		const width = currentWidth;
+		if (width === undefined) return undefined;
+		return `${width}px wide`;
+	});
+
+	function getAnnouncementLabel() {
+		const text = column.textValue?.trim() || column.id.replace(/[-_]+/g, ' ').trim();
+		return text || 'Column';
+	}
 
 	function getHeaderWidth() {
 		return Math.round(element?.closest('th')?.getBoundingClientRect().width ?? 0);
+	}
+
+	function isRightToLeft() {
+		const target = element?.closest('table') ?? element;
+		return target ? getComputedStyle(target).direction === 'rtl' : false;
 	}
 
 	function cleanupPointerListeners() {
@@ -64,8 +81,40 @@
 		table.endColumnResize();
 	}
 
+	function cleanupAnnouncementTimeout() {
+		if (announceTimeout !== null) {
+			clearTimeout(announceTimeout);
+			announceTimeout = null;
+		}
+	}
+
 	function updateWidth(nextWidth: number) {
 		table.setColumnWidth(column.id, nextWidth);
+	}
+
+	function getResolvedWidth() {
+		return table.getColumnWidth(column.id) ?? getHeaderWidth() ?? minWidth;
+	}
+
+	function announceWidth(width: number) {
+		const message = `${getAnnouncementLabel()} width ${width}px.`;
+		cleanupAnnouncementTimeout();
+		resizeAnnouncement = '';
+		announceTimeout = setTimeout(() => {
+			resizeAnnouncement = message;
+			announceTimeout = null;
+		}, 0);
+	}
+
+	function commitWidthChange(nextWidth: number, options?: { announce?: boolean }) {
+		table.startColumnResize(column.id);
+		updateWidth(nextWidth);
+		const committedWidth = getResolvedWidth();
+		table.endColumnResize();
+		if (options?.announce !== false) {
+			announceWidth(committedWidth);
+		}
+		return committedWidth;
 	}
 
 	function getAutoFitWidth() {
@@ -79,13 +128,13 @@
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = false;
 
-		table.startColumnResize(column.id);
-		updateWidth(getAutoFitWidth());
-		table.endColumnResize();
+		commitWidthChange(getAutoFitWidth());
 	}
 
-	function handleMouseDown(event: MouseEvent) {
-		if (!column.allowsResizing || event.button !== 0) return;
+	function handlePointerDown(event: PointerEvent) {
+		if (!column.allowsResizing) return;
+		if (event.pointerType === 'mouse' && event.button !== 0) return;
+		if (event.isPrimary === false) return;
 		event.preventDefault();
 		event.stopPropagation();
 		trackInteractionModality(event, element ?? null);
@@ -97,7 +146,11 @@
 		const tableEl = th?.closest('table') as HTMLTableElement | null;
 		const startX = event.clientX;
 		const startWidth = table.getColumnWidth(column.id) ?? getHeaderWidth();
+		const pointerId = event.pointerId;
+		const isRTL = isRightToLeft();
 		let didDrag = false;
+		let latestClientX = startX;
+		let animationFrameId: number | null = null;
 
 		function clampWidth(w: number) {
 			let clamped = Math.round(w);
@@ -106,7 +159,7 @@
 			return clamped;
 		}
 
-		function applyWidthToDOM(width: number) {
+		function applyTemporaryWidthToDOM(width: number) {
 			if (th) th.style.width = `${width}px`;
 			if (tableEl) {
 				const allThs = tableEl.querySelectorAll<HTMLElement>('thead th[style*="width"]');
@@ -121,6 +174,26 @@
 			}
 		}
 
+		function flushPendingPointerMove() {
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+
+			const direction = isRTL ? -1 : 1;
+			const delta = (latestClientX - startX) * positionScale * direction;
+			const nextWidth = clampWidth(startWidth + delta);
+			updateWidth(nextWidth);
+		}
+
+		function schedulePointerMove() {
+			if (animationFrameId !== null) return;
+			animationFrameId = requestAnimationFrame(() => {
+				animationFrameId = null;
+				flushPendingPointerMove();
+			});
+		}
+
 		// Measure position compensation factor.
 		// In centered/flex layouts, growing a column shifts the table's left edge,
 		// so the handle moves less than the mouse delta. We detect this by applying
@@ -128,36 +201,70 @@
 		let positionScale = 1;
 		if (th) {
 			const leftBefore = th.getBoundingClientRect().left;
-			applyWidthToDOM(startWidth + 1);
+			applyTemporaryWidthToDOM(startWidth + 1);
 			const leftAfter = th.getBoundingClientRect().left;
-			applyWidthToDOM(startWidth);
+			applyTemporaryWidthToDOM(startWidth);
 			const drift = leftBefore - leftAfter;
 			if (drift > 0.01 && drift < 0.99) {
 				positionScale = 1 / (1 - drift);
 			}
 		}
 
-		const handleMouseMove = (moveEvent: MouseEvent) => {
+		const handlePointerMove = (moveEvent: PointerEvent) => {
+			if (moveEvent.pointerId !== pointerId) return;
 			moveEvent.preventDefault();
 			didDrag = true;
-			const delta = (moveEvent.clientX - startX) * positionScale;
-			const nextWidth = clampWidth(startWidth + delta);
-			applyWidthToDOM(nextWidth);
-			updateWidth(nextWidth);
+			latestClientX = moveEvent.clientX;
+			schedulePointerMove();
 		};
 
-		const handleMouseUp = () => {
+		const handlePointerUp = (upEvent: PointerEvent) => {
+			if (upEvent.pointerId !== pointerId) return;
+			if (didDrag) {
+				latestClientX = upEvent.clientX;
+				flushPendingPointerMove();
+			}
 			if (didDrag) {
 				table.suppressHeaderClickOnce();
+				announceWidth(getResolvedWidth());
 			}
 			cleanupPointerListeners();
 		};
 
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('mouseup', handleMouseUp, { once: true });
+		const handlePointerCancel = (cancelEvent: PointerEvent) => {
+			if (cancelEvent.pointerId !== pointerId) return;
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+			cleanupPointerListeners();
+		};
+
+		const handleWindowKeyDown = (keyEvent: KeyboardEvent) => {
+			if (keyEvent.key !== 'Escape') return;
+			keyEvent.preventDefault();
+			keyEvent.stopPropagation();
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+			updateWidth(startWidth);
+			cleanupPointerListeners();
+		};
+
+		window.addEventListener('pointermove', handlePointerMove);
+		window.addEventListener('pointerup', handlePointerUp);
+		window.addEventListener('pointercancel', handlePointerCancel);
+		window.addEventListener('keydown', handleWindowKeyDown, true);
 		removeListeners = () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-			window.removeEventListener('mouseup', handleMouseUp);
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+			window.removeEventListener('pointermove', handlePointerMove);
+			window.removeEventListener('pointerup', handlePointerUp);
+			window.removeEventListener('pointercancel', handlePointerCancel);
+			window.removeEventListener('keydown', handleWindowKeyDown, true);
 		};
 	}
 
@@ -183,30 +290,32 @@
 		event.stopPropagation();
 
 		const delta = event.shiftKey ? shiftStep : step;
-		const baseWidth = currentWidth || getHeaderWidth();
+		const direction = isRightToLeft() ? -1 : 1;
+		const baseWidth = getResolvedWidth();
 
 		switch (event.key) {
 			case 'ArrowLeft':
 				event.preventDefault();
-				updateWidth(baseWidth - delta);
+				commitWidthChange(baseWidth - delta * direction);
 				return;
 			case 'ArrowRight':
 				event.preventDefault();
-				updateWidth(baseWidth + delta);
+				commitWidthChange(baseWidth + delta * direction);
 				return;
 			case 'Home':
 				event.preventDefault();
-				updateWidth(minWidth);
+				commitWidthChange(minWidth);
 				return;
 			case 'End':
 				if (maxWidth === undefined) return;
 				event.preventDefault();
-				updateWidth(maxWidth);
+				commitWidthChange(maxWidth);
 				return;
 		}
 	}
 
 	onDestroy(() => {
+		cleanupAnnouncementTimeout();
 		cleanupPointerListeners();
 	});
 </script>
@@ -219,9 +328,10 @@
 	class={className}
 	aria-label={accessibleLabel}
 	aria-orientation="vertical"
-	aria-valuenow={currentWidth || undefined}
+	aria-valuenow={currentWidth ?? undefined}
 	aria-valuemin={minWidth}
 	aria-valuemax={maxWidth}
+	aria-valuetext={accessibleValueText}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-resizing={isResizing ? 'true' : undefined}
@@ -237,7 +347,7 @@
 	style:justify-content="center"
 	style:user-select="none"
 	style:touch-action="none"
-	onmousedown={handleMouseDown}
+	onpointerdown={handlePointerDown}
 	ondblclick={handleDoubleClick}
 	onclick={handleClick}
 	onfocus={handleFocus}
@@ -253,4 +363,11 @@
 			style="display:block;width:1px;min-height:1rem;background:currentColor;opacity:0.35;"
 		></span>
 	{/if}
+	<span
+		data-testid="column-resize-status"
+		role="status"
+		aria-live="polite"
+		aria-atomic="true"
+		class="sr-only">{resizeAnnouncement}</span
+	>
 </div>

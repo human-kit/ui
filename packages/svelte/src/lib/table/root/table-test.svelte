@@ -37,7 +37,7 @@
 		rows = defaultRows,
 		ariaLabel = 'Users table',
 		ariaLabelledby,
-		selectionMode = 'multiple',
+		selectionMode = $bindable<TableSelectionMode>('multiple'),
 		selectionBehavior = 'toggle',
 		disabledKeys,
 		initialSelectedKeys,
@@ -47,17 +47,12 @@
 		showSortClearButton = false
 	}: TableTestProps = $props();
 
-	let currentSelectionMode = $state((() => selectionMode)());
 	let currentSelectedKeys = $state<Set<TableSelectionKey>>(
 		new Set((() => initialSelectedKeys ?? [])())
 	);
 	let currentSortDescriptor = $state<TableSortDescriptor | undefined>(
 		(() => initialSortDescriptor)()
 	);
-
-	$effect(() => {
-		currentSelectionMode = selectionMode;
-	});
 
 	const renderedRows = $derived.by(() => {
 		const nextRows = [...rows];
@@ -75,7 +70,7 @@
 <Table.Root
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
-	selectionMode={currentSelectionMode}
+	{selectionMode}
 	{selectionBehavior}
 	bind:selectedKeys={currentSelectedKeys}
 	bind:sortDescriptor={currentSortDescriptor}
@@ -118,7 +113,7 @@
 	<button
 		type="button"
 		data-testid="set-selection-mode-none"
-		onclick={() => (currentSelectionMode = 'none')}
+		onclick={() => (selectionMode = 'none')}
 	>
 		Selection none
 	</button>
@@ -128,7 +123,7 @@
 	<button
 		type="button"
 		data-testid="set-selection-mode-single"
-		onclick={() => (currentSelectionMode = 'single')}
+		onclick={() => (selectionMode = 'single')}
 	>
 		Selection single
 	</button>

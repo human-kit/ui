@@ -2,8 +2,8 @@
 name: Bun
 description: Use when building, running, testing, or bundling JavaScript/TypeScript applications. Reach for Bun when you need to execute scripts, manage packages, run tests, or bundle code for production. Bun is a drop-in replacement for Node.js with integrated package manager, test runner, and bundler.
 metadata:
-    mintlify-proj: bun
-    version: "1.0"
+  mintlify-proj: bun
+  version: '1.0'
 ---
 
 # Bun Skill Reference
@@ -27,16 +27,16 @@ Bun is an all-in-one JavaScript/TypeScript toolkit that ships as a single binary
 
 ### Core commands
 
-| Command | Purpose |
-|---------|---------|
-| `bun run <file>` | Execute a TypeScript/JavaScript file |
-| `bun run <script>` | Run a package.json script |
-| `bun install` | Install dependencies (30x faster than npm) |
-| `bun add <pkg>` | Add a package to dependencies |
-| `bun remove <pkg>` | Remove a package |
-| `bun test` | Run tests matching `*.test.ts`, `*_test.ts`, `*.spec.ts`, `*_spec.ts` |
-| `bun build <entry>` | Bundle code for production |
-| `bunx <pkg>` | Execute a package without installing |
+| Command             | Purpose                                                               |
+| ------------------- | --------------------------------------------------------------------- |
+| `bun run <file>`    | Execute a TypeScript/JavaScript file                                  |
+| `bun run <script>`  | Run a package.json script                                             |
+| `bun install`       | Install dependencies (30x faster than npm)                            |
+| `bun add <pkg>`     | Add a package to dependencies                                         |
+| `bun remove <pkg>`  | Remove a package                                                      |
+| `bun test`          | Run tests matching `*.test.ts`, `*_test.ts`, `*.spec.ts`, `*_spec.ts` |
+| `bun build <entry>` | Bundle code for production                                            |
+| `bunx <pkg>`        | Execute a package without installing                                  |
 
 ### Configuration file (bunfig.toml)
 
@@ -70,17 +70,17 @@ silent = false
 
 ```ts
 // Read file
-const file = Bun.file("path/to/file.txt");
+const file = Bun.file('path/to/file.txt');
 const text = await file.text();
 const bytes = await file.bytes();
 
 // Write file
-await Bun.write("path/to/file.txt", "content");
+await Bun.write('path/to/file.txt', 'content');
 
 // Incremental write
-const writer = Bun.file("output.txt").writer();
-writer.write("chunk 1\n");
-writer.write("chunk 2\n");
+const writer = Bun.file('output.txt').writer();
+writer.write('chunk 1\n');
+writer.write('chunk 2\n');
 writer.end();
 ```
 
@@ -88,54 +88,54 @@ writer.end();
 
 ```ts
 Bun.serve({
-  port: 3000,
-  routes: {
-    "/": () => new Response("Home"),
-    "/api": () => Response.json({ data: [] }),
-    "/users/:id": (req) => new Response(`User ${req.params.id}`),
-  },
-  fetch(req) {
-    return new Response("Not found", { status: 404 });
-  },
+	port: 3000,
+	routes: {
+		'/': () => new Response('Home'),
+		'/api': () => Response.json({ data: [] }),
+		'/users/:id': (req) => new Response(`User ${req.params.id}`)
+	},
+	fetch(req) {
+		return new Response('Not found', { status: 404 });
+	}
 });
 ```
 
 ### Package manager flags
 
-| Flag | Purpose |
-|------|---------|
-| `--save-dev` / `-d` | Add as dev dependency |
-| `--optional` | Add as optional dependency |
-| `--exact` | Use exact version (not caret range) |
-| `--production` | Skip dev dependencies on install |
-| `--frozen-lockfile` | Fail if lockfile needs updating |
-| `--global` | Install globally |
+| Flag                | Purpose                             |
+| ------------------- | ----------------------------------- |
+| `--save-dev` / `-d` | Add as dev dependency               |
+| `--optional`        | Add as optional dependency          |
+| `--exact`           | Use exact version (not caret range) |
+| `--production`      | Skip dev dependencies on install    |
+| `--frozen-lockfile` | Fail if lockfile needs updating     |
+| `--global`          | Install globally                    |
 
 ### Test runner flags
 
-| Flag | Purpose |
-|------|---------|
-| `--watch` | Re-run on file changes |
-| `--concurrent` | Run tests in parallel |
-| `--timeout <ms>` | Per-test timeout (default 5000) |
-| `--bail` | Stop after first failure |
-| `--retry <n>` | Retry failed tests |
-| `--coverage` | Generate coverage report |
-| `--update-snapshots` | Update snapshot files |
+| Flag                 | Purpose                         |
+| -------------------- | ------------------------------- |
+| `--watch`            | Re-run on file changes          |
+| `--concurrent`       | Run tests in parallel           |
+| `--timeout <ms>`     | Per-test timeout (default 5000) |
+| `--bail`             | Stop after first failure        |
+| `--retry <n>`        | Retry failed tests              |
+| `--coverage`         | Generate coverage report        |
+| `--update-snapshots` | Update snapshot files           |
 
 ### Bundler options
 
 ```ts
 await Bun.build({
-  entrypoints: ["./index.tsx"],
-  outdir: "./dist",
-  target: "browser",        // "browser" | "bun" | "node"
-  format: "esm",            // "esm" | "cjs" | "iife"
-  splitting: true,          // Enable code splitting
-  minify: true,             // Minify output
-  sourcemap: "linked",      // "none" | "linked" | "inline" | "external"
-  external: ["react"],      // Don't bundle these
-  define: { VERSION: '"1.0"' },
+	entrypoints: ['./index.tsx'],
+	outdir: './dist',
+	target: 'browser', // "browser" | "bun" | "node"
+	format: 'esm', // "esm" | "cjs" | "iife"
+	splitting: true, // Enable code splitting
+	minify: true, // Minify output
+	sourcemap: 'linked', // "none" | "linked" | "inline" | "external"
+	external: ['react'], // Don't bundle these
+	define: { VERSION: '"1.0"' }
 });
 ```
 
@@ -143,50 +143,52 @@ await Bun.build({
 
 ### When to use `bun run` vs `bun`
 
-| Scenario | Use |
-|----------|-----|
-| Running a package.json script | `bun run <script>` |
-| Running a file directly | `bun <file>` or `bun run <file>` |
-| Ambiguous name (file or script) | `bun run` (prioritizes scripts) |
-| Running system commands | `bun run` (in scripts) |
+| Scenario                        | Use                              |
+| ------------------------------- | -------------------------------- |
+| Running a package.json script   | `bun run <script>`               |
+| Running a file directly         | `bun <file>` or `bun run <file>` |
+| Ambiguous name (file or script) | `bun run` (prioritizes scripts)  |
+| Running system commands         | `bun run` (in scripts)           |
 
 ### When to use `hoisted` vs `isolated` linker
 
-| Scenario | Use |
-|----------|-----|
-| Single-package project | `hoisted` (default) |
-| Monorepo with workspaces | `isolated` (default for new workspaces) |
-| Need flat node_modules | `hoisted` |
-| Strict dependency isolation | `isolated` |
+| Scenario                    | Use                                     |
+| --------------------------- | --------------------------------------- |
+| Single-package project      | `hoisted` (default)                     |
+| Monorepo with workspaces    | `isolated` (default for new workspaces) |
+| Need flat node_modules      | `hoisted`                               |
+| Strict dependency isolation | `isolated`                              |
 
 ### When to bundle vs run directly
 
-| Scenario | Use |
-|----------|-----|
-| Development/testing | Run directly with `bun run` |
-| Production server | Bundle with `bun build --target bun` |
+| Scenario            | Use                                      |
+| ------------------- | ---------------------------------------- |
+| Development/testing | Run directly with `bun run`              |
+| Production server   | Bundle with `bun build --target bun`     |
 | Browser/client code | Bundle with `bun build --target browser` |
-| Single executable | Bundle with `bun build --compile` |
-| Reduce startup time | Bundle with `--bytecode` |
+| Single executable   | Bundle with `bun build --compile`        |
+| Reduce startup time | Bundle with `--bytecode`                 |
 
 ### When to use test.serial vs test.concurrent
 
-| Scenario | Use |
-|----------|-----|
-| Tests share state | `test.serial()` |
+| Scenario                | Use                 |
+| ----------------------- | ------------------- |
+| Tests share state       | `test.serial()`     |
 | Independent async tests | `test.concurrent()` |
-| Database operations | `test.serial()` |
-| API calls | `test.concurrent()` |
+| Database operations     | `test.serial()`     |
+| API calls               | `test.concurrent()` |
 
 ## Workflow
 
 ### 1. Initialize a new project
+
 ```bash
 bun init my-app
 cd my-app
 ```
 
 ### 2. Install dependencies
+
 ```bash
 bun install
 # or add specific packages
@@ -195,18 +197,21 @@ bun add -d typescript @types/react
 ```
 
 ### 3. Create and run scripts
+
 Edit `package.json`:
+
 ```json
 {
-  "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist",
-    "test": "bun test"
-  }
+	"scripts": {
+		"dev": "bun run src/index.ts",
+		"build": "bun build src/index.ts --outdir dist",
+		"test": "bun test"
+	}
 }
 ```
 
 Run with:
+
 ```bash
 bun run dev
 bun run build
@@ -214,6 +219,7 @@ bun test
 ```
 
 ### 4. Build for production
+
 ```bash
 # Browser bundle
 bun build src/index.tsx --outdir dist --target browser
@@ -226,16 +232,19 @@ bun build src/cli.ts --outfile mycli --compile
 ```
 
 ### 5. Write and run tests
-Create `math.test.ts`:
-```ts
-import { test, expect } from "bun:test";
 
-test("addition", () => {
-  expect(2 + 2).toBe(4);
+Create `math.test.ts`:
+
+```ts
+import { test, expect } from 'bun:test';
+
+test('addition', () => {
+	expect(2 + 2).toBe(4);
 });
 ```
 
 Run tests:
+
 ```bash
 bun test
 bun test --watch
@@ -243,7 +252,9 @@ bun test --coverage
 ```
 
 ### 6. Configure with bunfig.toml
+
 Create `bunfig.toml` in project root:
+
 ```toml
 [install]
 linker = "hoisted"

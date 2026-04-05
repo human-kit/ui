@@ -1,55 +1,55 @@
 {
-  "version": 1,
-  "skills": {
-    "accessibility": {
-      "source": "addyosmani/web-quality-skills",
-      "sourceType": "github",
-      "computedHash": "494d59fffe67c87b485f4ee2fb1abd73fc9d0d508c4c8bd9c43a9edd3242f730"
-    },
-    "bun": {
-      "source": "bun.sh",
-      "sourceType": "well-known",
-      "computedHash": "bc316dd20398ba1d43069d1ebc4e429f1ba2766d51c69aa96ef815c52346cdb7"
-    },
-    "frontend-design": {
-      "source": "anthropics/skills",
-      "sourceType": "github",
-      "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
-    },
-    "playwright-best-practices": {
-      "source": "currents-dev/playwright-best-practices-skill",
-      "sourceType": "github",
-      "computedHash": "6db654e753257e642d6507d59b4fc633a2382e93429748ba0fb6817c23ef5216"
-    },
-    "svelte-code-writer": {
-      "source": "sveltejs/ai-tools",
-      "sourceType": "github",
-      "computedHash": "c0e2cce9855f8e312cbb0a05aef164b4659c672d7723e4e598ffa6bc94890542"
-    },
-    "svelte5-best-practices": {
-      "source": "ejirocodes/agent-skills",
-      "sourceType": "github",
-      "computedHash": "ce40e28405a4c17006580d6766edf2deddfad8893c7887b73c68cb71644ceadb"
-    },
-    "tailwind-css-patterns": {
-      "source": "giuseppe-trisciuoglio/developer-kit",
-      "sourceType": "github",
-      "computedHash": "2fa1b2d4e0bc020dcbaa1e65af6f7ba75715116686e0fd663a4b268c8ace22d4"
-    },
-    "typescript-advanced-types": {
-      "source": "wshobson/agents",
-      "sourceType": "github",
-      "computedHash": "ee8377c523a911be41c31037b477805773ca5ab5ade181e44ca7dd3cd8df6692"
-    },
-    "vite": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "1cdc4bbecaa89544e6ef92566b015db989994bf90c4472683ac64f7a114dc3af"
-    },
-    "vitest": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "0efd9cf8c56aada060d418d009cfe621a7915d0c73a958fe611985bc0c2fa4b8"
-    }
-  }
+	"version": 1,
+	"skills": {
+		"accessibility": {
+			"source": "addyosmani/web-quality-skills",
+			"sourceType": "github",
+			"computedHash": "494d59fffe67c87b485f4ee2fb1abd73fc9d0d508c4c8bd9c43a9edd3242f730"
+		},
+		"bun": {
+			"source": "bun.sh",
+			"sourceType": "well-known",
+			"computedHash": "bc316dd20398ba1d43069d1ebc4e429f1ba2766d51c69aa96ef815c52346cdb7"
+		},
+		"frontend-design": {
+			"source": "anthropics/skills",
+			"sourceType": "github",
+			"computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
+		},
+		"playwright-best-practices": {
+			"source": "currents-dev/playwright-best-practices-skill",
+			"sourceType": "github",
+			"computedHash": "6db654e753257e642d6507d59b4fc633a2382e93429748ba0fb6817c23ef5216"
+		},
+		"svelte-code-writer": {
+			"source": "sveltejs/ai-tools",
+			"sourceType": "github",
+			"computedHash": "c0e2cce9855f8e312cbb0a05aef164b4659c672d7723e4e598ffa6bc94890542"
+		},
+		"svelte5-best-practices": {
+			"source": "ejirocodes/agent-skills",
+			"sourceType": "github",
+			"computedHash": "ce40e28405a4c17006580d6766edf2deddfad8893c7887b73c68cb71644ceadb"
+		},
+		"tailwind-css-patterns": {
+			"source": "giuseppe-trisciuoglio/developer-kit",
+			"sourceType": "github",
+			"computedHash": "2fa1b2d4e0bc020dcbaa1e65af6f7ba75715116686e0fd663a4b268c8ace22d4"
+		},
+		"typescript-advanced-types": {
+			"source": "wshobson/agents",
+			"sourceType": "github",
+			"computedHash": "ee8377c523a911be41c31037b477805773ca5ab5ade181e44ca7dd3cd8df6692"
+		},
+		"vite": {
+			"source": "antfu/skills",
+			"sourceType": "github",
+			"computedHash": "1cdc4bbecaa89544e6ef92566b015db989994bf90c4472683ac64f7a114dc3af"
+		},
+		"vitest": {
+			"source": "antfu/skills",
+			"sourceType": "github",
+			"computedHash": "0efd9cf8c56aada060d418d009cfe621a7915d0c73a958fe611985bc0c2fa4b8"
+		}
+	}
 }

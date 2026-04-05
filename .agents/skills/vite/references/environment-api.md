@@ -19,26 +19,26 @@ For SPA/MPA, nothing changes—options apply to the implicit `client` environmen
 
 ```ts
 export default defineConfig({
-  build: { sourcemap: false },
-  optimizeDeps: { include: ['lib'] },
-})
+	build: { sourcemap: false },
+	optimizeDeps: { include: ['lib'] }
+});
 ```
 
 ## Multiple Environments
 
 ```ts
 export default defineConfig({
-  build: { sourcemap: false },  // Inherited by all environments
-  optimizeDeps: { include: ['lib'] },  // Client only
-  environments: {
-    // SSR environment
-    server: {},
-    // Edge runtime environment
-    edge: {
-      resolve: { noExternal: true },
-    },
-  },
-})
+	build: { sourcemap: false }, // Inherited by all environments
+	optimizeDeps: { include: ['lib'] }, // Client only
+	environments: {
+		// SSR environment
+		server: {},
+		// Edge runtime environment
+		edge: {
+			resolve: { noExternal: true }
+		}
+	}
+});
 ```
 
 Environments inherit top-level config. Some options (like `optimizeDeps`) only apply to `client` by default.
@@ -47,12 +47,12 @@ Environments inherit top-level config. Some options (like `optimizeDeps`) only a
 
 ```ts
 interface EnvironmentOptions {
-  define?: Record<string, any>
-  resolve?: EnvironmentResolveOptions
-  optimizeDeps: DepOptimizationOptions
-  consumer?: 'client' | 'server'
-  dev: DevOptions
-  build: BuildOptions
+	define?: Record<string, any>;
+	resolve?: EnvironmentResolveOptions;
+	optimizeDeps: DepOptimizationOptions;
+	consumer?: 'client' | 'server';
+	dev: DevOptions;
+	build: BuildOptions;
 }
 ```
 
@@ -61,15 +61,15 @@ interface EnvironmentOptions {
 Runtime providers can define custom environments:
 
 ```ts
-import { customEnvironment } from 'vite-environment-provider'
+import { customEnvironment } from 'vite-environment-provider';
 
 export default defineConfig({
-  environments: {
-    ssr: customEnvironment({
-      build: { outDir: '/dist/ssr' },
-    }),
-  },
-})
+	environments: {
+		ssr: customEnvironment({
+			build: { outDir: '/dist/ssr' }
+		})
+	}
+});
 ```
 
 Example: Cloudflare's Vite plugin runs code in `workerd` runtime during development.

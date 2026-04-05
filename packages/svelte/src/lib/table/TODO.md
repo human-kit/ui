@@ -9,19 +9,24 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 ### Bugs / Correctness
 
 - [x] [M][P0][Area: Correctness][Owner: Unassigned][Target: Done] Deduplicate sync registration calls — `syncXxxRegistration()` runs both synchronously at mount and inside `$effect`, causing a redundant `notifyLayout()` per part on initial render (Column, Row, Cell, ColumnHeaderCell).
-- [ ] [S][P0][Area: Correctness][Owner: Unassigned][Target: TBD] Make `cellIndex` in `Table.Cell` reactive — currently captured once via `row.registerCellToken(key)` and never updated if cells are dynamically reordered within a row.
-- [ ] [C][P1][Area: Correctness][Owner: Unassigned][Target: TBD] Evaluate module-level monotonic counters (`columnInstanceId`, `rowInstanceId`, etc.) for SSR and test determinism — tokens grow indefinitely across renders and never reset.
+- [x] [S][P0][Area: Correctness][Owner: Unassigned][Target: Done] Make `cellIndex` in `Table.Cell` reactive — currently captured once via `row.registerCellToken(key)` and never updated if cells are dynamically reordered within a row.
+- [x] [C][P1][Area: Correctness][Owner: Unassigned][Target: Done] Replace module-level monotonic counters (`columnInstanceId`, `rowInstanceId`, etc.) with per-`Table.Root` token generation so SSR and repeated tests do not share global instance state.
 
 ### Behavior
 
 - [x] [M][P1][Area: Behavior][Owner: Unassigned][Target: Done] Align row focus state semantics — current row-level `data-focused` behaves more like `focus-within`; either rename/expose a distinct `data-focus-within` contract or implement true row focus semantics.
 - [x] [M][P1][Area: Behavior][Owner: Unassigned][Target: Done] Define and document the text-selection policy when row selection is enabled — keep browser-native behavior or add an explicit opt-in/opt-out API instead of ad hoc styling in examples.
 - [x] [S][P2][Area: Behavior][Owner: Unassigned][Target: Done] Verify that changing `selectionMode` between `multiple`, `single`, and `none` preserves the intended normalization rules in all controlled and uncontrolled flows.
+- [x] [M][P0][Area: Behavior][Owner: Unassigned][Target: Done] Make `Table.ColumnResizer` keyboard interactions run the same resize lifecycle as pointer interactions so width freezing and resize callbacks stay consistent.
+- [x] [M][P1][Area: Behavior][Owner: Unassigned][Target: Done] Allow cancelling an in-progress `Table.ColumnResizer` drag with `Escape`, restoring the starting width instead of forcing the partial drag result.
 
 ### Accessibility
 
 - [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Enforce accessible name on `Table.Root` — warn in dev when neither `aria-label` nor `aria-labelledby` is provided (WCAG 4.1.2).
 - [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Add `aria-disabled` to focusable body cells inside disabled rows — currently only the `<tr>` carries `aria-disabled`, leaving screen readers unaware at the cell level.
+- [x] [M][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Announce committed `Table.ColumnResizer` width changes through a polite live region and expose `aria-valuetext` so keyboard resizing has reliable screen reader feedback.
+- [x] [M][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Move `Table.ColumnResizer` drag handling to Pointer Events so touch, pen, and mouse resizing use the same path.
+- [x] [S][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Make `Table.ColumnResizer` keyboard arrow semantics respect RTL layouts so logical resize controls match the visual direction.
 - [ ] [M][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Validate screen reader announcements for `rowheader`, `columnheader`, and `aria-sort` across NVDA and VoiceOver.
 - [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Resolve footer grid semantics — footer cells live inside `role="grid"` but are unreachable by keyboard; either include footer in navigation or mark `<tfoot>` with `role="none"` to exclude it from the grid.
 - [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Add `aria-rowcount` and `aria-colcount` to the grid element for screen reader dimension announcements.
@@ -31,6 +36,8 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 ### Performance
 
 - [x] [M][P1][Area: Performance][Owner: Unassigned][Target: Done] Cache `getOrderedRowTokens` result and invalidate on `notifyLayout` — currently re-sorts with `compareDocumentPosition` on every focus move, selection, and row count query.
+- [x] [M][P1][Area: Performance][Owner: Unassigned][Target: Done] Replace repeated linear column-id scans in table resize helpers with an O(1) id-to-token lookup inside `Table.Root` context.
+- [x] [S][P1][Area: Performance][Owner: Unassigned][Target: Done] Batch `Table.ColumnResizer` pointer drag updates with `requestAnimationFrame` so width writes and store updates stay aligned to paint frames.
 - [x] [M][P2][Area: Performance][Owner: Unassigned][Target: Done] Cache `getNavigableCells()` / `getRowsWithCells()` and invalidate on layout changes — currently reconstructs full cell map on every `moveFocus` call.
 - [ ] [S][P2][Area: Performance][Owner: Unassigned][Target: TBD] Migrate version stores from `writable` (svelte/store) to `$state` runes for idiomatic Svelte 5 reactivity and potential batching improvements.
 

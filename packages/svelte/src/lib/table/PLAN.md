@@ -40,12 +40,12 @@ Design and implement a new public `Table` component for the Svelte library, usin
 - `Table.Column` is a logical component with no DOM output; it registers column metadata in context. `Table.ColumnHeaderCell` renders the `<th>`.
 - `Table.EmptyState` is a dedicated part for the body empty state.
 - V1 must include:
-	- base anatomy
-	- `Table.Footer`
-	- `Table.EmptyState`
-	- keyboard grid navigation
-	- row selection
-	- sorting
+  - base anatomy
+  - `Table.Footer`
+  - `Table.EmptyState`
+  - keyboard grid navigation
+  - row selection
+  - sorting
 
 ## V1 Scope
 
@@ -119,8 +119,8 @@ Design and implement a new public `Table` component for the Svelte library, usin
 - `Table.Row` should render `<tr role="row">`.
 - `Table.ColumnHeaderCell` should render `<th role="columnheader">`.
 - `Table.Cell` should render:
-	- `<th scope="row" role="rowheader">` when the associated column has `isRowHeader`
-	- `<td role="gridcell">` in all other cases
+  - `<th scope="row" role="rowheader">` when the associated column has `isRowHeader`
+  - `<td role="gridcell">` in all other cases
 
 This combination preserves real HTML semantics while allowing interactive grid behavior without inventing a structure entirely based on `div`s.
 
@@ -129,12 +129,12 @@ This combination preserves real HTML semantics while allowing interactive grid b
 Two related levels will be implemented:
 
 1. **DOM focus on cell/header cell**
-	 - `Table.ColumnHeaderCell` and `Table.Cell` are the real navigation targets.
-	 - This keeps the behavior close to React Aria Components.
+   - `Table.ColumnHeaderCell` and `Table.Cell` are the real navigation targets.
+   - This keeps the behavior close to React Aria Components.
 
 2. **Row-derived state**
-	 - `Table.Row` exposes derived states such as focused row, selected row, or disabled row.
-	 - This helps with styling and simplifies the visual experience.
+   - `Table.Row` exposes derived states such as focused row, selected row, or disabled row.
+   - This helps with styling and simplifies the visual experience.
 
 ### Target Keyboard Support in V1
 
@@ -151,9 +151,9 @@ Two related levels will be implemented:
 - Only one `Table.ColumnHeaderCell` or `Table.Cell` should have `tabindex="0"` at a time.
 - All other navigable cells should have `tabindex="-1"`.
 - When entering with `Tab` from outside:
-	- if there is a previously focused cell, focus is restored there
-	- otherwise focus enters the first navigable header cell
-	- if no header is navigable, focus enters the first navigable body cell
+  - if there is a previously focused cell, focus is restored there
+  - otherwise focus enters the first navigable header cell
+  - if no header is navigable, focus enters the first navigable body cell
 - `Shift+Tab` and `Tab` should allow the browser to leave the grid naturally from the active cell.
 
 This preserves the roving tabindex pattern and avoids making `Root` compete with cells as a focus target.
@@ -367,21 +367,21 @@ Responsibilities:
 
 ## ARIA Attributes by Part
 
-| Part               | Attribute                        | Value                             | Description                                            |
-| ------------------ | -------------------------------- | --------------------------------- | ------------------------------------------------------ |
-| `Root`             | `role`                           | `grid`                            | Interactive table                                      |
-| `Root`             | `aria-label` / `aria-labelledby` | string                            | Accessible name (required)                             |
-| `Root`             | `aria-multiselectable`           | `true`                            | Present when `selectionMode='multiple'`                |
-| `Header`           | `role`                           | `rowgroup`                        | Header row group                                       |
-| `Body`             | `role`                           | `rowgroup`                        | Data row group                                         |
-| `Footer`           | `role`                           | `rowgroup`                        | Footer row group                                       |
-| `Row`              | `role`                           | `row`                             | Row                                                    |
-| `Row` (body)       | `aria-selected`                  | `true` / `false`                  | Selection state (when `selectionMode != 'none'`)       |
-| `Row` (body)       | `aria-disabled`                  | `true`                            | Disabled row                                           |
-| `ColumnHeaderCell` | `role`                           | `columnheader`                    | Column header                                          |
-| `ColumnHeaderCell` | `aria-sort`                      | `ascending`, `descending`, `none` | Sort direction (only when `allowsSorting`)             |
-| `Cell`             | `role`                           | `gridcell` or `rowheader`         | `rowheader` if the column has `isRowHeader`            |
-| `EmptyState`       | `role`                           | `row` + internal `gridcell`       | Semantic, non-navigable empty-state row                |
+| Part               | Attribute                        | Value                             | Description                                      |
+| ------------------ | -------------------------------- | --------------------------------- | ------------------------------------------------ |
+| `Root`             | `role`                           | `grid`                            | Interactive table                                |
+| `Root`             | `aria-label` / `aria-labelledby` | string                            | Accessible name (required)                       |
+| `Root`             | `aria-multiselectable`           | `true`                            | Present when `selectionMode='multiple'`          |
+| `Header`           | `role`                           | `rowgroup`                        | Header row group                                 |
+| `Body`             | `role`                           | `rowgroup`                        | Data row group                                   |
+| `Footer`           | `role`                           | `rowgroup`                        | Footer row group                                 |
+| `Row`              | `role`                           | `row`                             | Row                                              |
+| `Row` (body)       | `aria-selected`                  | `true` / `false`                  | Selection state (when `selectionMode != 'none'`) |
+| `Row` (body)       | `aria-disabled`                  | `true`                            | Disabled row                                     |
+| `ColumnHeaderCell` | `role`                           | `columnheader`                    | Column header                                    |
+| `ColumnHeaderCell` | `aria-sort`                      | `ascending`, `descending`, `none` | Sort direction (only when `allowsSorting`)       |
+| `Cell`             | `role`                           | `gridcell` or `rowheader`         | `rowheader` if the column has `isRowHeader`      |
+| `EmptyState`       | `role`                           | `row` + internal `gridcell`       | Semantic, non-navigable empty-state row          |
 
 ## What V1 Does Not Include
 
@@ -406,22 +406,22 @@ Responsibilities:
 
 ## Advanced Feature Matrix
 
-| Feature                                | Main Complexity                                            | Risk       | Recommendation     |
-| -------------------------------------- | ---------------------------------------------------------- | ---------- | ------------------ |
-| Column resizing                        | width state, handles, pointer + keyboard, persistence      | high       | next planned phase |
-| Drag and drop                          | reorder, drop targets, SR + keyboard + pointer            | very high  | keep out of v1     |
-| Async loading / load more              | scroll state, sentinel rows, partial states                | high       | keep out of v1     |
-| Dynamic `items` / `columns` API        | collection, stable ids, render functions, memoization      | high       | defer              |
-| Row actions / row links                | conflicts between actions, selection, and HTML limitations | medium/high| defer              |
-| Interactive content inside `Cell`      | focus handoff between grid and nested controls             | very high  | keep out of v1     |
-| Typeahead                              | depends on stable collection and consistent `textValue`    | medium     | defer              |
-| Nested headers / column groups         | spans, navigation, and complex semantics                   | high       | keep out of v1     |
-| Cell selection                         | changes the entire interaction model                       | high       | keep out of v1     |
-| Full `selectionBehavior="replace"`    | modifiers and fine-grained focus/selection semantics       | medium/high| defer              |
-| Virtualization                         | strong decoupling between collection and DOM               | very high  | keep out of v1     |
-| Integrated select-all                  | useful UX but depends on mature selection behavior         | medium     | phase 2            |
-| Complex `colSpan` / `rowSpan`          | breaks the rectangular grid model                          | high       | defer              |
-| Navigable footer                       | adds another region to the focus model                     | medium     | avoid in v1        |
+| Feature                            | Main Complexity                                            | Risk        | Recommendation     |
+| ---------------------------------- | ---------------------------------------------------------- | ----------- | ------------------ |
+| Column resizing                    | width state, handles, pointer + keyboard, persistence      | high        | next planned phase |
+| Drag and drop                      | reorder, drop targets, SR + keyboard + pointer             | very high   | keep out of v1     |
+| Async loading / load more          | scroll state, sentinel rows, partial states                | high        | keep out of v1     |
+| Dynamic `items` / `columns` API    | collection, stable ids, render functions, memoization      | high        | defer              |
+| Row actions / row links            | conflicts between actions, selection, and HTML limitations | medium/high | defer              |
+| Interactive content inside `Cell`  | focus handoff between grid and nested controls             | very high   | keep out of v1     |
+| Typeahead                          | depends on stable collection and consistent `textValue`    | medium      | defer              |
+| Nested headers / column groups     | spans, navigation, and complex semantics                   | high        | keep out of v1     |
+| Cell selection                     | changes the entire interaction model                       | high        | keep out of v1     |
+| Full `selectionBehavior="replace"` | modifiers and fine-grained focus/selection semantics       | medium/high | defer              |
+| Virtualization                     | strong decoupling between collection and DOM               | very high   | keep out of v1     |
+| Integrated select-all              | useful UX but depends on mature selection behavior         | medium      | phase 2            |
+| Complex `colSpan` / `rowSpan`      | breaks the rectangular grid model                          | high        | defer              |
+| Navigable footer                   | adds another region to the focus model                     | medium      | avoid in v1        |
 
 ## Proposed Internal Architecture
 
@@ -489,19 +489,19 @@ interface GridNavigation {
 
 ### Key-to-Action Mapping
 
-| Key                      | Action                                                      |
-| ------------------------ | ----------------------------------------------------------- |
-| `ArrowUp`                | `move('up')`                                                |
-| `ArrowDown`              | `move('down')`                                              |
-| `ArrowLeft`              | `move('left')`                                              |
-| `ArrowRight`             | `move('right')`                                             |
-| `Home`                   | `moveToRowStart()`                                          |
-| `End`                    | `moveToRowEnd()`                                            |
-| `Ctrl+Home` / `Cmd+Home` | `moveToGridStart()`                                         |
-| `Ctrl+End` / `Cmd+End`   | `moveToGridEnd()`                                           |
-| `Tab`                    | Leaves the grid (focus to the next tabbable element)        |
-| `Shift+Tab`              | Leaves the grid (focus to the previous tabbable element)    |
-| `Enter` / `Space`        | Select row (body) or toggle sort (sortable header)          |
+| Key                      | Action                                                   |
+| ------------------------ | -------------------------------------------------------- |
+| `ArrowUp`                | `move('up')`                                             |
+| `ArrowDown`              | `move('down')`                                           |
+| `ArrowLeft`              | `move('left')`                                           |
+| `ArrowRight`             | `move('right')`                                          |
+| `Home`                   | `moveToRowStart()`                                       |
+| `End`                    | `moveToRowEnd()`                                         |
+| `Ctrl+Home` / `Cmd+Home` | `moveToGridStart()`                                      |
+| `Ctrl+End` / `Cmd+End`   | `moveToGridEnd()`                                        |
+| `Tab`                    | Leaves the grid (focus to the next tabbable element)     |
+| `Shift+Tab`              | Leaves the grid (focus to the previous tabbable element) |
+| `Enter` / `Space`        | Select row (body) or toggle sort (sortable header)       |
 
 ## Selection
 
@@ -552,10 +552,10 @@ Add column resizing in a way that follows the React Aria Components mental model
 - The resize handle must live inside the header composition for that column, not in a parallel list of handlers.
 - The active column is resolved from `Table.Column` context, never by visual index guessing alone.
 - Functional behavior should mirror RAC:
-	- a column opts into resizing via column metadata
-	- a dedicated resizer part provides the interactive affordance
-	- widths can be controlled or uncontrolled
-	- pointer and keyboard resizing are both supported
+  - a column opts into resizing via column metadata
+  - a dedicated resizer part provides the interactive affordance
+  - widths can be controlled or uncontrolled
+  - pointer and keyboard resizing are both supported
 
 ### Recommended Public Composition
 
@@ -577,13 +577,7 @@ Add column resizing in a way that follows the React Aria Components mental model
 				</Table.ColumnHeaderCell>
 			</Table.Column>
 
-			<Table.Column
-				id="group"
-				allowsSorting
-				allowsResizing
-				defaultWidth={180}
-				minWidth={140}
-			>
+			<Table.Column id="group" allowsSorting allowsResizing defaultWidth={180} minWidth={140}>
 				<Table.ColumnHeaderCell>
 					<span>Group</span>
 					<Table.ColumnResizer />

@@ -9,12 +9,20 @@
 		])
 	);
 	let currentSortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
+	let resizeStartColumnId = $state('');
+	let resizeEndWidths = $state<Record<string, number>>({});
 </script>
 
 <Table.Root
 	aria-label="Resizable users table"
 	bind:columnWidths={currentColumnWidths}
 	bind:sortDescriptor={currentSortDescriptor}
+	onColumnResizeStart={(columnId) => {
+		resizeStartColumnId = columnId;
+	}}
+	onColumnResizeEnd={(widths) => {
+		resizeEndWidths = Object.fromEntries(widths);
+	}}
 >
 	<Table.Header>
 		<Table.Row>
@@ -70,3 +78,5 @@
 		? `${currentSortDescriptor.column}:${currentSortDescriptor.direction}`
 		: ''}</output
 >
+<output data-testid="resize-start-column">{resizeStartColumnId}</output>
+<output data-testid="resize-end-widths">{JSON.stringify(resizeEndWidths)}</output>

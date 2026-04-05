@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import TableTest from './table-test.svelte';
+import TableReorderTest from './table-reorder-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 function getHeaderCells(container: HTMLElement) {
@@ -45,7 +46,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 		try {
 			render(TableTest, {
@@ -53,9 +54,11 @@ describe('Table.Root', () => {
 				ariaLabelledby: undefined
 			});
 
-			await expect.poll(() => warnSpy.mock.calls).toContainEqual([
-				'[Table.Root]: Provide either "aria-label" or "aria-labelledby" so the grid has an accessible name.'
-			]);
+			await expect
+				.poll(() => warnSpy.mock.calls)
+				.toContainEqual([
+					'[Table.Root]: Provide either "aria-label" or "aria-labelledby" so the grid has an accessible name.'
+				]);
 		} finally {
 			warnSpy.mockRestore();
 		}
@@ -89,6 +92,62 @@ describe('Table.Root', () => {
 		await userEvent.keyboard('{ArrowDown}');
 
 		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('danilo@example.com');
+	});
+
+	it('updates header and body column indices when keyed columns reorder', async () => {
+		render(TableReorderTest);
+
+		expect(
+			document.querySelector('[data-testid="email-header"]')?.getAttribute('data-column-index')
+		).toBe('0');
+		expect(
+			document.querySelector('[data-testid="group-header"]')?.getAttribute('data-column-index')
+		).toBe('1');
+		expect(
+			document.querySelector('[data-testid="email-cell-danilo"]')?.getAttribute('data-column-index')
+		).toBe('0');
+		expect(
+			document.querySelector('[data-testid="group-cell-danilo"]')?.getAttribute('data-column-index')
+		).toBe('1');
+		expect(document.querySelector('[data-testid="email-cell-danilo"]')?.getAttribute('role')).toBe(
+			'rowheader'
+		);
+		expect(document.querySelector('[data-testid="group-cell-danilo"]')?.getAttribute('role')).toBe(
+			'gridcell'
+		);
+
+		await userEvent.click(document.querySelector<HTMLElement>('[data-testid="toggle-order"]')!);
+
+		await expect
+			.poll(() =>
+				document.querySelector('[data-testid="group-header"]')?.getAttribute('data-column-index')
+			)
+			.toBe('0');
+		await expect
+			.poll(() =>
+				document.querySelector('[data-testid="email-header"]')?.getAttribute('data-column-index')
+			)
+			.toBe('1');
+		await expect
+			.poll(() =>
+				document
+					.querySelector('[data-testid="group-cell-danilo"]')
+					?.getAttribute('data-column-index')
+			)
+			.toBe('0');
+		await expect
+			.poll(() =>
+				document
+					.querySelector('[data-testid="email-cell-danilo"]')
+					?.getAttribute('data-column-index')
+			)
+			.toBe('1');
+		await expect
+			.poll(() => document.querySelector('[data-testid="group-cell-danilo"]')?.getAttribute('role'))
+			.toBe('gridcell');
+		await expect
+			.poll(() => document.querySelector('[data-testid="email-cell-danilo"]')?.getAttribute('role'))
+			.toBe('rowheader');
 	});
 
 	it('moves to row boundaries with Home and End', async () => {
@@ -344,7 +403,8 @@ describe('Table.Root', () => {
 			.toBe('group:ascending');
 		await expect
 			.poll(
-				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+				() =>
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
 			)
 			.toBe('Group sorted ascending.');
 	});
@@ -372,7 +432,8 @@ describe('Table.Root', () => {
 
 		await expect
 			.poll(
-				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+				() =>
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
 			)
 			.toBe('');
 	});
@@ -385,14 +446,16 @@ describe('Table.Root', () => {
 		await groupHeader.click();
 		await expect
 			.poll(
-				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+				() =>
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
 			)
 			.toBe('Group sorted ascending.');
 
 		await groupHeader.click();
 		await expect
 			.poll(
-				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+				() =>
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
 			)
 			.toBe('Group sorted descending.');
 	});
@@ -418,7 +481,8 @@ describe('Table.Root', () => {
 			.toBe('');
 		await expect
 			.poll(
-				() => document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+				() =>
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
 			)
 			.toBe('Sorting cleared.');
 	});
@@ -498,7 +562,9 @@ describe('Table.Root', () => {
 			disabledKeys: ['zahra']
 		});
 
-		const disabledRowCells = Array.from(document.querySelectorAll<HTMLElement>('tbody tr')[1].children);
+		const disabledRowCells = Array.from(
+			document.querySelectorAll<HTMLElement>('tbody tr')[1].children
+		);
 		for (const cell of disabledRowCells) {
 			expect(cell.getAttribute('tabindex')).toBeNull();
 		}
@@ -509,7 +575,9 @@ describe('Table.Root', () => {
 			disabledKeys: ['zahra']
 		});
 
-		const disabledRowCells = Array.from(document.querySelectorAll<HTMLElement>('tbody tr')[1].children);
+		const disabledRowCells = Array.from(
+			document.querySelectorAll<HTMLElement>('tbody tr')[1].children
+		);
 
 		expect(disabledRowCells).toHaveLength(2);
 		for (const cell of disabledRowCells) {

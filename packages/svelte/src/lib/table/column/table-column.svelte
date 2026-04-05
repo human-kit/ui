@@ -1,12 +1,3 @@
-<script module lang="ts">
-	let columnInstanceId = 0;
-
-	function createColumnToken() {
-		columnInstanceId += 1;
-		return `table-column-${columnInstanceId}`;
-	}
-</script>
-
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
@@ -45,7 +36,7 @@
 
 	const table = useTableContext();
 	const section = useTableSectionContext();
-	const token = createColumnToken();
+	const token = table.createInstanceToken('column');
 
 	if (section.section !== 'header') {
 		throw new Error('`Table.Column` must be used inside `Table.Header`.');

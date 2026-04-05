@@ -78,7 +78,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=test
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/test
@@ -93,7 +93,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: test
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -179,44 +179,44 @@ VS Code Dev Container or GitHub Codespaces configuration:
 
 ```json
 {
-  "name": "Playwright Dev",
-  "image": "mcr.microsoft.com/playwright:v1.48.0-noble",
-  "features": {
-    "ghcr.io/devcontainers/features/node:latest": {
-      "version": "20"
-    }
-  },
-  "postCreateCommand": "npm ci",
-  "customizations": {
-    "vscode": {
-      "extensions": ["ms-playwright.playwright"]
-    }
-  },
-  "forwardPorts": [3000, 9323],
-  "remoteUser": "root"
+	"name": "Playwright Dev",
+	"image": "mcr.microsoft.com/playwright:v1.48.0-noble",
+	"features": {
+		"ghcr.io/devcontainers/features/node:latest": {
+			"version": "20"
+		}
+	},
+	"postCreateCommand": "npm ci",
+	"customizations": {
+		"vscode": {
+			"extensions": ["ms-playwright.playwright"]
+		}
+	},
+	"forwardPorts": [3000, 9323],
+	"remoteUser": "root"
 }
 ```
 
 ## Decision Guide
 
-| Scenario | Approach |
-|---|---|
-| Simple CI pipeline | Official image as CI container |
-| Tests need database + cache | Docker Compose with app, db, e2e services |
-| Team needs identical environments | Dev Container or custom Dockerfile |
-| Only testing Chromium | Slim image with `install --with-deps chromium` |
-| Cross-browser testing | Official image (all browsers pre-installed) |
-| Local development | Run directly on host for faster iteration |
+| Scenario                          | Approach                                       |
+| --------------------------------- | ---------------------------------------------- |
+| Simple CI pipeline                | Official image as CI container                 |
+| Tests need database + cache       | Docker Compose with app, db, e2e services      |
+| Team needs identical environments | Dev Container or custom Dockerfile             |
+| Only testing Chromium             | Slim image with `install --with-deps chromium` |
+| Cross-browser testing             | Official image (all browsers pre-installed)    |
+| Local development                 | Run directly on host for faster iteration      |
 
 ## Anti-Patterns
 
-| Anti-Pattern | Problem | Solution |
-|---|---|---|
-| Installing browsers at runtime | Wastes 60-90 seconds per run | Use official image or bake browsers into custom image |
-| Running as non-root without sandbox config | Chromium sandbox permission errors | Run as root or disable sandbox |
-| Bind-mounting `node_modules` from host | Platform-specific binary crashes | Use anonymous volume: `-v /app/node_modules` |
-| No health checks on dependent services | Tests start before database ready | Add `healthcheck` with `depends_on: condition: service_healthy` |
-| Building application inside Playwright container | Large image, slow builds | Separate app and e2e containers |
+| Anti-Pattern                                     | Problem                            | Solution                                                        |
+| ------------------------------------------------ | ---------------------------------- | --------------------------------------------------------------- |
+| Installing browsers at runtime                   | Wastes 60-90 seconds per run       | Use official image or bake browsers into custom image           |
+| Running as non-root without sandbox config       | Chromium sandbox permission errors | Run as root or disable sandbox                                  |
+| Bind-mounting `node_modules` from host           | Platform-specific binary crashes   | Use anonymous volume: `-v /app/node_modules`                    |
+| No health checks on dependent services           | Tests start before database ready  | Add `healthcheck` with `depends_on: condition: service_healthy` |
+| Building application inside Playwright container | Large image, slow builds           | Separate app and e2e containers                                 |
 
 ## Troubleshooting
 
@@ -237,9 +237,9 @@ Tests trying to reach `localhost` instead of service name. Configure `baseURL`:
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
-  },
+	use: {
+		baseURL: process.env.BASE_URL || 'http://localhost:3000'
+	}
 });
 ```
 

@@ -82,6 +82,7 @@ export type TableContext = {
 	sortVersion: Readable<number>;
 	widthVersion: Readable<number>;
 	resizeVersion: Readable<number>;
+	createInstanceToken: (prefix: string) => string;
 	selectionMode: TableSelectionMode;
 	selectionBehavior: TableSelectionBehavior;
 	disabledKeys: Set<TableSelectionKey>;
@@ -152,8 +153,10 @@ export type TableRowContext = {
 	section: TableSectionKind;
 	rowId?: TableSelectionKey;
 	isDisabled: boolean;
-	registerCellToken: (token: string) => number;
+	cellOrderVersion: Readable<number>;
+	registerCellToken: (token: string, getElement?: () => HTMLElement | undefined) => void;
 	unregisterCellToken: (token: string) => void;
+	getCellIndex: (token: string) => number;
 };
 
 export type TableColumnContext = {
@@ -182,6 +185,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let suppressNextHeaderClick = false;
 
 	const columns = new Map<string, TableColumnRegistration>();
+	const columnIds = new Map<string, string>();
 	const columnOrder: string[] = [];
 	const columnWidths = new Map<string, number>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
@@ -193,12 +197,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		header: null,
 		body: null
 	};
-	let navigableCellsCache:
-		| Array<{ cell: TableCellRegistration; coord: TableGridCoord }>
-		| null = null;
-	let rowsWithCellsCache:
-		| Map<number, { col: number; key: string; element: HTMLElement }[]>
-		| null = null;
+	let navigableCellsCache: Array<{ cell: TableCellRegistration; coord: TableGridCoord }> | null =
+		null;
+	let rowsWithCellsCache: Map<number, { col: number; key: string; element: HTMLElement }[]> | null =
+		null;
 
 	const layoutVersion = writable(0);
 	const selectionVersion = writable(0);
@@ -206,6 +208,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const sortVersion = writable(0);
 	const widthVersion = writable(0);
 	const resizeVersion = writable(0);
+	const instanceCounters = new Map<string, number>();
+
+	function createInstanceToken(prefix: string) {
+		const nextCount = (instanceCounters.get(prefix) ?? 0) + 1;
+		instanceCounters.set(prefix, nextCount);
+		return `table-${prefix}-${nextCount}`;
+	}
 
 	function invalidateLayoutCaches() {
 		orderedRowTokensCache = { header: null, body: null };
@@ -255,7 +264,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnRegistrationById(columnId: string) {
-		return Array.from(columns.values()).find((column) => column.id === columnId);
+		const token = columnIds.get(columnId);
+		return token ? columns.get(token) : undefined;
 	}
 
 	function getColumnMinWidth(columnId: string) {
@@ -288,10 +298,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return false;
 	}
 
-	function sameColumnRegistration(
-		left: TableColumnRegistration,
-		right: TableColumnRegistration
-	) {
+	function sameColumnRegistration(left: TableColumnRegistration, right: TableColumnRegistration) {
 		return (
 			left.token === right.token &&
 			left.id === right.id &&
@@ -331,7 +338,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const existing = columns.get(column.token);
 		const alreadyOrdered = columnOrder.includes(column.token);
 		if (existing && sameColumnRegistration(existing, column) && alreadyOrdered) return;
+		if (existing && existing.id !== column.id && columnIds.get(existing.id) === column.token) {
+			columnIds.delete(existing.id);
+		}
 		columns.set(column.token, column);
+		columnIds.set(column.id, column.token);
 		if (!alreadyOrdered) {
 			columnOrder.push(column.token);
 		}
@@ -339,6 +350,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function unregisterColumn(token: string) {
+		const column = columns.get(token);
+		if (column && columnIds.get(column.id) === token) {
+			columnIds.delete(column.id);
+		}
 		columns.delete(token);
 		const index = columnOrder.indexOf(token);
 		if (index >= 0) {
@@ -347,17 +362,38 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		notifyLayout();
 	}
 
+	function getOrderedColumnTokens() {
+		return [...columnOrder].sort((leftToken, rightToken) => {
+			const leftCell = Array.from(cells.values()).find(
+				(cell) => cell.section === 'header' && cell.columnToken === leftToken && cell.element
+			)?.element;
+			const rightCell = Array.from(cells.values()).find(
+				(cell) => cell.section === 'header' && cell.columnToken === rightToken && cell.element
+			)?.element;
+
+			if (!leftCell || !rightCell) {
+				return columnOrder.indexOf(leftToken) - columnOrder.indexOf(rightToken);
+			}
+
+			if (leftCell === rightCell) return 0;
+			const position = leftCell.compareDocumentPosition(rightCell);
+			if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+			if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+			return columnOrder.indexOf(leftToken) - columnOrder.indexOf(rightToken);
+		});
+	}
+
 	function getColumnCount() {
-		return columnOrder.length;
+		return getOrderedColumnTokens().length;
 	}
 
 	function getColumnAt(index: number) {
-		const token = columnOrder[index];
+		const token = getOrderedColumnTokens()[index];
 		return token ? columns.get(token) : undefined;
 	}
 
 	function getColumnIndexByToken(token: string) {
-		return columnOrder.indexOf(token);
+		return getOrderedColumnTokens().indexOf(token);
 	}
 
 	function getColumnTextValue(columnId: string) {
@@ -374,8 +410,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (!registration) return undefined;
 
 		const nextWidth =
-			normalizeColumnWidth(registration.width) ??
-			normalizeColumnWidth(registration.defaultWidth);
+			normalizeColumnWidth(registration.width) ?? normalizeColumnWidth(registration.defaultWidth);
 
 		return nextWidth !== undefined ? clampColumnWidth(columnId, nextWidth) : undefined;
 	}
@@ -386,7 +421,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getColumnWidths() {
 		const widths = new Map<string, number>();
-		for (const token of columnOrder) {
+		for (const token of getOrderedColumnTokens()) {
 			const column = columns.get(token);
 			if (!column) continue;
 			const width = getColumnWidth(column.id);
@@ -443,9 +478,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		for (const token of columnOrder) {
 			const column = columns.get(token);
 			if (!column) continue;
-			const incomingWidth = widths
-				? new Map<string, number>(widths).get(column.id)
-				: undefined;
+			const incomingWidth = widths ? new Map<string, number>(widths).get(column.id) : undefined;
 			if (incomingWidth !== undefined) {
 				next.set(column.id, clampColumnWidth(column.id, incomingWidth));
 			}
@@ -539,7 +572,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function startColumnResize(columnId: string) {
 		if (!isColumnResizable(columnId) || resizingColumnId === columnId) return;
-		freezeColumnWidthsFromLayout();
+		if (getColumnWidths().size < getColumnCount()) {
+			freezeColumnWidthsFromLayout();
+		}
 		resizingColumnId = columnId;
 		options.onColumnResizeStart?.(columnId);
 		notifyResize();
@@ -765,7 +800,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 					entry.coord &&
 					entry.cell.element &&
 					(entry.cell.section !== 'body' ||
-						!isRowDisabled(rows.get(entry.cell.rowToken)?.id, rows.get(entry.cell.rowToken)?.disabled))
+						!isRowDisabled(
+							rows.get(entry.cell.rowToken)?.id,
+							rows.get(entry.cell.rowToken)?.disabled
+						))
 				)
 			)
 			.sort((left, right) =>
@@ -843,10 +881,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return row?.section === 'body' ? (row.id ?? null) : null;
 	}
 
-	function hasSameSelection(
-		left: Set<TableSelectionKey>,
-		right: Set<TableSelectionKey>
-	) {
+	function hasSameSelection(left: Set<TableSelectionKey>, right: Set<TableSelectionKey>) {
 		if (left.size !== right.size) return false;
 		for (const key of left) {
 			if (!right.has(key)) return false;
@@ -929,7 +964,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		emitSelectionChange();
 	}
 
-	function pressRow(id: TableSelectionKey | undefined, interaction: TableSelectionInteraction = {}) {
+	function pressRow(
+		id: TableSelectionKey | undefined,
+		interaction: TableSelectionInteraction = {}
+	) {
 		if (selectionMode === 'none' || id === undefined || disabledKeys.has(id)) return;
 
 		if (selectionBehavior === 'replace' && selectionMode === 'multiple') {
@@ -1142,6 +1180,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		sortVersion,
 		widthVersion,
 		resizeVersion,
+		createInstanceToken,
 		get selectionMode() {
 			return selectionMode;
 		},
