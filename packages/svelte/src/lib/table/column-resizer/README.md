@@ -24,5 +24,6 @@ Description: Interactive resize handle for the current `Table.Column`. It must b
 - Width state lives in `Table.Root` through `columnWidths` / `defaultColumnWidths`.
 - Pointer resizing uses Pointer Events, so mouse, touch, and pen interactions share the same behavior.
 - Keyboard resizing uses the same resize lifecycle callbacks as pointer resizing and announces committed widths through a polite live region.
+- Pressing `Enter` on a focused resize handle auto-fits the column to its content width (keyboard equivalent of double-click).
 - During pointer drag, pressing `Escape` restores the starting width and cancels the resize interaction.
 - In RTL layouts, `ArrowLeft` and `ArrowRight` are inverted so the logical resize direction matches the visual layout.

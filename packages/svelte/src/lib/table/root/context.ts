@@ -197,6 +197,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		header: null,
 		body: null
 	};
+	let orderedColumnTokensCache: string[] | null = null;
+	let columnWidthsCache: Map<string, number> | null = null;
 	let navigableCellsCache: Array<{ cell: TableCellRegistration; coord: TableGridCoord }> | null =
 		null;
 	let rowsWithCellsCache: Map<number, { col: number; key: string; element: HTMLElement }[]> | null =
@@ -218,6 +220,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function invalidateLayoutCaches() {
 		orderedRowTokensCache = { header: null, body: null };
+		orderedColumnTokensCache = null;
+		columnWidthsCache = null;
 		navigableCellsCache = null;
 		rowsWithCellsCache = null;
 	}
@@ -241,6 +245,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function notifyWidth() {
+		columnWidthsCache = null;
 		widthVersion.update((value) => value + 1);
 	}
 
@@ -363,13 +368,20 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getOrderedColumnTokens() {
-		return [...columnOrder].sort((leftToken, rightToken) => {
-			const leftCell = Array.from(cells.values()).find(
-				(cell) => cell.section === 'header' && cell.columnToken === leftToken && cell.element
-			)?.element;
-			const rightCell = Array.from(cells.values()).find(
-				(cell) => cell.section === 'header' && cell.columnToken === rightToken && cell.element
-			)?.element;
+		if (orderedColumnTokensCache) return orderedColumnTokensCache;
+
+		// Pre-build a lookup from columnToken → header cell element to avoid
+		// O(columns × cells) scanning inside the comparator.
+		const headerElementByToken = new Map<string, HTMLElement>();
+		for (const cell of cells.values()) {
+			if (cell.section === 'header' && cell.columnToken && cell.element) {
+				headerElementByToken.set(cell.columnToken, cell.element);
+			}
+		}
+
+		orderedColumnTokensCache = [...columnOrder].sort((leftToken, rightToken) => {
+			const leftCell = headerElementByToken.get(leftToken);
+			const rightCell = headerElementByToken.get(rightToken);
 
 			if (!leftCell || !rightCell) {
 				return columnOrder.indexOf(leftToken) - columnOrder.indexOf(rightToken);
@@ -381,6 +393,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
 			return columnOrder.indexOf(leftToken) - columnOrder.indexOf(rightToken);
 		});
+		return orderedColumnTokensCache;
 	}
 
 	function getColumnCount() {
@@ -420,6 +433,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnWidths() {
+		if (columnWidthsCache) return columnWidthsCache;
 		const widths = new Map<string, number>();
 		for (const token of getOrderedColumnTokens()) {
 			const column = columns.get(token);
@@ -429,6 +443,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				widths.set(column.id, width);
 			}
 		}
+		columnWidthsCache = widths;
 		return widths;
 	}
 
@@ -469,6 +484,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			columnWidths.set(columnId, width);
 		}
 
+		columnWidthsCache = null;
 		options.onColumnWidthsChange?.(getColumnWidths());
 		notifyWidth();
 	}
@@ -496,8 +512,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const nextWidth = clampColumnWidth(columnId, width);
 		if (columnWidths.get(columnId) === nextWidth) return;
 		columnWidths.set(columnId, nextWidth);
-		const nextWidths = getColumnWidths();
-		options.onColumnWidthsChange?.(nextWidths);
+		columnWidthsCache = null;
+		options.onColumnWidthsChange?.(getColumnWidths());
 		notifyWidth();
 	}
 

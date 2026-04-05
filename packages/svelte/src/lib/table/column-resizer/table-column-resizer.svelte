@@ -34,6 +34,7 @@
 	let removeListeners: (() => void) | null = null;
 	let resizeAnnouncement = $state('');
 	let announceTimeout: ReturnType<typeof setTimeout> | null = null;
+	let keyboardResizeEndTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const isResizing = $derived.by(() => {
 		void $resizeVersion;
@@ -106,11 +107,24 @@
 		}, 0);
 	}
 
+	function cleanupKeyboardResizeEndTimer() {
+		if (keyboardResizeEndTimer !== null) {
+			clearTimeout(keyboardResizeEndTimer);
+			keyboardResizeEndTimer = null;
+		}
+	}
+
 	function commitWidthChange(nextWidth: number, options?: { announce?: boolean }) {
+		// Start the resize session if not already active (first keypress).
+		// Subsequent keypresses extend the session; we end it after a pause.
+		cleanupKeyboardResizeEndTimer();
 		table.startColumnResize(column.id);
 		updateWidth(nextWidth);
 		const committedWidth = getResolvedWidth();
-		table.endColumnResize();
+		keyboardResizeEndTimer = setTimeout(() => {
+			keyboardResizeEndTimer = null;
+			table.endColumnResize();
+		}, 300);
 		if (options?.announce !== false) {
 			announceWidth(committedWidth);
 		}
@@ -140,6 +154,8 @@
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = false;
 
+		// End any pending keyboard resize session before starting a pointer drag.
+		cleanupKeyboardResizeEndTimer();
 		table.startColumnResize(column.id);
 
 		const th = element?.closest('th') as HTMLElement | null;
@@ -152,6 +168,18 @@
 		let latestClientX = startX;
 		let animationFrameId: number | null = null;
 
+		// Capture the pointer so we receive move/up events even if the cursor
+		// leaves the browser viewport (e.g. in iframes or when dragging fast).
+		// The try-catch guards against synthetic events with no active pointer.
+		try {
+			element?.setPointerCapture(pointerId);
+		} catch {
+			/* synthetic event */
+		}
+
+		// Note: final clamping is authoritative in context.clampColumnWidth().
+		// This local pre-clamp avoids sending clearly out-of-range values through
+		// the reactive pipeline during drag, reducing unnecessary width notifications.
 		function clampWidth(w: number) {
 			let clamped = Math.round(w);
 			if (!Number.isFinite(clamped) || clamped < minWidth) clamped = minWidth;
@@ -198,6 +226,9 @@
 		// In centered/flex layouts, growing a column shifts the table's left edge,
 		// so the handle moves less than the mouse delta. We detect this by applying
 		// a 1px test change and measuring how much the <th> left edge drifts.
+		// NOTE: applyTemporaryWidthToDOM intentionally mutates the DOM synchronously
+		// outside Svelte's reactive cycle. The mutation is immediately reverted
+		// within the same microtask, so no observer or $effect will see it.
 		let positionScale = 1;
 		if (th) {
 			const leftBefore = th.getBoundingClientRect().left;
@@ -237,6 +268,9 @@
 				cancelAnimationFrame(animationFrameId);
 				animationFrameId = null;
 			}
+			// Treat system-initiated cancellation the same as Escape:
+			// restore the width the column had before the drag started.
+			updateWidth(startWidth);
 			cleanupPointerListeners();
 		};
 
@@ -252,6 +286,10 @@
 			cleanupPointerListeners();
 		};
 
+		// With pointer capture active the browser routes all pointer events for
+		// this pointerId to the capturing element. Those events then bubble up
+		// to window, so we keep using window listeners — this also works in test
+		// environments that dispatch synthetic events directly on window.
 		window.addEventListener('pointermove', handlePointerMove);
 		window.addEventListener('pointerup', handlePointerUp);
 		window.addEventListener('pointercancel', handlePointerCancel);
@@ -260,6 +298,11 @@
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
 				animationFrameId = null;
+			}
+			try {
+				element?.releasePointerCapture(pointerId);
+			} catch {
+				/* already released */
 			}
 			window.removeEventListener('pointermove', handlePointerMove);
 			window.removeEventListener('pointerup', handlePointerUp);
@@ -311,11 +354,16 @@
 				event.preventDefault();
 				commitWidthChange(maxWidth);
 				return;
+			case 'Enter':
+				event.preventDefault();
+				commitWidthChange(getAutoFitWidth());
+				return;
 		}
 	}
 
 	onDestroy(() => {
 		cleanupAnnouncementTimeout();
+		cleanupKeyboardResizeEndTimer();
 		cleanupPointerListeners();
 	});
 </script>
@@ -368,6 +416,7 @@
 		role="status"
 		aria-live="polite"
 		aria-atomic="true"
-		class="sr-only">{resizeAnnouncement}</span
+		style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+		>{resizeAnnouncement}</span
 	>
 </div>

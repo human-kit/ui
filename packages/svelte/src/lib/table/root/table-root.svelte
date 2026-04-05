@@ -103,12 +103,18 @@
 			onColumnWidthsChange: (widths) => {
 				pendingControlledColumnWidths = new Map(widths);
 				columnWidths = new Map(widths);
-				onColumnWidthsChange?.(new Map(widths));
+				// During an active resize drag, skip the external consumer callback
+				// to avoid firing it at ~60 fps. The final widths are reported via
+				// onColumnResizeEnd. The bindable `columnWidths` is always kept in sync.
+				if (!ctx.resizingColumnId) {
+					onColumnWidthsChange?.(new Map(widths));
+				}
 			},
 			onColumnResizeStart: (columnId) => {
 				onColumnResizeStart?.(columnId);
 			},
 			onColumnResizeEnd: (widths) => {
+				onColumnWidthsChange?.(new Map(widths));
 				onColumnResizeEnd?.(new Map(widths));
 			}
 		})
@@ -350,4 +356,10 @@
 	{/if}
 </table>
 
-<span role="status" aria-live="polite" aria-atomic="true" class="sr-only">{sortAnnouncement}</span>
+<span
+	role="status"
+	aria-live="polite"
+	aria-atomic="true"
+	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+	>{sortAnnouncement}</span
+>
