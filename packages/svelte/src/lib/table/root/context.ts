@@ -31,6 +31,8 @@ export type TableGridCoord = {
 	col: number;
 };
 
+export type TableRowFocusEdge = 'start' | 'end';
+
 export type TableColumnRegistration = {
 	token: string;
 	id: string;
@@ -115,14 +117,19 @@ export type TableContext = {
 	getBodyRowCount: () => number;
 	isRowSelected: (id: TableSelectionKey | undefined) => boolean;
 	isRowFocused: (token: string) => boolean;
+	isRowFocusTarget: (token: string) => boolean;
+	getRowFocusEdge: (token: string) => TableRowFocusEdge | null;
 	isRowDisabled: (id: TableSelectionKey | undefined, localDisabled?: boolean) => boolean;
 	registerCell: (cell: TableCellRegistration) => void;
 	unregisterCell: (key: string) => void;
 	isCellFocused: (key: string) => boolean;
 	isCellTabStop: (key: string) => boolean;
+	isRowTabStop: (token: string) => boolean;
 	focusCellByKey: (key: string | null) => void;
+	focusRowByToken: (token: string, edge: TableRowFocusEdge) => void;
 	pressRow: (id: TableSelectionKey | undefined, interaction?: TableSelectionInteraction) => void;
 	setFocusedCell: (key: string | null) => void;
+	setFocusedRow: (token: string | null, edge?: TableRowFocusEdge) => void;
 	setFocusVisible: (visible: boolean) => void;
 	moveFocus: (
 		direction: 'up' | 'down' | 'left' | 'right',
@@ -130,6 +137,8 @@ export type TableContext = {
 	) => void;
 	moveToRowStart: () => void;
 	moveToRowEnd: () => void;
+	moveToBodyRowStart: () => void;
+	moveToBodyRowEnd: () => void;
 	moveToGridStart: () => void;
 	moveToGridEnd: () => void;
 	toggleRowSelection: (id: TableSelectionKey | undefined) => void;
@@ -177,6 +186,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let selectionBehavior = options.selectionBehavior ?? 'toggle';
 	let sortDescriptor = options.initialSortDescriptor;
 	let focusedCellKey: string | null = null;
+	let focusedRowTarget: { rowToken: string; edge: TableRowFocusEdge } | null = null;
 	let focusVisible = false;
 	let selectedKeys = new Set<TableSelectionKey>(options.initialSelectedKeys ?? []);
 	let selectionAnchorKey = selectedKeys.values().next().value ?? null;
@@ -643,6 +653,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function unregisterRow(token: string) {
 		const row = rows.get(token);
 		rows.delete(token);
+		if (focusedRowTarget?.rowToken === token) {
+			focusedRowTarget = null;
+			notifyFocus();
+		}
 		for (const order of [headerRowOrder, bodyRowOrder]) {
 			const index = order.indexOf(token);
 			if (index >= 0) {
@@ -722,8 +736,17 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function isRowFocused(token: string) {
+		if (focusedRowTarget?.rowToken === token) return true;
 		if (!focusedCellKey) return false;
 		return cells.get(focusedCellKey)?.rowToken === token;
+	}
+
+	function isRowFocusTarget(token: string) {
+		return focusedRowTarget?.rowToken === token;
+	}
+
+	function getRowFocusEdge(token: string) {
+		return focusedRowTarget?.rowToken === token ? focusedRowTarget.edge : null;
 	}
 
 	function registerCell(cell: TableCellRegistration) {
@@ -780,7 +803,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (focusedCellKey) {
 			return focusedCellKey === key;
 		}
+		if (focusedRowTarget) {
+			return false;
+		}
 		return getDefaultFocusKey() === key;
+	}
+
+	function isRowTabStop(token: string) {
+		return focusedRowTarget?.rowToken === token;
 	}
 
 	function getGlobalRowIndex(rowToken: string) {
@@ -865,15 +895,50 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		) {
 			return;
 		}
+		focusedRowTarget = null;
 		focusedCellKey = key;
 		notifyFocus();
 		cell.element.focus();
 		cell.element.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
 	}
 
+	function focusRowByToken(token: string, edge: TableRowFocusEdge) {
+		const row = rows.get(token);
+		if (!row?.element || row.section !== 'body') return;
+		if (isRowDisabled(row.id, row.disabled)) return;
+		focusedCellKey = null;
+		focusedRowTarget = { rowToken: token, edge };
+		notifyFocus();
+		row.element.focus();
+		row.element.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+	}
+
 	function setFocusedCell(key: string | null) {
-		if (focusedCellKey === key) return;
+		if (focusedCellKey === key && focusedRowTarget === null) return;
 		focusedCellKey = key;
+		focusedRowTarget = null;
+		notifyFocus();
+	}
+
+	function setFocusedRow(token: string | null, edge: TableRowFocusEdge = 'start') {
+		if (token === null) {
+			if (focusedCellKey === null && focusedRowTarget === null) return;
+			focusedCellKey = null;
+			focusedRowTarget = null;
+			notifyFocus();
+			return;
+		}
+
+		if (
+			focusedCellKey === null &&
+			focusedRowTarget?.rowToken === token &&
+			focusedRowTarget.edge === edge
+		) {
+			return;
+		}
+
+		focusedCellKey = null;
+		focusedRowTarget = { rowToken: token, edge };
 		notifyFocus();
 	}
 
@@ -890,11 +955,32 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getFocusedRowId() {
-		if (!focusedCellKey) return null;
-		const rowToken = cells.get(focusedCellKey)?.rowToken;
+		const rowToken = focusedRowTarget?.rowToken ?? cells.get(focusedCellKey ?? '')?.rowToken;
 		if (!rowToken) return null;
 		const row = rows.get(rowToken);
 		return row?.section === 'body' ? (row.id ?? null) : null;
+	}
+
+	function getRowTokenByGlobalIndex(index: number) {
+		const headerRows = getOrderedRowTokens('header');
+		if (index < headerRows.length) {
+			return headerRows[index] ?? null;
+		}
+
+		return getOrderedRowTokens('body')[index - headerRows.length] ?? null;
+	}
+
+	function getFocusableBodyRowToken(direction: 'start' | 'end') {
+		const orderedBodyTokens = getOrderedRowTokens('body');
+		const tokens = direction === 'start' ? orderedBodyTokens : [...orderedBodyTokens].reverse();
+
+		for (const token of tokens) {
+			const row = rows.get(token);
+			if (!row || isRowDisabled(row.id, row.disabled)) continue;
+			return token;
+		}
+
+		return null;
 	}
 
 	function hasSameSelection(left: Set<TableSelectionKey>, right: Set<TableSelectionKey>) {
@@ -1012,9 +1098,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (rowIndexes.length === 0) return;
 		const previousFocusedRowId = getFocusedRowId();
 
-		function maybeSyncSelectionAfterFocus(targetKey: string | null) {
+		function maybeSyncSelectionAfterFocus() {
 			if (direction !== 'up' && direction !== 'down') return;
-			if (!targetKey) return;
 			if (selectionMode === 'none') return;
 			if (interaction.ctrlKey || interaction.metaKey || interaction.altKey) return;
 
@@ -1032,9 +1117,54 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 
 		if (!currentCoord) {
+			if (focusedRowTarget) {
+				const currentRowIndex = getGlobalRowIndex(focusedRowTarget.rowToken);
+				if (currentRowIndex < 0) return;
+
+				if (direction === 'left' || direction === 'right') {
+					const rowCells = rowMap.get(currentRowIndex) ?? [];
+					if (focusedRowTarget.edge === 'start') {
+						if (direction === 'right') {
+							focusCellByKey(getClosestCellKey(currentRowIndex, -1));
+							return;
+						}
+
+						focusCellByKey(rowCells[rowCells.length - 1]?.key ?? null);
+						return;
+					}
+
+					if (direction === 'left') {
+						focusCellByKey(rowCells[rowCells.length - 1]?.key ?? null);
+						return;
+					}
+
+					focusCellByKey(getClosestCellKey(currentRowIndex, -1));
+					return;
+				}
+
+				const rowPosition = rowIndexes.indexOf(currentRowIndex);
+				const targetRowIndex =
+					direction === 'up' ? rowIndexes[rowPosition - 1] : rowIndexes[rowPosition + 1];
+				if (targetRowIndex === undefined) return;
+
+				const targetRowToken = getRowTokenByGlobalIndex(targetRowIndex);
+				const targetRow = targetRowToken ? rows.get(targetRowToken) : null;
+				if (targetRow?.section === 'body' && !isRowDisabled(targetRow.id, targetRow.disabled)) {
+					focusRowByToken(targetRowToken!, focusedRowTarget.edge);
+				} else if (focusedRowTarget.edge === 'start') {
+					focusCellByKey(getClosestCellKey(targetRowIndex, -1));
+				} else {
+					const targetRowCells = rowMap.get(targetRowIndex) ?? [];
+					focusCellByKey(targetRowCells[targetRowCells.length - 1]?.key ?? null);
+				}
+
+				maybeSyncSelectionAfterFocus();
+				return;
+			}
+
 			const firstKey = getClosestCellKey(rowIndexes[0], 0);
 			focusCellByKey(firstKey);
-			maybeSyncSelectionAfterFocus(firstKey);
+			maybeSyncSelectionAfterFocus();
 			return;
 		}
 
@@ -1046,6 +1176,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			const nextKey = rowCells[nextIndex]?.key;
 			if (nextKey) {
 				focusCellByKey(nextKey);
+				return;
+			}
+
+			const currentCell = cells.get(focusedCellKey ?? '');
+			if (currentCell?.section === 'body') {
+				focusRowByToken(currentCell.rowToken, direction === 'left' ? 'start' : 'end');
 			}
 			return;
 		}
@@ -1056,10 +1192,17 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (targetRowIndex === undefined) return;
 		const targetKey = getClosestCellKey(targetRowIndex, currentCoord.col);
 		focusCellByKey(targetKey);
-		maybeSyncSelectionAfterFocus(targetKey);
+		maybeSyncSelectionAfterFocus();
 	}
 
 	function moveToRowStart() {
+		if (focusedRowTarget) {
+			const rowIndex = getGlobalRowIndex(focusedRowTarget.rowToken);
+			if (rowIndex < 0) return;
+			focusCellByKey(getClosestCellKey(rowIndex, -1));
+			return;
+		}
+
 		const currentCoord = getFocusedCoord();
 		if (!currentCoord) {
 			moveToGridStart();
@@ -1070,6 +1213,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function moveToRowEnd() {
 		const rowMap = getRowsWithCells();
+		if (focusedRowTarget) {
+			const rowIndex = getGlobalRowIndex(focusedRowTarget.rowToken);
+			if (rowIndex < 0) return;
+			const rowCells = rowMap.get(rowIndex) ?? [];
+			focusCellByKey(rowCells[rowCells.length - 1]?.key ?? null);
+			return;
+		}
+
 		const currentCoord = getFocusedCoord();
 		if (!currentCoord) {
 			moveToGridEnd();
@@ -1083,6 +1234,18 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const rowIndexes = Array.from(getRowsWithCells().keys()).sort((a, b) => a - b);
 		if (rowIndexes.length === 0) return;
 		focusCellByKey(getClosestCellKey(rowIndexes[0], -1));
+	}
+
+	function moveToBodyRowStart() {
+		const targetToken = getFocusableBodyRowToken('start');
+		if (!targetToken) return;
+		focusRowByToken(targetToken, focusedRowTarget?.edge ?? 'start');
+	}
+
+	function moveToBodyRowEnd() {
+		const targetToken = getFocusableBodyRowToken('end');
+		if (!targetToken) return;
+		focusRowByToken(targetToken, focusedRowTarget?.edge ?? 'end');
 	}
 
 	function moveToGridEnd() {
@@ -1241,18 +1404,25 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getBodyRowCount,
 		isRowSelected,
 		isRowFocused,
+		isRowFocusTarget,
+		getRowFocusEdge,
 		isRowDisabled,
 		registerCell,
 		unregisterCell,
 		isCellFocused,
 		isCellTabStop,
+		isRowTabStop,
 		focusCellByKey,
+		focusRowByToken,
 		pressRow,
 		setFocusedCell,
+		setFocusedRow,
 		setFocusVisible,
 		moveFocus,
 		moveToRowStart,
 		moveToRowEnd,
+		moveToBodyRowStart,
+		moveToBodyRowEnd,
 		moveToGridStart,
 		moveToGridEnd,
 		toggleRowSelection,

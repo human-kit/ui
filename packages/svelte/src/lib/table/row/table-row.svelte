@@ -10,6 +10,10 @@
 		useTableSectionContext,
 		type TableSelectionKey
 	} from '../root/context';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children' | 'id'> & {
 		id?: TableSelectionKey;
@@ -143,31 +147,140 @@
 		void $selectionVersion;
 		return section.section === 'body' ? table.isRowSelected(id) : false;
 	});
-	const isFocused = $derived.by(() => {
+	const isFocusWithin = $derived.by(() => {
 		void $focusVersion;
 		return section.section === 'body' ? table.isRowFocused(rowToken) : false;
+	});
+	const isFocused = $derived.by(() => {
+		void $focusVersion;
+		return section.section === 'body' ? table.isRowFocusTarget(rowToken) : false;
 	});
 	const isFocusVisible = $derived.by(() => {
 		void $focusVersion;
 		return section.section === 'body' ? isFocused && table.focusVisible : false;
 	});
+	const isFocusVisibleWithin = $derived.by(() => {
+		void $focusVersion;
+		return section.section === 'body' ? isFocusWithin && table.focusVisible : false;
+	});
 	const isAriaDisabled = $derived.by(() => {
 		void $selectionVersion;
 		return section.section === 'body' ? table.isRowDisabled(id, isDisabled) : isDisabled;
 	});
+
+	function handleFocus() {
+		if (section.section !== 'body') return;
+		if (isAriaDisabled) return;
+		if (!table.isRowTabStop(rowToken)) return;
+		table.setFocusedRow(rowToken, table.getRowFocusEdge(rowToken) ?? 'start');
+		table.setFocusVisible(shouldShowFocusVisible(rowElement ?? null));
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, rowElement ?? null);
+		table.setFocusVisible(false);
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (section.section !== 'body') return;
+		if (event.target !== rowElement) return;
+		trackInteractionModality(event, rowElement ?? null);
+
+		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
+			if (table.selectionMode === 'multiple') {
+				event.preventDefault();
+				table.selectAllRows();
+			}
+			return;
+		}
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
+			event.preventDefault();
+			table.moveToGridStart();
+			return;
+		}
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'End') {
+			event.preventDefault();
+			table.moveToGridEnd();
+			return;
+		}
+
+		switch (event.key) {
+			case 'ArrowUp':
+				event.preventDefault();
+				table.moveFocus('up', {
+					shiftKey: event.shiftKey,
+					ctrlKey: event.ctrlKey,
+					metaKey: event.metaKey,
+					altKey: event.altKey
+				});
+				return;
+			case 'ArrowDown':
+				event.preventDefault();
+				table.moveFocus('down', {
+					shiftKey: event.shiftKey,
+					ctrlKey: event.ctrlKey,
+					metaKey: event.metaKey,
+					altKey: event.altKey
+				});
+				return;
+			case 'ArrowLeft':
+				event.preventDefault();
+				table.moveFocus('left');
+				return;
+			case 'ArrowRight':
+				event.preventDefault();
+				table.moveFocus('right');
+				return;
+			case 'Home':
+				event.preventDefault();
+				table.moveToBodyRowStart();
+				return;
+			case 'End':
+				event.preventDefault();
+				table.moveToBodyRowEnd();
+				return;
+			case 'Enter':
+			case ' ':
+				event.preventDefault();
+				if (event.repeat) return;
+				if (!isAriaDisabled) {
+					table.pressRow(id, {
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					});
+				}
+				return;
+		}
+	}
 </script>
 
 <tr
 	bind:this={rowElement}
 	class={className}
-	data-focus-within={isFocused ? 'true' : undefined}
-	data-focus-visible-within={isFocusVisible ? 'true' : undefined}
+	tabindex={section.section === 'body'
+		? !isAriaDisabled
+			? table.isRowTabStop(rowToken)
+				? 0
+				: -1
+			: undefined
+		: undefined}
+	data-focused={isFocused ? 'true' : undefined}
+	data-focus-visible={isFocusVisible ? 'true' : undefined}
+	data-focus-within={isFocusWithin ? 'true' : undefined}
+	data-focus-visible-within={isFocusVisibleWithin ? 'true' : undefined}
 	data-selected={isSelected ? 'true' : undefined}
 	data-disabled={isAriaDisabled || undefined}
 	aria-selected={section.section === 'body' && table.selectionMode !== 'none'
 		? isSelected
 		: undefined}
 	aria-disabled={section.section === 'body' && isAriaDisabled ? true : undefined}
+	onfocus={handleFocus}
+	onmousedown={handleMouseDown}
+	onkeydown={handleKeyDown}
 	{...restProps}
 >
 	{#if children}

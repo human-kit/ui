@@ -42,6 +42,7 @@ Description: Current v1 interaction constraints that affect consumer expectation
 | `replace` mode blur     | Clicking or tabbing outside the table clears focus state but does not clear row selection.                                                     |
 | Sort announcements      | Sort changes are mirrored into a polite live region. Use `Table.Column.textValue` when the announced label should differ from the column `id`. |
 | Column resizing         | Width state is normalized to px values and a resize handle only affects the `Table.Column` it is composed within.                              |
+| Row edge focus          | In body rows, `ArrowLeft` before the first cell and `ArrowRight` after the last cell move focus onto the row itself; `ArrowUp` / `ArrowDown` keep that row-edge focus aligned across rows, repeating the same horizontal arrow loops back into the opposite edge cell, and `Home` / `End` jump to the first or last focusable body row while row focus is active. |
 
 ### Context utilities
 

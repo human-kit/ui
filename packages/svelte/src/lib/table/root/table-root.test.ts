@@ -46,7 +46,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
 		try {
 			render(TableTest, {
@@ -163,6 +163,81 @@ describe('Table.Root', () => {
 
 		await userEvent.keyboard('{End}');
 		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+	});
+
+	it('moves focus to the body row when navigating past the last cell and back into the row', async () => {
+		render(TableTest);
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+		const firstRow = document.querySelector<HTMLElement>('tbody tr')!;
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement).toBe(firstRow);
+		await expect.poll(() => firstRow.getAttribute('data-focused')).toBe('true');
+		await expect.poll(() => firstRow.getAttribute('data-focus-visible')).toBe('true');
+
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+	});
+
+	it('loops horizontally from a focused body row edge back to the first or last cell', async () => {
+		render(TableTest);
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe(
+			'danilo@example.com Developer'
+		);
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('danilo@example.com');
+
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe(
+			'danilo@example.com Developer'
+		);
+
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
+	});
+
+	it('preserves row-edge focus while moving vertically between body rows', async () => {
+		render(TableTest, { selectionMode: 'multiple' });
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+		const rows = Array.from(document.querySelectorAll<HTMLElement>('tbody tr'));
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+		await expect.poll(() => document.activeElement).toBe(rows[0]);
+
+		await userEvent.keyboard('{ArrowDown}');
+		await expect.poll(() => document.activeElement).toBe(rows[1]);
+		await expect.poll(() => rows[1].getAttribute('data-focused')).toBe('true');
+
+		await userEvent.keyboard(' ');
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toContain('zahra');
+	});
+
+	it('moves to the first and last body rows with Home and End while a body row is focused', async () => {
+		render(TableTest);
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+		const rows = Array.from(document.querySelectorAll<HTMLElement>('tbody tr'));
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowDown}');
+		await expect.poll(() => document.activeElement).toBe(rows[1]);
+
+		await userEvent.keyboard('{End}');
+		await expect.poll(() => document.activeElement).toBe(rows[2]);
+
+		await userEvent.keyboard('{Home}');
+		await expect.poll(() => document.activeElement).toBe(rows[0]);
 	});
 
 	it('moves to grid boundaries with Ctrl+Home and Ctrl+End', async () => {

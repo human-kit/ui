@@ -25,6 +25,10 @@
 	const cellOrderVersion = row.cellOrderVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
+	let isElementFocused = $state(false);
+	let isElementFocusVisible = $state(false);
+	let isFocusWithin = $state(false);
+	let isFocusVisibleWithin = $state(false);
 	row.registerCellToken(key, () => element);
 	const cellIndex = $derived.by(() => {
 		void $cellOrderVersion;
@@ -54,11 +58,11 @@
 
 	const isFocused = $derived.by(() => {
 		void $focusVersion;
-		return table.isCellFocused(key);
+		return table.isCellFocused(key) && isElementFocused;
 	});
 	const isFocusVisible = $derived.by(() => {
 		void $focusVersion;
-		return isFocused && table.focusVisible;
+		return isFocused && isElementFocusVisible;
 	});
 	const sortDirection = $derived.by(() => {
 		void $sortVersion;
@@ -70,9 +74,63 @@
 	});
 	const isResizable = $derived(column.allowsResizing);
 
+	function focusResizerInHeader(target: HTMLElement | undefined) {
+		const resizer = target?.querySelector<HTMLElement>('[data-table-column-resizer="true"]');
+		if (!resizer) return false;
+		resizer.focus();
+		return document.activeElement === resizer;
+	}
+
+	function getSiblingHeaderCell(direction: 'left' | 'right') {
+		const headerRow = element?.closest('tr');
+		if (!headerRow || !element) return null;
+
+		const headerCells = Array.from(
+			headerRow.querySelectorAll<HTMLElement>('th[role="columnheader"]')
+		);
+		const currentIndex = headerCells.indexOf(element);
+		if (currentIndex < 0) return null;
+
+		return headerCells[currentIndex + (direction === 'left' ? -1 : 1)] ?? null;
+	}
+
+	function moveFocusIntoResizeHandle(direction: 'left' | 'right') {
+		if (!column.allowsResizing && direction === 'right') return false;
+
+		if (direction === 'right') {
+			return focusResizerInHeader(element);
+		}
+
+		return focusResizerInHeader(getSiblingHeaderCell('left') ?? undefined);
+	}
+
 	function handleFocus() {
+		isElementFocused = true;
+		isElementFocusVisible = shouldShowFocusVisible(element ?? null);
 		table.setFocusedCell(key);
-		table.setFocusVisible(shouldShowFocusVisible(element ?? null));
+		table.setFocusVisible(isElementFocusVisible);
+	}
+
+	function handleBlur() {
+		isElementFocused = false;
+		isElementFocusVisible = false;
+	}
+
+	function handleFocusIn(event: FocusEvent) {
+		if (event.target === element) {
+			isFocusWithin = false;
+			isFocusVisibleWithin = false;
+			return;
+		}
+		isFocusWithin = true;
+		isFocusVisibleWithin = shouldShowFocusVisible(event.target as HTMLElement | null);
+	}
+
+	function handleFocusOut(event: FocusEvent) {
+		const nextFocused = event.relatedTarget;
+		if (nextFocused instanceof Node && element?.contains(nextFocused)) return;
+		isFocusWithin = false;
+		isFocusVisibleWithin = false;
 	}
 
 	function handleClick() {
@@ -116,10 +174,12 @@
 				return;
 			case 'ArrowLeft':
 				event.preventDefault();
+				if (moveFocusIntoResizeHandle('left')) return;
 				table.moveFocus('left');
 				return;
 			case 'ArrowRight':
 				event.preventDefault();
+				if (moveFocusIntoResizeHandle('right')) return;
 				table.moveFocus('right');
 				return;
 			case 'Home':
@@ -149,13 +209,18 @@
 	aria-sort={column.allowsSorting ? (sortDirection ?? 'none') : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
+	data-focus-within={isFocusWithin ? 'true' : undefined}
+	data-focus-visible-within={isFocusVisibleWithin ? 'true' : undefined}
 	data-sortable={column.allowsSorting || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
 	style:position={isResizable ? 'relative' : undefined}
 	style:width={columnWidth !== undefined ? `${columnWidth}px` : undefined}
 	style:overflow={isResizable ? 'visible' : columnWidth !== undefined ? 'hidden' : undefined}
+	onfocusin={handleFocusIn}
+	onfocusout={handleFocusOut}
 	onfocus={handleFocus}
+	onblur={handleBlur}
 	onclick={handleClick}
 	onmousedown={handleMouseDown}
 	onkeydown={handleKeyDown}

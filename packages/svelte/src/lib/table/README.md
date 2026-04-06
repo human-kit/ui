@@ -75,13 +75,15 @@
 - When `selectionMode` changes to `none`, the component clears any existing row selection internally.
 - v1 leaves text selection and `Ctrl+C` behavior browser-native; the table does not implement custom copy handling or force a text-selection policy.
 - In `replace` mode, clicking outside the table clears focus but does not clear selection.
+- In body rows, pressing `ArrowLeft` before the first cell or `ArrowRight` after the last cell moves focus to the row itself. Repeating that same horizontal arrow loops back into the opposite edge cell of the same row.
 - Keep interactive controls inside `Table.Cell` out of scope for the current v1 API.
 
 ## Accessibility
 
 - `Table.Root` renders an interactive `grid` over native table markup.
 - Keyboard navigation uses roving `tabindex` across header and body cells.
+- Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
 - First-column body cells become `rowheader` when their associated column has `isRowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
 - Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.
-- Column resize handles are keyboard accessible separators and resize only the `Table.Column` they are composed within.
+- Column resize handles are keyboard accessible separators. Press `Enter` to enter resize mode, use the horizontal arrow keys to resize, `Home` to jump to the minimum width, `End` to auto-fit to content width, and press `Enter` again to exit resize mode while keeping focus on the handle.

@@ -26,6 +26,7 @@
 	let selectionMode = $state<TableSelectionMode>('multiple');
 	let selectionBehavior = $state<TableSelectionBehavior>('toggle');
 	let sortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
+	let resizingColumnId = $state<string | null>(null);
 	let columnWidths = $state<Map<string, number> | undefined>(
 		new Map([
 			['email', 260],
@@ -72,7 +73,7 @@
 		<div class="space-y-8">
 			<DemoSection
 				title="Interactive Table"
-				description="Use arrow keys to move between cells, Space to select rows, drag or keyboard-resize the header handles, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down. Long cell values truncate to preserve the column layout while resizing."
+				description="Use arrow keys to move between cells, Space to select rows, drag the header handles or focus a handle and press Enter to enter keyboard resize mode, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down. Long cell values truncate to preserve the column layout while resizing."
 			>
 				<div
 					class="overflow-x-auto rounded-xl border border-gray-300 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
@@ -85,6 +86,12 @@
 						bind:selectedKeys
 						bind:sortDescriptor
 						bind:columnWidths
+						onColumnResizeStart={(columnId) => {
+							resizingColumnId = columnId;
+						}}
+						onColumnResizeEnd={() => {
+							resizingColumnId = null;
+						}}
 						class="min-w-full border-collapse text-left"
 					>
 						<Table.Header>
@@ -105,8 +112,10 @@
 												>Email</span
 											>
 											<Table.ColumnResizer
-												class="inline-flex w-3 shrink-0 cursor-col-resize justify-center text-gray-400 hover:text-gray-600 data-[focus-visible=true]:rounded-sm data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:text-gray-500 dark:hover:text-gray-300"
-											/>
+												class="inline-flex w-4 shrink-0 cursor-col-resize justify-center rounded-sm outline-none text-gray-400 hover:text-gray-600 data-[focus-visible=true]:bg-blue-50 data-[focus-visible=true]:text-blue-600 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[resizing=true]:bg-blue-600 data-[resizing=true]:text-white dark:text-gray-500 dark:hover:text-gray-300 dark:data-[focus-visible=true]:bg-blue-950/50 dark:data-[focus-visible=true]:text-blue-200 dark:data-[resizing=true]:bg-blue-500"
+											>
+												<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>
+											</Table.ColumnResizer>
 										</div>
 									</Table.ColumnHeaderCell>
 								</Table.Column>
@@ -125,8 +134,10 @@
 												>Group</span
 											>
 											<Table.ColumnResizer
-												class="inline-flex w-3 shrink-0 cursor-col-resize justify-center text-gray-400 hover:text-gray-600 data-[focus-visible=true]:rounded-sm data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:text-gray-500 dark:hover:text-gray-300"
-											/>
+												class="inline-flex w-4 shrink-0 cursor-col-resize justify-center rounded-sm outline-none text-gray-400 hover:text-gray-600 data-[focus-visible=true]:bg-blue-50 data-[focus-visible=true]:text-blue-600 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[resizing=true]:bg-blue-600 data-[resizing=true]:text-white dark:text-gray-500 dark:hover:text-gray-300 dark:data-[focus-visible=true]:bg-blue-950/50 dark:data-[focus-visible=true]:text-blue-200 dark:data-[resizing=true]:bg-blue-500"
+											>
+												<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>
+											</Table.ColumnResizer>
 										</div>
 									</Table.ColumnHeaderCell>
 								</Table.Column>
@@ -136,7 +147,7 @@
 							{#each sortedUsers as user (user.id)}
 								<Table.Row
 									id={user.id}
-									class="border-b border-gray-100 data-selected:bg-blue-50 data-disabled:bg-gray-100/80 data-disabled:text-gray-400 data-disabled:opacity-70 dark:border-gray-800 dark:data-selected:bg-blue-950/40 dark:data-disabled:bg-gray-800/70 dark:data-disabled:text-gray-500"
+									class="border-b border-gray-100 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 data-selected:bg-blue-50 data-disabled:bg-gray-100/80 data-disabled:text-gray-400 data-disabled:opacity-70 dark:border-gray-800 dark:data-[focus-visible=true]:ring-blue-400 dark:data-selected:bg-blue-950/40 dark:data-disabled:bg-gray-800/70 dark:data-disabled:text-gray-500"
 								>
 									<Table.Cell
 										class="px-3 py-2 text-sm font-normal text-gray-900 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 data-disabled:line-through data-disabled:decoration-gray-400 dark:text-white dark:data-disabled:decoration-gray-600"
@@ -268,6 +279,7 @@
 							<DemoState label="selectionMode" value={selectionMode} />
 							<DemoState label="selectionBehavior" value={selectionBehavior} />
 							<DemoState label="sortableColumns" value={sortableColumns} />
+							<DemoState label="resizingColumn" value={resizingColumnId ?? 'none'} />
 							<DemoState
 								label="columnWidths"
 								value={columnWidths ? Object.fromEntries(columnWidths) : 'auto'}
@@ -292,7 +304,7 @@
 					</div>
 					<div class="flex items-center gap-2">
 						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">← ↑ ↓ →</kbd><span
-							>Move between header and enabled body cells</span
+							>Move between header cells, body cells, and focused body rows at row edges</span
 						>
 					</div>
 					<div class="flex items-center gap-2">
@@ -309,8 +321,20 @@
 						><span>Extend row selection in `replace` mode</span>
 					</div>
 					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Enter</kbd><span
+							>Enter or leave keyboard resize mode on the focused handle</span
+						>
+					</div>
+					<div class="flex items-center gap-2">
 						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">← / →</kbd><span
-							>Resize the focused column handle</span
+							>Resize the focused column handle while resize mode is active</span
+						>
+					</div>
+					<div class="flex items-center gap-2">
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">Home / End</kbd
+						><span
+							>Set the focused column handle to minimum width or auto-fit while resize mode is
+							active</span
 						>
 					</div>
 				</div>

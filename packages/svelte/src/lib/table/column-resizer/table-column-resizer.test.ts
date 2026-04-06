@@ -41,15 +41,30 @@ describe('Table.ColumnResizer', () => {
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
 
 		emailResizer.focus();
+		await userEvent.keyboard('{Enter}');
+		await expect.element(emailResizer).toHaveAttribute('data-resizing', 'true');
 		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{Enter}');
 
 		await expect.poll(() => readColumnWidths().email).toBe(216);
 		expect(readColumnWidths().group).toBe(160);
+		await expect.element(emailResizer).not.toHaveAttribute('data-resizing');
 		await expect
 			.poll(() => document.querySelector('[data-testid="resize-start-column"]')?.textContent)
 			.toBe('email');
 		await expect.poll(() => readResizeEndWidths().email).toBe(216);
 		await expect.poll(() => readResizeAnnouncement('email-resizer')).toBe('Email width 216px.');
+	});
+
+	it('does not resize from arrow keys until keyboard resize mode is activated', async () => {
+		render(ColumnResizerTest);
+		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+
+		emailResizer.focus();
+		await userEvent.keyboard('{ArrowRight}');
+
+		expect(readColumnWidths().email).toBe(200);
+		await expect.element(emailResizer).not.toHaveAttribute('data-resizing');
 	});
 
 	it('does not trigger sorting when interacting with the resize handle', async () => {
@@ -256,28 +271,40 @@ describe('Table.ColumnResizer', () => {
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
 
 		emailResizer.focus();
-		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{Enter}{ArrowRight}');
 		const groupAfterFirstResize = readColumnWidths().group;
 
-		await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+		await userEvent.keyboard('{ArrowRight}{ArrowRight}{Enter}');
 
 		await expect.poll(() => readColumnWidths().email).toBe(200 + 16 * 3);
 		expect(readColumnWidths().group).toBe(groupAfterFirstResize);
 	});
 
-	it('respects shift-step and Home/End keyboard resizing', async () => {
+	it('respects shift-step and Home keyboard resizing', async () => {
 		render(ColumnResizerTest);
 		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
 
 		groupResizer.focus();
+		await userEvent.keyboard('{Enter}');
 		await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}');
 		await expect.poll(() => readColumnWidths().group).toBe(208);
 
 		await userEvent.keyboard('{Home}');
 		await expect.poll(() => readColumnWidths().group).toBe(100);
+		await userEvent.keyboard('{Enter}');
+	});
+
+	it('auto fits the column from End while keyboard resize mode is active', async () => {
+		render(ColumnResizerTest);
+		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+
+		emailResizer.focus();
+		await userEvent.keyboard('{Enter}{Home}');
+		await expect.poll(() => readColumnWidths().email).toBe(120);
 
 		await userEvent.keyboard('{End}');
-		await expect.poll(() => readColumnWidths().group).toBe(260);
+		await expect.poll(() => readColumnWidths().email).toBeGreaterThan(200);
+		await userEvent.keyboard('{Enter}');
 	});
 
 	it('inverts ArrowLeft and ArrowRight resizing in RTL layouts', async () => {
@@ -285,15 +312,16 @@ describe('Table.ColumnResizer', () => {
 		document.documentElement.dir = 'rtl';
 
 		try {
-			render(ColumnResizerTest);
-			const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+			const screen = render(ColumnResizerTest);
+			const emailResizer = screen.getByTestId('email-resizer').element() as HTMLElement;
 
 			emailResizer.focus();
-			await userEvent.keyboard('{ArrowRight}');
+			await userEvent.keyboard('{Enter}{ArrowRight}');
 			await expect.poll(() => readColumnWidths().email).toBe(184);
 
 			await userEvent.keyboard('{ArrowLeft}');
 			await expect.poll(() => readColumnWidths().email).toBe(200);
+			await userEvent.keyboard('{Enter}');
 		} finally {
 			document.documentElement.dir = previousDir;
 		}
@@ -304,9 +332,70 @@ describe('Table.ColumnResizer', () => {
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
 
 		emailResizer.focus();
-		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{Enter}{ArrowRight}{Enter}');
 
 		await expect.element(emailResizer).toHaveAttribute('aria-valuenow', '216');
 		await expect.element(emailResizer).toHaveAttribute('aria-valuetext', '216px wide');
+	});
+
+	it('moves focus from a header cell into its resize handle before the next header cell', async () => {
+		const screen = render(ColumnResizerTest);
+		const emailHeaderCell = screen.getByTestId('email-header-cell').element() as HTMLElement;
+		const emailResizer = screen.getByTestId('email-resizer').element() as HTMLElement;
+		const groupHeaderCell = screen.getByTestId('group-header-cell').element() as HTMLElement;
+
+		emailHeaderCell.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement).toBe(emailResizer);
+		await expect.poll(() => emailHeaderCell.getAttribute('data-focused')).toBeNull();
+		await expect.poll(() => emailHeaderCell.getAttribute('data-focus-visible')).toBeNull();
+		await expect.poll(() => emailHeaderCell.getAttribute('data-focus-within')).toBe('true');
+		await expect.poll(() => emailHeaderCell.getAttribute('data-focus-visible-within')).toBe('true');
+		await expect.poll(() => emailResizer.getAttribute('data-focus-visible')).toBe('true');
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement).toBe(groupHeaderCell);
+	});
+
+	it('moves focus back through the previous column resize handle before the previous header cell', async () => {
+		const screen = render(ColumnResizerTest);
+		const emailHeaderCell = screen.getByTestId('email-header-cell').element() as HTMLElement;
+		const emailResizer = screen.getByTestId('email-resizer').element() as HTMLElement;
+		const groupHeaderCell = screen.getByTestId('group-header-cell').element() as HTMLElement;
+
+		groupHeaderCell.focus();
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => document.activeElement).toBe(emailResizer);
+
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => document.activeElement).toBe(emailHeaderCell);
+	});
+
+	it('keeps focus on the resize handle after exiting keyboard resize mode with Enter', async () => {
+		const screen = render(ColumnResizerTest);
+		const emailResizer = screen.getByTestId('email-resizer').element() as HTMLElement;
+		const groupHeaderCell = screen.getByTestId('group-header-cell').element() as HTMLElement;
+
+		emailResizer.focus();
+		await userEvent.keyboard('{Enter}{ArrowRight}{Enter}');
+
+		await expect.poll(() => document.activeElement).toBe(emailResizer);
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement).toBe(groupHeaderCell);
+	});
+
+	it('restores the starting width when Escape cancels keyboard resize mode', async () => {
+		render(ColumnResizerTest);
+		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+		const emailHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="email-header-cell"]'
+		)!;
+
+		emailResizer.focus();
+		await userEvent.keyboard('{Enter}{ArrowRight}{Escape}');
+
+		await expect.poll(() => readColumnWidths().email).toBe(200);
+		await expect.poll(() => document.activeElement).toBe(emailHeaderCell);
+		await expect.element(emailResizer).not.toHaveAttribute('data-resizing');
 	});
 });

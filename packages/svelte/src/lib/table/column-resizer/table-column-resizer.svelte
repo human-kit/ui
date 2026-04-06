@@ -31,10 +31,12 @@
 	let element = $state<HTMLDivElement | undefined>(undefined);
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);
+	let keyboardResizeActive = $state(false);
+	let keyboardResizeStartWidth = $state<number | null>(null);
 	let removeListeners: (() => void) | null = null;
 	let resizeAnnouncement = $state('');
 	let announceTimeout: ReturnType<typeof setTimeout> | null = null;
-	let keyboardResizeEndTimer: ReturnType<typeof setTimeout> | null = null;
+	let focusHeaderTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	const isResizing = $derived.by(() => {
 		void $resizeVersion;
@@ -89,6 +91,34 @@
 		}
 	}
 
+	function cleanupFocusHeaderTimeout() {
+		if (focusHeaderTimeout !== null) {
+			clearTimeout(focusHeaderTimeout);
+			focusHeaderTimeout = null;
+		}
+	}
+
+	function focusHeaderCell() {
+		const headerCell = element?.closest('th') as HTMLElement | null;
+		headerCell?.focus();
+	}
+
+	function focusAdjacentHeaderCell(direction: 'left' | 'right') {
+		const headerCell = element?.closest('th') as HTMLElement | null;
+		const headerRow = headerCell?.closest('tr');
+		if (!headerCell || !headerRow) return false;
+
+		const headerCells = Array.from(
+			headerRow.querySelectorAll<HTMLElement>('th[role="columnheader"]')
+		);
+		const currentIndex = headerCells.indexOf(headerCell);
+		if (currentIndex < 0) return false;
+
+		const target = headerCells[currentIndex + (direction === 'left' ? -1 : 1)] ?? null;
+		target?.focus();
+		return document.activeElement === target;
+	}
+
 	function updateWidth(nextWidth: number) {
 		table.setColumnWidth(column.id, nextWidth);
 	}
@@ -107,28 +137,42 @@
 		}, 0);
 	}
 
-	function cleanupKeyboardResizeEndTimer() {
-		if (keyboardResizeEndTimer !== null) {
-			clearTimeout(keyboardResizeEndTimer);
-			keyboardResizeEndTimer = null;
-		}
-	}
-
 	function commitWidthChange(nextWidth: number, options?: { announce?: boolean }) {
-		// Start the resize session if not already active (first keypress).
-		// Subsequent keypresses extend the session; we end it after a pause.
-		cleanupKeyboardResizeEndTimer();
-		table.startColumnResize(column.id);
 		updateWidth(nextWidth);
 		const committedWidth = getResolvedWidth();
-		keyboardResizeEndTimer = setTimeout(() => {
-			keyboardResizeEndTimer = null;
-			table.endColumnResize();
-		}, 300);
 		if (options?.announce !== false) {
 			announceWidth(committedWidth);
 		}
 		return committedWidth;
+	}
+
+	function startKeyboardResizeMode() {
+		if (keyboardResizeActive) return;
+		keyboardResizeActive = true;
+		keyboardResizeStartWidth = getResolvedWidth();
+		table.startColumnResize(column.id);
+	}
+
+	function stopKeyboardResizeMode(options?: { restoreWidth?: boolean; focusHeader?: boolean }) {
+		if (options?.restoreWidth && keyboardResizeStartWidth !== null) {
+			updateWidth(keyboardResizeStartWidth);
+		}
+
+		const wasActive = keyboardResizeActive;
+		keyboardResizeActive = false;
+		keyboardResizeStartWidth = null;
+
+		if (wasActive) {
+			table.endColumnResize();
+		}
+
+		if (options?.focusHeader) {
+			cleanupFocusHeaderTimeout();
+			focusHeaderTimeout = setTimeout(() => {
+				focusHeaderTimeout = null;
+				focusHeaderCell();
+			}, 0);
+		}
 	}
 
 	function getAutoFitWidth() {
@@ -141,8 +185,11 @@
 		event.stopPropagation();
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = false;
+		stopKeyboardResizeMode();
 
+		table.startColumnResize(column.id);
 		commitWidthChange(getAutoFitWidth());
+		table.endColumnResize();
 	}
 
 	function handlePointerDown(event: PointerEvent) {
@@ -154,8 +201,7 @@
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = false;
 
-		// End any pending keyboard resize session before starting a pointer drag.
-		cleanupKeyboardResizeEndTimer();
+		stopKeyboardResizeMode();
 		table.startColumnResize(column.id);
 
 		const th = element?.closest('th') as HTMLElement | null;
@@ -324,12 +370,72 @@
 	function handleBlur() {
 		isFocused = false;
 		isFocusVisible = false;
+		stopKeyboardResizeMode();
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (!column.allowsResizing) return;
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = true;
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
+			event.preventDefault();
+			event.stopPropagation();
+			table.moveToGridStart();
+			return;
+		}
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'End') {
+			event.preventDefault();
+			event.stopPropagation();
+			table.moveToGridEnd();
+			return;
+		}
+
+		if (!keyboardResizeActive) {
+			switch (event.key) {
+				case 'Enter':
+					event.preventDefault();
+					if (event.repeat) return;
+					event.stopPropagation();
+					startKeyboardResizeMode();
+					return;
+				case 'ArrowLeft':
+					event.preventDefault();
+					event.stopPropagation();
+					focusHeaderCell();
+					return;
+				case 'ArrowRight':
+					event.preventDefault();
+					event.stopPropagation();
+					focusAdjacentHeaderCell('right');
+					return;
+				case 'ArrowUp':
+					event.preventDefault();
+					event.stopPropagation();
+					table.moveFocus('up');
+					return;
+				case 'ArrowDown':
+					event.preventDefault();
+					event.stopPropagation();
+					table.moveFocus('down');
+					return;
+				case 'Home':
+					event.preventDefault();
+					event.stopPropagation();
+					focusHeaderCell();
+					table.moveToRowStart();
+					return;
+				case 'End':
+					event.preventDefault();
+					event.stopPropagation();
+					focusHeaderCell();
+					table.moveToRowEnd();
+					return;
+			}
+			return;
+		}
+
 		event.stopPropagation();
 
 		const delta = event.shiftKey ? shiftStep : step;
@@ -350,20 +456,24 @@
 				commitWidthChange(minWidth);
 				return;
 			case 'End':
-				if (maxWidth === undefined) return;
 				event.preventDefault();
-				commitWidthChange(maxWidth);
+					commitWidthChange(getAutoFitWidth());
 				return;
 			case 'Enter':
 				event.preventDefault();
-				commitWidthChange(getAutoFitWidth());
+					stopKeyboardResizeMode();
+				return;
+			case 'Escape':
+				event.preventDefault();
+				stopKeyboardResizeMode({ restoreWidth: true, focusHeader: true });
 				return;
 		}
 	}
 
 	onDestroy(() => {
 		cleanupAnnouncementTimeout();
-		cleanupKeyboardResizeEndTimer();
+		cleanupFocusHeaderTimeout();
+		stopKeyboardResizeMode();
 		cleanupPointerListeners();
 	});
 </script>
@@ -383,6 +493,7 @@
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-resizing={isResizing ? 'true' : undefined}
+	data-table-column-resizer="true"
 	data-resizable-direction="right"
 	style:position="absolute"
 	style:top="0"

@@ -27,7 +27,7 @@
 	<Table.Header>
 		<Table.Row>
 			<Table.Column id="email" isRowHeader allowsResizing textValue="Email" minWidth={120}>
-				<Table.ColumnHeaderCell>
+				<Table.ColumnHeaderCell data-testid="email-header-cell">
 					<div class="flex items-center justify-between gap-3">
 						<span>Email</span>
 						<Table.ColumnResizer
@@ -45,7 +45,7 @@
 				minWidth={100}
 				maxWidth={260}
 			>
-				<Table.ColumnHeaderCell>
+				<Table.ColumnHeaderCell data-testid="group-header-cell">
 					<div class="flex items-center justify-between gap-3">
 						<span>Group</span>
 						<Table.ColumnResizer
