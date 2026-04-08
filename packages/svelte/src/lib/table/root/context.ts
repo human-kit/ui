@@ -94,6 +94,8 @@ export type TableContext = {
 	resizingColumnId: string | null;
 	registerColumn: (column: TableColumnRegistration) => void;
 	unregisterColumn: (token: string) => void;
+	registerColumnResizer: (columnToken: string) => void;
+	unregisterColumnResizer: (columnToken: string) => void;
 	getColumnCount: () => number;
 	getColumnAt: (index: number) => TableColumnRegistration | undefined;
 	getColumnIndexByToken: (token: string) => number;
@@ -197,6 +199,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const columns = new Map<string, TableColumnRegistration>();
 	const columnIds = new Map<string, string>();
 	const columnOrder: string[] = [];
+	const columnsWithResizers = new Set<string>();
 	const columnWidths = new Map<string, number>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
@@ -308,9 +311,20 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function hasResizableColumns() {
 		for (const column of columns.values()) {
-			if (column.allowsResizing) return true;
+			if (column.allowsResizing || columnsWithResizers.has(column.token)) return true;
 		}
 		return false;
+	}
+
+	function registerColumnResizer(columnToken: string) {
+		if (columnsWithResizers.has(columnToken)) return;
+		columnsWithResizers.add(columnToken);
+		notifyLayout();
+	}
+
+	function unregisterColumnResizer(columnToken: string) {
+		if (!columnsWithResizers.delete(columnToken)) return;
+		notifyLayout();
 	}
 
 	function sameColumnRegistration(left: TableColumnRegistration, right: TableColumnRegistration) {
@@ -370,6 +384,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			columnIds.delete(column.id);
 		}
 		columns.delete(token);
+		columnsWithResizers.delete(token);
 		const index = columnOrder.indexOf(token);
 		if (index >= 0) {
 			columnOrder.splice(index, 1);
@@ -439,7 +454,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function isColumnResizable(columnId: string) {
-		return getColumnRegistrationById(columnId)?.allowsResizing ?? false;
+		const column = getColumnRegistrationById(columnId);
+		if (!column) return false;
+		return column.allowsResizing || columnsWithResizers.has(column.token);
 	}
 
 	function getColumnWidths() {
@@ -1381,6 +1398,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		},
 		registerColumn,
 		unregisterColumn,
+		registerColumnResizer,
+		unregisterColumnResizer,
 		getColumnCount,
 		getColumnAt,
 		getColumnIndexByToken,

@@ -72,7 +72,6 @@
 		void $widthVersion;
 		return table.getColumnWidth(column.id);
 	});
-	const isResizable = $derived(column.allowsResizing);
 
 	function focusResizerInHeader(target: HTMLElement | undefined) {
 		const resizer = target?.querySelector<HTMLElement>('[data-table-column-resizer="true"]');
@@ -95,8 +94,6 @@
 	}
 
 	function moveFocusIntoResizeHandle(direction: 'left' | 'right') {
-		if (!column.allowsResizing && direction === 'right') return false;
-
 		if (direction === 'right') {
 			return focusResizerInHeader(element);
 		}
@@ -214,9 +211,7 @@
 	data-sortable={column.allowsSorting || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
-	style:position={isResizable ? 'relative' : undefined}
 	style:width={columnWidth !== undefined ? `${columnWidth}px` : undefined}
-	style:overflow={isResizable ? 'visible' : columnWidth !== undefined ? 'hidden' : undefined}
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
 	onfocus={handleFocus}
@@ -238,3 +233,10 @@
 		{/if}
 	</div>
 </th>
+
+<style>
+	th {
+		position: relative;
+		overflow: visible;
+	}
+</style>

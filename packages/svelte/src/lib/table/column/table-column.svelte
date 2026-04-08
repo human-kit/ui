@@ -11,6 +11,7 @@
 	type TableColumnProps = {
 		id: string;
 		allowsSorting?: boolean;
+		/** @deprecated `Table.ColumnResizer` now enables resizing automatically. */
 		allowsResizing?: boolean;
 		isRowHeader?: boolean;
 		textValue?: string;
@@ -51,7 +52,7 @@
 			return allowsSorting;
 		},
 		get allowsResizing() {
-			return allowsResizing;
+			return allowsResizing || table.isColumnResizable(id);
 		},
 		get isRowHeader() {
 			return isRowHeader;

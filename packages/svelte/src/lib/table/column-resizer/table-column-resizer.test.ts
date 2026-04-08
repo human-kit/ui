@@ -250,8 +250,8 @@ describe('Table.ColumnResizer', () => {
 		const emailHeaderCell = emailResizer.closest('th') as HTMLElement;
 		const headerContent = emailHeaderCell.querySelector<HTMLElement>('[data-table-header-content]');
 
-		expect(emailHeaderCell.style.position).toBe('relative');
-		expect(emailHeaderCell.style.overflow).toBe('visible');
+		expect(getComputedStyle(emailHeaderCell).position).toBe('relative');
+		expect(getComputedStyle(emailHeaderCell).overflow).toBe('visible');
 		expect(headerContent?.style.overflow).toBe('hidden');
 		expect(emailResizer.style.position).toBe('absolute');
 		expect(emailResizer.style.right).toBe('0px');

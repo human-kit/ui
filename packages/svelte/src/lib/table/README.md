@@ -18,7 +18,7 @@
 			<Table.Column id="group" allowsSorting>
 				<Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="size" allowsResizing minWidth={120}>
+			<Table.Column id="size" minWidth={120}>
 				<Table.ColumnHeaderCell>
 					Size
 					<Table.ColumnResizer />
@@ -61,7 +61,7 @@
 - Use `selectionBehavior="toggle"` to allow deselecting an already selected row, or `selectionBehavior="replace"` to keep selected rows selected when pressed again.
 - `Table.Column` is a logical-only wrapper for column metadata; it does not render DOM by itself and should wrap a single `Table.ColumnHeaderCell`.
 - Wrap each header cell in `Table.Column` so the table can register stable column metadata.
-- Add `Table.ColumnResizer` inside `Table.ColumnHeaderCell` to resize the owning `Table.Column`.
+- Add `Table.ColumnResizer` inside `Table.ColumnHeaderCell` to make the owning `Table.Column` resizable.
 - Provide `aria-label` or `aria-labelledby` on `Table.Root`.
 - Use `selectedKeys` / `onSelectionChange` for controlled row selection.
 - Use `defaultSelectedKeys` for uncontrolled initial row selection.

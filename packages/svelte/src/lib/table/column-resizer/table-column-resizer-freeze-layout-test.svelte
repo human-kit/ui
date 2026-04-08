@@ -12,7 +12,7 @@
 	>
 		<Table.Header>
 			<Table.Row>
-				<Table.Column id="email" isRowHeader allowsResizing textValue="Email" minWidth={80}>
+				<Table.Column id="email" isRowHeader textValue="Email" minWidth={80}>
 					<Table.ColumnHeaderCell>
 						<div class="flex items-center justify-between gap-3">
 							<span>Email address</span>
@@ -23,7 +23,7 @@
 						</div>
 					</Table.ColumnHeaderCell>
 				</Table.Column>
-				<Table.Column id="group" allowsResizing textValue="Group" minWidth={80}>
+				<Table.Column id="group" textValue="Group" minWidth={80}>
 					<Table.ColumnHeaderCell>
 						<div class="flex items-center justify-between gap-3">
 							<span>Group membership</span>

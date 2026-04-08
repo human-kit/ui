@@ -25,8 +25,10 @@
 
 	const table = useTableContext();
 	const column = useTableColumnContext();
+	const layoutVersion = table.layoutVersion;
 	const resizeVersion = table.resizeVersion;
 	const widthVersion = table.widthVersion;
+	table.registerColumnResizer(column.token);
 
 	let element = $state<HTMLDivElement | undefined>(undefined);
 	let isFocused = $state(false);
@@ -41,6 +43,10 @@
 	const isResizing = $derived.by(() => {
 		void $resizeVersion;
 		return table.resizingColumnId === column.id;
+	});
+	const isResizable = $derived.by(() => {
+		void $layoutVersion;
+		return table.isColumnResizable(column.id);
 	});
 	const currentWidth = $derived.by(() => {
 		void $widthVersion;
@@ -180,7 +186,7 @@
 	}
 
 	function handleDoubleClick(event: MouseEvent) {
-		if (!column.allowsResizing) return;
+		if (!isResizable) return;
 		event.preventDefault();
 		event.stopPropagation();
 		trackInteractionModality(event, element ?? null);
@@ -193,7 +199,7 @@
 	}
 
 	function handlePointerDown(event: PointerEvent) {
-		if (!column.allowsResizing) return;
+		if (!isResizable) return;
 		if (event.pointerType === 'mouse' && event.button !== 0) return;
 		if (event.isPrimary === false) return;
 		event.preventDefault();
@@ -374,7 +380,7 @@
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
-		if (!column.allowsResizing) return;
+		if (!isResizable) return;
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = true;
 
@@ -457,11 +463,11 @@
 				return;
 			case 'End':
 				event.preventDefault();
-					commitWidthChange(getAutoFitWidth());
+				commitWidthChange(getAutoFitWidth());
 				return;
 			case 'Enter':
 				event.preventDefault();
-					stopKeyboardResizeMode();
+				stopKeyboardResizeMode();
 				return;
 			case 'Escape':
 				event.preventDefault();
@@ -475,6 +481,7 @@
 		cleanupFocusHeaderTimeout();
 		stopKeyboardResizeMode();
 		cleanupPointerListeners();
+		table.unregisterColumnResizer(column.token);
 	});
 </script>
 
@@ -482,7 +489,7 @@
 <div
 	bind:this={element}
 	role="separator"
-	tabindex={column.allowsResizing ? 0 : undefined}
+	tabindex={isResizable ? 0 : undefined}
 	class={className}
 	aria-label={accessibleLabel}
 	aria-orientation="vertical"

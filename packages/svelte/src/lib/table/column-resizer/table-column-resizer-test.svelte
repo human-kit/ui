@@ -26,7 +26,7 @@
 >
 	<Table.Header>
 		<Table.Row>
-			<Table.Column id="email" isRowHeader allowsResizing textValue="Email" minWidth={120}>
+			<Table.Column id="email" isRowHeader textValue="Email" minWidth={120}>
 				<Table.ColumnHeaderCell data-testid="email-header-cell">
 					<div class="flex items-center justify-between gap-3">
 						<span>Email</span>
@@ -37,14 +37,7 @@
 					</div>
 				</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column
-				id="group"
-				allowsSorting
-				allowsResizing
-				textValue="Group"
-				minWidth={100}
-				maxWidth={260}
-			>
+			<Table.Column id="group" allowsSorting textValue="Group" minWidth={100} maxWidth={260}>
 				<Table.ColumnHeaderCell data-testid="group-header-cell">
 					<div class="flex items-center justify-between gap-3">
 						<span>Group</span>

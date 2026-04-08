@@ -13,7 +13,7 @@ Description: Logical metadata wrapper for a header column. It does not render DO
 | ---------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
 | `id`             | `string`                    | `-`         | Stable identifier for the column.                                                                 |
 | `allowsSorting`  | `boolean`                   | `false`     | Enables sorting for the wrapped header cell.                                                      |
-| `allowsResizing` | `boolean`                   | `false`     | Enables resizing for the wrapped header cell when paired with `Table.ColumnResizer`.              |
+| `allowsResizing` | `boolean`                   | `false`     | Legacy explicit resize opt-in. `Table.ColumnResizer` now enables resizing automatically; keep this only for backward compatibility. |
 | `isRowHeader`    | `boolean`                   | `false`     | Marks the associated body column as row-header cells.                                             |
 | `textValue`      | `string`                    | `undefined` | Optional spoken label used by `Table.Root` sort announcements when it should differ from `id`.    |
 | `width`          | `number \| \`${number}px\`` | `undefined` | Explicit column width hint. Px numbers are the first-class format for the current resize release. |

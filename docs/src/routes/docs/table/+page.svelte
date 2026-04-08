@@ -100,7 +100,6 @@
 									id="email"
 									isRowHeader
 									allowsSorting={sortableColumns.includes('email')}
-									allowsResizing
 									minWidth={30}
 								>
 									<Table.ColumnHeaderCell
@@ -122,7 +121,6 @@
 								<Table.Column
 									id="group"
 									allowsSorting={sortableColumns.includes('group')}
-									allowsResizing
 									maxWidth={320}
 								>
 									<Table.ColumnHeaderCell
