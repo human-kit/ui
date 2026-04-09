@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { shouldShowFocusVisible, trackInteractionModality } from '../../primitives/input-modality';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 	import { cn } from '../../utils/cn';
 	import { setCheckboxContext, type CheckboxContext, type CheckboxState } from './context';
 
@@ -193,7 +196,12 @@
 	function handleKeyUp(event: KeyboardEvent) {
 		if (event.defaultPrevented) return;
 
-		const releasedKey = event.key === 'Enter' ? 'Enter' : event.key === ' ' || event.key === 'Spacebar' ? 'Space' : null;
+		const releasedKey =
+			event.key === 'Enter'
+				? 'Enter'
+				: event.key === ' ' || event.key === 'Spacebar'
+					? 'Space'
+					: null;
 		if (!releasedKey) return;
 
 		trackInteractionModality(event, rootRef);
@@ -324,7 +332,10 @@
 	onmousedown={handlePointerDown}
 	onfocus={handleFocus}
 	onblur={handleBlur}
-	class={cn('relative inline-flex shrink-0 items-center justify-center align-middle outline-none', className)}
+	class={cn(
+		'relative inline-flex shrink-0 items-center justify-center align-middle outline-none',
+		className
+	)}
 >
 	<input
 		bind:this={inputRef}
@@ -335,7 +346,7 @@
 		{value}
 		checked={currentChecked}
 		disabled={isDisabled}
-		required={required}
+		{required}
 		readonly={isReadOnly}
 		aria-hidden="true"
 		data-checkbox-input="true"

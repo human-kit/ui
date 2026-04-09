@@ -10,8 +10,12 @@
 		class?: string;
 	};
 
-	let { keepMounted = false, children, class: className = '', ...restProps }: CheckboxIndicatorProps =
-		$props();
+	let {
+		keepMounted = false,
+		children,
+		class: className = '',
+		...restProps
+	}: CheckboxIndicatorProps = $props();
 
 	const checkbox = useCheckboxContext();
 	const visible = $derived(checkbox.state !== 'unchecked');
