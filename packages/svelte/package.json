@@ -11,6 +11,11 @@
 			"svelte": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
+		"./checkbox": {
+			"types": "./dist/checkbox/index.d.ts",
+			"svelte": "./dist/checkbox/index.js",
+			"default": "./dist/checkbox/index.js"
+		},
 		"./combobox": {
 			"types": "./dist/combobox/index.d.ts",
 			"svelte": "./dist/combobox/index.js",
