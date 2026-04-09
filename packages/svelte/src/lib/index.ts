@@ -1,6 +1,7 @@
 // Main library entry point
 
 // Components (namespace exports)
+export { Checkbox } from './checkbox/index.ts';
 export { ComboBox } from './combobox/index.ts';
 export { Calendar } from './calendar/index.ts';
 export { Clock } from './clock/index.ts';
@@ -20,6 +21,7 @@ export { Portal } from './portal/index.ts';
 export * from './locale-provider/index.ts';
 
 // Re-export named exports from components
+export * from './checkbox/index.ts';
 export * from './combobox/index.ts';
 export * from './calendar/index.ts';
 export * from './clock/index.ts';
