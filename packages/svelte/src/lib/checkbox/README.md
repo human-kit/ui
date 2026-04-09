@@ -11,9 +11,9 @@
 
 ```svelte
 <Checkbox.Root aria-label="Accept terms">
-  <Checkbox.Indicator>
-    <CheckIcon />
-  </Checkbox.Indicator>
+	<Checkbox.Indicator>
+		<CheckIcon />
+	</Checkbox.Indicator>
 </Checkbox.Root>
 ```
 

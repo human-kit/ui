@@ -38,7 +38,9 @@ describe('Checkbox.Root', () => {
 		input?.click();
 
 		await expect.poll(() => checkbox.element()?.getAttribute('aria-checked')).toBe('true');
-		await expect.poll(() => document.querySelector('[data-checked-state]')?.textContent).toBe('true');
+		await expect
+			.poll(() => document.querySelector('[data-checked-state]')?.textContent)
+			.toBe('true');
 	});
 
 	it('resolves indeterminate to checked on first native hit-area click', async () => {
@@ -128,9 +130,7 @@ describe('Checkbox.Root', () => {
 		const screen = render(CheckboxTest, { isDisabled: true });
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
 
-		checkbox
-			.element()
-			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		checkbox.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 
 		expect(checkbox.element()?.getAttribute('aria-checked')).toBe('false');
 		expect(checkbox.element()?.getAttribute('data-disabled')).toBe('true');
@@ -140,9 +140,7 @@ describe('Checkbox.Root', () => {
 		const screen = render(CheckboxTest, { isReadOnly: true });
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
 
-		checkbox
-			.element()
-			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		checkbox.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 
 		expect(checkbox.element()?.getAttribute('aria-checked')).toBe('false');
 		expect(checkbox.element()?.getAttribute('data-readonly')).toBe('true');

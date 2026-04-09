@@ -46,7 +46,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 		try {
 			render(TableTest, {
@@ -189,17 +189,17 @@ describe('Table.Root', () => {
 
 		firstBodyCell.focus();
 		await userEvent.keyboard('{ArrowRight}{ArrowRight}');
-		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe(
-			'danilo@example.com Developer'
-		);
+		await expect
+			.poll(() => document.activeElement?.textContent?.trim())
+			.toBe('danilo@example.com Developer');
 
 		await userEvent.keyboard('{ArrowRight}');
 		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('danilo@example.com');
 
 		await userEvent.keyboard('{ArrowLeft}');
-		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe(
-			'danilo@example.com Developer'
-		);
+		await expect
+			.poll(() => document.activeElement?.textContent?.trim())
+			.toBe('danilo@example.com Developer');
 
 		await userEvent.keyboard('{ArrowLeft}');
 		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Developer');
