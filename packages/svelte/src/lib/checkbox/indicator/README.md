@@ -16,8 +16,8 @@ Description: Headless presence wrapper for checkbox indicator content. It render
 
 ```svelte
 <Checkbox.Root aria-label="Select row">
-  <Checkbox.Indicator>
-    <CheckIcon />
-  </Checkbox.Indicator>
+	<Checkbox.Indicator>
+		<CheckIcon />
+	</Checkbox.Indicator>
 </Checkbox.Root>
 ```
