@@ -5,6 +5,7 @@ const TABLE_KEY = Symbol('table');
 const TABLE_SECTION_KEY = Symbol('table-section');
 const TABLE_ROW_KEY = Symbol('table-row');
 const TABLE_COLUMN_KEY = Symbol('table-column');
+const TABLE_CELL_KEY = Symbol('table-cell');
 
 export type TableSelectionKey = string | number;
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
@@ -46,6 +47,8 @@ export type TableColumnRegistration = {
 	maxWidth?: number;
 };
 
+export type TableSelectionCheckboxState = 'none' | 'some' | 'all';
+
 type TableRowRegistration = {
 	token: string;
 	section: TableSectionKind;
@@ -61,6 +64,7 @@ type TableCellRegistration = {
 	columnIndex?: number;
 	columnToken?: string;
 	element?: HTMLElement;
+	focusDelegate?: () => HTMLElement | undefined;
 };
 
 export type CreateTableContextOptions = {
@@ -69,10 +73,12 @@ export type CreateTableContextOptions = {
 	initialSelectedKeys?: Iterable<TableSelectionKey>;
 	initialSortDescriptor?: TableSortDescriptor;
 	initialColumnWidths?: Iterable<readonly [string, number]>;
+	initialHiddenColumns?: Iterable<string>;
 	disabledKeys?: Iterable<TableSelectionKey>;
 	onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 	onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
 	onColumnWidthsChange?: (widths: Map<string, number>) => void;
+	onHiddenColumnsChange?: (columnIds: string[]) => void;
 	onColumnResizeStart?: (columnId: string) => void;
 	onColumnResizeEnd?: (widths: Map<string, number>) => void;
 };
@@ -97,16 +103,21 @@ export type TableContext = {
 	registerColumnResizer: (columnToken: string) => void;
 	unregisterColumnResizer: (columnToken: string) => void;
 	getColumnCount: () => number;
+	getVisibleColumnCount: () => number;
 	getColumnAt: (index: number) => TableColumnRegistration | undefined;
 	getColumnIndexByToken: (token: string) => number;
+	getVisibleColumnIndexByToken: (token: string) => number;
 	getColumnTextValue: (columnId: string) => string | undefined;
 	getColumnWidth: (columnId: string) => number | undefined;
 	getColumnMinWidth: (columnId: string) => number | undefined;
 	getColumnMaxWidth: (columnId: string) => number | undefined;
+	isColumnHidden: (columnId: string) => boolean;
 	isColumnResizable: (columnId: string) => boolean;
 	getColumnWidths: () => Map<string, number>;
+	getVisibleColumnWidths: () => Map<string, number>;
 	setColumnWidths: (widths?: Iterable<readonly [string, number]>) => void;
 	setColumnWidth: (columnId: string, width: number) => void;
+	setHiddenColumns: (columnIds?: Iterable<string>) => void;
 	measureColumnContentWidth: (columnId: string) => number | undefined;
 	startColumnResize: (columnId: string) => void;
 	endColumnResize: () => void;
@@ -122,6 +133,8 @@ export type TableContext = {
 	isRowFocusTarget: (token: string) => boolean;
 	getRowFocusEdge: (token: string) => TableRowFocusEdge | null;
 	isRowDisabled: (id: TableSelectionKey | undefined, localDisabled?: boolean) => boolean;
+	hasSelectableRows: () => boolean;
+	getSelectionCheckboxState: () => TableSelectionCheckboxState;
 	registerCell: (cell: TableCellRegistration) => void;
 	unregisterCell: (key: string) => void;
 	isCellFocused: (key: string) => boolean;
@@ -145,6 +158,7 @@ export type TableContext = {
 	moveToGridEnd: () => void;
 	toggleRowSelection: (id: TableSelectionKey | undefined) => void;
 	selectAllRows: () => void;
+	deselectAllRows: () => void;
 	setSelection: (keys: Iterable<TableSelectionKey>) => void;
 	setSelectionMode: (mode: TableSelectionMode) => void;
 	setSelectionBehavior: (behavior: TableSelectionBehavior) => void;
@@ -175,12 +189,19 @@ export type TableColumnContext = {
 	id: string;
 	allowsSorting: boolean;
 	allowsResizing: boolean;
+	isHidden: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
 	width?: TableColumnWidth;
 	defaultWidth?: TableColumnWidth;
 	minWidth?: number;
 	maxWidth?: number;
+};
+
+export type TableCellContext = {
+	cellKey: string;
+	registerFocusDelegate: (getElement: () => HTMLElement | undefined) => void;
+	unregisterFocusDelegate: () => void;
 };
 
 export function createTableContext(options: CreateTableContextOptions = {}): TableContext {
@@ -193,6 +214,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let selectedKeys = new Set<TableSelectionKey>(options.initialSelectedKeys ?? []);
 	let selectionAnchorKey = selectedKeys.values().next().value ?? null;
 	const disabledKeys = new Set<TableSelectionKey>(options.disabledKeys ?? []);
+	const hiddenColumnIds = new Set<string>(options.initialHiddenColumns ?? []);
 	let resizingColumnId: string | null = null;
 	let suppressNextHeaderClick = false;
 
@@ -211,6 +233,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		body: null
 	};
 	let orderedColumnTokensCache: string[] | null = null;
+	let visibleOrderedColumnTokensCache: string[] | null = null;
 	let columnWidthsCache: Map<string, number> | null = null;
 	let navigableCellsCache: Array<{ cell: TableCellRegistration; coord: TableGridCoord }> | null =
 		null;
@@ -234,6 +257,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function invalidateLayoutCaches() {
 		orderedRowTokensCache = { header: null, body: null };
 		orderedColumnTokensCache = null;
+		visibleOrderedColumnTokensCache = null;
 		columnWidthsCache = null;
 		navigableCellsCache = null;
 		rowsWithCellsCache = null;
@@ -286,6 +310,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return token ? columns.get(token) : undefined;
 	}
 
+	function isColumnHidden(columnId: string) {
+		return hiddenColumnIds.has(columnId);
+	}
+
 	function getColumnMinWidth(columnId: string) {
 		return getColumnRegistrationById(columnId)?.minWidth;
 	}
@@ -311,6 +339,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function hasResizableColumns() {
 		for (const column of columns.values()) {
+			if (isColumnHidden(column.id)) continue;
 			if (column.allowsResizing || columnsWithResizers.has(column.token)) return true;
 		}
 		return false;
@@ -359,7 +388,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			left.section === right.section &&
 			left.columnIndex === right.columnIndex &&
 			left.columnToken === right.columnToken &&
-			left.element === right.element
+			left.element === right.element &&
+			left.focusDelegate === right.focusDelegate
 		);
 	}
 
@@ -425,6 +455,19 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return getOrderedColumnTokens().length;
 	}
 
+	function getVisibleOrderedColumnTokens() {
+		if (visibleOrderedColumnTokensCache) return visibleOrderedColumnTokensCache;
+		visibleOrderedColumnTokensCache = getOrderedColumnTokens().filter((token) => {
+			const column = columns.get(token);
+			return column ? !isColumnHidden(column.id) : false;
+		});
+		return visibleOrderedColumnTokensCache;
+	}
+
+	function getVisibleColumnCount() {
+		return getVisibleOrderedColumnTokens().length;
+	}
+
 	function getColumnAt(index: number) {
 		const token = getOrderedColumnTokens()[index];
 		return token ? columns.get(token) : undefined;
@@ -432,6 +475,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getColumnIndexByToken(token: string) {
 		return getOrderedColumnTokens().indexOf(token);
+	}
+
+	function getVisibleColumnIndexByToken(token: string) {
+		return getVisibleOrderedColumnTokens().indexOf(token);
 	}
 
 	function getColumnTextValue(columnId: string) {
@@ -456,6 +503,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function isColumnResizable(columnId: string) {
 		const column = getColumnRegistrationById(columnId);
 		if (!column) return false;
+		if (isColumnHidden(columnId)) return false;
 		return column.allowsResizing || columnsWithResizers.has(column.token);
 	}
 
@@ -471,6 +519,15 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			}
 		}
 		columnWidthsCache = widths;
+		return widths;
+	}
+
+	function getVisibleColumnWidths() {
+		const widths = new Map<string, number>();
+		for (const [columnId, width] of getColumnWidths()) {
+			if (isColumnHidden(columnId)) continue;
+			widths.set(columnId, width);
+		}
 		return widths;
 	}
 
@@ -541,6 +598,103 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		columnWidths.set(columnId, nextWidth);
 		columnWidthsCache = null;
 		options.onColumnWidthsChange?.(getColumnWidths());
+		notifyWidth();
+	}
+
+	function getCellColumn(cell: TableCellRegistration) {
+		if (cell.section === 'header' && cell.columnToken) {
+			return columns.get(cell.columnToken);
+		}
+		return cell.columnIndex !== undefined ? getColumnAt(cell.columnIndex) : undefined;
+	}
+
+	function isCellColumnHidden(cell: TableCellRegistration) {
+		const column = getCellColumn(cell);
+		return column ? isColumnHidden(column.id) : false;
+	}
+
+	function getNearestVisibleCellKey(targetCell: TableCellRegistration) {
+		const targetPhysicalIndex = targetCell.section === 'header'
+			? (targetCell.columnToken ? getColumnIndexByToken(targetCell.columnToken) : -1)
+			: (targetCell.columnIndex ?? -1);
+
+		const siblingCells = Array.from(cells.values())
+			.filter((candidate) => {
+				if (candidate.key === targetCell.key) return false;
+				if (candidate.rowToken !== targetCell.rowToken) return false;
+				if (candidate.section !== targetCell.section) return false;
+				if (!candidate.element) return false;
+				if (isCellColumnHidden(candidate)) return false;
+				if (
+					candidate.section === 'body' &&
+					isRowDisabled(rows.get(candidate.rowToken)?.id, rows.get(candidate.rowToken)?.disabled)
+				) {
+					return false;
+				}
+				return true;
+			})
+			.map((candidate) => {
+				const physicalIndex = candidate.section === 'header'
+					? (candidate.columnToken ? getColumnIndexByToken(candidate.columnToken) : -1)
+					: (candidate.columnIndex ?? -1);
+				const candidateColumn = getCellColumn(candidate);
+				return { candidate, physicalIndex, candidateColumn };
+			})
+			.filter((entry) => entry.physicalIndex >= 0 && entry.candidateColumn);
+
+		if (siblingCells.length === 0) return null;
+
+		siblingCells.sort((left, right) => {
+			const leftDistance = Math.abs(left.physicalIndex - targetPhysicalIndex);
+			const rightDistance = Math.abs(right.physicalIndex - targetPhysicalIndex);
+			if (leftDistance !== rightDistance) return leftDistance - rightDistance;
+			return left.physicalIndex - right.physicalIndex;
+		});
+
+		return siblingCells[0]?.candidate.key ?? null;
+	}
+
+	function reconcileFocusAfterHiddenColumnsChange() {
+		if (resizingColumnId && isColumnHidden(resizingColumnId)) {
+			endColumnResize();
+		}
+
+		if (!focusedCellKey) return;
+		const focusedCell = cells.get(focusedCellKey);
+		if (!focusedCell || !isCellColumnHidden(focusedCell)) return;
+
+		const replacementKey = getNearestVisibleCellKey(focusedCell);
+		if (replacementKey) {
+			focusCellByKey(replacementKey);
+			return;
+		}
+
+		focusedCellKey = null;
+		focusedRowTarget = null;
+		notifyFocus();
+	}
+
+	function setHiddenColumns(columnIds?: Iterable<string>) {
+		const next = new Set(columnIds ?? []);
+		let changed = next.size !== hiddenColumnIds.size;
+		if (!changed) {
+			for (const columnId of hiddenColumnIds) {
+				if (!next.has(columnId)) {
+					changed = true;
+					break;
+				}
+			}
+		}
+
+		if (!changed) return;
+
+		hiddenColumnIds.clear();
+		for (const columnId of next) {
+			hiddenColumnIds.add(columnId);
+		}
+
+		reconcileFocusAfterHiddenColumnsChange();
+		notifyLayout();
 		notifyWidth();
 	}
 
@@ -615,7 +769,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function startColumnResize(columnId: string) {
 		if (!isColumnResizable(columnId) || resizingColumnId === columnId) return;
-		if (getColumnWidths().size < getColumnCount()) {
+		if (getVisibleColumnWidths().size < getVisibleColumnCount()) {
 			freezeColumnWidthsFromLayout();
 		}
 		resizingColumnId = columnId;
@@ -752,6 +906,32 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return selectedKeys.has(id);
 	}
 
+	function getSelectionCheckboxState(): TableSelectionCheckboxState {
+		const orderedIds = getOrderedSelectableRowIds();
+		if (orderedIds.length === 0) {
+			return selectedKeys.size > 0 ? 'some' : 'none';
+		}
+
+		if (selectedKeys.size === 0) {
+			return 'none';
+		}
+
+		let selectedCount = 0;
+		for (const id of orderedIds) {
+			if (selectedKeys.has(id)) {
+				selectedCount += 1;
+			}
+		}
+
+		if (selectedCount === 0) return 'none';
+		if (selectedCount === orderedIds.length) return 'all';
+		return 'some';
+	}
+
+	function hasSelectableRows() {
+		return getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+	}
+
 	function isRowFocused(token: string) {
 		if (focusedRowTarget?.rowToken === token) return true;
 		if (!focusedCellKey) return false;
@@ -842,9 +1022,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getColumnIndex(cell: TableCellRegistration) {
 		if (cell.section === 'header' && cell.columnToken) {
-			return getColumnIndexByToken(cell.columnToken);
+			return getVisibleColumnIndexByToken(cell.columnToken);
 		}
-		return cell.columnIndex ?? -1;
+
+		const column = cell.columnIndex !== undefined ? getColumnAt(cell.columnIndex) : undefined;
+		if (!column || isColumnHidden(column.id)) return -1;
+		return getVisibleColumnIndexByToken(column.token);
 	}
 
 	function getCellCoord(cell: TableCellRegistration): TableGridCoord | null {
@@ -861,6 +1044,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			.filter((entry): entry is { cell: TableCellRegistration; coord: TableGridCoord } =>
 				Boolean(
 					entry.coord &&
+					!isCellColumnHidden(entry.cell) &&
 					entry.cell.element &&
 					(entry.cell.section !== 'body' ||
 						!isRowDisabled(
@@ -915,8 +1099,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		focusedRowTarget = null;
 		focusedCellKey = key;
 		notifyFocus();
-		cell.element.focus();
-		cell.element.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+		const focusTarget = cell.focusDelegate?.() ?? cell.element;
+		focusTarget.focus();
+		focusTarget.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
 	}
 
 	function focusRowByToken(token: string, edge: TableRowFocusEdge) {
@@ -1287,7 +1472,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function toggleRowSelection(id: TableSelectionKey | undefined) {
-		toggleSelectionForRow(id);
+		if (selectionMode === 'none' || id === undefined || disabledKeys.has(id)) return;
+
+		if (selectionMode === 'single') {
+			const wasSelected = selectedKeys.has(id);
+			setSelectedKeys(wasSelected ? new Set() : new Set([id]), wasSelected ? null : id);
+			emitSelectionChange();
+			return;
+		}
+
+		const next = new Set(selectedKeys);
+		if (next.has(id)) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+		setSelectedKeys(next, id);
+		emitSelectionChange();
 	}
 
 	function selectAllRows() {
@@ -1299,6 +1500,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			next.add(row.id);
 		}
 		setSelectedKeys(next, next.values().next().value ?? null);
+		emitSelectionChange();
+	}
+
+	function deselectAllRows() {
+		if (selectedKeys.size === 0) return;
+		setSelectedKeys(new Set(), null);
 		emitSelectionChange();
 	}
 
@@ -1401,16 +1608,21 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		registerColumnResizer,
 		unregisterColumnResizer,
 		getColumnCount,
+		getVisibleColumnCount,
 		getColumnAt,
 		getColumnIndexByToken,
+		getVisibleColumnIndexByToken,
 		getColumnTextValue,
 		getColumnWidth,
 		getColumnMinWidth,
 		getColumnMaxWidth,
+		isColumnHidden,
 		isColumnResizable,
 		getColumnWidths,
+		getVisibleColumnWidths,
 		setColumnWidths,
 		setColumnWidth,
+		setHiddenColumns,
 		measureColumnContentWidth,
 		startColumnResize,
 		endColumnResize,
@@ -1426,6 +1638,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		isRowFocusTarget,
 		getRowFocusEdge,
 		isRowDisabled,
+		hasSelectableRows,
+		getSelectionCheckboxState,
 		registerCell,
 		unregisterCell,
 		isCellFocused,
@@ -1446,6 +1660,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		moveToGridEnd,
 		toggleRowSelection,
 		selectAllRows,
+		deselectAllRows,
 		setSelection,
 		setSelectionMode,
 		setSelectionBehavior,
@@ -1504,6 +1719,25 @@ export function useTableRowContext() {
 	const context = getTableRowContext();
 	if (!context) {
 		throw new Error('Table cells must be used inside `Table.Row`.');
+	}
+	return context;
+}
+
+export function setTableCellContext(context: TableCellContext) {
+	setContext(TABLE_CELL_KEY, context);
+	return context;
+}
+
+export function getTableCellContext() {
+	return getContext<TableCellContext | undefined>(TABLE_CELL_KEY);
+}
+
+export function useTableCellContext() {
+	const context = getTableCellContext();
+	if (!context) {
+		throw new Error(
+			'Table interactive cell parts must be used inside `Table.Cell` or `Table.ColumnHeaderCell`.'
+		);
 	}
 	return context;
 }

@@ -46,7 +46,7 @@
 	});
 	const isResizable = $derived.by(() => {
 		void $layoutVersion;
-		return table.isColumnResizable(column.id);
+		return !column.isHidden && table.isColumnResizable(column.id);
 	});
 	const currentWidth = $derived.by(() => {
 		void $widthVersion;
@@ -485,56 +485,58 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<div
-	bind:this={element}
-	role="separator"
-	tabindex={isResizable ? 0 : undefined}
-	class={className}
-	aria-label={accessibleLabel}
-	aria-orientation="vertical"
-	aria-valuenow={currentWidth ?? undefined}
-	aria-valuemin={minWidth}
-	aria-valuemax={maxWidth}
-	aria-valuetext={accessibleValueText}
-	data-focused={isFocused ? 'true' : undefined}
-	data-focus-visible={isFocusVisible ? 'true' : undefined}
-	data-resizing={isResizing ? 'true' : undefined}
-	data-table-column-resizer="true"
-	data-resizable-direction="right"
-	style:position="absolute"
-	style:top="0"
-	style:right="0"
-	style:transform="translateX(50%)"
-	style:width="0.75rem"
-	style:height="100%"
-	style:display="flex"
-	style:align-items="center"
-	style:justify-content="center"
-	style:user-select="none"
-	style:touch-action="none"
-	onpointerdown={handlePointerDown}
-	ondblclick={handleDoubleClick}
-	onclick={handleClick}
-	onfocus={handleFocus}
-	onblur={handleBlur}
-	onkeydown={handleKeyDown}
-	{...restProps}
->
-	{#if children}
-		{@render children()}
-	{:else}
-		<span
-			aria-hidden="true"
-			style="display:block;width:1px;min-height:1rem;background:currentColor;opacity:0.35;"
-		></span>
-	{/if}
-	<span
-		data-testid="column-resize-status"
-		role="status"
-		aria-live="polite"
-		aria-atomic="true"
-		style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
-		>{resizeAnnouncement}</span
+{#if !column.isHidden}
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+	<div
+		bind:this={element}
+		role="separator"
+		tabindex={isResizable ? 0 : undefined}
+		class={className}
+		aria-label={accessibleLabel}
+		aria-orientation="vertical"
+		aria-valuenow={currentWidth ?? undefined}
+		aria-valuemin={minWidth}
+		aria-valuemax={maxWidth}
+		aria-valuetext={accessibleValueText}
+		data-focused={isFocused ? 'true' : undefined}
+		data-focus-visible={isFocusVisible ? 'true' : undefined}
+		data-resizing={isResizing ? 'true' : undefined}
+		data-table-column-resizer="true"
+		data-resizable-direction="right"
+		style:position="absolute"
+		style:top="0"
+		style:right="0"
+		style:transform="translateX(50%)"
+		style:width="0.75rem"
+		style:height="100%"
+		style:display="flex"
+		style:align-items="center"
+		style:justify-content="center"
+		style:user-select="none"
+		style:touch-action="none"
+		onpointerdown={handlePointerDown}
+		ondblclick={handleDoubleClick}
+		onclick={handleClick}
+		onfocus={handleFocus}
+		onblur={handleBlur}
+		onkeydown={handleKeyDown}
+		{...restProps}
 	>
-</div>
+		{#if children}
+			{@render children()}
+		{:else}
+			<span
+				aria-hidden="true"
+				style="display:block;width:1px;min-height:1rem;background:currentColor;opacity:0.35;"
+			></span>
+		{/if}
+		<span
+			data-testid="column-resize-status"
+			role="status"
+			aria-live="polite"
+			aria-atomic="true"
+			style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+			>{resizeAnnouncement}</span
+		>
+	</div>
+{/if}

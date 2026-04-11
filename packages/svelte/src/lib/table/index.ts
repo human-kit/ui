@@ -9,6 +9,8 @@ export { default as TableFooter } from './footer/table-footer.svelte';
 export { default as TableRow } from './row/table-row.svelte';
 export { default as TableColumnHeaderCell } from './column-header-cell/table-column-header-cell.svelte';
 export { default as TableColumnResizer } from './column-resizer/table-column-resizer.svelte';
+export { default as TableCheckbox } from './checkbox/table-checkbox.svelte';
+export { default as TableCheckboxIndicator } from './checkbox-indicator/table-checkbox-indicator.svelte';
 export { default as TableCell } from './cell/table-cell.svelte';
 
 export {
@@ -27,6 +29,7 @@ export {
 	useTableColumnContext,
 	type TableContext,
 	type TableSelectionBehavior,
+	type TableSelectionCheckboxState,
 	type TableSelectionKey,
 	type TableSelectionMode,
 	type TableSortDirection,

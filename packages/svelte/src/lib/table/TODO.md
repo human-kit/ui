@@ -62,6 +62,19 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether `Table.Column` should hard-enforce a single `Table.ColumnHeaderCell` child.
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether clipboard-related behavior should remain fully browser-native in v1 or be deferred behind a future explicit cell-selection model.
 
+### Features
+
+- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add controlled and uncontrolled column filtering APIs — support per-column filters plus a global filter hook so `Table` can cover common data-grid scenarios without forcing consumers to build parallel filter state from scratch.
+- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add column visibility controls — allow columns to be shown/hidden dynamically while preserving keyboard navigation, sort state, selection column layout, and resize state for still-visible columns.
+- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add multi-column sorting — support ordered sort descriptors so users can compose secondary and tertiary sorts instead of being limited to a single active sort key.
+- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add pagination primitives — define a controlled pagination model for large datasets, including page index, page size, and total row count integration without coupling `Table` to a specific data-fetching strategy.
+- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Evaluate row virtualization support — provide a path for very large tables while preserving grid semantics, roving tabindex behavior, selection, and resize interactions.
+- [ ] [L][P2][Area: Features][Owner: Unassigned][Target: TBD] Add sticky header and pinned-column support — enable frozen headers and utility columns (selection, row headers, actions) for wide or scroll-heavy tables.
+- [ ] [L][P2][Area: Features][Owner: Unassigned][Target: TBD] Add expandable rows / subrows — support master-detail rows and tree-like disclosure patterns without forcing consumers to break the table's row and cell registration model.
+- [ ] [L][P2][Area: Features][Owner: Unassigned][Target: TBD] Add inline cell and row editing primitives — define an opt-in editing model that can coexist with current focus, selection, and keyboard navigation contracts.
+- [ ] [M][P2][Area: Features][Owner: Unassigned][Target: TBD] Add column action primitives — expose a path for header menus, quick sort/filter actions, and future column management UI without requiring consumers to hand-roll header action composition every time.
+- [ ] [M][P3][Area: Features][Owner: Unassigned][Target: TBD] Add row actions patterns — document or expose a composable pattern for common trailing actions columns so selection, row press, and nested interactive controls do not conflict.
+
 ### Tests
 
 - [x] [M][P1][Area: Tests][Owner: Unassigned][Target: Done] Add tests for `Home`, `End`, `Ctrl+Home`, and `Ctrl+End` keyboard navigation.
@@ -74,6 +87,13 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [ ] [C][P2][Area: Docs][Owner: Unassigned][Target: TBD] Add richer styling examples and sorting guidance to the docs page.
 - [x] [C][P3][Area: Docs][Owner: Unassigned][Target: Done] Document that `Table.Column` is a logical-only wrapper (no DOM output) prominently in the README anatomy section.
 - [x] [S][P2][Area: Docs][Owner: Unassigned][Target: Done] Document `selectionMode="none"` normalization behavior and clarify that selection is cleared internally when selection is disabled.
+
+### Selection Checkbox
+
+- [ ] [M][P1][Area: Performance][Owner: Unassigned][Target: TBD] Cache `getOrderedSelectableRowIds()` and invalidate on layout/selection changes — currently rebuilds the full selectable-row array on every call to `getSelectionCheckboxState()`, `hasSelectableRows()`, `selectAllRows()`, and `extendSelectionToRow()`, causing O(n) work per selection change.
+- [ ] [M][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Validate `Table.Checkbox` screen reader announcements across NVDA and VoiceOver — verify that `aria-checked="mixed"` transitions in the header checkbox and row selection toggles are announced correctly.
+- [ ] [M][P1][Area: Correctness][Owner: Unassigned][Target: TBD] Document or resolve `Table.Checkbox` bypass of `pressRow()` — the checkbox always calls `toggleRowSelection()` directly, ignoring `selectionBehavior="replace"` semantics (Shift+click range, Ctrl+click toggle). This is intentional for checkbox UX but undocumented and inconsistent with row-click behavior.
+- [ ] [M][P1][Area: Correctness][Owner: Unassigned][Target: TBD] Add dev-time structural validation for `Table.Checkbox` placement — warn when header includes a selection checkbox column but body rows do not, or when the checkbox is placed in a footer cell where it has no behavior.
 
 ### Code Quality
 

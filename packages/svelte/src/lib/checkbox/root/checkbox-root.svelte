@@ -353,7 +353,7 @@
 		onclick={handleInputClick}
 		onchange={handleInputChange}
 		onfocus={handleInputFocus}
-		style="position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:inherit;"
+		style="position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:inherit;pointer-events:none;"
 	/>
 
 	{@render children?.()}

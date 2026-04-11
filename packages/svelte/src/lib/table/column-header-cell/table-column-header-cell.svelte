@@ -2,7 +2,12 @@
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useTableColumnContext, useTableContext, useTableRowContext } from '../root/context';
+	import {
+		setTableCellContext,
+		useTableColumnContext,
+		useTableContext,
+		useTableRowContext
+	} from '../root/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -20,30 +25,41 @@
 	const row = useTableRowContext();
 	const key = table.createInstanceToken('header-cell');
 	const focusVersion = table.focusVersion;
+	const layoutVersion = table.layoutVersion;
 	const sortVersion = table.sortVersion;
 	const widthVersion = table.widthVersion;
-	const cellOrderVersion = row.cellOrderVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
+	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
 	let isElementFocused = $state(false);
 	let isElementFocusVisible = $state(false);
 	let isFocusWithin = $state(false);
 	let isFocusVisibleWithin = $state(false);
 	row.registerCellToken(key, () => element);
-	const cellIndex = $derived.by(() => {
-		void $cellOrderVersion;
-		return row.getCellIndex(key);
-	});
-
 	function syncHeaderCellRegistration() {
 		table.registerCell({
 			key,
 			rowToken: row.rowToken,
 			section: 'header',
 			columnToken: column.token,
-			element
+			element,
+			focusDelegate
 		});
 	}
+
+	function registerFocusDelegate(getElement: () => HTMLElement | undefined) {
+		focusDelegate = getElement;
+	}
+
+	function unregisterFocusDelegate() {
+		focusDelegate = undefined;
+	}
+
+	setTableCellContext({
+		cellKey: key,
+		registerFocusDelegate,
+		unregisterFocusDelegate
+	});
 
 	syncHeaderCellRegistration();
 
@@ -68,9 +84,21 @@
 		void $sortVersion;
 		return table.getSortDirection(column.id);
 	});
+	const isHidden = $derived.by(() => {
+		void $layoutVersion;
+		return column.isHidden;
+	});
 	const columnWidth = $derived.by(() => {
 		void $widthVersion;
 		return table.getColumnWidth(column.id);
+	});
+	const visibleColumnIndex = $derived.by(() => {
+		void $layoutVersion;
+		return table.getVisibleColumnIndexByToken(column.token);
+	});
+	const headerTabIndex = $derived.by(() => {
+		if (isHidden || focusDelegate) return undefined;
+		return table.isCellTabStop(key) ? 0 : -1;
 	});
 
 	function focusResizerInHeader(target: HTMLElement | undefined) {
@@ -202,7 +230,9 @@
 	bind:this={element}
 	role="columnheader"
 	class={className}
-	tabindex={table.isCellTabStop(key) ? 0 : -1}
+	tabindex={headerTabIndex}
+	aria-colindex={!isHidden && visibleColumnIndex >= 0 ? visibleColumnIndex + 1 : undefined}
+	aria-hidden={isHidden ? true : undefined}
 	aria-sort={column.allowsSorting ? (sortDirection ?? 'none') : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
@@ -210,8 +240,9 @@
 	data-focus-visible-within={isFocusVisibleWithin ? 'true' : undefined}
 	data-sortable={column.allowsSorting || undefined}
 	data-sort-direction={sortDirection}
-	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
+	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
 	style:width={columnWidth !== undefined ? `${columnWidth}px` : undefined}
+	style:display={isHidden ? 'none' : undefined}
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
 	onfocus={handleFocus}

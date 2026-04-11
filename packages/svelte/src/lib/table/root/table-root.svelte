@@ -31,6 +31,8 @@
 	type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> & {
 		selectionMode?: TableSelectionMode;
 		selectionBehavior?: TableSelectionBehavior;
+		hiddenColumns?: Iterable<string>;
+		defaultHiddenColumns?: Iterable<string>;
 		selectedKeys?: Iterable<TableSelectionKey>;
 		defaultSelectedKeys?: Iterable<TableSelectionKey>;
 		sortDescriptor?: TableSortDescriptor;
@@ -41,6 +43,7 @@
 		onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 		onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
 		onColumnWidthsChange?: (widths: Map<string, number>) => void;
+		onHiddenColumnsChange?: (columnIds: string[]) => void;
 		onColumnResizeStart?: (columnId: string) => void;
 		onColumnResizeEnd?: (widths: Map<string, number>) => void;
 		children?: Snippet;
@@ -52,6 +55,8 @@
 	let {
 		selectionMode = 'none',
 		selectionBehavior = 'toggle',
+		hiddenColumns = $bindable(),
+		defaultHiddenColumns,
 		selectedKeys = $bindable(),
 		defaultSelectedKeys,
 		sortDescriptor = $bindable(),
@@ -64,6 +69,7 @@
 		onSelectionChange,
 		onSortChange,
 		onColumnWidthsChange,
+		onHiddenColumnsChange,
 		onColumnResizeStart,
 		onColumnResizeEnd,
 		children,
@@ -76,6 +82,7 @@
 	let tableElement = $state<HTMLTableElement | undefined>(undefined);
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
+	let pendingControlledHiddenColumns = $state<string[] | null>(null);
 	let pendingControlledSelection = $state<Set<TableSelectionKey> | null>(null);
 	let pendingControlledColumnWidths = $state<Map<string, number> | null>(null);
 	let sortAnnouncement = $state('');
@@ -87,10 +94,16 @@
 		createTableContext({
 			selectionMode: (() => selectionMode)(),
 			selectionBehavior: (() => selectionBehavior)(),
+			initialHiddenColumns: (() => hiddenColumns ?? defaultHiddenColumns)(),
 			initialSelectedKeys: (() => selectedKeys ?? defaultSelectedKeys)(),
 			initialSortDescriptor: (() => sortDescriptor ?? defaultSortDescriptor)(),
 			initialColumnWidths: (() => columnWidths ?? defaultColumnWidths)(),
 			disabledKeys: (() => disabledKeys)(),
+			onHiddenColumnsChange: (columnIds) => {
+				pendingControlledHiddenColumns = [...columnIds];
+				hiddenColumns = [...columnIds];
+				onHiddenColumnsChange?.([...columnIds]);
+			},
 			onSelectionChange: (keys) => {
 				pendingControlledSelection = new Set(keys);
 				selectedKeys = new Set(keys);
@@ -124,10 +137,23 @@
 		return new Set<TableSelectionKey>(keys ?? []);
 	}
 
+	function parseHiddenColumns(columnIds: Iterable<string> | undefined) {
+		return [...new Set(columnIds ?? [])];
+	}
+
 	function hasSameSelection(left: Set<TableSelectionKey>, right: Set<TableSelectionKey>) {
 		if (left.size !== right.size) return false;
 		for (const key of left) {
 			if (!right.has(key)) return false;
+		}
+		return true;
+	}
+
+	function hasSameHiddenColumns(left: string[], right: string[]) {
+		if (left.length !== right.length) return false;
+		const rightSet = new Set(right);
+		for (const columnId of left) {
+			if (!rightSet.has(columnId)) return false;
 		}
 		return true;
 	}
@@ -145,7 +171,7 @@
 	const widthVersion = ctx.widthVersion;
 	const ariaColCount = $derived.by(() => {
 		void $layoutVersion;
-		const columnCount = ctx.getColumnCount();
+		const columnCount = ctx.getVisibleColumnCount();
 		return columnCount > 0 ? columnCount : undefined;
 	});
 	const ariaRowCount = $derived.by(() => {
@@ -165,7 +191,8 @@
 
 		let total = 0;
 		let hasAnyWidth = false;
-		for (const [, width] of widths) {
+		for (const [columnId, width] of widths) {
+			if (ctx.isColumnHidden(columnId)) continue;
 			if (!Number.isFinite(width)) continue;
 			total += width;
 			hasAnyWidth = true;
@@ -178,8 +205,8 @@
 		void $widthVersion;
 		void $layoutVersion;
 		if (!hasResizable) return undefined;
-		const widths = ctx.getColumnWidths();
-		const columnCount = ctx.getColumnCount();
+		const widths = ctx.getVisibleColumnWidths();
+		const columnCount = ctx.getVisibleColumnCount();
 		if (widths.size === 0 || widths.size < columnCount) return undefined;
 		let total = 0;
 		for (const w of widths.values()) total += w;
@@ -219,6 +246,24 @@
 
 	$effect(() => {
 		ctx.setSelectionMode(selectionMode);
+	});
+
+	$effect(() => {
+		if (hiddenColumns !== undefined) {
+			const nextHiddenColumns = parseHiddenColumns(hiddenColumns);
+			if (
+				pendingControlledHiddenColumns &&
+				hasSameHiddenColumns(pendingControlledHiddenColumns, nextHiddenColumns)
+			) {
+				pendingControlledHiddenColumns = null;
+				return;
+			}
+			pendingControlledHiddenColumns = null;
+			ctx.setHiddenColumns(nextHiddenColumns);
+			return;
+		}
+
+		ctx.setHiddenColumns(defaultHiddenColumns);
 	});
 
 	$effect(() => {

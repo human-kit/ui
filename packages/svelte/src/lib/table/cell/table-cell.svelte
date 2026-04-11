@@ -2,7 +2,12 @@
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useTableContext, useTableRowContext, type TableSelectionKey } from '../root/context';
+	import {
+		setTableCellContext,
+		useTableContext,
+		useTableRowContext,
+		type TableSelectionKey
+	} from '../root/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -24,6 +29,7 @@
 	const cellOrderVersion = row.cellOrderVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
+	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
 	row.registerCellToken(key, () => element);
 	const cellIndex = $derived.by(() => {
 		void $cellOrderVersion;
@@ -37,9 +43,24 @@
 			rowToken: row.rowToken,
 			section: 'body',
 			columnIndex: cellIndex,
-			element
+			element,
+			focusDelegate
 		});
 	}
+
+	function registerFocusDelegate(getElement: () => HTMLElement | undefined) {
+		focusDelegate = getElement;
+	}
+
+	function unregisterFocusDelegate() {
+		focusDelegate = undefined;
+	}
+
+	setTableCellContext({
+		cellKey: key,
+		registerFocusDelegate,
+		unregisterFocusDelegate
+	});
 
 	syncCellRegistration();
 
@@ -58,8 +79,17 @@
 		void $layoutVersion;
 		return cellIndex >= 0 ? table.getColumnAt(cellIndex) : undefined;
 	});
+	const isColumnHidden = $derived.by(() => {
+		void $layoutVersion;
+		return column ? table.isColumnHidden(column.id) : false;
+	});
+	const visibleColumnIndex = $derived.by(() => {
+		void $layoutVersion;
+		return column ? table.getVisibleColumnIndexByToken(column.token) : -1;
+	});
 	const tagName = $derived(row.section === 'body' && column?.isRowHeader ? 'th' : 'td');
 	const role = $derived.by(() => {
+		if (isColumnHidden) return undefined;
 		if (row.section !== 'body') return undefined;
 		return column?.isRowHeader ? 'rowheader' : 'gridcell';
 	});
@@ -80,6 +110,13 @@
 		return row.section === 'body' ? table.isRowDisabled(row.rowId, row.isDisabled) : row.isDisabled;
 	});
 	const isCellFocusable = $derived(row.section !== 'body' || !isRowDisabled);
+	const cellTabIndex = $derived.by(() => {
+		if (row.section !== 'body') return undefined;
+		if (isColumnHidden) return undefined;
+		if (!isCellFocusable) return undefined;
+		if (focusDelegate) return undefined;
+		return table.isCellTabStop(key) ? 0 : -1;
+	});
 
 	function handleFocus() {
 		if (row.section !== 'body' || isRowDisabled) return;
@@ -187,20 +224,17 @@
 	bind:this={element}
 	{role}
 	class={className}
-	tabindex={row.section === 'body'
-		? isCellFocusable
-			? table.isCellTabStop(key)
-				? 0
-				: -1
-			: undefined
-		: undefined}
+	tabindex={cellTabIndex}
 	scope={row.section === 'body' && column?.isRowHeader ? 'row' : undefined}
+	aria-colindex={!isColumnHidden && visibleColumnIndex >= 0 ? visibleColumnIndex + 1 : undefined}
+	aria-hidden={isColumnHidden ? true : undefined}
 	aria-disabled={row.section === 'body' && isRowDisabled ? true : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-row-selected={isRowSelected ? 'true' : undefined}
 	data-disabled={isRowDisabled || undefined}
-	data-column-index={cellIndex >= 0 ? cellIndex : undefined}
+	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
+	style:display={isColumnHidden ? 'none' : undefined}
 	onfocus={handleFocus}
 	onclick={handleClick}
 	onmousedown={handleMouseDown}

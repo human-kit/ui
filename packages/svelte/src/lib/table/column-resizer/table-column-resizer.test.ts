@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ColumnResizerTest from './table-column-resizer-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';
+import ColumnResizerSelectionColumnTest from './table-column-resizer-selection-column-test.svelte';
 
 function readColumnWidths() {
 	const text = document.querySelector('[data-testid="column-widths"]')?.textContent ?? '{}';
@@ -278,6 +279,24 @@ describe('Table.ColumnResizer', () => {
 
 		await expect.poll(() => readColumnWidths().email).toBe(200 + 16 * 3);
 		expect(readColumnWidths().group).toBe(groupAfterFirstResize);
+	});
+
+	it('keeps a fixed-width selection column stable while resizing a sibling column', async () => {
+		render(ColumnResizerSelectionColumnTest);
+		const emailResizer = document.querySelector<HTMLElement>(
+			'[data-testid="selection-email-resizer"]'
+		)!;
+		const selectionHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="selection-header-cell"]'
+		)!;
+		const initialSelectionWidth = Math.round(selectionHeaderCell.getBoundingClientRect().width);
+
+		emailResizer.focus();
+		await userEvent.keyboard('{Enter}{ArrowRight}{ArrowRight}{Enter}');
+
+		await expect
+			.poll(() => Math.round(selectionHeaderCell.getBoundingClientRect().width))
+			.toBe(initialSelectionWidth);
 	});
 
 	it('respects shift-step and Home keyboard resizing', async () => {

@@ -54,6 +54,9 @@
 		get allowsResizing() {
 			return allowsResizing || table.isColumnResizable(id);
 		},
+		get isHidden() {
+			return table.isColumnHidden(id);
+		},
 		get isRowHeader() {
 			return isRowHeader;
 		},

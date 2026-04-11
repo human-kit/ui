@@ -25,12 +25,15 @@
 		ariaLabelledby?: string;
 		selectionMode?: TableSelectionMode;
 		selectionBehavior?: TableSelectionBehavior;
+		hiddenColumns?: string[];
+		defaultHiddenColumns?: string[];
 		disabledKeys?: Iterable<TableSelectionKey>;
 		initialSelectedKeys?: Iterable<TableSelectionKey>;
 		initialSortDescriptor?: TableSortDescriptor;
 		showSelectionModeToggle?: boolean;
 		showSingleSelectionModeToggle?: boolean;
 		showSortClearButton?: boolean;
+		showHiddenColumnsToggle?: boolean;
 	};
 
 	let {
@@ -39,12 +42,15 @@
 		ariaLabelledby,
 		selectionMode = $bindable<TableSelectionMode>('multiple'),
 		selectionBehavior = 'toggle',
+		hiddenColumns = $bindable<string[] | undefined>(),
+		defaultHiddenColumns,
 		disabledKeys,
 		initialSelectedKeys,
 		initialSortDescriptor,
 		showSelectionModeToggle = false,
 		showSingleSelectionModeToggle = false,
-		showSortClearButton = false
+		showSortClearButton = false,
+		showHiddenColumnsToggle = false
 	}: TableTestProps = $props();
 
 	let currentSelectedKeys = $state<Set<TableSelectionKey>>(
@@ -72,6 +78,8 @@
 	aria-labelledby={ariaLabelledby}
 	{selectionMode}
 	{selectionBehavior}
+	bind:hiddenColumns
+	{defaultHiddenColumns}
 	bind:selectedKeys={currentSelectedKeys}
 	bind:sortDescriptor={currentSortDescriptor}
 	{disabledKeys}
@@ -139,9 +147,19 @@
 	</button>
 {/if}
 
+{#if showHiddenColumnsToggle}
+	<button type="button" data-testid="hide-group-column" onclick={() => (hiddenColumns = ['group'])}>
+		Hide group
+	</button>
+	<button type="button" data-testid="show-all-columns" onclick={() => (hiddenColumns = [])}>
+		Show all
+	</button>
+{/if}
+
 <output data-testid="selected-keys">{JSON.stringify([...currentSelectedKeys])}</output>
 <output data-testid="sort-descriptor"
 	>{currentSortDescriptor
 		? `${currentSortDescriptor.column}:${currentSortDescriptor.direction}`
 		: ''}</output
 >
+<output data-testid="hidden-columns">{JSON.stringify(hiddenColumns ?? [])}</output>

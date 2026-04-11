@@ -22,7 +22,7 @@
 	});
 	const columnCount = $derived.by(() => {
 		void $layoutVersion;
-		return Math.max(table.getColumnCount(), 1);
+		return Math.max(table.getVisibleColumnCount(), 1);
 	});
 </script>
 

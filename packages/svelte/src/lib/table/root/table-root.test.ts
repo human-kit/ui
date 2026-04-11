@@ -36,6 +36,102 @@ describe('Table.Root', () => {
 		await expect.element(grid).toHaveAttribute('aria-rowcount', '4');
 	});
 
+	it('hides configured columns across header, body, and footer while keeping visible column counts accurate', async () => {
+		const screen = render(TableTest, {
+			defaultHiddenColumns: ['group']
+		});
+		const grid = screen.getByRole('grid').element() as HTMLElement;
+
+		await expect.element(grid).toHaveAttribute('aria-colcount', '1');
+		expect(document.querySelector('[role="columnheader"][data-column-index="0"]')?.textContent?.trim()).toBe(
+			'Email'
+		);
+		expect(document.querySelector('[role="columnheader"]:nth-child(2)')?.getAttribute('aria-hidden')).toBe(
+			'true'
+		);
+		expect(document.querySelector('tbody tr td[aria-hidden="true"]')?.textContent?.trim()).toBe(
+			'Developer'
+		);
+		expect(document.querySelector('tfoot td[aria-hidden="true"]')?.textContent?.trim()).toBe(
+			'3 users'
+		);
+	});
+
+	it('updates hidden columns reactively through binding controls', async () => {
+		render(TableTest, {
+			showHiddenColumnsToggle: true
+		});
+
+		await userEvent.click(document.querySelector<HTMLElement>('[data-testid="hide-group-column"]')!);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="hidden-columns"]')?.textContent)
+			.toBe('["group"]');
+		await expect.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe(
+			'1'
+		);
+
+		await userEvent.click(document.querySelector<HTMLElement>('[data-testid="show-all-columns"]')!);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="hidden-columns"]')?.textContent)
+			.toBe('[]');
+		await expect.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe(
+			'2'
+		);
+	});
+
+	it('skips hidden columns during horizontal keyboard navigation', async () => {
+		render(TableTest, {
+			defaultHiddenColumns: ['group']
+		});
+		const firstHeaderCell = document.querySelector<HTMLElement>('thead [role="columnheader"]');
+
+		firstHeaderCell?.focus();
+		await userEvent.keyboard('{ArrowRight}');
+
+		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Email');
+	});
+
+	it('moves focus to nearest visible cell when the focused column is hidden', async () => {
+		render(TableTest, {
+			showHiddenColumnsToggle: true
+		});
+
+		const groupCell = document.querySelector<HTMLElement>('tbody tr:first-child td:nth-child(2)');
+		groupCell?.focus();
+		await expect.poll(() => document.activeElement).toBe(groupCell);
+
+		// Use pointerdown + click to hide the column without stealing focus permanently
+		const hideButton = document.querySelector<HTMLElement>('[data-testid="hide-group-column"]')!;
+		hideButton.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		hideButton.click();
+
+		await expect
+			.poll(() => {
+				const active = document.activeElement;
+				if (!active || active === document.body) return null;
+				return active.textContent?.trim();
+			})
+			.toBe('danilo@example.com');
+	});
+
+	it('exposes aria-colindex on visible cells (1-indexed)', async () => {
+		render(TableTest);
+
+		await expect
+			.poll(() => document.querySelector('[role="columnheader"]')?.getAttribute('aria-colindex'))
+			.toBe('1');
+		await expect
+			.poll(() =>
+				document.querySelectorAll('[role="columnheader"]')[1]?.getAttribute('aria-colindex')
+			)
+			.toBe('2');
+
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody tr:first-child [role="rowheader"]');
+		expect(firstBodyCell?.getAttribute('aria-colindex')).toBe('1');
+	});
+
 	it('excludes footer cells from grid semantics', async () => {
 		render(TableTest);
 
@@ -46,7 +142,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
 		try {
 			render(TableTest, {
