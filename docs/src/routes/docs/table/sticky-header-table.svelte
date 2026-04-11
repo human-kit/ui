@@ -47,22 +47,27 @@
 				<Table.Body>
 					{#each deploymentRuns as run (run.id)}
 						<Table.Row>
-							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 last:border-r-0 dark:border-gray-800 dark:text-white"
+							<Table.Cell
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 last:border-r-0 dark:border-gray-800 dark:text-white"
 								>{run.service}</Table.Cell
 							>
-							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
+							<Table.Cell
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
 								>{run.owner}</Table.Cell
 							>
-							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
+							<Table.Cell
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
 								>{run.region}</Table.Cell
 							>
-							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
+							<Table.Cell
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
 								><span
 									class="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200"
 									>{run.status}</span
 								></Table.Cell
 							>
-							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
+							<Table.Cell
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
 								>{run.updatedAt}</Table.Cell
 							>
 						</Table.Row>
