@@ -27,7 +27,7 @@
 								minWidth={60}
 							>
 								<Table.ColumnHeaderCell
-									class="sticky top-0 z-10 border-b border-gray-200 bg-white/95 px-4 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 backdrop-blur dark:border-gray-700 dark:bg-gray-900/95 dark:text-gray-300"
+									class="sticky top-0 z-10 border-b border-r border-gray-200 bg-white/95 pl-4 pr-0 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 backdrop-blur last:border-r-0 dark:border-gray-700 dark:bg-gray-900/95 dark:text-gray-300"
 								>
 									<div class="flex min-w-0 items-center justify-between gap-2">
 										<span class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
@@ -46,23 +46,23 @@
 				</Table.Header>
 				<Table.Body>
 					{#each deploymentRuns as run (run.id)}
-						<Table.Row class="border-b border-gray-100 dark:border-gray-800">
-							<Table.Cell class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white"
+						<Table.Row>
+							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 last:border-r-0 dark:border-gray-800 dark:text-white"
 								>{run.service}</Table.Cell
 							>
-							<Table.Cell class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300"
+							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
 								>{run.owner}</Table.Cell
 							>
-							<Table.Cell class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
 								>{run.region}</Table.Cell
 							>
-							<Table.Cell class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300"
+							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
 								><span
 									class="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200"
 									>{run.status}</span
 								></Table.Cell
 							>
-							<Table.Cell class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+							<Table.Cell class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
 								>{run.updatedAt}</Table.Cell
 							>
 						</Table.Row>
