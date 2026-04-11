@@ -43,12 +43,12 @@ describe('Table.Root', () => {
 		const grid = screen.getByRole('grid').element() as HTMLElement;
 
 		await expect.element(grid).toHaveAttribute('aria-colcount', '1');
-		expect(document.querySelector('[role="columnheader"][data-column-index="0"]')?.textContent?.trim()).toBe(
-			'Email'
-		);
-		expect(document.querySelector('[role="columnheader"]:nth-child(2)')?.getAttribute('aria-hidden')).toBe(
-			'true'
-		);
+		expect(
+			document.querySelector('[role="columnheader"][data-column-index="0"]')?.textContent?.trim()
+		).toBe('Email');
+		expect(
+			document.querySelector('[role="columnheader"]:nth-child(2)')?.getAttribute('aria-hidden')
+		).toBe('true');
 		expect(document.querySelector('tbody tr td[aria-hidden="true"]')?.textContent?.trim()).toBe(
 			'Developer'
 		);
@@ -62,23 +62,25 @@ describe('Table.Root', () => {
 			showHiddenColumnsToggle: true
 		});
 
-		await userEvent.click(document.querySelector<HTMLElement>('[data-testid="hide-group-column"]')!);
+		await userEvent.click(
+			document.querySelector<HTMLElement>('[data-testid="hide-group-column"]')!
+		);
 
 		await expect
 			.poll(() => document.querySelector('[data-testid="hidden-columns"]')?.textContent)
 			.toBe('["group"]');
-		await expect.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe(
-			'1'
-		);
+		await expect
+			.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount'))
+			.toBe('1');
 
 		await userEvent.click(document.querySelector<HTMLElement>('[data-testid="show-all-columns"]')!);
 
 		await expect
 			.poll(() => document.querySelector('[data-testid="hidden-columns"]')?.textContent)
 			.toBe('[]');
-		await expect.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount')).toBe(
-			'2'
-		);
+		await expect
+			.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount'))
+			.toBe('2');
 	});
 
 	it('skips hidden columns during horizontal keyboard navigation', async () => {
@@ -128,7 +130,9 @@ describe('Table.Root', () => {
 			)
 			.toBe('2');
 
-		const firstBodyCell = document.querySelector<HTMLElement>('tbody tr:first-child [role="rowheader"]');
+		const firstBodyCell = document.querySelector<HTMLElement>(
+			'tbody tr:first-child [role="rowheader"]'
+		);
 		expect(firstBodyCell?.getAttribute('aria-colindex')).toBe('1');
 	});
 
@@ -142,7 +146,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 		try {
 			render(TableTest, {

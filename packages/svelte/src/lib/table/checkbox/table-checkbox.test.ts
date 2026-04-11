@@ -24,9 +24,9 @@ describe('Table.Checkbox', () => {
 			initialSelectedKeys: ['danilo']
 		});
 
-		expect(document.querySelector('[data-testid="header-checkbox"]')?.getAttribute('aria-checked')).toBe(
-			'mixed'
-		);
+		expect(
+			document.querySelector('[data-testid="header-checkbox"]')?.getAttribute('aria-checked')
+		).toBe('mixed');
 	});
 
 	it('toggles row selection explicitly even in replace mode', async () => {

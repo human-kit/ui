@@ -38,38 +38,38 @@ The component should be composable, predictable, and aligned with the current `T
 
 ```svelte
 <Table.Root selectionMode="multiple" bind:selectedKeys>
- <Table.Header>
-  <Table.Row>
-   <Table.Column id="selection">
-    <Table.ColumnHeaderCell>
-     <Table.Checkbox>
-      <Table.CheckboxIndicator>
-       <CheckIcon />
-      </Table.CheckboxIndicator>
-     </Table.Checkbox>
-    </Table.ColumnHeaderCell>
-   </Table.Column>
+	<Table.Header>
+		<Table.Row>
+			<Table.Column id="selection">
+				<Table.ColumnHeaderCell>
+					<Table.Checkbox>
+						<Table.CheckboxIndicator>
+							<CheckIcon />
+						</Table.CheckboxIndicator>
+					</Table.Checkbox>
+				</Table.ColumnHeaderCell>
+			</Table.Column>
 
-   <Table.Column id="email" isRowHeader>
-    <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-   </Table.Column>
-  </Table.Row>
- </Table.Header>
+			<Table.Column id="email" isRowHeader>
+				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
+			</Table.Column>
+		</Table.Row>
+	</Table.Header>
 
- <Table.Body>
-  {#each rows as row (row.id)}
-   <Table.Row id={row.id}>
-    <Table.Cell>
-     <Table.Checkbox>
-      <Table.CheckboxIndicator>
-       <CheckIcon />
-      </Table.CheckboxIndicator>
-     </Table.Checkbox>
-    </Table.Cell>
-    <Table.Cell>{row.email}</Table.Cell>
-   </Table.Row>
-  {/each}
- </Table.Body>
+	<Table.Body>
+		{#each rows as row (row.id)}
+			<Table.Row id={row.id}>
+				<Table.Cell>
+					<Table.Checkbox>
+						<Table.CheckboxIndicator>
+							<CheckIcon />
+						</Table.CheckboxIndicator>
+					</Table.Checkbox>
+				</Table.Cell>
+				<Table.Cell>{row.email}</Table.Cell>
+			</Table.Row>
+		{/each}
+	</Table.Body>
 </Table.Root>
 ```
 

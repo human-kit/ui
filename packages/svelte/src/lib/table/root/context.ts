@@ -631,9 +631,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getNearestVisibleCellKey(targetCell: TableCellRegistration) {
-		const targetPhysicalIndex = targetCell.section === 'header'
-			? (targetCell.columnToken ? getColumnIndexByToken(targetCell.columnToken) : -1)
-			: (targetCell.columnIndex ?? -1);
+		const targetPhysicalIndex =
+			targetCell.section === 'header'
+				? targetCell.columnToken
+					? getColumnIndexByToken(targetCell.columnToken)
+					: -1
+				: (targetCell.columnIndex ?? -1);
 
 		const siblingCells = Array.from(cells.values())
 			.filter((candidate) => {
@@ -651,9 +654,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				return true;
 			})
 			.map((candidate) => {
-				const physicalIndex = candidate.section === 'header'
-					? (candidate.columnToken ? getColumnIndexByToken(candidate.columnToken) : -1)
-					: (candidate.columnIndex ?? -1);
+				const physicalIndex =
+					candidate.section === 'header'
+						? candidate.columnToken
+							? getColumnIndexByToken(candidate.columnToken)
+							: -1
+						: (candidate.columnIndex ?? -1);
 				const candidateColumn = getCellColumn(candidate);
 				return { candidate, physicalIndex, candidateColumn };
 			})

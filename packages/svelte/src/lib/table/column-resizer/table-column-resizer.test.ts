@@ -361,11 +361,13 @@ describe('Table.ColumnResizer', () => {
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
 		const headerContent = emailResizer.closest('[data-table-header-content]') as HTMLElement;
 
-		await expect.poll(() => {
-			const rect = headerContent.getBoundingClientRect();
-			const hitTarget = document.elementFromPoint(rect.right + 2, rect.top + rect.height / 2);
-			return hitTarget?.getAttribute('data-testid') ?? null;
-		}).toBe('email-resizer');
+		await expect
+			.poll(() => {
+				const rect = headerContent.getBoundingClientRect();
+				const hitTarget = document.elementFromPoint(rect.right + 2, rect.top + rect.height / 2);
+				return hitTarget?.getAttribute('data-testid') ?? null;
+			})
+			.toBe('email-resizer');
 	});
 
 	it('uses table-layout: fixed so resizing is column-isolated', async () => {

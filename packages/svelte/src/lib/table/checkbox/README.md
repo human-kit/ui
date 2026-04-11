@@ -7,16 +7,16 @@
 Name: `Table.Checkbox`
 Description: Headless selection-aware checkbox root for tables. In body cells it toggles the owning row. In header cells it becomes a select-all checkbox for multiple selection mode.
 
-| Prop              | Type                              | Default     | Description                                                                                              |
-| ----------------- | --------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------- |
-| `id`              | `string`                          | `undefined` | Optional id forwarded to the composed checkbox root.                                                     |
-| `title`           | `string`                          | `undefined` | Optional title forwarded to the composed checkbox root.                                                  |
-| `style`           | `HTMLAttributes<HTMLSpanElement>['style']` | `undefined` | Optional inline style forwarded to the composed checkbox root.                                           |
-| `data-testid`     | `string`                          | `undefined` | Test id forwarded to the composed checkbox root.                                                         |
-| `children`        | `Snippet`                         | `undefined` | Composed child content, typically `Table.CheckboxIndicator`.                                             |
-| `class`           | `string`                          | `''`        | CSS class names for the composed checkbox root element.                                                  |
-| `aria-label`      | `string`                          | `undefined` | Accessible label override. Defaults to `Select all rows` in headers and `Select row <id>` in body rows. |
-| `aria-labelledby` | `string`                          | `undefined` | Accessible label source id when the checkbox should be named by external content.                        |
+| Prop              | Type                                       | Default     | Description                                                                                             |
+| ----------------- | ------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `id`              | `string`                                   | `undefined` | Optional id forwarded to the composed checkbox root.                                                    |
+| `title`           | `string`                                   | `undefined` | Optional title forwarded to the composed checkbox root.                                                 |
+| `style`           | `HTMLAttributes<HTMLSpanElement>['style']` | `undefined` | Optional inline style forwarded to the composed checkbox root.                                          |
+| `data-testid`     | `string`                                   | `undefined` | Test id forwarded to the composed checkbox root.                                                        |
+| `children`        | `Snippet`                                  | `undefined` | Composed child content, typically `Table.CheckboxIndicator`.                                            |
+| `class`           | `string`                                   | `''`        | CSS class names for the composed checkbox root element.                                                 |
+| `aria-label`      | `string`                                   | `undefined` | Accessible label override. Defaults to `Select all rows` in headers and `Select row <id>` in body rows. |
+| `aria-labelledby` | `string`                                   | `undefined` | Accessible label source id when the checkbox should be named by external content.                       |
 
 ## Usage notes
 

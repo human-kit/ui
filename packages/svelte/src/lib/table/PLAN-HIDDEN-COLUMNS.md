@@ -127,17 +127,17 @@ Using `display: none`:
 
 ## Files affected
 
-| File | Change |
-|------|--------|
-| `table/root/context.ts` | State, methods, caches |
-| `table/root/table-root.svelte` | Props, binding, controlled pattern |
-| `table/column/table-column.svelte` | Propagate hidden state |
-| `table/column-header-cell/table-column-header-cell.svelte` | `display: none`, `aria-hidden` |
-| `table/cell/table-cell.svelte` | `display: none`, `aria-hidden`, skip focus |
-| `table/column-resizer/table-column-resizer.svelte` | Skip interaction when hidden |
-| `table/index.parts.ts` | Type exports if needed |
-| `table/index.ts` | Type exports if needed |
-| `table/root/*.test.ts` | New test cases |
+| File                                                       | Change                                     |
+| ---------------------------------------------------------- | ------------------------------------------ |
+| `table/root/context.ts`                                    | State, methods, caches                     |
+| `table/root/table-root.svelte`                             | Props, binding, controlled pattern         |
+| `table/column/table-column.svelte`                         | Propagate hidden state                     |
+| `table/column-header-cell/table-column-header-cell.svelte` | `display: none`, `aria-hidden`             |
+| `table/cell/table-cell.svelte`                             | `display: none`, `aria-hidden`, skip focus |
+| `table/column-resizer/table-column-resizer.svelte`         | Skip interaction when hidden               |
+| `table/index.parts.ts`                                     | Type exports if needed                     |
+| `table/index.ts`                                           | Type exports if needed                     |
+| `table/root/*.test.ts`                                     | New test cases                             |
 
 ## Execution order
 
