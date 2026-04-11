@@ -69,9 +69,11 @@
 
 	function buildCellIndexCache(): Map<string, number> {
 		if (cellIndexCache) return cellIndexCache;
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- plain cache, not reactive state
 		const cache = new Map<string, number>();
 		if (rowElement) {
 			const directCells = rowElement.children;
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- plain cache, not reactive state
 			const elementToIndex = new Map<HTMLElement, number>();
 			for (let i = 0; i < directCells.length; i += 1) {
 				const child = directCells[i];

@@ -4,6 +4,7 @@ declare module '*.svelte' {
 	export default component;
 }
 
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 declare global {
 	namespace App {
 		interface Error {}
@@ -12,5 +13,6 @@ declare global {
 		interface Platform {}
 	}
 }
+/* eslint-enable @typescript-eslint/no-empty-object-type */
 
 export {};
