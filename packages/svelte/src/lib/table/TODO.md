@@ -64,14 +64,14 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 
 ### Features
 
-- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add controlled and uncontrolled column filtering APIs — support per-column filters plus a global filter hook so `Table` can cover common data-grid scenarios without forcing consumers to build parallel filter state from scratch.
-- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add column visibility controls — allow columns to be shown/hidden dynamically while preserving keyboard navigation, sort state, selection column layout, and resize state for still-visible columns.
-- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add multi-column sorting — support ordered sort descriptors so users can compose secondary and tertiary sorts instead of being limited to a single active sort key.
-- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Add pagination primitives — define a controlled pagination model for large datasets, including page index, page size, and total row count integration without coupling `Table` to a specific data-fetching strategy.
-- [ ] [L][P1][Area: Features][Owner: Unassigned][Target: TBD] Evaluate row virtualization support — provide a path for very large tables while preserving grid semantics, roving tabindex behavior, selection, and resize interactions.
-- [ ] [L][P2][Area: Features][Owner: Unassigned][Target: TBD] Add sticky header and pinned-column support — enable frozen headers and utility columns (selection, row headers, actions) for wide or scroll-heavy tables.
-- [ ] [L][P2][Area: Features][Owner: Unassigned][Target: TBD] Add expandable rows / subrows — support master-detail rows and tree-like disclosure patterns without forcing consumers to break the table's row and cell registration model.
-- [ ] [L][P2][Area: Features][Owner: Unassigned][Target: TBD] Add inline cell and row editing primitives — define an opt-in editing model that can coexist with current focus, selection, and keyboard navigation contracts.
+- [ ] [C][P1][Area: Features][Owner: Unassigned][Target: TBD] Add controlled and uncontrolled column filtering APIs — support per-column filters plus a global filter hook so `Table` can cover common data-grid scenarios without forcing consumers to build parallel filter state from scratch.
+- [ ] [C][P1][Area: Features][Owner: Unassigned][Target: TBD] Add column visibility controls — allow columns to be shown/hidden dynamically while preserving keyboard navigation, sort state, selection column layout, and resize state for still-visible columns.
+- [ ] [C][P1][Area: Features][Owner: Unassigned][Target: TBD] Add multi-column sorting — support ordered sort descriptors so users can compose secondary and tertiary sorts instead of being limited to a single active sort key.
+- [ ] [C][P1][Area: Features][Owner: Unassigned][Target: TBD] Add pagination primitives — define a controlled pagination model for large datasets, including page index, page size, and total row count integration without coupling `Table` to a specific data-fetching strategy.
+- [ ] [C][P1][Area: Features][Owner: Unassigned][Target: TBD] Evaluate row virtualization support — provide a path for very large tables while preserving grid semantics, roving tabindex behavior, selection, and resize interactions.
+- [ ] [C][P2][Area: Features][Owner: Unassigned][Target: TBD] Add sticky header and pinned-column support — enable frozen headers and utility columns (selection, row headers, actions) for wide or scroll-heavy tables.
+- [ ] [C][P2][Area: Features][Owner: Unassigned][Target: TBD] Add expandable rows / subrows — support master-detail rows and tree-like disclosure patterns without forcing consumers to break the table's row and cell registration model.
+- [ ] [C][P2][Area: Features][Owner: Unassigned][Target: TBD] Add inline cell and row editing primitives — define an opt-in editing model that can coexist with current focus, selection, and keyboard navigation contracts.
 - [ ] [M][P2][Area: Features][Owner: Unassigned][Target: TBD] Add column action primitives — expose a path for header menus, quick sort/filter actions, and future column management UI without requiring consumers to hand-roll header action composition every time.
 - [ ] [M][P3][Area: Features][Owner: Unassigned][Target: TBD] Add row actions patterns — document or expose a composable pattern for common trailing actions columns so selection, row press, and nested interactive controls do not conflict.
 
