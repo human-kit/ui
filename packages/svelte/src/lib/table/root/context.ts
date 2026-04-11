@@ -202,6 +202,8 @@ export type TableCellContext = {
 	cellKey: string;
 	registerFocusDelegate: (getElement: () => HTMLElement | undefined) => void;
 	unregisterFocusDelegate: () => void;
+	notifyResizerPresent?: () => void;
+	notifyResizerRemoved?: () => void;
 };
 
 export function createTableContext(options: CreateTableContextOptions = {}): TableContext {
@@ -263,9 +265,18 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		rowsWithCellsCache = null;
 	}
 
+	let layoutNotifyScheduled = false;
+	let widthNotifyScheduled = false;
+
 	function notifyLayout() {
 		invalidateLayoutCaches();
-		layoutVersion.update((value) => value + 1);
+		if (!layoutNotifyScheduled) {
+			layoutNotifyScheduled = true;
+			queueMicrotask(() => {
+				layoutNotifyScheduled = false;
+				layoutVersion.update((value) => value + 1);
+			});
+		}
 	}
 
 	function notifySelection() {
@@ -283,7 +294,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function notifyWidth() {
 		columnWidthsCache = null;
-		widthVersion.update((value) => value + 1);
+		if (!widthNotifyScheduled) {
+			widthNotifyScheduled = true;
+			queueMicrotask(() => {
+				widthNotifyScheduled = false;
+				widthVersion.update((value) => value + 1);
+			});
+		}
 	}
 
 	function notifyResize() {

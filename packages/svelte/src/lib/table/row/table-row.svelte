@@ -42,6 +42,7 @@
 	let childListObserver: MutationObserver | null = null;
 
 	function notifyCellOrderChange() {
+		cellIndexCache = null;
 		cellOrderVersion.update((value) => value + 1);
 	}
 
@@ -64,22 +65,38 @@
 		}
 	}
 
-	function getCellIndex(token: string) {
+	let cellIndexCache: Map<string, number> | null = null;
+
+	function buildCellIndexCache(): Map<string, number> {
+		if (cellIndexCache) return cellIndexCache;
+		const cache = new Map<string, number>();
 		if (rowElement) {
-			const directCells = Array.from(rowElement.children).filter(
-				(child): child is HTMLElement => child instanceof HTMLElement
-			);
-			for (let index = 0; index < directCells.length; index += 1) {
-				const directCell = directCells[index];
-				for (const registeredToken of cellOrder) {
-					if (registeredToken !== token) continue;
-					const element = cellElements.get(registeredToken)?.();
-					if (element === directCell) {
-						return index;
+			const directCells = rowElement.children;
+			const elementToIndex = new Map<HTMLElement, number>();
+			for (let i = 0; i < directCells.length; i += 1) {
+				const child = directCells[i];
+				if (child instanceof HTMLElement) {
+					elementToIndex.set(child, i);
+				}
+			}
+			for (const registeredToken of cellOrder) {
+				const element = cellElements.get(registeredToken)?.();
+				if (element) {
+					const idx = elementToIndex.get(element);
+					if (idx !== undefined) {
+						cache.set(registeredToken, idx);
 					}
 				}
 			}
 		}
+		cellIndexCache = cache;
+		return cache;
+	}
+
+	function getCellIndex(token: string) {
+		const cache = buildCellIndexCache();
+		const cached = cache.get(token);
+		if (cached !== undefined) return cached;
 		return cellOrder.indexOf(token);
 	}
 
@@ -114,6 +131,19 @@
 		syncRowRegistration();
 	});
 
+	let pendingCellOrderNotify = false;
+
+	function scheduleCellOrderNotify() {
+		if (!pendingCellOrderNotify) {
+			pendingCellOrderNotify = true;
+			queueMicrotask(() => {
+				pendingCellOrderNotify = false;
+				cellIndexCache = null;
+				notifyCellOrderChange();
+			});
+		}
+	}
+
 	$effect(() => {
 		childListObserver?.disconnect();
 		childListObserver = null;
@@ -123,7 +153,7 @@
 		}
 
 		const observer = new MutationObserver(() => {
-			notifyCellOrderChange();
+			scheduleCellOrderNotify();
 		});
 		observer.observe(rowElement, { childList: true });
 		childListObserver = observer;

@@ -55,10 +55,21 @@
 		focusDelegate = undefined;
 	}
 
+	function notifyResizerPresent() {
+		// No-op. Header cells now always provide the positioning context that
+		// column resizers need so the handle is available in SSR HTML too.
+	}
+
+	function notifyResizerRemoved() {
+		// No-op. See notifyResizerPresent().
+	}
+
 	setTableCellContext({
 		cellKey: key,
 		registerFocusDelegate,
-		unregisterFocusDelegate
+		unregisterFocusDelegate,
+		notifyResizerPresent,
+		notifyResizerRemoved
 	});
 
 	syncHeaderCellRegistration();
@@ -88,6 +99,7 @@
 		void $layoutVersion;
 		return column.isHidden;
 	});
+
 	const columnWidth = $derived.by(() => {
 		void $widthVersion;
 		return table.getColumnWidth(column.id);
@@ -170,6 +182,8 @@
 
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, element ?? null);
+		isElementFocusVisible = false;
+		isFocusVisibleWithin = false;
 		table.setFocusVisible(false);
 	}
 
@@ -254,7 +268,8 @@
 >
 	<div
 		data-table-header-content
-		style:overflow={columnWidth !== undefined ? 'hidden' : undefined}
+		style:overflow="visible"
+		style:position="relative"
 		style:min-width="0"
 		style:width="100%"
 		style:height="100%"
@@ -264,10 +279,3 @@
 		{/if}
 	</div>
 </th>
-
-<style>
-	th {
-		position: relative;
-		overflow: visible;
-	}
-</style>

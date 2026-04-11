@@ -79,6 +79,38 @@ describe('Table.ColumnResizer', () => {
 			.toBe('');
 	});
 
+	it('moves focus onto the resize handle after pointer interaction so arrow keys work immediately', async () => {
+		const screen = render(ColumnResizerTest);
+		const emailResizer = screen.getByTestId('email-resizer').element() as HTMLElement;
+		const groupHeaderCell = screen.getByTestId('group-header-cell').element() as HTMLElement;
+
+		emailResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 41,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 41,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => document.activeElement).toBe(emailResizer);
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement).toBe(groupHeaderCell);
+	});
+
 	it('updates width on pointer drag and respects max width constraints', async () => {
 		render(ColumnResizerTest);
 		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
@@ -210,6 +242,69 @@ describe('Table.ColumnResizer', () => {
 		await expect.poll(() => readColumnWidths().group).toBeLessThan(160);
 	});
 
+	it('prioritizes auto fit on the second press of a double click instead of starting a drag', async () => {
+		render(ColumnResizerTest);
+		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
+
+		groupResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 12,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 12,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		expect(readColumnWidths().group).toBe(160);
+
+		groupResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 12,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readColumnWidths().group).toBeLessThan(160);
+
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 240,
+				pointerId: 12,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 240,
+				pointerId: 12,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		expect(readColumnWidths().group).not.toBe(260);
+		expect(readColumnWidths().group).toBeLessThan(160);
+	});
+
 	it('does not keep changing width after the column is already auto fitted', async () => {
 		render(ColumnResizerTest);
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
@@ -251,14 +346,26 @@ describe('Table.ColumnResizer', () => {
 		const emailHeaderCell = emailResizer.closest('th') as HTMLElement;
 		const headerContent = emailHeaderCell.querySelector<HTMLElement>('[data-table-header-content]');
 
-		expect(getComputedStyle(emailHeaderCell).position).toBe('relative');
-		expect(getComputedStyle(emailHeaderCell).overflow).toBe('visible');
-		expect(headerContent?.style.overflow).toBe('hidden');
+		await expect.poll(() => getComputedStyle(headerContent!).position).toBe('relative');
+		expect(headerContent?.style.overflow).toBe('visible');
 		expect(emailResizer.style.position).toBe('absolute');
+		expect(emailResizer.style.zIndex).toBe('2');
 		expect(emailResizer.style.right).toBe('0px');
 		expect(emailResizer.style.transform).toBe('translateX(50%)');
 		expect(emailResizer.style.width).toBe('0.75rem');
 		expect(emailResizer.style.height).toBe('100%');
+	});
+
+	it('keeps the overflow hit area reachable from the adjacent header cell side', async () => {
+		render(ColumnResizerTest);
+		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+		const headerContent = emailResizer.closest('[data-table-header-content]') as HTMLElement;
+
+		await expect.poll(() => {
+			const rect = headerContent.getBoundingClientRect();
+			const hitTarget = document.elementFromPoint(rect.right + 2, rect.top + rect.height / 2);
+			return hitTarget?.getAttribute('data-testid') ?? null;
+		}).toBe('email-resizer');
 	});
 
 	it('uses table-layout: fixed so resizing is column-isolated', async () => {

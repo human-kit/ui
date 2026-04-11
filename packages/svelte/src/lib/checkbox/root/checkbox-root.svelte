@@ -222,6 +222,7 @@
 
 	function handlePointerDown(event: PointerEvent | MouseEvent) {
 		trackInteractionModality(event, rootRef);
+		focusVisible = false;
 	}
 
 	function handleFocus() {

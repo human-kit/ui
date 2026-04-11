@@ -75,4 +75,20 @@ describe('Table.Checkbox', () => {
 		expect(headerCheckbox.getAttribute('tabindex')).toBe('0');
 		expect(headerCell.getAttribute('tabindex')).toBeNull();
 	});
+
+	it('clears checkbox focus-visible when a pointer click takes over from keyboard interaction', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		rowCheckbox.focus();
+		await userEvent.keyboard('{Space>}');
+
+		await expect.poll(() => rowCheckbox.getAttribute('data-focus-visible')).toBe('true');
+
+		await userEvent.keyboard('{/Space}');
+		await userEvent.click(rowCheckbox);
+
+		await expect.poll(() => rowCheckbox.getAttribute('data-focus-visible')).toBeNull();
+	});
 });

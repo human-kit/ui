@@ -796,8 +796,10 @@ describe('Table.Root', () => {
 		headerCell.focus();
 		bodyCell.focus();
 
-		expect(headerCell.getAttribute('style')).toBeNull();
-		expect(bodyCell.getAttribute('style')).toBeNull();
+		const headerStyle = headerCell.getAttribute('style') ?? '';
+		const bodyStyle = bodyCell.getAttribute('style') ?? '';
+		expect(headerStyle).not.toContain('outline');
+		expect(bodyStyle).not.toContain('outline');
 	});
 
 	it('shows focus-visible only for keyboard navigation, not pointer clicks', async () => {
@@ -813,6 +815,22 @@ describe('Table.Root', () => {
 		const secondBodyCell = document.activeElement as HTMLElement;
 		expect(secondBodyCell.getAttribute('data-focused')).toBe('true');
 		expect(secondBodyCell.getAttribute('data-focus-visible')).toBe('true');
+	});
+
+	it('clears header focus-visible when a pointer click takes over from keyboard navigation', async () => {
+		const screen = render(TableTest);
+		const grid = screen.getByRole('grid').element() as HTMLElement;
+		const [emailHeader, groupHeader] = getHeaderCells(grid);
+
+		emailHeader.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => groupHeader.getAttribute('data-focus-visible')).toBe('true');
+
+		await userEvent.click(groupHeader);
+
+		await expect.poll(() => document.activeElement).toBe(groupHeader);
+		expect(groupHeader.getAttribute('data-focused')).toBe('true');
+		expect(groupHeader.getAttribute('data-focus-visible')).toBeNull();
 	});
 
 	it('marks focused rows with focus-within semantics instead of row-focused semantics', async () => {

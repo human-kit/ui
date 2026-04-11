@@ -2,7 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useTableColumnContext, useTableContext } from '../root/context';
+	import { getTableCellContext, useTableColumnContext, useTableContext } from '../root/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -25,10 +25,12 @@
 
 	const table = useTableContext();
 	const column = useTableColumnContext();
+	const cellContext = getTableCellContext();
 	const layoutVersion = table.layoutVersion;
 	const resizeVersion = table.resizeVersion;
 	const widthVersion = table.widthVersion;
 	table.registerColumnResizer(column.token);
+	cellContext?.notifyResizerPresent?.();
 
 	let element = $state<HTMLDivElement | undefined>(undefined);
 	let isFocused = $state(false);
@@ -39,6 +41,17 @@
 	let resizeAnnouncement = $state('');
 	let announceTimeout: ReturnType<typeof setTimeout> | null = null;
 	let focusHeaderTimeout: ReturnType<typeof setTimeout> | null = null;
+	let suppressNextDoubleClickAutofit = $state(false);
+	let recentClickCandidate = $state<{
+		timeStamp: number;
+		clientX: number;
+		clientY: number;
+		button: number;
+		pointerType: string;
+	} | null>(null);
+
+	const DOUBLE_PRESS_MAX_DELAY_MS = 500;
+	const DOUBLE_PRESS_MAX_DISTANCE_PX = 6;
 
 	const isResizing = $derived.by(() => {
 		void $resizeVersion;
@@ -107,6 +120,10 @@
 	function focusHeaderCell() {
 		const headerCell = element?.closest('th') as HTMLElement | null;
 		headerCell?.focus();
+	}
+
+	function focusResizer() {
+		element?.focus({ preventScroll: true });
 	}
 
 	function focusAdjacentHeaderCell(direction: 'left' | 'right') {
@@ -185,17 +202,57 @@
 		return table.measureColumnContentWidth(column.id) ?? minWidth;
 	}
 
+	function clearRecentClickCandidate() {
+		recentClickCandidate = null;
+	}
+
+	function rememberCompletedClick(event: PointerEvent) {
+		if (event.pointerType !== 'mouse') {
+			clearRecentClickCandidate();
+			return;
+		}
+
+		recentClickCandidate = {
+			timeStamp: event.timeStamp,
+			clientX: event.clientX,
+			clientY: event.clientY,
+			button: event.button,
+			pointerType: event.pointerType
+		};
+	}
+
+	function isSecondPressOfDoubleClick(event: PointerEvent) {
+		const candidate = recentClickCandidate;
+		if (!candidate) return false;
+		if (event.pointerType !== 'mouse' || candidate.pointerType !== 'mouse') return false;
+		if (event.button !== candidate.button) return false;
+		if (event.timeStamp - candidate.timeStamp > DOUBLE_PRESS_MAX_DELAY_MS) return false;
+
+		const deltaX = event.clientX - candidate.clientX;
+		const deltaY = event.clientY - candidate.clientY;
+		return Math.hypot(deltaX, deltaY) <= DOUBLE_PRESS_MAX_DISTANCE_PX;
+	}
+
+	function autoFitColumn() {
+		stopKeyboardResizeMode();
+		table.startColumnResize(column.id);
+		commitWidthChange(getAutoFitWidth());
+		table.endColumnResize();
+	}
+
 	function handleDoubleClick(event: MouseEvent) {
 		if (!isResizable) return;
+		if (suppressNextDoubleClickAutofit) {
+			suppressNextDoubleClickAutofit = false;
+			event.preventDefault();
+			event.stopPropagation();
+			return;
+		}
 		event.preventDefault();
 		event.stopPropagation();
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = false;
-		stopKeyboardResizeMode();
-
-		table.startColumnResize(column.id);
-		commitWidthChange(getAutoFitWidth());
-		table.endColumnResize();
+		autoFitColumn();
 	}
 
 	function handlePointerDown(event: PointerEvent) {
@@ -206,6 +263,16 @@
 		event.stopPropagation();
 		trackInteractionModality(event, element ?? null);
 		isFocusVisible = false;
+		focusResizer();
+
+		if (isSecondPressOfDoubleClick(event)) {
+			clearRecentClickCandidate();
+			suppressNextDoubleClickAutofit = true;
+			autoFitColumn();
+			return;
+		}
+
+		suppressNextDoubleClickAutofit = false;
 
 		stopKeyboardResizeMode();
 		table.startColumnResize(column.id);
@@ -308,14 +375,18 @@
 				flushPendingPointerMove();
 			}
 			if (didDrag) {
+				clearRecentClickCandidate();
 				table.suppressHeaderClickOnce();
 				announceWidth(getResolvedWidth());
+			} else {
+				rememberCompletedClick(upEvent);
 			}
 			cleanupPointerListeners();
 		};
 
 		const handlePointerCancel = (cancelEvent: PointerEvent) => {
 			if (cancelEvent.pointerId !== pointerId) return;
+			clearRecentClickCandidate();
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
 				animationFrameId = null;
@@ -330,6 +401,7 @@
 			if (keyEvent.key !== 'Escape') return;
 			keyEvent.preventDefault();
 			keyEvent.stopPropagation();
+			clearRecentClickCandidate();
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
 				animationFrameId = null;
@@ -482,6 +554,7 @@
 		stopKeyboardResizeMode();
 		cleanupPointerListeners();
 		table.unregisterColumnResizer(column.token);
+		cellContext?.notifyResizerRemoved?.();
 	});
 </script>
 
@@ -504,6 +577,7 @@
 		data-table-column-resizer="true"
 		data-resizable-direction="right"
 		style:position="absolute"
+		style:z-index="2"
 		style:top="0"
 		style:right="0"
 		style:transform="translateX(50%)"
