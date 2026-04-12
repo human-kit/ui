@@ -10,13 +10,13 @@
 
 ```svelte
 <Button.Root>
-  {#snippet children({ isPending, isPressed })}
-    {#if isPending}
-      <SavingSpinner />
-    {:else}
-      <span class:is-pressed={isPressed}>Save</span>
-    {/if}
-  {/snippet}
+	{#snippet children({ isPending, isPressed })}
+		{#if isPending}
+			<SavingSpinner />
+		{:else}
+			<span class:is-pressed={isPressed}>Save</span>
+		{/if}
+	{/snippet}
 </Button.Root>
 ```
 

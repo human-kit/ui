@@ -19,13 +19,10 @@
 		onFocus
 	}: Props = $props();
 
-	let pending = $state(false);
+	let pendingOverride = $state<boolean | null>(null);
 	let clickCount = $state(0);
 	let submitCount = $state(0);
-
-	$effect(() => {
-		pending = isPending;
-	});
+	const pending = $derived(pendingOverride ?? isPending);
 
 	function handleClick() {
 		clickCount += 1;
@@ -66,8 +63,12 @@
 		{/snippet}
 	</Button.Root>
 
-	<button type="button" data-set-pending onclick={() => (pending = true)}>Set pending</button>
-	<button type="button" data-clear-pending onclick={() => (pending = false)}>Clear pending</button>
+	<button type="button" data-set-pending onclick={() => (pendingOverride = true)}
+		>Set pending</button
+	>
+	<button type="button" data-clear-pending onclick={() => (pendingOverride = false)}>
+		Clear pending
+	</button>
 
 	<output data-click-count>{String(clickCount)}</output>
 	<output data-submit-count>{String(submitCount)}</output>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 
-	const buttonDocsHref: string = '/docs/button';
+	const buttonDocsHref = resolve('/docs/button');
 </script>
 
 <main class="flex min-h-screen flex-col items-center justify-center bg-neutral-950 text-white">

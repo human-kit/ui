@@ -219,7 +219,7 @@
 		}
 	}
 
-	function handleMouseEnter(event: MouseEvent) {
+	function handleMouseEnter() {
 		if (isDisabled || isPending) {
 			hovered = false;
 			return;
