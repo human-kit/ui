@@ -31,16 +31,16 @@
 	}
 </script>
 
-	<ButtonRoot
-		bind:element={buttonRef}
+<ButtonRoot
+	bind:element={buttonRef}
 	class={className}
 	type="button"
 	aria-expanded={ctx?.isOpen ?? false}
 	aria-haspopup="dialog"
 	onclick={handleClick}
 	{...restProps}
-	>
+>
 	{#if children}
 		{@render children()}
 	{/if}
-	</ButtonRoot>
+</ButtonRoot>

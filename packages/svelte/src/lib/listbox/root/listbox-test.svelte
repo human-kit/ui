@@ -5,9 +5,17 @@
 		selectionMode?: 'single' | 'multiple';
 		selectionBehavior?: 'toggle' | 'replace';
 		disabledIds?: Iterable<string | number>;
+		pressedIds?: Iterable<string | number>;
 	};
 
-	let { selectionMode = 'single', selectionBehavior = 'toggle', disabledIds }: Props = $props();
+	let {
+		selectionMode = 'single',
+		selectionBehavior = 'toggle',
+		disabledIds,
+		pressedIds
+	}: Props = $props();
+
+	const pressedIdSet = $derived(new Set(pressedIds ?? []));
 
 	const fruits = [
 		{ id: 'apple', name: 'Apple' },
@@ -20,7 +28,11 @@
 
 <ListBox.Root {selectionMode} {selectionBehavior} {disabledIds} aria-label="Fruits list">
 	{#each fruits as fruit (fruit.id)}
-		<ListBox.Item id={fruit.id} textValue={fruit.name}>
+		<ListBox.Item
+			id={fruit.id}
+			textValue={fruit.name}
+			pressed={pressedIdSet.has(fruit.id) ? true : undefined}
+		>
 			{fruit.name}
 		</ListBox.Item>
 	{/each}

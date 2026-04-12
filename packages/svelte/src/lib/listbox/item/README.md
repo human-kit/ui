@@ -5,7 +5,7 @@
 ### ListBox.Item
 
 Name: `ListBox.Item`  
-Description: Selectable option element with built-in selected, focused, hovered, and disabled states.
+Description: Selectable option element with built-in selected, focused, hovered, pressed, and disabled states.
 
 | Prop                   | Type                             | Default              | Description                                              |
 | ---------------------- | -------------------------------- | -------------------- | -------------------------------------------------------- |
@@ -21,4 +21,5 @@ Description: Selectable option element with built-in selected, focused, hovered,
 | `onResolvedTextValue`  | `(label: string) => void`        | `undefined`          | Called when item text value is resolved.                 |
 | `scrollOnFocus`        | `boolean`                        | `false`              | Scrolls item into view when focused.                     |
 | `isParentDisabled`     | `boolean`                        | `false`              | Additional disabled state inherited from parent wrapper. |
+| `pressed`              | `boolean`                        | `undefined`          | Forces the visual pressed state from parent composition. |
 | `...restProps`         | `HTMLAttributes<HTMLDivElement>` | `-`                  | Additional option attributes.                            |
