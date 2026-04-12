@@ -88,11 +88,12 @@ describe('Button.Root', () => {
 	it('disables the native button when isDisabled is true', async () => {
 		const screen = render(ButtonTest, { isDisabled: true });
 		const button = screen.getByRole('button', { name: 'Save' });
+		const buttonElement = button.element() as HTMLButtonElement | null;
 
-		expect(button.element()?.hasAttribute('disabled')).toBe(true);
-		expect(button.element()?.getAttribute('data-disabled')).toBe('true');
+		expect(buttonElement?.hasAttribute('disabled')).toBe(true);
+		expect(buttonElement?.getAttribute('data-disabled')).toBe('true');
 
-		button.element()?.click();
+		buttonElement?.click();
 		expect(document.querySelector('[data-click-count]')?.textContent).toBe('0');
 	});
 
