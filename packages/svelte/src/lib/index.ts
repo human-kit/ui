@@ -1,6 +1,7 @@
 // Main library entry point
 
 // Components (namespace exports)
+export { Button } from './button/index.js';
 export { Checkbox } from './checkbox/index.js';
 export { ComboBox } from './combobox/index.js';
 export { Calendar } from './calendar/index.js';
@@ -21,6 +22,7 @@ export { Portal } from './portal/index.js';
 export * from './locale-provider/index.js';
 
 // Re-export named exports from components
+export * from './button/index.js';
 export * from './checkbox/index.js';
 export * from './combobox/index.js';
 export * from './calendar/index.js';

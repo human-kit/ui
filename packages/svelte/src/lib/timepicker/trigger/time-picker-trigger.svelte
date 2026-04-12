@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { ButtonRoot } from '../../button/index.js';
 	import { useTimePickerContext } from '../root/context';
 	import {
 		shouldShowFocusVisible,
@@ -94,14 +95,13 @@
 </script>
 
 {#if !timePicker.isReadOnly}
-	<button
-		bind:this={buttonRef}
+	<ButtonRoot
+		bind:element={buttonRef}
 		type="button"
-		disabled={timePicker.isDisabled}
+		isDisabled={timePicker.isDisabled}
 		class={className}
 		aria-haspopup="dialog"
 		aria-expanded={timePicker.open}
-		data-disabled={timePicker.isDisabled || undefined}
 		data-focused={isFocused || undefined}
 		data-focus-visible={isFocused && timePicker.focusVisible ? 'true' : undefined}
 		{...restProps}
@@ -118,5 +118,5 @@
 		{#if children}
 			{@render children()}
 		{/if}
-	</button>
+	</ButtonRoot>
 {/if}

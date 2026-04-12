@@ -34,6 +34,8 @@
 		scrollOnFocus?: boolean;
 		/** Additional disabled state from parent. */
 		isParentDisabled?: boolean;
+		/** Override the visual pressed state. When provided, this value is used instead of internal press tracking. */
+		pressed?: boolean;
 	};
 
 	let {
@@ -50,6 +52,7 @@
 		onResolvedTextValue,
 		scrollOnFocus = false,
 		isParentDisabled = false,
+		pressed: pressedOverride,
 		...restProps
 	}: ListBoxItemProps = $props();
 
@@ -59,6 +62,8 @@
 	let isSelected = $state(false);
 	let isFocused = $state(false);
 	let isHovered = $state(false);
+	let isPressed = $state(false);
+	let pressedKey: 'Enter' | 'Space' | null = $state(null);
 
 	// Focus: use override if provided, otherwise use internal state
 	const isFocusedComputed = $derived(
@@ -66,6 +71,11 @@
 	);
 	const isDisabledComputed = $derived(
 		disabled || listboxCtx.disabledIds.has(id) || isParentDisabled
+	);
+	const isPressedComputed = $derived(
+		pressedOverride !== undefined
+			? Boolean(pressedOverride) && !isDisabledComputed
+			: isPressed && !isDisabledComputed
 	);
 
 	// ID: use custom if provided, otherwise generate
@@ -113,6 +123,17 @@
 		}
 	});
 
+	$effect(() => {
+		if (!isDisabledComputed) return;
+		clearPressedState();
+		isHovered = false;
+	});
+
+	function clearPressedState() {
+		isPressed = false;
+		pressedKey = null;
+	}
+
 	function handleClick() {
 		if (isDisabledComputed) return;
 
@@ -135,6 +156,42 @@
 
 	function handleBlur() {}
 
+	function handlePointerDown(event: PointerEvent) {
+		if (isDisabledComputed) {
+			event.preventDefault();
+			clearPressedState();
+			return;
+		}
+
+		if (event.button !== 0) return;
+		isPressed = true;
+		pressedKey = null;
+	}
+
+	function handlePointerUp(event: PointerEvent) {
+		if (event.button !== 0) return;
+		isPressed = false;
+		pressedKey = null;
+	}
+
+	function handlePointerCancel() {
+		clearPressedState();
+	}
+
+	function handlePointerEnter(event: PointerEvent) {
+		if (isDisabledComputed) return;
+
+		if ((event.buttons & 1) === 1 && pressedKey === null) {
+			isPressed = true;
+		}
+	}
+
+	function handlePointerLeave() {
+		if (pressedKey === null) {
+			isPressed = false;
+		}
+	}
+
 	function handleMouseEnter() {
 		if (!isDisabledComputed) {
 			isHovered = true;
@@ -143,15 +200,78 @@
 
 	function handleMouseLeave() {
 		isHovered = false;
+		if (pressedKey === null) {
+			isPressed = false;
+		}
 	}
 
 	// Keyboard is handled by parent container
-	function handleKeydown() {}
+	function handleKeydown(event: KeyboardEvent) {
+		const key =
+			event.key === 'Enter'
+				? 'Enter'
+				: event.key === ' ' || event.key === 'Spacebar'
+					? 'Space'
+					: null;
+
+		if (!key) return;
+
+		if (isDisabledComputed) {
+			event.preventDefault();
+			clearPressedState();
+			return;
+		}
+
+		if (event.repeat && isPressed && pressedKey === key) return;
+
+		isPressed = true;
+		pressedKey = key;
+	}
+
+	function handleKeyup(event: KeyboardEvent) {
+		const key =
+			event.key === 'Enter'
+				? 'Enter'
+				: event.key === ' ' || event.key === 'Spacebar'
+					? 'Space'
+					: null;
+
+		if (!key) return;
+
+		if (isDisabledComputed) {
+			event.preventDefault();
+			clearPressedState();
+			return;
+		}
+
+		if (pressedKey === key) {
+			clearPressedState();
+		}
+	}
+
 	function handleMouseDown(event: MouseEvent) {
 		// Prevent focus stealing when used in ComboBox (disableFocusHandling=true)
 		// This keeps the focus on the input while allowing click selection
+		if (isDisabledComputed) {
+			event.preventDefault();
+			clearPressedState();
+			return;
+		}
+
+		if (event.button === 0) {
+			isPressed = true;
+			pressedKey = null;
+		}
+
 		if (disableFocusHandling) {
 			event.preventDefault();
+		}
+	}
+
+	function handleMouseUp(event: MouseEvent) {
+		if (event.button !== 0) return;
+		if (pressedKey === null) {
+			clearPressedState();
 		}
 	}
 </script>
@@ -171,9 +291,17 @@
 	data-disabled={isDisabledComputed || undefined}
 	data-focused={isFocusedComputed || undefined}
 	data-hovered={isHovered || undefined}
+	data-pressed={isPressedComputed || undefined}
+	onpointerdown={handlePointerDown}
+	onpointerup={handlePointerUp}
+	onpointercancel={handlePointerCancel}
+	onpointerenter={handlePointerEnter}
+	onpointerleave={handlePointerLeave}
 	onmousedown={handleMouseDown}
+	onmouseup={handleMouseUp}
 	onclick={handleClick}
 	onkeydown={handleKeydown}
+	onkeyup={handleKeyup}
 	onfocus={handleFocus}
 	onblur={handleBlur}
 	onmouseenter={handleMouseEnter}

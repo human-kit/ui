@@ -1,4 +1,5 @@
 // Demo components for interactive documentation
+export { default as DemoButtonShowcase } from './demo-button-showcase.svelte';
 export { default as DemoSection } from './demo-section.svelte';
 export { default as DemoCheckbox } from './demo-checkbox.svelte';
 export { default as DemoCheckboxShowcase } from './demo-checkbox-showcase.svelte';

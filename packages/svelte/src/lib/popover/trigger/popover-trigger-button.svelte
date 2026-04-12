@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { ButtonRoot } from '../../button/index.js';
 	import { getPopoverContext } from '../root/context';
 
 	type PopoverTriggerButtonProps = Omit<
@@ -30,8 +31,8 @@
 	}
 </script>
 
-<button
-	bind:this={buttonRef}
+<ButtonRoot
+	bind:element={buttonRef}
 	class={className}
 	type="button"
 	aria-expanded={ctx?.isOpen ?? false}
@@ -42,4 +43,4 @@
 	{#if children}
 		{@render children()}
 	{/if}
-</button>
+</ButtonRoot>

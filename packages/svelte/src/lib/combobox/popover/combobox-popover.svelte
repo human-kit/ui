@@ -26,11 +26,41 @@
 	}
 
 	function handleOpenChange(open: boolean, details?: PopoverOpenChangeDetails) {
-		if (!open && details?.reason === 'outside-press') {
-			const target = resolveFocusTarget(details);
-			if (target) {
-				focusWithModality(target, 'pointer' satisfies InputModality);
+		if (!open) {
+			// Cancel Popover.Root's close to prevent scheduleTriggerCloseFocus from
+			// setting stale data-focused on the trigger. The combobox passes triggerRef
+			// via prop (not Popover.Trigger), so Popover.Root never registers a
+			// blur-cleanup listener and any data-focused it sets persists forever.
+			//
+			// IMPORTANT: the actual state change is deferred to a microtask so that
+			// when Popover.Root's closePopover re-reads `isOpen` after the callback,
+			// the derived value is still `true` and the guard succeeds. A synchronous
+			// ctx.onOpenChange(false) would update the upstream signal immediately,
+			// making the derived `false` and bypassing the guard despite the cancel.
+			details?.cancel();
+
+			if (details?.reason === 'outside-press') {
+				const target = resolveFocusTarget(details);
+				queueMicrotask(() => {
+					ctx.onOpenChange(false);
+
+					if (target) {
+						focusWithModality(target, 'pointer' satisfies InputModality);
+					}
+
+					// If focus is still on the input (non-focusable target), blur it
+					// so focusWithin becomes false.
+					if (document.activeElement === ctx.inputRef) {
+						ctx.inputRef?.blur();
+					}
+				});
+				return;
 			}
+
+			queueMicrotask(() => {
+				ctx.onOpenChange(false);
+			});
+			return;
 		}
 
 		ctx.onOpenChange(open);

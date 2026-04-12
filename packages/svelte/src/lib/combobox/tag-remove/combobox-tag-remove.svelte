@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { getContext } from 'svelte';
+	import { ButtonRoot } from '../../button/index.js';
 	import { cn } from '../../utils/cn';
 	import { TAG_CONTEXT_KEY, type TagContext } from '../tag/combobox-tag.svelte';
 
@@ -27,7 +28,7 @@
 </script>
 
 {#if !tagCtx.disabled}
-	<button
+	<ButtonRoot
 		type="button"
 		onclick={handleClick}
 		aria-label={`Remove ${tagCtx.label}`}
@@ -49,5 +50,5 @@
 				/>
 			</svg>
 		{/if}
-	</button>
+	</ButtonRoot>
 {/if}
