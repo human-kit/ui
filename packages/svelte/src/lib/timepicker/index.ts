@@ -1,4 +1,4 @@
-export * as TimePicker from './index.parts.ts';
+export * as TimePicker from './index.parts.js';
 
 export { default as TimePickerRoot } from './root/time-picker-root.svelte';
 export { default as TimePickerInput } from './input/time-picker-input.svelte';
@@ -19,15 +19,15 @@ export {
 	type TimePickerSegmentPart,
 	type TimePickerSegmentType,
 	type TimePickerEditableSegmentType
-} from './root/context.ts';
+} from './root/context.js';
 
 export {
 	type TimePickerGranularity,
 	type TimePickerHourCycle,
 	type TimePickerTimeValue
-} from './root/time-utils';
+} from './root/time-utils.js';
 
-export { type ClockColumnInfo } from '../clock/root/resolve-visible-columns';
+export { type ClockColumnInfo } from '../clock/root/resolve-visible-columns.js';
 
-import * as TimePickerParts from './index.parts.ts';
+import * as TimePickerParts from './index.parts.js';
 export default TimePickerParts;

@@ -1,13 +1,13 @@
 // Namespace export for component composition: <ListBox.Root>, <ListBox.Item>
-export * as ListBox from './index.parts.ts';
+export * as ListBox from './index.parts.js';
 
 // Direct named exports for individual imports
 export { default as ListBoxRoot } from './root/listbox.svelte';
 export { default as ListBoxItem } from './item/listbox-item.svelte';
 
 // Context and types
-export { useListBoxContext, createListBoxContext, type ListBoxContext } from './root/context.ts';
+export { useListBoxContext, createListBoxContext, type ListBoxContext } from './root/context.js';
 
 // Default export as namespace object
-import * as ListBoxParts from './index.parts.ts';
+import * as ListBoxParts from './index.parts.js';
 export default ListBoxParts;

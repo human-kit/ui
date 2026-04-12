@@ -1,7 +1,7 @@
 // Dialog component with namespace pattern
 // Usage: <Dialog.Root>, <Dialog.Trigger>, <Dialog.Portal>, <Dialog.Overlay>, <Dialog.Content>
 
-import * as DialogParts from './index.parts.ts';
+import * as DialogParts from './index.parts.js';
 
 // Named export for namespace usage: import { Dialog } from '...'
 export const Dialog = DialogParts;
@@ -17,5 +17,5 @@ export { default as DialogOverlay } from './overlay/dialog-overlay.svelte';
 export { default as DialogContent } from './content/dialog-content.svelte';
 
 // Re-export context utilities
-export { getDialogContext, setDialogContext, type DialogContext } from './root/context';
-export type { DialogStateHelpers } from './root/types';
+export { getDialogContext, setDialogContext, type DialogContext } from './root/context.js';
+export type { DialogStateHelpers } from './root/types.js';

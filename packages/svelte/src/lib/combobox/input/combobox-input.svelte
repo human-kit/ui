@@ -1,6 +1,10 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { useComboBoxContext } from '../root/context';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 	import { cn } from '../../utils/cn';
 
 	type ComboBoxInputProps = HTMLInputAttributes & {
@@ -42,6 +46,8 @@
 	}
 
 	function handleFocus() {
+		ctx.setFocusVisible(shouldShowFocusVisible(inputRef));
+
 		// Open on focus if trigger is 'focus'
 		// Use a small delay to avoid opening immediately on programmatic focus
 		// (e.g., from a focus trap). This gives time for refs to be set up.
@@ -54,7 +60,9 @@
 		}
 	}
 
-	function handleMouseDown() {
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, inputRef);
+		ctx.setFocusVisible(false);
 		ctx.setFocusedTagId(null);
 		// Open on press if trigger is 'press'
 		if (ctx.trigger === 'press' && !ctx.isOpen && !ctx.isDisabled && !ctx.isReadOnly) {
@@ -62,7 +70,14 @@
 		}
 	}
 
+	function handleKeyDown(event: KeyboardEvent) {
+		trackInteractionModality(event, inputRef);
+		ctx.setFocusVisible(shouldShowFocusVisible(inputRef));
+		ctx.handleKeydown(event);
+	}
+
 	function handleBlur() {
+		ctx.setFocusVisible(false);
 		// Restore selection label or deselect if empty
 		ctx.handleInputBlur();
 	}
@@ -89,7 +104,7 @@
 	onfocus={handleFocus}
 	onmousedown={handleMouseDown}
 	onblur={handleBlur}
-	onkeydown={ctx.handleKeydown}
+	onkeydown={handleKeyDown}
 	class={cn(
 		'bg-depth-2 sunken placeholder:text-muted-foreground hover:bg-depth-1 focus:ring-border h-8 w-full rounded-xs border px-2 text-sm shadow-xs transition-all ease-out outline-none focus:ring focus:ring-offset-1 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
 		className

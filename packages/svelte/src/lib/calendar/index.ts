@@ -1,4 +1,4 @@
-export * as Calendar from './index.parts.ts';
+export * as Calendar from './index.parts.js';
 
 export { default as CalendarRoot } from './root/calendar-root.svelte';
 export { default as CalendarTriggerPrevious } from './trigger-previous/calendar-trigger-previous.svelte';
@@ -22,7 +22,7 @@ export {
 	type CalendarValueBySelectionMode,
 	type CalendarValue,
 	type CreateCalendarContextOptions
-} from './root/context';
+} from './root/context.js';
 
-import * as CalendarParts from './index.parts.ts';
+import * as CalendarParts from './index.parts.js';
 export default CalendarParts;

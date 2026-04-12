@@ -1,5 +1,5 @@
 // Namespace export for component composition: <Popover.Root>, <Popover.Trigger>, etc.
-export * as Popover from './index.parts.ts';
+export * as Popover from './index.parts.js';
 
 // Direct named exports for individual imports
 export { default as PopoverRoot } from './root/popover-root.svelte';
@@ -17,8 +17,8 @@ export {
 	type PopoverOpenReason,
 	type PopoverChangeReason,
 	type PopoverOpenChangeDetails
-} from './root/context.ts';
+} from './root/context.js';
 
 // Default export as namespace object
-import * as PopoverParts from './index.parts.ts';
+import * as PopoverParts from './index.parts.js';
 export default PopoverParts;

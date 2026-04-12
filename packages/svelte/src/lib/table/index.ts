@@ -1,4 +1,4 @@
-export * as Table from './index.parts.ts';
+export * as Table from './index.parts.js';
 
 export { default as TableRoot } from './root/table-root.svelte';
 export { default as TableColumn } from './column/table-column.svelte';
@@ -42,7 +42,7 @@ export {
 	type TableRowContext,
 	type TableColumnContext,
 	type CreateTableContextOptions
-} from './root/context';
+} from './root/context.js';
 
-import * as TableParts from './index.parts.ts';
+import * as TableParts from './index.parts.js';
 export default TableParts;

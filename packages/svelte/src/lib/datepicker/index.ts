@@ -1,4 +1,4 @@
-export * as DatePicker from './index.parts.ts';
+export * as DatePicker from './index.parts.js';
 
 export { default as DatePickerRoot } from './root/date-picker-root.svelte';
 export { default as DatePickerInput } from './input/date-picker-input.svelte';
@@ -24,7 +24,7 @@ export {
 	type DatePickerOpenChangeReason,
 	type DatePickerSegmentPart,
 	type DatePickerSegmentType
-} from './root/context.ts';
+} from './root/context.js';
 
-import * as DatePickerParts from './index.parts.ts';
+import * as DatePickerParts from './index.parts.js';
 export default DatePickerParts;

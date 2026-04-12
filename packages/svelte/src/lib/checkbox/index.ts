@@ -1,4 +1,4 @@
-export * as Checkbox from './index.parts.ts';
+export * as Checkbox from './index.parts.js';
 
 export { default as CheckboxRoot } from './root/checkbox-root.svelte';
 export { default as CheckboxIndicator } from './indicator/checkbox-indicator.svelte';
@@ -9,7 +9,7 @@ export {
 	useCheckboxContext,
 	type CheckboxContext,
 	type CheckboxState
-} from './root/context.ts';
+} from './root/context.js';
 
-import * as CheckboxParts from './index.parts.ts';
+import * as CheckboxParts from './index.parts.js';
 export default CheckboxParts;

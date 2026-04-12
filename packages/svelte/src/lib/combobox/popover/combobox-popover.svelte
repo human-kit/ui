@@ -2,6 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import { useComboBoxContext } from '../root/context';
 	import { Popover } from '../../popover';
+	import { focusWithModality, type InputModality } from '../../primitives/input-modality';
+	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
 
 	/**
 	 * ComboBox.Popover - Just the floating container wrapper.
@@ -16,7 +18,21 @@
 
 	const ctx = useComboBoxContext();
 
-	function handleOpenChange(open: boolean) {
+	function resolveFocusTarget(details?: PopoverOpenChangeDetails): HTMLElement | null {
+		const rawTarget = details?.event?.target;
+		if (!(rawTarget instanceof Node)) return null;
+		if (ctx.inputRef?.contains(rawTarget)) return null;
+		return rawTarget instanceof HTMLElement ? rawTarget : rawTarget.parentElement;
+	}
+
+	function handleOpenChange(open: boolean, details?: PopoverOpenChangeDetails) {
+		if (!open && details?.reason === 'outside-press') {
+			const target = resolveFocusTarget(details);
+			if (target) {
+				focusWithModality(target, 'pointer' satisfies InputModality);
+			}
+		}
+
 		ctx.onOpenChange(open);
 	}
 
