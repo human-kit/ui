@@ -1,5 +1,11 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.6
+
+### Patch Changes
+
+- [#18](https://github.com/Agustin-Delgado/svelte-components/pull/18) [`6197af7`](https://github.com/Agustin-Delgado/svelte-components/commit/6197af7d4289fee17ce8681bb5548784c26f7717) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix published package entrypoints so generated ESM files no longer import sibling TypeScript source paths.
+
 ## 1.0.0-alpha.5
 
 ### Minor Changes
