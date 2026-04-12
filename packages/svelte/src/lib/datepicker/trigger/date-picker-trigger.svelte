@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { ButtonRoot } from '../../button/index.js';
 	import { useDatePickerContext } from '../root/context';
 	import {
 		shouldShowFocusVisible,
@@ -86,14 +87,13 @@
 </script>
 
 {#if !datePicker.isReadOnly}
-	<button
-		bind:this={buttonRef}
+	<ButtonRoot
+		bind:element={buttonRef}
 		type="button"
-		disabled={datePicker.isDisabled}
+		isDisabled={datePicker.isDisabled}
 		class={className}
 		aria-haspopup="dialog"
 		aria-expanded={datePicker.open}
-		data-disabled={datePicker.isDisabled || undefined}
 		data-focused={isFocused || undefined}
 		data-focus-visible={isFocused && datePicker.focusVisible ? 'true' : undefined}
 		onmousedown={handleMouseDown}
@@ -106,5 +106,5 @@
 		{#if children}
 			{@render children()}
 		{/if}
-	</button>
+	</ButtonRoot>
 {/if}

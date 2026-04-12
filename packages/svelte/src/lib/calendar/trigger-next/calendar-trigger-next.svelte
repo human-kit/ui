@@ -1,9 +1,14 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { ButtonRoot } from '../../button/index.js';
 	import { useCalendarContext } from '../root/context';
 
-	type CalendarTriggerNextProps = Omit<HTMLButtonAttributes, 'children'> & {
+	type CalendarTriggerNextProps = Omit<
+		HTMLButtonAttributes,
+		'children' | 'class' | 'disabled' | 'aria-disabled'
+	> & {
+		class?: string;
 		children?: Snippet;
 	};
 
@@ -22,11 +27,11 @@
 	}
 </script>
 
-<button
+<ButtonRoot
 	type="button"
 	class={className}
 	aria-label="Next page"
-	disabled={isDisabled}
+	isDisabled={isDisabled}
 	onclick={handleClick}
 	{...restProps}
 >
@@ -35,4 +40,4 @@
 	{:else}
 		Next
 	{/if}
-</button>
+</ButtonRoot>

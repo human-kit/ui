@@ -1195,9 +1195,11 @@ describe('ComboBox', () => {
 			const screen = render(ComboBoxTest, { trigger: 'press' });
 			const input = screen.getByRole('combobox');
 			const outsideButton = screen.getByTestId('outside-button');
+			const wrapper = screen.getByRole('group');
 
 			await input.click();
 			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+			await expect.element(wrapper).toHaveAttribute('data-focus-within');
 
 			outsideButton
 				.element()
@@ -1205,6 +1207,7 @@ describe('ComboBox', () => {
 
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 			await expect.poll(() => document.activeElement).toBe(outsideButton.element());
+			await expect.element(wrapper).not.toHaveAttribute('data-focus-within');
 		});
 
 		it('keeps focus on input after pressing Escape', async () => {
@@ -1266,10 +1269,12 @@ describe('ComboBox', () => {
 			expect(root).toBeTruthy();
 
 			await input.click();
+			await expect.poll(() => root?.getAttribute('data-focused')).toBe('true');
 			await expect.poll(() => root?.getAttribute('data-focus-within')).toBe('true');
 			expectNoFalseFocusAttributes(root ?? document);
 
 			(input.element() as HTMLElement).blur();
+			await expect.poll(() => root?.getAttribute('data-focused')).toBeNull();
 			await expect.poll(() => root?.getAttribute('data-focus-within')).toBeNull();
 			await expect.poll(() => root?.getAttribute('data-focus-visible')).toBeNull();
 			expectNoFalseFocusAttributes(root ?? document);

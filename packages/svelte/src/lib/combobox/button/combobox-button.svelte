@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { ButtonRoot } from '../../button/index.js';
 	import { useComboBoxContext } from '../root/context';
 
 	type ComboBoxButtonProps = HTMLButtonAttributes & {
@@ -26,14 +27,14 @@
 
 <!-- * CHANGE: CHANGE NAME FROM BUTTON TO TRIGGER -->
 
-<button
+<ButtonRoot
 	type="button"
 	{tabindex}
 	aria-label={ctx.isOpen ? 'Close menu' : 'Open menu'}
 	aria-expanded={ctx.isOpen}
 	aria-controls={`combobox-listbox-${ctx.instanceId}`}
-	disabled={ctx.isDisabled}
-	data-pressed={ctx.isOpen}
+	isDisabled={ctx.isDisabled}
+	pressed={ctx.isOpen}
 	onmousedown={handleMouseDown}
 	class={className}
 	{...restProps}
@@ -56,4 +57,4 @@
 			<path d="m6 9 6 6 6-6" />
 		</svg>
 	{/if}
-</button>
+</ButtonRoot>

@@ -346,6 +346,13 @@
 			!!wrapperRef && !!document.activeElement && wrapperRef.contains(document.activeElement);
 		if (!focusWithin) {
 			focusVisible = false;
+			// Clean up stale data-focused/data-focus-visible that Popover.Root's
+			// focus-state module may have set imperatively on the wrapper (the
+			// wrapper is briefly used as triggerRef before the input overrides it).
+			if (wrapperRef) {
+				delete wrapperRef.dataset.focused;
+				delete wrapperRef.dataset.focusVisible;
+			}
 		}
 	}
 
@@ -717,6 +724,7 @@
 	aria-labelledby={ariaLabelledby}
 	class={className}
 	data-combobox
+	data-focused={focusWithin || undefined}
 	data-disabled={isDisabled || undefined}
 	data-readonly={isReadOnly || undefined}
 	data-focus-within={focusWithin || undefined}
