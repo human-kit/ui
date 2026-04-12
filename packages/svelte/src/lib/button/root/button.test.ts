@@ -56,16 +56,17 @@ describe('Button.Root', () => {
   it('sets data-pressed and focus-visible while Space is held', async () => {
     const screen = render(ButtonTest);
     const button = screen.getByRole('button', { name: 'Save' });
+    const buttonElement = button.element() as HTMLButtonElement | null;
 
-    button.element()?.focus();
+    buttonElement?.focus();
     await userEvent.keyboard('{Space>}');
 
-    expect(button.element()?.getAttribute('data-pressed')).toBe('true');
-    await expect.poll(() => button.element()?.getAttribute('data-focus-visible')).toBe('true');
-    expectFocusVisibleImpliesFocused(button.element());
+    expect(buttonElement?.getAttribute('data-pressed')).toBe('true');
+    await expect.poll(() => buttonElement?.getAttribute('data-focus-visible')).toBe('true');
+    expectFocusVisibleImpliesFocused(buttonElement);
 
     await userEvent.keyboard('{/Space}');
-    expect(button.element()?.getAttribute('data-pressed')).toBeNull();
+    expect(buttonElement?.getAttribute('data-pressed')).toBeNull();
     expect(document.querySelector('[data-click-count]')?.textContent).toBe('1');
   });
 
