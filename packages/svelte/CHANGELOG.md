@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.7
+
+### Patch Changes
+
+- [#20](https://github.com/Agustin-Delgado/svelte-components/pull/20) [`896bbf0`](https://github.com/Agustin-Delgado/svelte-components/commit/896bbf0c020c419e1f5a8e543caf9201db912c9e) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Summary
+
+  Add a new headless `Button` component with modality-aware focus state, pressed and hovered data attributes, and RAC-style pending semantics.
+
 ## 1.0.0-alpha.6
 
 ### Patch Changes
