@@ -1191,6 +1191,22 @@ describe('ComboBox', () => {
 			expect(document.activeElement).toBe(outsideButton.element());
 		});
 
+		it('moves focus away from the input when clicking outside while the popover is open', async () => {
+			const screen = render(ComboBoxTest, { trigger: 'press' });
+			const input = screen.getByRole('combobox');
+			const outsideButton = screen.getByTestId('outside-button');
+
+			await input.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			outsideButton
+				.element()
+				.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			await expect.poll(() => document.activeElement).toBe(outsideButton.element());
+		});
+
 		it('keeps focus on input after pressing Escape', async () => {
 			const screen = render(ComboBoxTest, { trigger: 'press' });
 			const input = screen.getByRole('combobox');
@@ -1257,6 +1273,21 @@ describe('ComboBox', () => {
 			await expect.poll(() => root?.getAttribute('data-focus-within')).toBeNull();
 			await expect.poll(() => root?.getAttribute('data-focus-visible')).toBeNull();
 			expectNoFalseFocusAttributes(root ?? document);
+		});
+
+		it('shows focus-visible for keyboard focus and clears it on pointer click takeover', async () => {
+			const screen = render(ComboBoxTest, { trigger: 'press' });
+			const input = screen.getByRole('combobox');
+			const root = document.querySelector('[data-combobox]') as HTMLElement | null;
+
+			(input.element() as HTMLElement).focus();
+			await userEvent.keyboard('{ArrowDown}');
+
+			await expect.poll(() => root?.getAttribute('data-focus-visible')).toBe('true');
+
+			await input.click();
+
+			await expect.poll(() => root?.getAttribute('data-focus-visible')).toBeNull();
 		});
 	});
 });

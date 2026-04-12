@@ -84,6 +84,8 @@ export type ComboBoxContext<T extends object = object> = {
 	handleKeydown: (event: KeyboardEvent) => void;
 	/** Handle input blur - restore selection or deselect if empty */
 	handleInputBlur: () => void;
+	/** Update root-level focus-visible state based on current modality. */
+	setFocusVisible: (visible: boolean) => void;
 	/** Currently focused tag ID (virtual focus for tag navigation) */
 	focusedTagId: string | number | null;
 	/** Set focused tag ID (virtual focus for tag navigation) */

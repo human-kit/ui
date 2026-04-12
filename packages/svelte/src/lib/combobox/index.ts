@@ -1,5 +1,5 @@
 // Namespace export for component composition: <ComboBox.Root>, <ComboBox.Input>, etc.
-export * as ComboBox from './index.parts.ts';
+export * as ComboBox from './index.parts.js';
 
 // Direct named exports for individual imports
 export { default as ComboBoxRoot } from './root/combobox.svelte';
@@ -19,8 +19,8 @@ export {
 	setComboBoxContext,
 	useComboBoxContext,
 	type ComboBoxContext
-} from './root/context.ts';
+} from './root/context.js';
 
 // Default export as namespace object
-import * as ComboBoxParts from './index.parts.ts';
+import * as ComboBoxParts from './index.parts.js';
 export default ComboBoxParts;

@@ -358,6 +358,10 @@
 		queueMicrotask(syncFocusWithin);
 	}
 
+	function setFocusVisibleState(visible: boolean) {
+		focusVisible = visible && focusWithin;
+	}
+
 	// Use navigation hook methods for keyboard navigation
 	function selectFocusedItem() {
 		if (navigation.focusedId !== null) {
@@ -694,6 +698,7 @@
 		unregisterItem: navigation.unregister,
 		handleKeydown,
 		handleInputBlur,
+		setFocusVisible: setFocusVisibleState,
 		get focusedTagId() {
 			return focusedTagId;
 		},

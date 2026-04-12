@@ -1,4 +1,4 @@
-export * as Clock from './index.parts.ts';
+export * as Clock from './index.parts.js';
 
 export { default as ClockRoot } from './root/clock-root.svelte';
 export { default as ClockAxis } from './axis/clock-axis.svelte';
@@ -11,15 +11,15 @@ export {
 	useClockContext,
 	type ClockContext,
 	type ClockEditableSegmentType
-} from './root/context.ts';
+} from './root/context.js';
 
 export {
 	type TimePickerGranularity as ClockGranularity,
 	type TimePickerHourCycle as ClockHourCycle,
 	type TimePickerTimeValue as ClockTimeValue
-} from './root/time-utils';
+} from './root/time-utils.js';
 
-export { type ClockColumnInfo } from './root/resolve-visible-columns';
+export { type ClockColumnInfo } from './root/resolve-visible-columns.js';
 
-import * as ClockParts from './index.parts.ts';
+import * as ClockParts from './index.parts.js';
 export default ClockParts;

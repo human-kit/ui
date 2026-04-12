@@ -1,41 +1,41 @@
 // Main library entry point
 
 // Components (namespace exports)
-export { Checkbox } from './checkbox/index.ts';
-export { ComboBox } from './combobox/index.ts';
-export { Calendar } from './calendar/index.ts';
-export { Clock } from './clock/index.ts';
-export { DatePicker } from './datepicker/index.ts';
-export { TimePicker } from './timepicker/index.ts';
-export { Dialog } from './dialog/index.ts';
-export { ListBox } from './listbox/index.ts';
-export { Popover } from './popover/index.ts';
-export { Table } from './table/index.ts';
+export { Checkbox } from './checkbox/index.js';
+export { ComboBox } from './combobox/index.js';
+export { Calendar } from './calendar/index.js';
+export { Clock } from './clock/index.js';
+export { DatePicker } from './datepicker/index.js';
+export { TimePicker } from './timepicker/index.js';
+export { Dialog } from './dialog/index.js';
+export { ListBox } from './listbox/index.js';
+export { Popover } from './popover/index.js';
+export { Table } from './table/index.js';
 
 // Simple components
-export { default as Input } from './input/index.ts';
-export { default as Label } from './label/index.ts';
-export { default as LocaleProvider } from './locale-provider/index.ts';
-export { Portal } from './portal/index.ts';
+export { default as Input } from './input/index.js';
+export { default as Label } from './label/index.js';
+export { default as LocaleProvider } from './locale-provider/index.js';
+export { Portal } from './portal/index.js';
 
-export * from './locale-provider/index.ts';
+export * from './locale-provider/index.js';
 
 // Re-export named exports from components
-export * from './checkbox/index.ts';
-export * from './combobox/index.ts';
-export * from './calendar/index.ts';
-export * from './clock/index.ts';
-export * from './datepicker/index.ts';
-export * from './timepicker/index.ts';
-export * from './dialog/index.ts';
-export * from './listbox/index.ts';
-export * from './popover/index.ts';
-export * from './table/index.ts';
+export * from './checkbox/index.js';
+export * from './combobox/index.js';
+export * from './calendar/index.js';
+export * from './clock/index.js';
+export * from './datepicker/index.js';
+export * from './timepicker/index.js';
+export * from './dialog/index.js';
+export * from './listbox/index.js';
+export * from './popover/index.js';
+export * from './table/index.js';
 
 // Primitives
-export * from './primitives/index.ts';
+export * from './primitives/index.js';
 
 // Utilities
-export { cn } from './utils/index.ts';
-export * from './utils/index.ts';
-export * from './utils/index.ts';
+export { cn } from './utils/index.js';
+export * from './utils/index.js';
+export * from './utils/index.js';
