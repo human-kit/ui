@@ -39,14 +39,15 @@ Svelte 5 replaces `$:` with `$derived` (for values) and `$effect` (for side effe
 
 ```svelte
 <script>
-  let items = [];
-  let filter = 'all';
+	let items = [];
+	let filter = 'all';
+	let filteredItems = [];
 
-  $: filteredItems = {
-    if (filter === 'all') return items;
-    if (filter === 'active') return items.filter(i => !i.done);
-    return items.filter(i => i.done);
-  };
+	$: {
+		if (filter === 'all') filteredItems = items;
+		else if (filter === 'active') filteredItems = items.filter((i) => !i.done);
+		else filteredItems = items.filter((i) => i.done);
+	}
 </script>
 ```
 
