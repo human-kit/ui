@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
+	import { Input } from '../../input';
 	import { useComboBoxContext } from '../root/context';
 	import {
 		shouldShowFocusVisible,
@@ -17,11 +18,26 @@
 		class?: string;
 	};
 
+	function composeEventHandlers<TEvent extends Event>(
+		internalHandler: ((event: TEvent) => void) | undefined,
+		externalHandler: ((event: TEvent) => void) | undefined
+	): (event: TEvent) => void {
+		return (event: TEvent) => {
+			internalHandler?.(event);
+			externalHandler?.(event);
+		};
+	}
+
 	let {
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby,
 		'aria-describedby': ariaDescribedby,
 		class: className,
+		oninput: onInputExternal,
+		onfocus: onFocusExternal,
+		onmousedown: onMouseDownExternal,
+		onblur: onBlurExternal,
+		onkeydown: onKeyDownExternal,
 		...restProps
 	}: ComboBoxInputProps = $props();
 
@@ -83,8 +99,8 @@
 	}
 </script>
 
-<input
-	bind:this={inputRef}
+<Input
+	bind:element={inputRef}
 	type="text"
 	role="combobox"
 	aria-autocomplete="list"
@@ -98,13 +114,13 @@
 	aria-labelledby={ariaLabelledby}
 	aria-describedby={ariaDescribedby}
 	value={ctx.displayValue}
-	disabled={ctx.isDisabled}
-	readonly={ctx.isReadOnly}
-	oninput={handleInput}
-	onfocus={handleFocus}
-	onmousedown={handleMouseDown}
-	onblur={handleBlur}
-	onkeydown={handleKeyDown}
+	isDisabled={ctx.isDisabled}
+	isReadOnly={ctx.isReadOnly}
+	oninput={composeEventHandlers(handleInput, onInputExternal ?? undefined)}
+	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
+	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
+	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
+	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
 	class={cn(
 		'bg-depth-2 sunken placeholder:text-muted-foreground hover:bg-depth-1 focus:ring-border h-8 w-full rounded-xs border px-2 text-sm shadow-xs transition-all ease-out outline-none focus:ring focus:ring-offset-1 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
 		className
