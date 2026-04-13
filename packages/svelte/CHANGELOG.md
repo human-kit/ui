@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.8
+
+### Patch Changes
+
+- [#22](https://github.com/Agustin-Delgado/svelte-components/pull/22) [`b6cba01`](https://github.com/Agustin-Delgado/svelte-components/commit/b6cba01f4cd8788ad75a4df26f756e277b9ece98) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Summary
+
+  Upgrade `Input` to a focus-aware native input primitive with RAC-style disabled, read-only, invalid, and required state props.
+
 ## 1.0.0-alpha.7
 
 ### Patch Changes
