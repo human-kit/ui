@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.9
+
+### Patch Changes
+
+- [#25](https://github.com/Agustin-Delgado/svelte-components/pull/25) [`6f70e98`](https://github.com/Agustin-Delgado/svelte-components/commit/6f70e98ae5a9e33a0cbc9ccb44ad285b1db07b91) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Summary
+
+  Make `ComboBox.Input` render through the shared `Input` primitive while preserving existing combobox behavior and accessibility semantics.
+
 ## 1.0.0-alpha.8
 
 ### Patch Changes
