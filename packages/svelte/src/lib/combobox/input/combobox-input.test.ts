@@ -12,6 +12,13 @@ describe('ComboBox.Input', () => {
 			await expect.element(input).toBeInTheDocument();
 		});
 
+		it('renders through the shared Input primitive', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveAttribute('data-input-root', 'true');
+		});
+
 		it('has aria-autocomplete="list"', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
