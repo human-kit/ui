@@ -11,7 +11,6 @@
 	import { untrack, onDestroy, setContext } from 'svelte';
 	import ListBoxItem from '../../listbox/item/listbox-item.svelte';
 	import { useComboBoxContext } from '../root/context';
-	import { cn } from '../../utils/cn';
 
 	/**
 	 * ComboBox.ListBoxItem wraps ListBox.Item and provides ComboBox-specific behavior:
@@ -33,7 +32,7 @@
 		| 'isParentDisabled'
 	>;
 
-	let { id, class: className, ...props }: ComboBoxListBoxItemProps = $props();
+	let { id, ...props }: ComboBoxListBoxItemProps = $props();
 
 	const ctx = useComboBoxContext();
 
@@ -125,12 +124,5 @@
 		onResolvedTextValue={handleResolvedTextValue}
 		scrollOnFocus={true}
 		isParentDisabled={ctx.isDisabled}
-		class={cn(
-			'cursor-pointer px-3 py-2 transition-colors outline-none',
-			'data-focused:bg-accent data-hovered:bg-accent',
-			'data-selected:bg-primary/10 data-selected:font-medium',
-			'data-disabled:pointer-events-none data-disabled:opacity-50',
-			className
-		)}
 	/>
 {/if}
