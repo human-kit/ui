@@ -1,5 +1,14 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.11
+
+### Minor Changes
+
+- [#31](https://github.com/Agustin-Delgado/svelte-components/pull/31) [`2263415`](https://github.com/Agustin-Delgado/svelte-components/commit/2263415e56ad61747821473a121058e67699a3e8) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add follow-up ComboBox and Popover improvements after the previous prerelease changeset was already consumed.
+  - Forward `Popover.Content` configuration props through `ComboBox.Popover`, including positioning options like `offset`, `placement`, `shouldFlip`, `shouldCloseOnEscape`, and `shouldCloseOnBlur`.
+  - Ensure `ComboBox` virtual focus marks the active `ListBox.Item` with `data-focus-visible` during keyboard navigation.
+  - Keep the interactive ComboBox docs aligned with the shared popover positioning behavior.
+
 ## 1.0.0-alpha.10
 
 ### Minor Changes
