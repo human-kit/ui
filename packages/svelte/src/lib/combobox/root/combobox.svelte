@@ -412,7 +412,6 @@
 		if (!shouldCloseOnBlurState) {
 			return;
 		}
-
 		// Close popover first to prevent flash of options when clearing input
 		closePopover();
 
