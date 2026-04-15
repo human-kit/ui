@@ -318,9 +318,9 @@ describe('ComboBox', () => {
 			await userEvent.keyboard('{Backspace}');
 
 			await expect.element(input).toHaveValue('');
-			await expect.poll(() => document.querySelector('[data-selected-value]')?.textContent).toBe(
-				'undefined'
-			);
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('undefined');
 		});
 
 		it('retains input focus after mouse selection', async () => {

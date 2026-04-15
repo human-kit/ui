@@ -7,12 +7,12 @@
 Name: `ComboBox.Clear`  
 Description: Optional clear button that resets the input value and clears the current selection without stealing focus from the input.
 
-| Prop           | Type                   | Default     | Description                                                                  |
-| -------------- | ---------------------- | ----------- | ---------------------------------------------------------------------------- |
-| `class`        | `string`               | `undefined` | CSS class names for the clear element.                                       |
-| `children`     | `Snippet`              | `undefined` | Custom clear content. If omitted, an “x” icon is rendered.                   |
-| `tabindex`     | `number`               | `-1`        | Tab index applied to the clear button.                                       |
-| `...restProps` | `HTMLButtonAttributes` | `-`         | Additional native button attributes.                                         |
+| Prop           | Type                   | Default     | Description                                                |
+| -------------- | ---------------------- | ----------- | ---------------------------------------------------------- |
+| `class`        | `string`               | `undefined` | CSS class names for the clear element.                     |
+| `children`     | `Snippet`              | `undefined` | Custom clear content. If omitted, an “x” icon is rendered. |
+| `tabindex`     | `number`               | `-1`        | Tab index applied to the clear button.                     |
+| `...restProps` | `HTMLButtonAttributes` | `-`         | Additional native button attributes.                       |
 
 ## Notes
 

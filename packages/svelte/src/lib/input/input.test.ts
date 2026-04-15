@@ -117,8 +117,8 @@ describe('Input', () => {
 		await input.click();
 		await userEvent.type(input.element() as HTMLInputElement, 'bind me');
 
-		await expect.poll(() => document.querySelector('[data-input-value]')?.textContent).toBe(
-			'bind me'
-		);
+		await expect
+			.poll(() => document.querySelector('[data-input-value]')?.textContent)
+			.toBe('bind me');
 	});
 });
