@@ -6,6 +6,7 @@
 		isReadOnly?: boolean;
 		isInvalid?: boolean;
 		isRequired?: boolean;
+		value?: string;
 		onMouseEnter?: (event: MouseEvent) => void;
 		onFocus?: (event: FocusEvent) => void;
 	};
@@ -15,6 +16,7 @@
 		isReadOnly = false,
 		isInvalid = false,
 		isRequired = false,
+		value = $bindable(''),
 		onMouseEnter,
 		onFocus
 	}: Props = $props();
@@ -24,6 +26,7 @@
 	<button type="button">Before</button>
 
 	<Input
+		bind:value
 		aria-label="Email"
 		placeholder="name@example.com"
 		{isDisabled}
@@ -33,6 +36,8 @@
 		onmouseenter={onMouseEnter}
 		onfocus={onFocus}
 	/>
+
+	<output data-input-value>{value}</output>
 
 	<button type="button">After</button>
 </form>

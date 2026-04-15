@@ -26,11 +26,13 @@
 - `isReadOnly?: boolean`
 - `isInvalid?: boolean`
 - `isRequired?: boolean`
+- `value?: string`
 - `element?: HTMLInputElement | null`
 - `...restProps: HTMLInputAttributes`
 
 ## Accessibility
 
 - `Input` renders a native `<input>` with `type="text"` by default.
+- `Input` supports `bind:value` for text-like inputs.
 - `data-focus-visible` follows the shared modality contract and only appears for keyboard or virtual focus.
 - `isInvalid` maps to `aria-invalid`, `isReadOnly` maps to `readonly` and `aria-readonly`, and `isRequired` maps to `required` and `aria-required`.

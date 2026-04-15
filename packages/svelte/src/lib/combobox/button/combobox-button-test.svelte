@@ -1,0 +1,27 @@
+<script lang="ts">
+	import ComboBox from '../index.js';
+
+	type Props = {
+		isPending?: boolean;
+	};
+
+	let { isPending = false }: Props = $props();
+
+	const countries = [
+		{ id: 'ar', name: 'Argentina' },
+		{ id: 'br', name: 'Brazil' }
+	];
+</script>
+
+<ComboBox.Root {isPending}>
+	<ComboBox.Input placeholder="Search countries..." />
+	<ComboBox.Button />
+
+	<ComboBox.Popover>
+		<ComboBox.List emptyPlaceholder="No countries found">
+			{#each countries as country (country.id)}
+				<ComboBox.Item id={country.id} textValue={country.name}>{country.name}</ComboBox.Item>
+			{/each}
+		</ComboBox.List>
+	</ComboBox.Popover>
+</ComboBox.Root>

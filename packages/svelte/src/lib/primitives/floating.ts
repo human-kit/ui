@@ -162,11 +162,15 @@ export function createFloating(anchorElement: HTMLElement | null, options: Float
 			size({
 				apply({ rects, availableWidth, availableHeight, elements, placement }) {
 					const floatingEl = elements.floating;
+					const clampedAvailableWidth = Math.max(0, availableWidth);
+					const clampedAvailableHeight = Math.max(0, availableHeight);
 					floatingEl.style.setProperty('--trigger-width', `${rects.reference.width}px`);
 					floatingEl.style.setProperty('--trigger-height', `${rects.reference.height}px`);
-					floatingEl.style.setProperty('--available-width', `${availableWidth}px`);
-					floatingEl.style.setProperty('--available-height', `${availableHeight}px`);
+					floatingEl.style.setProperty('--available-width', `${clampedAvailableWidth}px`);
+					floatingEl.style.setProperty('--available-height', `${clampedAvailableHeight}px`);
 					floatingEl.style.setProperty('--transform-origin', getTransformOrigin(placement));
+					floatingEl.style.maxWidth = `${clampedAvailableWidth}px`;
+					floatingEl.style.maxHeight = `${clampedAvailableHeight}px`;
 				}
 			})
 		];
@@ -235,11 +239,15 @@ export function floating(
 		size({
 			apply({ rects, availableWidth, availableHeight, elements, placement }) {
 				const floatingEl = elements.floating;
+				const clampedAvailableWidth = Math.max(0, availableWidth);
+				const clampedAvailableHeight = Math.max(0, availableHeight);
 				floatingEl.style.setProperty('--trigger-width', `${rects.reference.width}px`);
 				floatingEl.style.setProperty('--trigger-height', `${rects.reference.height}px`);
-				floatingEl.style.setProperty('--available-width', `${availableWidth}px`);
-				floatingEl.style.setProperty('--available-height', `${availableHeight}px`);
+				floatingEl.style.setProperty('--available-width', `${clampedAvailableWidth}px`);
+				floatingEl.style.setProperty('--available-height', `${clampedAvailableHeight}px`);
 				floatingEl.style.setProperty('--transform-origin', getTransformOrigin(placement));
+				floatingEl.style.maxWidth = `${clampedAvailableWidth}px`;
+				floatingEl.style.maxHeight = `${clampedAvailableHeight}px`;
 			}
 		})
 	];

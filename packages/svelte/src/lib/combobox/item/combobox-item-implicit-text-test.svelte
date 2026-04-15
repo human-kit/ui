@@ -6,7 +6,7 @@
 
 <ComboBox.Root bind:value={selected}>
 	<ComboBox.Input placeholder="Search countries..." />
-	<ComboBox.Button />
+	<ComboBox.Trigger />
 
 	<ComboBox.Popover>
 		<ComboBox.List emptyPlaceholder="No countries found">

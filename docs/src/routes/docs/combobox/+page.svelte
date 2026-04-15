@@ -26,6 +26,27 @@
 		{ id: 'strawberry', name: 'Strawberry' }
 	];
 
+	const cities = [
+		{ id: 'buenos-aires', name: 'Buenos Aires' },
+		{ id: 'barcelona', name: 'Barcelona' },
+		{ id: 'berlin', name: 'Berlin' },
+		{ id: 'bogota', name: 'Bogota' },
+		{ id: 'cdmx', name: 'Mexico City' },
+		{ id: 'lisbon', name: 'Lisbon' },
+		{ id: 'london', name: 'London' },
+		{ id: 'madrid', name: 'Madrid' },
+		{ id: 'medellin', name: 'Medellin' },
+		{ id: 'montevideo', name: 'Montevideo' },
+		{ id: 'new-york', name: 'New York' },
+		{ id: 'paris', name: 'Paris' },
+		{ id: 'quito', name: 'Quito' },
+		{ id: 'rio', name: 'Rio de Janeiro' },
+		{ id: 'rome', name: 'Rome' },
+		{ id: 'santiago', name: 'Santiago' },
+		{ id: 'sao-paulo', name: 'Sao Paulo' },
+		{ id: 'tokyo', name: 'Tokyo' }
+	];
+
 	// Interactive playground state
 	let triggerMode: 'focus' | 'input' | 'press' = $state('press');
 	let placeholder = $state('Search countries...');
@@ -51,6 +72,11 @@
 	// Multi-select state
 	let multiSelectValue = $state<(string | number)[]>([]);
 	let multiSelectInput = $state('');
+	let listScrollInput = $state('');
+	let listScrollValue = $state<string | number | undefined>();
+	let pendingDemoInput = $state('Argentina');
+	let pendingDemoValue = $state<string | number | undefined>('ar');
+	let pendingDemo = $state(false);
 
 	const filteredFruits = $derived(
 		multiSelectInput
@@ -58,11 +84,32 @@
 			: fruits
 	);
 
+	const filteredCities = $derived(
+		listScrollInput
+			? cities.filter((city) => city.name.toLowerCase().includes(listScrollInput.toLowerCase()))
+			: cities
+	);
+
+	const filteredPendingCountries = $derived(
+		pendingDemoInput
+			? countries.filter((country) =>
+					country.name.toLowerCase().includes(pendingDemoInput.toLowerCase())
+				)
+			: countries
+	);
+
 	const triggerOptions = [
 		{ value: 'focus', label: 'focus' },
 		{ value: 'input', label: 'input' },
 		{ value: 'press', label: 'press' }
 	];
+
+	function simulatePendingState() {
+		pendingDemo = true;
+		setTimeout(() => {
+			pendingDemo = false;
+		}, 1400);
+	}
 </script>
 
 <div class="min-h-screen bg-gray-100 p-8 dark:bg-gray-950">
@@ -76,22 +123,25 @@
 			<!-- Interactive Playground -->
 			<DemoSection
 				title="Interactive Playground"
-				description="Test all ComboBox props interactively"
+				description="Test all ComboBox props interactively, including the new popover enter and exit motion."
 			>
 				<div class="w-full max-w-xs">
-					<ComboBox.Root trigger={triggerMode} bind:value={selectedValue}>
+					<ComboBox.Root trigger={triggerMode} bind:inputValue bind:value={selectedValue}>
 						<div class="flex gap-1">
 							<ComboBox.Input
 								{placeholder}
 								class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 							/>
-							<ComboBox.Button
+							<ComboBox.Clear
+								class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+							/>
+							<ComboBox.Trigger
 								class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
 							/>
 						</div>
 
 						<ComboBox.Popover
-							class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+							class="combobox-playground-popover mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
 						>
 							<ComboBox.List emptyPlaceholder="No countries found">
 								{#each filteredCountries as country (country.id)}
@@ -140,7 +190,10 @@
 									placeholder="Search..."
 									class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
 								/>
-								<ComboBox.Button
+								<ComboBox.Clear
+									class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700"
+								/>
+								<ComboBox.Trigger
 									class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700"
 								/>
 							</div>
@@ -196,6 +249,81 @@
 					<div class="space-y-4">
 						<DemoState label="inputValue" value={controlledInputValue} />
 						<DemoState label="selectedValue" value={controlledSelectedValue} />
+					</div>
+				{/snippet}
+			</DemoSection>
+
+			<DemoSection
+				title="Pending State"
+				description="Expose async loading on the root while trigger and clear reflect the busy state."
+			>
+				<div class="flex items-start gap-8">
+					<div class="w-full max-w-xs">
+						<ComboBox.Root
+							isPending={pendingDemo}
+							trigger="focus"
+							bind:inputValue={pendingDemoInput}
+							bind:value={pendingDemoValue}
+						>
+							<div class="flex gap-1">
+								<ComboBox.Input
+									placeholder="Search while loading..."
+									class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+								/>
+								<ComboBox.Clear
+									class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+								/>
+								<ComboBox.Trigger
+									class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+								/>
+							</div>
+
+							<ComboBox.Popover
+								class="mt-1 w-(--trigger-width) overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+							>
+								{#if pendingDemo}
+									<div
+										role="status"
+										aria-live="polite"
+										class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400"
+									>
+										Loading options...
+									</div>
+								{:else}
+									<ComboBox.List emptyPlaceholder="No countries found">
+										{#each filteredPendingCountries as country (country.id)}
+											<ComboBox.Item
+												id={country.id}
+												textValue={country.name}
+												class="cursor-pointer px-3 py-2 text-gray-900 hover:bg-gray-100 data-[focused=true]:bg-gray-100 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-white dark:hover:bg-gray-700 dark:data-[focused=true]:bg-gray-700"
+											>
+												{country.name}
+											</ComboBox.Item>
+										{/each}
+									</ComboBox.List>
+								{/if}
+							</ComboBox.Popover>
+						</ComboBox.Root>
+					</div>
+
+					<div class="flex flex-col gap-2">
+						<button
+							onclick={simulatePendingState}
+							class="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+						>
+							Simulate Loading
+						</button>
+						<p class="text-sm text-gray-600 dark:text-gray-400">
+							The input stays editable while trigger and clear reflect the pending state.
+						</p>
+					</div>
+				</div>
+
+				{#snippet controls()}
+					<div class="space-y-4">
+						<DemoState label="isPending" value={pendingDemo} />
+						<DemoState label="inputValue" value={pendingDemoInput} />
+						<DemoState label="selectedValue" value={pendingDemoValue} />
 					</div>
 				{/snippet}
 			</DemoSection>
@@ -264,6 +392,55 @@
 				</div>
 			</DemoSection>
 
+			<DemoSection
+				title="Scrollable ListBox"
+				description="Keep the popover as a positioning shell and move overflow handling to the listbox itself."
+			>
+				<div class="w-full max-w-xs">
+					<ComboBox.Root
+						trigger="focus"
+						bind:inputValue={listScrollInput}
+						bind:value={listScrollValue}
+					>
+						<div class="flex gap-1">
+							<ComboBox.Input
+								placeholder="Search a city..."
+								class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+							/>
+							<ComboBox.Clear
+								class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+							/>
+							<ComboBox.Trigger
+								class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+							/>
+						</div>
+
+						<ComboBox.Popover
+							class="mt-1 w-(--trigger-width) overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+						>
+							<ComboBox.List class="max-h-60 overflow-auto p-1" emptyPlaceholder="No cities found">
+								{#each filteredCities as city (city.id)}
+									<ComboBox.Item
+										id={city.id}
+										textValue={city.name}
+										class="cursor-pointer rounded-md px-3 py-2 text-gray-900 hover:bg-gray-100 data-[focused=true]:bg-gray-100 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-white dark:hover:bg-gray-700 dark:data-[focused=true]:bg-gray-700"
+									>
+										{city.name}
+									</ComboBox.Item>
+								{/each}
+							</ComboBox.List>
+						</ComboBox.Popover>
+					</ComboBox.Root>
+				</div>
+
+				{#snippet controls()}
+					<div class="space-y-4">
+						<DemoState label="selectedValue" value={listScrollValue} />
+						<DemoState label="filteredCount" value={`${filteredCities.length}/${cities.length}`} />
+					</div>
+				{/snippet}
+			</DemoSection>
+
 			<!-- Multi-Select with Tags -->
 			<DemoSection
 				title="Multi-Select with Tags"
@@ -300,7 +477,8 @@
 								placeholder={multiSelectValue.length === 0 ? 'Select fruits...' : ''}
 								class="min-w-20 flex-1 border-0 bg-transparent px-1 py-0.5 text-gray-900 outline-none placeholder:text-gray-500 dark:text-white dark:placeholder:text-gray-400"
 							/>
-							<ComboBox.Button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+							<ComboBox.Clear class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300" />
+							<ComboBox.Trigger class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
 								<svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
 									<path
 										fill-rule="evenodd"
@@ -308,7 +486,7 @@
 										clip-rule="evenodd"
 									/>
 								</svg>
-							</ComboBox.Button>
+							</ComboBox.Trigger>
 						</div>
 
 						<ComboBox.Popover
@@ -373,3 +551,92 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	:global(.combobox-playground-popover) {
+		transform-origin: var(--transform-origin);
+		animation-duration: 180ms;
+		animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		will-change: transform, opacity;
+	}
+
+	:global(.combobox-playground-popover[data-entering]) {
+		animation-name: combobox-playground-popover-in;
+	}
+
+	:global(.combobox-playground-popover[data-exiting]) {
+		animation-name: combobox-playground-popover-out;
+	}
+
+	:global(.combobox-playground-popover[data-placement='top'][data-entering]) {
+		--combobox-playground-popover-translate-y: 10px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='bottom'][data-entering]) {
+		--combobox-playground-popover-translate-y: -10px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='left'][data-entering]) {
+		--combobox-playground-popover-translate-x: 10px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='right'][data-entering]) {
+		--combobox-playground-popover-translate-x: -10px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='top'][data-exiting]) {
+		--combobox-playground-popover-exit-translate-y: 8px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='bottom'][data-exiting]) {
+		--combobox-playground-popover-exit-translate-y: -8px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='left'][data-exiting]) {
+		--combobox-playground-popover-exit-translate-x: 8px;
+	}
+
+	:global(.combobox-playground-popover[data-placement='right'][data-exiting]) {
+		--combobox-playground-popover-exit-translate-x: -8px;
+	}
+
+	@keyframes combobox-playground-popover-in {
+		from {
+			opacity: 0;
+			transform: translate3d(
+					var(--combobox-playground-popover-translate-x, 0),
+					var(--combobox-playground-popover-translate-y, 0),
+					0
+				)
+				scale(0.96);
+		}
+
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+	}
+
+	@keyframes combobox-playground-popover-out {
+		from {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+
+		to {
+			opacity: 0;
+			transform: translate3d(
+					var(--combobox-playground-popover-exit-translate-x, 0),
+					var(--combobox-playground-popover-exit-translate-y, 0),
+					0
+				)
+				scale(0.98);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.combobox-playground-popover) {
+			animation-duration: 0.01ms;
+		}
+	}
+</style>

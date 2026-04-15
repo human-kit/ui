@@ -23,3 +23,14 @@ Description: Floating panel rendered in a portal. Supports context mode (`Popove
 | `triggerRef`                   | `HTMLElement \| null`            | `null`      | Trigger reference in standalone mode.                                          |
 | `onOpenChange`                 | `(open: boolean) => void`        | `undefined` | Open-state callback in standalone mode.                                        |
 | `...restProps`                 | `HTMLAttributes<HTMLDivElement>` | `-`         | Additional panel attributes.                                                   |
+
+## Styling state
+
+`Popover.Content` exposes RAC-style data attributes that can drive CSS or Tailwind animation utilities:
+
+- `data-state="open" | "closed"`
+- `data-entering`
+- `data-exiting`
+- `data-placement="top" | "right" | "bottom" | "left"`
+
+Exit animations keep the panel mounted until the element's own CSS transition or animation finishes. If no motion is defined, the panel unmounts immediately.

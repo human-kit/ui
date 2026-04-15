@@ -11,6 +11,7 @@ Description: State container for combobox behavior, including open state, input 
 | ------------------- | ------------------------------------------ | -------------------------------- | ----------------------------------------------------------- |
 | `id`                | `string`                                   | `$props.id()`                    | Stable id used to derive internal ARIA ids.                 |
 | `isDisabled`        | `boolean`                                  | `false`                          | Disables all user interaction.                              |
+| `isPending`         | `boolean`                                  | `false`                          | Exposes busy async state on the root via `data-pending`.    |
 | `isReadOnly`        | `boolean`                                  | `false`                          | Keeps the component interactive but prevents value changes. |
 | `value`             | `string \| number \| (string \| number)[]` | `undefined`                      | Controlled selection value. Supports `bind:value`.          |
 | `defaultValue`      | `string \| number \| (string \| number)[]` | `undefined`                      | Initial selection value in uncontrolled mode.               |

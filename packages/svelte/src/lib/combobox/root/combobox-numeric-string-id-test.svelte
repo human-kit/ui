@@ -6,7 +6,7 @@
 
 <ComboBox.Root bind:value={selected}>
 	<ComboBox.Input placeholder="Search codes..." />
-	<ComboBox.Button />
+	<ComboBox.Trigger />
 
 	<ComboBox.Popover>
 		<ComboBox.List emptyPlaceholder="No codes found">

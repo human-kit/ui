@@ -3,6 +3,10 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useListBoxContext } from '../root/context';
 	import { onMount, onDestroy } from 'svelte';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
 
 	/**
 	 * Props for the ListBox.Item component.
@@ -61,6 +65,7 @@
 	let elementRef: HTMLElement;
 	let isSelected = $state(false);
 	let isFocused = $state(false);
+	let isFocusVisible = $state(false);
 	let isHovered = $state(false);
 	let isPressed = $state(false);
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
@@ -127,6 +132,7 @@
 		if (!isDisabledComputed) return;
 		clearPressedState();
 		isHovered = false;
+		isFocusVisible = false;
 	});
 
 	function clearPressedState() {
@@ -149,14 +155,21 @@
 	}
 
 	function handleFocus() {
+		if (isDisabledComputed) return;
+		isFocusVisible = shouldShowFocusVisible(elementRef);
 		if (!disableFocusHandling) {
 			listboxCtx.setFocusedId(id);
 		}
 	}
 
-	function handleBlur() {}
+	function handleBlur() {
+		isFocusVisible = false;
+	}
 
 	function handlePointerDown(event: PointerEvent) {
+		trackInteractionModality(event, elementRef);
+		isFocusVisible = false;
+
 		if (isDisabledComputed) {
 			event.preventDefault();
 			clearPressedState();
@@ -207,6 +220,11 @@
 
 	// Keyboard is handled by parent container
 	function handleKeydown(event: KeyboardEvent) {
+		trackInteractionModality(event, elementRef);
+		if (isFocusedComputed) {
+			isFocusVisible = true;
+		}
+
 		const key =
 			event.key === 'Enter'
 				? 'Enter'
@@ -250,6 +268,9 @@
 	}
 
 	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, elementRef);
+		isFocusVisible = false;
+
 		// Prevent focus stealing when used in ComboBox (disableFocusHandling=true)
 		// This keeps the focus on the input while allowing click selection
 		if (isDisabledComputed) {
@@ -290,6 +311,7 @@
 	data-selected={isSelected || undefined}
 	data-disabled={isDisabledComputed || undefined}
 	data-focused={isFocusedComputed || undefined}
+	data-focus-visible={isFocusVisible || undefined}
 	data-hovered={isHovered || undefined}
 	data-pressed={isPressedComputed || undefined}
 	onpointerdown={handlePointerDown}

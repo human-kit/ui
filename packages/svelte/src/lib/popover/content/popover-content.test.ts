@@ -30,6 +30,22 @@ describe('Popover.Content', () => {
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 		});
 
+		it('exposes RAC-style presence data attributes while entering', async () => {
+			const screen = render(PopoverContentTest, { class: 'presence-animation' });
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			expect(dialog.getAttribute('data-state')).toBe('open');
+			expect(dialog.getAttribute('data-entering')).toBe('true');
+			expect(dialog.getAttribute('data-placement')).toMatch(/^(top|right|bottom|left)$/);
+
+			dialog.dispatchEvent(new AnimationEvent('animationend', { bubbles: true }));
+			await expect.poll(() => dialog.getAttribute('data-entering')).toBeNull();
+		});
+
 		it('closes when pressing Escape', async () => {
 			const screen = render(PopoverContentTest);
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
@@ -121,6 +137,28 @@ describe('Popover.Content', () => {
 			await userEvent.keyboard('{Escape}');
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 			expectNoFalseFocusAttributes();
+		});
+
+		it('keeps the popover mounted while exiting and unmounts after motion ends', async () => {
+			const screen = render(PopoverContentTest, { class: 'presence-animation' });
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			dialog.dispatchEvent(new AnimationEvent('animationend', { bubbles: true }));
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const exitingDialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			expect(exitingDialog.getAttribute('data-state')).toBe('closed');
+			expect(exitingDialog.getAttribute('data-exiting')).toBe('true');
+			expect(exitingDialog.getAttribute('aria-hidden')).toBe('true');
+
+			exitingDialog.dispatchEvent(new TransitionEvent('transitionend', { bubbles: true }));
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 		});
 	});
 
@@ -301,6 +339,28 @@ describe('Popover.Content', () => {
 					{ timeout: 2000 }
 				)
 				.toBe(true);
+		});
+
+		it('applies max-height based on the available viewport space', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			await trigger.click();
+
+			await expect
+				.poll(
+					() => {
+						const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+						if (!dialog) return null;
+
+						const availableHeight = dialog.style.getPropertyValue('--available-height');
+						return dialog.style.maxHeight && dialog.style.maxHeight === availableHeight
+							? dialog.style.maxHeight
+							: null;
+					},
+					{ timeout: 2000 }
+				)
+				.toMatch(/^\d+(\.\d+)?px$/);
 		});
 
 		it('exposes --transform-origin for animations', async () => {

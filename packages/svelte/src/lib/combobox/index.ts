@@ -4,7 +4,9 @@ export * as ComboBox from './index.parts.js';
 // Direct named exports for individual imports
 export { default as ComboBoxRoot } from './root/combobox.svelte';
 export { default as ComboBoxInput } from './input/combobox-input.svelte';
+export { default as ComboBoxTrigger } from './trigger/combobox-trigger.svelte';
 export { default as ComboBoxButton } from './button/combobox-button.svelte';
+export { default as ComboBoxClear } from './clear/combobox-clear.svelte';
 export { default as ComboBoxPopover } from './popover/combobox-popover.svelte';
 export { default as ComboBoxList } from './list/combobox-listbox.svelte';
 export { default as ComboBoxItem } from './item/combobox-listboxitem.svelte';

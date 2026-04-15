@@ -22,6 +22,8 @@ export type ComboBoxContext<T extends object = object> = {
 	selectedValue: Set<string | number>;
 	/** Whether the combobox is disabled */
 	isDisabled: boolean;
+	/** Whether the combobox is pending async work */
+	isPending: boolean;
 	/** Whether the combobox is read-only */
 	isReadOnly: boolean;
 	/** Selection mode */
@@ -83,13 +85,17 @@ export type ComboBoxContext<T extends object = object> = {
 	/** Handle keyboard events (arrow navigation, enter, escape) */
 	handleKeydown: (event: KeyboardEvent) => void;
 	/** Handle input blur - restore selection or deselect if empty */
-	handleInputBlur: () => void;
+	handleInputBlur: (event?: FocusEvent) => void;
 	/** Update root-level focus-visible state based on current modality. */
 	setFocusVisible: (visible: boolean) => void;
 	/** Currently focused tag ID (virtual focus for tag navigation) */
 	focusedTagId: string | number | null;
 	/** Set focused tag ID (virtual focus for tag navigation) */
 	setFocusedTagId: (id: string | number | null) => void;
+	/** Mark that the next input blur was caused by pointer interaction inside the popover. */
+	markPopoverPointerDown: () => void;
+	/** Consume the pending popover-pointer marker. */
+	consumePopoverPointerDown: () => boolean;
 };
 
 const COMBOBOX_KEY = Symbol('combobox');

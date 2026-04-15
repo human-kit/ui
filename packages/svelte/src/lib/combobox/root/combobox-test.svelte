@@ -4,11 +4,20 @@
 	type Props = {
 		id?: string;
 		isDisabled?: boolean;
+		isPending?: boolean;
 		isReadOnly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
 	};
 
-	let { id, isDisabled = false, isReadOnly = false, trigger = 'press' }: Props = $props();
+	let {
+		id,
+		isDisabled = false,
+		isPending = false,
+		isReadOnly = false,
+		trigger = 'press'
+	}: Props = $props();
+
+	let selectedValue = $state<string | number | undefined>();
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },
@@ -24,9 +33,9 @@
 	];
 </script>
 
-<ComboBox.Root {id} {isDisabled} {isReadOnly} {trigger}>
+<ComboBox.Root {id} {isDisabled} {isPending} {isReadOnly} {trigger} bind:value={selectedValue}>
 	<ComboBox.Input placeholder="Search countries..." />
-	<ComboBox.Button />
+	<ComboBox.Trigger />
 
 	<ComboBox.Popover>
 		<ComboBox.List emptyPlaceholder="No countries found">
@@ -38,6 +47,10 @@
 		</ComboBox.List>
 	</ComboBox.Popover>
 </ComboBox.Root>
+
+<output data-selected-value
+	>{selectedValue === undefined ? 'undefined' : String(selectedValue)}</output
+>
 
 <!-- Button outside the combobox for testing blur behavior -->
 <button type="button" data-testid="outside-button">Outside</button>

@@ -92,10 +92,10 @@
 		ctx.handleKeydown(event);
 	}
 
-	function handleBlur() {
+	function handleBlur(event: FocusEvent) {
 		ctx.setFocusVisible(false);
 		// Restore selection label or deselect if empty
-		ctx.handleInputBlur();
+		ctx.handleInputBlur(event);
 	}
 </script>
 

@@ -107,6 +107,31 @@ describe('ListBox.Item', () => {
 			// Others should have tabindex=-1
 			expect(options[1].getAttribute('tabindex')).toBe('-1');
 		});
+
+		it('has data-focus-visible when focused via keyboard navigation', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.getAttribute('data-focus-visible')).toBe('true');
+		});
+
+		it('clears data-focus-visible after pointer interaction takes over', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]') as HTMLElement | null;
+			expect(focusedOption?.getAttribute('data-focus-visible')).toBe('true');
+
+			await userEvent.click(focusedOption as HTMLElement);
+			expect(focusedOption?.getAttribute('data-focus-visible')).toBeNull();
+		});
 	});
 
 	describe('Hover State', () => {
