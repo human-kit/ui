@@ -219,13 +219,15 @@ echo ""
 echo -e "${YELLOW}→ Pushing to origin/${BRANCH}...${NC}"
 git push origin "$BRANCH" 2>/dev/null || git push --set-upstream origin "$BRANCH"
 
-# 5. Create PR (if it doesn't already exist)
-EXISTING_PR=$(gh pr view "$BRANCH" --json number 2>/dev/null | grep -o '"number":[0-9]*' | grep -o '[0-9]*' || true)
+# 5. Create PR (reuse only if an OPEN PR already exists for this branch)
+EXISTING_PR_JSON=$(gh pr list --head "$BRANCH" --base main --state open --json number,url 2>/dev/null || echo '[]')
+EXISTING_PR=$(echo "$EXISTING_PR_JSON" | jq -r '.[0].number // empty' 2>/dev/null || true)
+EXISTING_PR_URL=$(echo "$EXISTING_PR_JSON" | jq -r '.[0].url // empty' 2>/dev/null || true)
 
 if [[ -n "$EXISTING_PR" ]]; then
   echo ""
   echo -e "${GREEN}✓ PR #${EXISTING_PR} already exists — pushed new changes${NC}"
-  echo -e "  https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/pull/${EXISTING_PR}"
+  echo -e "  ${EXISTING_PR_URL}"
 else
   # Generate PR description with AI
   PR_BODY=""
