@@ -1,24 +1,24 @@
 {
-  "mode": "pre",
-  "tag": "alpha",
-  "initialVersions": {
-    "@human-kit/svelte-components": "1.0.0-alpha.0"
-  },
-  "changesets": [
-    "blue-camels-cough",
-    "bright-apples-wheel",
-    "calm-tools-fix",
-    "flat-guests-tickle",
-    "fresh-buttons-arrive",
-    "initial-release",
-    "kind-paths-judge",
-    "orange-otters-jump",
-    "polite-hotels-knock",
-    "six-pens-think",
-    "smooth-seals-drive",
-    "solid-input-basics",
-    "stale-pets-cheer",
-    "strong-cars-smell",
-    "tidy-planes-repair"
-  ]
+	"mode": "pre",
+	"tag": "alpha",
+	"initialVersions": {
+		"@human-kit/svelte-components": "1.0.0-alpha.0"
+	},
+	"changesets": [
+		"blue-camels-cough",
+		"bright-apples-wheel",
+		"calm-tools-fix",
+		"flat-guests-tickle",
+		"fresh-buttons-arrive",
+		"initial-release",
+		"kind-paths-judge",
+		"orange-otters-jump",
+		"polite-hotels-knock",
+		"six-pens-think",
+		"smooth-seals-drive",
+		"solid-input-basics",
+		"stale-pets-cheer",
+		"strong-cars-smell",
+		"tidy-planes-repair"
+	]
 }
