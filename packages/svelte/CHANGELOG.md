@@ -1,5 +1,18 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.10
+
+### Minor Changes
+
+- [#28](https://github.com/Agustin-Delgado/svelte-components/pull/28) [`d6e4d57`](https://github.com/Agustin-Delgado/svelte-components/commit/d6e4d5749198946bbc03651cf53ec8c5af0055da) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add new ComboBox trigger and clear parts, plus pending and scroll improvements.
+  - Add `ComboBox.Trigger` as the primary trigger part while keeping `ComboBox.Button` as a compatibility alias.
+  - Add `ComboBox.Clear` to reset the input and clear the current selection without stealing focus.
+  - Reflect `isPending` on trigger and clear affordances while keeping the root as the main async state source.
+  - Clear the selected value when a single-select combobox input is fully emptied.
+  - Allow wheel events to stay inside the combobox when a descendant scroll container can continue scrolling.
+  - Prevent page scroll when neither the popover nor a descendant scroll container can scroll further.
+  - Add docs coverage for pending state and the pattern where overflow is applied to `ComboBox.List` instead of `ComboBox.Popover`.
+
 ## 1.0.0-alpha.9
 
 ### Patch Changes
