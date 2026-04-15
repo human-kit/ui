@@ -107,6 +107,8 @@
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
 	let popoverPointerDownPending = $state(false);
+	let shouldCloseOnEscapeState = $state(true);
+	let shouldCloseOnBlurState = $state(true);
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -407,6 +409,9 @@
 			return;
 		}
 
+		if (!shouldCloseOnBlurState) {
+			return;
+		}
 		// Close popover first to prevent flash of options when clearing input
 		closePopover();
 
@@ -611,16 +616,16 @@
 				}
 				break;
 			case 'Escape':
-				if (currentIsOpen) {
+				if (currentIsOpen && shouldCloseOnEscapeState) {
 					closePopover(true); // Keep focus on input after Escape
 					// Stop propagation so parent dialogs don't also close
 					event.stopPropagation();
 					event.stopImmediatePropagation();
+					handleInputBlur();
+					// Escape is a keyboard-only path, so focus-visible remains enabled for the input.
+					focusVisible = true;
+					event.preventDefault();
 				}
-				handleInputBlur();
-				// Escape is a keyboard-only path, so focus-visible remains enabled for the input.
-				focusVisible = true;
-				event.preventDefault();
 				break;
 			case 'Backspace':
 				// In multiple mode, remove last tag when input is empty
@@ -667,6 +672,15 @@
 		},
 		get isPending() {
 			return isPending;
+		},
+		get isFocusVisible() {
+			return focusVisible;
+		},
+		get shouldCloseOnEscape() {
+			return shouldCloseOnEscapeState;
+		},
+		get shouldCloseOnBlur() {
+			return shouldCloseOnBlurState;
 		},
 		get isReadOnly() {
 			return isReadOnly;
@@ -742,7 +756,13 @@
 		markPopoverPointerDown: () => {
 			popoverPointerDownPending = true;
 		},
-		consumePopoverPointerDown
+		consumePopoverPointerDown,
+		setShouldCloseOnEscape: (value: boolean) => {
+			shouldCloseOnEscapeState = value;
+		},
+		setShouldCloseOnBlur: (value: boolean) => {
+			shouldCloseOnBlurState = value;
+		}
 	};
 
 	setComboBoxContext(ctx);

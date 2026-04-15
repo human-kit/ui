@@ -30,6 +30,8 @@
 		disableFocusHandling?: boolean;
 		/** Override the focused state. When provided, this value is used instead of internal focus tracking. */
 		isFocusedOverride?: boolean;
+		/** Override the focus-visible presentation state. */
+		isFocusVisibleOverride?: boolean;
 		/** Override the select behavior. When provided, called instead of default listbox selection. */
 		onItemSelect?: (id: string | number, label: string) => void;
 		/** Callback with resolved text value when mounted (from prop or rendered content). */
@@ -52,6 +54,7 @@
 		customId,
 		disableFocusHandling = false,
 		isFocusedOverride,
+		isFocusVisibleOverride,
 		onItemSelect,
 		onResolvedTextValue,
 		scrollOnFocus = false,
@@ -81,6 +84,9 @@
 		pressedOverride !== undefined
 			? Boolean(pressedOverride) && !isDisabledComputed
 			: isPressed && !isDisabledComputed
+	);
+	const isFocusVisibleComputed = $derived(
+		isFocusVisibleOverride !== undefined ? isFocusVisibleOverride : isFocusVisible
 	);
 
 	// ID: use custom if provided, otherwise generate
@@ -311,7 +317,7 @@
 	data-selected={isSelected || undefined}
 	data-disabled={isDisabledComputed || undefined}
 	data-focused={isFocusedComputed || undefined}
-	data-focus-visible={isFocusVisible || undefined}
+	data-focus-visible={isFocusVisibleComputed || undefined}
 	data-hovered={isHovered || undefined}
 	data-pressed={isPressedComputed || undefined}
 	onpointerdown={handlePointerDown}

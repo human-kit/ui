@@ -24,6 +24,8 @@ export type ComboBoxContext<T extends object = object> = {
 	isDisabled: boolean;
 	/** Whether the combobox is pending async work */
 	isPending: boolean;
+	/** Whether focus should currently be presented as keyboard-visible */
+	isFocusVisible: boolean;
 	/** Whether the combobox is read-only */
 	isReadOnly: boolean;
 	/** Selection mode */
@@ -96,6 +98,14 @@ export type ComboBoxContext<T extends object = object> = {
 	markPopoverPointerDown: () => void;
 	/** Consume the pending popover-pointer marker. */
 	consumePopoverPointerDown: () => boolean;
+	/** Whether Escape should close the popover. */
+	shouldCloseOnEscape: boolean;
+	/** Whether blur should close the popover. */
+	shouldCloseOnBlur: boolean;
+	/** Update whether Escape should close the popover. */
+	setShouldCloseOnEscape: (value: boolean) => void;
+	/** Update whether blur should close the popover. */
+	setShouldCloseOnBlur: (value: boolean) => void;
 };
 
 const COMBOBOX_KEY = Symbol('combobox');
