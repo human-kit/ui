@@ -109,4 +109,16 @@ describe('Input', () => {
 		expect(focusEvents).toBe(1);
 		expect(hoverEvents).toBe(1);
 	});
+
+	it('supports bind:value updates from user input', async () => {
+		const screen = render(InputTest, { value: '' });
+		const input = screen.getByRole('textbox', { name: 'Email' });
+
+		await input.click();
+		await userEvent.type(input.element() as HTMLInputElement, 'bind me');
+
+		await expect
+			.poll(() => document.querySelector('[data-input-value]')?.textContent)
+			.toBe('bind me');
+	});
 });

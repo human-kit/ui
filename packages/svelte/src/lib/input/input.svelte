@@ -13,6 +13,7 @@
 		isReadOnly?: boolean;
 		isInvalid?: boolean;
 		isRequired?: boolean;
+		value?: HTMLInputAttributes['value'];
 		element?: HTMLInputElement | null;
 	};
 
@@ -44,7 +45,9 @@
 		isReadOnly = false,
 		isInvalid = false,
 		isRequired = false,
+		value = $bindable<HTMLInputElement['value']>(),
 		element = $bindable<HTMLInputElement | null>(null),
+		oninput: onInputExternal,
 		onfocus: onFocusExternal,
 		onblur: onBlurExternal,
 		onkeydown: onKeyDownExternal,
@@ -95,6 +98,10 @@
 		focusVisible = false;
 	}
 
+	function handleInput(event: Event) {
+		value = (event.currentTarget as HTMLInputElement).value;
+	}
+
 	function handleKeyDown(event: KeyboardEvent) {
 		trackInteractionModality(event, inputRef);
 		focusVisible = focused ? true : shouldShowFocusVisible(inputRef);
@@ -129,6 +136,7 @@
 	bind:this={inputRef}
 	id={resolvedId}
 	{type}
+	{value}
 	disabled={resolvedDisabled}
 	readonly={resolvedReadOnly}
 	required={resolvedRequired}
@@ -143,6 +151,7 @@
 	data-hovered={hovered || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
+	oninput={composeEventHandlers(handleInput, onInputExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}

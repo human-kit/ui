@@ -318,6 +318,9 @@ describe('ComboBox', () => {
 			await userEvent.keyboard('{Backspace}');
 
 			await expect.element(input).toHaveValue('');
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('undefined');
 		});
 
 		it('retains input focus after mouse selection', async () => {
@@ -428,6 +431,14 @@ describe('ComboBox', () => {
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toBeDisabled();
+		});
+
+		it('sets pending state attributes on the root when isPending is true', async () => {
+			render(ComboBoxTest, { isPending: true });
+			const root = document.querySelector('[data-combobox]');
+
+			expect(root?.getAttribute('data-pending')).toBe('true');
+			expect(root?.getAttribute('aria-busy')).toBe('true');
 		});
 	});
 

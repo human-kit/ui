@@ -1,11 +1,11 @@
-﻿# ComboBox Button
+# ComboBox Trigger
 
 ## API reference
 
-### ComboBox.Button
+### ComboBox.Trigger
 
-Name: `ComboBox.Button`  
-Description: Compatibility alias for `ComboBox.Trigger`.
+Name: `ComboBox.Trigger`  
+Description: Optional trigger button that toggles the combobox popover without stealing focus from the input.
 
 | Prop           | Type                   | Default     | Description                                                     |
 | -------------- | ---------------------- | ----------- | --------------------------------------------------------------- |
@@ -16,5 +16,6 @@ Description: Compatibility alias for `ComboBox.Trigger`.
 
 ## Notes
 
-- Prefer `ComboBox.Trigger` in new code.
-- `ComboBox.Button` forwards all props and behavior to `ComboBox.Trigger`.
+- `ComboBox.Trigger` reflects the root pending state through `data-pending`.
+- While the combobox is disabled, read-only, or pending, the trigger becomes non-interactive.
+- `ComboBox.Button` remains available as a compatibility alias.

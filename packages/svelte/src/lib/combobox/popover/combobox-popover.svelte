@@ -17,6 +17,7 @@
 	let { class: className = '', children }: ComboBoxPopoverProps = $props();
 
 	const ctx = useComboBoxContext();
+	let restoreListboxMaxHeight: (() => void) | undefined;
 
 	function resolveFocusTarget(details?: PopoverOpenChangeDetails): HTMLElement | null {
 		const rawTarget = details?.event?.target;
@@ -66,33 +67,101 @@
 		ctx.onOpenChange(open);
 	}
 
+	function handleMouseDown() {
+		ctx.markPopoverPointerDown();
+	}
+
+	function applyListboxViewportConstraint() {
+		const listbox = ctx.listboxRef;
+		if (!listbox) return;
+
+		const previousInlineMaxHeight = listbox.style.maxHeight;
+		const computedMaxHeight = getComputedStyle(listbox).maxHeight;
+
+		listbox.style.maxHeight =
+			computedMaxHeight && computedMaxHeight !== 'none'
+				? `min(${computedMaxHeight}, var(--available-height))`
+				: 'var(--available-height)';
+
+		restoreListboxMaxHeight = () => {
+			listbox.style.maxHeight = previousInlineMaxHeight;
+		};
+	}
+
+	function canElementScrollInDirection(element: HTMLElement, deltaY: number) {
+		const isScrollingDown = deltaY > 0;
+		const isScrollingUp = deltaY < 0;
+		const canScrollDown = element.scrollTop < element.scrollHeight - element.clientHeight;
+		const canScrollUp = element.scrollTop > 0;
+
+		return (isScrollingDown && canScrollDown) || (isScrollingUp && canScrollUp);
+	}
+
+	function isScrollableElement(element: HTMLElement) {
+		const { overflowY } = getComputedStyle(element);
+		return (
+			['auto', 'scroll', 'overlay'].includes(overflowY) &&
+			element.scrollHeight > element.clientHeight
+		);
+	}
+
+	function hasScrollableDescendantForWheel(
+		boundary: HTMLElement,
+		target: EventTarget | null,
+		deltaY: number
+	) {
+		let current =
+			target instanceof HTMLElement ? target : target instanceof Node ? target.parentElement : null;
+
+		while (current) {
+			if (isScrollableElement(current) && canElementScrollInDirection(current, deltaY)) {
+				return true;
+			}
+
+			if (current === boundary) {
+				break;
+			}
+
+			current = current.parentElement;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Prevent wheel/scroll events from propagating to the page
 	 * This keeps the page from scrolling when scrolling over the popover
-	 * But allows internal scrolling when the popover has overflow
+	 * But allows internal scrolling when either the popover or a descendant owns overflow
 	 */
 	function handleWheel(event: WheelEvent) {
 		const element = event.currentTarget as HTMLElement;
 		if (!element) return;
 
-		const { scrollTop, scrollHeight, clientHeight } = element;
-		const isScrollingDown = event.deltaY > 0;
-		const isScrollingUp = event.deltaY < 0;
-
-		// Check if we can scroll in the direction of the wheel
-		const canScrollDown = scrollTop < scrollHeight - clientHeight;
-		const canScrollUp = scrollTop > 0;
-
-		// If we can scroll internally in this direction, allow it
-		if ((isScrollingDown && canScrollDown) || (isScrollingUp && canScrollUp)) {
-			// Allow internal scroll, but stop propagation to page
+		if (
+			hasScrollableDescendantForWheel(element, event.target, event.deltaY) ||
+			(isScrollableElement(element) && canElementScrollInDirection(element, event.deltaY))
+		) {
 			event.stopPropagation();
-		} else {
-			// Can't scroll internally, prevent both default and propagation
-			event.preventDefault();
-			event.stopPropagation();
+			return;
 		}
+
+		event.preventDefault();
+		event.stopPropagation();
 	}
+
+	$effect(() => {
+		restoreListboxMaxHeight?.();
+		restoreListboxMaxHeight = undefined;
+
+		if (ctx.isOpen && ctx.listboxRef) {
+			applyListboxViewportConstraint();
+		}
+
+		return () => {
+			restoreListboxMaxHeight?.();
+			restoreListboxMaxHeight = undefined;
+		};
+	});
 
 	$effect(() => {
 		if (ctx.isOpen) {
@@ -106,6 +175,7 @@
 		isNonModal={true}
 		placement="bottom-start"
 		class={className}
+		onmousedown={handleMouseDown}
 		onwheel={handleWheel}
 	>
 		{#if children}

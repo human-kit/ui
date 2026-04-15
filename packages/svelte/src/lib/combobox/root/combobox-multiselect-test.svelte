@@ -47,7 +47,7 @@
 			{/snippet}
 		</ComboBox.Tags>
 		<ComboBox.Input placeholder="Search fruits..." />
-		<ComboBox.Button>▼</ComboBox.Button>
+		<ComboBox.Trigger>▼</ComboBox.Trigger>
 	</div>
 
 	<ComboBox.Popover>

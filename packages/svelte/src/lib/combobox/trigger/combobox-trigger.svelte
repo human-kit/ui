@@ -4,19 +4,19 @@
 	import { ButtonRoot } from '../../button/index.js';
 	import { useComboBoxContext } from '../root/context';
 
-	type ComboBoxButtonProps = HTMLButtonAttributes & {
+	type ComboBoxTriggerProps = HTMLButtonAttributes & {
 		class?: string;
 		children?: Snippet;
 	};
 
-	let { class: className, children, tabindex = -1, ...restProps }: ComboBoxButtonProps = $props();
+	let { class: className, children, tabindex = -1, ...restProps }: ComboBoxTriggerProps = $props();
 
 	const ctx = useComboBoxContext();
-	const isButtonDisabled = $derived(ctx.isDisabled || ctx.isReadOnly || ctx.isPending);
+	const isTriggerDisabled = $derived(ctx.isDisabled || ctx.isReadOnly || ctx.isPending);
 
 	function handleMouseDown(event: MouseEvent) {
 		event.preventDefault();
-		if (!isButtonDisabled) {
+		if (!isTriggerDisabled) {
 			ctx.toggle();
 		}
 	}

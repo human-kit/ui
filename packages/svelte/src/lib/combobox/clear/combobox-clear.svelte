@@ -4,34 +4,39 @@
 	import { ButtonRoot } from '../../button/index.js';
 	import { useComboBoxContext } from '../root/context';
 
-	type ComboBoxButtonProps = HTMLButtonAttributes & {
+	type ComboBoxClearProps = HTMLButtonAttributes & {
 		class?: string;
 		children?: Snippet;
 	};
 
-	let { class: className, children, tabindex = -1, ...restProps }: ComboBoxButtonProps = $props();
+	let { class: className, children, tabindex = -1, ...restProps }: ComboBoxClearProps = $props();
 
 	const ctx = useComboBoxContext();
-	const isButtonDisabled = $derived(ctx.isDisabled || ctx.isReadOnly || ctx.isPending);
+	const hasContent = $derived(ctx.displayValue.trim().length > 0 || ctx.selectedValue.size > 0);
+	const isClearDisabled = $derived(
+		ctx.isDisabled || ctx.isReadOnly || ctx.isPending || !hasContent
+	);
+	const ariaLabel = $derived(ctx.selectedValue.size > 0 ? 'Clear selection' : 'Clear input');
 
 	function handleMouseDown(event: MouseEvent) {
 		event.preventDefault();
-		if (!isButtonDisabled) {
-			ctx.toggle();
-		}
+	}
+
+	function handleClick() {
+		if (isClearDisabled) return;
+		ctx.clearSelection();
+		ctx.inputRef?.focus();
 	}
 </script>
 
 <ButtonRoot
 	type="button"
 	{tabindex}
-	aria-label={ctx.isOpen ? 'Close menu' : 'Open menu'}
-	aria-expanded={ctx.isOpen}
-	aria-controls={`combobox-listbox-${ctx.instanceId}`}
-	isDisabled={ctx.isDisabled || ctx.isReadOnly}
+	aria-label={ariaLabel}
+	isDisabled={ctx.isDisabled || ctx.isReadOnly || !hasContent}
 	isPending={ctx.isPending}
-	pressed={ctx.isOpen}
 	onmousedown={handleMouseDown}
+	onclick={handleClick}
 	class={className}
 	{...restProps}
 >
@@ -48,9 +53,9 @@
 			stroke-width="2"
 			stroke-linecap="round"
 			stroke-linejoin="round"
-			class="transition-transform {ctx.isOpen ? 'rotate-180' : ''}"
 		>
-			<path d="m6 9 6 6 6-6" />
+			<path d="M18 6 6 18" />
+			<path d="m6 6 12 12" />
 		</svg>
 	{/if}
 </ButtonRoot>

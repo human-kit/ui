@@ -12,6 +12,7 @@
 		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
 		id?: string;
 		isDisabled?: boolean;
+		isPending?: boolean;
 		isReadOnly?: boolean;
 		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
 		value?: string | number | (string | number)[];
@@ -47,6 +48,7 @@
 	let {
 		id: rootId,
 		isDisabled = false,
+		isPending = false,
 		isReadOnly = false,
 		value = $bindable(),
 		defaultValue,
@@ -104,6 +106,7 @@
 	let focusedTagId: string | number | null = $state(null);
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
+	let popoverPointerDownPending = $state(false);
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -194,6 +197,7 @@
 		// In multiple mode, selections are managed via tags, not input
 		if (selectionMode === 'single' && val.trim() === '' && currentSelection.size > 0) {
 			const emptySelection = new Set<string | number>();
+			selectedInternal = emptySelection;
 			if (isSelectionControlled) {
 				onChange?.(toExternalValue(emptySelection));
 			} else {
@@ -242,6 +246,7 @@
 			}
 		}
 
+		selectedInternal = newSelection;
 		if (isSelectionControlled) {
 			onChange?.(toExternalValue(newSelection));
 		} else {
@@ -263,6 +268,7 @@
 		// Remove from persistent labels
 		selectedLabels.delete(id);
 
+		selectedInternal = newSelection;
 		if (isSelectionControlled) {
 			onChange?.(toExternalValue(newSelection));
 		} else {
@@ -280,6 +286,7 @@
 	function clearSelection() {
 		const emptySelection = new Set<string | number>();
 
+		selectedInternal = emptySelection;
 		if (isSelectionControlled) {
 			onChange?.(toExternalValue(emptySelection));
 		} else {
@@ -380,9 +387,26 @@
 	/**
 	 * Handle input blur or escape - restore selection label or clear if no selection
 	 */
-	function handleInputBlur() {
+	function consumePopoverPointerDown() {
+		if (!popoverPointerDownPending) return false;
+		popoverPointerDownPending = false;
+		return true;
+	}
+
+	function handleInputBlur(event?: FocusEvent) {
 		// Clear tag virtual focus
 		focusedTagId = null;
+
+		const nextFocusedElement = event?.relatedTarget;
+		const isMovingFocusWithinCombobox =
+			nextFocusedElement instanceof Node &&
+			((wrapperRef?.contains(nextFocusedElement) ?? false) ||
+				(listboxRef?.contains(nextFocusedElement) ?? false));
+
+		if (isMovingFocusWithinCombobox || consumePopoverPointerDown()) {
+			return;
+		}
+
 		// Close popover first to prevent flash of options when clearing input
 		closePopover();
 
@@ -641,6 +665,9 @@
 		get isDisabled() {
 			return isDisabled;
 		},
+		get isPending() {
+			return isPending;
+		},
 		get isReadOnly() {
 			return isReadOnly;
 		},
@@ -711,7 +738,11 @@
 		},
 		setFocusedTagId: (id: string | number | null) => {
 			focusedTagId = id;
-		}
+		},
+		markPopoverPointerDown: () => {
+			popoverPointerDownPending = true;
+		},
+		consumePopoverPointerDown
 	};
 
 	setComboBoxContext(ctx);
@@ -722,10 +753,12 @@
 	role="group"
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
+	aria-busy={isPending ? 'true' : undefined}
 	class={className}
 	data-combobox
 	data-focused={focusWithin || undefined}
 	data-disabled={isDisabled || undefined}
+	data-pending={isPending || undefined}
 	data-readonly={isReadOnly || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}

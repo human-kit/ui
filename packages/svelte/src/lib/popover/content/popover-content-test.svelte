@@ -9,6 +9,7 @@
 		shouldCloseOnInteractOutside?: boolean;
 		shouldCloseOnEscape?: boolean;
 		shouldCloseOnBlur?: boolean;
+		class?: string;
 		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
 	};
 
@@ -19,6 +20,7 @@
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		shouldCloseOnBlur,
+		class: className = '',
 		onOpenChange
 	}: Props = $props();
 </script>
@@ -29,7 +31,7 @@
 	</Popover.Trigger>
 
 	<Popover.Content
-		class="popover-content"
+		class={`popover-content ${className}`.trim()}
 		{isNonModal}
 		{shouldCloseOnInteractOutside}
 		{shouldCloseOnEscape}
@@ -42,3 +44,30 @@
 		</div>
 	</Popover.Content>
 </Popover.Root>
+
+<style>
+	:global(.presence-animation) {
+		opacity: 1;
+		transition: opacity 0.2s linear;
+	}
+
+	:global(.presence-animation[data-entering]) {
+		animation: popover-enter 0.2s linear;
+	}
+
+	:global(.presence-animation[data-exiting]) {
+		opacity: 0;
+	}
+
+	@keyframes popover-enter {
+		from {
+			opacity: 0;
+			transform: scale(0.96);
+		}
+
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+</style>

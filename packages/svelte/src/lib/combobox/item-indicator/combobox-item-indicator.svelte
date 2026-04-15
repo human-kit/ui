@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { getContext } from 'svelte';
-	import { cn } from '../../utils/cn';
-	import { useComboBoxContext } from '../root/context';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import {
 		COMBOBOX_ITEM_CONTEXT_KEY,
 		type ComboBoxItemContext
 	} from '../item/combobox-listboxitem.svelte';
+	import { useComboBoxContext } from '../root/context';
 
 	/**
 	 * ComboBox.ItemIndicator - Visual indicator shown when an item is selected.
@@ -22,12 +21,7 @@
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'>;
 
-	let {
-		children,
-		forceMount = false,
-		class: className,
-		...restProps
-	}: ComboBoxItemIndicatorProps = $props();
+	let { children, forceMount = false, ...restProps }: ComboBoxItemIndicatorProps = $props();
 
 	const comboboxCtx = useComboBoxContext();
 	const itemCtx = getContext<ComboBoxItemContext>(COMBOBOX_ITEM_CONTEXT_KEY);
@@ -37,12 +31,7 @@
 </script>
 
 {#if shouldRender}
-	<span
-		aria-hidden="true"
-		data-state={isSelected ? 'checked' : 'unchecked'}
-		class={cn('inline-flex items-center justify-center', className)}
-		{...restProps}
-	>
+	<span aria-hidden="true" data-state={isSelected ? 'checked' : 'unchecked'} {...restProps}>
 		{#if children}
 			{@render children()}
 		{:else}
