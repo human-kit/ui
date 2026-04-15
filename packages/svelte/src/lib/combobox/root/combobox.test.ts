@@ -42,6 +42,21 @@ describe('ComboBox', () => {
 			expect(activeDescendant).toBeTruthy();
 		});
 
+		it('marks the virtually focused item as focus-visible during keyboard navigation', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+
+			await expect.poll(() => {
+				const activeDescendant = input.element().getAttribute('aria-activedescendant');
+				if (!activeDescendant) return null;
+
+				return document.getElementById(activeDescendant)?.getAttribute('data-focus-visible');
+			}).toBe('true');
+		});
+
 		it('navigates up through items with ArrowUp when open', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');

@@ -66,6 +66,7 @@
 
 	// Virtual focus from ComboBox context
 	const isFocused = $derived(ctx.focusedItemId === id);
+	const isFocusVisible = $derived(isFocused && ctx.isFocusVisible);
 
 	// Generate unique ID using instanceId
 	const uniqueId = $derived(`combobox-item-${ctx.instanceId}-${id}`);
@@ -120,6 +121,7 @@
 		customId={uniqueId}
 		disableFocusHandling={true}
 		isFocusedOverride={isFocused}
+		isFocusVisibleOverride={isFocusVisible}
 		onItemSelect={handleSelect}
 		onResolvedTextValue={handleResolvedTextValue}
 		scrollOnFocus={true}

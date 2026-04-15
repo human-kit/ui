@@ -57,7 +57,7 @@
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 
 	let {
-		offset = 8,
+		offset = 4,
 		placement = 'bottom',
 		shouldFlip = true,
 		boundaryElement = null,

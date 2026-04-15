@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import type { ComponentProps, Snippet } from 'svelte';
 	import { useComboBoxContext } from '../root/context';
 	import { Popover } from '../../popover';
 	import { focusWithModality, type InputModality } from '../../primitives/input-modality';
@@ -9,12 +9,22 @@
 	 * ComboBox.Popover - Just the floating container wrapper.
 	 * Should contain ComboBox.ListBox as a child.
 	 */
-	type ComboBoxPopoverProps = {
-		class?: string;
+	type ComboBoxPopoverProps = Omit<
+		ComponentProps<typeof Popover.Content>,
+		'open' | 'triggerRef' | 'onOpenChange' | 'children'
+	> & {
 		children?: Snippet;
 	};
 
-	let { class: className = '', children }: ComboBoxPopoverProps = $props();
+	let {
+		class: className = '',
+		children,
+		placement = 'bottom-start',
+		isNonModal = true,
+		shouldCloseOnEscape = true,
+		shouldCloseOnBlur = true,
+		...contentProps
+	}: ComboBoxPopoverProps = $props();
 
 	const ctx = useComboBoxContext();
 	let restoreListboxMaxHeight: (() => void) | undefined;
@@ -168,15 +178,32 @@
 			ctx.inputRef?.focus();
 		}
 	});
+
+	$effect(() => {
+		ctx.setShouldCloseOnEscape(shouldCloseOnEscape);
+		return () => {
+			ctx.setShouldCloseOnEscape(true);
+		};
+	});
+
+	$effect(() => {
+		ctx.setShouldCloseOnBlur(shouldCloseOnBlur);
+		return () => {
+			ctx.setShouldCloseOnBlur(true);
+		};
+	});
 </script>
 
 <Popover.Root open={ctx.isOpen} triggerRef={ctx.triggerRef} onOpenChange={handleOpenChange}>
 	<Popover.Content
-		isNonModal={true}
-		placement="bottom-start"
+		{isNonModal}
+		{placement}
+		{shouldCloseOnEscape}
+		{shouldCloseOnBlur}
 		class={className}
 		onmousedown={handleMouseDown}
 		onwheel={handleWheel}
+		{...contentProps}
 	>
 		{#if children}
 			{@render children()}
