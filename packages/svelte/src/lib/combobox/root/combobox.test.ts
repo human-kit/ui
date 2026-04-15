@@ -49,12 +49,14 @@ describe('ComboBox', () => {
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');
 
-			await expect.poll(() => {
-				const activeDescendant = input.element().getAttribute('aria-activedescendant');
-				if (!activeDescendant) return null;
+			await expect
+				.poll(() => {
+					const activeDescendant = input.element().getAttribute('aria-activedescendant');
+					if (!activeDescendant) return null;
 
-				return document.getElementById(activeDescendant)?.getAttribute('data-focus-visible');
-			}).toBe('true');
+					return document.getElementById(activeDescendant)?.getAttribute('data-focus-visible');
+				})
+				.toBe('true');
 		});
 
 		it('navigates up through items with ArrowUp when open', async () => {
