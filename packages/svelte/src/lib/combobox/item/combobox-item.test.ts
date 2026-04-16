@@ -191,7 +191,7 @@ describe('ComboBox.Item', () => {
 			const input = screen.getByRole('combobox');
 			const scrollIntoViewSpy = vi
 				.spyOn(HTMLElement.prototype, 'scrollIntoView')
-				.mockImplementation(() => {});
+				.mockImplementation(() => { });
 
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');

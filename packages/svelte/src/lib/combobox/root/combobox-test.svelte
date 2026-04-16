@@ -42,11 +42,11 @@
 	<ComboBox.Popover>
 		<ComboBox.List emptyPlaceholder="No countries found">
 			{#each countries as country (country.id)}
-					<ComboBox.Item
-						id={country.id}
-						textValue={country.name}
-						disabled={disabledIds.includes(country.id)}
-					>
+				<ComboBox.Item
+					id={country.id}
+					textValue={country.name}
+					disabled={disabledIds.includes(country.id)}
+				>
 					{country.name}
 				</ComboBox.Item>
 			{/each}
