@@ -4,6 +4,7 @@
 	import { useListBoxContext } from '../root/context';
 	import { onMount, onDestroy } from 'svelte';
 	import {
+		focusWithModality,
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
@@ -36,6 +37,8 @@
 		onItemSelect?: (id: string | number, label: string) => void;
 		/** Callback with resolved text value when mounted (from prop or rendered content). */
 		onResolvedTextValue?: (label: string) => void;
+		/** Callback when pointer hover should move logical focus to this item. */
+		onItemHoverStart?: (id: string | number, label: string) => void;
 		/** Whether to scroll this item into view when focused. Useful for virtual focus patterns. */
 		scrollOnFocus?: boolean;
 		/** Additional disabled state from parent. */
@@ -57,6 +60,7 @@
 		isFocusVisibleOverride,
 		onItemSelect,
 		onResolvedTextValue,
+		onItemHoverStart,
 		scrollOnFocus = false,
 		isParentDisabled = false,
 		pressed: pressedOverride,
@@ -69,9 +73,11 @@
 	let isSelected = $state(false);
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);
+	let listFocusVisible = $state(false);
 	let isHovered = $state(false);
 	let isPressed = $state(false);
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
+	let suppressNextFocusVisible = $state(false);
 
 	// Focus: use override if provided, otherwise use internal state
 	const isFocusedComputed = $derived(
@@ -88,12 +94,20 @@
 	const isFocusVisibleComputed = $derived(
 		isFocusVisibleOverride !== undefined ? isFocusVisibleOverride : isFocusVisible
 	);
+	const isActiveFocusVisible = $derived(
+		isFocusVisibleOverride !== undefined
+			? isFocusVisibleComputed
+			: isFocusedComputed && listFocusVisible
+	);
+	const showFocusVisible = $derived(isActiveFocusVisible && !isHovered);
+	const showHovered = $derived(isHovered && !isActiveFocusVisible);
 
 	// ID: use custom if provided, otherwise generate
 	const uniqueId = $derived(customId ?? `listbox-item-${id}`);
 
 	let unsubscribeSelection: (() => void) | null = null;
 	let unsubscribeFocus: (() => void) | null = null;
+	let unsubscribeFocusVisible: (() => void) | null = null;
 
 	function getResolvedTextValue() {
 		return textValue || elementRef?.textContent?.trim() || String(id);
@@ -115,6 +129,9 @@
 			unsubscribeFocus = listboxCtx.subscribeToFocus(id, (focused) => {
 				isFocused = focused;
 			});
+			unsubscribeFocusVisible = listboxCtx.subscribeToFocusVisible((visible) => {
+				listFocusVisible = visible;
+			});
 			listboxCtx.keyboardNav.updateItems();
 		}
 	});
@@ -123,6 +140,7 @@
 		listboxCtx.unregisterItem(id);
 		unsubscribeSelection?.();
 		unsubscribeFocus?.();
+		unsubscribeFocusVisible?.();
 	});
 
 	// Scroll into view when focused (if enabled)
@@ -146,6 +164,30 @@
 		pressedKey = null;
 	}
 
+	function applyPointerFocusState() {
+		suppressNextFocusVisible = true;
+		listboxCtx.setFocusVisible(false);
+		listboxCtx.setFocusedId(id);
+		listboxCtx.keyboardNav.setCurrentId(id);
+		if (elementRef) {
+			focusWithModality(elementRef, 'pointer');
+		}
+	}
+
+	function transferHoverFocus() {
+		const label = getResolvedTextValue();
+		if (onItemHoverStart) {
+			onItemHoverStart(id, label);
+		} else if (!disableFocusHandling) {
+			applyPointerFocusState();
+			requestAnimationFrame(() => {
+				if (isHovered && !isDisabledComputed) {
+					applyPointerFocusState();
+				}
+			});
+		}
+	}
+
 	function handleClick() {
 		if (isDisabledComputed) return;
 
@@ -156,25 +198,40 @@
 			onItemSelect(id, label);
 		} else {
 			listboxCtx.select(id);
-			listboxCtx.setFocusedId(id);
+		}
+
+		if (!disableFocusHandling) {
+			listboxCtx.keyboardNav.focusById(id);
 		}
 	}
 
 	function handleFocus() {
 		if (isDisabledComputed) return;
-		isFocusVisible = shouldShowFocusVisible(elementRef);
+		isFocusVisible = suppressNextFocusVisible ? false : shouldShowFocusVisible(elementRef);
+		suppressNextFocusVisible = false;
+		if (isFocusVisible) {
+			isHovered = false;
+		}
 		if (!disableFocusHandling) {
+			listboxCtx.setFocusVisible(isFocusVisible);
 			listboxCtx.setFocusedId(id);
 		}
 	}
 
 	function handleBlur() {
 		isFocusVisible = false;
+		if (!disableFocusHandling && listboxCtx.isFocused(id)) {
+			listboxCtx.setFocusVisible(false);
+			listboxCtx.setFocusedId(null);
+		}
 	}
 
 	function handlePointerDown(event: PointerEvent) {
 		trackInteractionModality(event, elementRef);
 		isFocusVisible = false;
+		if (!disableFocusHandling) {
+			listboxCtx.setFocusVisible(false);
+		}
 
 		if (isDisabledComputed) {
 			event.preventDefault();
@@ -200,6 +257,12 @@
 	function handlePointerEnter(event: PointerEvent) {
 		if (isDisabledComputed) return;
 
+		trackInteractionModality(event, elementRef);
+		if (!disableFocusHandling) {
+			listboxCtx.setFocusVisible(false);
+		}
+		transferHoverFocus();
+
 		if ((event.buttons & 1) === 1 && pressedKey === null) {
 			isPressed = true;
 		}
@@ -211,9 +274,15 @@
 		}
 	}
 
-	function handleMouseEnter() {
+	function handleMouseEnter(event: MouseEvent) {
 		if (!isDisabledComputed) {
+			trackInteractionModality(event, elementRef);
 			isHovered = true;
+			isFocusVisible = false;
+			if (!disableFocusHandling) {
+				listboxCtx.setFocusVisible(false);
+				transferHoverFocus();
+			}
 		}
 	}
 
@@ -228,7 +297,11 @@
 	function handleKeydown(event: KeyboardEvent) {
 		trackInteractionModality(event, elementRef);
 		if (isFocusedComputed) {
+			isHovered = false;
 			isFocusVisible = true;
+			if (!disableFocusHandling) {
+				listboxCtx.setFocusVisible(true);
+			}
 		}
 
 		const key =
@@ -276,6 +349,9 @@
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, elementRef);
 		isFocusVisible = false;
+		if (!disableFocusHandling) {
+			listboxCtx.setFocusVisible(false);
+		}
 
 		// Prevent focus stealing when used in ComboBox (disableFocusHandling=true)
 		// This keeps the focus on the input while allowing click selection
@@ -317,8 +393,8 @@
 	data-selected={isSelected || undefined}
 	data-disabled={isDisabledComputed || undefined}
 	data-focused={isFocusedComputed || undefined}
-	data-focus-visible={isFocusVisibleComputed || undefined}
-	data-hovered={isHovered || undefined}
+	data-focus-visible={showFocusVisible || undefined}
+	data-hovered={showHovered || undefined}
 	data-pressed={isPressedComputed || undefined}
 	onpointerdown={handlePointerDown}
 	onpointerup={handlePointerUp}

@@ -7,6 +7,7 @@
 		onValueChange?: (value: (string | number)[]) => void;
 		trigger?: 'focus' | 'input' | 'press';
 		closeOnSelect?: boolean;
+		disabledIds?: string[];
 	}
 
 	let {
@@ -20,7 +21,8 @@
 		value = $bindable([]),
 		onValueChange,
 		trigger = 'press',
-		closeOnSelect = false
+		closeOnSelect = false,
+		disabledIds = []
 	}: Props = $props();
 
 	function handleChange(newValue: string | number | (string | number)[] | undefined) {
@@ -53,7 +55,11 @@
 	<ComboBox.Popover>
 		<ComboBox.List>
 			{#each items as item (item.id)}
-				<ComboBox.Item id={item.id} textValue={item.name}>
+				<ComboBox.Item
+					id={item.id}
+					textValue={item.name}
+					disabled={disabledIds.includes(item.id)}
+				>
 					{item.name}
 					<ComboBox.ItemIndicator />
 				</ComboBox.Item>

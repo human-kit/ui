@@ -47,11 +47,10 @@ describe('ListBox', () => {
 			await expect.element(listbox).toHaveAttribute('data-focus-within', 'true');
 
 			await userEvent.keyboard('{Home}');
-			await expect.element(listbox).toHaveAttribute('data-focus-visible', 'true');
+			await expect.element(listbox).not.toHaveAttribute('data-focus-visible');
 
 			(document.activeElement as HTMLElement | null)?.blur();
 			await expect.poll(() => listbox.element()?.getAttribute('data-focus-within')).toBeNull();
-			await expect.poll(() => listbox.element()?.getAttribute('data-focus-visible')).toBeNull();
 		});
 	});
 
@@ -201,6 +200,18 @@ describe('ListBox', () => {
 
 			const selectedOption = listbox.element().querySelector('[data-selected]');
 			expect(selectedOption?.textContent).toContain('Cherry');
+		});
+
+		it('continues keyboard navigation from the clicked item', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await (options[2] as HTMLElement).click();
+			await userEvent.keyboard('{ArrowDown}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.textContent).toContain('Grape');
 		});
 	});
 

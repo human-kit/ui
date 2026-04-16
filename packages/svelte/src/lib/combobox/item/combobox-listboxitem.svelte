@@ -56,6 +56,7 @@
 
 	// Normalized input for filtering comparison
 	const normalizedInput = $derived(ctx.inputValue.trim().toLowerCase());
+	const isDisabled = $derived(Boolean(props.disabled) || ctx.isDisabled);
 
 	// Automatic filtering: if text is not resolved yet, keep item visible until mount resolves it.
 	const isVisible = $derived(
@@ -77,14 +78,15 @@
 	// Reactive registration: register when visible, unregister when hidden
 	$effect(() => {
 		const visible = isVisible;
+		const disabled = isDisabled;
 		const label = effectiveTextValue || String(id);
 		const itemId = id;
 
 		untrack(() => {
-			if (visible && !isRegistered) {
+			if (visible && !disabled && !isRegistered) {
 				ctx.registerItem(itemId, label);
 				isRegistered = true;
-			} else if (!visible && isRegistered) {
+			} else if ((!visible || disabled) && isRegistered) {
 				ctx.unregisterItem(itemId);
 				isRegistered = false;
 			}
@@ -109,7 +111,13 @@
 
 	// Custom select handler that uses ComboBox context
 	function handleSelect(itemId: string | number, label: string) {
+		ctx.setFocusedItemId(itemId);
 		ctx.select(itemId, label);
+	}
+
+	function handleHoverStart(itemId: string | number) {
+		ctx.setFocusVisible(false);
+		ctx.setFocusedItemId(itemId);
 	}
 </script>
 
@@ -124,6 +132,7 @@
 		isFocusVisibleOverride={isFocusVisible}
 		onItemSelect={handleSelect}
 		onResolvedTextValue={handleResolvedTextValue}
+		onItemHoverStart={handleHoverStart}
 		scrollOnFocus={true}
 		isParentDisabled={ctx.isDisabled}
 	/>

@@ -132,6 +132,37 @@ describe('ListBox.Item', () => {
 			await userEvent.click(focusedOption as HTMLElement);
 			expect(focusedOption?.getAttribute('data-focus-visible')).toBeNull();
 		});
+
+		it('replaces focus-visible with hovered on pointer hover', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]') as HTMLElement | null;
+			expect(focusedOption?.getAttribute('data-focus-visible')).toBe('true');
+
+			await userEvent.hover(focusedOption as HTMLElement);
+
+			expect(focusedOption?.getAttribute('data-focus-visible')).toBeNull();
+			expect(focusedOption?.getAttribute('data-hovered')).toBe('true');
+		});
+
+		it('clears hovered when keyboard focus-visible takes over again', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await userEvent.hover(options[0] as HTMLElement);
+			expect(options[0].getAttribute('data-hovered')).toBe('true');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}');
+
+			expect(options[0].getAttribute('data-hovered')).toBeNull();
+			expect(options[0].getAttribute('data-focus-visible')).toBe('true');
+		});
 	});
 
 	describe('Hover State', () => {
