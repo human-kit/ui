@@ -158,5 +158,31 @@ describe('ComboBox.Item', () => {
 			const inputValue = (input.element() as HTMLInputElement).value;
 			expect(inputValue).toBeTruthy();
 		});
+
+		it('moves virtual focus to the hovered option and clears focus-visible from the previous one', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+			expect(options[0].getAttribute('data-focus-visible')).toBe('true');
+
+			await userEvent.hover(options[2] as HTMLElement);
+			const updatedOptions = listbox.querySelectorAll(
+				'[role="option"]:not([data-empty-placeholder])'
+			);
+
+			await expect
+				.poll(() => input.element().getAttribute('aria-activedescendant'))
+				.toBe(updatedOptions[2].id);
+			await expect.poll(() => updatedOptions[0].getAttribute('data-focus-visible')).toBeNull();
+			await expect.poll(() => updatedOptions[0].getAttribute('data-focused')).toBeNull();
+			await expect.poll(() => updatedOptions[2].getAttribute('data-hovered')).toBe('true');
+			await expect.poll(() => updatedOptions[2].getAttribute('data-focused')).toBe('true');
+			await expect.poll(() => updatedOptions[2].getAttribute('data-focus-visible')).toBeNull();
+		});
 	});
 });

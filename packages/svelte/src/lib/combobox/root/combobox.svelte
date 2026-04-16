@@ -381,6 +381,9 @@
 	// Use navigation hook methods for keyboard navigation
 	function selectFocusedItem() {
 		if (navigation.focusedId !== null) {
+			if (listboxCtxRef?.isDisabled(navigation.focusedId)) {
+				return;
+			}
 			const label = navigation.itemLabels.get(navigation.focusedId) ?? String(navigation.focusedId);
 			selectItem(navigation.focusedId, label);
 		}

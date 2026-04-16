@@ -26,6 +26,8 @@ export type ListBoxContext = {
 	isDisabled: (id: string | number) => boolean;
 	/** Checks if an item is focused. */
 	isFocused: (id: string | number) => boolean;
+	/** Whether keyboard focus-visible should be shown for the currently focused item. */
+	getFocusVisible: () => boolean;
 
 	/** Keyboard navigation controller from the shared primitive. */
 	keyboardNav: KeyboardNavigationReturn;
@@ -51,11 +53,15 @@ export type ListBoxContext = {
 	setSelection: (selection: Set<string | number>) => void;
 	/** Sets the focused item ID. */
 	setFocusedId: (id: string | number | null) => void;
+	/** Sets whether the focused item should render keyboard focus-visible. */
+	setFocusVisible: (visible: boolean) => void;
 
 	/** Subscribes to selection changes for a specific item. Returns unsubscribe function. */
 	subscribeToItem: (id: string | number, callback: (selected: boolean) => void) => () => void;
 	/** Subscribes to focus changes for a specific item. Returns unsubscribe function. */
 	subscribeToFocus: (id: string | number, callback: (focused: boolean) => void) => () => void;
+	/** Subscribes to focus-visible state changes. Returns unsubscribe function. */
+	subscribeToFocusVisible: (callback: (visible: boolean) => void) => () => void;
 	/** Returns the next item ID respecting loop setting, or null if at end. */
 	getNextItemId: (currentId: string | number | null) => string | number | null;
 	/** Returns the previous item ID respecting loop setting, or null if at start. */
@@ -152,6 +158,8 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 
 	let focusedId: string | number | null = null;
 	const focusCallbacks = new Map<string | number, Set<(focused: boolean) => void>>();
+	let focusVisible = false;
+	const focusVisibleCallbacks = new Set<(visible: boolean) => void>();
 
 	function getFocusedId(): string | number | null {
 		return focusedId;
@@ -161,25 +169,23 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		return focusedId === id || String(focusedId) === String(id);
 	}
 
-	function notifyFocus(id: string | number, focused: boolean) {
-		const callbacks = focusCallbacks.get(id);
-		if (callbacks) {
-			callbacks.forEach((cb) => cb(focused));
-		}
+	function getFocusVisible(): boolean {
+		return focusVisible;
 	}
 
 	function setFocusedId(newId: string | number | null) {
-		if (focusedId === newId) return;
-
-		const previousId = focusedId;
 		focusedId = newId;
 
-		if (previousId !== null) {
-			notifyFocus(previousId, false);
+		for (const [id, callbacks] of focusCallbacks) {
+			const focused = newId !== null && (id === newId || String(id) === String(newId));
+			callbacks.forEach((callback) => callback(focused));
 		}
-		if (newId !== null) {
-			notifyFocus(newId, true);
-		}
+	}
+
+	function setFocusVisible(visible: boolean) {
+		if (focusVisible === visible) return;
+		focusVisible = visible;
+		focusVisibleCallbacks.forEach((callback) => callback(visible));
 	}
 
 	function subscribeToFocus(id: string | number, callback: (focused: boolean) => void): () => void {
@@ -197,6 +203,15 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 					focusCallbacks.delete(id);
 				}
 			}
+		};
+	}
+
+	function subscribeToFocusVisible(callback: (visible: boolean) => void): () => void {
+		focusVisibleCallbacks.add(callback);
+		callback(focusVisible);
+
+		return () => {
+			focusVisibleCallbacks.delete(callback);
 		};
 	}
 
@@ -345,6 +360,7 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		isSelected,
 		isDisabled,
 		isFocused,
+		getFocusVisible,
 		keyboardNav,
 		items,
 		registerItem,
@@ -356,8 +372,10 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		selectAll,
 		setSelection,
 		setFocusedId,
+		setFocusVisible,
 		subscribeToItem,
 		subscribeToFocus,
+		subscribeToFocusVisible,
 		getNextItemId,
 		getPreviousItemId
 	};

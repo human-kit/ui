@@ -108,7 +108,9 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 			if (fullId && fullId.startsWith(prefix)) {
 				const rawId = fullId.substring(prefix.length);
 				const registeredId = itemIds.find((id) => String(id) === rawId);
-				orderedIds.push(registeredId ?? rawId);
+				if (registeredId !== undefined) {
+					orderedIds.push(registeredId);
+				}
 			}
 		});
 

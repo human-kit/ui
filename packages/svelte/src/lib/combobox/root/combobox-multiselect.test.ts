@@ -86,6 +86,47 @@ describe('ComboBox Multi-Select', () => {
 			// Popover should be closed
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
+
+		it('skips disabled items during keyboard navigation and selection', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(ComboBoxMultiselectTest, {
+				disabledIds: ['banana'],
+				onValueChange
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{ArrowDown}');
+
+			expect(input.element().getAttribute('aria-activedescendant')).toMatch(
+				/combobox-item-.*-cherry/
+			);
+
+			await userEvent.keyboard('{Enter}');
+
+			expect(onValueChange).toHaveBeenLastCalledWith(['cherry']);
+		});
+
+		it('continues keyboard navigation from the clicked item in multiple mode', async () => {
+			const screen = render(ComboBoxMultiselectTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			const cherryItem = screen.getByRole('option', { name: 'Cherry' });
+			await cherryItem.click();
+
+			expect(document.activeElement).toBe(input.element());
+			expect(input.element().getAttribute('aria-activedescendant')).toMatch(
+				/combobox-item-.*-cherry/
+			);
+
+			await userEvent.keyboard('{ArrowDown}');
+
+			expect(input.element().getAttribute('aria-activedescendant')).toMatch(
+				/combobox-item-.*-date/
+			);
+		});
 	});
 
 	describe('Tags Display', () => {

@@ -63,6 +63,7 @@ export type KeyboardNavigationReturn = {
 	focusFirst: () => void;
 	focusLast: () => void;
 	focusById: (id: string | number) => void;
+	setCurrentId: (id: string | number | null) => void;
 
 	/** Update items (call after DOM changes) */
 	updateItems: () => void;
@@ -225,6 +226,25 @@ export function createKeyboardNavigation(
 		}
 	}
 
+	function setCurrentId(id: string | number | null) {
+		if (id === null) {
+			focusedId.set(null);
+			focusedElement.set(null);
+			onFocusChange?.(null, null);
+			return;
+		}
+
+		items = getItems();
+		const element = items.find((el) => {
+			const itemId = getItemId(el);
+			return itemId === id || String(itemId) === String(id);
+		});
+
+		focusedId.set(id);
+		focusedElement.set(element ?? null);
+		onFocusChange?.(id, element ?? null);
+	}
+
 	function handleTypeahead(char: string) {
 		if (!typeahead) return;
 
@@ -374,6 +394,7 @@ export function createKeyboardNavigation(
 		focusFirst,
 		focusLast,
 		focusById,
+		setCurrentId,
 		updateItems
 	};
 }

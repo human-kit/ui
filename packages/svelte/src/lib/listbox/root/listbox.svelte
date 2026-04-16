@@ -1,10 +1,7 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
 	import { createListBoxContext, type ListBoxContext } from './context';
-	import {
-		shouldShowFocusVisible,
-		trackInteractionModality
-	} from '../../primitives/input-modality';
+	import { trackInteractionModality } from '../../primitives/input-modality';
 
 	/**
 	 * Props for the ListBox component.
@@ -120,21 +117,16 @@
 	const hasItems = $derived(itemsArray.length > 0 || itemCount > 0);
 
 	let focusWithin = $state(false);
-	let focusVisible = $state(false);
 
 	function syncFocusWithin() {
 		focusWithin =
 			!!listboxElement &&
 			!!document.activeElement &&
 			listboxElement.contains(document.activeElement);
-		if (!focusWithin) {
-			focusVisible = false;
-		}
 	}
 
-	function handleFocusIn(event: FocusEvent) {
+	function handleFocusIn() {
 		focusWithin = true;
-		focusVisible = shouldShowFocusVisible(event.target as HTMLElement | null);
 	}
 
 	function handleFocusOut() {
@@ -143,13 +135,13 @@
 
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
-		focusVisible = false;
+		ctx.setFocusVisible(false);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
 		if (focusWithin) {
-			focusVisible = true;
+			ctx.setFocusVisible(true);
 		}
 	}
 </script>
@@ -163,7 +155,6 @@
 	class={className}
 	tabindex="0"
 	data-focus-within={focusWithin || undefined}
-	data-focus-visible={focusVisible || undefined}
 	use:keyboardAction
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
