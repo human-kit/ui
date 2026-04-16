@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.12
+
+### Patch Changes
+
+- [#33](https://github.com/Agustin-Delgado/svelte-components/pull/33) [`b339fe2`](https://github.com/Agustin-Delgado/svelte-components/commit/b339fe278d56040be2e2284c00f7505fe8c3b85c) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix ListBox and ComboBox interaction state issues so keyboard focus, hover, and virtual focus stay in sync.
+
+  This includes clearing item `data-focus-visible` on pointer hover, tightening ListBox focus ownership, skipping disabled ComboBox options during keyboard navigation, and continuing keyboard navigation from the clicked option in multiselect flows.
+
 ## 1.0.0-alpha.11
 
 ### Minor Changes
