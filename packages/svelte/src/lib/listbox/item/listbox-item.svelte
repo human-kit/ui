@@ -145,7 +145,7 @@
 
 	// Scroll into view when focused (if enabled)
 	$effect(() => {
-		if (scrollOnFocus && isFocusedComputed && elementRef) {
+		if (scrollOnFocus && isFocusedComputed && isFocusVisibleComputed && elementRef) {
 			requestAnimationFrame(() => {
 				elementRef?.scrollIntoView({ block: 'nearest' });
 			});

@@ -113,6 +113,7 @@
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-describedby={ariaDescribedby}
+	autocomplete="off"
 	value={ctx.displayValue}
 	isDisabled={ctx.isDisabled}
 	isReadOnly={ctx.isReadOnly}

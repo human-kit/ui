@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from '../root/combobox-test.svelte';
+import ComboBoxScrollableListTest from '../popover/combobox-scrollable-list-test.svelte';
 
 describe('ComboBox.Item', () => {
 	describe('Accessibility', () => {
@@ -183,6 +184,32 @@ describe('ComboBox.Item', () => {
 			await expect.poll(() => updatedOptions[2].getAttribute('data-hovered')).toBe('true');
 			await expect.poll(() => updatedOptions[2].getAttribute('data-focused')).toBe('true');
 			await expect.poll(() => updatedOptions[2].getAttribute('data-focus-visible')).toBeNull();
+		});
+
+		it('does not scroll hovered options into view', async () => {
+			const screen = render(ComboBoxScrollableListTest);
+			const input = screen.getByRole('combobox');
+			const scrollIntoViewSpy = vi
+				.spyOn(HTMLElement.prototype, 'scrollIntoView')
+				.mockImplementation(() => {});
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			scrollIntoViewSpy.mockClear();
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+			const hoveredOption = options[options.length - 1] as HTMLElement;
+
+			hoveredOption.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
+			hoveredOption.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+
+			await expect.poll(() => input.element().getAttribute('aria-activedescendant')).toBe(
+				hoveredOption.id
+			);
+			expect(scrollIntoViewSpy).not.toHaveBeenCalled();
+
+			scrollIntoViewSpy.mockRestore();
 		});
 	});
 });

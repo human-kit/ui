@@ -546,6 +546,7 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('role', 'combobox');
 			await expect.element(input).toHaveAttribute('aria-haspopup', 'listbox');
 			await expect.element(input).toHaveAttribute('aria-autocomplete', 'list');
+			await expect.element(input).toHaveAttribute('autocomplete', 'off');
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
@@ -762,6 +763,63 @@ describe('ComboBox', () => {
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toHaveAttribute('readonly');
+		});
+
+		it('keeps input focus after clicking a disabled option so arrow navigation still works', async () => {
+			const screen = render(ComboBoxTest, { disabledIds: ['br'] });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			const activeDescendantBeforeClick = input.element().getAttribute('aria-activedescendant');
+
+			const disabledOption = screen.getByRole('option', { name: 'Brazil' });
+			disabledOption.element().dispatchEvent(
+				new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+			);
+			disabledOption.element().dispatchEvent(
+				new MouseEvent('click', { bubbles: true, cancelable: true })
+			);
+
+			expect(document.activeElement).toBe(input.element());
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			await userEvent.keyboard('{ArrowDown}');
+
+			expect(document.activeElement).toBe(input.element());
+			expect(input.element().getAttribute('aria-activedescendant')).not.toBeNull();
+			expect(input.element().getAttribute('aria-activedescendant')).not.toBe(
+				activeDescendantBeforeClick
+			);
+		});
+
+		it('keeps input focus after clicking the listbox gap and can still close without focus errors', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+
+			const listbox = screen.getByRole('listbox');
+			listbox.element().dispatchEvent(
+				new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+			);
+			listbox.element().dispatchEvent(
+				new MouseEvent('click', { bubbles: true, cancelable: true })
+			);
+
+			expect(document.activeElement).toBe(input.element());
+			await userEvent.keyboard('{ArrowDown}');
+			expect(document.activeElement).toBe(input.element());
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			expect(consoleError).not.toHaveBeenCalled();
+
+			consoleError.mockRestore();
 		});
 	});
 
@@ -1072,6 +1130,26 @@ describe('ComboBox', () => {
 			listbox = screen.getByRole('listbox').element();
 			options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
 			expect(options.length).toBeGreaterThan(1);
+		});
+
+		it('does not notify onInputChange with the selected label when choosing an option', async () => {
+			const { vi } = await import('vitest');
+			const ComboBoxFilteredTest = (await import('./combobox-filtered-test.svelte')).default;
+			const onInputChangeMock = vi.fn();
+			const screen = render(ComboBoxFilteredTest, {
+				trigger: 'focus',
+				onInputChange: onInputChangeMock
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			onInputChangeMock.mockClear();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+
+			await expect.element(input).toHaveValue('Argentina');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			expect(onInputChangeMock).not.toHaveBeenCalledWith('Argentina');
 		});
 	});
 

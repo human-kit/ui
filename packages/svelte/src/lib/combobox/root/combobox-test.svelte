@@ -7,6 +7,7 @@
 		isPending?: boolean;
 		isReadOnly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
+		disabledIds?: string[];
 	};
 
 	let {
@@ -14,7 +15,8 @@
 		isDisabled = false,
 		isPending = false,
 		isReadOnly = false,
-		trigger = 'press'
+		trigger = 'press',
+		disabledIds = []
 	}: Props = $props();
 
 	let selectedValue = $state<string | number | undefined>();
@@ -40,7 +42,11 @@
 	<ComboBox.Popover>
 		<ComboBox.List emptyPlaceholder="No countries found">
 			{#each countries as country (country.id)}
-				<ComboBox.Item id={country.id} textValue={country.name}>
+					<ComboBox.Item
+						id={country.id}
+						textValue={country.name}
+						disabled={disabledIds.includes(country.id)}
+					>
 					{country.name}
 				</ComboBox.Item>
 			{/each}
