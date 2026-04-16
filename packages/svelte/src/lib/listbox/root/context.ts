@@ -173,13 +173,6 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		return focusVisible;
 	}
 
-	function notifyFocus(id: string | number, focused: boolean) {
-		const callbacks = focusCallbacks.get(id);
-		if (callbacks) {
-			callbacks.forEach((cb) => cb(focused));
-		}
-	}
-
 	function setFocusedId(newId: string | number | null) {
 		focusedId = newId;
 

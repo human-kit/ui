@@ -55,11 +55,7 @@
 	<ComboBox.Popover>
 		<ComboBox.List>
 			{#each items as item (item.id)}
-				<ComboBox.Item
-					id={item.id}
-					textValue={item.name}
-					disabled={disabledIds.includes(item.id)}
-				>
+				<ComboBox.Item id={item.id} textValue={item.name} disabled={disabledIds.includes(item.id)}>
 					{item.name}
 					<ComboBox.ItemIndicator />
 				</ComboBox.Item>
