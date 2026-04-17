@@ -193,6 +193,15 @@
 
 		const label = getResolvedTextValue();
 
+		if (!disableFocusHandling && elementRef) {
+			suppressNextFocusVisible = true;
+			isFocusVisible = false;
+			listboxCtx.setFocusVisible(false);
+			listboxCtx.setFocusedId(id);
+			listboxCtx.keyboardNav.setCurrentId(id);
+			focusWithModality(elementRef, 'pointer');
+		}
+
 		// Use custom select handler if provided, otherwise use listbox default
 		if (onItemSelect) {
 			onItemSelect(id, label);
@@ -201,7 +210,7 @@
 		}
 
 		if (!disableFocusHandling) {
-			listboxCtx.keyboardNav.focusById(id);
+			listboxCtx.keyboardNav.setCurrentId(id);
 		}
 	}
 
