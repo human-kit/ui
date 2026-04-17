@@ -26,6 +26,13 @@ describe('ComboBox.Input', () => {
 			await expect.element(input).toHaveAttribute('aria-autocomplete', 'list');
 		});
 
+		it('disables browser autocomplete', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveAttribute('autocomplete', 'off');
+		});
+
 		it('has aria-expanded matching open state', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');

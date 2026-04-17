@@ -73,4 +73,5 @@
 	value={ctx.selectedValue}
 	onChange={handleSelectionChange}
 	aria-label={ariaLabel}
+	disableFocusHandling={true}
 />

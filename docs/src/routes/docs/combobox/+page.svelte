@@ -126,7 +126,7 @@
 				description="Test all ComboBox props interactively, including the new popover enter and exit motion."
 			>
 				<div class="w-full max-w-xs">
-					<ComboBox.Root trigger={triggerMode} bind:inputValue bind:value={selectedValue}>
+					<ComboBox.Root trigger={triggerMode} bind:value={selectedValue}>
 						<div class="flex gap-1">
 							<ComboBox.Input
 								{placeholder}

@@ -32,6 +32,8 @@
 		'aria-label'?: string;
 		/** Callback fired when the selection changes. */
 		onChange?: (value: Set<string | number>) => void;
+		/** Disable DOM focus handling on the root container for virtual-focus compositions. */
+		disableFocusHandling?: boolean;
 	};
 
 	let {
@@ -47,6 +49,7 @@
 		id,
 		'aria-label': ariaLabel,
 		onChange,
+		disableFocusHandling = false,
 		context = $bindable(),
 		element = $bindable()
 	}: ListBoxProps & { context?: ListBoxContext; element?: HTMLElement } = $props();
@@ -136,6 +139,9 @@
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
 		ctx.setFocusVisible(false);
+		if (disableFocusHandling) {
+			event.preventDefault();
+		}
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -153,7 +159,7 @@
 	aria-multiselectable={selectionMode === 'multiple'}
 	aria-label={ariaLabel}
 	class={className}
-	tabindex="0"
+	tabindex={disableFocusHandling ? undefined : 0}
 	data-focus-within={focusWithin || undefined}
 	use:keyboardAction
 	onfocusin={handleFocusIn}

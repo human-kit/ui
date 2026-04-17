@@ -211,6 +211,15 @@
 		}
 	}
 
+	function syncInputValue(val: string, options?: { notifyInputChange?: boolean }) {
+		inputValueInternal = val;
+		inputValue = val;
+
+		if (options?.notifyInputChange ?? true) {
+			onInputChange?.(val);
+		}
+	}
+
 	function selectItem(id: string | number, label: string) {
 		let newSelection: Set<string | number>;
 
@@ -218,10 +227,9 @@
 			newSelection = new Set([id]);
 			// Save the label persistently for restore on blur/escape
 			selectedLabel = label;
-			// Update input directly without triggering deselection
-			inputValueInternal = label;
-			inputValue = label;
-			onInputChange?.(label);
+			// Keep the selected label visible in the input without re-triggering
+			// external filtering during the popover close animation.
+			syncInputValue(label, { notifyInputChange: false });
 			if (effectiveCloseOnSelect) {
 				closePopover(true); // Close and keep focus on input
 			}
@@ -318,6 +326,8 @@
 					onInputChange?.('');
 				}
 				// Otherwise user typed, keep their filter
+			} else {
+				shouldFilter = true;
 			}
 			setIsOpen(true);
 			// Auto-focus the selected item when opening with a selection
@@ -333,8 +343,6 @@
 		setIsOpen(false);
 		// Reset navigation state
 		navigation.reset();
-		// Re-enable filtering for next open
-		shouldFilter = true;
 		// Only refocus input when explicitly requested (e.g., after selection)
 		// Never refocus in focus mode to prevent re-opening
 		if (refocusInput && trigger !== 'focus') {
@@ -442,9 +450,7 @@
 		if (currentSelection.size > 0 && selectedLabel) {
 			if (selectedLabel !== currentInputValue) {
 				// Restore the selected label
-				inputValueInternal = selectedLabel;
-				inputValue = selectedLabel;
-				onInputChange?.(selectedLabel);
+				syncInputValue(selectedLabel, { notifyInputChange: false });
 			}
 		}
 	}
