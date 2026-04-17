@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.13
+
+### Patch Changes
+
+- [#35](https://github.com/Agustin-Delgado/svelte-components/pull/35) [`222642b`](https://github.com/Agustin-Delgado/svelte-components/commit/222642b4f73475d1912598a9724e148d80f73f4a) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix ComboBox and ListBox interaction regressions around input behavior, focus handling, and virtual focus scrolling.
+
+  This disables native browser autocomplete on ComboBox inputs, prevents the reused ListBox root from stealing DOM focus, avoids filtering flashes during popover close animations, and keeps hover-driven virtual focus from auto-scrolling overflowed option lists.
+
 ## 1.0.0-alpha.12
 
 ### Patch Changes
