@@ -191,7 +191,7 @@ describe('ComboBox.Item', () => {
 			const input = screen.getByRole('combobox');
 			const scrollIntoViewSpy = vi
 				.spyOn(HTMLElement.prototype, 'scrollIntoView')
-				.mockImplementation(() => { });
+				.mockImplementation(() => {});
 
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');
@@ -204,9 +204,9 @@ describe('ComboBox.Item', () => {
 			hoveredOption.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
 			hoveredOption.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
-			await expect.poll(() => input.element().getAttribute('aria-activedescendant')).toBe(
-				hoveredOption.id
-			);
+			await expect
+				.poll(() => input.element().getAttribute('aria-activedescendant'))
+				.toBe(hoveredOption.id);
 			expect(scrollIntoViewSpy).not.toHaveBeenCalled();
 
 			scrollIntoViewSpy.mockRestore();

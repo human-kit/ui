@@ -774,12 +774,12 @@ describe('ComboBox', () => {
 			const activeDescendantBeforeClick = input.element().getAttribute('aria-activedescendant');
 
 			const disabledOption = screen.getByRole('option', { name: 'Brazil' });
-			disabledOption.element().dispatchEvent(
-				new MouseEvent('mousedown', { bubbles: true, cancelable: true })
-			);
-			disabledOption.element().dispatchEvent(
-				new MouseEvent('click', { bubbles: true, cancelable: true })
-			);
+			disabledOption
+				.element()
+				.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+			disabledOption
+				.element()
+				.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 
 			expect(document.activeElement).toBe(input.element());
 			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
@@ -797,18 +797,16 @@ describe('ComboBox', () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
 
-			const consoleError = vi.spyOn(console, 'error').mockImplementation(() => { });
+			const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');
 
 			const listbox = screen.getByRole('listbox');
-			listbox.element().dispatchEvent(
-				new MouseEvent('mousedown', { bubbles: true, cancelable: true })
-			);
-			listbox.element().dispatchEvent(
-				new MouseEvent('click', { bubbles: true, cancelable: true })
-			);
+			listbox
+				.element()
+				.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+			listbox.element().dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 
 			expect(document.activeElement).toBe(input.element());
 			await userEvent.keyboard('{ArrowDown}');
