@@ -797,7 +797,7 @@ describe('ComboBox', () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
 
-			const consoleError = vi.spyOn(console, 'error').mockImplementation(() => { });
+			const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');
