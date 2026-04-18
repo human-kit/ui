@@ -123,4 +123,24 @@ describe('Table.Checkbox', () => {
 
 		await expect.poll(() => rowCheckbox.getAttribute('data-focus-visible')).toBeNull();
 	});
+
+	it('toggles row selection when clicking the checkbox root directly', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		await userEvent.click(rowCheckbox);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+	});
+
+	it('does not render an extra presentation wrapper around the checkbox root', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		expect(rowCheckbox.parentElement?.getAttribute('role')).not.toBe('presentation');
+	});
 });

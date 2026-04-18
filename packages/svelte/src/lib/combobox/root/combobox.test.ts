@@ -1149,6 +1149,25 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 			expect(onInputChangeMock).not.toHaveBeenCalledWith('Argentina');
 		});
+
+		it('does not collapse the first closing animation to only the selected option', async () => {
+			const ComboBoxFilteredTest = (await import('./combobox-filtered-test.svelte')).default;
+			const screen = render(ComboBoxFilteredTest, { trigger: 'focus' });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			const listbox = screen.getByRole('listbox').element();
+
+			await userEvent.keyboard('{Enter}');
+
+			await expect
+				.poll(() => {
+					const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+					return options.length;
+				})
+				.toBeGreaterThan(1);
+		});
 	});
 
 	describe('onInputChange Callback Behavior', () => {

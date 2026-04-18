@@ -50,7 +50,7 @@
 	const selectionVersion = table.selectionVersion;
 	const layoutVersion = table.layoutVersion;
 
-	let wrapperElement = $state<HTMLElement | undefined>(undefined);
+	let checkboxElement = $state<HTMLSpanElement | null>(null);
 	let checkboxChecked = $state(false);
 	let checkboxIndeterminate = $state(false);
 
@@ -103,7 +103,7 @@
 	});
 
 	function getCheckboxRootElement() {
-		return wrapperElement?.querySelector<HTMLElement>('[data-checkbox-root="true"]') ?? undefined;
+		return checkboxElement ?? undefined;
 	}
 
 	$effect(() => {
@@ -142,6 +142,27 @@
 		checkboxElement.tabIndex = tabIndex;
 	});
 
+	$effect(() => {
+		const checkboxElement = getCheckboxRootElement();
+		if (!checkboxElement) return;
+
+		const handleElementFocus = (event: FocusEvent) => {
+			handleFocusIn(event);
+		};
+
+		const handleElementMouseDown = (event: MouseEvent) => {
+			handleMouseDown(event);
+		};
+
+		checkboxElement.addEventListener('focus', handleElementFocus);
+		checkboxElement.addEventListener('mousedown', handleElementMouseDown);
+
+		return () => {
+			checkboxElement.removeEventListener('focus', handleElementFocus);
+			checkboxElement.removeEventListener('mousedown', handleElementMouseDown);
+		};
+	});
+
 	function applySelection(nextChecked: boolean) {
 		if (isDisabled) return;
 
@@ -165,11 +186,6 @@
 		table.setFocusVisible(shouldShowFocusVisible(target ?? null));
 	}
 
-	function handleFocusOut(event: FocusEvent) {
-		const nextFocused = event.relatedTarget;
-		if (nextFocused instanceof Node && wrapperElement?.contains(nextFocused)) return;
-	}
-
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, getCheckboxRootElement() ?? null);
 		table.setFocusVisible(false);
@@ -179,6 +195,9 @@
 	function handleClick(event: MouseEvent) {
 		event.stopPropagation();
 		if (!isVisible || isDisabled) return;
+		event.preventDefault();
+		const nextChecked = section.section === 'header' ? checkboxState !== 'all' : !isChecked;
+		applySelection(nextChecked);
 		table.focusCellByKey(cell.cellKey);
 	}
 
@@ -259,29 +278,22 @@
 </script>
 
 {#if isVisible}
-	<div
-		bind:this={wrapperElement}
-		role="presentation"
-		onfocusin={handleFocusIn}
-		onfocusout={handleFocusOut}
-		onmousedown={handleMouseDown}
+	<Checkbox.Root
+		{id}
+		bind:element={checkboxElement}
+		bind:isChecked={checkboxChecked}
+		bind:isIndeterminate={checkboxIndeterminate}
+		{isDisabled}
+		onCheckedChange={applySelection}
+		{title}
+		aria-label={accessibleLabel}
+		aria-labelledby={ariaLabelledby}
+		data-table-checkbox="true"
 		onclick={handleClick}
 		onkeydown={handleKeyDown}
+		class={className}
+		{...restProps}
 	>
-		<Checkbox.Root
-			{id}
-			bind:isChecked={checkboxChecked}
-			bind:isIndeterminate={checkboxIndeterminate}
-			{isDisabled}
-			onCheckedChange={applySelection}
-			{title}
-			aria-label={accessibleLabel}
-			aria-labelledby={ariaLabelledby}
-			data-table-checkbox="true"
-			class={className}
-			{...restProps}
-		>
-			{@render children?.()}
-		</Checkbox.Root>
-	</div>
+		{@render children?.()}
+	</Checkbox.Root>
 {/if}

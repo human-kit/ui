@@ -159,6 +159,19 @@
 		isFocusVisible = false;
 	});
 
+	$effect(() => {
+		if (!isFocusedComputed) {
+			if (pressedKey !== null) {
+				clearPressedState();
+			}
+			return;
+		}
+
+		if (listFocusVisible || isFocusVisibleComputed) {
+			isHovered = false;
+		}
+	});
+
 	function clearPressedState() {
 		isPressed = false;
 		pressedKey = null;

@@ -163,6 +163,22 @@ describe('ListBox.Item', () => {
 			expect(options[0].getAttribute('data-hovered')).toBeNull();
 			expect(options[0].getAttribute('data-focus-visible')).toBe('true');
 		});
+
+		it('restores data-focus-visible when keyboard navigation returns to a pointer-selected item', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await userEvent.click(options[0] as HTMLElement);
+
+			expect(options[0].getAttribute('data-focus-visible')).toBeNull();
+
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{ArrowUp}');
+
+			await expect.poll(() => options[0].getAttribute('data-focus-visible')).toBe('true');
+			expect((options[0] as HTMLElement).matches(':focus-visible')).toBe(true);
+		});
 	});
 
 	describe('Hover State', () => {
@@ -233,6 +249,28 @@ describe('ListBox.Item', () => {
 			const options = listbox.element().querySelectorAll('[role="option"]');
 			expect(options[1].getAttribute('data-pressed')).toBe('true');
 			expect(options[2].getAttribute('data-pressed')).toBeNull();
+		});
+
+		it('clears pressed state when focus moves while Space is still held', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await userEvent.keyboard('{Space>}');
+			await expect.poll(() => options[0].getAttribute('data-pressed')).toBe('true');
+
+			await userEvent.keyboard('{ArrowDown}');
+
+			await expect.poll(() => options[0].getAttribute('data-pressed')).toBeNull();
+			expect(options[1].getAttribute('data-pressed')).toBeNull();
+
+			await userEvent.keyboard('{/Space}');
+			for (const option of options) {
+				expect(option.getAttribute('data-pressed')).toBeNull();
+			}
 		});
 	});
 

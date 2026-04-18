@@ -39,6 +39,12 @@ describe('ListBox', () => {
 			await expect.element(listbox).toHaveAttribute('tabindex', '0');
 		});
 
+		it('does not render the empty placeholder while static items are mounting', async () => {
+			render(ListBoxTest);
+
+			expect(document.querySelector('[data-empty-placeholder]')).toBeNull();
+		});
+
 		it('exposes root focus contract attributes during keyboard flow', async () => {
 			const screen = render(ListBoxTest);
 			const listbox = screen.getByRole('listbox');
