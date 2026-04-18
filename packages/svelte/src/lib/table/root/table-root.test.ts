@@ -365,6 +365,102 @@ describe('Table.Root', () => {
 		expect(document.querySelector('tbody tr')?.getAttribute('data-selected')).toBe('true');
 	});
 
+	it('runs onRowAction on click when selectionMode is none', async () => {
+		render(TableTest, {
+			selectionMode: 'none',
+			onRowAction: vi.fn()
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		await userEvent.click(firstBodyCell);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="row-action-log"]')?.textContent)
+			.toBe('["danilo"]');
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('[]');
+		expect(firstBodyCell.getAttribute('data-actionable')).toBe('true');
+	});
+
+	it('runs onRowAction on click in toggle mode when selection is empty', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'toggle',
+			onRowAction: vi.fn()
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		await userEvent.click(firstBodyCell);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="row-action-log"]')?.textContent)
+			.toBe('["danilo"]');
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('[]');
+	});
+
+	it('switches row click to selection in toggle mode once an active selection exists', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'toggle',
+			initialSelectedKeys: ['danilo'],
+			onRowAction: vi.fn()
+		});
+		const secondBodyCell = getBodyFirstColumnCells(document.body)[1];
+
+		await userEvent.click(secondBodyCell);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo","zahra"]');
+		expect(document.querySelector('[data-testid="row-action-log"]')?.textContent).toBe('[]');
+		expect(secondBodyCell.getAttribute('data-actionable')).toBe('true');
+	});
+
+	it('uses Enter for action and Space for selection when onRowAction is provided', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'toggle',
+			onRowAction: vi.fn()
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		firstBodyCell.focus();
+		await userEvent.keyboard('{Enter}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="row-action-log"]')?.textContent)
+			.toBe('["danilo"]');
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('[]');
+
+		await userEvent.keyboard(' ');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+		await expect
+			.poll(() => document.querySelector('[data-testid="event-log"]')?.textContent)
+			.toBe('["action:danilo","selection:[\\"danilo\\"]"]');
+	});
+
+	it('selects on click and runs action on double click in replace mode with callback ordering', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'replace',
+			onRowAction: vi.fn()
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		await userEvent.dblClick(firstBodyCell);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+		await expect
+			.poll(() => document.querySelector('[data-testid="event-log"]')?.textContent)
+			.toBe('["selection:[\\"danilo\\"]","action:danilo"]');
+	});
+
 	it('toggles off an already selected row when selectionBehavior is toggle', async () => {
 		render(TableTest, {
 			selectionMode: 'multiple',
@@ -505,6 +601,23 @@ describe('Table.Root', () => {
 			.toContain('zahra');
 	});
 
+	it('extends selection with Shift+Space in replace mode', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'replace'
+		});
+		const firstBodyCell = getBodyFirstColumnCells(document.body)[0];
+		const thirdBodyCell = getBodyFirstColumnCells(document.body)[2];
+
+		await userEvent.click(firstBodyCell);
+		thirdBodyCell.focus();
+		await userEvent.keyboard('{Shift>} {/Shift}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo","zahra","jasper"]');
+	});
+
 	it('preserves the bottom anchor when extending upward with Shift+ArrowUp in replace mode', async () => {
 		render(TableTest, {
 			selectionMode: 'multiple',
@@ -556,6 +669,39 @@ describe('Table.Root', () => {
 		firstBodyCell.dispatchEvent(
 			new KeyboardEvent('keydown', { key: ' ', bubbles: true, repeat: true })
 		);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+	});
+
+	it('allows Space to deselect the current row in replace mode when empty selection is allowed', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'replace',
+			initialSelectedKeys: ['danilo']
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		firstBodyCell.focus();
+		await userEvent.keyboard(' ');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('[]');
+	});
+
+	it('keeps one row selected in replace mode when disallowEmptySelection is true', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'replace',
+			disallowEmptySelection: true,
+			initialSelectedKeys: ['danilo']
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		firstBodyCell.focus();
+		await userEvent.keyboard(' ');
 
 		await expect
 			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
@@ -730,6 +876,72 @@ describe('Table.Root', () => {
 			'zahra'
 		);
 		expect(document.querySelectorAll('tbody tr')[1]?.getAttribute('data-disabled')).toBe('true');
+	});
+
+	it('allows actions but blocks selection for disabled rows when disabledBehavior is selection', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'toggle',
+			disabledBehavior: 'selection',
+			disabledKeys: ['zahra'],
+			onRowAction: vi.fn()
+		});
+		const secondBodyCell = getBodyFirstColumnCells(document.body)[1];
+		const secondRow = document.querySelectorAll<HTMLElement>('tbody tr')[1];
+
+		await userEvent.click(secondBodyCell);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="row-action-log"]')?.textContent)
+			.toBe('["zahra"]');
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('[]');
+		expect(secondRow.getAttribute('data-disabled')).toBeNull();
+		expect(secondRow.getAttribute('data-selection-disabled')).toBe('true');
+		expect(secondRow.getAttribute('aria-description')).toBeNull();
+		expect(secondBodyCell.getAttribute('aria-describedby')).toBeTruthy();
+		expect(
+			document.getElementById(secondBodyCell.getAttribute('aria-describedby') ?? '')?.textContent
+		).toBe('Selection unavailable for this row.');
+		expect(secondBodyCell.getAttribute('aria-disabled')).toBeNull();
+		expect(document.querySelector('[role="grid"]')?.getAttribute('data-disabled-behavior')).toBe(
+			'selection'
+		);
+	});
+
+	it('allows Enter row actions on selection-disabled rows', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			disabledBehavior: 'selection',
+			disabledKeys: ['zahra'],
+			onRowAction: vi.fn()
+		});
+		const secondBodyCell = getBodyFirstColumnCells(document.body)[1];
+
+		secondBodyCell.focus();
+		await userEvent.keyboard('{Enter}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="row-action-log"]')?.textContent)
+			.toBe('["zahra"]');
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('[]');
+	});
+
+	it('blocks focus, selection, and actions for disabled rows when disabledBehavior is all', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			disabledBehavior: 'all',
+			disabledKeys: ['zahra'],
+			onRowAction: vi.fn()
+		});
+		const secondBodyCell = getBodyFirstColumnCells(document.body)[1];
+		const secondRow = document.querySelectorAll<HTMLElement>('tbody tr')[1];
+
+		secondBodyCell.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+		expect(document.querySelector('[data-testid="row-action-log"]')?.textContent).toBe('[]');
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('[]');
+		expect(secondRow.getAttribute('data-disabled')).toBe('true');
+		expect(secondBodyCell.getAttribute('tabindex')).toBeNull();
 	});
 
 	it('does not make disabled body cells focusable', async () => {

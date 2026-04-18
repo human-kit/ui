@@ -390,7 +390,7 @@ Responsibilities:
 - drag and drop
 - async loading / load more
 - API pública dinámica con `items` y `columns`
-- row actions / row links
+- row links / `href`-style navigation semantics
 - typeahead
 - focus management para elementos interactivos dentro de `Cell`
 - focus management for interactive elements inside `Cell`
@@ -406,22 +406,23 @@ Responsibilities:
 
 ## Advanced Feature Matrix
 
-| Feature                            | Main Complexity                                            | Risk        | Recommendation     |
-| ---------------------------------- | ---------------------------------------------------------- | ----------- | ------------------ |
-| Column resizing                    | width state, handles, pointer + keyboard, persistence      | high        | next planned phase |
-| Drag and drop                      | reorder, drop targets, SR + keyboard + pointer             | very high   | keep out of v1     |
-| Async loading / load more          | scroll state, sentinel rows, partial states                | high        | keep out of v1     |
-| Dynamic `items` / `columns` API    | collection, stable ids, render functions, memoization      | high        | defer              |
-| Row actions / row links            | conflicts between actions, selection, and HTML limitations | medium/high | defer              |
-| Interactive content inside `Cell`  | focus handoff between grid and nested controls             | very high   | keep out of v1     |
-| Typeahead                          | depends on stable collection and consistent `textValue`    | medium      | defer              |
-| Nested headers / column groups     | spans, navigation, and complex semantics                   | high        | keep out of v1     |
-| Cell selection                     | changes the entire interaction model                       | high        | keep out of v1     |
-| Full `selectionBehavior="replace"` | modifiers and fine-grained focus/selection semantics       | medium/high | defer              |
-| Virtualization                     | strong decoupling between collection and DOM               | very high   | keep out of v1     |
-| Integrated select-all              | useful UX but depends on mature selection behavior         | medium      | phase 2            |
-| Complex `colSpan` / `rowSpan`      | breaks the rectangular grid model                          | high        | defer              |
-| Navigable footer                   | adds another region to the focus model                     | medium      | avoid in v1        |
+| Feature                            | Main Complexity                                          | Risk        | Recommendation     |
+| ---------------------------------- | -------------------------------------------------------- | ----------- | ------------------ |
+| Column resizing                    | width state, handles, pointer + keyboard, persistence    | high        | next planned phase |
+| Drag and drop                      | reorder, drop targets, SR + keyboard + pointer           | very high   | keep out of v1     |
+| Async loading / load more          | scroll state, sentinel rows, partial states              | high        | keep out of v1     |
+| Dynamic `items` / `columns` API    | collection, stable ids, render functions, memoization    | high        | defer              |
+| Row actions / `onRowAction`        | action-selection conflicts across mouse and keyboard     | medium/high | next planned phase |
+| Row links / `href` semantics       | HTML limitations, router integration, native link parity | high        | defer              |
+| Interactive content inside `Cell`  | focus handoff between grid and nested controls           | very high   | keep out of v1     |
+| Typeahead                          | depends on stable collection and consistent `textValue`  | medium      | defer              |
+| Nested headers / column groups     | spans, navigation, and complex semantics                 | high        | keep out of v1     |
+| Cell selection                     | changes the entire interaction model                     | high        | keep out of v1     |
+| Full `selectionBehavior="replace"` | modifiers and fine-grained focus/selection semantics     | medium/high | defer              |
+| Virtualization                     | strong decoupling between collection and DOM             | very high   | keep out of v1     |
+| Integrated select-all              | useful UX but depends on mature selection behavior       | medium      | phase 2            |
+| Complex `colSpan` / `rowSpan`      | breaks the rectangular grid model                        | high        | defer              |
+| Navigable footer                   | adds another region to the focus model                   | medium      | avoid in v1        |
 
 ## Proposed Internal Architecture
 
@@ -918,6 +919,428 @@ Minimum regression coverage:
 - sorting and selection work without ambiguity
 - tests cover critical behavior
 - the implementation leaves real room for future phases without breaking the API
+
+## Phase 3: Row Actions and Disabled Behavior Plan
+
+### Goal
+
+Add row actions in a way that matches the React Aria Components mental model closely enough for consumers to predict behavior, while still fitting the existing `Table` architecture in this repository:
+
+- `Table.Root` remains the single owner of interaction state
+- `Table.Row` and `Table.Cell` remain semantic wrappers over native table elements
+- selection and actions are treated as related but distinct interactions
+- disabled state becomes more explicit so selection-only disabling does not accidentally disable focus or actions
+
+This phase is specifically about `onRowAction` and `disabledBehavior`. It does not attempt to solve full row-as-link semantics or nested interactive controls inside arbitrary cells.
+
+### Reference Behavior
+
+The intended behavioral reference is React Aria's collection model for selection and item actions:
+
+- `selectionBehavior="toggle"` keeps action as the primary row press interaction until the user enters a selection state
+- `selectionBehavior="replace"` makes selection the primary pointer interaction and uses double click for row actions
+- keyboard behavior separates selection from action more strictly:
+  - `Space` is selection-oriented
+  - `Enter` is action-oriented when actions are available
+
+The goal is functional parity for the supported cases, not a byte-for-byte clone of RAC internals.
+
+### Public API Recommendation
+
+#### `Table.Root`
+
+Add the following props:
+
+- `onRowAction?: (id: TableSelectionKey) => void`
+- `disabledBehavior?: 'selection' | 'all'`
+
+Prerequisite:
+
+- `selectionBehavior?: 'toggle' | 'replace'` must already exist and be part of the stable `Table.Root` contract for this phase to make sense. This phase depends on the existing selection-behavior model rather than introducing a parallel row-press API.
+
+Defaults:
+
+- `onRowAction` default: `undefined`
+- `disabledBehavior` default: `'all'`
+
+Rationale:
+
+- `onRowAction` belongs at the collection root because the component is built around row ids and centralized interaction state
+- `disabledBehavior` also belongs at the root because the current disabled model is collection-driven (`disabledKeys`) and should stay consistent across row-local and root-provided disabled state
+
+#### No New `rowPressBehavior` Prop
+
+This phase should not add a new `rowPressBehavior` prop.
+
+Reasons:
+
+- the desired behavior is already derivable from the combination of:
+  - `onRowAction`
+  - `selectionMode`
+  - `selectionBehavior`
+- React Aria already establishes a recognizable interaction contract based on those inputs
+- a separate `rowPressBehavior` prop would create redundant states and undocumented invalid combinations
+
+### Interaction Model
+
+#### Core Principle
+
+There are now three distinct row-level concepts:
+
+1. row focus
+2. row selection
+3. row action
+
+The implementation must stop treating `pressRow()` as if it were synonymous with selection. A row press should first be classified, then routed to either selection logic, action logic, or both depending on the active mode.
+
+#### Pointer Behavior Without `onRowAction`
+
+When `onRowAction` is not provided, the component should preserve the current selection semantics:
+
+- `selectionMode="none"`: row/cell click does nothing selection-related
+- `selectionBehavior="toggle"`: row/cell click toggles selection
+- `selectionBehavior="replace"`: row/cell click replaces selection according to current replace-mode rules
+
+This preserves backwards compatibility.
+
+#### Pointer Behavior With `onRowAction`
+
+##### `selectionMode="none"`
+
+Regardless of `selectionBehavior`:
+
+- single click on row or cell executes `onRowAction(id)`
+- double click does not have special meaning beyond the browser's normal click sequence
+- no selection state is changed
+
+##### `selectionBehavior="toggle"` with selection enabled
+
+When `selectionMode` is `single` or `multiple` and `onRowAction` exists:
+
+- if the table currently has no selected rows:
+  - single click executes `onRowAction(id)`
+  - click does not change row selection
+- if the table currently has at least one selected row:
+  - single click on a row follows toggle selection semantics
+  - click does not execute `onRowAction`
+
+This matches the RAC notion that action is the default press interaction until the user has entered a selection workflow.
+
+Important documentation note:
+
+- this behavior changes dynamically based on whether the table currently has an active selection
+- that dynamic switch is powerful but can also surprise consumers and end users if it is not documented clearly
+- docs should call this out explicitly and describe it as an intentional RAC-aligned interaction model rather than a bug or inconsistency
+- if future consumer feedback shows this is too implicit, a dedicated escape hatch can be evaluated later, but this phase should ship the RAC-style default first
+
+##### `selectionBehavior="replace"` with selection enabled
+
+When `selectionMode` is `single` or `multiple` and `onRowAction` exists:
+
+- single click selects the row using replace-mode semantics
+- double click executes `onRowAction(id)`
+- the first click of the double-click sequence still performs selection
+
+Callback ordering requirement:
+
+- because the first click in the double-click sequence performs selection, `onSelectionChange` must fire before `onRowAction`
+- docs should state this ordering explicitly so consumers do not assume the action callback is the first observable event in the interaction
+
+This is the clearest and most familiar desktop-style interaction model for replace mode.
+
+### Keyboard Model
+
+#### Rows and Cells Without `onRowAction`
+
+Keep existing behavior:
+
+- `Enter` and `Space` continue to use selection behavior when appropriate
+
+#### Rows and Cells With `onRowAction`
+
+Apply the following contract in body rows:
+
+- `Enter` executes `onRowAction(id)` when the row is actionable
+- `Space` performs selection when selection is allowed for that row
+- arrow keys keep their existing focus/navigation behavior
+
+This keyboard split applies even when pointer behavior differs between `toggle` and `replace`.
+
+#### Detailed Keyboard Rules
+
+| State                                      | `Enter`                    | `Space`                    |
+| ------------------------------------------ | -------------------------- | -------------------------- |
+| `selectionMode="none"` + `onRowAction`     | action                     | no-op                      |
+| `selectionMode="single"` + `onRowAction`   | action                     | selection                  |
+| `selectionMode="multiple"` + `onRowAction` | action                     | selection                  |
+| any mode without `onRowAction`             | current selection behavior | current selection behavior |
+
+Notes:
+
+- in `replace` mode, `Space` must not be treated as action even though pointer uses double click for action
+- `Ctrl/Cmd+Space` in `multiple` + `replace` should preserve the existing non-contiguous selection behavior
+- `Shift+ArrowUp/Down` in `replace` should continue to extend selection; `onRowAction` must not interfere with that contract
+
+### Checkbox Interaction Rules
+
+`Table.Checkbox` remains the explicit selection affordance.
+
+Rules:
+
+- checkbox interactions must never trigger `onRowAction`
+- checkbox interaction should continue to stop propagation so row presses are not synthesized accidentally
+- when `disabledBehavior="selection"`, the checkbox is disabled even if the row remains actionable
+- checkbox semantics remain selection-only, even when `selectionBehavior="replace"`
+
+This preserves a clean mental model: checkbox equals selection, row press may mean action or selection depending on state.
+
+### `disabledBehavior` Semantics
+
+#### `'all'`
+
+This is the current effective behavior and should remain the default.
+
+When a row is disabled by `disabledKeys` or `Table.Row isDisabled` and `disabledBehavior="all"`:
+
+- row cannot be selected
+- row cannot trigger `onRowAction`
+- row is skipped by focus navigation
+- row should not be tabbable directly
+- body cells in that row should not be tabbable directly
+- checkbox is disabled
+
+#### `'selection'`
+
+When a row is disabled and `disabledBehavior="selection"`:
+
+- row cannot be selected
+- row cannot be added to or removed from selection by click
+- row cannot be selected by `Space`
+- row cannot be selected via replace-mode arrow synchronization
+- checkbox is disabled
+- row can still receive focus
+- row can still participate in keyboard navigation
+- row can still trigger `onRowAction`
+
+This mode means disabled-for-selection, not disabled-for-interaction.
+
+### Disabled State Matrix
+
+| Condition                                     | Focusable | Selectable                | Actionable                     |
+| --------------------------------------------- | --------- | ------------------------- | ------------------------------ |
+| enabled row                                   | yes       | yes, per selection config | yes, when `onRowAction` exists |
+| disabled row + `disabledBehavior="all"`       | no        | no                        | no                             |
+| disabled row + `disabledBehavior="selection"` | yes       | no                        | yes, when `onRowAction` exists |
+
+### Recommended Internal Refactor
+
+#### Split the Existing Disabled Model
+
+The current `isRowDisabled()` helper is too coarse for the new behavior. Internally, the root context should introduce separate predicates, or equivalent derived logic, for:
+
+- row disabled for focus/navigation
+- row disabled for selection
+- row disabled for action
+
+The public API does not need to expose all of these separately, but the internal model should.
+
+Recommended internal helpers:
+
+- `isRowSelectionDisabled(id, localDisabled?)`
+- `isRowActionDisabled(id, localDisabled?)`
+- `isRowInteractionDisabled(id, localDisabled?)`
+- `canRowReceiveFocus(id, localDisabled?)`
+
+These names are illustrative; exact naming can be refined during implementation.
+
+#### Split the Existing Press Pipeline
+
+The current `pressRow()` API is selection-oriented. This phase should replace that single concept with a more explicit pipeline.
+
+Recommended root-level methods:
+
+- `performRowAction(id)`
+- `pressRowSelection(id, interaction)`
+- `pressRow(id, source, interaction)` as a coordinator, or equivalent separate handlers
+
+The coordinator should decide behavior using:
+
+- presence of `onRowAction`
+- `selectionMode`
+- `selectionBehavior`
+- whether there is an active selection
+- whether the row is disabled for selection or for all interactions
+- whether the source was pointer single click, pointer double click, `Enter`, or `Space`
+
+### Affected Parts
+
+#### `root/context.ts`
+
+Will need to own:
+
+- `onRowAction`
+- `disabledBehavior`
+- selection-disabled vs action-disabled resolution
+- row action dispatch helpers
+- press classification helpers
+
+#### `root/table-root.svelte`
+
+Will need to:
+
+- accept and sync the new props into context
+- expose any new root-level data attributes if useful for styling/debugging
+
+#### `row/table-row.svelte`
+
+Will need to:
+
+- update row tabbability based on `disabledBehavior`
+- handle `Enter` as action when available
+- handle `Space` as selection when available
+- ensure row-level keydown no longer assumes `Enter` and `Space` are always equivalent
+
+#### `cell/table-cell.svelte`
+
+Will need to:
+
+- classify pointer click behavior differently when `onRowAction` exists
+- support double-click action in `replace` mode
+- align keydown behavior with the row contract so focus target does not change semantics
+
+#### `checkbox/table-checkbox.svelte`
+
+Will need to:
+
+- disable itself from selection-only disabled rows
+- keep stopping propagation so row actions are not accidentally fired
+- preserve explicit selection behavior independently from row-action semantics
+
+### Event Contract Recommendation
+
+For the first release of this feature, `onRowAction` should receive only the row id:
+
+```ts
+onRowAction?: (id: TableSelectionKey) => void;
+```
+
+Reasons:
+
+- aligns with the current root-level API style (`onSelectionChange`, `onSortChange`)
+- keeps the surface simple while the interaction model is still stabilizing
+- avoids prematurely freezing an event-detail contract that may need more nuance later
+
+If consumers later need trigger metadata, a future non-breaking addition could evolve this to an object payload or add a second callback.
+
+### Data Attribute Plan
+
+This phase should add row-level state markers for styling and debugging:
+
+- `data-actionable="true"` when the row can trigger `onRowAction`
+- `data-disabled-behavior="selection" | "all"` on `Table.Root`
+- `data-selection-disabled="true"` on rows/cells when selection is blocked but action remains available
+
+`data-actionable` should be treated as required for this phase rather than optional.
+
+Reasons:
+
+- consumers need a reliable styling hook for actionable rows
+- cursor styling depends on this (`cursor: pointer` vs default)
+- once row actions exist, actionable state is part of the public styling contract rather than an internal implementation detail
+
+### Accessibility Plan
+
+Requirements for this phase:
+
+- rows that are action-enabled but selection-disabled must still expose coherent keyboard interaction
+- `aria-disabled` should only reflect non-interactive rows under `disabledBehavior="all"`
+- rows disabled only for selection should not be presented as fully disabled if they remain actionable and focusable
+- checkbox disabled state must remain announced correctly
+
+Explicit decision:
+
+- rows under `disabledBehavior="selection"` should not add compensating `aria-roledescription` just to explain partial disabled state
+- the row should remain announced according to its normal table/grid semantics
+- the disabled checkbox remains the primary assistive-technology signal that selection is unavailable
+- docs should explain that selection-only disabled rows are still actionable and focusable, while accessibility semantics stay conservative rather than inventing a custom roledescription
+
+This is important because reusing the current all-or-nothing `aria-disabled` contract under `disabledBehavior="selection"` would misrepresent the row to assistive technology.
+
+### Behavior Matrix
+
+#### Pointer Summary
+
+| `selectionMode`       | `selectionBehavior`   | `onRowAction`                | row click         | row double click       |
+| --------------------- | --------------------- | ---------------------------- | ----------------- | ---------------------- |
+| `none`                | `toggle` or `replace` | no                           | no-op             | no-op                  |
+| `none`                | `toggle` or `replace` | yes                          | action            | same as click sequence |
+| `single` / `multiple` | `toggle`              | no                           | selection toggle  | same as click sequence |
+| `single` / `multiple` | `toggle`              | yes, no active selection     | action            | same as click sequence |
+| `single` / `multiple` | `toggle`              | yes, active selection exists | selection toggle  | same as click sequence |
+| `single` / `multiple` | `replace`             | no                           | replace selection | same as click sequence |
+| `single` / `multiple` | `replace`             | yes                          | replace selection | action                 |
+
+#### Keyboard Summary
+
+| `selectionMode`       | `onRowAction` | `Enter`                     | `Space`                     |
+| --------------------- | ------------- | --------------------------- | --------------------------- |
+| `none`                | no            | no-op                       | no-op                       |
+| `none`                | yes           | action                      | no-op                       |
+| `single` / `multiple` | no            | existing selection behavior | existing selection behavior |
+| `single` / `multiple` | yes           | action                      | selection                   |
+
+### Testing Plan
+
+Minimum regression coverage:
+
+- `selectionMode="none"` + `onRowAction` triggers action on row click
+- basic pointer action tests should land before double-click support so the action pipeline is validated incrementally
+- `selectionBehavior="toggle"` + `onRowAction` triggers action on click when selection is empty
+- `selectionBehavior="toggle"` + `onRowAction` toggles selection on click once a selection exists
+- `selectionBehavior="replace"` + `onRowAction` selects on click and acts on double click
+- `Enter` triggers action and `Space` triggers selection when both are available
+- `disabledBehavior="selection"` disables checkbox and selection changes but still allows action
+- `disabledBehavior="all"` blocks focus, selection, and action
+- disabled rows under `selection` are skipped by selection sync but not by pure focus navigation
+- disabled row + `disabledBehavior="selection"` + `onRowAction` + `Enter` triggers action
+- checkbox never triggers `onRowAction`
+- existing replace-mode selection extension (`Shift+Arrow`, `Ctrl/Cmd+Space`) remains intact
+
+### Documentation Plan
+
+Docs and README updates should include:
+
+- a new section explaining the difference between row actions and row selection
+- examples for:
+  - action-only rows (`selectionMode="none"`)
+  - mixed action + selection in `toggle`
+  - mixed action + selection in `replace`
+  - `disabledBehavior="selection"`
+- an explicit note that in `toggle` mode the meaning of row click changes when a selection becomes active
+- an explicit note that in `replace` mode double click emits callbacks in the order `onSelectionChange` then `onRowAction`
+- an explicit note that this phase does not implement full row link semantics
+
+### Explicit Non-Goals
+
+This phase should not attempt to solve:
+
+- `href`, `target`, or router-aware row navigation APIs
+- native-link-equivalent semantics for rows
+- nested buttons, links, inputs, or menus inside arbitrary body cells
+- touch-specific long-press selection mode switching
+
+These can be revisited later, but they should not block the collection-level row action API.
+
+### Recommended Implementation Order
+
+1. Add `onRowAction` and `disabledBehavior` to `Table.Root` and root context.
+2. Refactor disabled-state helpers into selection-vs-action-aware logic.
+3. Refactor row press handling so action and selection are separate pathways, and land basic pointer single-click action tests immediately.
+4. Update `Table.Row` and `Table.Cell` keyboard semantics (`Enter` vs `Space`).
+5. Add pointer double-click support for `replace` mode only after the basic action pipeline is covered by tests.
+6. Update `Table.Checkbox` for selection-only disabled rows.
+7. Add regression tests for the full matrix, including callback ordering and disabled-row keyboard action coverage.
+8. Document examples and caveats, especially the dynamic `toggle`-mode switch, callback ordering in `replace`, and the non-goal of row link semantics.
 
 ## Recommended Next Step
 

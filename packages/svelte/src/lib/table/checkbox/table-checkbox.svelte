@@ -51,6 +51,8 @@
 	const layoutVersion = table.layoutVersion;
 
 	let wrapperElement = $state<HTMLElement | undefined>(undefined);
+	let checkboxChecked = $state(false);
+	let checkboxIndeterminate = $state(false);
 
 	const isVisible = $derived.by(() => {
 		if (table.selectionMode === 'none') return false;
@@ -83,7 +85,7 @@
 			return !table.hasSelectableRows();
 		}
 		if (section.section === 'body') {
-			return table.isRowDisabled(row.rowId, row.isDisabled) || row.rowId === undefined;
+			return table.isRowSelectionDisabled(row.rowId, row.isDisabled) || row.rowId === undefined;
 		}
 		return true;
 	});
@@ -103,6 +105,17 @@
 	function getCheckboxRootElement() {
 		return wrapperElement?.querySelector<HTMLElement>('[data-checkbox-root="true"]') ?? undefined;
 	}
+
+	$effect(() => {
+		void $selectionVersion;
+		checkboxChecked = isChecked;
+	});
+
+	$effect(() => {
+		void $selectionVersion;
+		void $layoutVersion;
+		checkboxIndeterminate = isIndeterminate;
+	});
 
 	$effect(() => {
 		if (!isVisible || isDisabled) {
@@ -257,8 +270,8 @@
 	>
 		<Checkbox.Root
 			{id}
-			{isChecked}
-			{isIndeterminate}
+			bind:isChecked={checkboxChecked}
+			bind:isIndeterminate={checkboxIndeterminate}
 			{isDisabled}
 			onCheckedChange={applySelection}
 			{title}

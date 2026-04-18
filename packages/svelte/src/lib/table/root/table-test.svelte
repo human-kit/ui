@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Table } from '../index';
 	import type {
+		TableDisabledBehavior,
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode,
@@ -25,11 +26,15 @@
 		ariaLabelledby?: string;
 		selectionMode?: TableSelectionMode;
 		selectionBehavior?: TableSelectionBehavior;
+		disabledBehavior?: TableDisabledBehavior;
+		disallowEmptySelection?: boolean;
 		hiddenColumns?: string[];
 		defaultHiddenColumns?: string[];
 		disabledKeys?: Iterable<TableSelectionKey>;
 		initialSelectedKeys?: Iterable<TableSelectionKey>;
 		initialSortDescriptor?: TableSortDescriptor;
+		onRowAction?: (id: TableSelectionKey) => void;
+		onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 		showSelectionModeToggle?: boolean;
 		showSingleSelectionModeToggle?: boolean;
 		showSortClearButton?: boolean;
@@ -42,11 +47,15 @@
 		ariaLabelledby,
 		selectionMode = $bindable<TableSelectionMode>('multiple'),
 		selectionBehavior = 'toggle',
+		disabledBehavior = 'all',
+		disallowEmptySelection = false,
 		hiddenColumns = $bindable<string[] | undefined>(),
 		defaultHiddenColumns,
 		disabledKeys,
 		initialSelectedKeys,
 		initialSortDescriptor,
+		onRowAction,
+		onSelectionChange,
 		showSelectionModeToggle = false,
 		showSingleSelectionModeToggle = false,
 		showSortClearButton = false,
@@ -59,6 +68,8 @@
 	let currentSortDescriptor = $state<TableSortDescriptor | undefined>(
 		(() => initialSortDescriptor)()
 	);
+	let rowActionLog = $state<string[]>([]);
+	let eventLog = $state<string[]>([]);
 
 	const renderedRows = $derived.by(() => {
 		const nextRows = [...rows];
@@ -71,6 +82,18 @@
 			return String(left).localeCompare(String(right)) * direction;
 		});
 	});
+
+	function handleSelectionChange(keys: Set<TableSelectionKey>) {
+		currentSelectedKeys = new Set(keys);
+		eventLog = [...eventLog, `selection:${JSON.stringify([...keys])}`];
+		onSelectionChange?.(new Set(keys));
+	}
+
+	function handleRowAction(id: TableSelectionKey) {
+		rowActionLog = [...rowActionLog, String(id)];
+		eventLog = [...eventLog, `action:${String(id)}`];
+		onRowAction?.(id);
+	}
 </script>
 
 <Table.Root
@@ -78,11 +101,15 @@
 	aria-labelledby={ariaLabelledby}
 	{selectionMode}
 	{selectionBehavior}
+	{disabledBehavior}
+	{disallowEmptySelection}
 	bind:hiddenColumns
 	{defaultHiddenColumns}
 	bind:selectedKeys={currentSelectedKeys}
 	bind:sortDescriptor={currentSortDescriptor}
 	{disabledKeys}
+	onRowAction={handleRowAction}
+	onSelectionChange={handleSelectionChange}
 	class="table-root"
 >
 	<Table.Header>
@@ -157,6 +184,8 @@
 {/if}
 
 <output data-testid="selected-keys">{JSON.stringify([...currentSelectedKeys])}</output>
+<output data-testid="row-action-log">{JSON.stringify(rowActionLog)}</output>
+<output data-testid="event-log">{JSON.stringify(eventLog)}</output>
 <output data-testid="sort-descriptor"
 	>{currentSortDescriptor
 		? `${currentSortDescriptor.column}:${currentSortDescriptor.direction}`

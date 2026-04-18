@@ -1,11 +1,14 @@
 <script lang="ts">
 	import BehaviorNotesTable from './behavior-notes-table.svelte';
+	import DisabledBehaviorTable from './disabled-behavior-table.svelte';
 	import ColumnVisibilityTable from './column-visibility-table.svelte';
 	import FilteringTable from './filtering-table.svelte';
 	import InteractiveTable from './interactive-table.svelte';
 	import KeyboardTable from './keyboard-table.svelte';
 	import PaginationTable from './pagination-table.svelte';
 	import ReadOnlySnapshotEmptyStateTable from './read-only-snapshot-empty-state-table.svelte';
+	import RowActionsReplaceTable from './row-actions-replace-table.svelte';
+	import RowActionsToggleTable from './row-actions-toggle-table.svelte';
 	import SingleSelectionInboxTable from './single-selection-inbox-table.svelte';
 	import StickyHeaderTable from './sticky-header-table.svelte';
 </script>
@@ -19,6 +22,9 @@
 
 		<div class="space-y-8">
 			<InteractiveTable />
+			<RowActionsToggleTable />
+			<RowActionsReplaceTable />
+			<DisabledBehaviorTable />
 			<SingleSelectionInboxTable />
 			<ReadOnlySnapshotEmptyStateTable />
 			<StickyHeaderTable />

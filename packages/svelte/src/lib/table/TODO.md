@@ -61,6 +61,9 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [x] [S][P2][Area: Behavior][Owner: Unassigned][Target: Done] Confirm whether disabled body rows should remain keyboard-focusable or be skipped by navigation.
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether `Table.Column` should hard-enforce a single `Table.ColumnHeaderCell` child.
 - [ ] [S][P2][Area: API][Owner: Unassigned][Target: TBD] Decide whether clipboard-related behavior should remain fully browser-native in v1 or be deferred behind a future explicit cell-selection model.
+- [x] [C][P1][Area: API][Owner: Unassigned][Target: Done] Add `onRowAction?: (id: TableSelectionKey) => void` to `Table.Root` and document its collection-level semantics across `selectionMode` and `selectionBehavior`.
+- [x] [C][P1][Area: API][Owner: Unassigned][Target: Done] Add `disabledBehavior?: 'selection' | 'all'` to `Table.Root` with default `'all'`, and document that `'selection'` disables selection while preserving focus and row actions.
+- [x] [S][P1][Area: API][Owner: Unassigned][Target: Done] Treat stable `selectionBehavior?: 'toggle' | 'replace'` support in `Table.Root` as an explicit prerequisite for the row-actions phase rather than an implicit assumption.
 
 ### Features
 
@@ -74,6 +77,7 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [ ] [C][P2][Area: Features][Owner: Unassigned][Target: TBD] Add inline cell and row editing primitives — define an opt-in editing model that can coexist with current focus, selection, and keyboard navigation contracts.
 - [ ] [M][P2][Area: Features][Owner: Unassigned][Target: TBD] Add column action primitives — expose a path for header menus, quick sort/filter actions, and future column management UI without requiring consumers to hand-roll header action composition every time.
 - [ ] [M][P3][Area: Features][Owner: Unassigned][Target: TBD] Add row actions patterns — document or expose a composable pattern for common trailing actions columns so selection, row press, and nested interactive controls do not conflict.
+- [x] [C][P1][Area: Features][Owner: Unassigned][Target: Done] Implement collection-level row actions in `Table.Root` so body rows can trigger `onRowAction` using RAC-style interaction rules without introducing a separate `rowPressBehavior` prop.
 
 ### Tests
 
@@ -81,12 +85,21 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [x] [S][P2][Area: Tests][Owner: Unassigned][Target: Done] Add test for full sort cycle via keyboard (ascending → descending) and verify no way to clear sort with keyboard is intentional.
 - [x] [S][P2][Area: Tests][Owner: Unassigned][Target: Done] Add test verifying disabled rows are not selected when arrow-navigated in `replace` mode.
 - [x] [S][P2][Area: Tests][Owner: Unassigned][Target: Done] Add tests covering `selectionMode` transitions after mount, including collapsing multiple selections to one on `single`.
+- [x] [C][P1][Area: Tests][Owner: Unassigned][Target: Done] Add the full row action matrix to `Table.Root` tests: click/action in `selectionMode="none"`, toggle-mode action when selection is empty, toggle-mode selection when selection is active, and replace-mode double-click actions.
+- [x] [M][P1][Area: Tests][Owner: Unassigned][Target: Done] Add keyboard interaction tests proving `Enter` triggers `onRowAction` and `Space` triggers selection when both behaviors are available.
+- [x] [M][P1][Area: Tests][Owner: Unassigned][Target: Done] Add `disabledBehavior` regression tests covering `'selection'` vs `'all'` for row focusability, checkbox disabled state, row action availability, and selection blocking.
+- [x] [S][P1][Area: Tests][Owner: Unassigned][Target: Done] Add an explicit edge-case test proving a disabled row under `disabledBehavior="selection"` still fires `onRowAction` on `Enter` while remaining non-selectable.
+- [x] [S][P1][Area: Tests][Owner: Unassigned][Target: Done] Add a callback-ordering test proving `selectionBehavior="replace"` double click fires `onSelectionChange` before `onRowAction`.
 
 ### Docs
 
 - [ ] [C][P2][Area: Docs][Owner: Unassigned][Target: TBD] Add richer styling examples and sorting guidance to the docs page.
 - [x] [C][P3][Area: Docs][Owner: Unassigned][Target: Done] Document that `Table.Column` is a logical-only wrapper (no DOM output) prominently in the README anatomy section.
 - [x] [S][P2][Area: Docs][Owner: Unassigned][Target: Done] Document `selectionMode="none"` normalization behavior and clarify that selection is cleared internally when selection is disabled.
+- [ ] [C][P1][Area: Docs][Owner: Unassigned][Target: TBD] Document row actions vs row selection in the Table README and docs page, including the different pointer rules for `toggle` and `replace` when `onRowAction` is provided.
+- [ ] [M][P1][Area: Docs][Owner: Unassigned][Target: TBD] Document `disabledBehavior="selection"` and clarify that it disables selection only, not row actions or focus.
+- [ ] [S][P1][Area: Docs][Owner: Unassigned][Target: TBD] Call out explicitly that `toggle` mode changes row-click behavior dynamically once an active selection exists, and treat this as an intentional RAC-style model rather than an accidental inconsistency.
+- [ ] [S][P1][Area: Docs][Owner: Unassigned][Target: TBD] Document callback ordering for `replace`-mode double click: `onSelectionChange` fires before `onRowAction`.
 
 ### Selection Checkbox
 
@@ -94,7 +107,32 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [ ] [M][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Validate `Table.Checkbox` screen reader announcements across NVDA and VoiceOver — verify that `aria-checked="mixed"` transitions in the header checkbox and row selection toggles are announced correctly.
 - [ ] [M][P1][Area: Correctness][Owner: Unassigned][Target: TBD] Document or resolve `Table.Checkbox` bypass of `pressRow()` — the checkbox always calls `toggleRowSelection()` directly, ignoring `selectionBehavior="replace"` semantics (Shift+click range, Ctrl+click toggle). This is intentional for checkbox UX but undocumented and inconsistent with row-click behavior.
 - [ ] [M][P1][Area: Correctness][Owner: Unassigned][Target: TBD] Add dev-time structural validation for `Table.Checkbox` placement — warn when header includes a selection checkbox column but body rows do not, or when the checkbox is placed in a footer cell where it has no behavior.
+- [x] [M][P1][Area: Correctness][Owner: Unassigned][Target: Done] Ensure `Table.Checkbox` respects `disabledBehavior="selection"` by disabling explicit selection controls without suppressing row actions on the rest of the row.
+
+### Row Actions
+
+- [x] [C][P1][Area: Correctness][Owner: Unassigned][Target: Done] Refactor the current `pressRow()` pipeline so selection and row actions are distinct internal pathways rather than a single selection-oriented press abstraction.
+- [x] [C][P1][Area: Correctness][Owner: Unassigned][Target: Done] Split row disabled-state helpers into selection-disabled vs action-disabled semantics so `disabledBehavior="selection"` does not incorrectly suppress focus or actions.
+- [x] [M][P1][Area: Behavior][Owner: Unassigned][Target: Done] Preserve existing `replace`-mode selection extension (`Shift+Arrow`, `Ctrl/Cmd+Space`, click replace) while layering `onRowAction` on top.
+- [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Revisit `aria-disabled` semantics for rows under `disabledBehavior="selection"` so actionable rows are not announced as fully disabled.
+- [x] [M][P1][Area: DX][Owner: Unassigned][Target: Done] Evaluate whether row/cell data attributes should expose actionable and selection-disabled states for styling and debugging once `onRowAction` ships.
+- [x] [S][P1][Area: DX][Owner: Unassigned][Target: Done] Make `data-actionable` part of the required styling contract for actionable rows so consumers can reliably style cursor and affordances.
 
 ### Code Quality
 
-- [ ] [C][P3][Area: Code Quality][Owner: Unassigned][Target: TBD] Remove unused keyboard/click handlers from `Table.Cell` when rendering in footer scope — currently handlers are bound but short-circuit via guards.
+- [x] [C][P3][Area: Code Quality][Owner: Unassigned][Target: Done] Remove unused keyboard/click handlers from `Table.Cell` when rendering in footer scope — currently handlers are bound but short-circuit via guards.
+- [x] [M][P2][Area: Code Quality][Owner: Unassigned][Target: Done] Extract shared keyboard handler between `Table.Row` and `Table.Cell` — both components duplicate ~60 lines of nearly identical `handleKeyDown` logic (ArrowUp/Down/Left/Right, Home/End, Ctrl+Home/End, Ctrl+A, Enter, Space) with only minor differences in Home/End targets.
+- [x] [S][P2][Area: Code Quality][Owner: Unassigned][Target: Done] Add a defensive `isRowDisabled` guard inside `pressRow()` in context — currently callers (Row, Cell) check disabled state before calling, but `pressRow` itself does not validate, so a direct call bypasses the check.
+
+### Bugs / Phase 3
+
+- [x] [M][P1][Area: Correctness][Owner: Unassigned][Target: Done] Fix `keyboard-space` ignoring interaction modifiers in `pressRow()` — the `keyboard-space` branch calls `toggleRowSelection(id)` directly, discarding `shiftKey`/`ctrlKey`/`metaKey`. This breaks `Shift+Space` (should extend selection) and `Ctrl+Space` semantics in `replace` + `multiple` mode. Should route through `pressRowSelection(id, interaction)` instead.
+
+### Accessibility / Phase 3
+
+- [x] [S][P2][Area: Accessibility][Owner: Unassigned][Target: Done] Clarify ARIA semantics for rows under `disabledBehavior="selection"` without a checkbox — a selection-disabled but actionable row has no `aria-disabled` (correct) but also no ARIA hint that selection is unavailable; the checkbox disabled state announces it, but rows without a checkbox column have no signal for assistive technology.
+
+### Performance / Phase 3
+
+- [x] [S][P2][Area: Performance][Owner: Unassigned][Target: Done] Use O(1) id-to-token lookup in `isColumnSortable()` — currently iterates all columns with `Array.from(columns.values()).some(...)` instead of using `getColumnRegistrationById(columnId)?.allowsSorting`.
+- [x] [S][P2][Area: Performance][Owner: Unassigned][Target: Done] Cache `getVisibleColumnWidths()` result — it filters `getColumnWidths()` on every call but is used in the render path of `Table.Root` for `managedTableWidth` derivation; should share a cache invalidated alongside `columnWidthsCache`.
