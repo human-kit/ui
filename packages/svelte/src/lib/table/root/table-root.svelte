@@ -17,6 +17,8 @@
 	import {
 		createTableContext,
 		setTableContext,
+		type TableDisabledBehavior,
+		type TableRowActionHandler,
 		type TableContext,
 		type TableSelectionBehavior,
 		type TableSelectionKey,
@@ -31,6 +33,8 @@
 	type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> & {
 		selectionMode?: TableSelectionMode;
 		selectionBehavior?: TableSelectionBehavior;
+		disabledBehavior?: TableDisabledBehavior;
+		disallowEmptySelection?: boolean;
 		hiddenColumns?: Iterable<string>;
 		defaultHiddenColumns?: Iterable<string>;
 		selectedKeys?: Iterable<TableSelectionKey>;
@@ -40,6 +44,7 @@
 		columnWidths?: Map<string, number>;
 		defaultColumnWidths?: Iterable<readonly [string, number]>;
 		disabledKeys?: Iterable<TableSelectionKey>;
+		onRowAction?: TableRowActionHandler;
 		onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 		onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
 		onColumnWidthsChange?: (widths: Map<string, number>) => void;
@@ -55,6 +60,8 @@
 	let {
 		selectionMode = 'none',
 		selectionBehavior = 'toggle',
+		disabledBehavior = 'all',
+		disallowEmptySelection = false,
 		hiddenColumns = $bindable(),
 		defaultHiddenColumns,
 		selectedKeys = $bindable(),
@@ -66,6 +73,7 @@
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby,
 		disabledKeys,
+		onRowAction,
 		onSelectionChange,
 		onSortChange,
 		onColumnWidthsChange,
@@ -94,11 +102,14 @@
 		createTableContext({
 			selectionMode: (() => selectionMode)(),
 			selectionBehavior: (() => selectionBehavior)(),
+			disabledBehavior: (() => disabledBehavior)(),
+			disallowEmptySelection: (() => disallowEmptySelection)(),
 			initialHiddenColumns: (() => hiddenColumns ?? defaultHiddenColumns)(),
 			initialSelectedKeys: (() => selectedKeys ?? defaultSelectedKeys)(),
 			initialSortDescriptor: (() => sortDescriptor ?? defaultSortDescriptor)(),
 			initialColumnWidths: (() => columnWidths ?? defaultColumnWidths)(),
 			disabledKeys: (() => disabledKeys)(),
+			onRowAction: (() => onRowAction)(),
 			onHiddenColumnsChange: (columnIds) => {
 				pendingControlledHiddenColumns = [...columnIds];
 				hiddenColumns = [...columnIds];
@@ -271,7 +282,19 @@
 	});
 
 	$effect(() => {
+		ctx.setDisabledBehavior(disabledBehavior);
+	});
+
+	$effect(() => {
+		ctx.setDisallowEmptySelection(disallowEmptySelection);
+	});
+
+	$effect(() => {
 		ctx.setDisabledKeys(disabledKeys);
+	});
+
+	$effect(() => {
+		ctx.setRowActionHandler(onRowAction);
 	});
 
 	$effect(() => {
@@ -388,6 +411,7 @@
 	aria-multiselectable={selectionMode === 'multiple' ? true : undefined}
 	data-selection-mode={selectionMode}
 	data-selection-behavior={selectionBehavior}
+	data-disabled-behavior={disabledBehavior}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}
 	onfocusin={handleFocusIn}
@@ -407,4 +431,10 @@
 	aria-atomic="true"
 	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
 	>{sortAnnouncement}</span
+>
+
+<span
+	id={ctx.selectionUnavailableDescriptionId}
+	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+	>Selection unavailable for this row.</span
 >

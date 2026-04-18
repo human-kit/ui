@@ -10,8 +10,10 @@ const TABLE_CELL_KEY = Symbol('table-cell');
 export type TableSelectionKey = string | number;
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
 export type TableSelectionBehavior = 'toggle' | 'replace';
+export type TableDisabledBehavior = 'selection' | 'all';
 export type TableSortDirection = 'ascending' | 'descending';
 export type TableSectionKind = 'header' | 'body' | 'footer';
+export type TableRowActionHandler = (id: TableSelectionKey) => void;
 
 type TableSelectionInteraction = {
 	shiftKey?: boolean;
@@ -19,6 +21,8 @@ type TableSelectionInteraction = {
 	metaKey?: boolean;
 	altKey?: boolean;
 };
+
+type TableRowPressSource = 'pointer' | 'pointer-double' | 'keyboard-enter' | 'keyboard-space';
 
 export type TableSortDescriptor = {
 	column: string;
@@ -70,11 +74,14 @@ type TableCellRegistration = {
 export type CreateTableContextOptions = {
 	selectionMode?: TableSelectionMode;
 	selectionBehavior?: TableSelectionBehavior;
+	disabledBehavior?: TableDisabledBehavior;
+	disallowEmptySelection?: boolean;
 	initialSelectedKeys?: Iterable<TableSelectionKey>;
 	initialSortDescriptor?: TableSortDescriptor;
 	initialColumnWidths?: Iterable<readonly [string, number]>;
 	initialHiddenColumns?: Iterable<string>;
 	disabledKeys?: Iterable<TableSelectionKey>;
+	onRowAction?: TableRowActionHandler;
 	onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 	onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
 	onColumnWidthsChange?: (widths: Map<string, number>) => void;
@@ -93,6 +100,9 @@ export type TableContext = {
 	createInstanceToken: (prefix: string) => string;
 	selectionMode: TableSelectionMode;
 	selectionBehavior: TableSelectionBehavior;
+	disabledBehavior: TableDisabledBehavior;
+	disallowEmptySelection: boolean;
+	selectionUnavailableDescriptionId: string;
 	disabledKeys: Set<TableSelectionKey>;
 	focusedCellKey: string | null;
 	focusVisible: boolean;
@@ -133,6 +143,9 @@ export type TableContext = {
 	isRowFocusTarget: (token: string) => boolean;
 	getRowFocusEdge: (token: string) => TableRowFocusEdge | null;
 	isRowDisabled: (id: TableSelectionKey | undefined, localDisabled?: boolean) => boolean;
+	isRowSelectionDisabled: (id: TableSelectionKey | undefined, localDisabled?: boolean) => boolean;
+	isRowActionDisabled: (id: TableSelectionKey | undefined, localDisabled?: boolean) => boolean;
+	isRowActionable: (id: TableSelectionKey | undefined, localDisabled?: boolean) => boolean;
 	hasSelectableRows: () => boolean;
 	getSelectionCheckboxState: () => TableSelectionCheckboxState;
 	registerCell: (cell: TableCellRegistration) => void;
@@ -142,7 +155,12 @@ export type TableContext = {
 	isRowTabStop: (token: string) => boolean;
 	focusCellByKey: (key: string | null) => void;
 	focusRowByToken: (token: string, edge: TableRowFocusEdge) => void;
-	pressRow: (id: TableSelectionKey | undefined, interaction?: TableSelectionInteraction) => void;
+	pressRow: (
+		id: TableSelectionKey | undefined,
+		source: TableRowPressSource,
+		interaction?: TableSelectionInteraction,
+		localDisabled?: boolean
+	) => void;
 	setFocusedCell: (key: string | null) => void;
 	setFocusedRow: (token: string | null, edge?: TableRowFocusEdge) => void;
 	setFocusVisible: (visible: boolean) => void;
@@ -162,7 +180,10 @@ export type TableContext = {
 	setSelection: (keys: Iterable<TableSelectionKey>) => void;
 	setSelectionMode: (mode: TableSelectionMode) => void;
 	setSelectionBehavior: (behavior: TableSelectionBehavior) => void;
+	setDisabledBehavior: (behavior: TableDisabledBehavior) => void;
+	setDisallowEmptySelection: (disallow: boolean) => void;
 	setDisabledKeys: (keys?: Iterable<TableSelectionKey>) => void;
+	setRowActionHandler: (handler?: TableRowActionHandler) => void;
 	setSortDescriptor: (descriptor: TableSortDescriptor | undefined) => void;
 	toggleSort: (columnId: string) => void;
 	isColumnSortable: (columnId: string) => boolean;
@@ -209,6 +230,9 @@ export type TableCellContext = {
 export function createTableContext(options: CreateTableContextOptions = {}): TableContext {
 	let selectionMode = options.selectionMode ?? 'none';
 	let selectionBehavior = options.selectionBehavior ?? 'toggle';
+	let disabledBehavior = options.disabledBehavior ?? 'all';
+	let disallowEmptySelection = options.disallowEmptySelection ?? false;
+	let onRowAction = options.onRowAction;
 	let sortDescriptor = options.initialSortDescriptor;
 	let focusedCellKey: string | null = null;
 	let focusedRowTarget: { rowToken: string; edge: TableRowFocusEdge } | null = null;
@@ -237,6 +261,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let orderedColumnTokensCache: string[] | null = null;
 	let visibleOrderedColumnTokensCache: string[] | null = null;
 	let columnWidthsCache: Map<string, number> | null = null;
+	let visibleColumnWidthsCache: Map<string, number> | null = null;
 	let navigableCellsCache: Array<{ cell: TableCellRegistration; coord: TableGridCoord }> | null =
 		null;
 	let rowsWithCellsCache: Map<number, { col: number; key: string; element: HTMLElement }[]> | null =
@@ -249,6 +274,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const widthVersion = writable(0);
 	const resizeVersion = writable(0);
 	const instanceCounters = new Map<string, number>();
+	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
 
 	function createInstanceToken(prefix: string) {
 		const nextCount = (instanceCounters.get(prefix) ?? 0) + 1;
@@ -261,6 +287,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		orderedColumnTokensCache = null;
 		visibleOrderedColumnTokensCache = null;
 		columnWidthsCache = null;
+		visibleColumnWidthsCache = null;
 		navigableCellsCache = null;
 		rowsWithCellsCache = null;
 	}
@@ -294,6 +321,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function notifyWidth() {
 		columnWidthsCache = null;
+		visibleColumnWidthsCache = null;
 		if (!widthNotifyScheduled) {
 			widthNotifyScheduled = true;
 			queueMicrotask(() => {
@@ -540,11 +568,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getVisibleColumnWidths() {
+		if (visibleColumnWidthsCache) return visibleColumnWidthsCache;
 		const widths = new Map<string, number>();
 		for (const [columnId, width] of getColumnWidths()) {
 			if (isColumnHidden(columnId)) continue;
 			widths.set(columnId, width);
 		}
+		visibleColumnWidthsCache = widths;
 		return widths;
 	}
 
@@ -695,6 +725,41 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		focusedCellKey = null;
 		focusedRowTarget = null;
 		notifyFocus();
+	}
+
+	function reconcileFocusAfterDisabledStateChange() {
+		if (focusedCellKey) {
+			const focusedCell = cells.get(focusedCellKey);
+			if (
+				focusedCell &&
+				focusedCell.section === 'body' &&
+				isRowDisabled(rows.get(focusedCell.rowToken)?.id, rows.get(focusedCell.rowToken)?.disabled)
+			) {
+				moveFocus('down');
+				const nextFocusedCell = cells.get(focusedCellKey ?? '');
+				if (
+					nextFocusedCell?.section === 'body' &&
+					isRowDisabled(
+						rows.get(nextFocusedCell.rowToken)?.id,
+						rows.get(nextFocusedCell.rowToken)?.disabled
+					)
+				) {
+					moveFocus('up');
+				}
+			}
+		}
+
+		if (focusedRowTarget) {
+			const focusedRow = rows.get(focusedRowTarget.rowToken);
+			if (focusedRow && isRowDisabled(focusedRow.id, focusedRow.disabled)) {
+				const nextToken = getFocusableBodyRowToken('start');
+				if (nextToken) {
+					setFocusedRow(nextToken, focusedRowTarget.edge);
+				} else {
+					setFocusedRow(null);
+				}
+			}
+		}
 	}
 
 	function setHiddenColumns(columnIds?: Iterable<string>) {
@@ -912,16 +977,28 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		for (const token of getOrderedRowTokens('body')) {
 			const row = rows.get(token);
 			if (!row?.id) continue;
-			if (disabledKeys.has(row.id) || row.disabled) continue;
+			if (isRowSelectionDisabled(row.id, row.disabled)) continue;
 			rowIds.push(row.id);
 		}
 		return rowIds;
 	}
 
-	function isRowDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
+	function isRowSelectionDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
 		if (localDisabled) return true;
 		if (id === undefined) return false;
 		return disabledKeys.has(id);
+	}
+
+	function isRowDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
+		return disabledBehavior === 'all' && isRowSelectionDisabled(id, localDisabled);
+	}
+
+	function isRowActionDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
+		return disabledBehavior === 'all' && isRowSelectionDisabled(id, localDisabled);
+	}
+
+	function isRowActionable(id: TableSelectionKey | undefined, localDisabled = false) {
+		return Boolean(onRowAction) && id !== undefined && !isRowActionDisabled(id, localDisabled);
 	}
 
 	function isRowSelected(id: TableSelectionKey | undefined) {
@@ -1217,12 +1294,29 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setSelectedKeys(next: Set<TableSelectionKey>, anchor?: TableSelectionKey | null) {
+		const previousSelectedKeys = new Set(selectedKeys);
 		selectedKeys =
 			selectionMode === 'none'
 				? new Set()
 				: selectionMode === 'single' && next.size > 1
 					? new Set([next.values().next().value as TableSelectionKey])
 					: next;
+
+		if (selectionMode !== 'none' && disallowEmptySelection && selectedKeys.size === 0) {
+			const fallbackKey =
+				(anchor !== undefined && anchor !== null && !isRowSelectionDisabled(anchor)
+					? anchor
+					: previousSelectedKeys.values().next().value) ??
+				getFocusedRowId() ??
+				getOrderedSelectableRowIds()[0];
+			if (
+				fallbackKey !== undefined &&
+				fallbackKey !== null &&
+				!isRowSelectionDisabled(fallbackKey)
+			) {
+				selectedKeys = new Set([fallbackKey]);
+			}
+		}
 
 		const fallbackAnchor = selectedKeys.values().next().value ?? null;
 		if (anchor === undefined) {
@@ -1234,20 +1328,38 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function replaceSelectionWithRow(id: TableSelectionKey | undefined) {
-		if (id === undefined || disabledKeys.has(id)) return;
-		setSelectedKeys(new Set([id]), id);
+		if (id === undefined || isRowSelectionDisabled(id)) return;
+		const next = new Set([id]);
+		if (hasSameSelection(selectedKeys, next)) {
+			setSelectedKeys(next, id);
+			notifySelection();
+			return;
+		}
+		setSelectedKeys(next, id);
 		emitSelectionChange();
 	}
 
+	function applySelectionChange(next: Set<TableSelectionKey>, anchor?: TableSelectionKey | null) {
+		const previousSelection = new Set(selectedKeys);
+		const previousAnchor = selectionAnchorKey;
+		setSelectedKeys(next, anchor);
+		if (!hasSameSelection(previousSelection, selectedKeys)) {
+			emitSelectionChange();
+			return;
+		}
+		if (!hasSameSelection(next, selectedKeys) || previousAnchor !== selectionAnchorKey) {
+			notifySelection();
+		}
+	}
+
 	function toggleSelectionForRow(id: TableSelectionKey | undefined) {
-		if (id === undefined || disabledKeys.has(id)) return;
+		if (id === undefined || isRowSelectionDisabled(id)) return;
 		if (selectionMode === 'single') {
 			const wasSelected = selectedKeys.has(id);
-			setSelectedKeys(
+			applySelectionChange(
 				selectionBehavior === 'toggle' && wasSelected ? new Set() : new Set([id]),
 				selectionBehavior === 'toggle' && wasSelected ? null : id
 			);
-			emitSelectionChange();
 			return;
 		}
 		const next = new Set(selectedKeys);
@@ -1256,15 +1368,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		} else {
 			next.add(id);
 		}
-		setSelectedKeys(next, id);
-		emitSelectionChange();
+		applySelectionChange(next, id);
 	}
 
 	function extendSelectionToRow(
 		id: TableSelectionKey | undefined,
 		anchorOverride?: TableSelectionKey | null
 	) {
-		if (id === undefined || disabledKeys.has(id)) return;
+		if (id === undefined || isRowSelectionDisabled(id)) return;
 		if (selectionMode !== 'multiple') {
 			replaceSelectionWithRow(id);
 			return;
@@ -1287,15 +1398,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 		const start = Math.min(anchorIndex, targetIndex);
 		const end = Math.max(anchorIndex, targetIndex);
-		setSelectedKeys(new Set(orderedIds.slice(start, end + 1)), anchor);
-		emitSelectionChange();
+		applySelectionChange(new Set(orderedIds.slice(start, end + 1)), anchor);
 	}
 
-	function pressRow(
+	function performRowAction(id: TableSelectionKey | undefined) {
+		if (!onRowAction || id === undefined || isRowActionDisabled(id)) return;
+		onRowAction(id);
+	}
+
+	function hasActiveSelection() {
+		return selectedKeys.size > 0;
+	}
+
+	function pressRowSelection(
 		id: TableSelectionKey | undefined,
 		interaction: TableSelectionInteraction = {}
 	) {
-		if (selectionMode === 'none' || id === undefined || disabledKeys.has(id)) return;
+		if (selectionMode === 'none' || id === undefined || isRowSelectionDisabled(id)) return;
 
 		if (selectionBehavior === 'replace' && selectionMode === 'multiple') {
 			if (interaction.shiftKey) {
@@ -1311,6 +1430,67 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 
 		toggleSelectionForRow(id);
+	}
+
+	function pressRow(
+		id: TableSelectionKey | undefined,
+		source: TableRowPressSource,
+		interaction: TableSelectionInteraction = {},
+		localDisabled = false
+	) {
+		if (id === undefined) return;
+		if (isRowDisabled(id, localDisabled)) return;
+
+		if (source === 'keyboard-enter') {
+			if (onRowAction) {
+				performRowAction(id);
+				return;
+			}
+			pressRowSelection(id, interaction);
+			return;
+		}
+
+		if (source === 'keyboard-space') {
+			if (interaction.shiftKey) {
+				extendSelectionToRow(id);
+				return;
+			}
+			if (interaction.ctrlKey || interaction.metaKey) {
+				toggleSelectionForRow(id);
+				return;
+			}
+			toggleRowSelection(id);
+			return;
+		}
+
+		if (source === 'pointer-double') {
+			if (onRowAction && selectionMode !== 'none' && selectionBehavior === 'replace') {
+				performRowAction(id);
+			}
+			return;
+		}
+
+		if (!onRowAction) {
+			pressRowSelection(id, interaction);
+			return;
+		}
+
+		if (selectionMode === 'none') {
+			performRowAction(id);
+			return;
+		}
+
+		if (selectionBehavior === 'replace') {
+			pressRowSelection(id, interaction);
+			return;
+		}
+
+		if (hasActiveSelection()) {
+			pressRowSelection(id, interaction);
+			return;
+		}
+
+		performRowAction(id);
 	}
 
 	function moveFocus(
@@ -1495,12 +1675,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function toggleRowSelection(id: TableSelectionKey | undefined) {
-		if (selectionMode === 'none' || id === undefined || disabledKeys.has(id)) return;
+		if (selectionMode === 'none' || id === undefined || isRowSelectionDisabled(id)) return;
 
 		if (selectionMode === 'single') {
 			const wasSelected = selectedKeys.has(id);
-			setSelectedKeys(wasSelected ? new Set() : new Set([id]), wasSelected ? null : id);
-			emitSelectionChange();
+			applySelectionChange(wasSelected ? new Set() : new Set([id]), wasSelected ? null : id);
 			return;
 		}
 
@@ -1510,8 +1689,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		} else {
 			next.add(id);
 		}
-		setSelectedKeys(next, id);
-		emitSelectionChange();
+		applySelectionChange(next, id);
 	}
 
 	function selectAllRows() {
@@ -1519,7 +1697,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const next = new Set<TableSelectionKey>();
 		for (const token of getOrderedRowTokens('body')) {
 			const row = rows.get(token);
-			if (!row?.id || disabledKeys.has(row.id) || row.disabled) continue;
+			if (!row?.id || isRowSelectionDisabled(row.id, row.disabled)) continue;
 			next.add(row.id);
 		}
 		setSelectedKeys(next, next.values().next().value ?? null);
@@ -1528,16 +1706,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function deselectAllRows() {
 		if (selectedKeys.size === 0) return;
-		setSelectedKeys(new Set(), null);
-		emitSelectionChange();
+		applySelectionChange(new Set(), null);
 	}
 
 	function setSelection(keys: Iterable<TableSelectionKey>) {
+		const previousSelection = new Set(selectedKeys);
+		const previousAnchor = selectionAnchorKey;
 		const next = new Set(keys);
 		const preservedAnchor =
 			selectionAnchorKey !== null && next.has(selectionAnchorKey) ? selectionAnchorKey : undefined;
 		setSelectedKeys(next, preservedAnchor);
-		notifySelection();
+		if (!hasSameSelection(previousSelection, selectedKeys)) {
+			emitSelectionChange();
+			return;
+		}
+		if (previousAnchor !== selectionAnchorKey) {
+			notifySelection();
+		}
 	}
 
 	function setSelectionMode(mode: TableSelectionMode) {
@@ -1560,6 +1745,25 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		notifySelection();
 	}
 
+	function setDisabledBehavior(behavior: TableDisabledBehavior) {
+		disabledBehavior = behavior;
+		invalidateLayoutCaches();
+		reconcileFocusAfterDisabledStateChange();
+		notifyLayout();
+		notifySelection();
+	}
+
+	function setDisallowEmptySelection(disallow: boolean) {
+		disallowEmptySelection = disallow;
+		const previousSelection = new Set(selectedKeys);
+		setSelectedKeys(new Set(selectedKeys), selectionAnchorKey);
+		if (!hasSameSelection(previousSelection, selectedKeys)) {
+			emitSelectionChange();
+			return;
+		}
+		notifySelection();
+	}
+
 	function setDisabledKeys(keys?: Iterable<TableSelectionKey>) {
 		disabledKeys.clear();
 		if (keys) {
@@ -1567,6 +1771,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				disabledKeys.add(key);
 			}
 		}
+		invalidateLayoutCaches();
+		reconcileFocusAfterDisabledStateChange();
+		notifyLayout();
+		notifySelection();
+	}
+
+	function setRowActionHandler(handler?: TableRowActionHandler) {
+		onRowAction = handler;
 		notifySelection();
 	}
 
@@ -1577,9 +1789,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function isColumnSortable(columnId: string) {
-		return Array.from(columns.values()).some(
-			(column) => column.id === columnId && column.allowsSorting
-		);
+		return getColumnRegistrationById(columnId)?.allowsSorting ?? false;
 	}
 
 	function toggleSort(columnId: string) {
@@ -1612,6 +1822,15 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		},
 		get selectionBehavior() {
 			return selectionBehavior;
+		},
+		get disabledBehavior() {
+			return disabledBehavior;
+		},
+		get disallowEmptySelection() {
+			return disallowEmptySelection;
+		},
+		get selectionUnavailableDescriptionId() {
+			return selectionUnavailableDescriptionId;
 		},
 		disabledKeys,
 		get focusedCellKey() {
@@ -1661,6 +1880,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		isRowFocusTarget,
 		getRowFocusEdge,
 		isRowDisabled,
+		isRowSelectionDisabled,
+		isRowActionDisabled,
+		isRowActionable,
 		hasSelectableRows,
 		getSelectionCheckboxState,
 		registerCell,
@@ -1687,7 +1909,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		setSelection,
 		setSelectionMode,
 		setSelectionBehavior,
+		setDisabledBehavior,
+		setDisallowEmptySelection,
 		setDisabledKeys,
+		setRowActionHandler,
 		setSortDescriptor,
 		toggleSort,
 		isColumnSortable,

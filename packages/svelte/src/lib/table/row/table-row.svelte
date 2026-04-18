@@ -14,6 +14,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
 
 	type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children' | 'id'> & {
 		id?: TableSelectionKey;
@@ -199,6 +200,14 @@
 		void $selectionVersion;
 		return section.section === 'body' ? table.isRowDisabled(id, isDisabled) : isDisabled;
 	});
+	const isSelectionDisabled = $derived.by(() => {
+		void $selectionVersion;
+		return section.section === 'body' ? table.isRowSelectionDisabled(id, isDisabled) : isDisabled;
+	});
+	const isActionable = $derived.by(() => {
+		void $selectionVersion;
+		return section.section === 'body' ? table.isRowActionable(id, isDisabled) : false;
+	});
 
 	function handleFocus() {
 		if (section.section !== 'body') return;
@@ -216,77 +225,38 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		if (section.section !== 'body') return;
 		if (event.target !== rowElement) return;
-		trackInteractionModality(event, rowElement ?? null);
-
-		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
-			if (table.selectionMode === 'multiple') {
-				event.preventDefault();
-				table.selectAllRows();
-			}
-			return;
-		}
-
-		if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
-			event.preventDefault();
-			table.moveToGridStart();
-			return;
-		}
-
-		if ((event.ctrlKey || event.metaKey) && event.key === 'End') {
-			event.preventDefault();
-			table.moveToGridEnd();
-			return;
-		}
-
-		switch (event.key) {
-			case 'ArrowUp':
-				event.preventDefault();
-				table.moveFocus('up', {
-					shiftKey: event.shiftKey,
-					ctrlKey: event.ctrlKey,
-					metaKey: event.metaKey,
-					altKey: event.altKey
-				});
-				return;
-			case 'ArrowDown':
-				event.preventDefault();
-				table.moveFocus('down', {
-					shiftKey: event.shiftKey,
-					ctrlKey: event.ctrlKey,
-					metaKey: event.metaKey,
-					altKey: event.altKey
-				});
-				return;
-			case 'ArrowLeft':
-				event.preventDefault();
-				table.moveFocus('left');
-				return;
-			case 'ArrowRight':
-				event.preventDefault();
-				table.moveFocus('right');
-				return;
-			case 'Home':
-				event.preventDefault();
-				table.moveToBodyRowStart();
-				return;
-			case 'End':
-				event.preventDefault();
-				table.moveToBodyRowEnd();
-				return;
-			case 'Enter':
-			case ' ':
-				event.preventDefault();
-				if (event.repeat) return;
-				if (!isAriaDisabled) {
-					table.pressRow(id, {
+		handleTableBodyKeydown({
+			event,
+			table,
+			focusTarget: rowElement,
+			isDisabled: isAriaDisabled,
+			onHome: () => table.moveToBodyRowStart(),
+			onEnd: () => table.moveToBodyRowEnd(),
+			onEnter: () =>
+				table.pressRow(
+					id,
+					'keyboard-enter',
+					{
 						shiftKey: event.shiftKey,
 						ctrlKey: event.ctrlKey,
 						metaKey: event.metaKey,
 						altKey: event.altKey
-					});
-				}
-				return;
-		}
+					},
+					isDisabled
+				),
+			onSpace: () =>
+				table.pressRow(
+					id,
+					'keyboard-space',
+					{
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					},
+					isDisabled
+				)
+		});
 	}
 </script>
 
@@ -304,7 +274,14 @@
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-focus-within={isFocusWithin ? 'true' : undefined}
 	data-focus-visible-within={isFocusVisibleWithin ? 'true' : undefined}
+	data-actionable={isActionable ? 'true' : undefined}
 	data-selected={isSelected ? 'true' : undefined}
+	data-selection-disabled={section.section === 'body' &&
+	table.selectionMode !== 'none' &&
+	!isAriaDisabled &&
+	isSelectionDisabled
+		? 'true'
+		: undefined}
 	data-disabled={isAriaDisabled || undefined}
 	aria-selected={section.section === 'body' && table.selectionMode !== 'none'
 		? isSelected

@@ -39,6 +39,12 @@ describe('ListBox', () => {
 			await expect.element(listbox).toHaveAttribute('tabindex', '0');
 		});
 
+		it('does not render the empty placeholder while static items are mounting', async () => {
+			render(ListBoxTest);
+
+			expect(document.querySelector('[data-empty-placeholder]')).toBeNull();
+		});
+
 		it('exposes root focus contract attributes during keyboard flow', async () => {
 			const screen = render(ListBoxTest);
 			const listbox = screen.getByRole('listbox');
@@ -207,7 +213,8 @@ describe('ListBox', () => {
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
-			await (options[2] as HTMLElement).click();
+			await userEvent.click(options[2] as HTMLElement);
+			await expect.poll(() => document.activeElement === options[2]).toBe(true);
 			await userEvent.keyboard('{ArrowDown}');
 
 			const focusedOption = listbox.element().querySelector('[data-focused]');

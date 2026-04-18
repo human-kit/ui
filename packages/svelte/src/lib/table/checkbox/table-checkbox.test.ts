@@ -45,6 +45,23 @@ describe('Table.Checkbox', () => {
 			.toBe('["danilo","zahra"]');
 	});
 
+	it('keeps the row checkbox checked when disallowEmptySelection prevents deselection', async () => {
+		render(CheckboxTest, {
+			selectionMode: 'multiple',
+			disallowEmptySelection: true,
+			initialSelectedKeys: ['danilo']
+		});
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		await userEvent.click(rowCheckbox);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+		await expect.poll(() => rowCheckbox.getAttribute('aria-checked')).toBe('true');
+	});
+
 	it('selects and deselects all non-disabled rows from the header checkbox', async () => {
 		render(CheckboxTest, {
 			selectionMode: 'multiple',
@@ -76,6 +93,21 @@ describe('Table.Checkbox', () => {
 		expect(headerCell.getAttribute('tabindex')).toBeNull();
 	});
 
+	it('disables row checkboxes for selection-only disabled rows', async () => {
+		render(CheckboxTest, {
+			selectionMode: 'multiple',
+			disabledBehavior: 'selection',
+			disabledKeys: ['zahra']
+		});
+
+		expect(
+			document.querySelector('[data-testid="row-checkbox-zahra"]')?.getAttribute('aria-disabled')
+		).toBe('true');
+		expect(
+			document.querySelector('[data-testid="row-checkbox-danilo"]')?.getAttribute('aria-disabled')
+		).toBeNull();
+	});
+
 	it('clears checkbox focus-visible when a pointer click takes over from keyboard interaction', async () => {
 		render(CheckboxTest, { selectionMode: 'multiple' });
 
@@ -90,5 +122,25 @@ describe('Table.Checkbox', () => {
 		await userEvent.click(rowCheckbox);
 
 		await expect.poll(() => rowCheckbox.getAttribute('data-focus-visible')).toBeNull();
+	});
+
+	it('toggles row selection when clicking the checkbox root directly', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		await userEvent.click(rowCheckbox);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+	});
+
+	it('does not render an extra presentation wrapper around the checkbox root', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		expect(rowCheckbox.parentElement?.getAttribute('role')).not.toBe('presentation');
 	});
 });

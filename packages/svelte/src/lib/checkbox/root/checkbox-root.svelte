@@ -24,6 +24,7 @@
 		| 'value'
 	> & {
 		id?: string;
+		element?: HTMLSpanElement | null;
 		name?: string;
 		value?: string;
 		isChecked?: boolean;
@@ -39,7 +40,19 @@
 		class?: string;
 		'aria-label'?: string;
 		'aria-labelledby'?: string;
+		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
+		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
 	};
+
+	function composeEventHandlers<TEvent extends Event>(
+		internalHandler: ((event: TEvent) => void) | undefined,
+		externalHandler: ((event: TEvent) => void) | undefined
+	): (event: TEvent) => void {
+		return (event: TEvent) => {
+			internalHandler?.(event);
+			externalHandler?.(event);
+		};
+	}
 
 	function resolveState(isChecked: boolean, isIndeterminate: boolean): CheckboxState {
 		if (isIndeterminate) return 'indeterminate';
@@ -56,6 +69,7 @@
 
 	let {
 		id,
+		element = $bindable(),
 		name,
 		value = 'on',
 		isChecked = $bindable(),
@@ -71,6 +85,8 @@
 		class: className = '',
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby,
+		onclick: onClickExternal,
+		onkeydown: onKeyDownExternal,
 		...restProps
 	}: CheckboxRootProps = $props();
 
@@ -90,6 +106,10 @@
 	let focusVisible = $state(false);
 	let rootRef: HTMLSpanElement | null = $state(null);
 	let inputRef: HTMLInputElement | null = $state(null);
+
+	$effect(() => {
+		element = rootRef;
+	});
 
 	if (untrack(() => isChecked) === undefined) {
 		isChecked = initialState === 'checked';
@@ -326,8 +346,8 @@
 	data-required={required || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
-	onclick={handleClick}
-	onkeydown={handleKeyDown}
+	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
+	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
 	onkeyup={handleKeyUp}
 	onpointerdown={handlePointerDown}
 	onmousedown={handlePointerDown}

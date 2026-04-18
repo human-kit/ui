@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Table } from '../index';
 	import type {
+		TableDisabledBehavior,
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode
@@ -27,6 +28,8 @@
 		rows?: DemoRow[];
 		selectionMode?: TableSelectionMode;
 		selectionBehavior?: TableSelectionBehavior;
+		disabledBehavior?: TableDisabledBehavior;
+		disallowEmptySelection?: boolean;
 		disabledKeys?: Iterable<TableSelectionKey>;
 		initialSelectedKeys?: Iterable<TableSelectionKey>;
 	};
@@ -35,6 +38,8 @@
 		rows = defaultRows,
 		selectionMode = 'multiple',
 		selectionBehavior = 'toggle',
+		disabledBehavior = 'all',
+		disallowEmptySelection = false,
 		disabledKeys,
 		initialSelectedKeys
 	}: CheckboxTestProps = $props();
@@ -48,6 +53,8 @@
 	aria-label="Users table"
 	{selectionMode}
 	{selectionBehavior}
+	{disabledBehavior}
+	{disallowEmptySelection}
 	bind:selectedKeys={currentSelectedKeys}
 	{disabledKeys}
 >

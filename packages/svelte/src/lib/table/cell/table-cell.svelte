@@ -12,6 +12,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
 
 	type TableCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
 		children?: Snippet;
@@ -109,6 +110,27 @@
 		void $selectionVersion;
 		return row.section === 'body' ? table.isRowDisabled(row.rowId, row.isDisabled) : row.isDisabled;
 	});
+	const isRowSelectionDisabled = $derived.by(() => {
+		void $selectionVersion;
+		return row.section === 'body'
+			? table.isRowSelectionDisabled(row.rowId, row.isDisabled)
+			: row.isDisabled;
+	});
+	const isRowActionable = $derived.by(() => {
+		void $selectionVersion;
+		return row.section === 'body' ? table.isRowActionable(row.rowId, row.isDisabled) : false;
+	});
+	const selectionUnavailableDescription = $derived.by(() => {
+		return row.section === 'body' &&
+			table.selectionMode !== 'none' &&
+			!isRowDisabled &&
+			isRowSelectionDisabled
+			? 'Selection unavailable for this row.'
+			: undefined;
+	});
+	const selectionUnavailableDescriptionId = $derived(
+		selectionUnavailableDescription ? table.selectionUnavailableDescriptionId : undefined
+	);
 	const isCellFocusable = $derived(row.section !== 'body' || !isRowDisabled);
 	const cellTabIndex = $derived.by(() => {
 		if (row.section !== 'body') return undefined;
@@ -128,12 +150,29 @@
 		if (row.section !== 'body') return;
 		if (isRowDisabled) return;
 		table.focusCellByKey(key);
-		table.pressRow(row.rowId as TableSelectionKey | undefined, {
-			shiftKey: event.shiftKey,
-			ctrlKey: event.ctrlKey,
-			metaKey: event.metaKey,
-			altKey: event.altKey
-		});
+		table.pressRow(
+			row.rowId as TableSelectionKey | undefined,
+			'pointer',
+			{
+				shiftKey: event.shiftKey,
+				ctrlKey: event.ctrlKey,
+				metaKey: event.metaKey,
+				altKey: event.altKey
+			},
+			row.isDisabled
+		);
+	}
+
+	function handleDoubleClick() {
+		if (row.section !== 'body') return;
+		if (isRowDisabled) return;
+		table.focusCellByKey(key);
+		table.pressRow(
+			row.rowId as TableSelectionKey | undefined,
+			'pointer-double',
+			{},
+			row.isDisabled
+		);
 	}
 
 	function handleMouseDown(event: MouseEvent) {
@@ -143,79 +182,38 @@
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (row.section !== 'body') return;
-		trackInteractionModality(event, element ?? null);
-
-		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
-			if (table.selectionMode === 'multiple') {
-				event.preventDefault();
-				table.selectAllRows();
-			}
-			return;
-		}
-
-		if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
-			event.preventDefault();
-			table.moveToGridStart();
-			return;
-		}
-
-		if ((event.ctrlKey || event.metaKey) && event.key === 'End') {
-			event.preventDefault();
-			table.moveToGridEnd();
-			return;
-		}
-
-		switch (event.key) {
-			case 'ArrowUp':
-				event.preventDefault();
-				table.moveFocus('up', {
-					shiftKey: event.shiftKey,
-					ctrlKey: event.ctrlKey,
-					metaKey: event.metaKey,
-					altKey: event.altKey
-				});
-				return;
-			case 'ArrowDown':
-				event.preventDefault();
-				table.moveFocus('down', {
-					shiftKey: event.shiftKey,
-					ctrlKey: event.ctrlKey,
-					metaKey: event.metaKey,
-					altKey: event.altKey
-				});
-				return;
-			case 'ArrowLeft':
-				event.preventDefault();
-				table.moveFocus('left');
-				return;
-			case 'ArrowRight':
-				event.preventDefault();
-				table.moveFocus('right');
-				return;
-			case 'Home':
-				event.preventDefault();
-				table.moveToRowStart();
-				return;
-			case 'End':
-				event.preventDefault();
-				table.moveToRowEnd();
-				return;
-			case 'Enter':
-			case ' ':
-				event.preventDefault();
-				if (event.repeat) {
-					return;
-				}
-				if (!isRowDisabled) {
-					table.pressRow(row.rowId as TableSelectionKey | undefined, {
+		handleTableBodyKeydown({
+			event,
+			table,
+			focusTarget: element,
+			isDisabled: isRowDisabled,
+			onHome: () => table.moveToRowStart(),
+			onEnd: () => table.moveToRowEnd(),
+			onEnter: () =>
+				table.pressRow(
+					row.rowId as TableSelectionKey | undefined,
+					'keyboard-enter',
+					{
 						shiftKey: event.shiftKey,
 						ctrlKey: event.ctrlKey,
 						metaKey: event.metaKey,
 						altKey: event.altKey
-					});
-				}
-				return;
-		}
+					},
+					row.isDisabled
+				),
+			onSpace: () =>
+				table.pressRow(
+					row.rowId as TableSelectionKey | undefined,
+					'keyboard-space',
+					{
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					},
+					row.isDisabled
+				)
+		});
 	}
 </script>
 
@@ -228,17 +226,26 @@
 	scope={row.section === 'body' && column?.isRowHeader ? 'row' : undefined}
 	aria-colindex={!isColumnHidden && visibleColumnIndex >= 0 ? visibleColumnIndex + 1 : undefined}
 	aria-hidden={isColumnHidden ? true : undefined}
+	aria-describedby={selectionUnavailableDescriptionId}
 	aria-disabled={row.section === 'body' && isRowDisabled ? true : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
+	data-actionable={isRowActionable ? 'true' : undefined}
 	data-row-selected={isRowSelected ? 'true' : undefined}
+	data-selection-disabled={row.section === 'body' &&
+	table.selectionMode !== 'none' &&
+	!isRowDisabled &&
+	isRowSelectionDisabled
+		? 'true'
+		: undefined}
 	data-disabled={isRowDisabled || undefined}
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
 	style:display={isColumnHidden ? 'none' : undefined}
-	onfocus={handleFocus}
-	onclick={handleClick}
-	onmousedown={handleMouseDown}
-	onkeydown={handleKeyDown}
+	onfocus={row.section === 'body' ? handleFocus : undefined}
+	onclick={row.section === 'body' ? handleClick : undefined}
+	ondblclick={row.section === 'body' ? handleDoubleClick : undefined}
+	onmousedown={row.section === 'body' ? handleMouseDown : undefined}
+	onkeydown={row.section === 'body' ? handleKeyDown : undefined}
 	{...restProps}
 >
 	{#if children}

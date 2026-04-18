@@ -225,6 +225,7 @@
 
 		if (selectionMode === 'single') {
 			newSelection = new Set([id]);
+			shouldFilter = false;
 			// Save the label persistently for restore on blur/escape
 			selectedLabel = label;
 			// Keep the selected label visible in the input without re-triggering

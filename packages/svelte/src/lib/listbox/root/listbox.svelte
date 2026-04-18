@@ -1,5 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { createListBoxContext, type ListBoxContext } from './context';
 	import { trackInteractionModality } from '../../primitives/input-modality';
 
@@ -118,8 +119,13 @@
 
 	const itemsArray = $derived(items ? Array.from(items) : []);
 	const hasItems = $derived(itemsArray.length > 0 || itemCount > 0);
+	let hasMounted = $state(false);
 
 	let focusWithin = $state(false);
+
+	onMount(() => {
+		hasMounted = true;
+	});
 
 	function syncFocusWithin() {
 		focusWithin =
@@ -175,7 +181,7 @@
 		{@render (children as Snippet)()}
 	{/if}
 
-	{#if !hasItems && itemCount === 0}
+	{#if hasMounted && !hasItems && itemCount === 0}
 		{#if typeof emptyPlaceholder === 'string'}
 			<div role="option" aria-selected="false" aria-disabled="true" data-empty-placeholder>
 				{emptyPlaceholder}
