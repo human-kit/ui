@@ -213,7 +213,8 @@ describe('ListBox', () => {
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
-			await (options[2] as HTMLElement).click();
+			await userEvent.click(options[2] as HTMLElement);
+			await expect.poll(() => document.activeElement === options[2]).toBe(true);
 			await userEvent.keyboard('{ArrowDown}');
 
 			const focusedOption = listbox.element().querySelector('[data-focused]');
