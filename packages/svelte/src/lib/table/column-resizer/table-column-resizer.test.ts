@@ -31,7 +31,9 @@ describe('Table.ColumnResizer', () => {
 
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]');
 		const emailTh = emailResizer?.closest('th');
-		const resizeStatus = emailResizer?.querySelector<HTMLElement>('[data-testid="column-resize-status"]');
+		const resizeStatus = emailResizer?.querySelector<HTMLElement>(
+			'[data-testid="column-resize-status"]'
+		);
 
 		await expect.element(emailResizer).toHaveAttribute('role', 'separator');
 		await expect.element(emailResizer).toHaveAttribute('tabindex', '0');
