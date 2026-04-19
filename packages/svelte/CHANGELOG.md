@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.15
+
+### Patch Changes
+
+- [#39](https://github.com/Agustin-Delgado/svelte-components/pull/39) [`f4462ff`](https://github.com/Agustin-Delgado/svelte-components/commit/f4462ff4d3556dc8133cb7e90e350fd0e770ea77) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Summary
+
+  Clean up the Table contract by removing the legacy `Table.Column.allowsResizing` prop, exporting explicit public prop types for `Table.Root`, `Table.Column`, `Table.ColumnHeaderCell`, and `Table.ColumnResizer`, and documenting the intended composition model separately from internal normalized column metadata.
+
 ## 1.0.0-alpha.14
 
 ### Minor Changes
