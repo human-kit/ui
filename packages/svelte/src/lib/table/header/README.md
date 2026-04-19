@@ -9,6 +9,8 @@
 Name: `Table.Header`
 Description: Header rowgroup for a `Table`, typically containing a single row of sortable or static column headers.
 
+Public prop type: `TableHeaderProps`
+
 | Prop       | Type      | Default     | Description                          |
 | ---------- | --------- | ----------- | ------------------------------------ |
 | `class`    | `string`  | `''`        | Class names for the `thead` element. |

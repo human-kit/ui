@@ -9,6 +9,8 @@
 Name: `Table.Cell`
 Description: Table data cell part. In body scope it participates in roving focus and row selection. In footer scope it renders semantic summary cells only.
 
+Public prop type: `TableCellProps`
+
 | Prop       | Type      | Default     | Description                                |
 | ---------- | --------- | ----------- | ------------------------------------------ |
 | `class`    | `string`  | `''`        | Class names for the rendered `td` or `th`. |

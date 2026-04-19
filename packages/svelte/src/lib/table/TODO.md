@@ -46,7 +46,7 @@ Ship a stable `Table` v1 with keyboard navigation, row selection, sorting, docum
 - [x] [M][P1][Area: DX][Owner: Unassigned][Target: Done] Break the controlled `selectedKeys` feedback loop — the `$effect` that syncs `selectedKeys` to `ctx.setSelection` also fires after internal selection changes via `onSelectionChange`, causing a redundant `notifySelection`.
 - [x] [S][P2][Area: DX][Owner: Unassigned][Target: Done] Remove inline `style="outline: none;"` from Cell and ColumnHeaderCell — it overrides consumer inline styles; let consumers handle focus-visible styling via `data-focus-visible` / `data-focused` attributes instead.
 - [x] [S][P2][Area: DX][Owner: Unassigned][Target: Done] Document `defaultSelectedKeys` and `defaultSortDescriptor` props in the README and docs page.
-- [ ] [C][P2][Area: DX][Owner: Unassigned][Target: TBD] Export component prop types (`TableRootProps`, `TableRowProps`, `TableCellProps`, etc.) so consumers can type wrapper components.
+- [x] [C][P2][Area: DX][Owner: Unassigned][Target: Done] Export component prop types (`TableRootProps`, `TableRowProps`, `TableCellProps`, etc.) so consumers can type wrapper components.
 - [ ] [C][P2][Area: DX][Owner: Unassigned][Target: TBD] Evaluate whether exposing `context` as a `$bindable` prop on `Table.Root` is necessary or if a narrower public API would be safer.
 - [ ] [C][P3][Area: DX][Owner: Unassigned][Target: TBD] Extract a shared registration helper to eliminate the duplicated sync-then-effect pattern across Column, Row, Cell, and ColumnHeaderCell.
 

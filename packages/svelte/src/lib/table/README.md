@@ -6,6 +6,8 @@
 
 `Table` is a headless interactive table primitive with grid-style keyboard navigation, row selection, sortable column headers, and a composable part-based API.
 
+All public Table part prop types are exported from the table barrel, including `TableRootProps`, `TableColumnProps`, `TableHeaderProps`, `TableBodyProps`, `TableFooterProps`, `TableRowProps`, `TableColumnHeaderCellProps`, `TableColumnResizerProps`, `TableCellProps`, `TableEmptyStateProps`, `TableCheckboxProps`, and `TableCheckboxIndicatorProps`.
+
 ## Anatomy
 
 ```svelte
@@ -103,6 +105,15 @@
 - In `replace` mode, clicking outside the table clears focus but does not clear selection.
 - In body rows, pressing `ArrowLeft` before the first cell or `ArrowRight` after the last cell moves focus to the row itself. Repeating that same horizontal arrow loops back into the opposite edge cell of the same row.
 - `Table.Checkbox` is the supported interactive control inside table cells for explicit row selection in v1.
+
+## Composition contract
+
+- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
+- Metadata-only part: `Table.Column` does not render its own element. It only registers the public column input for the surrounding header composition.
+- Sorting: `Table.Column.allowsSorting` declares that a column participates in sorting, and `Table.ColumnHeaderCell` is the interactive header cell that toggles the sort state.
+- Resizing: `Table.ColumnResizer` is the only public opt-in for resizing. Rendering it inside a `Table.ColumnHeaderCell` enables resizing for the owning `Table.Column`.
+- Public input types: import the `Table*Props` types you need from `@human-kit/svelte-components/table` or the main package barrel instead of deriving contracts from component internals.
+- Internal normalized state: table context stores normalized column metadata internally as `TableColumnMetadata`. That metadata is not the public input contract for wrappers or consumers.
 
 ## Accessibility
 

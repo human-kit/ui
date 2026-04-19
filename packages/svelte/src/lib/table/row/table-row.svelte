@@ -2,27 +2,13 @@
 	import { onDestroy } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { writable } from 'svelte/store';
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
-	import {
-		setTableRowContext,
-		useTableContext,
-		useTableSectionContext,
-		type TableSelectionKey
-	} from '../root/context';
+	import { setTableRowContext, useTableContext, useTableSectionContext } from '../root/context';
+	import type { TableRowProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
-
-	type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children' | 'id'> & {
-		id?: TableSelectionKey;
-		isDisabled?: boolean;
-		textValue?: string;
-		children?: Snippet;
-		class?: string;
-	};
 
 	let {
 		id,

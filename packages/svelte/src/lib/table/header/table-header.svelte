@@ -1,12 +1,6 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { setTableSectionContext } from '../root/context';
-
-	type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
-		children?: Snippet;
-		class?: string;
-	};
+	import type { TableHeaderProps } from '../types.js';
 
 	let { children, class: className = '', ...restProps }: TableHeaderProps = $props();
 	setTableSectionContext({ section: 'header' });

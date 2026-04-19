@@ -9,6 +9,8 @@
 Name: `Table.ColumnResizer`
 Description: Interactive resize handle for the current `Table.Column`. It must be composed inside `Table.ColumnHeaderCell`, and it resizes the column that owns the surrounding `Table.Column` context.
 
+Public prop type: `TableColumnResizerProps`
+
 | Prop        | Type      | Default     | Description                                                          |
 | ----------- | --------- | ----------- | -------------------------------------------------------------------- |
 | `step`      | `number`  | `16`        | Keyboard resize delta in px for `ArrowLeft` / `ArrowRight`.          |
@@ -20,7 +22,6 @@ Description: Interactive resize handle for the current `Table.Column`. It must b
 
 - `Table.ColumnResizer` must be used inside `Table.ColumnHeaderCell`.
 - Rendering `Table.ColumnResizer` inside `Table.ColumnHeaderCell` is enough to make the owning `Table.Column` resizable.
-- `Table.Column.allowsResizing` is still accepted for backward compatibility, but it is no longer required.
 - The handle resolves the active column from `Table.Column` context. It does not accept a separate `columnId` prop.
 - Width state lives in `Table.Root` through `columnWidths` / `defaultColumnWidths`.
 - Pointer resizing uses Pointer Events, so mouse, touch, and pen interactions share the same behavior.

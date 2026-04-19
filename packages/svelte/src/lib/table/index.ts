@@ -1,5 +1,20 @@
 export * as Table from './index.parts.js';
 
+export type {
+	TableBodyProps,
+	TableCellProps,
+	TableCheckboxIndicatorProps,
+	TableCheckboxProps,
+	TableColumnHeaderCellProps,
+	TableColumnProps,
+	TableColumnResizerProps,
+	TableEmptyStateProps,
+	TableFooterProps,
+	TableHeaderProps,
+	TableRowProps,
+	TableRootProps
+} from './types.js';
+
 export { default as TableRoot } from './root/table-root.svelte';
 export { default as TableColumn } from './column/table-column.svelte';
 export { default as TableHeader } from './header/table-header.svelte';
@@ -38,7 +53,6 @@ export {
 	type TableSortDescriptor,
 	type TableColumnWidth,
 	type TableGridCoord,
-	type TableColumnRegistration,
 	type TableSectionKind,
 	type TableSectionContext,
 	type TableRowContext,

@@ -7,6 +7,8 @@
 Name: `Table.Checkbox`
 Description: Headless selection-aware checkbox root for tables. In body cells it toggles the owning row. In header cells it becomes a select-all checkbox for multiple selection mode.
 
+Public prop type: `TableCheckboxProps`
+
 | Prop              | Type                                       | Default     | Description                                                                                             |
 | ----------------- | ------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
 | `id`              | `string`                                   | `undefined` | Optional id forwarded to the composed checkbox root.                                                    |

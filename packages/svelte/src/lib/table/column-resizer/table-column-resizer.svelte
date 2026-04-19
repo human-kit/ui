@@ -1,19 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { getTableCellContext, useTableColumnContext, useTableContext } from '../root/context';
+	import type { TableColumnResizerProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-
-	type TableColumnResizerProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
-		step?: number;
-		shiftStep?: number;
-		children?: Snippet;
-		class?: string;
-	};
 
 	let {
 		step = 16,

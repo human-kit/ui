@@ -1,22 +1,16 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import {
 		setTableCellContext,
 		useTableColumnContext,
 		useTableContext,
 		useTableRowContext
 	} from '../root/context';
+	import type { TableColumnHeaderCellProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-
-	type TableColumnHeaderCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
-		children?: Snippet;
-		class?: string;
-	};
 
 	let { children, class: className = '', ...restProps }: TableColumnHeaderCellProps = $props();
 

@@ -1,31 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import type { Snippet } from 'svelte';
-	import {
-		setTableColumnContext,
-		useTableContext,
-		useTableSectionContext,
-		type TableColumnWidth
-	} from '../root/context';
-
-	type TableColumnProps = {
-		id: string;
-		allowsSorting?: boolean;
-		/** @deprecated `Table.ColumnResizer` now enables resizing automatically. */
-		allowsResizing?: boolean;
-		isRowHeader?: boolean;
-		textValue?: string;
-		width?: TableColumnWidth;
-		defaultWidth?: TableColumnWidth;
-		minWidth?: number;
-		maxWidth?: number;
-		children?: Snippet;
-	};
+	import { setTableColumnContext, useTableContext, useTableSectionContext } from '../root/context';
+	import type { TableColumnProps } from '../types.js';
 
 	let {
 		id,
 		allowsSorting = false,
-		allowsResizing = false,
 		isRowHeader = false,
 		textValue,
 		width,
@@ -50,9 +30,6 @@
 		},
 		get allowsSorting() {
 			return allowsSorting;
-		},
-		get allowsResizing() {
-			return allowsResizing || table.isColumnResizable(id);
 		},
 		get isHidden() {
 			return table.isColumnHidden(id);
@@ -82,7 +59,6 @@
 			token,
 			id,
 			allowsSorting,
-			allowsResizing,
 			isRowHeader,
 			textValue,
 			width,

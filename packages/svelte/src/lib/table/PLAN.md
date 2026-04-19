@@ -224,7 +224,7 @@ Responsibilities:
 
 - define stable column identity
 - register column metadata in context (sorting, row header)
-- register column resize metadata in context when enabled
+- register column width constraints in context
 - serve as the anchor for sorting and row header semantics
 - serve as the anchor for width/resizing behavior
 
@@ -232,7 +232,6 @@ Tentative API:
 
 - `id: string` — stable column identity
 - `allowsSorting?: boolean`
-- `allowsResizing?: boolean`
 - `isRowHeader?: boolean`
 - `textValue?: string`
 - `width?: number | string`
@@ -564,21 +563,14 @@ Add column resizing in a way that follows the React Aria Components mental model
 <Table.Root aria-label="Users" bind:columnWidths>
 	<Table.Header>
 		<Table.Row>
-			<Table.Column
-				id="email"
-				isRowHeader
-				allowsSorting
-				allowsResizing
-				defaultWidth={280}
-				minWidth={180}
-			>
+			<Table.Column id="email" isRowHeader allowsSorting defaultWidth={280} minWidth={180}>
 				<Table.ColumnHeaderCell>
 					<span>Email</span>
 					<Table.ColumnResizer />
 				</Table.ColumnHeaderCell>
 			</Table.Column>
 
-			<Table.Column id="group" allowsSorting allowsResizing defaultWidth={180} minWidth={140}>
+			<Table.Column id="group" allowsSorting defaultWidth={180} minWidth={140}>
 				<Table.ColumnHeaderCell>
 					<span>Group</span>
 					<Table.ColumnResizer />
@@ -595,11 +587,10 @@ Add column resizing in a way that follows the React Aria Components mental model
 
 ### API Recommendation
 
-#### Resize Props on `Table.Column`
+#### Width Props on `Table.Column`
 
 Add the following props:
 
-- `allowsResizing?: boolean`
 - `width?: number | string`
 - `defaultWidth?: number | string`
 - `minWidth?: number`
@@ -609,8 +600,7 @@ Notes:
 
 - `width` is the controlled width for the column.
 - `defaultWidth` is the uncontrolled initial width.
-- `allowsResizing` is required for resize behavior, even if a `Table.ColumnResizer` is rendered.
-- `Table.ColumnResizer` without `allowsResizing` should be ignored in production and warn in dev.
+- rendering `Table.ColumnResizer` is the public resize opt-in for the owning column.
 
 #### Width State on `Table.Root`
 
@@ -752,7 +742,6 @@ Derived data attributes:
 
 Extend column registration to include:
 
-- `allowsResizing`
 - `width`
 - `defaultWidth`
 - `minWidth`

@@ -7,6 +7,8 @@
 Name: `Table.CheckboxIndicator`
 Description: Headless presence wrapper for indicator content inside `Table.Checkbox`. It renders when the checkbox is checked or indeterminate.
 
+Public prop type: `TableCheckboxIndicatorProps`
+
 | Prop           | Type                              | Default     | Description                                                                     |
 | -------------- | --------------------------------- | ----------- | ------------------------------------------------------------------------------- |
 | `keepMounted`  | `boolean`                         | `false`     | Keeps the indicator mounted while hidden when the checkbox is unchecked.        |
