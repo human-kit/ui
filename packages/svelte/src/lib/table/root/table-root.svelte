@@ -393,16 +393,10 @@
 	{/if}
 </table>
 
-<span
-	role="status"
-	aria-live="polite"
-	aria-atomic="true"
-	style={visuallyHiddenStyle}
+<span role="status" aria-live="polite" aria-atomic="true" style={visuallyHiddenStyle}
 	>{sortAnnouncement}</span
 >
 
-<span
-	id={ctx.selectionUnavailableDescriptionId}
-	style={visuallyHiddenStyle}
+<span id={ctx.selectionUnavailableDescriptionId} style={visuallyHiddenStyle}
 	>Selection unavailable for this row.</span
 >

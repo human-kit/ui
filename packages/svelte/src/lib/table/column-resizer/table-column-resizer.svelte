@@ -602,8 +602,7 @@
 			role="status"
 			aria-live="polite"
 			aria-atomic="true"
-			style={visuallyHiddenStyle}
-			>{resizeAnnouncement}</span
+			style={visuallyHiddenStyle}>{resizeAnnouncement}</span
 		>
 	</div>
 {/if}
