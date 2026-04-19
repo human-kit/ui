@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { Checkbox } from '../../checkbox';
 	import {
 		useTableCellContext,
@@ -8,30 +6,11 @@
 		useTableRowContext,
 		useTableSectionContext
 	} from '../root/context';
+	import type { TableCheckboxProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-
-	type TableCheckboxProps = Omit<
-		HTMLAttributes<HTMLSpanElement>,
-		| 'children'
-		| 'class'
-		| 'id'
-		| 'role'
-		| 'tabindex'
-		| 'aria-checked'
-		| 'aria-disabled'
-		| 'onclick'
-		| 'onkeydown'
-	> & {
-		id?: string;
-		title?: string;
-		children?: Snippet;
-		class?: string;
-		'aria-label'?: string;
-		'aria-labelledby'?: string;
-	};
 
 	let {
 		id,

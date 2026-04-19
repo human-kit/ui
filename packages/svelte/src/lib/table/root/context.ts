@@ -38,11 +38,10 @@ export type TableGridCoord = {
 
 export type TableRowFocusEdge = 'start' | 'end';
 
-export type TableColumnRegistration = {
+type TableColumnMetadata = {
 	token: string;
 	id: string;
 	allowsSorting: boolean;
-	allowsResizing: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
 	width?: TableColumnWidth;
@@ -108,13 +107,13 @@ export type TableContext = {
 	focusVisible: boolean;
 	sortDescriptor: TableSortDescriptor | undefined;
 	resizingColumnId: string | null;
-	registerColumn: (column: TableColumnRegistration) => void;
+	registerColumn: (column: TableColumnMetadata) => void;
 	unregisterColumn: (token: string) => void;
 	registerColumnResizer: (columnToken: string) => void;
 	unregisterColumnResizer: (columnToken: string) => void;
 	getColumnCount: () => number;
 	getVisibleColumnCount: () => number;
-	getColumnAt: (index: number) => TableColumnRegistration | undefined;
+	getColumnAt: (index: number) => TableColumnMetadata | undefined;
 	getColumnIndexByToken: (token: string) => number;
 	getVisibleColumnIndexByToken: (token: string) => number;
 	getColumnTextValue: (columnId: string) => string | undefined;
@@ -209,7 +208,6 @@ export type TableColumnContext = {
 	token: string;
 	id: string;
 	allowsSorting: boolean;
-	allowsResizing: boolean;
 	isHidden: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
@@ -244,7 +242,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let resizingColumnId: string | null = null;
 	let suppressNextHeaderClick = false;
 
-	const columns = new Map<string, TableColumnRegistration>();
+	const columns = new Map<string, TableColumnMetadata>();
 	const columnIds = new Map<string, string>();
 	const columnOrder: string[] = [];
 	const columnsWithResizers = new Set<string>();
@@ -385,7 +383,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function hasResizableColumns() {
 		for (const column of columns.values()) {
 			if (isColumnHidden(column.id)) continue;
-			if (column.allowsResizing || columnsWithResizers.has(column.token)) return true;
+			if (columnsWithResizers.has(column.token)) return true;
 		}
 		return false;
 	}
@@ -401,12 +399,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		notifyLayout();
 	}
 
-	function sameColumnRegistration(left: TableColumnRegistration, right: TableColumnRegistration) {
+	function sameColumnMetadata(left: TableColumnMetadata, right: TableColumnMetadata) {
 		return (
 			left.token === right.token &&
 			left.id === right.id &&
 			left.allowsSorting === right.allowsSorting &&
-			left.allowsResizing === right.allowsResizing &&
 			left.isRowHeader === right.isRowHeader &&
 			left.textValue === right.textValue &&
 			left.width === right.width &&
@@ -438,10 +435,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		);
 	}
 
-	function registerColumn(column: TableColumnRegistration) {
+	function registerColumn(column: TableColumnMetadata) {
 		const existing = columns.get(column.token);
 		const alreadyOrdered = columnOrder.includes(column.token);
-		if (existing && sameColumnRegistration(existing, column) && alreadyOrdered) return;
+		if (existing && sameColumnMetadata(existing, column) && alreadyOrdered) return;
 		if (existing && existing.id !== column.id && columnIds.get(existing.id) === column.token) {
 			columnIds.delete(existing.id);
 		}
@@ -549,7 +546,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const column = getColumnRegistrationById(columnId);
 		if (!column) return false;
 		if (isColumnHidden(columnId)) return false;
-		return column.allowsResizing || columnsWithResizers.has(column.token);
+		return columnsWithResizers.has(column.token);
 	}
 
 	function getColumnWidths() {

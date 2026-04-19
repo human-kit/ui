@@ -9,6 +9,8 @@
 Name: `Table.Footer`
 Description: Footer rowgroup for summary rows or aggregate information. In v1 it is semantic only and excluded from keyboard navigation.
 
+Public prop type: `TableFooterProps`
+
 | Prop       | Type      | Default     | Description                          |
 | ---------- | --------- | ----------- | ------------------------------------ |
 | `class`    | `string`  | `''`        | Class names for the `tfoot` element. |

@@ -9,6 +9,8 @@
 Name: `Table.ColumnHeaderCell`
 Description: Focusable header cell for a column. It participates in roving focus and toggles sorting when the wrapping `Table.Column` allows it.
 
+Public prop type: `TableColumnHeaderCellProps`
+
 - When a nested control like `Table.ColumnResizer` receives focus, the header exposes `data-focus-within` / `data-focus-visible-within` instead of remaining `data-focused`.
 
 | Prop       | Type      | Default     | Description                       |

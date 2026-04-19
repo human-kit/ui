@@ -9,6 +9,8 @@
 Name: `Table.Body`
 Description: Body rowgroup for table data rows. It also exposes empty-state markers when no body rows are registered.
 
+Public prop type: `TableBodyProps`
+
 | Prop       | Type      | Default     | Description                                |
 | ---------- | --------- | ----------- | ------------------------------------------ |
 | `class`    | `string`  | `''`        | Class names for the `tbody` element.       |

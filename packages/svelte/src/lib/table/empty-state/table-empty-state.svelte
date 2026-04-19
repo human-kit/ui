@@ -1,11 +1,6 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { useTableContext, useTableSectionContext } from '../root/context';
-
-	type TableEmptyStateProps = {
-		children?: Snippet;
-		class?: string;
-	};
+	import type { TableEmptyStateProps } from '../types.js';
 
 	let { children, class: className = '' }: TableEmptyStateProps = $props();
 

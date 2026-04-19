@@ -1,13 +1,6 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { Checkbox } from '../../checkbox';
-
-	type TableCheckboxIndicatorProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
-		keepMounted?: boolean;
-		children?: Snippet;
-		class?: string;
-	};
+	import type { TableCheckboxIndicatorProps } from '../types.js';
 
 	let {
 		keepMounted = false,

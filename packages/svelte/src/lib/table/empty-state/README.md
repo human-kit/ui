@@ -9,6 +9,8 @@
 Name: `Table.EmptyState`
 Description: Convenience part for rendering a semantic empty row inside `Table.Body` when no data rows are registered.
 
+Public prop type: `TableEmptyStateProps`
+
 | Prop       | Type      | Default     | Description                                             |
 | ---------- | --------- | ----------- | ------------------------------------------------------- |
 | `class`    | `string`  | `''`        | Class names for the generated empty row.                |

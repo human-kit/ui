@@ -9,6 +9,8 @@
 Name: `Table.Row`
 Description: Semantic table row part used in the header, body, or footer. In body scope it reflects row focus, selection, and disabled state.
 
+Public prop type: `TableRowProps`
+
 | Prop         | Type               | Default     | Description                                                     |
 | ------------ | ------------------ | ----------- | --------------------------------------------------------------- |
 | `id`         | `string \| number` | `undefined` | Stable row identifier used for selection state in `Table.Body`. |

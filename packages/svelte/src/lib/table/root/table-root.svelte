@@ -12,50 +12,17 @@
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
-	import {
-		createTableContext,
-		setTableContext,
-		type TableDisabledBehavior,
-		type TableRowActionHandler,
-		type TableContext,
-		type TableSelectionBehavior,
-		type TableSelectionKey,
-		type TableSelectionMode,
-		type TableSortDescriptor
-	} from './context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-
-	type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> & {
-		selectionMode?: TableSelectionMode;
-		selectionBehavior?: TableSelectionBehavior;
-		disabledBehavior?: TableDisabledBehavior;
-		disallowEmptySelection?: boolean;
-		hiddenColumns?: Iterable<string>;
-		defaultHiddenColumns?: Iterable<string>;
-		selectedKeys?: Iterable<TableSelectionKey>;
-		defaultSelectedKeys?: Iterable<TableSelectionKey>;
-		sortDescriptor?: TableSortDescriptor;
-		defaultSortDescriptor?: TableSortDescriptor;
-		columnWidths?: Map<string, number>;
-		defaultColumnWidths?: Iterable<readonly [string, number]>;
-		disabledKeys?: Iterable<TableSelectionKey>;
-		onRowAction?: TableRowActionHandler;
-		onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
-		onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
-		onColumnWidthsChange?: (widths: Map<string, number>) => void;
-		onHiddenColumnsChange?: (columnIds: string[]) => void;
-		onColumnResizeStart?: (columnId: string) => void;
-		onColumnResizeEnd?: (widths: Map<string, number>) => void;
-		children?: Snippet;
-		class?: string;
-		context?: TableContext;
-		element?: HTMLTableElement;
-	};
+	import type { TableRootProps } from '../types.js';
+	import {
+		createTableContext,
+		setTableContext,
+		type TableSelectionKey,
+		type TableSortDescriptor
+	} from './context';
 
 	let {
 		selectionMode = 'none',
