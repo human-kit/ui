@@ -759,6 +759,28 @@ describe('Table.Root', () => {
 			.toBe('');
 	});
 
+	it('renders visually hidden accessibility nodes with fixed positioning', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			disabledBehavior: 'selection',
+			disabledKeys: ['zahra']
+		});
+
+		const liveRegion = document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]');
+		const selectionUnavailableDescription = document.getElementById(
+			document
+				.querySelector<HTMLElement>('tbody [aria-describedby]')
+				?.getAttribute('aria-describedby') ?? ''
+		);
+
+		expect(liveRegion?.style.position).toBe('fixed');
+		expect(liveRegion?.style.top).toBe('0px');
+		expect(liveRegion?.style.left).toBe('0px');
+		expect(selectionUnavailableDescription?.style.position).toBe('fixed');
+		expect(selectionUnavailableDescription?.style.top).toBe('0px');
+		expect(selectionUnavailableDescription?.style.left).toBe('0px');
+	});
+
 	it('announces sort changes through a polite live region', async () => {
 		render(TableTest);
 		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;

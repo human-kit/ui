@@ -16,6 +16,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
 	import type { TableRootProps } from '../types.js';
 	import {
 		createTableContext,
@@ -396,12 +397,12 @@
 	role="status"
 	aria-live="polite"
 	aria-atomic="true"
-	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+	style={visuallyHiddenStyle}
 	>{sortAnnouncement}</span
 >
 
 <span
 	id={ctx.selectionUnavailableDescriptionId}
-	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+	style={visuallyHiddenStyle}
 	>Selection unavailable for this row.</span
 >
