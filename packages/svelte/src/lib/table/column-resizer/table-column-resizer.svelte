@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { getTableCellContext, useTableColumnContext, useTableContext } from '../root/context';
 	import type { TableColumnResizerProps } from '../types.js';
+	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -601,8 +602,7 @@
 			role="status"
 			aria-live="polite"
 			aria-atomic="true"
-			style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
-			>{resizeAnnouncement}</span
+			style={visuallyHiddenStyle}>{resizeAnnouncement}</span
 		>
 	</div>
 {/if}

@@ -31,10 +31,16 @@ describe('Table.ColumnResizer', () => {
 
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]');
 		const emailTh = emailResizer?.closest('th');
+		const resizeStatus = emailResizer?.querySelector<HTMLElement>(
+			'[data-testid="column-resize-status"]'
+		);
 
 		await expect.element(emailResizer).toHaveAttribute('role', 'separator');
 		await expect.element(emailResizer).toHaveAttribute('tabindex', '0');
 		expect(emailTh?.style.width).toBe('200px');
+		expect(resizeStatus?.style.position).toBe('fixed');
+		expect(resizeStatus?.style.top).toBe('0px');
+		expect(resizeStatus?.style.left).toBe('0px');
 	});
 
 	it('resizes only the active column with keyboard input', async () => {
