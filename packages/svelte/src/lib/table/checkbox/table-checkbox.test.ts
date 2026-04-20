@@ -11,6 +11,25 @@ describe('Table.Checkbox', () => {
 		expect(document.querySelector('[data-testid="row-checkbox-danilo"]')).toBeTruthy();
 	});
 
+	it('enables the header checkbox immediately when selectable rows are present', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		expect(
+			document.querySelector('[data-testid="header-checkbox"]')?.getAttribute('aria-disabled')
+		).toBeNull();
+	});
+
+	it('disables the header checkbox once the body initializes with no selectable rows', async () => {
+		render(CheckboxTest, {
+			selectionMode: 'multiple',
+			rows: []
+		});
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="header-checkbox"]')?.getAttribute('aria-disabled'))
+			.toBe('true');
+	});
+
 	it('hides all table checkboxes when selectionMode is none', async () => {
 		render(CheckboxTest, { selectionMode: 'none' });
 

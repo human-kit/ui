@@ -147,6 +147,7 @@ export type TableContext = {
 	hasResizableColumns: () => boolean;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
+	markBodyRowsInitialized: () => void;
 	getHeaderRowCount: () => number;
 	getBodyRowCount: () => number;
 	isRowSelected: (id: TableSelectionKey | undefined) => boolean;
@@ -271,6 +272,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
 	const bodyRowOrder: string[] = [];
+	let bodyRowsInitialized = false;
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
@@ -1259,6 +1261,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (targetOrder && !targetOrder.includes(row.token)) {
 			targetOrder.push(row.token);
 		}
+		notifySelection();
 		notifyLayout();
 	}
 
@@ -1287,7 +1290,18 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				notifyFocus();
 			}
 		}
+		notifySelection();
 		notifyLayout();
+	}
+
+	function markBodyRowsInitialized() {
+		if (bodyRowsInitialized) return;
+		const optimisticHasSelectableRows = selectionMode === 'multiple' || selectedKeys.size > 0;
+		bodyRowsInitialized = true;
+		const actualHasSelectableRows = getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		if (optimisticHasSelectableRows !== actualHasSelectableRows) {
+			notifySelection();
+		}
 	}
 
 	function getBodyRowCount() {
@@ -1382,6 +1396,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function hasSelectableRows() {
+		if (!bodyRowsInitialized) {
+			return selectionMode === 'multiple' || selectedKeys.size > 0;
+		}
 		return getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
 	}
 
@@ -2230,6 +2247,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		hasResizableColumns,
 		registerRow,
 		unregisterRow,
+		markBodyRowsInitialized,
 		getHeaderRowCount,
 		getBodyRowCount,
 		isRowSelected,

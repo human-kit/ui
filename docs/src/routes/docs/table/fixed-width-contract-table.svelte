@@ -35,7 +35,7 @@
 		>
 			<Table.Header>
 				<Table.Row class="border-b border-gray-200 dark:border-gray-700">
-					<Table.Column id="name" isRowHeader textValue="Name">
+					<Table.Column id="name" isRowHeader textValue="Name" defaultWidth="100px">
 						<Table.ColumnHeaderCell
 							class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-300"
 						>
