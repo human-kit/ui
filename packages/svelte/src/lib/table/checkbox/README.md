@@ -2,7 +2,7 @@
 
 ## API reference
 
-### Table.Checkbox
+### Checkbox Part
 
 Name: `Table.Checkbox`
 Description: Headless selection-aware checkbox root for tables. In body cells it toggles the owning row. In header cells it becomes a select-all checkbox for multiple selection mode.

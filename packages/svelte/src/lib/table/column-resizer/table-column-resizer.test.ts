@@ -1,23 +1,48 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
+import type { TableColumnWidth } from '../root/context';
 import ColumnResizerTest from './table-column-resizer-test.svelte';
+import ColumnResizerFixedWidthTest from './table-column-resizer-fixed-width-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';
+import ColumnResizerOverflowTest from './table-column-resizer-overflow-test.svelte';
+import ColumnResizerPaddedContainerTest from './table-column-resizer-padded-container-test.svelte';
+import ColumnResizerThreeColumnRelativeTest from './table-column-resizer-three-column-relative-test.svelte';
 import ColumnResizerSelectionColumnTest from './table-column-resizer-selection-column-test.svelte';
+
+type ColumnWidthState = Record<string, TableColumnWidth>;
 
 function readColumnWidths() {
 	const text = document.querySelector('[data-testid="column-widths"]')?.textContent ?? '{}';
-	return JSON.parse(text) as Record<string, number>;
+	return JSON.parse(text) as ColumnWidthState;
 }
 
 function readFrozenColumnWidths() {
 	const text = document.querySelector('[data-testid="freeze-column-widths"]')?.textContent ?? '{}';
-	return JSON.parse(text) as Record<string, number>;
+	return JSON.parse(text) as ColumnWidthState;
+}
+
+function readOverflowColumnWidths() {
+	const text =
+		document.querySelector('[data-testid="overflow-column-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as ColumnWidthState;
+}
+
+function readThreeColumnRelativeWidths() {
+	const text =
+		document.querySelector('[data-testid="three-column-relative-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as ColumnWidthState;
+}
+
+function readPaddedRelativeWidths() {
+	const text =
+		document.querySelector('[data-testid="padded-relative-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as ColumnWidthState;
 }
 
 function readResizeEndWidths() {
 	const text = document.querySelector('[data-testid="resize-end-widths"]')?.textContent ?? '{}';
-	return JSON.parse(text) as Record<string, number>;
+	return JSON.parse(text) as ColumnWidthState;
 }
 
 function readResizeAnnouncement(testId: string) {
@@ -72,6 +97,73 @@ describe('Table.ColumnResizer', () => {
 
 		expect(readColumnWidths().email).toBe(200);
 		await expect.element(emailResizer).not.toHaveAttribute('data-resizing');
+	});
+
+	it('treats width as a fixed column width while still exposing the resize handle affordance', async () => {
+		render(ColumnResizerFixedWidthTest);
+		const fixedResizer = document.querySelector<HTMLElement>(
+			'[data-testid="fixed-email-resizer"]'
+		)!;
+		const fixedHeader = fixedResizer.closest('th') as HTMLElement;
+
+		await expect.poll(() => fixedHeader.style.width).toBe('220px');
+		await expect.element(fixedResizer).toHaveAttribute('role', 'separator');
+		await expect.element(fixedResizer).toHaveAttribute('tabindex', '0');
+		expect(fixedResizer.style.pointerEvents).toBe('auto');
+
+		fixedResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 21,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 180,
+				pointerId: 21,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 180,
+				pointerId: 21,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.element(fixedResizer).not.toHaveAttribute('data-resizing');
+
+		await expect.poll(() => fixedHeader.style.width).toBe('220px');
+		expect(readColumnWidths().email).toBeUndefined();
+		expect(readColumnWidths().role).toBeUndefined();
+
+		window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+	});
+
+	it('keeps defaultWidth columns resizable as uncontrolled initial widths', async () => {
+		render(ColumnResizerFixedWidthTest);
+		const roleResizer = document.querySelector<HTMLElement>('[data-testid="role-resizer"]')!;
+		const roleHeader = roleResizer.closest('th') as HTMLElement;
+
+		await expect.poll(() => roleHeader.style.width).toBe('180px');
+		await expect.element(roleResizer).toHaveAttribute('role', 'separator');
+		await expect.element(roleResizer).toHaveAttribute('tabindex', '0');
+
+		roleResizer.focus();
+		await userEvent.keyboard('{Enter}');
+		await userEvent.keyboard('{ArrowRight}');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.poll(() => readColumnWidths().role).toBe(196);
 	});
 
 	it('does not trigger sorting when interacting with the resize handle', async () => {
@@ -324,11 +416,123 @@ describe('Table.ColumnResizer', () => {
 		await expect.poll(() => readColumnWidths().email).toBe(fittedWidth);
 	});
 
-	it('freezes measured widths for all columns when a drag starts', async () => {
+	it('does not materialize relative widths on pointerdown without an actual drag', async () => {
 		render(ColumnResizerFreezeLayoutTest);
 		const emailResizer = document.querySelector<HTMLElement>(
 			'[data-testid="freeze-email-resizer"]'
 		)!;
+
+		emailResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 160,
+				pointerId: 31,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				button: 0,
+				clientX: 160,
+				pointerId: 31,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		expect(readFrozenColumnWidths()).toEqual({});
+	});
+
+	it('does not resize the flexible tail when clicking a handle without dragging in a relative layout', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		const planBeforeClick = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 36,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 36,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		expect(readThreeColumnRelativeWidths()).toEqual({});
+		expect(Math.round(planHeaderCell.getBoundingClientRect().width)).toBe(planBeforeClick);
+	});
+
+	it('ignores a zero-delta pointermove so relative widths do not materialize accidentally', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		const planBeforePointerNoise = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 37,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 240,
+				pointerId: 37,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 37,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		expect(readThreeColumnRelativeWidths()).toEqual({});
+		expect(Math.round(planHeaderCell.getBoundingClientRect().width)).toBe(planBeforePointerNoise);
+	});
+
+	it('freezes the implicit flexible tail into px widths when a drag first changes width', async () => {
+		render(ColumnResizerFreezeLayoutTest);
+		const emailResizer = document.querySelector<HTMLElement>(
+			'[data-testid="freeze-email-resizer"]'
+		)!;
+		const table = document.querySelector<HTMLTableElement>('table[role="grid"]')!;
 
 		emailResizer.dispatchEvent(
 			new PointerEvent('pointerdown', {
@@ -340,20 +544,33 @@ describe('Table.ColumnResizer', () => {
 				isPrimary: true
 			})
 		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 220,
+				pointerId: 3,
+				pointerType: 'touch',
+				isPrimary: true
+			})
+		);
 
 		await expect
 			.poll(() => Object.keys(readFrozenColumnWidths()).sort())
 			.toEqual(['email', 'group']);
+		await expect.poll(() => typeof readFrozenColumnWidths().group).toBe('number');
+		await expect.poll(() => typeof readFrozenColumnWidths().email).toBe('number');
+		await expect
+			.poll(() => Math.round(table.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(640);
 	});
 
 	it('anchors the resize handle to the header cell edge', async () => {
 		render(ColumnResizerTest);
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
 		const emailHeaderCell = emailResizer.closest('th') as HTMLElement;
-		const headerContent = emailHeaderCell.querySelector<HTMLElement>('[data-table-header-content]');
 
-		await expect.poll(() => getComputedStyle(headerContent!).position).toBe('relative');
-		expect(headerContent?.style.overflow).toBe('visible');
+		await expect.poll(() => getComputedStyle(emailHeaderCell).position).toBe('relative');
+		expect(emailHeaderCell.style.overflow).toBe('visible');
 		expect(emailResizer.style.position).toBe('absolute');
 		expect(emailResizer.style.zIndex).toBe('2');
 		expect(emailResizer.style.right).toBe('0px');
@@ -365,11 +582,11 @@ describe('Table.ColumnResizer', () => {
 	it('keeps the overflow hit area reachable from the adjacent header cell side', async () => {
 		render(ColumnResizerTest);
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
-		const headerContent = emailResizer.closest('[data-table-header-content]') as HTMLElement;
+		const emailHeaderCell = emailResizer.closest('th') as HTMLElement;
 
 		await expect
 			.poll(() => {
-				const rect = headerContent.getBoundingClientRect();
+				const rect = emailHeaderCell.getBoundingClientRect();
 				const hitTarget = document.elementFromPoint(rect.right + 2, rect.top + rect.height / 2);
 				return hitTarget?.getAttribute('data-testid') ?? null;
 			})
@@ -412,6 +629,604 @@ describe('Table.ColumnResizer', () => {
 		await expect
 			.poll(() => Math.round(selectionHeaderCell.getBoundingClientRect().width))
 			.toBe(initialSelectionWidth);
+	});
+
+	it('keeps growing the resized column after the flexible tail hits its implicit minimum', async () => {
+		render(ColumnResizerOverflowTest);
+		const regionResizer = document.querySelector<HTMLElement>(
+			'[data-testid="overflow-region-resizer"]'
+		)!;
+		const nameHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="overflow-name-header-cell"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="overflow-plan-header-cell"]'
+		)!;
+		const table = document.querySelector<HTMLTableElement>('table[role="grid"]')!;
+
+		regionResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 320,
+				pointerId: 51,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 480,
+				pointerId: 51,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readOverflowColumnWidths().region as number).toBeTypeOf('number');
+		const firstRegionWidth = readOverflowColumnWidths().region as number;
+
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 760,
+				pointerId: 51,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect
+			.poll(() => readOverflowColumnWidths().region as number)
+			.toBeGreaterThan(firstRegionWidth);
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBeLessThanOrEqual(68);
+		expect(Math.round(planHeaderCell.getBoundingClientRect().width)).toBeGreaterThanOrEqual(60);
+		await expect.poll(() => nameHeaderCell.style.width).toBe('240px');
+		await expect.poll(() => Math.round(table.getBoundingClientRect().width)).toBeGreaterThan(640);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 760,
+				pointerId: 51,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+	});
+
+	it('does not make region lose pixels when name grows from the implicit layout', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const regionHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-header-cell"]'
+		)!;
+
+		const regionBefore = Math.round(regionHeaderCell.getBoundingClientRect().width);
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 71,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 241,
+				pointerId: 71,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 241,
+				pointerId: 71,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().region).toBe(180);
+		await expect
+			.poll(() => Math.round(regionHeaderCell.getBoundingClientRect().width))
+			.toBe(regionBefore);
+	});
+
+	it('keeps implicit relative columns in relative CSS until the first resize starts', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-header-cell"]'
+		)!;
+		const regionHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-header-cell"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		await expect.poll(() => readThreeColumnRelativeWidths()).toEqual({});
+		await expect.poll(() => regionHeaderCell.style.width).toBe('180px');
+		await expect.poll(() => nameHeaderCell.style.width.includes('calc(')).toBe(true);
+		await expect.poll(() => planHeaderCell.style.width.includes('calc(')).toBe(true);
+	});
+
+	it('restores the trailing flexible tail after one drag so a later sibling drag still treats it as flexible', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const regionResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-resizer"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 81,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 280,
+				pointerId: 81,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 280,
+				pointerId: 81,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().plan).toBe('1fr');
+
+		const planBeforeRegionDrag = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		regionResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 320,
+				pointerId: 82,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 380,
+				pointerId: 82,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBeLessThan(planBeforeRegionDrag);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 380,
+				pointerId: 82,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().plan).toBe('1fr');
+	});
+
+	it('does not let the flexible tail grow disproportionately on a second drag after resizing a sibling first', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const regionResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-resizer"]'
+		)!;
+		const regionHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-header-cell"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 91,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 300,
+				pointerId: 91,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 300,
+				pointerId: 91,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		const planBeforeSecondDrag = Math.round(planHeaderCell.getBoundingClientRect().width);
+		const regionBeforeSecondDrag = Math.round(regionHeaderCell.getBoundingClientRect().width);
+
+		regionResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 320,
+				pointerId: 92,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 320,
+				pointerId: 92,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		expect(readThreeColumnRelativeWidths().plan).toBe('1fr');
+		expect(Math.round(planHeaderCell.getBoundingClientRect().width)).toBe(planBeforeSecondDrag);
+
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 350,
+				pointerId: 92,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect
+			.poll(() => Math.round(regionHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThan(regionBeforeSecondDrag);
+		const regionAfterSecondDrag = Math.round(regionHeaderCell.getBoundingClientRect().width);
+		const planAfterSecondDrag = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		expect(regionAfterSecondDrag - regionBeforeSecondDrag).toBeLessThanOrEqual(40);
+		expect(planAfterSecondDrag - planBeforeSecondDrag).toBeLessThanOrEqual(10);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 350,
+				pointerId: 92,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+	});
+
+	it('re-materializes widths when resizing a px-managed column after the flexible tail was restored', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const regionResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-resizer"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 101,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 251,
+				pointerId: 101,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 251,
+				pointerId: 101,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().plan).toBe('1fr');
+		const planBeforeRegionDrag = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		regionResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 320,
+				pointerId: 102,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 325,
+				pointerId: 102,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => typeof readThreeColumnRelativeWidths().plan).toBe('number');
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBeLessThan(planBeforeRegionDrag);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 325,
+				pointerId: 102,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().plan).toBe('1fr');
+	});
+
+	it('does not expand the flexible tail when releasing a drag inside a padded container', async () => {
+		render(ColumnResizerPaddedContainerTest);
+		const nameResizer = document.querySelector<HTMLElement>('[data-testid="padded-name-resizer"]')!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="padded-plan-header-cell"]'
+		)!;
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 111,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 260,
+				pointerId: 111,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => typeof readPaddedRelativeWidths().plan).toBe('number');
+		const planWidthDuringDrag = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 260,
+				pointerId: 111,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readPaddedRelativeWidths().plan).toBe('1fr');
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBe(planWidthDuringDrag);
+	});
+
+	it('shrinking an overflowed column in a new drag session removes overflow before pointerup', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const table = document.querySelector<HTMLTableElement>('table[role="grid"]')!;
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-relative-container"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 121,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 480,
+				pointerId: 121,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 480,
+				pointerId: 121,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		const overflowedTableWidth = Math.round(table.getBoundingClientRect().width);
+		const containerWidth = Math.round(container.getBoundingClientRect().width);
+		expect(overflowedTableWidth).toBeGreaterThan(containerWidth);
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 480,
+				pointerId: 122,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 360,
+				pointerId: 122,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect
+			.poll(() => {
+				const widths = readThreeColumnRelativeWidths();
+				return Number(widths.name) + Number(widths.region) + Number(widths.plan);
+			})
+			.toBeLessThanOrEqual(640);
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(60);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 360,
+				pointerId: 122,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+	});
+
+	it('does not make name shrink after region exhausts the flexible tail', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const regionResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-region-resizer"]'
+		)!;
+		const nameHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-header-cell"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+		const table = document.querySelector<HTMLTableElement>('table[role="grid"]')!;
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-relative-container"]'
+		)!;
+
+		regionResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 320,
+				pointerId: 72,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 520,
+				pointerId: 72,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().name).toBeTypeOf('number');
+		const frozenNameWidth = Math.round(nameHeaderCell.getBoundingClientRect().width);
+
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 760,
+				pointerId: 72,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect
+			.poll(() => Math.round(nameHeaderCell.getBoundingClientRect().width))
+			.toBe(frozenNameWidth);
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBeLessThanOrEqual(68);
+		expect(Math.round(planHeaderCell.getBoundingClientRect().width)).toBeGreaterThanOrEqual(60);
+		await expect.poll(() => Math.round(table.getBoundingClientRect().width)).toBeGreaterThan(640);
+		expect(container.scrollWidth).toBeGreaterThan(container.clientWidth);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 760,
+				pointerId: 72,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
 	});
 
 	it('respects shift-step and Home keyboard resizing', async () => {

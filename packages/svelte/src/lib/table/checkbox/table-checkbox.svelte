@@ -30,8 +30,6 @@
 	const layoutVersion = table.layoutVersion;
 
 	let checkboxElement = $state<HTMLSpanElement | null>(null);
-	let checkboxChecked = $state(false);
-	let checkboxIndeterminate = $state(false);
 
 	const isVisible = $derived.by(() => {
 		if (table.selectionMode === 'none') return false;
@@ -84,17 +82,6 @@
 	function getCheckboxRootElement() {
 		return checkboxElement ?? undefined;
 	}
-
-	$effect(() => {
-		void $selectionVersion;
-		checkboxChecked = isChecked;
-	});
-
-	$effect(() => {
-		void $selectionVersion;
-		void $layoutVersion;
-		checkboxIndeterminate = isIndeterminate;
-	});
 
 	$effect(() => {
 		if (!isVisible || isDisabled) {
@@ -260,8 +247,8 @@
 	<Checkbox.Root
 		{id}
 		bind:element={checkboxElement}
-		bind:isChecked={checkboxChecked}
-		bind:isIndeterminate={checkboxIndeterminate}
+		{isChecked}
+		{isIndeterminate}
 		{isDisabled}
 		onCheckedChange={applySelection}
 		{title}

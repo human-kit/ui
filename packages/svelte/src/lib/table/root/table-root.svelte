@@ -21,6 +21,7 @@
 	import {
 		createTableContext,
 		setTableContext,
+		type TableColumnWidth,
 		type TableSelectionKey,
 		type TableSortDescriptor
 	} from './context';
@@ -60,7 +61,7 @@
 	let focusVisible = $state(false);
 	let pendingControlledHiddenColumns = $state<string[] | null>(null);
 	let pendingControlledSelection = $state<Set<TableSelectionKey> | null>(null);
-	let pendingControlledColumnWidths = $state<Map<string, number> | null>(null);
+	let pendingControlledColumnWidths = $state<Map<string, TableColumnWidth> | null>(null);
 	let sortAnnouncement = $state('');
 	let hasObservedSortState = $state(false);
 	let hasInitializedSortSync = $state(false);
@@ -137,7 +138,10 @@
 		return true;
 	}
 
-	function hasSameColumnWidths(left: Map<string, number>, right: Map<string, number>) {
+	function hasSameColumnWidths(
+		left: Map<string, TableColumnWidth>,
+		right: Map<string, TableColumnWidth>
+	) {
 		if (left.size !== right.size) return false;
 		for (const [key, value] of left) {
 			if (right.get(key) !== value) return false;
@@ -164,7 +168,50 @@
 		return ctx.hasResizableColumns();
 	});
 
+	const hasDefinedColumnWidths = $derived.by(() => {
+		void $layoutVersion;
+		for (let index = 0; index < ctx.getColumnCount(); index += 1) {
+			const column = ctx.getColumnAt(index);
+			if (!column || ctx.isColumnHidden(column.id)) continue;
+			if (column.width !== undefined || column.defaultWidth !== undefined) {
+				return true;
+			}
+		}
+		return false;
+	});
+
+	const layoutColumns = $derived.by(() => {
+		void $layoutVersion;
+		void $widthVersion;
+
+		const columns: Array<{
+			id: string;
+			width: number | undefined;
+			widthStyle: string | undefined;
+			minWidth: number | undefined;
+			maxWidth: number | undefined;
+		}> = [];
+
+		for (let index = 0; index < ctx.getColumnCount(); index += 1) {
+			const column = ctx.getColumnAt(index);
+			if (!column || ctx.isColumnHidden(column.id)) continue;
+
+			columns.push({
+				id: column.id,
+				width: ctx.getColumnWidth(column.id),
+				widthStyle: ctx.getColumnWidthStyle(column.id),
+				minWidth: ctx.getColumnMinWidth(column.id),
+				maxWidth: ctx.getColumnMaxWidth(column.id)
+			});
+		}
+
+		return columns;
+	});
+
 	const explicitManagedTableWidth = $derived.by(() => {
+		void $layoutVersion;
+		if (ctx.hasRelativeVisibleColumnWidths()) return undefined;
+
 		const widths = columnWidths ?? defaultColumnWidths;
 		if (!widths) return undefined;
 
@@ -172,8 +219,10 @@
 		let hasAnyWidth = false;
 		for (const [columnId, width] of widths) {
 			if (ctx.isColumnHidden(columnId)) continue;
-			if (!Number.isFinite(width)) continue;
-			total += width;
+			if (typeof width === 'string' && !width.trim().endsWith('px')) return undefined;
+			const numericWidth = typeof width === 'number' ? width : Number.parseFloat(width);
+			if (!Number.isFinite(numericWidth)) return undefined;
+			total += numericWidth;
 			hasAnyWidth = true;
 		}
 
@@ -183,16 +232,37 @@
 	const managedTableWidth = $derived.by(() => {
 		void $widthVersion;
 		void $layoutVersion;
-		if (!hasResizable) return undefined;
-		const widths = ctx.getVisibleColumnWidths();
+		const widths = ctx.getResolvedVisibleColumnWidths();
 		const columnCount = ctx.getVisibleColumnCount();
 		if (widths.size === 0 || widths.size < columnCount) return undefined;
+		if (ctx.hasRelativeVisibleColumnWidths()) return undefined;
 		let total = 0;
 		for (const w of widths.values()) total += w;
 		return total;
 	});
 
-	const resolvedTableWidth = $derived(managedTableWidth ?? explicitManagedTableWidth);
+	const relativeResolvedTableWidth = $derived.by(() => {
+		void $widthVersion;
+		void $layoutVersion;
+		if (!ctx.hasRelativeVisibleColumnWidths()) return undefined;
+
+		const widths = ctx.getResolvedVisibleColumnWidths();
+		const columnCount = ctx.getVisibleColumnCount();
+		if (widths.size === 0 || widths.size < columnCount) return undefined;
+
+		let total = 0;
+		for (const w of widths.values()) total += w;
+		return total;
+	});
+
+	const fallbackRelativeTableWidth = $derived.by(() => {
+		void $layoutVersion;
+		return ctx.hasRelativeVisibleColumnWidths() ? '100%' : undefined;
+	});
+
+	const resolvedTableWidth = $derived(
+		managedTableWidth ?? explicitManagedTableWidth ?? relativeResolvedTableWidth
+	);
 
 	context = ctx;
 
@@ -369,8 +439,12 @@
 	bind:this={tableElement}
 	role="grid"
 	class={className}
-	style:table-layout={hasResizable || resolvedTableWidth !== undefined ? 'fixed' : undefined}
-	style:width={resolvedTableWidth !== undefined ? `${resolvedTableWidth}px` : undefined}
+	style:table-layout={hasResizable || hasDefinedColumnWidths || resolvedTableWidth !== undefined
+		? 'fixed'
+		: undefined}
+	style:width={resolvedTableWidth !== undefined
+		? `${resolvedTableWidth}px`
+		: fallbackRelativeTableWidth}
 	style:min-width={resolvedTableWidth !== undefined ? '0' : undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
@@ -388,6 +462,18 @@
 	onkeydown={handleKeyDown}
 	{...restProps}
 >
+	{#if layoutColumns.length > 0}
+		<colgroup>
+			{#each layoutColumns as column (column.id)}
+				<col
+					style:width={column.widthStyle}
+					style:min-width={column.minWidth !== undefined ? `${column.minWidth}px` : undefined}
+					style:max-width={column.maxWidth !== undefined ? `${column.maxWidth}px` : undefined}
+				/>
+			{/each}
+		</colgroup>
+	{/if}
+
 	{#if children}
 		{@render children()}
 	{/if}
@@ -400,3 +486,11 @@
 <span id={ctx.selectionUnavailableDescriptionId} style={visuallyHiddenStyle}
 	>Selection unavailable for this row.</span
 >
+
+<style>
+	:global(table[role='grid']:has([data-table-column-resizer='true'])) {
+		table-layout: fixed;
+		width: 100%;
+		min-width: 0;
+	}
+</style>

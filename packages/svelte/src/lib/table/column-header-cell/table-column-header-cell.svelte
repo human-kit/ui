@@ -93,10 +93,17 @@
 		void $layoutVersion;
 		return column.isHidden;
 	});
-
-	const columnWidth = $derived.by(() => {
+	const columnWidthStyle = $derived.by(() => {
 		void $widthVersion;
-		return table.getColumnWidth(column.id);
+		return table.getColumnWidthStyle(column.id);
+	});
+	const columnMinWidth = $derived.by(() => {
+		void $widthVersion;
+		return table.getColumnMinWidth(column.id);
+	});
+	const columnMaxWidth = $derived.by(() => {
+		void $widthVersion;
+		return table.getColumnMaxWidth(column.id);
 	});
 	const visibleColumnIndex = $derived.by(() => {
 		void $layoutVersion;
@@ -249,7 +256,12 @@
 	data-sortable={column.allowsSorting || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
-	style:width={columnWidth !== undefined ? `${columnWidth}px` : undefined}
+	style:box-sizing="border-box"
+	style:position="relative"
+	style:overflow="visible"
+	style:width={columnWidthStyle}
+	style:min-width={columnMinWidth !== undefined ? `${columnMinWidth}px` : undefined}
+	style:max-width={columnMaxWidth !== undefined ? `${columnMaxWidth}px` : undefined}
 	style:display={isHidden ? 'none' : undefined}
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
@@ -260,16 +272,7 @@
 	onkeydown={handleKeyDown}
 	{...restProps}
 >
-	<div
-		data-table-header-content
-		style:overflow="visible"
-		style:position="relative"
-		style:min-width="0"
-		style:width="100%"
-		style:height="100%"
-	>
-		{#if children}
-			{@render children()}
-		{/if}
-	</div>
+	{#if children}
+		{@render children()}
+	{/if}
 </th>

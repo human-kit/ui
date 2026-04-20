@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { getTableCellContext, useTableColumnContext, useTableContext } from '../root/context';
+	import {
+		DEFAULT_TABLE_COLUMN_MIN_WIDTH,
+		getTableCellContext,
+		useTableColumnContext,
+		useTableContext
+	} from '../root/context';
 	import type { TableColumnResizerProps } from '../types.js';
 	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
 	import {
@@ -60,7 +65,7 @@
 	});
 	const minWidth = $derived.by(() => {
 		void $widthVersion;
-		return table.getColumnMinWidth(column.id) ?? 75;
+		return table.getColumnMinWidth(column.id) ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
 	});
 	const maxWidth = $derived.by(() => {
 		void $widthVersion;
@@ -268,16 +273,16 @@
 		suppressNextDoubleClickAutofit = false;
 
 		stopKeyboardResizeMode();
-		table.startColumnResize(column.id);
 
-		const th = element?.closest('th') as HTMLElement | null;
-		const tableEl = th?.closest('table') as HTMLTableElement | null;
-		const startX = event.clientX;
 		const startWidth = table.getColumnWidth(column.id) ?? getHeaderWidth();
 		const pointerId = event.pointerId;
 		const isRTL = isRightToLeft();
+		const pointerStartClientX = event.clientX;
 		let didDrag = false;
-		let latestClientX = startX;
+		let didStartResize = false;
+		let latestClientX = event.clientX;
+		let previousClientX = event.clientX;
+		let dragWidth = startWidth;
 		let animationFrameId: number | null = null;
 
 		// Capture the pointer so we receive move/up events even if the cursor
@@ -299,30 +304,27 @@
 			return clamped;
 		}
 
-		function applyTemporaryWidthToDOM(width: number) {
-			if (th) th.style.width = `${width}px`;
-			if (tableEl) {
-				const allThs = tableEl.querySelectorAll<HTMLElement>('thead th[style*="width"]');
-				let total = 0;
-				for (const cell of allThs) {
-					total += parseFloat(cell.style.width) || 0;
-				}
-				if (total > 0) {
-					tableEl.style.width = `${total}px`;
-					tableEl.style.minWidth = '0';
-				}
-			}
-		}
-
 		function flushPendingPointerMove() {
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
 				animationFrameId = null;
 			}
 
-			const direction = isRTL ? -1 : 1;
-			const delta = (latestClientX - startX) * positionScale * direction;
-			const nextWidth = clampWidth(startWidth + delta);
+			if (!didStartResize && latestClientX === pointerStartClientX) {
+				return;
+			}
+
+			if (!didStartResize) {
+				table.startColumnResize(column.id);
+				didStartResize = true;
+				previousClientX = pointerStartClientX;
+			}
+
+			const pointerDelta = latestClientX - previousClientX;
+			previousClientX = latestClientX;
+			const widthDelta = isRTL ? -pointerDelta : pointerDelta;
+			dragWidth = clampWidth(dragWidth + widthDelta);
+			const nextWidth = dragWidth;
 			updateWidth(nextWidth);
 		}
 
@@ -334,30 +336,14 @@
 			});
 		}
 
-		// Measure position compensation factor.
-		// In centered/flex layouts, growing a column shifts the table's left edge,
-		// so the handle moves less than the mouse delta. We detect this by applying
-		// a 1px test change and measuring how much the <th> left edge drifts.
-		// NOTE: applyTemporaryWidthToDOM intentionally mutates the DOM synchronously
-		// outside Svelte's reactive cycle. The mutation is immediately reverted
-		// within the same microtask, so no observer or $effect will see it.
-		let positionScale = 1;
-		if (th) {
-			const leftBefore = th.getBoundingClientRect().left;
-			applyTemporaryWidthToDOM(startWidth + 1);
-			const leftAfter = th.getBoundingClientRect().left;
-			applyTemporaryWidthToDOM(startWidth);
-			const drift = leftBefore - leftAfter;
-			if (drift > 0.01 && drift < 0.99) {
-				positionScale = 1 / (1 - drift);
-			}
-		}
-
 		const handlePointerMove = (moveEvent: PointerEvent) => {
 			if (moveEvent.pointerId !== pointerId) return;
 			moveEvent.preventDefault();
-			didDrag = true;
 			latestClientX = moveEvent.clientX;
+			if (!didStartResize && latestClientX === pointerStartClientX) {
+				return;
+			}
+			didDrag = true;
 			schedulePointerMove();
 		};
 
@@ -386,7 +372,9 @@
 			}
 			// Treat system-initiated cancellation the same as Escape:
 			// restore the width the column had before the drag started.
-			updateWidth(startWidth);
+			if (didStartResize) {
+				updateWidth(startWidth);
+			}
 			cleanupPointerListeners();
 		};
 
@@ -399,7 +387,9 @@
 				cancelAnimationFrame(animationFrameId);
 				animationFrameId = null;
 			}
-			updateWidth(startWidth);
+			if (didStartResize) {
+				updateWidth(startWidth);
+			}
 			cleanupPointerListeners();
 		};
 
@@ -429,6 +419,7 @@
 	}
 
 	function handleClick(event: MouseEvent) {
+		if (!isResizable) return;
 		event.preventDefault();
 		event.stopPropagation();
 	}
@@ -555,18 +546,19 @@
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<div
 		bind:this={element}
-		role="separator"
+		role={isResizable ? 'separator' : undefined}
 		tabindex={isResizable ? 0 : undefined}
 		class={className}
-		aria-label={accessibleLabel}
-		aria-orientation="vertical"
-		aria-valuenow={currentWidth ?? undefined}
-		aria-valuemin={minWidth}
-		aria-valuemax={maxWidth}
-		aria-valuetext={accessibleValueText}
+		aria-label={isResizable ? accessibleLabel : undefined}
+		aria-orientation={isResizable ? 'vertical' : undefined}
+		aria-valuenow={isResizable ? (currentWidth ?? undefined) : undefined}
+		aria-valuemin={isResizable ? minWidth : undefined}
+		aria-valuemax={isResizable ? maxWidth : undefined}
+		aria-valuetext={isResizable ? accessibleValueText : undefined}
 		data-focused={isFocused ? 'true' : undefined}
 		data-focus-visible={isFocusVisible ? 'true' : undefined}
 		data-resizing={isResizing ? 'true' : undefined}
+		data-resizable={isResizable ? 'true' : undefined}
 		data-table-column-resizer="true"
 		data-resizable-direction="right"
 		style:position="absolute"
@@ -580,6 +572,7 @@
 		style:align-items="center"
 		style:justify-content="center"
 		style:user-select="none"
+		style:pointer-events={isResizable ? 'auto' : 'none'}
 		style:touch-action="none"
 		onpointerdown={handlePointerDown}
 		ondblclick={handleDoubleClick}

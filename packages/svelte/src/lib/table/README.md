@@ -90,8 +90,10 @@ All public Table part prop types are exported from the table barrel, including `
 - Use `defaultSortDescriptor` for uncontrolled initial sort state.
 - Use `hiddenColumns` for controlled column visibility when consumers need to show or hide columns without changing the table markup.
 - Use `defaultHiddenColumns` for uncontrolled initial column visibility.
-- Use `columnWidths` / `onColumnWidthsChange` for controlled column width state.
-- Use `defaultColumnWidths`, `Table.Column.defaultWidth`, and `Table.Column.width` to seed explicit widths.
+- Use `columnWidths` / `onColumnWidthsChange` for controlled column width state. Width specs can be px, `%`, or `fr`.
+- Use `defaultColumnWidths` and `Table.Column.defaultWidth` to seed uncontrolled initial widths that can still be resized by the user.
+- Use `Table.Column.width` when a column should stay fixed at an explicit width. Fixed-width columns ignore resize attempts even if a `Table.ColumnResizer` is composed.
+- In resizable tables, unspecified columns behave like an implicit `1fr` width before interaction. On the first real resize, visible columns are materialized to px; the trailing column absorbs the delta until its minimum width, and further growth overflows the table horizontally.
 - Setting `sortDescriptor` back to `undefined` clears the controlled sort state, matching React Aria Table semantics.
 - Set `Table.Column.textValue` when the spoken column label should differ from the column id; `Table.Root` uses it for polite sort announcements.
 - Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
