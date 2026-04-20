@@ -188,6 +188,7 @@
 			id: string;
 			width: number | undefined;
 			widthStyle: string | undefined;
+			implicitWidth: boolean;
 			minWidth: number | undefined;
 			maxWidth: number | undefined;
 		}> = [];
@@ -200,6 +201,7 @@
 				id: column.id,
 				width: ctx.getColumnWidth(column.id),
 				widthStyle: ctx.getColumnWidthStyle(column.id),
+				implicitWidth: !ctx.hasAuthoredColumnWidthSpec(column.id),
 				minWidth: ctx.getColumnMinWidth(column.id),
 				maxWidth: ctx.getColumnMaxWidth(column.id)
 			});
@@ -439,6 +441,7 @@
 	bind:this={tableElement}
 	role="grid"
 	class={className}
+	style:--table-visible-column-count={ariaColCount ? `${ariaColCount}` : undefined}
 	style:table-layout={hasResizable || hasDefinedColumnWidths || resolvedTableWidth !== undefined
 		? 'fixed'
 		: undefined}
@@ -466,6 +469,7 @@
 		<colgroup>
 			{#each layoutColumns as column (column.id)}
 				<col
+					data-table-implicit-width={column.implicitWidth ? 'true' : undefined}
 					style:width={column.widthStyle}
 					style:min-width={column.minWidth !== undefined ? `${column.minWidth}px` : undefined}
 					style:max-width={column.maxWidth !== undefined ? `${column.maxWidth}px` : undefined}
@@ -492,5 +496,11 @@
 		table-layout: fixed;
 		width: 100%;
 		min-width: 0;
+	}
+
+	:global(
+		table[role='grid']:has([data-table-column-resizer='true']) col[data-table-implicit-width='true']
+	) {
+		width: calc(100% / var(--table-visible-column-count, 1));
 	}
 </style>

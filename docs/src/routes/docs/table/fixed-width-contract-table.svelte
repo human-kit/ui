@@ -51,7 +51,7 @@
 							</div>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
-					<Table.Column id="region" textValue="Region" defaultWidth={180} minWidth={140}>
+					<Table.Column id="region" textValue="Region">
 						<Table.ColumnHeaderCell
 							class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-300"
 						>

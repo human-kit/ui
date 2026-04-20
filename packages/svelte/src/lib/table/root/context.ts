@@ -6,6 +6,7 @@ const TABLE_SECTION_KEY = Symbol('table-section');
 const TABLE_ROW_KEY = Symbol('table-row');
 const TABLE_COLUMN_KEY = Symbol('table-column');
 const TABLE_CELL_KEY = Symbol('table-cell');
+const IS_BROWSER = typeof window !== 'undefined';
 
 export type TableSelectionKey = string | number;
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
@@ -126,6 +127,7 @@ export type TableContext = {
 	getColumnTextValue: (columnId: string) => string | undefined;
 	getColumnWidth: (columnId: string) => number | undefined;
 	getColumnWidthStyle: (columnId: string) => string | undefined;
+	hasAuthoredColumnWidthSpec: (columnId: string) => boolean;
 	getColumnMinWidth: (columnId: string) => number | undefined;
 	getColumnMaxWidth: (columnId: string) => number | undefined;
 	isColumnHidden: (columnId: string) => boolean;
@@ -264,6 +266,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const columnIds = new Map<string, string>();
 	const columnOrder: string[] = [];
 	const columnsWithResizers = new Set<string>();
+	let resizerLayoutReady = false;
 	const columnWidths = new Map<string, TableColumnWidth>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
@@ -312,6 +315,21 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	let layoutNotifyScheduled = false;
 	let widthNotifyScheduled = false;
+	let resizerLayoutReadyScheduled = false;
+
+	function scheduleResizerLayoutReady() {
+		if (!IS_BROWSER) return;
+		if (resizerLayoutReadyScheduled) return;
+		resizerLayoutReadyScheduled = true;
+		queueMicrotask(() => {
+			resizerLayoutReadyScheduled = false;
+			const nextReady = columnsWithResizers.size > 0;
+			if (resizerLayoutReady === nextReady) return;
+			resizerLayoutReady = nextReady;
+			notifyLayout();
+			notifyWidth();
+		});
+	}
 
 	function notifyLayout() {
 		invalidateLayoutCaches();
@@ -428,6 +446,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return normalizeColumnWidth(getColumnRegistrationById(columnId)?.defaultWidth);
 	}
 
+	function hasAuthoredColumnWidthSpec(columnId: string) {
+		return (
+			getFixedColumnWidthSpec(columnId) !== undefined ||
+			getManagedColumnWidthSpec(columnId) !== undefined ||
+			getDefaultColumnWidthSpec(columnId) !== undefined
+		);
+	}
+
 	function getEffectiveColumnWidthSpec(columnId: string) {
 		const fixedWidth = getFixedColumnWidthSpec(columnId);
 		if (fixedWidth !== undefined) {
@@ -444,7 +470,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return defaultWidth;
 		}
 
-		return columnsWithResizers.size > 0 ? ('1fr' as const) : undefined;
+		return resizerLayoutReady && columnsWithResizers.size > 0 ? ('1fr' as const) : undefined;
 	}
 
 	function getMeasuredTableWidth() {
@@ -497,16 +523,20 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function registerColumnResizer(columnToken: string) {
 		if (columnsWithResizers.has(columnToken)) return;
 		columnsWithResizers.add(columnToken);
+		resizerLayoutReady = false;
 		invalidateLayoutCaches();
 		layoutVersion.update((value) => value + 1);
 		notifyWidth();
+		scheduleResizerLayoutReady();
 	}
 
 	function unregisterColumnResizer(columnToken: string) {
 		if (!columnsWithResizers.delete(columnToken)) return;
+		resizerLayoutReady = false;
 		invalidateLayoutCaches();
 		layoutVersion.update((value) => value + 1);
 		notifyWidth();
+		scheduleResizerLayoutReady();
 	}
 
 	function sameColumnMetadata(left: TableColumnMetadata, right: TableColumnMetadata) {
@@ -2180,6 +2210,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getColumnTextValue,
 		getColumnWidth,
 		getColumnWidthStyle,
+		hasAuthoredColumnWidthSpec,
 		getColumnMinWidth,
 		getColumnMaxWidth,
 		isColumnHidden,
