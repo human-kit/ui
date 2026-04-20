@@ -26,7 +26,9 @@ describe('Table.Checkbox', () => {
 		});
 
 		await expect
-			.poll(() => document.querySelector('[data-testid="header-checkbox"]')?.getAttribute('aria-disabled'))
+			.poll(() =>
+				document.querySelector('[data-testid="header-checkbox"]')?.getAttribute('aria-disabled')
+			)
 			.toBe('true');
 	});
 

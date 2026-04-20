@@ -1298,7 +1298,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (bodyRowsInitialized) return;
 		const optimisticHasSelectableRows = selectionMode === 'multiple' || selectedKeys.size > 0;
 		bodyRowsInitialized = true;
-		const actualHasSelectableRows = getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		const actualHasSelectableRows =
+			getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
 		if (optimisticHasSelectableRows !== actualHasSelectableRows) {
 			notifySelection();
 		}
