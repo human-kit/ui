@@ -1,5 +1,11 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.16
+
+### Patch Changes
+
+- [#41](https://github.com/Agustin-Delgado/svelte-components/pull/41) [`74af45c`](https://github.com/Agustin-Delgado/svelte-components/commit/74af45cf6e3809ee508a95abd93282efbcb0f936) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix table accessibility helper nodes so the sort live region and selection-unavailable description stay visually hidden without contributing to page overflow.
+
 ## 1.0.0-alpha.15
 
 ### Patch Changes
