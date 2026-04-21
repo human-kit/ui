@@ -1,5 +1,17 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.17
+
+### Patch Changes
+
+- [#43](https://github.com/Agustin-Delgado/svelte-components/pull/43) [`0faed71`](https://github.com/Agustin-Delgado/svelte-components/commit/0faed71ed19aed40955351bae0159b904f29ba24) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # RAC-style Table Widths
+
+  Add `%` and `fr` support to table width state, and preserve a flexible trailing column during resize so RAC-style resizable tables can keep filling the available width.
+
+- [#43](https://github.com/Agustin-Delgado/svelte-components/pull/43) [`0faed71`](https://github.com/Agustin-Delgado/svelte-components/commit/0faed71ed19aed40955351bae0159b904f29ba24) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Width Contract
+
+  Treat `Table.Column.width` as a fixed width that disables user resizing, while keeping `defaultWidth` as the uncontrolled resizable initial width.
+
 ## 1.0.0-alpha.16
 
 ### Patch Changes
