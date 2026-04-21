@@ -251,7 +251,7 @@
 	style:width={columnWidthStyle}
 	style:min-width={columnMinWidth !== undefined ? `${columnMinWidth}px` : undefined}
 	style:max-width={columnMaxWidth !== undefined ? `${columnMaxWidth}px` : undefined}
-	style:display={isColumnHidden ? 'none' : undefined}
+	style:display={isColumnHidden ? 'none' : 'table-cell'}
 	onfocus={row.section === 'body' ? handleFocus : undefined}
 	onclick={row.section === 'body' ? handleClick : undefined}
 	ondblclick={row.section === 'body' ? handleDoubleClick : undefined}

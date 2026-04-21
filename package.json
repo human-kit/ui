@@ -37,5 +37,8 @@
 		"prettier-plugin-tailwindcss": "^0.7.1",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.46.1"
+	},
+	"dependencies": {
+		"tailwind-variants": "^3.2.2"
 	}
 }

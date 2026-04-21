@@ -96,39 +96,6 @@
 		};
 	});
 
-	$effect(() => {
-		const checkboxElement = getCheckboxRootElement();
-		if (!checkboxElement) return;
-
-		if (!isVisible || isDisabled || tabIndex === undefined) {
-			checkboxElement.removeAttribute('tabindex');
-			return;
-		}
-
-		checkboxElement.tabIndex = tabIndex;
-	});
-
-	$effect(() => {
-		const checkboxElement = getCheckboxRootElement();
-		if (!checkboxElement) return;
-
-		const handleElementFocus = (event: FocusEvent) => {
-			handleFocusIn(event);
-		};
-
-		const handleElementMouseDown = (event: MouseEvent) => {
-			handleMouseDown(event);
-		};
-
-		checkboxElement.addEventListener('focus', handleElementFocus);
-		checkboxElement.addEventListener('mousedown', handleElementMouseDown);
-
-		return () => {
-			checkboxElement.removeEventListener('focus', handleElementFocus);
-			checkboxElement.removeEventListener('mousedown', handleElementMouseDown);
-		};
-	});
-
 	function applySelection(nextChecked: boolean) {
 		if (isDisabled) return;
 
@@ -255,8 +222,11 @@
 		aria-label={accessibleLabel}
 		aria-labelledby={ariaLabelledby}
 		data-table-checkbox="true"
+		tabindex={tabIndex}
 		onclick={handleClick}
 		onkeydown={handleKeyDown}
+		onfocus={handleFocusIn}
+		onmousedown={handleMouseDown}
 		class={className}
 		{...restProps}
 	>

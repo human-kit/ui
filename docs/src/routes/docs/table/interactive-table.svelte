@@ -138,7 +138,7 @@
 							</div>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
-					<Table.Column id="group" allowsSorting={sortableColumns.includes('group')} maxWidth={320}>
+					<Table.Column id="group" allowsSorting={sortableColumns.includes('group')}>
 						<Table.ColumnHeaderCell
 							class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
 							data-sortable={sortableColumns.includes('group') ? 'true' : undefined}
@@ -147,11 +147,6 @@
 								<span class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
 									>Group</span
 								>
-								<Table.ColumnResizer
-									class="inline-flex w-4 shrink-0 cursor-col-resize justify-center rounded-sm outline-none text-gray-400 hover:text-gray-600 data-[focus-visible=true]:bg-blue-50 data-[focus-visible=true]:text-blue-600 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[resizing=true]:bg-blue-600 data-[resizing=true]:text-white dark:text-gray-500 dark:hover:text-gray-300 dark:data-[focus-visible=true]:bg-blue-950/50 dark:data-[focus-visible=true]:text-blue-200 dark:data-[resizing=true]:bg-blue-500"
-								>
-									<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>
-								</Table.ColumnResizer>
 							</div>
 						</Table.ColumnHeaderCell>
 					</Table.Column>

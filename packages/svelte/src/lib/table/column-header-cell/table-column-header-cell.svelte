@@ -262,7 +262,7 @@
 	style:width={columnWidthStyle}
 	style:min-width={columnMinWidth !== undefined ? `${columnMinWidth}px` : undefined}
 	style:max-width={columnMaxWidth !== undefined ? `${columnMaxWidth}px` : undefined}
-	style:display={isHidden ? 'none' : undefined}
+	style:display={isHidden ? 'none' : 'table-cell'}
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
 	onfocus={handleFocus}

@@ -273,6 +273,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const headerRowOrder: string[] = [];
 	const bodyRowOrder: string[] = [];
 	let bodyRowsInitialized = false;
+	let selectableBodyRowCount = 0;
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
@@ -495,7 +496,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function clampColumnWidth(columnId: string, width: number) {
 		const registration = getColumnRegistrationById(columnId);
-		const minWidth = registration?.minWidth ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
+		const fixedWidth = parseColumnWidth(registration?.width);
+		const minWidth =
+			registration?.minWidth ??
+			(fixedWidth?.unit === 'px'
+				? Math.min(fixedWidth.value, DEFAULT_TABLE_COLUMN_MIN_WIDTH)
+				: DEFAULT_TABLE_COLUMN_MIN_WIDTH);
 		const maxWidth = registration?.maxWidth;
 		let next = Math.round(width);
 		if (Number.isNaN(next) || !Number.isFinite(next)) {
@@ -1238,6 +1244,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function registerRow(row: TableRowRegistration) {
 		const existing = rows.get(row.token);
+		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		const targetOrder =
 			row.section === 'header' ? headerRowOrder : row.section === 'body' ? bodyRowOrder : null;
 		const alreadyOrdered = targetOrder ? targetOrder.includes(row.token) : false;
@@ -1256,17 +1263,32 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (wasInBody) {
 			bodyRowOrder.splice(bodyRowOrder.indexOf(row.token), 1);
 		}
+		const previousSelectableBodyRow = isSelectableBodyRow(existing);
 		rows.set(row.token, row);
 		if (targetOrder && !targetOrder.includes(row.token)) {
 			targetOrder.push(row.token);
 		}
-		notifySelection();
+		const nextSelectableBodyRow = isSelectableBodyRow(row);
+		if (previousSelectableBodyRow !== nextSelectableBodyRow) {
+			selectableBodyRowCount += nextSelectableBodyRow ? 1 : -1;
+		}
+		if (
+			(selectedKeys.size > 0 && (existing?.section === 'body' || row.section === 'body')) ||
+			(bodyRowsInitialized &&
+				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
+		) {
+			notifySelection();
+		}
 		notifyLayout();
 	}
 
 	function unregisterRow(token: string) {
 		const row = rows.get(token);
+		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		rows.delete(token);
+		if (isSelectableBodyRow(row)) {
+			selectableBodyRowCount = Math.max(0, selectableBodyRowCount - 1);
+		}
 		if (focusedRowTarget?.rowToken === token) {
 			focusedRowTarget = null;
 			notifyFocus();
@@ -1289,7 +1311,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				notifyFocus();
 			}
 		}
-		notifySelection();
+		if (
+			(selectedKeys.size > 0 && row?.section === 'body') ||
+			(bodyRowsInitialized &&
+				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
+		) {
+			notifySelection();
+		}
 		notifyLayout();
 	}
 
@@ -1297,8 +1325,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (bodyRowsInitialized) return;
 		const optimisticHasSelectableRows = selectionMode === 'multiple' || selectedKeys.size > 0;
 		bodyRowsInitialized = true;
-		const actualHasSelectableRows =
-			getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		const actualHasSelectableRows = selectableBodyRowCount > 0 || selectedKeys.size > 0;
 		if (optimisticHasSelectableRows !== actualHasSelectableRows) {
 			notifySelection();
 		}
@@ -1356,6 +1383,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return disabledKeys.has(id);
 	}
 
+	function isSelectableBodyRow(row: TableRowRegistration | undefined) {
+		return (
+			row?.section === 'body' &&
+			row.id !== undefined &&
+			!isRowSelectionDisabled(row.id, row.disabled)
+		);
+	}
+
+	function recomputeSelectableBodyRowCount() {
+		let nextSelectableBodyRowCount = 0;
+		for (const token of bodyRowOrder) {
+			if (isSelectableBodyRow(rows.get(token))) {
+				nextSelectableBodyRowCount += 1;
+			}
+		}
+		selectableBodyRowCount = nextSelectableBodyRowCount;
+	}
+
 	function isRowDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
 		return disabledBehavior === 'all' && isRowSelectionDisabled(id, localDisabled);
 	}
@@ -1399,7 +1444,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (!bodyRowsInitialized) {
 			return selectionMode === 'multiple' || selectedKeys.size > 0;
 		}
-		return getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		return selectableBodyRowCount > 0 || selectedKeys.size > 0;
 	}
 
 	function isRowFocused(token: string) {
@@ -2135,16 +2180,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setDisabledKeys(keys?: Iterable<TableSelectionKey>) {
+		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		disabledKeys.clear();
 		if (keys) {
 			for (const key of keys) {
 				disabledKeys.add(key);
 			}
 		}
+		recomputeSelectableBodyRowCount();
 		invalidateLayoutCaches();
 		reconcileFocusAfterDisabledStateChange();
 		notifyLayout();
-		notifySelection();
+		if (
+			selectedKeys.size > 0 ||
+			(bodyRowsInitialized &&
+				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
+		) {
+			notifySelection();
+		}
 	}
 
 	function setRowActionHandler(handler?: TableRowActionHandler) {
