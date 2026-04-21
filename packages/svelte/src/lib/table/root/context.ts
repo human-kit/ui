@@ -317,20 +317,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	let layoutNotifyScheduled = false;
 	let widthNotifyScheduled = false;
-	let resizerLayoutReadyScheduled = false;
 
-	function scheduleResizerLayoutReady() {
-		if (!IS_BROWSER) return;
-		if (resizerLayoutReadyScheduled) return;
-		resizerLayoutReadyScheduled = true;
-		queueMicrotask(() => {
-			resizerLayoutReadyScheduled = false;
-			const nextReady = columnsWithResizers.size > 0;
-			if (resizerLayoutReady === nextReady) return;
-			resizerLayoutReady = nextReady;
-			notifyLayout();
-			notifyWidth();
-		});
+	function syncResizerLayoutReady(nextReady: boolean) {
+		if (resizerLayoutReady === nextReady) return;
+		resizerLayoutReady = nextReady;
+		invalidateLayoutCaches();
+		layoutVersion.update((value) => value + 1);
+		notifyWidth();
 	}
 
 	function notifyLayout() {
@@ -525,20 +518,26 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function registerColumnResizer(columnToken: string) {
 		if (columnsWithResizers.has(columnToken)) return;
 		columnsWithResizers.add(columnToken);
+		if (IS_BROWSER) {
+			syncResizerLayoutReady(true);
+			return;
+		}
 		resizerLayoutReady = false;
 		invalidateLayoutCaches();
 		layoutVersion.update((value) => value + 1);
 		notifyWidth();
-		scheduleResizerLayoutReady();
 	}
 
 	function unregisterColumnResizer(columnToken: string) {
 		if (!columnsWithResizers.delete(columnToken)) return;
+		if (IS_BROWSER) {
+			syncResizerLayoutReady(columnsWithResizers.size > 0);
+			return;
+		}
 		resizerLayoutReady = false;
 		invalidateLayoutCaches();
 		layoutVersion.update((value) => value + 1);
 		notifyWidth();
-		scheduleResizerLayoutReady();
 	}
 
 	function sameColumnMetadata(left: TableColumnMetadata, right: TableColumnMetadata) {
