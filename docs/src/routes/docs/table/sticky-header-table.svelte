@@ -2,6 +2,18 @@
 	import { DemoSection, DemoState } from '$lib/demo';
 	import { Table } from '@human-kit/svelte-components/table';
 	import { deploymentRuns } from './table-demo-data';
+
+	const stickyColumns = [
+		{ id: 'service', label: 'Service', defaultWidth: 220, minWidth: 180 },
+		{ id: 'owner', label: 'Owner', defaultWidth: 160, minWidth: 140 },
+		{ id: 'region', label: 'Region', defaultWidth: 150, minWidth: 130 },
+		{ id: 'status', label: 'Status', defaultWidth: 150, minWidth: 130 },
+		{ id: 'updatedAt', label: 'Updated', defaultWidth: 140, minWidth: 120 }
+	] as const;
+
+	const stickyColumnWidths = new Map(
+		stickyColumns.map((column) => [column.id, column.defaultWidth])
+	);
 </script>
 
 <DemoSection
@@ -11,20 +23,22 @@
 	<div
 		class="w-full rounded-2xl border border-gray-300 bg-white p-3 dark:border-gray-700 dark:bg-gray-900"
 	>
-		<div class="h-80 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-800">
+		<div class="h-80 overflow-auto rounded-xl border border-gray-200 dark:border-gray-800">
 			<Table.Root
 				aria-label="Sticky deployment runs table"
 				selectionMode="none"
+				defaultColumnWidths={stickyColumnWidths}
 				class="min-w-full border-separate border-spacing-0 text-left"
 			>
 				<Table.Header>
 					<Table.Row>
-						{#each [{ id: 'service', label: 'Service' }, { id: 'owner', label: 'Owner' }, { id: 'region', label: 'Region' }, { id: 'status', label: 'Status' }, { id: 'updatedAt', label: 'Updated' }] as column (column.id)}
+						{#each stickyColumns as column (column.id)}
 							<Table.Column
 								id={column.id}
 								isRowHeader={column.id === 'service'}
 								textValue={column.label}
-								minWidth={60}
+								defaultWidth={column.defaultWidth}
+								minWidth={column.minWidth}
 							>
 								<Table.ColumnHeaderCell
 									class="sticky top-0 z-10 border-b border-r border-gray-200 bg-white/95 pl-4 pr-0 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 backdrop-blur last:border-r-0 dark:border-gray-700 dark:bg-gray-900/95 dark:text-gray-300"
@@ -48,26 +62,26 @@
 					{#each deploymentRuns as run (run.id)}
 						<Table.Row>
 							<Table.Cell
-								class="border-b border-r border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 last:border-r-0 dark:border-gray-800 dark:text-white"
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm font-medium whitespace-nowrap text-gray-900 last:border-r-0 dark:border-gray-800 dark:text-white"
 								>{run.service}</Table.Cell
 							>
 							<Table.Cell
-								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm whitespace-nowrap text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
 								>{run.owner}</Table.Cell
 							>
 							<Table.Cell
-								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm whitespace-nowrap text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
 								>{run.region}</Table.Cell
 							>
 							<Table.Cell
-								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm whitespace-nowrap text-gray-600 last:border-r-0 dark:border-gray-800 dark:text-gray-300"
 								><span
 									class="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200"
 									>{run.status}</span
 								></Table.Cell
 							>
 							<Table.Cell
-								class="border-b border-r border-gray-200 px-4 py-3 text-sm text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
+								class="border-b border-r border-gray-200 px-4 py-3 text-sm whitespace-nowrap text-gray-500 last:border-r-0 dark:border-gray-800 dark:text-gray-400"
 								>{run.updatedAt}</Table.Cell
 							>
 						</Table.Row>

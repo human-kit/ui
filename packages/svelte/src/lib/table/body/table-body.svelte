@@ -6,6 +6,11 @@
 	setTableSectionContext({ section: 'body' });
 	const table = useTableContext();
 	const layoutVersion = table.layoutVersion;
+
+	$effect(() => {
+		table.markBodyRowsInitialized();
+	});
+
 	const isEmpty = $derived.by(() => {
 		void $layoutVersion;
 		return table.getBodyRowCount() === 0;

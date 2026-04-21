@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Table } from '../index';
+	import type { TableColumnWidth } from '../root/context';
 
-	let currentColumnWidths = $state<Map<string, number> | undefined>(undefined);
+	let currentColumnWidths = $state<Map<string, TableColumnWidth> | undefined>(undefined);
 </script>
 
 <div style="width: 640px;">

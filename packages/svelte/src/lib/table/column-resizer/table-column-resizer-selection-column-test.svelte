@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Table } from '../index';
+	import type { TableColumnWidth } from '../root/context';
 
-	let currentColumnWidths = $state<Map<string, number> | undefined>(undefined);
+	let currentColumnWidths = $state<Map<string, TableColumnWidth> | undefined>(undefined);
 
 	const checkboxStyle =
 		'display:inline-flex;height:20px;width:20px;align-items:center;justify-content:center;border:1px solid currentColor;border-radius:4px;';

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Table } from '../index';
-	import type { TableSortDescriptor } from '../root/context';
+	import type { TableColumnWidth, TableSortDescriptor } from '../root/context';
 
-	let currentColumnWidths = $state<Map<string, number>>(
+	let currentColumnWidths = $state<Map<string, TableColumnWidth>>(
 		new Map([
 			['email', 200],
 			['group', 160]
@@ -10,7 +10,7 @@
 	);
 	let currentSortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
 	let resizeStartColumnId = $state('');
-	let resizeEndWidths = $state<Record<string, number>>({});
+	let resizeEndWidths = $state<Record<string, TableColumnWidth>>({});
 </script>
 
 <Table.Root

@@ -21,6 +21,7 @@
 	const layoutVersion = table.layoutVersion;
 	const focusVersion = table.focusVersion;
 	const selectionVersion = table.selectionVersion;
+	const widthVersion = table.widthVersion;
 	const cellOrderVersion = row.cellOrderVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
@@ -81,6 +82,18 @@
 	const visibleColumnIndex = $derived.by(() => {
 		void $layoutVersion;
 		return column ? table.getVisibleColumnIndexByToken(column.token) : -1;
+	});
+	const columnWidthStyle = $derived.by(() => {
+		void $widthVersion;
+		return column ? table.getColumnWidthStyle(column.id) : undefined;
+	});
+	const columnMinWidth = $derived.by(() => {
+		void $widthVersion;
+		return column ? table.getColumnMinWidth(column.id) : undefined;
+	});
+	const columnMaxWidth = $derived.by(() => {
+		void $widthVersion;
+		return column ? table.getColumnMaxWidth(column.id) : undefined;
 	});
 	const tagName = $derived(row.section === 'body' && column?.isRowHeader ? 'th' : 'td');
 	const role = $derived.by(() => {
@@ -234,6 +247,10 @@
 		: undefined}
 	data-disabled={isRowDisabled || undefined}
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
+	style:box-sizing="border-box"
+	style:width={columnWidthStyle}
+	style:min-width={columnMinWidth !== undefined ? `${columnMinWidth}px` : undefined}
+	style:max-width={columnMaxWidth !== undefined ? `${columnMaxWidth}px` : undefined}
 	style:display={isColumnHidden ? 'none' : undefined}
 	onfocus={row.section === 'body' ? handleFocus : undefined}
 	onclick={row.section === 'body' ? handleClick : undefined}

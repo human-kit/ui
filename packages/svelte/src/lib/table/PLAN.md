@@ -911,7 +911,7 @@ Minimum regression coverage:
 
 ## Phase 3: Row Actions and Disabled Behavior Plan
 
-### Goal
+### Phase 3 Goal
 
 Add row actions in a way that matches the React Aria Components mental model closely enough for consumers to predict behavior, while still fitting the existing `Table` architecture in this repository:
 
@@ -936,7 +936,7 @@ The goal is functional parity for the supported cases, not a byte-for-byte clone
 
 ### Public API Recommendation
 
-#### `Table.Root`
+#### `Table.Root` Props
 
 Add the following props:
 
@@ -970,7 +970,7 @@ Reasons:
 - React Aria already establishes a recognizable interaction contract based on those inputs
 - a separate `rowPressBehavior` prop would create redundant states and undocumented invalid combinations
 
-### Interaction Model
+### Phase 3 Interaction Model
 
 #### Core Principle
 
@@ -1163,7 +1163,7 @@ The coordinator should decide behavior using:
 
 ### Affected Parts
 
-#### `root/context.ts`
+#### `root/context.ts` Changes
 
 Will need to own:
 
@@ -1278,7 +1278,7 @@ This is important because reusing the current all-or-nothing `aria-disabled` con
 | `single` / `multiple` | no            | existing selection behavior | existing selection behavior |
 | `single` / `multiple` | yes           | action                      | selection                   |
 
-### Testing Plan
+### Phase 3 Testing Plan
 
 Minimum regression coverage:
 
@@ -1320,7 +1320,7 @@ This phase should not attempt to solve:
 
 These can be revisited later, but they should not block the collection-level row action API.
 
-### Recommended Implementation Order
+### Phase 3 Recommended Implementation Order
 
 1. Add `onRowAction` and `disabledBehavior` to `Table.Root` and root context.
 2. Refactor disabled-state helpers into selection-vs-action-aware logic.

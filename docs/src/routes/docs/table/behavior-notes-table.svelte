@@ -14,6 +14,16 @@
 			column only.
 		</p>
 		<p>
+			`Table.Column.width`, `defaultWidth`, `columnWidths`, and `defaultColumnWidths` accept px,
+			`%`, and `fr`-style specs. In resizable tables, unspecified columns behave like an implicit
+			`1fr` tail.
+		</p>
+		<p>
+			When a resize starts, the table converts the visible columns to px, lets the trailing column
+			absorb the delta until it reaches its minimum width, and then overflows horizontally instead
+			of redistributing width into unrelated sibling columns.
+		</p>
+		<p>
 			Text selection and `Ctrl+C` remain browser-native; `Table` does not implement custom copy
 			behavior in v1.
 		</p>

@@ -2,7 +2,7 @@
 
 ## API reference
 
-### Table.CheckboxIndicator
+### Indicator Part
 
 Name: `Table.CheckboxIndicator`
 Description: Headless presence wrapper for indicator content inside `Table.Checkbox`. It renders when the checkbox is checked or indeterminate.

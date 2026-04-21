@@ -1,4 +1,4 @@
-import { getContext, setContext } from 'svelte';
+import { flushSync, getContext, setContext } from 'svelte';
 import { writable, type Readable } from 'svelte/store';
 
 const TABLE_KEY = Symbol('table');
@@ -6,6 +6,7 @@ const TABLE_SECTION_KEY = Symbol('table-section');
 const TABLE_ROW_KEY = Symbol('table-row');
 const TABLE_COLUMN_KEY = Symbol('table-column');
 const TABLE_CELL_KEY = Symbol('table-cell');
+const IS_BROWSER = typeof window !== 'undefined';
 
 export type TableSelectionKey = string | number;
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
@@ -29,7 +30,14 @@ export type TableSortDescriptor = {
 	direction: TableSortDirection;
 };
 
-export type TableColumnWidth = number | `${number}px`;
+export type TableColumnWidth = number | `${number}px` | `${number}%` | `${number}fr`;
+
+export const DEFAULT_TABLE_COLUMN_MIN_WIDTH = 60;
+
+type ParsedTableColumnWidth = {
+	unit: 'px' | '%' | 'fr';
+	value: number;
+};
 
 export type TableGridCoord = {
 	row: number;
@@ -77,16 +85,16 @@ export type CreateTableContextOptions = {
 	disallowEmptySelection?: boolean;
 	initialSelectedKeys?: Iterable<TableSelectionKey>;
 	initialSortDescriptor?: TableSortDescriptor;
-	initialColumnWidths?: Iterable<readonly [string, number]>;
+	initialColumnWidths?: Iterable<readonly [string, TableColumnWidth]>;
 	initialHiddenColumns?: Iterable<string>;
 	disabledKeys?: Iterable<TableSelectionKey>;
 	onRowAction?: TableRowActionHandler;
 	onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
 	onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
-	onColumnWidthsChange?: (widths: Map<string, number>) => void;
+	onColumnWidthsChange?: (widths: Map<string, TableColumnWidth>) => void;
 	onHiddenColumnsChange?: (columnIds: string[]) => void;
 	onColumnResizeStart?: (columnId: string) => void;
-	onColumnResizeEnd?: (widths: Map<string, number>) => void;
+	onColumnResizeEnd?: (widths: Map<string, TableColumnWidth>) => void;
 };
 
 export type TableContext = {
@@ -118,13 +126,17 @@ export type TableContext = {
 	getVisibleColumnIndexByToken: (token: string) => number;
 	getColumnTextValue: (columnId: string) => string | undefined;
 	getColumnWidth: (columnId: string) => number | undefined;
+	getColumnWidthStyle: (columnId: string) => string | undefined;
+	hasAuthoredColumnWidthSpec: (columnId: string) => boolean;
 	getColumnMinWidth: (columnId: string) => number | undefined;
 	getColumnMaxWidth: (columnId: string) => number | undefined;
 	isColumnHidden: (columnId: string) => boolean;
 	isColumnResizable: (columnId: string) => boolean;
-	getColumnWidths: () => Map<string, number>;
-	getVisibleColumnWidths: () => Map<string, number>;
-	setColumnWidths: (widths?: Iterable<readonly [string, number]>) => void;
+	getColumnWidths: () => Map<string, TableColumnWidth>;
+	getVisibleColumnWidths: () => Map<string, TableColumnWidth>;
+	getResolvedVisibleColumnWidths: () => Map<string, number>;
+	hasRelativeVisibleColumnWidths: () => boolean;
+	setColumnWidths: (widths?: Iterable<readonly [string, TableColumnWidth]>) => void;
 	setColumnWidth: (columnId: string, width: number) => void;
 	setHiddenColumns: (columnIds?: Iterable<string>) => void;
 	measureColumnContentWidth: (columnId: string) => number | undefined;
@@ -135,6 +147,7 @@ export type TableContext = {
 	hasResizableColumns: () => boolean;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
+	markBodyRowsInitialized: () => void;
 	getHeaderRowCount: () => number;
 	getBodyRowCount: () => number;
 	isRowSelected: (id: TableSelectionKey | undefined) => boolean;
@@ -240,16 +253,26 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const disabledKeys = new Set<TableSelectionKey>(options.disabledKeys ?? []);
 	const hiddenColumnIds = new Set<string>(options.initialHiddenColumns ?? []);
 	let resizingColumnId: string | null = null;
+	let resizeSession: {
+		activeColumnId: string;
+		flexibleTailColumnId?: string;
+		flexibleTailRestoreWidth?: TableColumnWidth;
+		baselineWidths: Map<string, number>;
+		baselineTableWidth: number;
+		baselineTotalWidth: number;
+	} | null = null;
 	let suppressNextHeaderClick = false;
 
 	const columns = new Map<string, TableColumnMetadata>();
 	const columnIds = new Map<string, string>();
 	const columnOrder: string[] = [];
 	const columnsWithResizers = new Set<string>();
-	const columnWidths = new Map<string, number>(options.initialColumnWidths ?? []);
+	let resizerLayoutReady = false;
+	const columnWidths = new Map<string, TableColumnWidth>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
 	const bodyRowOrder: string[] = [];
+	let bodyRowsInitialized = false;
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
@@ -258,8 +281,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	};
 	let orderedColumnTokensCache: string[] | null = null;
 	let visibleOrderedColumnTokensCache: string[] | null = null;
-	let columnWidthsCache: Map<string, number> | null = null;
-	let visibleColumnWidthsCache: Map<string, number> | null = null;
+	let columnWidthsCache: Map<string, TableColumnWidth> | null = null;
+	let visibleColumnWidthsCache: Map<string, TableColumnWidth> | null = null;
+	let resolvedVisibleColumnWidthsCache: Map<string, number> | null = null;
 	let navigableCellsCache: Array<{ cell: TableCellRegistration; coord: TableGridCoord }> | null =
 		null;
 	let rowsWithCellsCache: Map<number, { col: number; key: string; element: HTMLElement }[]> | null =
@@ -286,12 +310,21 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		visibleOrderedColumnTokensCache = null;
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
+		resolvedVisibleColumnWidthsCache = null;
 		navigableCellsCache = null;
 		rowsWithCellsCache = null;
 	}
 
 	let layoutNotifyScheduled = false;
 	let widthNotifyScheduled = false;
+
+	function syncResizerLayoutReady(nextReady: boolean) {
+		if (resizerLayoutReady === nextReady) return;
+		resizerLayoutReady = nextReady;
+		invalidateLayoutCaches();
+		layoutVersion.update((value) => value + 1);
+		notifyWidth();
+	}
 
 	function notifyLayout() {
 		invalidateLayoutCaches();
@@ -320,6 +353,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function notifyWidth() {
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
+		resolvedVisibleColumnWidthsCache = null;
 		if (!widthNotifyScheduled) {
 			widthNotifyScheduled = true;
 			queueMicrotask(() => {
@@ -329,23 +363,53 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 	}
 
+	function notifyWidthImmediately() {
+		columnWidthsCache = null;
+		visibleColumnWidthsCache = null;
+		resolvedVisibleColumnWidthsCache = null;
+		flushSync(() => {
+			widthVersion.update((value) => value + 1);
+		});
+	}
+
 	function notifyResize() {
 		resizeVersion.update((value) => value + 1);
 	}
 
-	function normalizeColumnWidth(width: TableColumnWidth | undefined) {
+	function parseColumnWidth(
+		width: TableColumnWidth | undefined
+	): ParsedTableColumnWidth | undefined {
 		if (typeof width === 'number') {
-			return Number.isFinite(width) ? width : undefined;
+			return Number.isFinite(width) ? { unit: 'px', value: width } : undefined;
 		}
 
 		if (typeof width === 'string') {
-			const match = width.trim().match(/^(\d+(?:\.\d+)?)px$/i);
+			const match = width.trim().match(/^(\d+(?:\.\d+)?)(px|%|fr)$/i);
 			if (!match) return undefined;
 			const next = Number(match[1]);
-			return Number.isFinite(next) ? next : undefined;
+			if (!Number.isFinite(next)) return undefined;
+			const unit = match[2].toLowerCase() as ParsedTableColumnWidth['unit'];
+			return { unit, value: next };
 		}
 
 		return undefined;
+	}
+
+	function normalizeColumnWidth(width: TableColumnWidth | undefined) {
+		const parsed = parseColumnWidth(width);
+		if (!parsed) return undefined;
+		if (parsed.unit === 'px') {
+			return typeof width === 'number' ? width : (`${parsed.value}px` as const);
+		}
+		if (parsed.unit === '%') {
+			return `${parsed.value}%` as const;
+		}
+		return `${parsed.value}fr` as const;
+	}
+
+	function isRelativeColumnWidth(width: TableColumnWidth | undefined) {
+		const parsed = parseColumnWidth(width);
+		return parsed ? parsed.unit !== 'px' : false;
 	}
 
 	function getColumnRegistrationById(columnId: string) {
@@ -365,9 +429,73 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return getColumnRegistrationById(columnId)?.maxWidth;
 	}
 
+	function getFixedColumnWidthSpec(columnId: string) {
+		return normalizeColumnWidth(getColumnRegistrationById(columnId)?.width);
+	}
+
+	function getManagedColumnWidthSpec(columnId: string) {
+		return normalizeColumnWidth(columnWidths.get(columnId));
+	}
+
+	function getDefaultColumnWidthSpec(columnId: string) {
+		return normalizeColumnWidth(getColumnRegistrationById(columnId)?.defaultWidth);
+	}
+
+	function hasAuthoredColumnWidthSpec(columnId: string) {
+		return (
+			getFixedColumnWidthSpec(columnId) !== undefined ||
+			getManagedColumnWidthSpec(columnId) !== undefined ||
+			getDefaultColumnWidthSpec(columnId) !== undefined
+		);
+	}
+
+	function getEffectiveColumnWidthSpec(columnId: string) {
+		const fixedWidth = getFixedColumnWidthSpec(columnId);
+		if (fixedWidth !== undefined) {
+			return fixedWidth;
+		}
+
+		const managedWidth = getManagedColumnWidthSpec(columnId);
+		if (managedWidth !== undefined) {
+			return managedWidth;
+		}
+
+		const defaultWidth = getDefaultColumnWidthSpec(columnId);
+		if (defaultWidth !== undefined) {
+			return defaultWidth;
+		}
+
+		return resizerLayoutReady && columnsWithResizers.size > 0 ? ('1fr' as const) : undefined;
+	}
+
+	function getMeasuredTableWidth() {
+		const tableCell = Array.from(cells.values()).find((cell) => cell.element)?.element;
+		const tableElement = tableCell?.closest('table');
+		const tableWidth = tableElement?.getBoundingClientRect().width;
+		const containerElement = tableElement?.parentElement;
+		const containerClientWidth = containerElement?.clientWidth;
+		const containerStyle = containerElement ? getComputedStyle(containerElement) : undefined;
+		const containerPaddingLeft = Number.parseFloat(containerStyle?.paddingLeft ?? '0');
+		const containerPaddingRight = Number.parseFloat(containerStyle?.paddingRight ?? '0');
+		const containerWidth =
+			containerClientWidth !== undefined && Number.isFinite(containerClientWidth)
+				? containerClientWidth - containerPaddingLeft - containerPaddingRight
+				: undefined;
+		// Use the container width as the stable reference for fr/% resolution.
+		// Using Math.max(table, container) causes a feedback loop during resize:
+		// the table grows → measurement returns more → fr columns get more space →
+		// the table grows further. The container width is stable and represents
+		// the actual available space the table should fill.
+		const width = containerWidth ?? tableWidth;
+		if (width === undefined || width <= 0 || !Number.isFinite(width)) {
+			return undefined;
+		}
+		return Math.round(width);
+	}
+
 	function clampColumnWidth(columnId: string, width: number) {
 		const registration = getColumnRegistrationById(columnId);
-		const minWidth = registration?.minWidth ?? 75;
+		const minWidth = registration?.minWidth ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
 		const maxWidth = registration?.maxWidth;
 		let next = Math.round(width);
 		if (Number.isNaN(next) || !Number.isFinite(next)) {
@@ -382,8 +510,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function hasResizableColumns() {
 		for (const column of columns.values()) {
-			if (isColumnHidden(column.id)) continue;
-			if (columnsWithResizers.has(column.token)) return true;
+			if (isColumnResizable(column.id)) return true;
 		}
 		return false;
 	}
@@ -391,12 +518,26 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function registerColumnResizer(columnToken: string) {
 		if (columnsWithResizers.has(columnToken)) return;
 		columnsWithResizers.add(columnToken);
-		notifyLayout();
+		if (IS_BROWSER) {
+			syncResizerLayoutReady(true);
+			return;
+		}
+		resizerLayoutReady = false;
+		invalidateLayoutCaches();
+		layoutVersion.update((value) => value + 1);
+		notifyWidth();
 	}
 
 	function unregisterColumnResizer(columnToken: string) {
 		if (!columnsWithResizers.delete(columnToken)) return;
-		notifyLayout();
+		if (IS_BROWSER) {
+			syncResizerLayoutReady(columnsWithResizers.size > 0);
+			return;
+		}
+		resizerLayoutReady = false;
+		invalidateLayoutCaches();
+		layoutVersion.update((value) => value + 1);
+		notifyWidth();
 	}
 
 	function sameColumnMetadata(left: TableColumnMetadata, right: TableColumnMetadata) {
@@ -528,18 +669,76 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnWidth(columnId: string) {
-		const managedWidth = columnWidths.get(columnId);
-		if (managedWidth !== undefined) {
-			return clampColumnWidth(columnId, managedWidth);
+		const parsed = parseColumnWidth(getEffectiveColumnWidthSpec(columnId));
+		if (!parsed) return undefined;
+
+		if (!isColumnHidden(columnId)) {
+			if (parsed.unit !== 'px') {
+				return undefined;
+			}
+			return getResolvedVisibleColumnWidths().get(columnId);
 		}
 
-		const registration = getColumnRegistrationById(columnId);
-		if (!registration) return undefined;
+		return parsed?.unit === 'px' ? clampColumnWidth(columnId, parsed.value) : undefined;
+	}
 
-		const nextWidth =
-			normalizeColumnWidth(registration.width) ?? normalizeColumnWidth(registration.defaultWidth);
+	function formatCssLength(length: number) {
+		const rounded = Math.round(length * 1000) / 1000;
+		return Number.isInteger(rounded) ? `${rounded}` : `${rounded}`;
+	}
 
-		return nextWidth !== undefined ? clampColumnWidth(columnId, nextWidth) : undefined;
+	function getColumnWidthStyle(columnId: string) {
+		const resolvedWidth = getColumnWidth(columnId);
+		if (resolvedWidth !== undefined) {
+			return `${resolvedWidth}px`;
+		}
+
+		const parsed = parseColumnWidth(getEffectiveColumnWidthSpec(columnId));
+		if (!parsed) return undefined;
+		if (parsed.unit === 'px') {
+			return `${clampColumnWidth(columnId, parsed.value)}px`;
+		}
+		if (parsed.unit === '%') {
+			return `${parsed.value}%`;
+		}
+
+		let fixedPxTotal = 0;
+		let percentTotal = 0;
+		let totalFr = 0;
+		for (const token of getVisibleOrderedColumnTokens()) {
+			const column = columns.get(token);
+			if (!column) continue;
+			const spec = parseColumnWidth(getEffectiveColumnWidthSpec(column.id));
+			if (!spec) continue;
+			if (spec.unit === 'px') {
+				fixedPxTotal += clampColumnWidth(column.id, spec.value);
+				continue;
+			}
+			if (spec.unit === '%') {
+				percentTotal += spec.value;
+				continue;
+			}
+			totalFr += spec.value;
+		}
+
+		if (totalFr <= 0) return undefined;
+		const frShare = parsed.value / totalFr;
+		const availableWidthTerms: string[] = ['100%'];
+		if (fixedPxTotal > 0) {
+			availableWidthTerms.push(`${formatCssLength(fixedPxTotal)}px`);
+		}
+		if (percentTotal > 0) {
+			availableWidthTerms.push(`${formatCssLength(percentTotal)}%`);
+		}
+
+		const availableWidthExpression =
+			availableWidthTerms.length === 1
+				? availableWidthTerms[0]
+				: `(${availableWidthTerms.join(' - ')})`;
+		if (frShare === 1) {
+			return `calc(${availableWidthExpression})`;
+		}
+		return `calc(${availableWidthExpression} * ${formatCssLength(frShare)})`;
 	}
 
 	function isColumnResizable(columnId: string) {
@@ -551,11 +750,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getColumnWidths() {
 		if (columnWidthsCache) return columnWidthsCache;
-		const widths = new Map<string, number>();
+		const widths = new Map<string, TableColumnWidth>();
 		for (const token of getOrderedColumnTokens()) {
 			const column = columns.get(token);
 			if (!column) continue;
-			const width = getColumnWidth(column.id);
+			const width = getManagedColumnWidthSpec(column.id);
 			if (width !== undefined) {
 				widths.set(column.id, width);
 			}
@@ -566,12 +765,77 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getVisibleColumnWidths() {
 		if (visibleColumnWidthsCache) return visibleColumnWidthsCache;
-		const widths = new Map<string, number>();
+		const widths = new Map<string, TableColumnWidth>();
 		for (const [columnId, width] of getColumnWidths()) {
 			if (isColumnHidden(columnId)) continue;
 			widths.set(columnId, width);
 		}
 		visibleColumnWidthsCache = widths;
+		return widths;
+	}
+
+	function hasRelativeVisibleColumnWidths() {
+		for (const token of getVisibleOrderedColumnTokens()) {
+			const column = columns.get(token);
+			if (!column) continue;
+			if (isRelativeColumnWidth(getEffectiveColumnWidthSpec(column.id))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function getResolvedVisibleColumnWidths() {
+		if (resolvedVisibleColumnWidthsCache) return resolvedVisibleColumnWidthsCache;
+
+		const widths = new Map<string, number>();
+		const flexibleColumns: Array<{ columnId: string; fr: number }> = [];
+		const tableWidth = getMeasuredTableWidth();
+		let remainingWidth = tableWidth;
+		let totalFr = 0;
+
+		for (const token of getVisibleOrderedColumnTokens()) {
+			const column = columns.get(token);
+			if (!column) continue;
+
+			const parsed = parseColumnWidth(getEffectiveColumnWidthSpec(column.id));
+			if (!parsed) continue;
+
+			if (parsed.unit === 'px') {
+				const nextWidth = clampColumnWidth(column.id, parsed.value);
+				widths.set(column.id, nextWidth);
+				if (remainingWidth !== undefined) {
+					remainingWidth -= nextWidth;
+				}
+				continue;
+			}
+
+			if (parsed.unit === '%') {
+				if (tableWidth === undefined) continue;
+				const nextWidth = clampColumnWidth(column.id, (tableWidth * parsed.value) / 100);
+				widths.set(column.id, nextWidth);
+				if (remainingWidth !== undefined) {
+					remainingWidth -= nextWidth;
+				}
+				continue;
+			}
+
+			flexibleColumns.push({ columnId: column.id, fr: parsed.value });
+			totalFr += parsed.value;
+		}
+
+		if (tableWidth !== undefined && flexibleColumns.length > 0 && totalFr > 0) {
+			const distributableWidth = Math.max(remainingWidth ?? tableWidth, 0);
+			for (const entry of flexibleColumns) {
+				const nextWidth = clampColumnWidth(
+					entry.columnId,
+					(distributableWidth * entry.fr) / totalFr
+				);
+				widths.set(entry.columnId, nextWidth);
+			}
+		}
+
+		resolvedVisibleColumnWidthsCache = widths;
 		return widths;
 	}
 
@@ -586,26 +850,52 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return Math.round(width);
 	}
 
-	function freezeColumnWidthsFromLayout() {
-		const next = new Map<string, number>();
-		let changed = false;
+	function getResizableRelativeTailColumnId(activeColumnId: string) {
+		return getVisibleOrderedColumnTokens()
+			.map((token) => columns.get(token))
+			.filter((column): column is TableColumnMetadata => !!column)
+			.filter((column) => {
+				if (column.id === activeColumnId) return false;
+				if (getFixedColumnWidthSpec(column.id) !== undefined) return false;
+				return isRelativeColumnWidth(getEffectiveColumnWidthSpec(column.id));
+			})
+			.at(-1)?.id;
+	}
 
-		for (const token of columnOrder) {
+	function prepareColumnWidthsForResize(activeColumnId: string) {
+		const next = new Map<string, TableColumnWidth>(columnWidths);
+		const baselineWidths = new Map<string, number>();
+		const preservedFlexibleColumnId = getResizableRelativeTailColumnId(activeColumnId);
+		const preservedFlexibleEffectiveWidth = preservedFlexibleColumnId
+			? normalizeColumnWidth(getEffectiveColumnWidthSpec(preservedFlexibleColumnId))
+			: undefined;
+		const measuredTableWidth = getMeasuredTableWidth();
+
+		for (const token of getVisibleOrderedColumnTokens()) {
 			const column = columns.get(token);
 			if (!column) continue;
+			if (getFixedColumnWidthSpec(column.id) !== undefined) continue;
 
 			const measuredWidth = getMeasuredHeaderWidth(token);
-			const resolvedWidth = measuredWidth ?? getColumnWidth(column.id);
+			const resolvedWidth = getColumnWidth(column.id) ?? measuredWidth;
 			if (resolvedWidth === undefined) continue;
 
-			const clampedWidth = clampColumnWidth(column.id, resolvedWidth);
-			next.set(column.id, clampedWidth);
-			if (columnWidths.get(column.id) !== clampedWidth) {
-				changed = true;
+			const frozenWidth = clampColumnWidth(column.id, resolvedWidth);
+			next.set(column.id, frozenWidth);
+			baselineWidths.set(column.id, frozenWidth);
+		}
+
+		let changed = next.size !== columnWidths.size;
+		if (!changed) {
+			for (const [columnId, width] of next) {
+				if (columnWidths.get(columnId) !== width) {
+					changed = true;
+					break;
+				}
 			}
 		}
 
-		if (!changed || next.size === 0) return;
+		if (!changed) return;
 
 		columnWidths.clear();
 		for (const [columnId, width] of next) {
@@ -613,18 +903,42 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 
 		columnWidthsCache = null;
+		visibleColumnWidthsCache = null;
+		const baselineTotalWidth = Array.from(baselineWidths.values()).reduce(
+			(total, current) => total + current,
+			0
+		);
+		resizeSession = {
+			activeColumnId: activeColumnId,
+			flexibleTailColumnId: preservedFlexibleColumnId,
+			flexibleTailRestoreWidth:
+				preservedFlexibleColumnId && isRelativeColumnWidth(preservedFlexibleEffectiveWidth)
+					? preservedFlexibleEffectiveWidth
+					: undefined,
+			baselineWidths,
+			baselineTableWidth: measuredTableWidth ?? baselineTotalWidth,
+			baselineTotalWidth
+		};
 		options.onColumnWidthsChange?.(getColumnWidths());
 		notifyWidth();
 	}
 
-	function setColumnWidths(widths?: Iterable<readonly [string, number]>) {
-		const next = new Map<string, number>();
+	function shouldPrepareColumnWidthsForResize(columnId: string) {
+		if (getFixedColumnWidthSpec(columnId) !== undefined) return false;
+		if (!hasRelativeVisibleColumnWidths()) return false;
+		return resizeSession?.activeColumnId !== columnId;
+	}
+
+	function setColumnWidths(widths?: Iterable<readonly [string, TableColumnWidth]>) {
+		const next = new Map<string, TableColumnWidth>();
+		const incomingWidths = widths ? new Map<string, TableColumnWidth>(widths) : undefined;
 		for (const token of columnOrder) {
 			const column = columns.get(token);
 			if (!column) continue;
-			const incomingWidth = widths ? new Map<string, number>(widths).get(column.id) : undefined;
+			if (getFixedColumnWidthSpec(column.id) !== undefined) continue;
+			const incomingWidth = normalizeColumnWidth(incomingWidths?.get(column.id));
 			if (incomingWidth !== undefined) {
-				next.set(column.id, clampColumnWidth(column.id, incomingWidth));
+				next.set(column.id, incomingWidth);
 			}
 		}
 
@@ -636,11 +950,41 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setColumnWidth(columnId: string, width: number) {
+		if (getFixedColumnWidthSpec(columnId) !== undefined) return;
 		if (!isColumnResizable(columnId)) return;
+		if (shouldPrepareColumnWidthsForResize(columnId)) {
+			prepareColumnWidthsForResize(columnId);
+		}
 		const nextWidth = clampColumnWidth(columnId, width);
-		if (columnWidths.get(columnId) === nextWidth) return;
+		const currentWidth = columnWidths.get(columnId);
+		if (
+			resizeSession?.activeColumnId === columnId &&
+			resizeSession.flexibleTailColumnId !== undefined
+		) {
+			const baselineActiveWidth = resizeSession.baselineWidths.get(columnId);
+			const baselineTailWidth = resizeSession.baselineWidths.get(
+				resizeSession.flexibleTailColumnId
+			);
+			if (baselineActiveWidth !== undefined && baselineTailWidth !== undefined) {
+				const widthDelta = nextWidth - baselineActiveWidth;
+				const overflowWidth = Math.max(
+					resizeSession.baselineTotalWidth - resizeSession.baselineTableWidth,
+					0
+				);
+				const tailTargetWidth =
+					widthDelta >= 0
+						? baselineTailWidth - widthDelta
+						: baselineTailWidth + Math.max(-widthDelta - overflowWidth, 0);
+				const tailWidth = clampColumnWidth(resizeSession.flexibleTailColumnId, tailTargetWidth);
+				if (columnWidths.get(resizeSession.flexibleTailColumnId) !== tailWidth) {
+					columnWidths.set(resizeSession.flexibleTailColumnId, tailWidth);
+				}
+			}
+		}
+		if (currentWidth === nextWidth) return;
 		columnWidths.set(columnId, nextWidth);
 		columnWidthsCache = null;
+		visibleColumnWidthsCache = null;
 		options.onColumnWidthsChange?.(getColumnWidths());
 		notifyWidth();
 	}
@@ -784,10 +1128,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function measureIntrinsicElementWidth(cell: HTMLElement) {
-		const target =
-			cell.querySelector<HTMLElement>('[data-table-header-content]') ??
-			cell.firstElementChild ??
-			cell;
+		const target = cell;
 		const clone = target.cloneNode(true) as HTMLElement;
 		for (const separator of clone.querySelectorAll('[role="separator"]')) {
 			separator.remove();
@@ -854,9 +1195,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function startColumnResize(columnId: string) {
 		if (!isColumnResizable(columnId) || resizingColumnId === columnId) return;
-		if (getVisibleColumnWidths().size < getVisibleColumnCount()) {
-			freezeColumnWidthsFromLayout();
-		}
+		resizeSession = null;
 		resizingColumnId = columnId;
 		options.onColumnResizeStart?.(columnId);
 		notifyResize();
@@ -864,8 +1203,26 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function endColumnResize() {
 		if (!resizingColumnId) return;
+		let restoredFlexibleTail = false;
+		if (
+			resizeSession?.flexibleTailColumnId !== undefined &&
+			resizeSession.activeColumnId !== resizeSession.flexibleTailColumnId &&
+			resizeSession.flexibleTailRestoreWidth !== undefined
+		) {
+			const tailColumnId = resizeSession.flexibleTailColumnId;
+			columnWidths.set(tailColumnId, resizeSession.flexibleTailRestoreWidth);
+			columnWidthsCache = null;
+			visibleColumnWidthsCache = null;
+			resolvedVisibleColumnWidthsCache = null;
+			restoredFlexibleTail = true;
+		}
 		resizingColumnId = null;
+		if (restoredFlexibleTail) {
+			options.onColumnWidthsChange?.(getColumnWidths());
+		}
+		resizeSession = null;
 		options.onColumnResizeEnd?.(getColumnWidths());
+		notifyWidthImmediately();
 		notifyResize();
 	}
 
@@ -903,6 +1260,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (targetOrder && !targetOrder.includes(row.token)) {
 			targetOrder.push(row.token);
 		}
+		notifySelection();
 		notifyLayout();
 	}
 
@@ -931,7 +1289,19 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				notifyFocus();
 			}
 		}
+		notifySelection();
 		notifyLayout();
+	}
+
+	function markBodyRowsInitialized() {
+		if (bodyRowsInitialized) return;
+		const optimisticHasSelectableRows = selectionMode === 'multiple' || selectedKeys.size > 0;
+		bodyRowsInitialized = true;
+		const actualHasSelectableRows =
+			getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		if (optimisticHasSelectableRows !== actualHasSelectableRows) {
+			notifySelection();
+		}
 	}
 
 	function getBodyRowCount() {
@@ -1026,6 +1396,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function hasSelectableRows() {
+		if (!bodyRowsInitialized) {
+			return selectionMode === 'multiple' || selectedKeys.size > 0;
+		}
 		return getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
 	}
 
@@ -1853,12 +2226,16 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getVisibleColumnIndexByToken,
 		getColumnTextValue,
 		getColumnWidth,
+		getColumnWidthStyle,
+		hasAuthoredColumnWidthSpec,
 		getColumnMinWidth,
 		getColumnMaxWidth,
 		isColumnHidden,
 		isColumnResizable,
 		getColumnWidths,
 		getVisibleColumnWidths,
+		getResolvedVisibleColumnWidths,
+		hasRelativeVisibleColumnWidths,
 		setColumnWidths,
 		setColumnWidth,
 		setHiddenColumns,
@@ -1870,6 +2247,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		hasResizableColumns,
 		registerRow,
 		unregisterRow,
+		markBodyRowsInitialized,
 		getHeaderRowCount,
 		getBodyRowCount,
 		isRowSelected,
