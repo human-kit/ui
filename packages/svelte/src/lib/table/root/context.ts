@@ -317,6 +317,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	let layoutNotifyScheduled = false;
+	let selectionNotifyScheduled = false;
 	let widthNotifyScheduled = false;
 
 	function syncResizerLayoutReady(nextReady: boolean) {
@@ -339,7 +340,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function notifySelection() {
-		selectionVersion.update((value) => value + 1);
+		if (!selectionNotifyScheduled) {
+			selectionNotifyScheduled = true;
+			queueMicrotask(() => {
+				selectionNotifyScheduled = false;
+				selectionVersion.update((value) => value + 1);
+			});
+		}
 	}
 
 	function notifyFocus() {
