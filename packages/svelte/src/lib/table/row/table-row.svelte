@@ -21,6 +21,7 @@
 	const section = useTableSectionContext();
 	const rowToken = table.createInstanceToken('row');
 	const cellOrder: string[] = [];
+	const cellElements: Record<string, () => HTMLElement | undefined> = {};
 	const cellOrderVersion = writable(0);
 
 	let rowElement = $state<HTMLTableRowElement | undefined>(undefined);
@@ -29,23 +30,31 @@
 		cellOrderVersion.update((value) => value + 1);
 	}
 
-	function registerCellToken(token: string, _getElement?: () => HTMLElement | undefined) {
-		void _getElement;
+	function registerCellToken(token: string, getElement?: () => HTMLElement | undefined) {
 		if (!cellOrder.includes(token)) {
 			cellOrder.push(token);
-			scheduleCellOrderNotify();
+			notifyCellOrderChange();
+		}
+		if (getElement) {
+			cellElements[token] = getElement;
 		}
 	}
 
 	function unregisterCellToken(token: string) {
+		delete cellElements[token];
 		const index = cellOrder.indexOf(token);
 		if (index >= 0) {
 			cellOrder.splice(index, 1);
-			scheduleCellOrderNotify();
+			notifyCellOrderChange();
 		}
 	}
 
 	function getCellIndex(token: string) {
+		const element = cellElements[token]?.();
+		if (rowElement && element) {
+			const index = Array.from(rowElement.children).indexOf(element);
+			if (index >= 0) return index;
+		}
 		return cellOrder.indexOf(token);
 	}
 
@@ -78,6 +87,21 @@
 
 	$effect(() => {
 		syncRowRegistration();
+	});
+
+	$effect(() => {
+		if (!rowElement) {
+			return;
+		}
+
+		const observer = new MutationObserver(() => {
+			scheduleCellOrderNotify();
+		});
+		observer.observe(rowElement, { childList: true });
+
+		return () => {
+			observer.disconnect();
+		};
 	});
 
 	let pendingCellOrderNotify = false;
