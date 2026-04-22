@@ -1,5 +1,11 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.18
+
+### Patch Changes
+
+- [#46](https://github.com/Agustin-Delgado/svelte-components/pull/46) [`c68dd08`](https://github.com/Agustin-Delgado/svelte-components/commit/c68dd083c93bfcb36a383eec1a68150ecbc3002d) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix `Table` column sizing and ordering edge cases by keeping trailing flexible columns in sync during resize recovery, recomputing relative widths after viewport or container size changes, avoiding one-pixel width loss from relative-column rounding, and updating body cell column indices correctly when keyed columns reorder.
+
 ## 1.0.0-alpha.17
 
 ### Patch Changes
