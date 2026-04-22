@@ -30,6 +30,7 @@
 	}
 
 	function registerCellToken(token: string, _getElement?: () => HTMLElement | undefined) {
+		void _getElement;
 		if (!cellOrder.includes(token)) {
 			cellOrder.push(token);
 			scheduleCellOrderNotify();

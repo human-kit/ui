@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import {
-	distributeRoundedWidths,
-	type TableColumnWidth
-} from '../root/context';
+import { distributeRoundedWidths, type TableColumnWidth } from '../root/context';
 import ColumnResizerTest from './table-column-resizer-test.svelte';
 import ColumnResizerFixedWidthTest from './table-column-resizer-fixed-width-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';
@@ -67,12 +64,6 @@ function readResizeEndWidths() {
 function readResizeAnnouncement(testId: string) {
 	const resizer = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
 	return resizer?.querySelector('[data-testid="column-resize-status"]')?.textContent?.trim() ?? '';
-}
-
-function readColumnHeaderWidths() {
-	return Array.from(document.querySelectorAll<HTMLElement>('thead th[role="columnheader"]')).map(
-		(cell) => cell.getBoundingClientRect().width
-	);
 }
 
 describe('Table.ColumnResizer', () => {
@@ -1434,8 +1425,7 @@ describe('Table.ColumnResizer', () => {
 		);
 
 		expect(entries.map((entry) => entry.width).sort((left, right) => left - right)).toEqual([
-			226,
-			227
+			226, 227
 		]);
 		expect(entries.reduce((total, entry) => total + entry.width, 0)).toBe(453);
 	});
