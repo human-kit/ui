@@ -296,6 +296,33 @@
 	});
 
 	$effect(() => {
+		if (!tableElement) return;
+
+		const resizeTarget = tableElement.parentElement ?? tableElement;
+		const refreshMeasuredLayout = () => {
+			ctx.refreshMeasuredLayout();
+		};
+
+		window.addEventListener('resize', refreshMeasuredLayout);
+		window.visualViewport?.addEventListener('resize', refreshMeasuredLayout);
+
+		const resizeObserver =
+			typeof ResizeObserver !== 'undefined'
+				? new ResizeObserver(() => {
+						refreshMeasuredLayout();
+					})
+				: null;
+
+		resizeObserver?.observe(resizeTarget);
+
+		return () => {
+			window.removeEventListener('resize', refreshMeasuredLayout);
+			window.visualViewport?.removeEventListener('resize', refreshMeasuredLayout);
+			resizeObserver?.disconnect();
+		};
+	});
+
+	$effect(() => {
 		ctx.setSelectionMode(selectionMode);
 	});
 

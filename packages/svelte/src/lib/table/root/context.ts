@@ -39,6 +39,68 @@ type ParsedTableColumnWidth = {
 	value: number;
 };
 
+type RelativeColumnWidthAllocation = {
+	columnId: string;
+	index: number;
+	exactWidth: number;
+	width: number;
+	minWidth: number;
+	maxWidth?: number;
+	remainder: number;
+};
+
+export type RoundedWidthDistributionEntry = {
+	columnId: string;
+	index: number;
+	exactWidth: number;
+	width: number;
+	minWidth: number;
+	maxWidth?: number;
+	remainder: number;
+};
+
+export function distributeRoundedWidths(
+	entries: RoundedWidthDistributionEntry[],
+	targetTotal: number
+) {
+	let delta = targetTotal - entries.reduce((total, entry) => total + entry.width, 0);
+	if (delta === 0) return entries;
+
+	const prioritizedEntries = [...entries].sort((left, right) => {
+		if (delta > 0) {
+			if (right.remainder !== left.remainder) return right.remainder - left.remainder;
+			return right.index - left.index;
+		}
+
+		if (left.remainder !== right.remainder) return left.remainder - right.remainder;
+		return left.index - right.index;
+	});
+
+	while (delta !== 0) {
+		let updated = false;
+
+		for (const entry of prioritizedEntries) {
+			if (delta > 0) {
+				if (entry.maxWidth !== undefined && entry.width >= entry.maxWidth) continue;
+				entry.width += 1;
+				delta -= 1;
+				updated = true;
+			} else {
+				if (entry.width <= entry.minWidth) continue;
+				entry.width -= 1;
+				delta += 1;
+				updated = true;
+			}
+
+			if (delta === 0) break;
+		}
+
+		if (!updated) break;
+	}
+
+	return entries;
+}
+
 export type TableGridCoord = {
 	row: number;
 	col: number;
@@ -136,6 +198,7 @@ export type TableContext = {
 	getVisibleColumnWidths: () => Map<string, TableColumnWidth>;
 	getResolvedVisibleColumnWidths: () => Map<string, number>;
 	hasRelativeVisibleColumnWidths: () => boolean;
+	refreshMeasuredLayout: () => void;
 	setColumnWidths: (widths?: Iterable<readonly [string, TableColumnWidth]>) => void;
 	setColumnWidth: (columnId: string, width: number) => void;
 	setHiddenColumns: (columnIds?: Iterable<string>) => void;
@@ -258,7 +321,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		flexibleTailColumnId?: string;
 		flexibleTailRestoreWidth?: TableColumnWidth;
 		baselineWidths: Map<string, number>;
-		baselineTableWidth: number;
+		baselineAvailableTableWidth: number;
 		baselineTotalWidth: number;
 	} | null = null;
 	let suppressNextHeaderClick = false;
@@ -273,6 +336,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const headerRowOrder: string[] = [];
 	const bodyRowOrder: string[] = [];
 	let bodyRowsInitialized = false;
+	let selectableBodyRowCount = 0;
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
@@ -316,6 +380,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	let layoutNotifyScheduled = false;
+	let selectionNotifyScheduled = false;
 	let widthNotifyScheduled = false;
 
 	function syncResizerLayoutReady(nextReady: boolean) {
@@ -338,7 +403,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function notifySelection() {
-		selectionVersion.update((value) => value + 1);
+		if (!selectionNotifyScheduled) {
+			selectionNotifyScheduled = true;
+			queueMicrotask(() => {
+				selectionNotifyScheduled = false;
+				selectionVersion.update((value) => value + 1);
+			});
+		}
 	}
 
 	function notifyFocus() {
@@ -370,6 +441,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		flushSync(() => {
 			widthVersion.update((value) => value + 1);
 		});
+	}
+
+	function refreshMeasuredLayout() {
+		notifyWidthImmediately();
 	}
 
 	function notifyResize() {
@@ -493,10 +568,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return Math.round(width);
 	}
 
-	function clampColumnWidth(columnId: string, width: number) {
+	function getColumnWidthBounds(columnId: string) {
 		const registration = getColumnRegistrationById(columnId);
-		const minWidth = registration?.minWidth ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
-		const maxWidth = registration?.maxWidth;
+		const fixedWidth = parseColumnWidth(registration?.width);
+		const minWidth =
+			registration?.minWidth ??
+			(fixedWidth?.unit === 'px'
+				? Math.min(fixedWidth.value, DEFAULT_TABLE_COLUMN_MIN_WIDTH)
+				: DEFAULT_TABLE_COLUMN_MIN_WIDTH);
+
+		return {
+			minWidth,
+			maxWidth: registration?.maxWidth
+		};
+	}
+
+	function clampColumnWidth(columnId: string, width: number) {
+		const { minWidth, maxWidth } = getColumnWidthBounds(columnId);
 		let next = Math.round(width);
 		if (Number.isNaN(next) || !Number.isFinite(next)) {
 			next = minWidth;
@@ -506,6 +594,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			next = Math.min(maxWidth, next);
 		}
 		return next;
+	}
+
+	function resolveRelativeColumnWidthAllocations(
+		entries: Array<{ columnId: string; index: number; exactWidth: number }>,
+		targetTotal: number
+	) {
+		const allocations: RelativeColumnWidthAllocation[] = entries.map((entry) => {
+			const { minWidth, maxWidth } = getColumnWidthBounds(entry.columnId);
+			return {
+				...entry,
+				width: clampColumnWidth(entry.columnId, entry.exactWidth),
+				minWidth,
+				maxWidth,
+				remainder: entry.exactWidth - Math.floor(entry.exactWidth)
+			};
+		});
+
+		return distributeRoundedWidths(allocations, targetTotal);
 	}
 
 	function hasResizableColumns() {
@@ -789,12 +895,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (resolvedVisibleColumnWidthsCache) return resolvedVisibleColumnWidthsCache;
 
 		const widths = new Map<string, number>();
-		const flexibleColumns: Array<{ columnId: string; fr: number }> = [];
+		const flexibleColumns: Array<{ columnId: string; fr: number; index: number }> = [];
+		const relativeColumns: Array<{ columnId: string; index: number; exactWidth: number }> = [];
 		const tableWidth = getMeasuredTableWidth();
-		let remainingWidth = tableWidth;
+		let fixedWidthTotal = 0;
+		let exactRelativeWidthTotal = 0;
 		let totalFr = 0;
 
-		for (const token of getVisibleOrderedColumnTokens()) {
+		for (const [index, token] of getVisibleOrderedColumnTokens().entries()) {
 			const column = columns.get(token);
 			if (!column) continue;
 
@@ -804,34 +912,43 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (parsed.unit === 'px') {
 				const nextWidth = clampColumnWidth(column.id, parsed.value);
 				widths.set(column.id, nextWidth);
-				if (remainingWidth !== undefined) {
-					remainingWidth -= nextWidth;
-				}
+				fixedWidthTotal += nextWidth;
 				continue;
 			}
 
 			if (parsed.unit === '%') {
 				if (tableWidth === undefined) continue;
-				const nextWidth = clampColumnWidth(column.id, (tableWidth * parsed.value) / 100);
-				widths.set(column.id, nextWidth);
-				if (remainingWidth !== undefined) {
-					remainingWidth -= nextWidth;
-				}
+				const exactWidth = (tableWidth * parsed.value) / 100;
+				relativeColumns.push({ columnId: column.id, index, exactWidth });
+				exactRelativeWidthTotal += exactWidth;
 				continue;
 			}
 
-			flexibleColumns.push({ columnId: column.id, fr: parsed.value });
+			flexibleColumns.push({ columnId: column.id, fr: parsed.value, index });
 			totalFr += parsed.value;
 		}
 
 		if (tableWidth !== undefined && flexibleColumns.length > 0 && totalFr > 0) {
-			const distributableWidth = Math.max(remainingWidth ?? tableWidth, 0);
+			const distributableWidth = Math.max(
+				tableWidth - fixedWidthTotal - exactRelativeWidthTotal,
+				0
+			);
 			for (const entry of flexibleColumns) {
-				const nextWidth = clampColumnWidth(
-					entry.columnId,
-					(distributableWidth * entry.fr) / totalFr
-				);
-				widths.set(entry.columnId, nextWidth);
+				relativeColumns.push({
+					columnId: entry.columnId,
+					index: entry.index,
+					exactWidth: (distributableWidth * entry.fr) / totalFr
+				});
+			}
+		}
+
+		if (tableWidth !== undefined && relativeColumns.length > 0) {
+			const targetRelativeTotal = Math.max(tableWidth - fixedWidthTotal, 0);
+			for (const entry of resolveRelativeColumnWidthAllocations(
+				relativeColumns,
+				targetRelativeTotal
+			)) {
+				widths.set(entry.columnId, entry.width);
 			}
 		}
 
@@ -848,6 +965,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return undefined;
 		}
 		return Math.round(width);
+	}
+
+	function getFixedVisibleColumnWidthTotal() {
+		let total = 0;
+
+		for (const token of getVisibleOrderedColumnTokens()) {
+			const column = columns.get(token);
+			if (!column) continue;
+			if (getFixedColumnWidthSpec(column.id) === undefined) continue;
+
+			const measuredWidth = getMeasuredHeaderWidth(token);
+			const resolvedWidth = getColumnWidth(column.id) ?? measuredWidth;
+			if (resolvedWidth === undefined) continue;
+
+			total += clampColumnWidth(column.id, resolvedWidth);
+		}
+
+		return total;
 	}
 
 	function getResizableRelativeTailColumnId(activeColumnId: string) {
@@ -870,6 +1005,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			? normalizeColumnWidth(getEffectiveColumnWidthSpec(preservedFlexibleColumnId))
 			: undefined;
 		const measuredTableWidth = getMeasuredTableWidth();
+		const fixedVisibleColumnWidthTotal = getFixedVisibleColumnWidthTotal();
 
 		for (const token of getVisibleOrderedColumnTokens()) {
 			const column = columns.get(token);
@@ -916,7 +1052,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 					? preservedFlexibleEffectiveWidth
 					: undefined,
 			baselineWidths,
-			baselineTableWidth: measuredTableWidth ?? baselineTotalWidth,
+			baselineAvailableTableWidth:
+				measuredTableWidth !== undefined
+					? Math.max(measuredTableWidth - fixedVisibleColumnWidthTotal, 0)
+					: baselineTotalWidth,
 			baselineTotalWidth
 		};
 		options.onColumnWidthsChange?.(getColumnWidths());
@@ -968,7 +1107,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (baselineActiveWidth !== undefined && baselineTailWidth !== undefined) {
 				const widthDelta = nextWidth - baselineActiveWidth;
 				const overflowWidth = Math.max(
-					resizeSession.baselineTotalWidth - resizeSession.baselineTableWidth,
+					resizeSession.baselineTotalWidth - resizeSession.baselineAvailableTableWidth,
 					0
 				);
 				const tailTargetWidth =
@@ -1238,6 +1377,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function registerRow(row: TableRowRegistration) {
 		const existing = rows.get(row.token);
+		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		const targetOrder =
 			row.section === 'header' ? headerRowOrder : row.section === 'body' ? bodyRowOrder : null;
 		const alreadyOrdered = targetOrder ? targetOrder.includes(row.token) : false;
@@ -1256,17 +1396,32 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (wasInBody) {
 			bodyRowOrder.splice(bodyRowOrder.indexOf(row.token), 1);
 		}
+		const previousSelectableBodyRow = isSelectableBodyRow(existing);
 		rows.set(row.token, row);
 		if (targetOrder && !targetOrder.includes(row.token)) {
 			targetOrder.push(row.token);
 		}
-		notifySelection();
+		const nextSelectableBodyRow = isSelectableBodyRow(row);
+		if (previousSelectableBodyRow !== nextSelectableBodyRow) {
+			selectableBodyRowCount += nextSelectableBodyRow ? 1 : -1;
+		}
+		if (
+			(selectedKeys.size > 0 && (existing?.section === 'body' || row.section === 'body')) ||
+			(bodyRowsInitialized &&
+				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
+		) {
+			notifySelection();
+		}
 		notifyLayout();
 	}
 
 	function unregisterRow(token: string) {
 		const row = rows.get(token);
+		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		rows.delete(token);
+		if (isSelectableBodyRow(row)) {
+			selectableBodyRowCount = Math.max(0, selectableBodyRowCount - 1);
+		}
 		if (focusedRowTarget?.rowToken === token) {
 			focusedRowTarget = null;
 			notifyFocus();
@@ -1289,7 +1444,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				notifyFocus();
 			}
 		}
-		notifySelection();
+		if (
+			(selectedKeys.size > 0 && row?.section === 'body') ||
+			(bodyRowsInitialized &&
+				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
+		) {
+			notifySelection();
+		}
 		notifyLayout();
 	}
 
@@ -1297,8 +1458,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (bodyRowsInitialized) return;
 		const optimisticHasSelectableRows = selectionMode === 'multiple' || selectedKeys.size > 0;
 		bodyRowsInitialized = true;
-		const actualHasSelectableRows =
-			getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		const actualHasSelectableRows = selectableBodyRowCount > 0 || selectedKeys.size > 0;
 		if (optimisticHasSelectableRows !== actualHasSelectableRows) {
 			notifySelection();
 		}
@@ -1356,6 +1516,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return disabledKeys.has(id);
 	}
 
+	function isSelectableBodyRow(row: TableRowRegistration | undefined) {
+		return (
+			row?.section === 'body' &&
+			row.id !== undefined &&
+			!isRowSelectionDisabled(row.id, row.disabled)
+		);
+	}
+
+	function recomputeSelectableBodyRowCount() {
+		let nextSelectableBodyRowCount = 0;
+		for (const token of bodyRowOrder) {
+			if (isSelectableBodyRow(rows.get(token))) {
+				nextSelectableBodyRowCount += 1;
+			}
+		}
+		selectableBodyRowCount = nextSelectableBodyRowCount;
+	}
+
 	function isRowDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
 		return disabledBehavior === 'all' && isRowSelectionDisabled(id, localDisabled);
 	}
@@ -1399,7 +1577,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (!bodyRowsInitialized) {
 			return selectionMode === 'multiple' || selectedKeys.size > 0;
 		}
-		return getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
+		return selectableBodyRowCount > 0 || selectedKeys.size > 0;
 	}
 
 	function isRowFocused(token: string) {
@@ -2135,16 +2313,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setDisabledKeys(keys?: Iterable<TableSelectionKey>) {
+		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		disabledKeys.clear();
 		if (keys) {
 			for (const key of keys) {
 				disabledKeys.add(key);
 			}
 		}
+		recomputeSelectableBodyRowCount();
 		invalidateLayoutCaches();
 		reconcileFocusAfterDisabledStateChange();
 		notifyLayout();
-		notifySelection();
+		if (
+			selectedKeys.size > 0 ||
+			(bodyRowsInitialized &&
+				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
+		) {
+			notifySelection();
+		}
 	}
 
 	function setRowActionHandler(handler?: TableRowActionHandler) {
@@ -2236,6 +2422,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getVisibleColumnWidths,
 		getResolvedVisibleColumnWidths,
 		hasRelativeVisibleColumnWidths,
+		refreshMeasuredLayout,
 		setColumnWidths,
 		setColumnWidth,
 		setHiddenColumns,

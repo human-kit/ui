@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
 	import { writable } from 'svelte/store';
 	import { setTableRowContext, useTableContext, useTableSectionContext } from '../root/context';
 	import type { TableRowProps } from '../types.js';
@@ -22,14 +21,12 @@
 	const section = useTableSectionContext();
 	const rowToken = table.createInstanceToken('row');
 	const cellOrder: string[] = [];
-	const cellElements = new SvelteMap<string, () => HTMLElement | undefined>();
+	const cellElements: Record<string, () => HTMLElement | undefined> = {};
 	const cellOrderVersion = writable(0);
 
 	let rowElement = $state<HTMLTableRowElement | undefined>(undefined);
-	let childListObserver: MutationObserver | null = null;
 
 	function notifyCellOrderChange() {
-		cellIndexCache = null;
 		cellOrderVersion.update((value) => value + 1);
 	}
 
@@ -39,12 +36,12 @@
 			notifyCellOrderChange();
 		}
 		if (getElement) {
-			cellElements.set(token, getElement);
+			cellElements[token] = getElement;
 		}
 	}
 
 	function unregisterCellToken(token: string) {
-		cellElements.delete(token);
+		delete cellElements[token];
 		const index = cellOrder.indexOf(token);
 		if (index >= 0) {
 			cellOrder.splice(index, 1);
@@ -52,40 +49,12 @@
 		}
 	}
 
-	let cellIndexCache: Map<string, number> | null = null;
-
-	function buildCellIndexCache(): Map<string, number> {
-		if (cellIndexCache) return cellIndexCache;
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- plain cache, not reactive state
-		const cache = new Map<string, number>();
-		if (rowElement) {
-			const directCells = rowElement.children;
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- plain cache, not reactive state
-			const elementToIndex = new Map<HTMLElement, number>();
-			for (let i = 0; i < directCells.length; i += 1) {
-				const child = directCells[i];
-				if (child instanceof HTMLElement) {
-					elementToIndex.set(child, i);
-				}
-			}
-			for (const registeredToken of cellOrder) {
-				const element = cellElements.get(registeredToken)?.();
-				if (element) {
-					const idx = elementToIndex.get(element);
-					if (idx !== undefined) {
-						cache.set(registeredToken, idx);
-					}
-				}
-			}
-		}
-		cellIndexCache = cache;
-		return cache;
-	}
-
 	function getCellIndex(token: string) {
-		const cache = buildCellIndexCache();
-		const cached = cache.get(token);
-		if (cached !== undefined) return cached;
+		const element = cellElements[token]?.();
+		if (rowElement && element) {
+			const index = Array.from(rowElement.children).indexOf(element);
+			if (index >= 0) return index;
+		}
 		return cellOrder.indexOf(token);
 	}
 
@@ -120,23 +89,7 @@
 		syncRowRegistration();
 	});
 
-	let pendingCellOrderNotify = false;
-
-	function scheduleCellOrderNotify() {
-		if (!pendingCellOrderNotify) {
-			pendingCellOrderNotify = true;
-			queueMicrotask(() => {
-				pendingCellOrderNotify = false;
-				cellIndexCache = null;
-				notifyCellOrderChange();
-			});
-		}
-	}
-
 	$effect(() => {
-		childListObserver?.disconnect();
-		childListObserver = null;
-
 		if (!rowElement) {
 			return;
 		}
@@ -145,18 +98,25 @@
 			scheduleCellOrderNotify();
 		});
 		observer.observe(rowElement, { childList: true });
-		childListObserver = observer;
 
 		return () => {
 			observer.disconnect();
-			if (childListObserver === observer) {
-				childListObserver = null;
-			}
 		};
 	});
 
+	let pendingCellOrderNotify = false;
+
+	function scheduleCellOrderNotify() {
+		if (!pendingCellOrderNotify) {
+			pendingCellOrderNotify = true;
+			queueMicrotask(() => {
+				pendingCellOrderNotify = false;
+				notifyCellOrderChange();
+			});
+		}
+	}
+
 	onDestroy(() => {
-		childListObserver?.disconnect();
 		table.unregisterRow(rowToken);
 	});
 

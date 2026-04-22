@@ -14,7 +14,6 @@
 		| 'class'
 		| 'id'
 		| 'role'
-		| 'tabindex'
 		| 'aria-checked'
 		| 'aria-disabled'
 		| 'aria-readonly'
@@ -40,8 +39,11 @@
 		class?: string;
 		'aria-label'?: string;
 		'aria-labelledby'?: string;
+		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
+		onfocus?: HTMLAttributes<HTMLSpanElement>['onfocus'];
+		onmousedown?: HTMLAttributes<HTMLSpanElement>['onmousedown'];
 	};
 
 	function composeEventHandlers<TEvent extends Event>(
@@ -85,8 +87,11 @@
 		class: className = '',
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby,
+		tabindex,
 		onclick: onClickExternal,
 		onkeydown: onKeyDownExternal,
+		onfocus: onFocusExternal,
+		onmousedown: onMouseDownExternal,
 		...restProps
 	}: CheckboxRootProps = $props();
 
@@ -329,7 +334,7 @@
 	bind:this={rootRef}
 	id={rootId}
 	role="checkbox"
-	tabindex={isDisabled ? undefined : 0}
+	tabindex={isDisabled ? undefined : (tabindex ?? 0)}
 	aria-checked={currentIndeterminate ? 'mixed' : currentChecked ? 'true' : 'false'}
 	aria-disabled={isDisabled || undefined}
 	aria-readonly={isReadOnly || undefined}
@@ -350,8 +355,8 @@
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
 	onkeyup={handleKeyUp}
 	onpointerdown={handlePointerDown}
-	onmousedown={handlePointerDown}
-	onfocus={handleFocus}
+	onmousedown={composeEventHandlers(onMouseDownExternal ?? undefined, handlePointerDown)}
+	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={handleBlur}
 	class={cn(
 		'relative inline-flex shrink-0 items-center justify-center align-middle outline-none',

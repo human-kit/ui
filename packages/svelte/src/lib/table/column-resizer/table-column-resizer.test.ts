@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import type { TableColumnWidth } from '../root/context';
+import { distributeRoundedWidths, type TableColumnWidth } from '../root/context';
 import ColumnResizerTest from './table-column-resizer-test.svelte';
 import ColumnResizerFixedWidthTest from './table-column-resizer-fixed-width-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';
 import ColumnResizerOverflowTest from './table-column-resizer-overflow-test.svelte';
 import ColumnResizerPaddedContainerTest from './table-column-resizer-padded-container-test.svelte';
+import ColumnResizerSandboxOverflowTest from './table-column-resizer-sandbox-overflow-test.svelte';
 import ColumnResizerThreeColumnRelativeTest from './table-column-resizer-three-column-relative-test.svelte';
 import ColumnResizerSelectionColumnTest from './table-column-resizer-selection-column-test.svelte';
 
@@ -38,6 +39,21 @@ function readPaddedRelativeWidths() {
 	const text =
 		document.querySelector('[data-testid="padded-relative-widths"]')?.textContent ?? '{}';
 	return JSON.parse(text) as ColumnWidthState;
+}
+
+function readSandboxOverflowWidths() {
+	const text =
+		document.querySelector('[data-testid="sandbox-overflow-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as ColumnWidthState;
+}
+
+function readNumericWidth(width: TableColumnWidth | undefined) {
+	if (typeof width === 'number') return width;
+	if (typeof width === 'string' && width.trim().endsWith('px')) {
+		const parsed = Number.parseFloat(width);
+		return Number.isFinite(parsed) ? parsed : 0;
+	}
+	return 0;
 }
 
 function readResizeEndWidths() {
@@ -480,6 +496,124 @@ describe('Table.ColumnResizer', () => {
 
 		expect(readThreeColumnRelativeWidths()).toEqual({});
 		expect(Math.round(planHeaderCell.getBoundingClientRect().width)).toBe(planBeforeClick);
+	});
+
+	it('recomputes a trailing relative column when the container width changes without dragging', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-relative-container"]'
+		)!;
+		const table = document.querySelector<HTMLTableElement>('table[role="grid"]')!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		const initialTableWidth = Math.round(table.getBoundingClientRect().width);
+		const initialPlanWidth = Math.round(planHeaderCell.getBoundingClientRect().width);
+
+		container.style.width = '760px';
+		window.dispatchEvent(new Event('resize'));
+
+		await expect
+			.poll(() => Math.round(table.getBoundingClientRect().width))
+			.toBeGreaterThan(initialTableWidth);
+		await expect
+			.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThan(initialPlanWidth);
+	});
+
+	it('recomputes relative widths when a resize event changes the measured container width', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-relative-container"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+		const initialPlanWidth = Math.round(planHeaderCell.getBoundingClientRect().width);
+		let mockedClientWidth = container.clientWidth;
+
+		Object.defineProperty(container, 'clientWidth', {
+			configurable: true,
+			get() {
+				return mockedClientWidth;
+			}
+		});
+
+		try {
+			mockedClientWidth = initialPlanWidth + 520;
+			window.dispatchEvent(new Event('resize'));
+
+			await expect
+				.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+				.toBeGreaterThan(initialPlanWidth);
+		} finally {
+			Reflect.deleteProperty(container, 'clientWidth');
+		}
+	});
+
+	it('recomputes the restored flexible tail on resize after a prior drag session', async () => {
+		render(ColumnResizerThreeColumnRelativeTest);
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-relative-container"]'
+		)!;
+		const nameResizer = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-name-resizer"]'
+		)!;
+		const planHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="three-column-plan-header-cell"]'
+		)!;
+
+		nameResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 240,
+				pointerId: 141,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 320,
+				pointerId: 141,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 320,
+				pointerId: 141,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readThreeColumnRelativeWidths().plan).toBe('1fr');
+		const planWidthAfterDrag = Math.round(planHeaderCell.getBoundingClientRect().width);
+		let mockedClientWidth = container.clientWidth;
+
+		Object.defineProperty(container, 'clientWidth', {
+			configurable: true,
+			get() {
+				return mockedClientWidth;
+			}
+		});
+
+		try {
+			mockedClientWidth += 120;
+			window.dispatchEvent(new Event('resize'));
+
+			await expect
+				.poll(() => Math.round(planHeaderCell.getBoundingClientRect().width))
+				.toBeGreaterThan(planWidthAfterDrag);
+		} finally {
+			Reflect.deleteProperty(container, 'clientWidth');
+		}
 	});
 
 	it('ignores a zero-delta pointermove so relative widths do not materialize accidentally', async () => {
@@ -1157,6 +1291,143 @@ describe('Table.ColumnResizer', () => {
 				isPrimary: true
 			})
 		);
+	});
+
+	it('removes overflow mid-drag in the sandbox-like layout after releasing an overflowed resize', async () => {
+		render(ColumnResizerSandboxOverflowTest);
+		const requestResizer = document.querySelector<HTMLElement>(
+			'[data-testid="sandbox-request-resizer"]'
+		)!;
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="sandbox-overflow-container"]'
+		)!;
+		const totalHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="sandbox-total-header-cell"]'
+		)!;
+
+		requestResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 320,
+				pointerId: 131,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 640,
+				pointerId: 131,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 640,
+				pointerId: 131,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => Number(readSandboxOverflowWidths().request)).toBeGreaterThan(350);
+		await expect
+			.poll(() => {
+				const widths = readSandboxOverflowWidths();
+				return (
+					44 +
+					readNumericWidth(widths.request) +
+					readNumericWidth(widths.requester) +
+					readNumericWidth(widths.area) +
+					readNumericWidth(widths.status) +
+					readNumericWidth(widths.priority) +
+					readNumericWidth(widths.total)
+				);
+			})
+			.toBeGreaterThan(Math.round(container.getBoundingClientRect().width));
+
+		requestResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 640,
+				pointerId: 132,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 280,
+				pointerId: 132,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect
+			.poll(() => {
+				const widths = readSandboxOverflowWidths();
+				return (
+					44 +
+					readNumericWidth(widths.request) +
+					readNumericWidth(widths.requester) +
+					readNumericWidth(widths.area) +
+					readNumericWidth(widths.status) +
+					readNumericWidth(widths.priority) +
+					readNumericWidth(widths.total)
+				);
+			})
+			.toBeLessThanOrEqual(Math.round(container.getBoundingClientRect().width));
+		await expect
+			.poll(() => Math.round(totalHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThan(60);
+
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 280,
+				pointerId: 132,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+	});
+
+	it('distributes the leftover pixel across relative columns when rounding would otherwise lose it', () => {
+		const entries = distributeRoundedWidths(
+			[
+				{
+					columnId: 'left',
+					index: 0,
+					exactWidth: 226.5,
+					width: 227,
+					minWidth: 60,
+					maxWidth: undefined,
+					remainder: 0.5
+				},
+				{
+					columnId: 'right',
+					index: 1,
+					exactWidth: 226.5,
+					width: 227,
+					minWidth: 60,
+					maxWidth: undefined,
+					remainder: 0.5
+				}
+			],
+			453
+		);
+
+		expect(entries.map((entry) => entry.width).sort((left, right) => left - right)).toEqual([
+			226, 227
+		]);
+		expect(entries.reduce((total, entry) => total + entry.width, 0)).toBe(453);
 	});
 
 	it('does not make name shrink after region exhausts the flexible tail', async () => {

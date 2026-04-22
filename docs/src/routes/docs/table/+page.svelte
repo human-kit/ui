@@ -7,6 +7,7 @@
 	import InteractiveTable from './interactive-table.svelte';
 	import KeyboardTable from './keyboard-table.svelte';
 	import PaginationTable from './pagination-table.svelte';
+	import PurchaseRequestsReproTable from './purchase-requests-repro-table.svelte';
 	import ReadOnlySnapshotEmptyStateTable from './read-only-snapshot-empty-state-table.svelte';
 	import RowActionsReplaceTable from './row-actions-replace-table.svelte';
 	import RowActionsToggleTable from './row-actions-toggle-table.svelte';
@@ -24,6 +25,7 @@
 		<div class="space-y-8">
 			<InteractiveTable />
 			<FixedWidthContractTable />
+			<PurchaseRequestsReproTable />
 			<RowActionsToggleTable />
 			<RowActionsReplaceTable />
 			<DisabledBehaviorTable />
