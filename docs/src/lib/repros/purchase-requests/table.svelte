@@ -25,7 +25,6 @@
 
 	type Props = RootProps & {
 		items?: T[];
-		columnDefinitions?: ResolvedColumn<T>[];
 		emptyPlaceholder?: string;
 		class?: string;
 		columns?: Snippet<[TableColumnsContext<T>]>;
@@ -34,7 +33,6 @@
 
 	let {
 		items = [],
-		columnDefinitions = undefined,
 		emptyPlaceholder = 'No rows found',
 		class: className = '',
 		selectedKeys = $bindable(),
@@ -73,13 +71,9 @@
 	const selectionMode = $derived((rootProps.selectionMode ?? 'none') as TableSelectionMode);
 	const showSelection = $derived(selectionMode !== 'none');
 
-	const resolvedColumns = $derived.by<ResolvedColumn<T>[]>(() => {
-		if (registeredColumns.length > 0) {
-			return registeredColumns.map((entry) => entry.column);
-		}
-
-		return columnDefinitions?.length ? columnDefinitions : [];
-	});
+	function getResolvedColumns(): ResolvedColumn<T>[] {
+		return registeredColumns.map((entry) => entry.column);
+	}
 
 	function getColumnValue(item: T, column: ResolvedColumn<T>): ColumnDefValue {
 		if (!(column.id in item)) {
@@ -120,18 +114,18 @@
 		return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
 	}
 
-	const sortedItems = $derived.by(() => {
+	function getSortedItems(columns: ResolvedColumn<T>[]) {
 		const descriptor = sortDescriptor;
 		if (!descriptor) return items;
 
-		const column = resolvedColumns.find((entry) => entry.id === descriptor.column);
+		const column = columns.find((entry) => entry.id === descriptor.column);
 		if (!column) return items;
 
 		const direction = descriptor.direction === 'ascending' ? 1 : -1;
 		return [...items].sort(
 			(a, b) => compareValues(getSortValue(a, column), getSortValue(b, column)) * direction
 		);
-	});
+	}
 
 	function getDefaultDisplayValue(value: ColumnDefValue) {
 		if (value == null || value === '') return '-';
@@ -148,6 +142,12 @@
 </script>
 
 <div class={cx(recipe.container(), className)}>
+	{#if columns}
+		{@render columns({ Column })}
+	{:else if children}
+		{@render children()}
+	{/if}
+
 	<div class="h-full max-h-[inherit] min-h-0 max-w-full overflow-auto">
 		<Table.Root
 			bind:selectedKeys
@@ -156,6 +156,9 @@
 			class={recipe.root()}
 			{...rootProps}
 		>
+			{@const resolvedColumns = getResolvedColumns()}
+			{@const sortedItems = getSortedItems(resolvedColumns)}
+
 			<Table.Header>
 				<Table.Row class={recipe.headerRow()}>
 					{#if showSelection}
@@ -181,11 +184,32 @@
 						</Table.Column>
 					{/if}
 
-					{#if columns}
-						{@render columns({ Column })}
-					{:else if children}
-						{@render children()}
-					{/if}
+					{#each resolvedColumns as column (column.id)}
+						<Table.Column
+							id={column.id}
+							textValue={column.header ?? column.id}
+							isRowHeader={column.isRowHeader}
+							allowsSorting={column.allowsSorting}
+							width={column.width}
+							defaultWidth={column.defaultWidth}
+							minWidth={column.minWidth}
+							maxWidth={column.maxWidth}
+						>
+							<Table.ColumnHeaderCell
+								class={cx(recipe.headerCell(), alignmentClass(column.align))}
+								data-sortable={column.allowsSorting ? 'true' : undefined}
+							>
+								<div class="flex h-full min-w-0 items-center gap-2">
+									<div class="min-w-0 flex-1 truncate">{column.header ?? column.id}</div>
+									{#if column.resizable}
+										<Table.ColumnResizer class={recipe.resizer()}>
+											<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>
+										</Table.ColumnResizer>
+									{/if}
+								</div>
+							</Table.ColumnHeaderCell>
+						</Table.Column>
+					{/each}
 				</Table.Row>
 			</Table.Header>
 

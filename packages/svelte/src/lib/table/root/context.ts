@@ -39,6 +39,68 @@ type ParsedTableColumnWidth = {
 	value: number;
 };
 
+type RelativeColumnWidthAllocation = {
+	columnId: string;
+	index: number;
+	exactWidth: number;
+	width: number;
+	minWidth: number;
+	maxWidth?: number;
+	remainder: number;
+};
+
+export type RoundedWidthDistributionEntry = {
+	columnId: string;
+	index: number;
+	exactWidth: number;
+	width: number;
+	minWidth: number;
+	maxWidth?: number;
+	remainder: number;
+};
+
+export function distributeRoundedWidths(
+	entries: RoundedWidthDistributionEntry[],
+	targetTotal: number
+) {
+	let delta = targetTotal - entries.reduce((total, entry) => total + entry.width, 0);
+	if (delta === 0) return entries;
+
+	const prioritizedEntries = [...entries].sort((left, right) => {
+		if (delta > 0) {
+			if (right.remainder !== left.remainder) return right.remainder - left.remainder;
+			return right.index - left.index;
+		}
+
+		if (left.remainder !== right.remainder) return left.remainder - right.remainder;
+		return left.index - right.index;
+	});
+
+	while (delta !== 0) {
+		let updated = false;
+
+		for (const entry of prioritizedEntries) {
+			if (delta > 0) {
+				if (entry.maxWidth !== undefined && entry.width >= entry.maxWidth) continue;
+				entry.width += 1;
+				delta -= 1;
+				updated = true;
+			} else {
+				if (entry.width <= entry.minWidth) continue;
+				entry.width -= 1;
+				delta += 1;
+				updated = true;
+			}
+
+			if (delta === 0) break;
+		}
+
+		if (!updated) break;
+	}
+
+	return entries;
+}
+
 export type TableGridCoord = {
 	row: number;
 	col: number;
@@ -136,6 +198,7 @@ export type TableContext = {
 	getVisibleColumnWidths: () => Map<string, TableColumnWidth>;
 	getResolvedVisibleColumnWidths: () => Map<string, number>;
 	hasRelativeVisibleColumnWidths: () => boolean;
+	refreshMeasuredLayout: () => void;
 	setColumnWidths: (widths?: Iterable<readonly [string, TableColumnWidth]>) => void;
 	setColumnWidth: (columnId: string, width: number) => void;
 	setHiddenColumns: (columnIds?: Iterable<string>) => void;
@@ -258,7 +321,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		flexibleTailColumnId?: string;
 		flexibleTailRestoreWidth?: TableColumnWidth;
 		baselineWidths: Map<string, number>;
-		baselineTableWidth: number;
+		baselineAvailableTableWidth: number;
 		baselineTotalWidth: number;
 	} | null = null;
 	let suppressNextHeaderClick = false;
@@ -378,6 +441,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		flushSync(() => {
 			widthVersion.update((value) => value + 1);
 		});
+	}
+
+	function refreshMeasuredLayout() {
+		notifyWidthImmediately();
 	}
 
 	function notifyResize() {
@@ -501,7 +568,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return Math.round(width);
 	}
 
-	function clampColumnWidth(columnId: string, width: number) {
+	function getColumnWidthBounds(columnId: string) {
 		const registration = getColumnRegistrationById(columnId);
 		const fixedWidth = parseColumnWidth(registration?.width);
 		const minWidth =
@@ -509,7 +576,15 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			(fixedWidth?.unit === 'px'
 				? Math.min(fixedWidth.value, DEFAULT_TABLE_COLUMN_MIN_WIDTH)
 				: DEFAULT_TABLE_COLUMN_MIN_WIDTH);
-		const maxWidth = registration?.maxWidth;
+
+		return {
+			minWidth,
+			maxWidth: registration?.maxWidth
+		};
+	}
+
+	function clampColumnWidth(columnId: string, width: number) {
+		const { minWidth, maxWidth } = getColumnWidthBounds(columnId);
 		let next = Math.round(width);
 		if (Number.isNaN(next) || !Number.isFinite(next)) {
 			next = minWidth;
@@ -519,6 +594,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			next = Math.min(maxWidth, next);
 		}
 		return next;
+	}
+
+	function resolveRelativeColumnWidthAllocations(
+		entries: Array<{ columnId: string; index: number; exactWidth: number }>,
+		targetTotal: number
+	) {
+		const allocations: RelativeColumnWidthAllocation[] = entries.map((entry) => {
+			const { minWidth, maxWidth } = getColumnWidthBounds(entry.columnId);
+			return {
+				...entry,
+				width: clampColumnWidth(entry.columnId, entry.exactWidth),
+				minWidth,
+				maxWidth,
+				remainder: entry.exactWidth - Math.floor(entry.exactWidth)
+			};
+		});
+
+		return distributeRoundedWidths(allocations, targetTotal);
 	}
 
 	function hasResizableColumns() {
@@ -802,12 +895,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (resolvedVisibleColumnWidthsCache) return resolvedVisibleColumnWidthsCache;
 
 		const widths = new Map<string, number>();
-		const flexibleColumns: Array<{ columnId: string; fr: number }> = [];
+		const flexibleColumns: Array<{ columnId: string; fr: number; index: number }> = [];
+		const relativeColumns: Array<{ columnId: string; index: number; exactWidth: number }> = [];
 		const tableWidth = getMeasuredTableWidth();
-		let remainingWidth = tableWidth;
+		let fixedWidthTotal = 0;
+		let exactRelativeWidthTotal = 0;
 		let totalFr = 0;
 
-		for (const token of getVisibleOrderedColumnTokens()) {
+		for (const [index, token] of getVisibleOrderedColumnTokens().entries()) {
 			const column = columns.get(token);
 			if (!column) continue;
 
@@ -817,34 +912,43 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (parsed.unit === 'px') {
 				const nextWidth = clampColumnWidth(column.id, parsed.value);
 				widths.set(column.id, nextWidth);
-				if (remainingWidth !== undefined) {
-					remainingWidth -= nextWidth;
-				}
+				fixedWidthTotal += nextWidth;
 				continue;
 			}
 
 			if (parsed.unit === '%') {
 				if (tableWidth === undefined) continue;
-				const nextWidth = clampColumnWidth(column.id, (tableWidth * parsed.value) / 100);
-				widths.set(column.id, nextWidth);
-				if (remainingWidth !== undefined) {
-					remainingWidth -= nextWidth;
-				}
+				const exactWidth = (tableWidth * parsed.value) / 100;
+				relativeColumns.push({ columnId: column.id, index, exactWidth });
+				exactRelativeWidthTotal += exactWidth;
 				continue;
 			}
 
-			flexibleColumns.push({ columnId: column.id, fr: parsed.value });
+			flexibleColumns.push({ columnId: column.id, fr: parsed.value, index });
 			totalFr += parsed.value;
 		}
 
 		if (tableWidth !== undefined && flexibleColumns.length > 0 && totalFr > 0) {
-			const distributableWidth = Math.max(remainingWidth ?? tableWidth, 0);
+			const distributableWidth = Math.max(
+				tableWidth - fixedWidthTotal - exactRelativeWidthTotal,
+				0
+			);
 			for (const entry of flexibleColumns) {
-				const nextWidth = clampColumnWidth(
-					entry.columnId,
-					(distributableWidth * entry.fr) / totalFr
-				);
-				widths.set(entry.columnId, nextWidth);
+				relativeColumns.push({
+					columnId: entry.columnId,
+					index: entry.index,
+					exactWidth: (distributableWidth * entry.fr) / totalFr
+				});
+			}
+		}
+
+		if (tableWidth !== undefined && relativeColumns.length > 0) {
+			const targetRelativeTotal = Math.max(tableWidth - fixedWidthTotal, 0);
+			for (const entry of resolveRelativeColumnWidthAllocations(
+				relativeColumns,
+				targetRelativeTotal
+			)) {
+				widths.set(entry.columnId, entry.width);
 			}
 		}
 
@@ -861,6 +965,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return undefined;
 		}
 		return Math.round(width);
+	}
+
+	function getFixedVisibleColumnWidthTotal() {
+		let total = 0;
+
+		for (const token of getVisibleOrderedColumnTokens()) {
+			const column = columns.get(token);
+			if (!column) continue;
+			if (getFixedColumnWidthSpec(column.id) === undefined) continue;
+
+			const measuredWidth = getMeasuredHeaderWidth(token);
+			const resolvedWidth = getColumnWidth(column.id) ?? measuredWidth;
+			if (resolvedWidth === undefined) continue;
+
+			total += clampColumnWidth(column.id, resolvedWidth);
+		}
+
+		return total;
 	}
 
 	function getResizableRelativeTailColumnId(activeColumnId: string) {
@@ -883,6 +1005,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			? normalizeColumnWidth(getEffectiveColumnWidthSpec(preservedFlexibleColumnId))
 			: undefined;
 		const measuredTableWidth = getMeasuredTableWidth();
+		const fixedVisibleColumnWidthTotal = getFixedVisibleColumnWidthTotal();
 
 		for (const token of getVisibleOrderedColumnTokens()) {
 			const column = columns.get(token);
@@ -929,7 +1052,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 					? preservedFlexibleEffectiveWidth
 					: undefined,
 			baselineWidths,
-			baselineTableWidth: measuredTableWidth ?? baselineTotalWidth,
+			baselineAvailableTableWidth:
+				measuredTableWidth !== undefined
+					? Math.max(measuredTableWidth - fixedVisibleColumnWidthTotal, 0)
+					: baselineTotalWidth,
 			baselineTotalWidth
 		};
 		options.onColumnWidthsChange?.(getColumnWidths());
@@ -981,7 +1107,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (baselineActiveWidth !== undefined && baselineTailWidth !== undefined) {
 				const widthDelta = nextWidth - baselineActiveWidth;
 				const overflowWidth = Math.max(
-					resizeSession.baselineTotalWidth - resizeSession.baselineTableWidth,
+					resizeSession.baselineTotalWidth - resizeSession.baselineAvailableTableWidth,
 					0
 				);
 				const tailTargetWidth =
@@ -2296,6 +2422,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getVisibleColumnWidths,
 		getResolvedVisibleColumnWidths,
 		hasRelativeVisibleColumnWidths,
+		refreshMeasuredLayout,
 		setColumnWidths,
 		setColumnWidth,
 		setHiddenColumns,

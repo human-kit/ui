@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
-	import ReproTable from '$lib/repros/purchase-requests/table.svelte';
+	import ReproTable from '$lib/repros/purchase-requests/index';
+	import type { CellRenderContext } from '$lib/repros/purchase-requests/types';
 
 	type PurchaseRequest = {
 		id: string;
@@ -69,27 +70,31 @@
 		selectionMode="multiple"
 		bind:selectedKeys={selectedPurchaseRequestIds}
 	>
-		{#snippet columns({ Column })}
-			<Column
-				id="requestNumber"
-				header="Request"
-				isRowHeader
-				allowsSorting
-				resizable
-				defaultWidth={350}
-			/>
-			<Column id="requester" header="Requester" allowsSorting resizable />
-			<Column id="area" header="Area" allowsSorting resizable />
-			<Column id="status" header="Status" allowsSorting resizable />
-			<Column id="priority" header="Priority" allowsSorting resizable />
-			<Column id="total" header="Total" align="right" allowsSorting sort={(item) => item.total}>
-				{#snippet cell(cellContext)}
-					<div class="flex w-full justify-end">
-						<span>${cellContext.item.total.toLocaleString()}</span>
-					</div>
-				{/snippet}
-			</Column>
-		{/snippet}
+		<ReproTable.Column
+			id="requestNumber"
+			header="Request"
+			isRowHeader
+			allowsSorting
+			resizable
+			defaultWidth={350}
+		/>
+		<ReproTable.Column id="requester" header="Requester" allowsSorting resizable />
+		<ReproTable.Column id="area" header="Area" allowsSorting resizable />
+		<ReproTable.Column id="status" header="Status" allowsSorting resizable />
+		<ReproTable.Column id="priority" header="Priority" allowsSorting resizable />
+		<ReproTable.Column
+			id="total"
+			header="Total"
+			align="right"
+			allowsSorting
+			sort={(item: PurchaseRequest) => item.total}
+		>
+			{#snippet cell(cellContext: CellRenderContext<PurchaseRequest>)}
+				<div class="flex w-full justify-end">
+					<span>${cellContext.item.total.toLocaleString()}</span>
+				</div>
+			{/snippet}
+		</ReproTable.Column>
 	</ReproTable>
 
 	{#snippet controls()}

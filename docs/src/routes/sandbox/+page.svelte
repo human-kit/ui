@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ReproTable from '$lib/repros/purchase-requests/table.svelte';
-	import type { ResolvedColumn } from '$lib/repros/purchase-requests/types';
+	import ReproTable from '$lib/repros/purchase-requests/index';
+	import type { CellRenderContext } from '$lib/repros/purchase-requests/types';
 
 	type PurchaseRequest = {
 		id: string;
@@ -51,53 +51,6 @@
 		};
 	});
 
-	const columnDefinitions: ResolvedColumn<PurchaseRequest>[] = [
-		{
-			id: 'requestNumber',
-			header: 'Request',
-			isRowHeader: true,
-			allowsSorting: true,
-			resizable: true,
-			defaultWidth: 350,
-			align: 'left'
-		},
-		{
-			id: 'requester',
-			header: 'Requester',
-			allowsSorting: true,
-			resizable: true,
-			align: 'left'
-		},
-		{
-			id: 'area',
-			header: 'Area',
-			allowsSorting: true,
-			resizable: true,
-			align: 'left'
-		},
-		{
-			id: 'status',
-			header: 'Status',
-			allowsSorting: true,
-			resizable: true,
-			align: 'left'
-		},
-		{
-			id: 'priority',
-			header: 'Priority',
-			allowsSorting: true,
-			resizable: true,
-			align: 'left'
-		},
-		{
-			id: 'total',
-			header: 'Total',
-			allowsSorting: true,
-			sort: (item) => item.total,
-			align: 'right'
-		}
-	];
-
 	let selectedPurchaseRequestIds = $state<Array<string | number>>([
 		purchaseRequests[0].id,
 		purchaseRequests[3].id,
@@ -122,31 +75,34 @@
 	<ReproTable
 		aria-label="Purchase requests"
 		items={purchaseRequests}
-		{columnDefinitions}
 		class="max-h-[calc(100vh-140px)] w-full"
 		selectionMode="multiple"
 		bind:selectedKeys={selectedPurchaseRequestIds}
 	>
-		{#snippet columns({ Column })}
-			<Column
-				id="requestNumber"
-				header="Request"
-				isRowHeader
-				allowsSorting
-				resizable
-				defaultWidth={350}
-			/>
-			<Column id="requester" header="Requester" allowsSorting resizable />
-			<Column id="area" header="Area" allowsSorting resizable />
-			<Column id="status" header="Status" allowsSorting resizable />
-			<Column id="priority" header="Priority" allowsSorting resizable />
-			<Column id="total" header="Total" align="right" allowsSorting sort={(item) => item.total}>
-				{#snippet cell(cellContext)}
-					<div class="flex w-full justify-end">
-						<span>${cellContext.item.total.toLocaleString()}</span>
-					</div>
-				{/snippet}
-			</Column>
-		{/snippet}
+		<ReproTable.Column
+			id="requestNumber"
+			header="Request"
+			isRowHeader
+			allowsSorting
+			resizable
+			defaultWidth={350}
+		/>
+		<ReproTable.Column id="requester" header="Requester" allowsSorting resizable />
+		<ReproTable.Column id="area" header="Area" allowsSorting resizable />
+		<ReproTable.Column id="status" header="Status" allowsSorting resizable />
+		<ReproTable.Column id="priority" header="Priority" allowsSorting resizable />
+		<ReproTable.Column
+			id="total"
+			header="Total"
+			align="right"
+			allowsSorting
+			sort={(item: PurchaseRequest) => item.total}
+		>
+			{#snippet cell(cellContext: CellRenderContext<PurchaseRequest>)}
+				<div class="flex w-full justify-end">
+					<span>${cellContext.item.total.toLocaleString()}</span>
+				</div>
+			{/snippet}
+		</ReproTable.Column>
 	</ReproTable>
 </div>
