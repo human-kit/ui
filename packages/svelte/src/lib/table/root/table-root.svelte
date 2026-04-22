@@ -309,8 +309,8 @@
 		const resizeObserver =
 			typeof ResizeObserver !== 'undefined'
 				? new ResizeObserver(() => {
-					refreshMeasuredLayout();
-				})
+						refreshMeasuredLayout();
+					})
 				: null;
 
 		resizeObserver?.observe(resizeTarget);
