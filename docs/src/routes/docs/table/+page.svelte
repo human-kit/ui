@@ -2,6 +2,7 @@
 	import BehaviorNotesTable from './behavior-notes-table.svelte';
 	import DisabledBehaviorTable from './disabled-behavior-table.svelte';
 	import FixedWidthContractTable from './fixed-width-contract-table.svelte';
+	import ItemsColumnsTable from './items-columns-table.svelte';
 	import ColumnVisibilityTable from './column-visibility-table.svelte';
 	import FilteringTable from './filtering-table.svelte';
 	import InteractiveTable from './interactive-table.svelte';
@@ -24,6 +25,7 @@
 
 		<div class="space-y-8">
 			<InteractiveTable />
+			<ItemsColumnsTable />
 			<FixedWidthContractTable />
 			<PurchaseRequestsReproTable />
 			<RowActionsToggleTable />

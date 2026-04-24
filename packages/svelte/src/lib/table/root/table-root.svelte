@@ -210,6 +210,20 @@
 		return columns;
 	});
 
+	const minimumTableWidth = $derived.by(() => {
+		if (!hasResizable && !ctx.hasRelativeVisibleColumnWidths()) return undefined;
+
+		let total = 0;
+		let hasMinimumWidth = false;
+		for (const column of layoutColumns) {
+			if (column.minWidth === undefined) continue;
+			total += column.minWidth;
+			hasMinimumWidth = true;
+		}
+
+		return hasMinimumWidth ? total : undefined;
+	});
+
 	const explicitManagedTableWidth = $derived.by(() => {
 		void $layoutVersion;
 		if (ctx.hasRelativeVisibleColumnWidths()) return undefined;
@@ -302,6 +316,8 @@
 		const refreshMeasuredLayout = () => {
 			ctx.refreshMeasuredLayout();
 		};
+
+		refreshMeasuredLayout();
 
 		window.addEventListener('resize', refreshMeasuredLayout);
 		window.visualViewport?.addEventListener('resize', refreshMeasuredLayout);
@@ -475,7 +491,11 @@
 	style:width={resolvedTableWidth !== undefined
 		? `${resolvedTableWidth}px`
 		: fallbackRelativeTableWidth}
-	style:min-width={resolvedTableWidth !== undefined ? '0' : undefined}
+	style:min-width={minimumTableWidth !== undefined
+		? `${minimumTableWidth}px`
+		: resolvedTableWidth !== undefined
+			? '0'
+			: undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-colcount={ariaColCount}

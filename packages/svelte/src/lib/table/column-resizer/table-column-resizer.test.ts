@@ -5,6 +5,7 @@ import { distributeRoundedWidths, type TableColumnWidth } from '../root/context'
 import ColumnResizerTest from './table-column-resizer-test.svelte';
 import ColumnResizerFixedWidthTest from './table-column-resizer-fixed-width-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';
+import ColumnResizerNarrowMinWidthTest from './table-column-resizer-narrow-min-width-test.svelte';
 import ColumnResizerOverflowTest from './table-column-resizer-overflow-test.svelte';
 import ColumnResizerPaddedContainerTest from './table-column-resizer-padded-container-test.svelte';
 import ColumnResizerSandboxOverflowTest from './table-column-resizer-sandbox-overflow-test.svelte';
@@ -44,6 +45,12 @@ function readPaddedRelativeWidths() {
 function readSandboxOverflowWidths() {
 	const text =
 		document.querySelector('[data-testid="sandbox-overflow-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as ColumnWidthState;
+}
+
+function readNarrowMinWidthWidths() {
+	const text =
+		document.querySelector('[data-testid="narrow-min-width-widths"]')?.textContent ?? '{}';
 	return JSON.parse(text) as ColumnWidthState;
 }
 
@@ -550,6 +557,50 @@ describe('Table.ColumnResizer', () => {
 		} finally {
 			Reflect.deleteProperty(container, 'clientWidth');
 		}
+	});
+
+	it('enforces min widths on narrow relative tables before any drag interaction', async () => {
+		render(ColumnResizerNarrowMinWidthTest);
+		const container = document.querySelector<HTMLElement>(
+			'[data-testid="narrow-min-width-container"]'
+		)!;
+		const table = document.querySelector<HTMLTableElement>('table[role="grid"]')!;
+		const requestHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="narrow-request-header-cell"]'
+		)!;
+		const requesterHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="narrow-requester-header-cell"]'
+		)!;
+		const areaHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="narrow-area-header-cell"]'
+		)!;
+		const statusHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="narrow-status-header-cell"]'
+		)!;
+		const totalHeaderCell = document.querySelector<HTMLElement>(
+			'[data-testid="narrow-total-header-cell"]'
+		)!;
+
+		await expect.poll(() => table.style.minWidth).toBe('395px');
+		await expect
+			.poll(() => Math.round(requestHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(75);
+		await expect
+			.poll(() => Math.round(requesterHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(140);
+		await expect
+			.poll(() => Math.round(areaHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(60);
+		await expect
+			.poll(() => Math.round(statusHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(60);
+		await expect
+			.poll(() => Math.round(totalHeaderCell.getBoundingClientRect().width))
+			.toBeGreaterThanOrEqual(60);
+		await expect
+			.poll(() => Math.round(table.getBoundingClientRect().width))
+			.toBeGreaterThan(Math.round(container.getBoundingClientRect().width));
+		expect(readNarrowMinWidthWidths()).toEqual({});
 	});
 
 	it('recomputes the restored flexible tail on resize after a prior drag session', async () => {

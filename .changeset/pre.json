@@ -1,34 +1,34 @@
 {
-  "mode": "pre",
-  "tag": "alpha",
-  "initialVersions": {
-    "@human-kit/svelte-components": "1.0.0-alpha.0"
-  },
-  "changesets": [
-    "blue-camels-cough",
-    "bright-apples-wheel",
-    "brown-countries-applaud",
-    "calm-tools-fix",
-    "curvy-eggs-fold",
-    "flat-guests-tickle",
-    "fresh-buttons-arrive",
-    "gentle-plants-rest",
-    "green-bears-visit",
-    "initial-release",
-    "kind-paths-judge",
-    "late-dingos-splash",
-    "olive-tips-promise",
-    "orange-otters-jump",
-    "polite-hotels-knock",
-    "rare-candles-care",
-    "short-bottles-smile",
-    "silent-geese-teach",
-    "six-pens-think",
-    "smooth-seals-drive",
-    "solid-input-basics",
-    "stale-pets-cheer",
-    "strong-cars-smell",
-    "tame-schools-share",
-    "tidy-planes-repair"
-  ]
+	"mode": "pre",
+	"tag": "alpha",
+	"initialVersions": {
+		"@human-kit/svelte-components": "1.0.0-alpha.0"
+	},
+	"changesets": [
+		"blue-camels-cough",
+		"bright-apples-wheel",
+		"brown-countries-applaud",
+		"calm-tools-fix",
+		"curvy-eggs-fold",
+		"flat-guests-tickle",
+		"fresh-buttons-arrive",
+		"gentle-plants-rest",
+		"green-bears-visit",
+		"initial-release",
+		"kind-paths-judge",
+		"late-dingos-splash",
+		"olive-tips-promise",
+		"orange-otters-jump",
+		"polite-hotels-knock",
+		"rare-candles-care",
+		"short-bottles-smile",
+		"silent-geese-teach",
+		"six-pens-think",
+		"smooth-seals-drive",
+		"solid-input-basics",
+		"stale-pets-cheer",
+		"strong-cars-smell",
+		"tame-schools-share",
+		"tidy-planes-repair"
+	]
 }

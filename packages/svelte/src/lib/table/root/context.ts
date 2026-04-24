@@ -497,7 +497,16 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnMinWidth(columnId: string) {
-		return getColumnRegistrationById(columnId)?.minWidth;
+		const registration = getColumnRegistrationById(columnId);
+		if (!registration) return undefined;
+		if (registration.minWidth !== undefined) return registration.minWidth;
+		if (
+			!isColumnResizable(columnId) &&
+			!isRelativeColumnWidth(getEffectiveColumnWidthSpec(columnId))
+		) {
+			return undefined;
+		}
+		return getColumnWidthBounds(columnId).minWidth;
 	}
 
 	function getColumnMaxWidth(columnId: string) {
@@ -811,6 +820,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		let fixedPxTotal = 0;
 		let percentTotal = 0;
 		let totalFr = 0;
+		const resolvedVisibleWidths = getResolvedVisibleColumnWidths();
+		const tableWidth = getMeasuredTableWidth();
 		for (const token of getVisibleOrderedColumnTokens()) {
 			const column = columns.get(token);
 			if (!column) continue;
@@ -841,6 +852,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			availableWidthTerms.length === 1
 				? availableWidthTerms[0]
 				: `(${availableWidthTerms.join(' - ')})`;
+		if (tableWidth !== undefined) {
+			const targetRelativeTotal = Math.max(tableWidth - fixedPxTotal, 0);
+			let actualRelativeTotal = 0;
+			for (const token of getVisibleOrderedColumnTokens()) {
+				const column = columns.get(token);
+				if (!column) continue;
+				const spec = parseColumnWidth(getEffectiveColumnWidthSpec(column.id));
+				if (!spec || spec.unit === 'px') continue;
+				actualRelativeTotal += resolvedVisibleWidths.get(column.id) ?? 0;
+			}
+			if (Math.abs(actualRelativeTotal - targetRelativeTotal) > 1) {
+				const constrainedWidth = resolvedVisibleWidths.get(columnId);
+				if (constrainedWidth !== undefined) {
+					return `${constrainedWidth}px`;
+				}
+			}
+		}
 		if (frShare === 1) {
 			return `calc(${availableWidthExpression})`;
 		}
@@ -1603,6 +1631,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			cellOrder.push(cell.key);
 		}
 		notifyLayout();
+		notifyWidth();
 	}
 
 	function unregisterCell(key: string) {
@@ -1616,6 +1645,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			notifyFocus();
 		}
 		notifyLayout();
+		notifyWidth();
 	}
 
 	function isCellFocused(key: string) {
