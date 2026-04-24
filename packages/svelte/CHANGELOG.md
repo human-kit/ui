@@ -1,5 +1,11 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.19
+
+### Patch Changes
+
+- [#49](https://github.com/Agustin-Delgado/svelte-components/pull/49) [`db8c1ce`](https://github.com/Agustin-Delgado/svelte-components/commit/db8c1ce376864d6ab6d7b298f3a80279fd2b7413) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix `Table` minimum width calculations so relative and resizable columns preserve measured minimum widths more reliably during layout and resize updates.
+
 ## 1.0.0-alpha.18
 
 ### Patch Changes
