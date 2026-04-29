@@ -83,19 +83,17 @@
 			id="requestNumber"
 			header="Request"
 			isRowHeader
-			allowsSorting
 			resizable
 			defaultWidth={350}
 		/>
-		<ReproTable.Column id="requester" header="Requester" allowsSorting resizable />
-		<ReproTable.Column id="area" header="Area" allowsSorting resizable />
-		<ReproTable.Column id="status" header="Status" allowsSorting resizable />
-		<ReproTable.Column id="priority" header="Priority" allowsSorting resizable />
+		<ReproTable.Column id="requester" header="Requester" resizable />
+		<ReproTable.Column id="area" header="Area" resizable />
+		<ReproTable.Column id="status" header="Status" resizable />
+		<ReproTable.Column id="priority" header="Priority" resizable />
 		<ReproTable.Column
 			id="total"
 			header="Total"
 			align="right"
-			allowsSorting
 			sort={(item: PurchaseRequest) => item.total}
 		>
 			{#snippet cell(cellContext: CellRenderContext<PurchaseRequest>)}

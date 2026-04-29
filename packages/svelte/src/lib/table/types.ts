@@ -8,12 +8,12 @@ import type {
 	TableSelectionBehavior,
 	TableSelectionKey,
 	TableSelectionMode,
+	TableSortDirection,
 	TableSortDescriptor
 } from './root/context.js';
 
 export type TableColumnProps = {
 	id: string;
-	allowsSorting?: boolean;
 	isRowHeader?: boolean;
 	textValue?: string;
 	width?: TableColumnWidth;
@@ -76,6 +76,14 @@ export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children'
 export type TableColumnHeaderCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
 	children?: Snippet;
 	class?: string;
+};
+
+export type TableSortTriggerRenderState = {
+	sortDirection: TableSortDirection | undefined;
+};
+
+export type TableSortTriggerProps = {
+	children?: Snippet<[TableSortTriggerRenderState]> | Snippet;
 };
 
 export type TableColumnResizerProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {

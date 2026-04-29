@@ -4,9 +4,9 @@
 
 ## Description
 
-`Table` is a headless interactive table primitive with grid-style keyboard navigation, row selection, sortable column headers, and a composable part-based API.
+`Table` is a headless interactive table primitive with grid-style keyboard navigation, row selection, explicit sortable header triggers, and a composable part-based API.
 
-All public Table part prop types are exported from the table barrel, including `TableRootProps`, `TableColumnProps`, `TableHeaderProps`, `TableBodyProps`, `TableFooterProps`, `TableRowProps`, `TableColumnHeaderCellProps`, `TableColumnResizerProps`, `TableCellProps`, `TableEmptyStateProps`, `TableCheckboxProps`, and `TableCheckboxIndicatorProps`.
+All public Table part prop types are exported from the table barrel, including `TableRootProps`, `TableColumnProps`, `TableHeaderProps`, `TableBodyProps`, `TableFooterProps`, `TableRowProps`, `TableColumnHeaderCellProps`, `TableSortTriggerProps`, `TableColumnResizerProps`, `TableCellProps`, `TableEmptyStateProps`, `TableCheckboxProps`, and `TableCheckboxIndicatorProps`.
 
 ## Anatomy
 
@@ -26,8 +26,19 @@ All public Table part prop types are exported from the table barrel, including `
 			<Table.Column id="email" isRowHeader>
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="group" allowsSorting>
-				<Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
+			<Table.Column id="group">
+				<Table.ColumnHeaderCell>
+					<Table.SortTrigger>
+						{#snippet children({ sortDirection })}
+							<button
+								type="button"
+								aria-label={`Group sort button. ${sortDirection ?? 'not sorted'}.`}
+							>
+								Sort group
+							</button>
+						{/snippet}
+					</Table.SortTrigger>
+				</Table.ColumnHeaderCell>
 			</Table.Column>
 			<Table.Column id="size" minWidth={120}>
 				<Table.ColumnHeaderCell>
@@ -71,6 +82,7 @@ All public Table part prop types are exported from the table barrel, including `
 - `Table.Footer`
 - `Table.Row`
 - `Table.ColumnHeaderCell`
+- `Table.SortTrigger`
 - `Table.ColumnResizer`
 - `Table.Checkbox`
 - `Table.CheckboxIndicator`
@@ -112,7 +124,8 @@ All public Table part prop types are exported from the table barrel, including `
 
 - DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
 - Metadata-only part: `Table.Column` does not render its own element. It only registers the public column input for the surrounding header composition.
-- Sorting: `Table.Column.allowsSorting` declares that a column participates in sorting, and `Table.ColumnHeaderCell` is the interactive header cell that toggles the sort state.
+- Sorting: `Table.SortTrigger` is the public opt-in for sortable columns. Rendering it inside `Table.ColumnHeaderCell` makes the owning `Table.Column` sortable and toggles `Table.Root.sortDescriptor`.
+- `Table.SortTrigger.children` can consume a `sortDirection` render state so the nested button can expose stateful labels or visuals without reading the root descriptor directly.
 - Resizing: `Table.ColumnResizer` is the only public opt-in for resizing. Rendering it inside a `Table.ColumnHeaderCell` enables resizing for the owning `Table.Column`.
 - Public input types: import the `Table*Props` types you need from `@human-kit/svelte-components/table` or the main package barrel instead of deriving contracts from component internals.
 - Internal normalized state: table context stores normalized column metadata internally as `TableColumnMetadata`. That metadata is not the public input contract for wrappers or consumers.
@@ -125,5 +138,6 @@ All public Table part prop types are exported from the table barrel, including `
 - `Table.Checkbox` can receive DOM focus directly while still participating in the table's roving-focus grid.
 - First-column body cells become `rowheader` when their associated column has `isRowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
+- `Table.SortTrigger` wires a nested trigger button, while the header cell remains the roving-focus target for arrow-key grid navigation.
 - Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.
 - Column resize handles are keyboard accessible separators. Press `Enter` to enter resize mode, use the horizontal arrow keys to resize, `Home` to jump to the minimum width, `End` to auto-fit to content width, and press `Enter` again to exit resize mode while keeping focus on the handle.

@@ -117,8 +117,20 @@
 			<Table.Column id="email" isRowHeader textValue="Email">
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="group" allowsSorting textValue="Group">
-				<Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
+			<Table.Column id="group" textValue="Group">
+				<Table.ColumnHeaderCell>
+					<Table.SortTrigger>
+						{#snippet children({ sortDirection })}
+							<button
+								type="button"
+								data-testid="group-sort-trigger"
+								data-sort-direction-state={sortDirection ?? 'none'}
+							>
+								Group
+							</button>
+						{/snippet}
+					</Table.SortTrigger>
+				</Table.ColumnHeaderCell>
 			</Table.Column>
 		</Table.Row>
 	</Table.Header>

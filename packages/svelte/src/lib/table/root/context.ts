@@ -111,7 +111,6 @@ export type TableRowFocusEdge = 'start' | 'end';
 type TableColumnMetadata = {
 	token: string;
 	id: string;
-	allowsSorting: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
 	width?: TableColumnWidth;
@@ -192,6 +191,8 @@ export type TableContext = {
 	hasAuthoredColumnWidthSpec: (columnId: string) => boolean;
 	getColumnMinWidth: (columnId: string) => number | undefined;
 	getColumnMaxWidth: (columnId: string) => number | undefined;
+	registerColumnSortTrigger: (columnToken: string) => void;
+	unregisterColumnSortTrigger: (columnToken: string) => void;
 	isColumnHidden: (columnId: string) => boolean;
 	isColumnResizable: (columnId: string) => boolean;
 	getColumnWidths: () => Map<string, TableColumnWidth>;
@@ -283,7 +284,6 @@ export type TableRowContext = {
 export type TableColumnContext = {
 	token: string;
 	id: string;
-	allowsSorting: boolean;
 	isHidden: boolean;
 	isRowHeader: boolean;
 	textValue?: string;
@@ -329,6 +329,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const columns = new Map<string, TableColumnMetadata>();
 	const columnIds = new Map<string, string>();
 	const columnOrder: string[] = [];
+	const columnsWithSortTriggers = new Set<string>();
 	const columnsWithResizers = new Set<string>();
 	let resizerLayoutReady = false;
 	const columnWidths = new Map<string, TableColumnWidth>(options.initialColumnWidths ?? []);
@@ -361,6 +362,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const resizeVersion = writable(0);
 	const instanceCounters = new Map<string, number>();
 	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
+	setSelectedKeys(new Set(selectedKeys), selectionAnchorKey);
 
 	function createInstanceToken(prefix: string) {
 		const nextCount = (instanceCounters.get(prefix) ?? 0) + 1;
@@ -659,7 +661,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return (
 			left.token === right.token &&
 			left.id === right.id &&
-			left.allowsSorting === right.allowsSorting &&
 			left.isRowHeader === right.isRowHeader &&
 			left.textValue === right.textValue &&
 			left.width === right.width &&
@@ -712,11 +713,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			columnIds.delete(column.id);
 		}
 		columns.delete(token);
+		columnsWithSortTriggers.delete(token);
 		columnsWithResizers.delete(token);
 		const index = columnOrder.indexOf(token);
 		if (index >= 0) {
 			columnOrder.splice(index, 1);
 		}
+		notifyLayout();
+	}
+
+	function registerColumnSortTrigger(columnToken: string) {
+		if (columnsWithSortTriggers.has(columnToken)) return;
+		columnsWithSortTriggers.add(columnToken);
+		notifyLayout();
+	}
+
+	function unregisterColumnSortTrigger(columnToken: string) {
+		if (!columnsWithSortTriggers.delete(columnToken)) return;
 		notifyLayout();
 	}
 
@@ -2375,7 +2388,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function isColumnSortable(columnId: string) {
-		return getColumnRegistrationById(columnId)?.allowsSorting ?? false;
+		const token = columnIds.get(columnId);
+		return token ? columnsWithSortTriggers.has(token) : false;
 	}
 
 	function toggleSort(columnId: string) {
@@ -2433,6 +2447,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		},
 		registerColumn,
 		unregisterColumn,
+		registerColumnSortTrigger,
+		unregisterColumnSortTrigger,
 		registerColumnResizer,
 		unregisterColumnResizer,
 		getColumnCount,
