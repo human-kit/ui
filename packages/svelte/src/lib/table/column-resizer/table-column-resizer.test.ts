@@ -369,7 +369,9 @@ describe('Table.ColumnResizer', () => {
 		render(ColumnResizerTest);
 		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
 		const groupHeader = groupResizer.closest('th') as HTMLElement;
-		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
 
 		groupResizer.dispatchEvent(
 			new PointerEvent('pointerdown', {

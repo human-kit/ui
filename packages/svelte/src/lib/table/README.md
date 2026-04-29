@@ -30,7 +30,10 @@ All public Table part prop types are exported from the table barrel, including `
 				<Table.ColumnHeaderCell>
 					<Table.SortTrigger>
 						{#snippet children({ sortDirection })}
-							<button type="button" aria-label={`Group sort button. ${sortDirection ?? 'not sorted'}.`}>
+							<button
+								type="button"
+								aria-label={`Group sort button. ${sortDirection ?? 'not sorted'}.`}
+							>
 								Sort group
 							</button>
 						{/snippet}

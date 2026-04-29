@@ -146,7 +146,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
 		try {
 			render(TableTest, {
@@ -721,7 +721,9 @@ describe('Table.Root', () => {
 
 	it('ignores repeated Space keydown when toggling sorting', async () => {
 		render(TableTest);
-		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
 
 		groupSortTrigger.focus();
 		await userEvent.keyboard(' ');
@@ -742,7 +744,9 @@ describe('Table.Root', () => {
 
 	it('toggles sorting from a sortable header cell', async () => {
 		render(TableTest);
-		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
 
 		await groupSortTrigger.click();
 		await expect
@@ -792,7 +796,9 @@ describe('Table.Root', () => {
 
 	it('announces sort changes through a polite live region', async () => {
 		render(TableTest);
-		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
 
 		await groupSortTrigger.click();
 		await expect
@@ -840,7 +846,9 @@ describe('Table.Root', () => {
 
 	it('cycles keyboard sorting between ascending and descending without a clear state', async () => {
 		render(TableTest);
-		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
 
 		groupSortTrigger.focus();
 		await userEvent.keyboard('{Enter}');
@@ -863,7 +871,9 @@ describe('Table.Root', () => {
 		render(TableTest);
 		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
 		const [, groupHeader] = getHeaderCells(grid);
-		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
 
 		await groupSortTrigger.click();
 		await groupSortTrigger.click();

@@ -11,8 +11,8 @@ Description: Headless wrapper that makes the owning `Table.Column` sortable. It 
 
 Public prop type: `TableSortTriggerProps`
 
-| Prop       | Type      | Default     | Description                                                              |
-| ---------- | --------- | ----------- | ------------------------------------------------------------------------ |
+| Prop       | Type                                                | Default     | Description                                                                                                                |
+| ---------- | --------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `children` | `Snippet<[TableSortTriggerRenderState]> \| Snippet` | `undefined` | Child content that includes the actual trigger button or role=button UI. The snippet receives the current `sortDirection`. |
 
 ## Usage notes
@@ -27,19 +27,19 @@ Public prop type: `TableSortTriggerProps`
 
 ```svelte
 <Table.Column id="group" textValue="Group">
- <Table.ColumnHeaderCell>
-    <Table.SortTrigger>
-     {#snippet children({ sortDirection })}
-      <button
-       type="button"
-       class="inline-flex items-center gap-2 rounded-sm"
-       aria-label={`Group sort button. ${sortDirection ?? 'not sorted'}.`}
-      >
-       <span>Sort group</span>
-       <SortIcon data-direction={sortDirection} />
-      </button>
-     {/snippet}
-    </Table.SortTrigger>
- </Table.ColumnHeaderCell>
+	<Table.ColumnHeaderCell>
+		<Table.SortTrigger>
+			{#snippet children({ sortDirection })}
+				<button
+					type="button"
+					class="inline-flex items-center gap-2 rounded-sm"
+					aria-label={`Group sort button. ${sortDirection ?? 'not sorted'}.`}
+				>
+					<span>Sort group</span>
+					<SortIcon data-direction={sortDirection} />
+				</button>
+			{/snippet}
+		</Table.SortTrigger>
+	</Table.ColumnHeaderCell>
 </Table.Column>
 ```
