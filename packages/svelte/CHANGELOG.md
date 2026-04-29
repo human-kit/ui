@@ -1,5 +1,13 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.20
+
+### Minor Changes
+
+- [#51](https://github.com/Agustin-Delgado/svelte-components/pull/51) [`f96b102`](https://github.com/Agustin-Delgado/svelte-components/commit/f96b102f3c50e2401f695c92abd59788ec723f70) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Replace implicit table header sorting with an explicit `Table.SortTrigger` part. `Table.Column` no longer accepts `allowsSorting`; columns become sortable by composing `Table.SortTrigger` inside `Table.ColumnHeaderCell`.
+
+  This change prevents nested header actions like filter popovers from triggering sort through click bubbling and lets sortable headers take DOM focus directly through the trigger while keeping the table grid navigation contract.
+
 ## 1.0.0-alpha.19
 
 ### Patch Changes
