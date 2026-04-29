@@ -109,6 +109,11 @@
 		void $layoutVersion;
 		return table.getVisibleColumnIndexByToken(column.token);
 	});
+	const isSortable = $derived.by(() => {
+		void $layoutVersion;
+		void $sortVersion;
+		return table.isColumnSortable(column.id);
+	});
 	const headerTabIndex = $derived.by(() => {
 		if (isHidden || focusDelegate) return undefined;
 		return table.isCellTabStop(key) ? 0 : -1;
@@ -173,12 +178,7 @@
 
 	function handleClick() {
 		table.focusCellByKey(key);
-		if (table.consumeHeaderClickSuppression()) {
-			return;
-		}
-		if (column.allowsSorting) {
-			table.toggleSort(column.id);
-		}
+		table.consumeHeaderClickSuppression();
 	}
 
 	function handleMouseDown(event: MouseEvent) {
@@ -230,13 +230,6 @@
 				event.preventDefault();
 				table.moveToRowEnd();
 				return;
-			case 'Enter':
-			case ' ':
-				if (!column.allowsSorting) return;
-				event.preventDefault();
-				if (event.repeat) return;
-				table.toggleSort(column.id);
-				return;
 		}
 	}
 </script>
@@ -248,12 +241,12 @@
 	tabindex={headerTabIndex}
 	aria-colindex={!isHidden && visibleColumnIndex >= 0 ? visibleColumnIndex + 1 : undefined}
 	aria-hidden={isHidden ? true : undefined}
-	aria-sort={column.allowsSorting ? (sortDirection ?? 'none') : undefined}
+	aria-sort={isSortable ? (sortDirection ?? 'none') : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-focus-within={isFocusWithin ? 'true' : undefined}
 	data-focus-visible-within={isFocusVisibleWithin ? 'true' : undefined}
-	data-sortable={column.allowsSorting || undefined}
+	data-sortable={isSortable || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
 	style:box-sizing="border-box"

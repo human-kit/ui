@@ -38,6 +38,21 @@ describe('Popover.Trigger', () => {
 			const triggerEl = document.querySelector('button[aria-haspopup="dialog"]');
 			expect(triggerEl?.getAttribute('aria-expanded')).toBe('true');
 		});
+
+		it('keeps data-pressed on the active trigger while the popover is open', async () => {
+			const screen = render(PopoverTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const triggerEl = document.querySelector('button[aria-haspopup="dialog"]');
+			expect(triggerEl?.getAttribute('data-pressed')).toBe('true');
+
+			(triggerEl as HTMLButtonElement | null)?.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			expect(triggerEl?.hasAttribute('data-pressed')).toBe(false);
+		});
 	});
 
 	describe('Interaction', () => {

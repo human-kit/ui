@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
+	import { Popover } from '@human-kit/svelte-components/popover';
 	import { Table } from '@human-kit/svelte-components/table';
 	import type {
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode,
-		TableSortDescriptor
+		TableSortDescriptor,
+		TableSortTriggerRenderState
 	} from '@human-kit/svelte-components/table';
 	import {
 		disabledUserIds,
@@ -19,6 +21,7 @@
 	let selectionBehavior = $state<TableSelectionBehavior>('toggle');
 	let sortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
 	let resizingColumnId = $state<string | null>(null);
+	let emailFilterOpen = $state(false);
 	let hiddenColumns = $state<string[]>([]);
 	let columnWidths = $state<Map<string, number> | undefined>(
 		new Map([
@@ -68,11 +71,65 @@
 				) * direction
 		);
 	});
+
+	function getSortButtonClass(sortDirection: TableSortTriggerRenderState['sortDirection']) {
+		const baseClass =
+			'inline-flex h-8 shrink-0 items-center gap-2 rounded-md border px-2.5 font-mono text-[11px] font-semibold tracking-[0.18em] uppercase transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
+
+		if (sortDirection === 'ascending') {
+			return `${baseClass} border-emerald-300 bg-emerald-50 text-emerald-800 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.08)] hover:border-emerald-400 hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-200 dark:hover:border-emerald-400/60 dark:hover:bg-emerald-950/60`;
+		}
+
+		if (sortDirection === 'descending') {
+			return `${baseClass} border-amber-300 bg-amber-50 text-amber-800 shadow-[inset_0_0_0_1px_rgba(245,158,11,0.08)] hover:border-amber-400 hover:bg-amber-100 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:border-amber-400/60 dark:hover:bg-amber-950/60`;
+		}
+
+		return `${baseClass} border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-blue-500/50 dark:hover:text-blue-300`;
+	}
+
+	function getSortTriggerStatus(sortDirection: TableSortTriggerRenderState['sortDirection']) {
+		if (sortDirection === 'ascending') return 'Sorted ascending';
+		if (sortDirection === 'descending') return 'Sorted descending';
+		return 'Not sorted';
+	}
+
+	function getSortTriggerLabel(
+		columnLabel: string,
+		sortDirection: TableSortTriggerRenderState['sortDirection']
+	) {
+		return `${columnLabel} column sort button. ${getSortTriggerStatus(sortDirection)}.`;
+	}
+
+	function getSortIconClass(sortDirection: TableSortTriggerRenderState['sortDirection']) {
+		if (sortDirection === 'ascending') return 'rotate-180';
+		if (sortDirection === 'descending') return 'rotate-0';
+		return 'opacity-60';
+	}
+
+	function getSortDirectionBadge(sortDirection: TableSortTriggerRenderState['sortDirection']) {
+		if (sortDirection === 'ascending') return 'ASC';
+		if (sortDirection === 'descending') return 'DESC';
+		return 'OFF';
+	}
+
+	function getSortDirectionBadgeClass(sortDirection: TableSortTriggerRenderState['sortDirection']) {
+		const baseClass = 'rounded-sm px-1.5 py-0.5 text-[10px] leading-none tracking-[0.16em]';
+
+		if (sortDirection === 'ascending') {
+			return `${baseClass} bg-emerald-700 text-emerald-50 dark:bg-emerald-300 dark:text-emerald-950`;
+		}
+
+		if (sortDirection === 'descending') {
+			return `${baseClass} bg-amber-700 text-amber-50 dark:bg-amber-300 dark:text-amber-950`;
+		}
+
+		return `${baseClass} bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-200`;
+	}
 </script>
 
 <DemoSection
 	title="Interactive Table"
-	description="Use arrow keys to move between cells, Space to select rows, drag the header handles or focus a handle and press Enter to enter keyboard resize mode, click enabled sortable headers to sort, and try replace mode with Shift+ArrowUp/Down. Long cell values truncate to preserve the column layout while resizing."
+	description="Use arrow keys to move between cells, land directly on explicit sort buttons, Tab into secondary header actions like the filter popover, drag the header handles or focus a handle and press Enter to enter keyboard resize mode, and try replace mode with Shift+ArrowUp/Down."
 >
 	<div
 		class="overflow-x-auto rounded-xl border border-gray-300 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
@@ -116,37 +173,132 @@
 							</Table.Checkbox>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
-					<Table.Column
-						id="email"
-						isRowHeader
-						allowsSorting={sortableColumns.includes('email')}
-						minWidth={30}
-					>
+					<Table.Column id="email" isRowHeader minWidth={30}>
 						<Table.ColumnHeaderCell
 							class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
-							data-sortable={sortableColumns.includes('email') ? 'true' : undefined}
 						>
 							<div class="flex min-w-0 items-center justify-between gap-3">
 								<span class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
 									>Email</span
 								>
-								<Table.ColumnResizer
-									class="inline-flex w-4 shrink-0 cursor-col-resize justify-center rounded-sm outline-none text-gray-400 hover:text-gray-600 data-[focus-visible=true]:bg-blue-50 data-[focus-visible=true]:text-blue-600 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[resizing=true]:bg-blue-600 data-[resizing=true]:text-white dark:text-gray-500 dark:hover:text-gray-300 dark:data-[focus-visible=true]:bg-blue-950/50 dark:data-[focus-visible=true]:text-blue-200 dark:data-[resizing=true]:bg-blue-500"
-								>
-									<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>
-								</Table.ColumnResizer>
+								<div class="flex shrink-0 items-center gap-2">
+									{#if sortableColumns.includes('email')}
+										<Table.SortTrigger>
+											{#snippet children({ sortDirection })}
+												<button
+													type="button"
+													class={getSortButtonClass(sortDirection)}
+													aria-label={getSortTriggerLabel('Email', sortDirection)}
+												>
+													<svg
+														aria-hidden="true"
+														viewBox="0 0 16 16"
+														class={`h-3.5 w-3.5 transition-transform ${getSortIconClass(sortDirection)}`}
+													>
+														<path
+															d="M8 3.25 11 6.25H5L8 3.25Zm0 9.5-3-3h6l-3 3Z"
+															fill="currentColor"
+														/>
+													</svg>
+													<span
+														aria-hidden="true"
+														class={getSortDirectionBadgeClass(sortDirection)}
+													>
+														{getSortDirectionBadge(sortDirection)}
+													</span>
+													<span class="sr-only">{getSortTriggerStatus(sortDirection)}</span>
+												</button>
+											{/snippet}
+										</Table.SortTrigger>
+									{/if}
+									<Popover.Root bind:open={emailFilterOpen}>
+										<Popover.Trigger>
+											<button
+												type="button"
+												class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 text-gray-500 transition hover:border-blue-200 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-blue-500/50 dark:hover:text-blue-300"
+												aria-label="Open email column filters"
+											>
+												<svg aria-hidden="true" viewBox="0 0 16 16" class="h-3.5 w-3.5">
+													<path
+														d="M2 3.25h12M4.5 8h7M6.75 12.75h2.5"
+														fill="none"
+														stroke="currentColor"
+														stroke-linecap="round"
+														stroke-width="1.5"
+													/>
+												</svg>
+											</button>
+										</Popover.Trigger>
+										<Popover.Content
+											placement="bottom-end"
+											offset={8}
+											class="w-64 rounded-xl border border-gray-200 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-900"
+										>
+											<div class="space-y-2">
+												<p class="text-sm font-semibold text-gray-900 dark:text-white">
+													Email filters
+												</p>
+												<p class="text-sm text-gray-600 dark:text-gray-300">
+													This secondary action no longer triggers sorting because sort now lives in
+													an explicit `Table.SortTrigger`.
+												</p>
+												<label
+													class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:text-gray-200"
+												>
+													<span>Only developer emails</span>
+													<input type="checkbox" disabled />
+												</label>
+											</div>
+										</Popover.Content>
+									</Popover.Root>
+									<Table.ColumnResizer
+										class="inline-flex w-4 shrink-0 cursor-col-resize justify-center rounded-sm outline-none text-gray-400 hover:text-gray-600 data-[focus-visible=true]:bg-blue-50 data-[focus-visible=true]:text-blue-600 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[resizing=true]:bg-blue-600 data-[resizing=true]:text-white dark:text-gray-500 dark:hover:text-gray-300 dark:data-[focus-visible=true]:bg-blue-950/50 dark:data-[focus-visible=true]:text-blue-200 dark:data-[resizing=true]:bg-blue-500"
+									>
+										<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>
+									</Table.ColumnResizer>
+								</div>
 							</div>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
-					<Table.Column id="group" allowsSorting={sortableColumns.includes('group')}>
+					<Table.Column id="group">
 						<Table.ColumnHeaderCell
 							class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
-							data-sortable={sortableColumns.includes('group') ? 'true' : undefined}
 						>
 							<div class="flex min-w-0 items-center justify-between gap-3">
 								<span class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
 									>Group</span
 								>
+								<div class="flex shrink-0 items-center gap-2">
+									{#if sortableColumns.includes('group')}
+										<Table.SortTrigger>
+											{#snippet children({ sortDirection })}
+												<button
+													type="button"
+													class={getSortButtonClass(sortDirection)}
+													aria-label={getSortTriggerLabel('Group', sortDirection)}
+												>
+													<svg
+														aria-hidden="true"
+														viewBox="0 0 16 16"
+														class={`h-3.5 w-3.5 transition-transform ${getSortIconClass(sortDirection)}`}
+													>
+														<path
+															d="M8 3.25 11 6.25H5L8 3.25Zm0 9.5-3-3h6l-3 3Z"
+															fill="currentColor"
+														/>
+													</svg>
+													<span
+														aria-hidden="true"
+														class={getSortDirectionBadgeClass(sortDirection)}
+													>
+														{getSortDirectionBadge(sortDirection)}
+													</span>
+													<span class="sr-only">{getSortTriggerStatus(sortDirection)}</span>
+												</button>
+											{/snippet}
+										</Table.SortTrigger>
+									{/if}
+								</div>
 							</div>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
@@ -326,6 +478,7 @@
 				<DemoState label="selectionMode" value={selectionMode} />
 				<DemoState label="selectionBehavior" value={selectionBehavior} />
 				<DemoState label="sortableColumns" value={sortableColumns} />
+				<DemoState label="emailFilterOpen" value={emailFilterOpen} />
 				<DemoState label="resizingColumn" value={resizingColumnId ?? 'none'} />
 				<DemoState
 					label="columnWidths"

@@ -37,10 +37,12 @@
 					</div>
 				</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="group" allowsSorting textValue="Group" minWidth={100} maxWidth={260}>
+			<Table.Column id="group" textValue="Group" minWidth={100} maxWidth={260}>
 				<Table.ColumnHeaderCell data-testid="group-header-cell">
 					<div class="flex items-center justify-between gap-3">
-						<span>Group</span>
+						<Table.SortTrigger>
+							<button type="button" data-testid="group-sort-trigger">Group</button>
+						</Table.SortTrigger>
 						<Table.ColumnResizer
 							data-testid="group-resizer"
 							class="inline-flex w-3 cursor-col-resize justify-center"

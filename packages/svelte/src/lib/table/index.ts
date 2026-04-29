@@ -8,6 +8,8 @@ export type {
 	TableColumnHeaderCellProps,
 	TableColumnProps,
 	TableColumnResizerProps,
+	TableSortTriggerRenderState,
+	TableSortTriggerProps,
 	TableEmptyStateProps,
 	TableFooterProps,
 	TableHeaderProps,
@@ -23,6 +25,7 @@ export { default as TableEmptyState } from './empty-state/table-empty-state.svel
 export { default as TableFooter } from './footer/table-footer.svelte';
 export { default as TableRow } from './row/table-row.svelte';
 export { default as TableColumnHeaderCell } from './column-header-cell/table-column-header-cell.svelte';
+export { default as TableSortTrigger } from './sort-trigger/table-sort-trigger.svelte';
 export { default as TableColumnResizer } from './column-resizer/table-column-resizer.svelte';
 export { default as TableCheckbox } from './checkbox/table-checkbox.svelte';
 export { default as TableCheckboxIndicator } from './checkbox-indicator/table-checkbox-indicator.svelte';

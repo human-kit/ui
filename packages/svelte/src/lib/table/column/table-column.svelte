@@ -5,7 +5,6 @@
 
 	let {
 		id,
-		allowsSorting = false,
 		isRowHeader = false,
 		textValue,
 		width,
@@ -27,9 +26,6 @@
 		token,
 		get id() {
 			return id;
-		},
-		get allowsSorting() {
-			return allowsSorting;
 		},
 		get isHidden() {
 			return table.isColumnHidden(id);
@@ -58,7 +54,6 @@
 		table.registerColumn({
 			token,
 			id,
-			allowsSorting,
 			isRowHeader,
 			textValue,
 			width,

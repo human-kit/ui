@@ -146,7 +146,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
 		try {
 			render(TableTest, {
@@ -511,6 +511,18 @@ describe('Table.Root', () => {
 		expect(document.querySelectorAll('tbody tr[data-selected="true"]')).toHaveLength(1);
 	});
 
+	it('normalizes the initial selected keys for single selection before hydration sync runs', () => {
+		render(TableTest, {
+			selectionMode: 'single',
+			initialSelectedKeys: ['danilo', 'zahra']
+		});
+
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe(
+			'["danilo"]'
+		);
+		expect(document.querySelectorAll('tbody tr[data-selected="true"]')).toHaveLength(1);
+	});
+
 	it('keeps an already selected row selected when selectionBehavior is replace', async () => {
 		render(TableTest, {
 			selectionMode: 'multiple',
@@ -732,15 +744,14 @@ describe('Table.Root', () => {
 
 	it('toggles sorting from a sortable header cell', async () => {
 		render(TableTest);
-		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
-		const [, groupHeader] = getHeaderCells(grid);
+		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
 
-		await groupHeader.click();
+		await groupSortTrigger.click();
 		await expect
 			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
 			.toBe('group:ascending');
 
-		await groupHeader.click();
+		await groupSortTrigger.click();
 		await expect
 			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
 			.toBe('group:descending');
@@ -783,10 +794,9 @@ describe('Table.Root', () => {
 
 	it('announces sort changes through a polite live region', async () => {
 		render(TableTest);
-		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
-		const [, groupHeader] = getHeaderCells(grid);
+		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
 
-		await groupHeader.click();
+		await groupSortTrigger.click();
 		await expect
 			.poll(
 				() =>
@@ -794,7 +804,7 @@ describe('Table.Root', () => {
 			)
 			.toBe('Group sorted ascending.');
 
-		await groupHeader.click();
+		await groupSortTrigger.click();
 		await expect
 			.poll(
 				() =>
@@ -832,10 +842,9 @@ describe('Table.Root', () => {
 
 	it('cycles keyboard sorting between ascending and descending without a clear state', async () => {
 		render(TableTest);
-		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
-		const [, groupHeader] = getHeaderCells(grid);
+		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
 
-		groupHeader.focus();
+		groupSortTrigger.focus();
 		await userEvent.keyboard('{Enter}');
 		await expect
 			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
@@ -856,9 +865,10 @@ describe('Table.Root', () => {
 		render(TableTest);
 		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
 		const [, groupHeader] = getHeaderCells(grid);
+		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
 
-		await groupHeader.click();
-		await groupHeader.click();
+		await groupSortTrigger.click();
+		await groupSortTrigger.click();
 
 		const groupCells = getBodySecondColumnCells(grid);
 		const visibleOrder = groupCells.map((cell) => cell.textContent?.trim());
@@ -872,6 +882,18 @@ describe('Table.Root', () => {
 
 		await userEvent.keyboard('{ArrowDown}');
 		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe(visibleOrder[2]);
+	});
+
+	it('keeps sortable header cells reachable with arrow-key grid navigation', async () => {
+		render(TableTest);
+		const grid = document.querySelector<HTMLElement>('[role="grid"]')!;
+		const [emailHeader, groupHeader] = getHeaderCells(grid);
+
+		emailHeader.focus();
+		await userEvent.keyboard('{ArrowRight}');
+
+		await expect.poll(() => document.activeElement).toBe(groupHeader);
+		await expect.element(groupHeader).toHaveAttribute('tabindex', '0');
 	});
 
 	it('renders the empty state when there are no body rows', async () => {

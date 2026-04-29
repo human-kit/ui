@@ -302,6 +302,69 @@ describe('Table.ColumnResizer', () => {
 		expect(readResizeAnnouncement('group-resizer')).toBe('');
 	});
 
+	it('cancels an in-progress pointer resize when the context menu opens', async () => {
+		render(ColumnResizerTest);
+		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
+
+		groupResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 51,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 220,
+				pointerId: 51,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readColumnWidths().group).toBe(260);
+
+		window.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2 }));
+
+		await expect.poll(() => readColumnWidths().group).toBe(160);
+		await expect.element(groupResizer).not.toHaveAttribute('data-resizing');
+
+		groupResizer.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				button: 0,
+				clientX: 100,
+				pointerId: 52,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointermove', {
+				bubbles: true,
+				clientX: 180,
+				pointerId: 52,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+		window.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				clientX: 180,
+				pointerId: 52,
+				pointerType: 'mouse',
+				isPrimary: true
+			})
+		);
+
+		await expect.poll(() => readColumnWidths().group).toBe(220);
+	});
+
 	it('suppresses the residual header click after a drag resize ends', async () => {
 		render(ColumnResizerTest);
 		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;

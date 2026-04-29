@@ -7,7 +7,7 @@
 ### Table.ColumnHeaderCell
 
 Name: `Table.ColumnHeaderCell`
-Description: Focusable header cell for a column. It participates in roving focus and toggles sorting when the wrapping `Table.Column` allows it.
+Description: Focusable header cell for a column. It participates in roving focus, exposes `aria-sort` when a nested `Table.SortTrigger` is present, and can host additional header actions.
 
 Public prop type: `TableColumnHeaderCellProps`
 

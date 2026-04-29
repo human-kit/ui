@@ -26,15 +26,25 @@
 	let wrapperRef: HTMLElement | null = $state(null);
 	let activeTrigger: HTMLElement | null = null;
 
+	function syncTriggerState(button: HTMLElement) {
+		button.setAttribute('aria-haspopup', 'dialog');
+		button.setAttribute('aria-expanded', String(popoverCtx.isOpen));
+		if (popoverCtx.isOpen) {
+			button.dataset.pressed = 'true';
+		} else {
+			delete button.dataset.pressed;
+		}
+	}
+
 	function setActiveTrigger(button: HTMLElement) {
 		if (activeTrigger && activeTrigger !== button) {
 			activeTrigger.setAttribute('aria-expanded', 'false');
+			delete activeTrigger.dataset.pressed;
 		}
 
 		activeTrigger = button;
 		popoverCtx.setTriggerRef(button);
-		button.setAttribute('aria-haspopup', 'dialog');
-		button.setAttribute('aria-expanded', String(popoverCtx.isOpen));
+		syncTriggerState(button);
 	}
 
 	function handleClick(event: MouseEvent) {
@@ -70,8 +80,7 @@
 			if (activeTrigger !== popoverCtx.triggerRef) {
 				activeTrigger = popoverCtx.triggerRef;
 			}
-			popoverCtx.triggerRef.setAttribute('aria-haspopup', 'dialog');
-			popoverCtx.triggerRef.setAttribute('aria-expanded', String(popoverCtx.isOpen));
+			syncTriggerState(popoverCtx.triggerRef);
 		}
 	});
 </script>

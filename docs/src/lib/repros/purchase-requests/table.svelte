@@ -189,7 +189,6 @@
 							id={column.id}
 							textValue={column.header ?? column.id}
 							isRowHeader={column.isRowHeader}
-							allowsSorting={column.allowsSorting}
 							width={column.width}
 							defaultWidth={column.defaultWidth}
 							minWidth={column.minWidth}
@@ -197,10 +196,17 @@
 						>
 							<Table.ColumnHeaderCell
 								class={cx(recipe.headerCell(), alignmentClass(column.align))}
-								data-sortable={column.allowsSorting ? 'true' : undefined}
+								data-sortable="true"
 							>
 								<div class="flex h-full min-w-0 items-center gap-2">
-									<div class="min-w-0 flex-1 truncate">{column.header ?? column.id}</div>
+									<Table.SortTrigger>
+										<button
+											type="button"
+											class="min-w-0 flex-1 truncate text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+										>
+											{column.header ?? column.id}
+										</button>
+									</Table.SortTrigger>
 									{#if column.resizable}
 										<Table.ColumnResizer class={recipe.resizer()}>
 											<span class="block h-5 w-0.5 rounded-full bg-current opacity-80"></span>

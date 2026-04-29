@@ -365,6 +365,12 @@
 
 		const handlePointerCancel = (cancelEvent: PointerEvent) => {
 			if (cancelEvent.pointerId !== pointerId) return;
+			cancelPointerResize();
+		};
+
+		function cancelPointerResize(event?: Event) {
+			event?.preventDefault();
+			event?.stopPropagation();
 			clearRecentClickCandidate();
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
@@ -376,21 +382,20 @@
 				updateWidth(startWidth);
 			}
 			cleanupPointerListeners();
-		};
+		}
 
 		const handleWindowKeyDown = (keyEvent: KeyboardEvent) => {
 			if (keyEvent.key !== 'Escape') return;
-			keyEvent.preventDefault();
-			keyEvent.stopPropagation();
-			clearRecentClickCandidate();
-			if (animationFrameId !== null) {
-				cancelAnimationFrame(animationFrameId);
-				animationFrameId = null;
-			}
-			if (didStartResize) {
-				updateWidth(startWidth);
-			}
-			cleanupPointerListeners();
+			cancelPointerResize(keyEvent);
+		};
+
+		const handleContextMenu = (menuEvent: MouseEvent) => {
+			if (!didStartResize && !didDrag) return;
+			cancelPointerResize(menuEvent);
+		};
+
+		const handleWindowBlur = () => {
+			cancelPointerResize();
 		};
 
 		// With pointer capture active the browser routes all pointer events for
@@ -401,6 +406,8 @@
 		window.addEventListener('pointerup', handlePointerUp);
 		window.addEventListener('pointercancel', handlePointerCancel);
 		window.addEventListener('keydown', handleWindowKeyDown, true);
+		window.addEventListener('contextmenu', handleContextMenu, true);
+		window.addEventListener('blur', handleWindowBlur);
 		removeListeners = () => {
 			if (animationFrameId !== null) {
 				cancelAnimationFrame(animationFrameId);
@@ -415,6 +422,8 @@
 			window.removeEventListener('pointerup', handlePointerUp);
 			window.removeEventListener('pointercancel', handlePointerCancel);
 			window.removeEventListener('keydown', handleWindowKeyDown, true);
+			window.removeEventListener('contextmenu', handleContextMenu, true);
+			window.removeEventListener('blur', handleWindowBlur);
 		};
 	}
 
