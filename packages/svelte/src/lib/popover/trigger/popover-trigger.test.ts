@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from '../root/popover-test.svelte';
+import PopoverTriggerButtonRootTest from './popover-trigger-button-root-test.svelte';
 import PopoverTriggerInDialogTest from './popover-trigger-in-dialog-test.svelte';
 import PopoverTriggerMultiButtonTest from './popover-trigger-multi-button-test.svelte';
 
@@ -48,6 +49,21 @@ describe('Popover.Trigger', () => {
 
 			const triggerEl = document.querySelector('button[aria-haspopup="dialog"]');
 			expect(triggerEl?.getAttribute('data-pressed')).toBe('true');
+
+			(triggerEl as HTMLButtonElement | null)?.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			expect(triggerEl?.hasAttribute('data-pressed')).toBe(false);
+		});
+
+		it('keeps data-pressed when Popover.Trigger wraps Button.Root', async () => {
+			const screen = render(PopoverTriggerButtonRootTest);
+			const trigger = screen.getByRole('button', { name: 'Open Button Root Popover' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const triggerEl = document.querySelector('button[aria-haspopup="dialog"]');
+			await expect.poll(() => triggerEl?.getAttribute('data-pressed')).toBe('true');
 
 			(triggerEl as HTMLButtonElement | null)?.click();
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();

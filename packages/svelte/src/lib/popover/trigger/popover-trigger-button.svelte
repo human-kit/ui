@@ -35,6 +35,7 @@
 	bind:element={buttonRef}
 	class={className}
 	type="button"
+	pressed={ctx?.isOpen ?? false}
 	aria-expanded={ctx?.isOpen ?? false}
 	aria-haspopup="dialog"
 	onclick={handleClick}

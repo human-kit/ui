@@ -93,10 +93,13 @@
 	let focused = $state(false);
 	let focusVisible = $state(false);
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
+	let expandedPressed = $state(false);
 
 	const renderedType = $derived(type === 'submit' && isPending ? 'button' : type);
 	const renderedPressed = $derived(
-		pressedOverride !== undefined ? Boolean(pressedOverride) && !isPending : pressed && !isPending
+		pressedOverride !== undefined
+			? Boolean(pressedOverride) && !isPending
+			: (pressed || expandedPressed) && !isPending
 	);
 	const renderState = $derived.by<ButtonRenderState>(() => ({
 		isHovered: hovered,
@@ -147,6 +150,34 @@
 
 	$effect(() => {
 		element = buttonRef;
+	});
+
+	function syncExpandedPressed() {
+		expandedPressed =
+			buttonRef?.getAttribute('data-pressed-when-expanded') === 'true' &&
+			buttonRef?.getAttribute('aria-expanded') === 'true';
+	}
+
+	$effect(() => {
+		if (!buttonRef) {
+			expandedPressed = false;
+			return;
+		}
+
+		syncExpandedPressed();
+
+		const observer = new MutationObserver(() => {
+			syncExpandedPressed();
+		});
+
+		observer.observe(buttonRef, {
+			attributes: true,
+			attributeFilter: ['aria-expanded', 'data-pressed-when-expanded']
+		});
+
+		return () => {
+			observer.disconnect();
+		};
 	});
 
 	$effect(() => {

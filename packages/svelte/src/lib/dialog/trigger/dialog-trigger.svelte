@@ -29,12 +29,14 @@
 	function setActiveTrigger(button: HTMLElement) {
 		if (activeTrigger && activeTrigger !== button) {
 			activeTrigger.setAttribute('aria-expanded', 'false');
+			delete activeTrigger.dataset.pressedWhenExpanded;
 		}
 
 		activeTrigger = button;
 		dialogCtx.setTriggerRef(button);
 		button.setAttribute('aria-haspopup', 'dialog');
 		button.setAttribute('aria-expanded', String(dialogCtx.isOpen));
+		button.dataset.pressedWhenExpanded = 'true';
 	}
 
 	function handleClick(event: MouseEvent) {
@@ -72,6 +74,7 @@
 			}
 			dialogCtx.triggerRef.setAttribute('aria-haspopup', 'dialog');
 			dialogCtx.triggerRef.setAttribute('aria-expanded', String(dialogCtx.isOpen));
+			dialogCtx.triggerRef.dataset.pressedWhenExpanded = 'true';
 		}
 	});
 </script>
