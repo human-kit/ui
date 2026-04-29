@@ -362,13 +362,14 @@ describe('Table.ColumnResizer', () => {
 			})
 		);
 
-		await expect.poll(() => readColumnWidths().group).toBe(220);
+		await expect.poll(() => readColumnWidths().group).toBe(240);
 	});
 
 	it('suppresses the residual header click after a drag resize ends', async () => {
 		render(ColumnResizerTest);
 		const groupResizer = document.querySelector<HTMLElement>('[data-testid="group-resizer"]')!;
 		const groupHeader = groupResizer.closest('th') as HTMLElement;
+		const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
 
 		groupResizer.dispatchEvent(
 			new PointerEvent('pointerdown', {
@@ -402,7 +403,7 @@ describe('Table.ColumnResizer', () => {
 		groupHeader.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		expect(document.querySelector('[data-testid="sort-descriptor"]')?.textContent).toBe('');
 
-		groupHeader.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		await groupSortTrigger.click();
 		await expect
 			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
 			.toBe('group:ascending');

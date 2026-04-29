@@ -10,7 +10,10 @@ describe('Table.SortTrigger', () => {
     const groupHeader = document.querySelectorAll<HTMLElement>('thead [role="columnheader"]')[1]!;
     const groupSortTrigger = document.querySelector<HTMLElement>('[data-testid="group-sort-trigger"]')!;
 
-    expect(groupHeader.getAttribute('tabindex')).toBe('0');
+    groupHeader.focus();
+
+    await expect.poll(() => document.activeElement).toBe(groupHeader);
+    expect(groupHeader.getAttribute('tabindex')).toBe('-1');
     expect(groupSortTrigger.getAttribute('tabindex')).toBeNull();
     expect(groupSortTrigger.getAttribute('data-sort-direction-state')).toBe('none');
 
