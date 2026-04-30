@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverContentTest from './popover-content-test.svelte';
+import PopoverContentControlledCloseTest from './popover-content-controlled-close-test.svelte';
 import PopoverContentStandaloneTest from './popover-content-standalone-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
@@ -155,6 +156,28 @@ describe('Popover.Content', () => {
 			const exitingDialog = document.querySelector('[role="dialog"]') as HTMLElement;
 			expect(exitingDialog.getAttribute('data-state')).toBe('closed');
 			expect(exitingDialog.getAttribute('data-exiting')).toBe('true');
+			expect(exitingDialog.getAttribute('aria-hidden')).toBe('true');
+
+			exitingDialog.dispatchEvent(new TransitionEvent('transitionend', { bubbles: true }));
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		});
+
+		it('moves focus back to the trigger before an internally closed popover becomes aria-hidden', async () => {
+			const screen = render(PopoverContentControlledCloseTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const applyButton = screen.getByRole('button', { name: 'Apply' });
+			applyButton.element().focus();
+			await expect.poll(() => document.activeElement).toBe(applyButton.element());
+
+			await applyButton.click();
+
+			const exitingDialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			await expect.poll(() => exitingDialog?.getAttribute('data-exiting')).toBe('true');
+			expect(exitingDialog.contains(document.activeElement)).toBe(false);
 			expect(exitingDialog.getAttribute('aria-hidden')).toBe('true');
 
 			exitingDialog.dispatchEvent(new TransitionEvent('transitionend', { bubbles: true }));
