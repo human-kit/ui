@@ -313,27 +313,35 @@
 		if (!tableElement) return;
 
 		const resizeTarget = tableElement.parentElement ?? tableElement;
-		const refreshMeasuredLayout = () => {
-			ctx.refreshMeasuredLayout();
+		let refreshFrame = 0;
+		const scheduleMeasuredLayoutRefresh = () => {
+			if (refreshFrame !== 0) return;
+			refreshFrame = window.requestAnimationFrame(() => {
+				refreshFrame = 0;
+				ctx.refreshMeasuredLayout();
+			});
 		};
 
-		refreshMeasuredLayout();
+		scheduleMeasuredLayoutRefresh();
 
-		window.addEventListener('resize', refreshMeasuredLayout);
-		window.visualViewport?.addEventListener('resize', refreshMeasuredLayout);
+		window.addEventListener('resize', scheduleMeasuredLayoutRefresh);
+		window.visualViewport?.addEventListener('resize', scheduleMeasuredLayoutRefresh);
 
 		const resizeObserver =
 			typeof ResizeObserver !== 'undefined'
 				? new ResizeObserver(() => {
-						refreshMeasuredLayout();
-					})
+					scheduleMeasuredLayoutRefresh();
+				})
 				: null;
 
 		resizeObserver?.observe(resizeTarget);
 
 		return () => {
-			window.removeEventListener('resize', refreshMeasuredLayout);
-			window.visualViewport?.removeEventListener('resize', refreshMeasuredLayout);
+			if (refreshFrame !== 0) {
+				window.cancelAnimationFrame(refreshFrame);
+			}
+			window.removeEventListener('resize', scheduleMeasuredLayoutRefresh);
+			window.visualViewport?.removeEventListener('resize', scheduleMeasuredLayoutRefresh);
 			resizeObserver?.disconnect();
 		};
 	});
