@@ -9,7 +9,7 @@ const tableRecipeConfig = {
 		headerCell:
 			'pl-3 h-7 text-sm font-semibold text-foreground outline-none data-[sortable=true]:select-none',
 		bodyRow:
-			'border-b border-border/70 outline-none odd:bg-depth-0 even:bg-depth-1/35 data-selected:bg-primary/5 [content-visibility:auto] [contain-intrinsic-size:41px]',
+			'border-b border-border/70 outline-none odd:bg-depth-0 even:bg-depth-1/35 data-selected:bg-primary/5',
 		bodyCell: 'px-3 py-2 text-sm text-foreground align-middle',
 		emptyState: 'block px-3 py-4 text-sm text-muted-foreground',
 		footerCell: 'px-3 py-2 text-sm text-muted-foreground',

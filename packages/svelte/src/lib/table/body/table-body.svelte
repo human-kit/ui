@@ -2,7 +2,7 @@
 	lang="ts"
 	generics="T extends Record<string, unknown> & { id: string | number } = Record<string, unknown> & { id: string | number }"
 >
-	import type { Snippet } from 'svelte';
+	import { flushSync, type Snippet } from 'svelte';
 	import { setTableSectionContext, useTableContext } from '../root/context';
 	import type { TableBodyProps } from '../types.js';
 
@@ -104,13 +104,17 @@
 		const scrollContainer = findScrollContainer(bodyElement);
 		if (!scrollContainer) return;
 
-		const updateMetrics = () => {
+		const setMetrics = () => {
 			viewportHeight = scrollContainer.clientHeight;
 			scrollTop = scrollContainer.scrollTop;
 		};
 
+		const updateMetrics = () => {
+			flushSync(setMetrics);
+		};
+
 		const handleScroll = () => {
-			scrollTop = scrollContainer.scrollTop;
+			flushSync(setMetrics);
 		};
 
 		updateMetrics();
