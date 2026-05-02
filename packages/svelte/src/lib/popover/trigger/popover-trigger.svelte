@@ -29,10 +29,11 @@
 	function syncTriggerState(button: HTMLElement) {
 		button.setAttribute('aria-haspopup', 'dialog');
 		button.setAttribute('aria-expanded', String(popoverCtx.isOpen));
-		button.dataset.pressedWhenExpanded = 'true';
 		if (popoverCtx.isOpen) {
+			button.dataset.pressedWhenExpanded = 'true';
 			button.dataset.pressed = 'true';
 		} else {
+			delete button.dataset.pressedWhenExpanded;
 			delete button.dataset.pressed;
 		}
 	}
