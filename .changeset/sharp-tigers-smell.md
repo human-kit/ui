@@ -2,6 +2,8 @@
 '@human-kit/svelte-components': patch
 ---
 
+# Table Body typing and overscan
+
 Improve `Table.Body` item-driven typings and virtualization defaults.
 
 - Infer the `children(item)` snippet parameter from the `items` element type in item-driven mode.
