@@ -13,7 +13,7 @@
 	const layoutVersion = table.layoutVersion;
 	const isVisible = $derived.by(() => {
 		void $layoutVersion;
-		return table.getBodyRowCount() === 0;
+		return table.getLogicalBodyRowCount() === 0;
 	});
 	const columnCount = $derived.by(() => {
 		void $layoutVersion;

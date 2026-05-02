@@ -96,6 +96,8 @@
 	let pendingMotionFrame: number | undefined;
 	let cleanupMotionListeners: (() => void) | undefined;
 	let motionId = 0;
+	let previousOpen = $state(false);
+	let closeHandledInternally = false;
 
 	function parseTimeList(value: string) {
 		return value
@@ -239,7 +241,21 @@
 		});
 	}
 
+	function releaseFocusedDescendantBeforeHide() {
+		if (!browser || !popoverRef || !triggerRef) return;
+
+		const activeElement = document.activeElement;
+		if (!(activeElement instanceof HTMLElement)) return;
+		if (activeElement === triggerRef || triggerRef.contains(activeElement)) return;
+		if (activeElement !== popoverRef && !popoverRef.contains(activeElement)) return;
+
+		activeElement.blur();
+	}
+
 	function close(reason: PopoverCloseReason = 'imperative-action', event?: Event) {
+		closeHandledInternally = true;
+		releaseFocusedDescendantBeforeHide();
+
 		if (isStandalone) {
 			let canceled = false;
 			const details: PopoverOpenChangeDetails = {
@@ -332,6 +348,28 @@
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
 		document.removeEventListener('scroll', handleScroll, true);
+	});
+
+	$effect(() => {
+		const wasOpen = previousOpen;
+		previousOpen = isOpen;
+
+		if (isOpen) {
+			closeHandledInternally = false;
+			return;
+		}
+
+		if (!wasOpen) {
+			closeHandledInternally = false;
+			return;
+		}
+
+		if (closeHandledInternally) {
+			closeHandledInternally = false;
+			return;
+		}
+
+		releaseFocusedDescendantBeforeHide();
 	});
 
 	$effect(() => {

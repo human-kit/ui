@@ -3,6 +3,14 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import CheckboxTest from './table-checkbox-test.svelte';
 
+function createRows(count: number) {
+	return Array.from({ length: count }, (_, index) => ({
+		id: `row-${String(index + 1).padStart(3, '0')}`,
+		email: `user${index + 1}@example.com`,
+		group: index % 2 === 0 ? 'Developer' : 'Admin'
+	}));
+}
+
 describe('Table.Checkbox', () => {
 	it('renders header and body checkboxes in multiple mode', async () => {
 		render(CheckboxTest, { selectionMode: 'multiple' });
@@ -103,6 +111,37 @@ describe('Table.Checkbox', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
 			.toBe('[]');
+	});
+
+	it('selects and deselects all logical rows from the header checkbox in virtualized mode', async () => {
+		render(CheckboxTest, {
+			rows: createRows(40),
+			selectionMode: 'multiple',
+			useItemsMode: true,
+			virtualizer: { rowHeight: 32, overscan: 2 }
+		});
+
+		const headerCheckbox = document.querySelector<HTMLElement>('[data-testid="header-checkbox"]')!;
+
+		await userEvent.click(headerCheckbox);
+		await expect
+			.poll(
+				() =>
+					JSON.parse(document.querySelector('[data-testid="selected-keys"]')?.textContent ?? '[]')
+						.length
+			)
+			.toBe(40);
+		await expect.poll(() => headerCheckbox.getAttribute('aria-checked')).toBe('true');
+
+		await userEvent.click(headerCheckbox);
+		await expect
+			.poll(
+				() =>
+					JSON.parse(document.querySelector('[data-testid="selected-keys"]')?.textContent ?? '[]')
+						.length
+			)
+			.toBe(0);
+		await expect.poll(() => headerCheckbox.getAttribute('aria-checked')).toBe('false');
 	});
 
 	it('uses the checkbox as the cell tab stop when rendered', async () => {

@@ -30,8 +30,10 @@
 		button.setAttribute('aria-haspopup', 'dialog');
 		button.setAttribute('aria-expanded', String(popoverCtx.isOpen));
 		if (popoverCtx.isOpen) {
+			button.dataset.pressedWhenExpanded = 'true';
 			button.dataset.pressed = 'true';
 		} else {
+			delete button.dataset.pressedWhenExpanded;
 			delete button.dataset.pressed;
 		}
 	}
@@ -40,6 +42,7 @@
 		if (activeTrigger && activeTrigger !== button) {
 			activeTrigger.setAttribute('aria-expanded', 'false');
 			delete activeTrigger.dataset.pressed;
+			delete activeTrigger.dataset.pressedWhenExpanded;
 		}
 
 		activeTrigger = button;

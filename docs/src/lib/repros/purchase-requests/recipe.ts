@@ -3,7 +3,7 @@ import { tv } from 'tailwind-variants';
 const tableRecipeConfig = {
 	slots: {
 		container:
-			'min-h-0 min-w-0 rounded-lg corner-squircle border border-border bg-depth-0 shadow-sm overflow-hidden',
+			'min-h-0 min-w-0 rounded-lg border border-border bg-depth-0 shadow-sm overflow-hidden',
 		root: 'min-w-full border-collapse text-left',
 		headerRow: 'border-b border-border sticky top-0 z-10 bg-depth-2 sunken shadow-none',
 		headerCell:

@@ -9,6 +9,7 @@ const TABLE_CELL_KEY = Symbol('table-cell');
 const IS_BROWSER = typeof window !== 'undefined';
 
 export type TableSelectionKey = string | number;
+export type TableRowItem = Record<string, unknown> & { id: TableSelectionKey };
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
 export type TableSelectionBehavior = 'toggle' | 'replace';
 export type TableDisabledBehavior = 'selection' | 'all';
@@ -211,9 +212,11 @@ export type TableContext = {
 	hasResizableColumns: () => boolean;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
+	setLogicalBodyRows: (ids?: Iterable<TableSelectionKey>) => void;
 	markBodyRowsInitialized: () => void;
 	getHeaderRowCount: () => number;
 	getBodyRowCount: () => number;
+	getLogicalBodyRowCount: () => number;
 	isRowSelected: (id: TableSelectionKey | undefined) => boolean;
 	isRowFocused: (token: string) => boolean;
 	isRowFocusTarget: (token: string) => boolean;
@@ -338,6 +341,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const bodyRowOrder: string[] = [];
 	let bodyRowsInitialized = false;
 	let selectableBodyRowCount = 0;
+	let logicalBodyRowIds: TableSelectionKey[] | null = null;
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
@@ -349,6 +353,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let columnWidthsCache: Map<string, TableColumnWidth> | null = null;
 	let visibleColumnWidthsCache: Map<string, TableColumnWidth> | null = null;
 	let resolvedVisibleColumnWidthsCache: Map<string, number> | null = null;
+	let measuredTableWidthCache: number | undefined;
+	let hasMeasuredTableWidthCache = false;
 	let navigableCellsCache: Array<{ cell: TableCellRegistration; coord: TableGridCoord }> | null =
 		null;
 	let rowsWithCellsCache: Map<number, { col: number; key: string; element: HTMLElement }[]> | null =
@@ -377,6 +383,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
 		resolvedVisibleColumnWidthsCache = null;
+		measuredTableWidthCache = undefined;
+		hasMeasuredTableWidthCache = false;
 		navigableCellsCache = null;
 		rowsWithCellsCache = null;
 	}
@@ -427,6 +435,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
 		resolvedVisibleColumnWidthsCache = null;
+		measuredTableWidthCache = undefined;
+		hasMeasuredTableWidthCache = false;
 		if (!widthNotifyScheduled) {
 			widthNotifyScheduled = true;
 			queueMicrotask(() => {
@@ -440,6 +450,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
 		resolvedVisibleColumnWidthsCache = null;
+		measuredTableWidthCache = undefined;
+		hasMeasuredTableWidthCache = false;
 		flushSync(() => {
 			widthVersion.update((value) => value + 1);
 		});
@@ -555,6 +567,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getMeasuredTableWidth() {
+		if (hasMeasuredTableWidthCache) {
+			return measuredTableWidthCache;
+		}
+
 		const tableCell = Array.from(cells.values()).find((cell) => cell.element)?.element;
 		const tableElement = tableCell?.closest('table');
 		const tableWidth = tableElement?.getBoundingClientRect().width;
@@ -574,9 +590,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		// the actual available space the table should fill.
 		const width = containerWidth ?? tableWidth;
 		if (width === undefined || width <= 0 || !Number.isFinite(width)) {
+			hasMeasuredTableWidthCache = true;
+			measuredTableWidthCache = undefined;
 			return undefined;
 		}
-		return Math.round(width);
+
+		measuredTableWidthCache = Math.round(width);
+		hasMeasuredTableWidthCache = true;
+		return measuredTableWidthCache;
 	}
 
 	function getColumnWidthBounds(columnId: string) {
@@ -1456,6 +1477,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		notifyLayout();
 	}
 
+	function hasSameLogicalBodyRows(nextIds: TableSelectionKey[] | null) {
+		if (logicalBodyRowIds === nextIds) return true;
+		if (logicalBodyRowIds === null || nextIds === null) return false;
+		if (logicalBodyRowIds.length !== nextIds.length) return false;
+		for (let index = 0; index < logicalBodyRowIds.length; index += 1) {
+			if (logicalBodyRowIds[index] !== nextIds[index]) return false;
+		}
+		return true;
+	}
+
+	function setLogicalBodyRows(ids?: Iterable<TableSelectionKey>) {
+		const nextIds = ids ? [...ids] : null;
+		if (hasSameLogicalBodyRows(nextIds)) return;
+		logicalBodyRowIds = nextIds;
+		notifyLayout();
+		notifySelection();
+	}
+
 	function unregisterRow(token: string) {
 		const row = rows.get(token);
 		const previousSelectableBodyRowCount = selectableBodyRowCount;
@@ -1499,7 +1538,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (bodyRowsInitialized) return;
 		const optimisticHasSelectableRows = selectionMode === 'multiple' || selectedKeys.size > 0;
 		bodyRowsInitialized = true;
-		const actualHasSelectableRows = selectableBodyRowCount > 0 || selectedKeys.size > 0;
+		const actualHasSelectableRows = hasSelectableRows();
 		if (optimisticHasSelectableRows !== actualHasSelectableRows) {
 			notifySelection();
 		}
@@ -1507,6 +1546,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getBodyRowCount() {
 		return getOrderedRowTokens('body').length;
+	}
+
+	function getLogicalBodyRowCount() {
+		return logicalBodyRowIds?.length ?? getBodyRowCount();
 	}
 
 	function getHeaderRowCount() {
@@ -1541,6 +1584,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getOrderedSelectableRowIds() {
+		if (logicalBodyRowIds) {
+			return logicalBodyRowIds.filter((id) => !isRowSelectionDisabled(id));
+		}
+
 		const rowIds: TableSelectionKey[] = [];
 		for (const token of getOrderedRowTokens('body')) {
 			const row = rows.get(token);
@@ -1617,6 +1664,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function hasSelectableRows() {
 		if (!bodyRowsInitialized) {
 			return selectionMode === 'multiple' || selectedKeys.size > 0;
+		}
+		if (logicalBodyRowIds) {
+			return getOrderedSelectableRowIds().length > 0 || selectedKeys.size > 0;
 		}
 		return selectableBodyRowCount > 0 || selectedKeys.size > 0;
 	}
@@ -2285,12 +2335,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function selectAllRows() {
 		if (selectionMode !== 'multiple') return;
-		const next = new Set<TableSelectionKey>();
-		for (const token of getOrderedRowTokens('body')) {
-			const row = rows.get(token);
-			if (!row?.id || isRowSelectionDisabled(row.id, row.disabled)) continue;
-			next.add(row.id);
-		}
+		const next = new Set<TableSelectionKey>(getOrderedSelectableRowIds());
 		setSelectedKeys(next, next.values().next().value ?? null);
 		emitSelectionChange();
 	}
@@ -2480,9 +2525,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		hasResizableColumns,
 		registerRow,
 		unregisterRow,
+		setLogicalBodyRows,
 		markBodyRowsInitialized,
 		getHeaderRowCount,
 		getBodyRowCount,
+		getLogicalBodyRowCount,
 		isRowSelected,
 		isRowFocused,
 		isRowFocusTarget,

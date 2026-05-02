@@ -35,7 +35,7 @@
 	const statuses: PurchaseRequest['status'][] = ['Pending', 'Review', 'Approved', 'Rejected'];
 	const priorities: PurchaseRequest['priority'][] = ['Low', 'Medium', 'High'];
 
-	const purchaseRequests: PurchaseRequest[] = Array.from({ length: 100 }, (_, index) => {
+	const purchaseRequests: PurchaseRequest[] = Array.from({ length: 5000 }, (_, index) => {
 		const sequence = index + 1;
 		const status = statuses[index % statuses.length];
 		const priority = priorities[index % priorities.length];
@@ -68,7 +68,8 @@
 		<h2 class="mt-2 text-2xl font-semibold text-foreground">Purchase Requests</h2>
 		<p class="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
 			This is the full isolated route copy of the consumer page. It runs under its own app shell
-			instead of the docs showcase, so width jumps and first-paint overflow are easier to inspect.
+			instead of the docs showcase, so width jumps, first-paint overflow, and the core `Table.Body`
+			virtualization behavior are easier to inspect.
 		</p>
 	</header>
 
@@ -77,6 +78,7 @@
 		items={purchaseRequests}
 		class="max-h-[calc(100vh-140px)] w-full"
 		selectionMode="multiple"
+		virtualizer={{ rowHeight: 41, overscan: 18 }}
 		bind:selectedKeys={selectedPurchaseRequestIds}
 	>
 		<ReproTable.Column

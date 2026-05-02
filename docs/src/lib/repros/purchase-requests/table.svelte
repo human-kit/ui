@@ -5,6 +5,7 @@
 	import { Table } from '@human-kit/svelte-components/table';
 	import type { Snippet } from 'svelte';
 	import type {
+		TableBodyVirtualizer,
 		TableRootProps,
 		TableSelectionMode,
 		TableSortDescriptor
@@ -26,6 +27,7 @@
 	type Props = RootProps & {
 		items?: T[];
 		emptyPlaceholder?: string;
+		virtualizer?: TableBodyVirtualizer;
 		class?: string;
 		columns?: Snippet<[TableColumnsContext<T>]>;
 		children?: Snippet;
@@ -34,6 +36,7 @@
 	let {
 		items = [],
 		emptyPlaceholder = 'No rows found',
+		virtualizer,
 		class: className = '',
 		selectedKeys = $bindable(),
 		sortDescriptor = $bindable<TableSortDescriptor | undefined>(),
@@ -156,9 +159,8 @@
 			class={recipe.root()}
 			{...rootProps}
 		>
-			{@const resolvedColumns = getResolvedColumns()}
-			{@const sortedItems = getSortedItems(resolvedColumns)}
-
+			{@const resolvedColumns = (() => getResolvedColumns())()}
+			{@const sortedItems = (() => getSortedItems(resolvedColumns))()}
 			<Table.Header>
 				<Table.Row class={recipe.headerRow()}>
 					{#if showSelection}
@@ -219,8 +221,8 @@
 				</Table.Row>
 			</Table.Header>
 
-			<Table.Body>
-				{#each sortedItems as item (item.id)}
+			<Table.Body items={sortedItems} {virtualizer}>
+				{#snippet children(item)}
 					<Table.Row id={item.id} class={recipe.bodyRow()}>
 						{#if showSelection}
 							<Table.Cell class={recipe.selectionCell()}>
@@ -255,11 +257,12 @@
 							</Table.Cell>
 						{/each}
 					</Table.Row>
-				{/each}
-
-				<Table.EmptyState>
-					<span class={recipe.emptyState()}>{emptyPlaceholder}</span>
-				</Table.EmptyState>
+				{/snippet}
+				{#snippet empty()}
+					<Table.EmptyState>
+						<span class={recipe.emptyState()}>{emptyPlaceholder}</span>
+					</Table.EmptyState>
+				{/snippet}
 			</Table.Body>
 		</Table.Root>
 	</div>
