@@ -125,13 +125,21 @@ describe('Table.Checkbox', () => {
 
 		await userEvent.click(headerCheckbox);
 		await expect
-			.poll(() => JSON.parse(document.querySelector('[data-testid="selected-keys"]')?.textContent ?? '[]').length)
+			.poll(
+				() =>
+					JSON.parse(document.querySelector('[data-testid="selected-keys"]')?.textContent ?? '[]')
+						.length
+			)
 			.toBe(40);
 		await expect.poll(() => headerCheckbox.getAttribute('aria-checked')).toBe('true');
 
 		await userEvent.click(headerCheckbox);
 		await expect
-			.poll(() => JSON.parse(document.querySelector('[data-testid="selected-keys"]')?.textContent ?? '[]').length)
+			.poll(
+				() =>
+					JSON.parse(document.querySelector('[data-testid="selected-keys"]')?.textContent ?? '[]')
+						.length
+			)
 			.toBe(0);
 		await expect.poll(() => headerCheckbox.getAttribute('aria-checked')).toBe('false');
 	});

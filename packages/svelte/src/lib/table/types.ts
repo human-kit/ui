@@ -34,10 +34,7 @@ export type TableBodyVirtualizer = {
 	overscan?: number;
 };
 
-type TableBodyBaseProps = Omit<
-	HTMLAttributes<HTMLTableSectionElement>,
-	'children'
-> & {
+type TableBodyBaseProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
 	class?: string;
 };
 

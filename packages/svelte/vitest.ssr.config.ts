@@ -3,16 +3,16 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [svelte({ hot: false })],
-  test: {
-    include: ['src/**/*-ssr.test.ts'],
-    globals: true,
-    environment: 'node',
-    alias: {
-      $lib: resolve(__dirname, './src/lib'),
-      '$app/environment': resolve(__dirname, './src/lib/test-mocks/app-environment.ts'),
-      '$app/navigation': resolve(__dirname, './src/lib/test-mocks/app-navigation.ts'),
-      '$app/stores': resolve(__dirname, './src/lib/test-mocks/app-stores.ts')
-    }
-  }
+	plugins: [svelte({ hot: false })],
+	test: {
+		include: ['src/**/*-ssr.test.ts'],
+		globals: true,
+		environment: 'node',
+		alias: {
+			$lib: resolve(__dirname, './src/lib'),
+			'$app/environment': resolve(__dirname, './src/lib/test-mocks/app-environment.ts'),
+			'$app/navigation': resolve(__dirname, './src/lib/test-mocks/app-navigation.ts'),
+			'$app/stores': resolve(__dirname, './src/lib/test-mocks/app-stores.ts')
+		}
+	}
 });

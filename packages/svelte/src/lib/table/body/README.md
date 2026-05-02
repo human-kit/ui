@@ -11,13 +11,13 @@ Description: Body rowgroup for table data rows. It can render authored rows dire
 
 Public prop type: `TableBodyProps`
 
-| Prop          | Type                       | Default     | Description                                                                  |
-| ------------- | -------------------------- | ----------- | ---------------------------------------------------------------------------- |
-| `items`       | `readonly T[]`             | `undefined` | Logical row collection for item-driven mode. When present, `children(item)` renders once per item with `item` inferred from `items`. |
-| `virtualizer` | `TableBodyVirtualizer`     | `undefined` | Optional fixed-height row virtualization config with `rowHeight` and `overscan`. |
-| `class`       | `string`                   | `''`        | Class names for the `tbody` element.                                         |
-| `children`    | `Snippet` or `Snippet<[T]>` | `undefined` | Manual body content when `items` is omitted, or `children(item)` in item-driven mode. |
-| `empty`       | `Snippet`                  | `undefined` | Optional empty-state snippet for item-driven mode.                           |
+| Prop          | Type                        | Default     | Description                                                                                                                          |
+| ------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `items`       | `readonly T[]`              | `undefined` | Logical row collection for item-driven mode. When present, `children(item)` renders once per item with `item` inferred from `items`. |
+| `virtualizer` | `TableBodyVirtualizer`      | `undefined` | Optional fixed-height row virtualization config with `rowHeight` and `overscan`.                                                     |
+| `class`       | `string`                    | `''`        | Class names for the `tbody` element.                                                                                                 |
+| `children`    | `Snippet` or `Snippet<[T]>` | `undefined` | Manual body content when `items` is omitted, or `children(item)` in item-driven mode.                                                |
+| `empty`       | `Snippet`                   | `undefined` | Optional empty-state snippet for item-driven mode.                                                                                   |
 
 ### TableBodyVirtualizer
 
