@@ -3,13 +3,13 @@ import { tv } from 'tailwind-variants';
 const tableRecipeConfig = {
 	slots: {
 		container:
-			'min-h-0 min-w-0 rounded-lg corner-squircle border border-border bg-depth-0 shadow-sm overflow-hidden',
+			'min-h-0 min-w-0 rounded-lg border border-border bg-depth-0 shadow-sm overflow-hidden',
 		root: 'min-w-full border-collapse text-left',
 		headerRow: 'border-b border-border sticky top-0 z-10 bg-depth-2 sunken shadow-none',
 		headerCell:
 			'pl-3 h-7 text-sm font-semibold text-foreground outline-none data-[sortable=true]:select-none',
 		bodyRow:
-			'border-b border-border/70 outline-none odd:bg-depth-0 even:bg-depth-1/35 data-selected:bg-primary/5',
+			'border-b border-border/70 outline-none odd:bg-depth-0 even:bg-depth-1/35 data-selected:bg-primary/5 [content-visibility:auto] [contain-intrinsic-size:41px]',
 		bodyCell: 'px-3 py-2 text-sm text-foreground align-middle',
 		emptyState: 'block px-3 py-4 text-sm text-muted-foreground',
 		footerCell: 'px-3 py-2 text-sm text-muted-foreground',

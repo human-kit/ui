@@ -159,7 +159,7 @@
 	});
 	const ariaRowCount = $derived.by(() => {
 		void $layoutVersion;
-		const rowCount = ctx.getHeaderRowCount() + ctx.getBodyRowCount();
+		const rowCount = ctx.getHeaderRowCount() + ctx.getLogicalBodyRowCount();
 		return rowCount > 0 ? rowCount : undefined;
 	});
 
@@ -330,8 +330,8 @@
 		const resizeObserver =
 			typeof ResizeObserver !== 'undefined'
 				? new ResizeObserver(() => {
-					scheduleMeasuredLayoutRefresh();
-				})
+						scheduleMeasuredLayoutRefresh();
+					})
 				: null;
 
 		resizeObserver?.observe(resizeTarget);

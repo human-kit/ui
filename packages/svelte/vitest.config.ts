@@ -7,6 +7,7 @@ export default defineConfig({
 	plugins: [svelte({ hot: false })],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
+		exclude: ['src/**/*-ssr.test.ts'],
 		globals: true,
 		alias: {
 			$lib: resolve(__dirname, './src/lib'),

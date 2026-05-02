@@ -2,6 +2,7 @@ export * as Table from './index.parts.js';
 
 export type {
 	TableBodyProps,
+	TableBodyVirtualizer,
 	TableCellProps,
 	TableCheckboxIndicatorProps,
 	TableCheckboxProps,

@@ -5,6 +5,7 @@ import type {
 	TableContext,
 	TableDisabledBehavior,
 	TableRowActionHandler,
+	TableRowItem,
 	TableSelectionBehavior,
 	TableSelectionKey,
 	TableSelectionMode,
@@ -28,8 +29,19 @@ export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'ch
 	class?: string;
 };
 
-export type TableBodyProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
-	children?: Snippet;
+export type TableBodyVirtualizer = {
+	rowHeight: number;
+	overscan?: number;
+};
+
+export type TableBodyProps<T extends TableRowItem = TableRowItem> = Omit<
+	HTMLAttributes<HTMLTableSectionElement>,
+	'children'
+> & {
+	items?: T[];
+	virtualizer?: TableBodyVirtualizer;
+	children?: Snippet | Snippet<[T]>;
+	empty?: Snippet;
 	class?: string;
 };
 
