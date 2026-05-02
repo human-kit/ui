@@ -13,10 +13,10 @@ Public prop type: `TableBodyProps`
 
 | Prop          | Type                       | Default     | Description                                                                  |
 | ------------- | -------------------------- | ----------- | ---------------------------------------------------------------------------- |
-| `items`       | `T[]`                      | `undefined` | Optional logical row collection. When present, `children` renders once per item. |
+| `items`       | `readonly T[]`             | `undefined` | Logical row collection for item-driven mode. When present, `children(item)` renders once per item with `item` inferred from `items`. |
 | `virtualizer` | `TableBodyVirtualizer`     | `undefined` | Optional fixed-height row virtualization config with `rowHeight` and `overscan`. |
 | `class`       | `string`                   | `''`        | Class names for the `tbody` element.                                         |
-| `children`    | `Snippet` or `Snippet<[T]>` | `undefined` | Manual body content, or the row-render snippet when `items` is provided.     |
+| `children`    | `Snippet` or `Snippet<[T]>` | `undefined` | Manual body content when `items` is omitted, or `children(item)` in item-driven mode. |
 | `empty`       | `Snippet`                  | `undefined` | Optional empty-state snippet for item-driven mode.                           |
 
 ### TableBodyVirtualizer
@@ -27,7 +27,7 @@ Description: Fixed-height body virtualization settings.
 | Prop        | Type     | Default | Description                                                    |
 | ----------- | -------- | ------- | -------------------------------------------------------------- |
 | `rowHeight` | `number` | `-`     | Required fixed pixel height used to compute the visible range. |
-| `overscan`  | `number` | `6`     | Extra rows rendered above and below the viewport.              |
+| `overscan`  | `number` | `18`    | Extra rows rendered above and below the viewport.              |
 
 ### Context utilities
 

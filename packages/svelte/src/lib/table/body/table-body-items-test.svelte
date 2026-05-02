@@ -30,7 +30,7 @@
 			</Table.Row>
 		</Table.Header>
 
-		<Table.Body items={rows} virtualizer={{ rowHeight: 32, overscan: 4 }}>
+		<Table.Body items={rows} virtualizer={{ rowHeight: 32 }}>
 			{#snippet children(row)}
 				<Table.Row id={row.id} data-item-id={row.id}>
 					<Table.Cell>{row.email}</Table.Cell>

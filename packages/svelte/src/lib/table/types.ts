@@ -34,16 +34,30 @@ export type TableBodyVirtualizer = {
 	overscan?: number;
 };
 
-export type TableBodyProps<T extends TableRowItem = TableRowItem> = Omit<
+type TableBodyBaseProps = Omit<
 	HTMLAttributes<HTMLTableSectionElement>,
 	'children'
 > & {
-	items?: T[];
-	virtualizer?: TableBodyVirtualizer;
-	children?: Snippet | Snippet<[T]>;
-	empty?: Snippet;
 	class?: string;
 };
+
+export type TableBodyManualProps = TableBodyBaseProps & {
+	items?: undefined;
+	virtualizer?: undefined;
+	children?: Snippet;
+	empty?: undefined;
+};
+
+export type TableBodyItemsProps<T extends TableRowItem = TableRowItem> = TableBodyBaseProps & {
+	items: readonly T[];
+	virtualizer?: TableBodyVirtualizer;
+	children?: Snippet<[T]>;
+	empty?: Snippet;
+};
+
+export type TableBodyProps<T extends TableRowItem = TableRowItem> =
+	| TableBodyManualProps
+	| TableBodyItemsProps<T>;
 
 export type TableFooterProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
 	children?: Snippet;

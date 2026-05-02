@@ -35,7 +35,7 @@
 	const itemList = $derived(items ?? []);
 	const isItemsMode = $derived(items !== undefined);
 	const virtualizerEnabled = $derived(Boolean(virtualizer && itemList.length > 0));
-	const overscan = $derived(Math.max(0, virtualizer?.overscan ?? 6));
+	const overscan = $derived(Math.max(0, virtualizer?.overscan ?? 18));
 	const bodyColumnCount = $derived.by(() => {
 		void $layoutVersion;
 		return Math.max(table.getVisibleColumnCount(), 1);
