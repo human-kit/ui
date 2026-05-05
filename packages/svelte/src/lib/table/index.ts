@@ -1,6 +1,12 @@
 export * as Table from './index.parts.js';
 
 export type {
+	CellContext,
+	CellProps,
+	CellRenderer,
+	ColumnDef,
+	Row,
+	RowData,
 	TableBodyProps,
 	TableBodyVirtualizer,
 	TableCellProps,

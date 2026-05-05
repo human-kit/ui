@@ -9,19 +9,19 @@ describe('Table.Body', () => {
 		expect(document.querySelector('tbody[data-empty]')).toBeTruthy();
 	});
 
-	it('supports item-driven virtualization with typed items and default overscan', async () => {
+	it('supports item-driven virtualization with typed items and a fixed default overscan', async () => {
 		render(TableBodyItemsTest);
 
 		await expect
 			.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-rowcount'))
 			.toBe('121');
-		await expect.poll(() => document.querySelectorAll('tbody tr').length).toBeLessThan(40);
+		await expect.poll(() => document.querySelectorAll('tbody tr').length).toBeLessThan(30);
 		expect(document.querySelector('tbody [data-item-id="row-001"]')).toBeTruthy();
 		await expect
 			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-026"]')))
 			.toBe(true);
 		await expect
-			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-031"]')))
+			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-027"]')))
 			.toBe(false);
 	});
 });

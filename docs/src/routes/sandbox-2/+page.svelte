@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import ReproTable from '$lib/repros/purchase-requests/index';
+	import AmountCell from '$lib/repros/purchase-requests/amount-cell.svelte';
+	import type { PurchaseRequest } from '$lib/repros/purchase-requests/model';
 	import RowCostProbe from '$lib/repros/purchase-requests/row-cost-probe.svelte';
+	import StaticReproTable from '$lib/repros/purchase-requests/static-table.svelte';
+	import type { StaticResolvedColumn } from '$lib/repros/purchase-requests/static-types';
+	import type { TableSortDescriptor } from '@human-kit/svelte-components/table';
 	import { tick } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-	import type { CellRenderContext } from '$lib/repros/purchase-requests/types';
 
 	type BenchmarkPhase = 'hydrate' | 'remount';
 	type TableVariant = 'current' | 'current-no-selection' | 'raw';
@@ -72,16 +75,6 @@
 		files: string[];
 	};
 
-	type PurchaseRequest = {
-		id: string;
-		requestNumber: string;
-		requester: string;
-		area: string;
-		status: 'Pending' | 'Review' | 'Approved' | 'Rejected';
-		priority: 'Low' | 'Medium' | 'High';
-		total: number;
-	};
-
 	const requesters = [
 		'Ana Gomez',
 		'Lucas Perez',
@@ -113,14 +106,15 @@
 	}> = [
 		{
 			id: 'current',
-			label: 'Current row',
-			description: 'Wrapper real con Table.Root, selección, columnas y celdas renderizadas.'
+			label: 'Static wrapper',
+			description:
+				'Wrapper con columns estatico: arma la tabla, pero sin registro dinamico hijo -> padre.'
 		},
 		{
 			id: 'current-no-selection',
-			label: 'Current no selection',
+			label: 'Static wrapper no selection',
 			description:
-				'Mismo wrapper real y mismas columnas de datos, pero sin columna de selección ni checkbox stack.'
+				'Mismo wrapper estatico y mismas columnas de datos, pero sin columna de seleccion ni checkbox stack.'
 		},
 		{
 			id: 'raw',
@@ -130,10 +124,30 @@
 		}
 	] as const;
 	const variantLabels = {
-		current: 'Current row',
-		'current-no-selection': 'Current no selection',
+		current: 'Static wrapper',
+		'current-no-selection': 'Static wrapper no selection',
 		raw: 'Raw table'
 	} satisfies Record<TableVariant, string>;
+	const resolvedColumns: StaticResolvedColumn<PurchaseRequest>[] = [
+		{
+			id: 'requestNumber',
+			header: 'Request',
+			isRowHeader: true,
+			resizable: true,
+			defaultWidth: 350
+		},
+		{ id: 'requester', header: 'Requester', resizable: true },
+		{ id: 'area', header: 'Area', resizable: true },
+		{ id: 'status', header: 'Status', resizable: true },
+		{ id: 'priority', header: 'Priority', resizable: true },
+		{
+			id: 'total',
+			header: 'Total',
+			align: 'right',
+			sort: (item) => item.total,
+			cell: AmountCell
+		}
+	];
 	const optimizationTodos: OptimizationTodo[] = [
 		{
 			responsibility: 'Tab stop and focus resolution',
@@ -237,6 +251,7 @@
 		purchaseRequests[3].id,
 		purchaseRequests[7].id
 	]);
+	let sortDescriptor = $state<TableSortDescriptor | undefined>(undefined);
 	let tableVariant = $state<TableVariant>('current');
 	let rowCount = $state<(typeof rowCountOptions)[number]>(defaultRowCount);
 	let tableRunVersion = $state(0);
@@ -554,17 +569,18 @@
 </script>
 
 <svelte:head>
-	<title>Sandbox | Purchase Requests</title>
+	<title>Sandbox 2 | Static Wrapper</title>
 </svelte:head>
 
 <div class="flex h-full min-h-[calc(100svh-8px)] min-w-0 flex-col gap-3">
 	<header class="rounded-xl border border-border bg-depth-1 px-5 py-4 shadow-sm">
-		<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Sandbox Route</p>
-		<h2 class="mt-2 text-2xl font-semibold text-foreground">Purchase Requests</h2>
+		<p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
+			Sandbox Route 2
+		</p>
+		<h2 class="mt-2 text-2xl font-semibold text-foreground">Purchase Requests - Static Wrapper</h2>
 		<p class="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-			This sandbox now benchmarks the current component stack, a no-selection variant of the same
-			stack, and a raw HTML table. Run the same row count on each variant to compare bootstrap,
-			fan-out, and DOM cost.
+			This sandbox keeps the same benchmark harness as the original route, but uses the
+			static-columns wrapper instead of the dynamic child-registration wrapper.
 		</p>
 		<div
 			class="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-border/70 bg-background/80 px-4 py-3 text-sm"
@@ -892,40 +908,19 @@
 	<div bind:this={tableHost}>
 		{#key `${tableVariant}-${tableRunVersion}`}
 			{#if tableVariant === 'current' || tableVariant === 'current-no-selection'}
-				<ReproTable
+				<StaticReproTable
 					aria-label="Purchase requests"
 					items={visiblePurchaseRequests}
+					columns={resolvedColumns}
 					class="max-h-[calc(100vh-140px)] w-full"
 					selectionMode={tableVariant === 'current' ? 'multiple' : 'none'}
 					bind:selectedKeys={selectedPurchaseRequestIds}
+					bind:sortDescriptor
 				>
 					{#snippet rowProbe(item: PurchaseRequest)}
 						<RowCostProbe rowId={item.id} onMeasure={handleRowMeasure} />
 					{/snippet}
-					<ReproTable.Column
-						id="requestNumber"
-						header="Request"
-						isRowHeader
-						resizable
-						defaultWidth={350}
-					/>
-					<ReproTable.Column id="requester" header="Requester" resizable />
-					<ReproTable.Column id="area" header="Area" resizable />
-					<ReproTable.Column id="status" header="Status" resizable />
-					<ReproTable.Column id="priority" header="Priority" resizable />
-					<ReproTable.Column
-						id="total"
-						header="Total"
-						align="right"
-						sort={(item: PurchaseRequest) => item.total}
-					>
-						{#snippet cell(cellContext: CellRenderContext<PurchaseRequest>)}
-							<div class="flex w-full justify-end">
-								<span>${cellContext.item.total.toLocaleString()}</span>
-							</div>
-						{/snippet}
-					</ReproTable.Column>
-				</ReproTable>
+				</StaticReproTable>
 			{:else}
 				<div
 					class="max-h-[calc(100vh-140px)] overflow-auto rounded-xl border border-border bg-background shadow-sm"

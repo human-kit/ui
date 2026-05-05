@@ -10,77 +10,42 @@
 		TableSelectionMode,
 		TableSortDescriptor
 	} from '@human-kit/svelte-components/table';
-	import TableColumnBridge from './column.svelte';
-	import type {
-		CellRenderContext,
-		ColumnDefAlignment,
-		ColumnDefValue,
-		ResolvedColumn,
-		TableColumnComponent,
-		TableColumnsContext
-	} from './types';
-	import { setTableColumnRegistry } from './context';
+	import type { ColumnDefAlignment, ColumnDefValue } from './types';
+	import type { StaticResolvedColumn, StaticRow } from './static-types';
 	import { tableRecipe } from './recipe';
 
 	type RootProps = Omit<TableRootProps, 'children' | 'class'>;
 
 	type Props = RootProps & {
 		items?: T[];
+		columns: StaticResolvedColumn<T>[];
 		emptyPlaceholder?: string;
 		virtualizer?: TableBodyVirtualizer;
 		class?: string;
 		rowProbe?: Snippet<[T]>;
-		columns?: Snippet<[TableColumnsContext<T>]>;
-		children?: Snippet;
 	};
 
 	let {
 		items = [],
+		columns,
 		emptyPlaceholder = 'No rows found',
 		virtualizer,
 		class: className = '',
 		rowProbe,
 		selectedKeys = $bindable(),
 		sortDescriptor = $bindable<TableSortDescriptor | undefined>(),
-		columns,
-		children,
 		...rootProps
 	}: Props = $props();
 
-	let registeredColumns = $state<Array<{ token: string; column: ResolvedColumn<T> }>>([]);
+	const recipe = tableRecipe();
+	const selectionMode = $derived((rootProps.selectionMode ?? 'none') as TableSelectionMode);
+	const showSelection = $derived(selectionMode !== 'none');
 
 	function cx(...values: Array<string | undefined>) {
 		return values.filter(Boolean).join(' ');
 	}
 
-	setTableColumnRegistry({
-		upsertColumn(token, column) {
-			const index = registeredColumns.findIndex((entry) => entry.token === token);
-
-			if (index === -1) {
-				registeredColumns = [...registeredColumns, { token, column }];
-				return;
-			}
-
-			registeredColumns = registeredColumns.map((entry) =>
-				entry.token === token ? { token, column } : entry
-			);
-		},
-		removeColumn(token) {
-			registeredColumns = registeredColumns.filter((entry) => entry.token !== token);
-		}
-	});
-
-	const recipe = tableRecipe();
-	const Column = TableColumnBridge as TableColumnComponent<T>;
-	const selectionMode = $derived((rootProps.selectionMode ?? 'none') as TableSelectionMode);
-	const showSelection = $derived(selectionMode !== 'none');
-
-	function getResolvedColumns(): ResolvedColumn<T>[] {
-		return registeredColumns.map((entry) => entry.column);
-	}
-
-	function getColumnValue(item: T, column: ResolvedColumn<T>): ColumnDefValue {
+	function getColumnValue(item: T, column: StaticResolvedColumn<T>): ColumnDefValue {
 		if (!(column.id in item)) {
 			return undefined;
 		}
@@ -88,7 +53,7 @@
 		return item[column.id as keyof T] as ColumnDefValue;
 	}
 
-	function getSortValue(item: T, column: ResolvedColumn<T>) {
+	function getSortValue(item: T, column: StaticResolvedColumn<T>) {
 		if (column.sort) {
 			return column.sort(item);
 		}
@@ -119,7 +84,7 @@
 		return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
 	}
 
-	function getSortedItems(columns: ResolvedColumn<T>[]) {
+	function getSortedItems() {
 		const descriptor = sortDescriptor;
 		if (!descriptor) return items;
 
@@ -147,12 +112,6 @@
 </script>
 
 <div class={cx(recipe.container(), className)}>
-	{#if columns}
-		{@render columns({ Column })}
-	{:else if children}
-		{@render children()}
-	{/if}
-
 	<div
 		class="h-full max-h-[inherit] min-h-0 max-w-full overflow-auto"
 		data-purchase-request-scroll-container
@@ -164,8 +123,7 @@
 			class={recipe.root()}
 			{...rootProps}
 		>
-			{@const resolvedColumns = (() => getResolvedColumns())()}
-			{@const sortedItems = (() => getSortedItems(resolvedColumns))()}
+			{@const sortedItems = getSortedItems()}
 			<Table.Header>
 				<Table.Row class={recipe.headerRow()}>
 					{#if showSelection}
@@ -191,7 +149,7 @@
 						</Table.Column>
 					{/if}
 
-					{#each resolvedColumns as column (column.id)}
+					{#each columns as column (column.id)}
 						<Table.Column
 							id={column.id}
 							textValue={column.header ?? column.id}
@@ -228,6 +186,7 @@
 
 			<Table.Body items={sortedItems} {virtualizer}>
 				{#snippet children(item)}
+					{@const row = { id: item.id, original: item } satisfies StaticRow<T>}
 					<Table.Row id={item.id} class={recipe.bodyRow()} data-purchase-request-row={item.id}>
 						{#if showSelection}
 							<Table.Cell class={recipe.selectionCell()}>
@@ -251,20 +210,18 @@
 							</Table.Cell>
 						{/if}
 
-						{#each resolvedColumns as column, columnIndex (column.id)}
+						{#each columns as column, columnIndex (column.id)}
 							{@const value = getColumnValue(item, column)}
-							{@const cellContext = { item, value, column } satisfies CellRenderContext<T>}
 							<Table.Cell class={cx(recipe.bodyCell(), alignmentClass(column.align))}>
 								{#if rowProbe && !showSelection && columnIndex === 0}
 									{@render rowProbe(item)}
 								{/if}
-								<div class="min-w-0 truncate">
-									{#if column.cell}
-										{@render column.cell(cellContext)}
-									{:else}
-										{getDefaultDisplayValue(value)}
-									{/if}
-								</div>
+								{#if column.cell}
+									{@const CellComponent = column.cell}
+									<CellComponent {row} {value} {column} />
+								{:else}
+									<div class="min-w-0 truncate">{getDefaultDisplayValue(value)}</div>
+								{/if}
 							</Table.Cell>
 						{/each}
 					</Table.Row>

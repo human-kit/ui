@@ -1,4 +1,4 @@
-import type { Snippet } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { HTMLAttributes } from 'svelte/elements';
 import type {
 	TableColumnWidth,
@@ -23,6 +23,45 @@ export type TableColumnProps = {
 	maxWidth?: number;
 	children?: Snippet;
 };
+
+export type RowData = Record<string, unknown> & {
+	id: TableSelectionKey;
+};
+
+export type Row<T extends RowData = RowData> = {
+	id: T['id'];
+	original: T;
+};
+
+export type ColumnDef<T extends RowData = RowData, TValue = unknown> = {
+	id: string;
+	header?: string;
+	textValue?: string;
+	accessorKey?: Extract<keyof T, string>;
+	accessor?: (row: T) => TValue;
+	sortValue?: (row: T) => string | number | boolean | Date | null | undefined;
+	align?: 'left' | 'center' | 'right';
+	isRowHeader?: boolean;
+	resizable?: boolean;
+	width?: TableColumnWidth;
+	defaultWidth?: TableColumnWidth;
+	minWidth?: number;
+	maxWidth?: number;
+	cellComponent?: Component<CellProps<T, TValue>>;
+	renderCell?: CellRenderer<T, TValue>;
+};
+
+export type CellContext<T extends RowData = RowData, TValue = unknown> = {
+	row: Row<T>;
+	value: TValue;
+	column: ColumnDef<T, TValue>;
+};
+
+export type CellProps<T extends RowData = RowData, TValue = unknown> = CellContext<T, TValue>;
+
+export type CellRenderer<T extends RowData = RowData, TValue = unknown> = Snippet<[
+	CellContext<T, TValue>
+]>;
 
 export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
 	children?: Snippet;

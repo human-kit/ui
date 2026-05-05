@@ -146,7 +146,7 @@ describe('Table.Root', () => {
 	});
 
 	it('warns in dev when the grid has no accessible name', async () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
 		try {
 			render(TableTest, {
@@ -217,7 +217,6 @@ describe('Table.Root', () => {
 		);
 
 		await userEvent.click(document.querySelector<HTMLElement>('[data-testid="toggle-order"]')!);
-
 		await expect
 			.poll(() =>
 				document.querySelector('[data-testid="group-header"]')?.getAttribute('data-column-index')

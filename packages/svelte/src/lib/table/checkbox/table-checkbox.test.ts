@@ -199,6 +199,19 @@ describe('Table.Checkbox', () => {
 			.toBe('["danilo"]');
 	});
 
+	it('toggles row selection with Space when the checkbox has focus', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		const rowCheckbox = document.querySelector<HTMLElement>('[data-testid="row-checkbox-danilo"]')!;
+
+		rowCheckbox.focus();
+		await userEvent.keyboard('{Space}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+	});
+
 	it('does not render an extra presentation wrapper around the checkbox root', async () => {
 		render(CheckboxTest, { selectionMode: 'multiple' });
 

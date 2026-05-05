@@ -22,6 +22,7 @@
 	const focusVersion = table.focusVersion;
 	const selectionVersion = table.selectionVersion;
 	const cellOrderVersion = row.cellOrderVersion;
+	const rowState = row.rowState;
 
 	let element = $state<HTMLElement | undefined>(undefined);
 	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
@@ -51,17 +52,11 @@
 		focusDelegate = undefined;
 	}
 
-	const shouldSeedClientRegistration = typeof window === 'undefined';
-
 	setTableCellContext({
 		cellKey: key,
 		registerFocusDelegate,
 		unregisterFocusDelegate
 	});
-
-	if (shouldSeedClientRegistration) {
-		syncCellRegistration();
-	}
 
 	$effect(() => {
 		syncCellRegistration();
@@ -76,21 +71,17 @@
 
 	const column = $derived.by(() => {
 		void $layoutVersion;
-		return cellIndex >= 0 ? table.getColumnAt(cellIndex) : undefined;
+		void $focusVersion;
+		return cellIndex >= 0 ? table.getColumnLayoutAt(cellIndex) : undefined;
 	});
-	const isColumnHidden = $derived.by(() => {
-		void $layoutVersion;
-		return column ? table.isColumnHidden(column.id) : false;
-	});
-	const visibleColumnIndex = $derived.by(() => {
-		void $layoutVersion;
-		return column ? table.getVisibleColumnIndexByToken(column.token) : -1;
-	});
-	const tagName = $derived(row.section === 'body' && column?.isRowHeader ? 'th' : 'td');
+	const resolvedColumn = $derived(column?.column);
+	const isColumnHidden = $derived(column?.isHidden ?? false);
+	const visibleColumnIndex = $derived(column?.visibleColumnIndex ?? -1);
+	const tagName = $derived(row.section === 'body' && resolvedColumn?.isRowHeader ? 'th' : 'td');
 	const role = $derived.by(() => {
 		if (isColumnHidden) return undefined;
 		if (row.section !== 'body') return undefined;
-		return column?.isRowHeader ? 'rowheader' : 'gridcell';
+		return resolvedColumn?.isRowHeader ? 'rowheader' : 'gridcell';
 	});
 	const isFocused = $derived.by(() => {
 		void $focusVersion;
@@ -100,34 +91,24 @@
 		void $focusVersion;
 		return row.section === 'body' ? isFocused && table.focusVisible : false;
 	});
-	const isRowSelected = $derived.by(() => {
-		void $selectionVersion;
-		return row.section === 'body' ? table.isRowSelected(row.rowId) : false;
-	});
+	const isRowSelected = $derived(row.section === 'body' ? $rowState.isSelected : false);
 	const isRowDisabled = $derived.by(() => {
 		void $selectionVersion;
-		return row.section === 'body' ? table.isRowDisabled(row.rowId, row.isDisabled) : row.isDisabled;
-	});
-	const isRowSelectionDisabled = $derived.by(() => {
-		void $selectionVersion;
 		return row.section === 'body'
-			? table.isRowSelectionDisabled(row.rowId, row.isDisabled)
+			? table.isRowDisabled(row.rowId as TableSelectionKey | undefined, row.isDisabled)
 			: row.isDisabled;
 	});
-	const isRowActionable = $derived.by(() => {
-		void $selectionVersion;
-		return row.section === 'body' ? table.isRowActionable(row.rowId, row.isDisabled) : false;
-	});
-	const selectionUnavailableDescription = $derived.by(() => {
-		return row.section === 'body' &&
-			table.selectionMode !== 'none' &&
-			!isRowDisabled &&
-			isRowSelectionDisabled
-			? 'Selection unavailable for this row.'
-			: undefined;
-	});
-	const selectionUnavailableDescriptionId = $derived(
-		selectionUnavailableDescription ? table.selectionUnavailableDescriptionId : undefined
+	const isRowSelectionDisabled = $derived(
+		row.section === 'body' ? $rowState.isSelectionDisabled : row.isDisabled
+	);
+	const isRowActionable = $derived(row.section === 'body' ? $rowState.isActionable : false);
+	const selectionUnavailableDescriptionId = $derived.by(() =>
+		row.section === 'body' &&
+		table.selectionMode !== 'none' &&
+		!isRowDisabled &&
+		isRowSelectionDisabled
+			? table.selectionUnavailableDescriptionId
+			: undefined
 	);
 	const isCellFocusable = $derived(row.section !== 'body' || !isRowDisabled);
 	const cellTabIndex = $derived.by(() => {
@@ -135,6 +116,8 @@
 		if (isColumnHidden) return undefined;
 		if (!isCellFocusable) return undefined;
 		if (focusDelegate) return undefined;
+		void $focusVersion;
+		if (table.focusedCellKey === null && table.getHeaderRowCount() > 0) return -1;
 		return table.isCellTabStop(key) ? 0 : -1;
 	});
 
@@ -221,7 +204,7 @@
 	{role}
 	class={className}
 	tabindex={cellTabIndex}
-	scope={row.section === 'body' && column?.isRowHeader ? 'row' : undefined}
+	scope={row.section === 'body' && resolvedColumn?.isRowHeader ? 'row' : undefined}
 	aria-colindex={!isColumnHidden && visibleColumnIndex >= 0 ? visibleColumnIndex + 1 : undefined}
 	aria-hidden={isColumnHidden ? true : undefined}
 	aria-describedby={selectionUnavailableDescriptionId}

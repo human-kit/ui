@@ -120,6 +120,12 @@ type TableColumnMetadata = {
 	maxWidth?: number;
 };
 
+type TableColumnLayoutEntry = {
+	column: TableColumnMetadata | undefined;
+	isHidden: boolean;
+	visibleColumnIndex: number;
+};
+
 export type TableSelectionCheckboxState = 'none' | 'some' | 'all';
 
 type TableRowRegistration = {
@@ -184,6 +190,7 @@ export type TableContext = {
 	getColumnCount: () => number;
 	getVisibleColumnCount: () => number;
 	getColumnAt: (index: number) => TableColumnMetadata | undefined;
+	getColumnLayoutAt: (index: number) => TableColumnLayoutEntry;
 	getColumnIndexByToken: (token: string) => number;
 	getVisibleColumnIndexByToken: (token: string) => number;
 	getColumnTextValue: (columnId: string) => string | undefined;
@@ -201,6 +208,7 @@ export type TableContext = {
 	getResolvedVisibleColumnWidths: () => Map<string, number>;
 	hasRelativeVisibleColumnWidths: () => boolean;
 	refreshMeasuredLayout: () => void;
+	notifyLayoutChange: () => void;
 	setColumnWidths: (widths?: Iterable<readonly [string, TableColumnWidth]>) => void;
 	setColumnWidth: (columnId: string, width: number) => void;
 	setHiddenColumns: (columnIds?: Iterable<string>) => void;
@@ -278,6 +286,12 @@ export type TableRowContext = {
 	section: TableSectionKind;
 	rowId?: TableSelectionKey;
 	isDisabled: boolean;
+	rowState: Readable<{
+		isSelected: boolean;
+		isAriaDisabled: boolean;
+		isSelectionDisabled: boolean;
+		isActionable: boolean;
+	}>;
 	cellOrderVersion: Readable<number>;
 	registerCellToken: (token: string, getElement?: () => HTMLElement | undefined) => void;
 	unregisterCellToken: (token: string) => void;
@@ -338,18 +352,23 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const columnWidths = new Map<string, TableColumnWidth>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
+	const headerRowOrderSet = new Set<string>();
 	const bodyRowOrder: string[] = [];
+	const bodyRowOrderSet = new Set<string>();
 	let bodyRowsInitialized = false;
 	let selectableBodyRowCount = 0;
 	let logicalBodyRowIds: TableSelectionKey[] | null = null;
 	const cells = new Map<string, TableCellRegistration>();
 	const cellOrder: string[] = [];
+	const cellOrderSet = new Set<string>();
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
 		header: null,
 		body: null
 	};
 	let orderedColumnTokensCache: string[] | null = null;
 	let visibleOrderedColumnTokensCache: string[] | null = null;
+	let visibleColumnIndexByTokenCache: Map<string, number> | null = null;
+	let columnLayoutByIndexCache: TableColumnLayoutEntry[] | null = null;
 	let columnWidthsCache: Map<string, TableColumnWidth> | null = null;
 	let visibleColumnWidthsCache: Map<string, TableColumnWidth> | null = null;
 	let resolvedVisibleColumnWidthsCache: Map<string, number> | null = null;
@@ -359,6 +378,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		null;
 	let rowsWithCellsCache: Map<number, { col: number; key: string; element: HTMLElement }[]> | null =
 		null;
+	let defaultFocusKeyCache: string | undefined;
 
 	const layoutVersion = writable(0);
 	const selectionVersion = writable(0);
@@ -380,6 +400,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		orderedRowTokensCache = { header: null, body: null };
 		orderedColumnTokensCache = null;
 		visibleOrderedColumnTokensCache = null;
+		visibleColumnIndexByTokenCache = null;
+		columnLayoutByIndexCache = null;
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
 		resolvedVisibleColumnWidthsCache = null;
@@ -387,11 +409,50 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		hasMeasuredTableWidthCache = false;
 		navigableCellsCache = null;
 		rowsWithCellsCache = null;
+		defaultFocusKeyCache = undefined;
+	}
+
+	function invalidateBodyStructureCaches() {
+		orderedRowTokensCache = {
+			header: orderedRowTokensCache.header,
+			body: null
+		};
+		navigableCellsCache = null;
+		rowsWithCellsCache = null;
+		const cachedCell = defaultFocusKeyCache ? cells.get(defaultFocusKeyCache) : undefined;
+		if (cachedCell?.section !== 'header') {
+			defaultFocusKeyCache = undefined;
+		}
 	}
 
 	let layoutNotifyScheduled = false;
 	let selectionNotifyScheduled = false;
 	let widthNotifyScheduled = false;
+	let bodyStructureInvalidationScheduled = false;
+
+	function scheduleBodyStructureCacheInvalidation() {
+		if (bodyStructureInvalidationScheduled) return;
+		bodyStructureInvalidationScheduled = true;
+		queueMicrotask(() => {
+			bodyStructureInvalidationScheduled = false;
+			invalidateBodyStructureCaches();
+		});
+	}
+
+	function seedDefaultFocusKeyFromCell(cell: TableCellRegistration) {
+		if (focusedCellKey || focusedRowTarget || defaultFocusKeyCache !== undefined) {
+			return;
+		}
+
+		if (cell.section === 'header') {
+			defaultFocusKeyCache = cell.key;
+			return;
+		}
+
+		const row = rows.get(cell.rowToken);
+		if (!row || isRowDisabled(row.id, row.disabled)) return;
+		defaultFocusKeyCache = cell.key;
+	}
 
 	function syncResizerLayoutReady(nextReady: boolean) {
 		if (resizerLayoutReady === nextReady) return;
@@ -459,6 +520,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function refreshMeasuredLayout() {
 		notifyWidthImmediately();
+	}
+
+	function notifyLayoutChange() {
+		notifyLayout();
 	}
 
 	function notifyResize() {
@@ -713,6 +778,18 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		);
 	}
 
+	type ResolvedCellTarget = TableCellRegistration;
+
+	function resolveCellTargetByKey(key: string | null) {
+		return key ? (cells.get(key) ?? null) : null;
+	}
+
+	function getResolvedBodyCellsForRow(rowToken: string) {
+		return Array.from(cells.values()).filter(
+			(cell): cell is ResolvedCellTarget => cell.section === 'body' && cell.rowToken === rowToken
+		);
+	}
+
 	function registerColumn(column: TableColumnMetadata) {
 		const existing = columns.get(column.token);
 		const alreadyOrdered = columnOrder.includes(column.token);
@@ -755,7 +832,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getOrderedColumnTokens() {
-		if (orderedColumnTokensCache) return orderedColumnTokensCache;
+		if (!IS_BROWSER && orderedColumnTokensCache) return orderedColumnTokensCache;
 
 		// Pre-build a lookup from columnToken → header cell element to avoid
 		// O(columns × cells) scanning inside the comparator.
@@ -766,7 +843,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			}
 		}
 
-		orderedColumnTokensCache = [...columnOrder].sort((leftToken, rightToken) => {
+		const orderedColumnTokens = [...columnOrder].sort((leftToken, rightToken) => {
 			const leftCell = headerElementByToken.get(leftToken);
 			const rightCell = headerElementByToken.get(rightToken);
 
@@ -780,7 +857,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
 			return columnOrder.indexOf(leftToken) - columnOrder.indexOf(rightToken);
 		});
-		return orderedColumnTokensCache;
+
+		if (!IS_BROWSER) {
+			orderedColumnTokensCache = orderedColumnTokens;
+		}
+
+		return orderedColumnTokens;
 	}
 
 	function getColumnCount() {
@@ -788,16 +870,35 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getVisibleOrderedColumnTokens() {
-		if (visibleOrderedColumnTokensCache) return visibleOrderedColumnTokensCache;
-		visibleOrderedColumnTokensCache = getOrderedColumnTokens().filter((token) => {
+		if (!IS_BROWSER && visibleOrderedColumnTokensCache) return visibleOrderedColumnTokensCache;
+		const visibleOrderedColumnTokens = getOrderedColumnTokens().filter((token) => {
 			const column = columns.get(token);
 			return column ? !isColumnHidden(column.id) : false;
 		});
-		return visibleOrderedColumnTokensCache;
+
+		if (!IS_BROWSER) {
+			visibleOrderedColumnTokensCache = visibleOrderedColumnTokens;
+		}
+
+		return visibleOrderedColumnTokens;
 	}
 
 	function getVisibleColumnCount() {
 		return getVisibleOrderedColumnTokens().length;
+	}
+
+	function getVisibleColumnIndexByTokenMap() {
+		if (!IS_BROWSER && visibleColumnIndexByTokenCache) return visibleColumnIndexByTokenCache;
+
+		const visibleColumnIndexByToken = new Map(
+			getVisibleOrderedColumnTokens().map((token, index) => [token, index])
+		);
+
+		if (!IS_BROWSER) {
+			visibleColumnIndexByTokenCache = visibleColumnIndexByToken;
+		}
+
+		return visibleColumnIndexByToken;
 	}
 
 	function getColumnAt(index: number) {
@@ -805,12 +906,60 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return token ? columns.get(token) : undefined;
 	}
 
+	function getColumnLayoutAt(index: number) {
+		if (IS_BROWSER) {
+			const token = getOrderedColumnTokens()[index];
+			const column = token ? columns.get(token) : undefined;
+			if (!column) {
+				return {
+					column: undefined,
+					isHidden: false,
+					visibleColumnIndex: -1
+				};
+			}
+
+			return {
+				column,
+				isHidden: isColumnHidden(column.id),
+				visibleColumnIndex: getVisibleColumnIndexByTokenMap().get(column.token) ?? -1
+			};
+		}
+
+		if (!columnLayoutByIndexCache) {
+			const visibleColumnIndexByToken = getVisibleColumnIndexByTokenMap();
+			columnLayoutByIndexCache = getOrderedColumnTokens().map((token) => {
+				const column = columns.get(token);
+				if (!column) {
+					return {
+						column: undefined,
+						isHidden: false,
+						visibleColumnIndex: -1
+					} satisfies TableColumnLayoutEntry;
+				}
+
+				return {
+					column,
+					isHidden: isColumnHidden(column.id),
+					visibleColumnIndex: visibleColumnIndexByToken.get(column.token) ?? -1
+				} satisfies TableColumnLayoutEntry;
+			});
+		}
+
+		return (
+			columnLayoutByIndexCache[index] ?? {
+				column: undefined,
+				isHidden: false,
+				visibleColumnIndex: -1
+			}
+		);
+	}
+
 	function getColumnIndexByToken(token: string) {
 		return getOrderedColumnTokens().indexOf(token);
 	}
 
 	function getVisibleColumnIndexByToken(token: string) {
-		return getVisibleOrderedColumnTokens().indexOf(token);
+		return getVisibleColumnIndexByTokenMap().get(token) ?? -1;
 	}
 
 	function getColumnTextValue(columnId: string) {
@@ -1190,19 +1339,19 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		notifyWidth();
 	}
 
-	function getCellColumn(cell: TableCellRegistration) {
+	function getCellColumn(cell: ResolvedCellTarget) {
 		if (cell.section === 'header' && cell.columnToken) {
 			return columns.get(cell.columnToken);
 		}
 		return cell.columnIndex !== undefined ? getColumnAt(cell.columnIndex) : undefined;
 	}
 
-	function isCellColumnHidden(cell: TableCellRegistration) {
+	function isCellColumnHidden(cell: ResolvedCellTarget) {
 		const column = getCellColumn(cell);
 		return column ? isColumnHidden(column.id) : false;
 	}
 
-	function getNearestVisibleCellKey(targetCell: TableCellRegistration) {
+	function getNearestVisibleCellKey(targetCell: ResolvedCellTarget) {
 		const targetPhysicalIndex =
 			targetCell.section === 'header'
 				? targetCell.columnToken
@@ -1210,11 +1359,16 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 					: -1
 				: (targetCell.columnIndex ?? -1);
 
-		const siblingCells = Array.from(cells.values())
+		const siblingCandidates =
+			targetCell.section === 'header'
+				? Array.from(cells.values()).filter(
+					(candidate) => candidate.section === 'header' && candidate.rowToken === targetCell.rowToken
+				)
+				: getResolvedBodyCellsForRow(targetCell.rowToken);
+
+		const siblingCells = siblingCandidates
 			.filter((candidate) => {
 				if (candidate.key === targetCell.key) return false;
-				if (candidate.rowToken !== targetCell.rowToken) return false;
-				if (candidate.section !== targetCell.section) return false;
 				if (!candidate.element) return false;
 				if (isCellColumnHidden(candidate)) return false;
 				if (
@@ -1255,7 +1409,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 
 		if (!focusedCellKey) return;
-		const focusedCell = cells.get(focusedCellKey);
+		const focusedCell = resolveCellTargetByKey(focusedCellKey);
 		if (!focusedCell || !isCellColumnHidden(focusedCell)) return;
 
 		const replacementKey = getNearestVisibleCellKey(focusedCell);
@@ -1271,14 +1425,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function reconcileFocusAfterDisabledStateChange() {
 		if (focusedCellKey) {
-			const focusedCell = cells.get(focusedCellKey);
+			const focusedCell = resolveCellTargetByKey(focusedCellKey);
 			if (
 				focusedCell &&
 				focusedCell.section === 'body' &&
 				isRowDisabled(rows.get(focusedCell.rowToken)?.id, rows.get(focusedCell.rowToken)?.disabled)
 			) {
 				moveFocus('down');
-				const nextFocusedCell = cells.get(focusedCellKey ?? '');
+				const nextFocusedCell = resolveCellTargetByKey(focusedCellKey);
 				if (
 					nextFocusedCell?.section === 'body' &&
 					isRowDisabled(
@@ -1442,9 +1596,15 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		const targetOrder =
 			row.section === 'header' ? headerRowOrder : row.section === 'body' ? bodyRowOrder : null;
-		const alreadyOrdered = targetOrder ? targetOrder.includes(row.token) : false;
-		const wasInHeader = headerRowOrder.includes(row.token);
-		const wasInBody = bodyRowOrder.includes(row.token);
+		const targetOrderSet =
+			row.section === 'header'
+				? headerRowOrderSet
+				: row.section === 'body'
+					? bodyRowOrderSet
+					: null;
+		const alreadyOrdered = targetOrderSet ? targetOrderSet.has(row.token) : false;
+		const wasInHeader = headerRowOrderSet.has(row.token);
+		const wasInBody = bodyRowOrderSet.has(row.token);
 		if (
 			existing &&
 			sameRowRegistration(existing, row) &&
@@ -1454,27 +1614,36 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 		if (wasInHeader) {
 			headerRowOrder.splice(headerRowOrder.indexOf(row.token), 1);
+			headerRowOrderSet.delete(row.token);
 		}
 		if (wasInBody) {
 			bodyRowOrder.splice(bodyRowOrder.indexOf(row.token), 1);
+			bodyRowOrderSet.delete(row.token);
 		}
 		const previousSelectableBodyRow = isSelectableBodyRow(existing);
 		rows.set(row.token, row);
-		if (targetOrder && !targetOrder.includes(row.token)) {
+		if (targetOrder && targetOrderSet && !targetOrderSet.has(row.token)) {
 			targetOrder.push(row.token);
+			targetOrderSet.add(row.token);
 		}
 		const nextSelectableBodyRow = isSelectableBodyRow(row);
 		if (previousSelectableBodyRow !== nextSelectableBodyRow) {
 			selectableBodyRowCount += nextSelectableBodyRow ? 1 : -1;
 		}
 		if (
-			(selectedKeys.size > 0 && (existing?.section === 'body' || row.section === 'body')) ||
+			(selectedKeys.size > 0 &&
+				logicalBodyRowIds === null &&
+				(existing?.section === 'body' || row.section === 'body')) ||
 			(bodyRowsInitialized &&
 				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
 		) {
 			notifySelection();
 		}
-		notifyLayout();
+		if (row.section === 'body' && logicalBodyRowIds !== null) {
+			scheduleBodyStructureCacheInvalidation();
+		} else {
+			notifyLayout();
+		}
 	}
 
 	function hasSameLogicalBodyRows(nextIds: TableSelectionKey[] | null) {
@@ -1496,6 +1665,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function unregisterRow(token: string) {
+		defaultFocusKeyCache = undefined;
 		const row = rows.get(token);
 		const previousSelectableBodyRowCount = selectableBodyRowCount;
 		rows.delete(token);
@@ -1512,26 +1682,33 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				order.splice(index, 1);
 			}
 		}
+		headerRowOrderSet.delete(token);
+		bodyRowOrderSet.delete(token);
 		for (const [key, cell] of cells.entries()) {
 			if (cell.rowToken === token) {
 				cells.delete(key);
+				cellOrderSet.delete(key);
 			}
 		}
 		if (row && focusedCellKey) {
-			const focusedCell = cells.get(focusedCellKey);
+			const focusedCell = resolveCellTargetByKey(focusedCellKey);
 			if (!focusedCell || focusedCell.rowToken === token) {
 				focusedCellKey = null;
 				notifyFocus();
 			}
 		}
 		if (
-			(selectedKeys.size > 0 && row?.section === 'body') ||
+			(selectedKeys.size > 0 && logicalBodyRowIds === null && row?.section === 'body') ||
 			(bodyRowsInitialized &&
 				(previousSelectableBodyRowCount === 0) !== (selectableBodyRowCount === 0))
 		) {
 			notifySelection();
 		}
-		notifyLayout();
+		if (row?.section === 'body' && logicalBodyRowIds !== null) {
+			scheduleBodyStructureCacheInvalidation();
+		} else {
+			notifyLayout();
+		}
 	}
 
 	function markBodyRowsInitialized() {
@@ -1674,7 +1851,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function isRowFocused(token: string) {
 		if (focusedRowTarget?.rowToken === token) return true;
 		if (!focusedCellKey) return false;
-		return cells.get(focusedCellKey)?.rowToken === token;
+		return resolveCellTargetByKey(focusedCellKey)?.rowToken === token;
 	}
 
 	function isRowFocusTarget(token: string) {
@@ -1687,18 +1864,33 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function registerCell(cell: TableCellRegistration) {
 		const existing = cells.get(cell.key);
-		const alreadyOrdered = cellOrder.includes(cell.key);
-		if (existing && sameCellRegistration(existing, cell) && alreadyOrdered) return;
+		const alreadyOrdered = cellOrderSet.has(cell.key);
+		if (existing && sameCellRegistration(existing, cell) && alreadyOrdered) {
+			if (cell.section === 'header') {
+				notifyLayout();
+				notifyWidth();
+			}
+			return;
+		}
 		cells.set(cell.key, cell);
+		seedDefaultFocusKeyFromCell(cell);
 		if (!alreadyOrdered) {
 			cellOrder.push(cell.key);
+			cellOrderSet.add(cell.key);
 		}
-		notifyLayout();
-		notifyWidth();
+		if (cell.section === 'header') {
+			notifyLayout();
+			notifyWidth();
+		} else {
+			scheduleBodyStructureCacheInvalidation();
+		}
 	}
 
 	function unregisterCell(key: string) {
+		defaultFocusKeyCache = undefined;
+		const cell = cells.get(key);
 		cells.delete(key);
+		cellOrderSet.delete(key);
 		const index = cellOrder.indexOf(key);
 		if (index >= 0) {
 			cellOrder.splice(index, 1);
@@ -1707,8 +1899,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			focusedCellKey = null;
 			notifyFocus();
 		}
-		notifyLayout();
-		notifyWidth();
+		if (cell?.section === 'header') {
+			notifyLayout();
+			notifyWidth();
+		} else {
+			scheduleBodyStructureCacheInvalidation();
+		}
 	}
 
 	function isCellFocused(key: string) {
@@ -1716,22 +1912,35 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getDefaultFocusKey() {
+		if (defaultFocusKeyCache !== undefined) {
+			return defaultFocusKeyCache;
+		}
+
 		for (const rowToken of getOrderedRowTokens('header')) {
 			const headerCells = Array.from(cells.values())
 				.filter((cell) => cell.section === 'header' && cell.rowToken === rowToken)
 				.sort((left, right) => getColumnIndex(left) - getColumnIndex(right));
 			const firstHeaderCell = headerCells[0]?.key;
-			if (firstHeaderCell) return firstHeaderCell;
+			if (firstHeaderCell) {
+				defaultFocusKeyCache = firstHeaderCell;
+				return firstHeaderCell;
+			}
 		}
 
 		for (const rowToken of getOrderedRowTokens('body')) {
 			const row = rows.get(rowToken);
 			if (isRowDisabled(row?.id, row?.disabled)) continue;
-			const bodyCells = Array.from(cells.values())
-				.filter((cell) => cell.section === 'body' && cell.rowToken === rowToken)
-				.sort((left, right) => (left.columnIndex ?? -1) - (right.columnIndex ?? -1));
+			const bodyCells = getResolvedBodyCellsForRow(rowToken)
+				.filter(
+					(cell): cell is ResolvedCellTarget & { columnIndex: number } =>
+						Boolean(cell.element) && cell.columnIndex !== undefined && !isCellColumnHidden(cell)
+				)
+				.sort((left, right) => left.columnIndex - right.columnIndex);
 			const firstBodyCell = bodyCells[0]?.key;
-			if (firstBodyCell) return firstBodyCell;
+			if (firstBodyCell) {
+				defaultFocusKeyCache = firstBodyCell;
+				return firstBodyCell;
+			}
 		}
 
 		return null;
@@ -1771,7 +1980,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return getVisibleColumnIndexByToken(column.token);
 	}
 
-	function getCellCoord(cell: TableCellRegistration): TableGridCoord | null {
+	function getCellCoord(cell: ResolvedCellTarget): TableGridCoord | null {
 		const row = getGlobalRowIndex(cell.rowToken);
 		const col = getColumnIndex(cell);
 		if (row < 0 || col < 0) return null;
@@ -1829,7 +2038,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function focusCellByKey(key: string | null) {
 		if (!key) return;
-		const cell = cells.get(key);
+		const cell = resolveCellTargetByKey(key);
 		if (!cell?.element) return;
 		if (
 			cell.section === 'body' &&
@@ -1893,12 +2102,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getFocusedCoord() {
 		if (!focusedCellKey) return null;
-		const cell = cells.get(focusedCellKey);
+		const cell = resolveCellTargetByKey(focusedCellKey);
 		return cell ? getCellCoord(cell) : null;
 	}
 
 	function getFocusedRowId() {
-		const rowToken = focusedRowTarget?.rowToken ?? cells.get(focusedCellKey ?? '')?.rowToken;
+		const rowToken = focusedRowTarget?.rowToken ?? resolveCellTargetByKey(focusedCellKey)?.rowToken;
 		if (!rowToken) return null;
 		const row = rows.get(rowToken);
 		return row?.section === 'body' ? (row.id ?? null) : null;
@@ -2225,7 +2434,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				return;
 			}
 
-			const currentCell = cells.get(focusedCellKey ?? '');
+			const currentCell = resolveCellTargetByKey(focusedCellKey);
 			if (currentCell?.section === 'body') {
 				focusRowByToken(currentCell.rowToken, direction === 'left' ? 'start' : 'end');
 			}
@@ -2499,6 +2708,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getColumnCount,
 		getVisibleColumnCount,
 		getColumnAt,
+		getColumnLayoutAt,
 		getColumnIndexByToken,
 		getVisibleColumnIndexByToken,
 		getColumnTextValue,
@@ -2514,6 +2724,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getResolvedVisibleColumnWidths,
 		hasRelativeVisibleColumnWidths,
 		refreshMeasuredLayout,
+		notifyLayoutChange,
 		setColumnWidths,
 		setColumnWidth,
 		setHiddenColumns,

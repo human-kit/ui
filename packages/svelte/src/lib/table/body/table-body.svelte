@@ -35,7 +35,6 @@
 	const itemList = $derived(items ?? []);
 	const isItemsMode = $derived(items !== undefined);
 	const virtualizerEnabled = $derived(Boolean(virtualizer && itemList.length > 0));
-	const overscan = $derived(Math.max(0, virtualizer?.overscan ?? 18));
 	const bodyColumnCount = $derived.by(() => {
 		void $layoutVersion;
 		return Math.max(table.getVisibleColumnCount(), 1);
@@ -44,6 +43,15 @@
 		if (!virtualizer) return 0;
 		if (viewportHeight > 0) return viewportHeight;
 		return Math.min(itemList.length, 12) * virtualizer.rowHeight;
+	});
+	const visibleCount = $derived.by(() => {
+		if (!virtualizer || !virtualizerEnabled || itemList.length === 0) return 0;
+		return Math.max(1, Math.ceil(effectiveViewportHeight / virtualizer.rowHeight));
+	});
+	const overscan = $derived.by(() => {
+		if (!virtualizer || !virtualizerEnabled) return 0;
+		if (virtualizer.overscan !== undefined) return Math.max(0, virtualizer.overscan);
+		return 18;
 	});
 	const visibleRange = $derived.by(() => {
 		if (!virtualizer || !virtualizerEnabled || itemList.length === 0) {
@@ -58,7 +66,6 @@
 		const rowHeight = virtualizer.rowHeight;
 		const rowCount = itemList.length;
 		const startIndex = Math.min(rowCount - 1, Math.floor(Math.max(0, scrollTop) / rowHeight));
-		const visibleCount = Math.max(1, Math.ceil(effectiveViewportHeight / rowHeight));
 		const endIndex = Math.min(rowCount - 1, startIndex + visibleCount - 1);
 		const from = Math.max(0, startIndex - overscan);
 		const to = Math.max(from, Math.min(rowCount - 1, endIndex + overscan));
@@ -162,7 +169,7 @@
 			</tr>
 		{/if}
 
-		{#if empty}
+		{#if empty && isEmpty}
 			{@render (empty as Snippet)()}
 		{/if}
 	{:else if children}
