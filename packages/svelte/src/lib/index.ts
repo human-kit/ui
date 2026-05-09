@@ -12,6 +12,7 @@ export { Dialog } from './dialog/index.js';
 export { ListBox } from './listbox/index.js';
 export { Popover } from './popover/index.js';
 export { Table } from './table/index.js';
+export { Tree } from './tree/index.js';
 
 // Simple components
 export { default as Input } from './input/index.js';
@@ -33,6 +34,7 @@ export * from './dialog/index.js';
 export * from './listbox/index.js';
 export * from './popover/index.js';
 export * from './table/index.js';
+export * from './tree/index.js';
 
 // Primitives
 export * from './primitives/index.js';
