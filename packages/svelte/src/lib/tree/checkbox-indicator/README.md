@@ -21,8 +21,8 @@ Description: Indicator wrapper for `Tree.Checkbox`. It only renders when the che
 
 ```svelte
 <Tree.Checkbox>
-	<Tree.CheckboxIndicator>
-		<CheckIcon class="h-3.5 w-3.5" />
-	</Tree.CheckboxIndicator>
+ <Tree.CheckboxIndicator>
+  <CheckIcon class="h-3.5 w-3.5" />
+ </Tree.CheckboxIndicator>
 </Tree.Checkbox>
 ```

@@ -375,16 +375,12 @@
 				event.preventDefault();
 				const currentId = ctx.getFocusedId();
 				if (currentId !== null) {
-					ctx.pressNode(
-						currentId,
-						'keyboard-space',
-						{
-							shiftKey: event.shiftKey,
-							ctrlKey: event.ctrlKey,
-							metaKey: event.metaKey,
-							altKey: event.altKey
-						}
-					);
+					ctx.pressNode(currentId, 'keyboard-space', {
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					});
 				}
 				return;
 			}
@@ -392,16 +388,12 @@
 				event.preventDefault();
 				const currentId = ctx.getFocusedId();
 				if (currentId !== null) {
-					ctx.pressNode(
-						currentId,
-						'keyboard-enter',
-						{
-							shiftKey: event.shiftKey,
-							ctrlKey: event.ctrlKey,
-							metaKey: event.metaKey,
-							altKey: event.altKey
-						}
-					);
+					ctx.pressNode(currentId, 'keyboard-enter', {
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					});
 				}
 				return;
 			}
@@ -481,14 +473,10 @@
 				class={section.className}
 				aria-labelledby={section.labelId}
 				aria-label={section.labelId ? undefined : section.ariaLabel}
-				{...(section.domProps ?? {})}
+				{...section.domProps ?? {}}
 			>
 				{#if section.header && section.labelId}
-					<div
-						id={section.labelId}
-						class={section.headerClassName}
-						{...(section.headerProps ?? {})}
-					>
+					<div id={section.labelId} class={section.headerClassName} {...section.headerProps ?? {}}>
 						{@render section.header()}
 					</div>
 				{/if}

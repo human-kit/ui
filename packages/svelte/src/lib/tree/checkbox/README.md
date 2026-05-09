@@ -25,14 +25,14 @@ Description: Headless selection-aware checkbox root for trees. It reflects and t
 
 ```svelte
 <Tree.Item id="documents" title="Documents">
-	<Tree.Checkbox
-		aria-label="Select Documents"
-		class="inline-flex h-5 w-5 items-center justify-center rounded border"
-	>
-		<Tree.CheckboxIndicator>
-			<CheckIcon class="h-3.5 w-3.5" />
-		</Tree.CheckboxIndicator>
-	</Tree.Checkbox>
-	<Tree.Label>Documents</Tree.Label>
+ <Tree.Checkbox
+  aria-label="Select Documents"
+  class="inline-flex h-5 w-5 items-center justify-center rounded border"
+ >
+  <Tree.CheckboxIndicator>
+   <CheckIcon class="h-3.5 w-3.5" />
+  </Tree.CheckboxIndicator>
+ </Tree.Checkbox>
+ <Tree.Label>Documents</Tree.Label>
 </Tree.Item>
 ```

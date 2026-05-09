@@ -20,14 +20,14 @@ Description: Optional toggle button that wires expansion state to the owning `Tr
 
 ```svelte
 <Tree.Item id="documents" title="Documents">
-	<Tree.Trigger aria-label="Toggle Documents">
-		<ChevronRightIcon />
-	</Tree.Trigger>
-	<Tree.Label>Documents</Tree.Label>
-	<Tree.Children>
-		<Tree.Item id="reports" title="Reports">
-			<Tree.Label>Reports</Tree.Label>
-		</Tree.Item>
-	</Tree.Children>
+ <Tree.Trigger aria-label="Toggle Documents">
+  <ChevronRightIcon />
+ </Tree.Trigger>
+ <Tree.Label>Documents</Tree.Label>
+ <Tree.Children>
+  <Tree.Item id="reports" title="Reports">
+   <Tree.Label>Reports</Tree.Label>
+  </Tree.Item>
+ </Tree.Children>
 </Tree.Item>
 ```

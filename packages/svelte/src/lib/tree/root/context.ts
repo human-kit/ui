@@ -60,11 +60,11 @@ export type TreeSectionContext = {
 	setHeader: (
 		header:
 			| {
-					id: string;
-					render?: Snippet;
-					className?: string;
-					domProps?: Record<string, unknown>;
-			  }
+				id: string;
+				render?: Snippet;
+				className?: string;
+				domProps?: Record<string, unknown>;
+			}
 			| undefined
 	) => void;
 	getHeaderId: () => string | undefined;
