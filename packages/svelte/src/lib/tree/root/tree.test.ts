@@ -110,6 +110,14 @@ describe('Tree.Root', () => {
 
 		await userEvent.keyboard('{ArrowLeft}');
 		await expect.poll(() => document.body.textContent?.includes('Reports')).toBe(false);
+
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect
+			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
+			.toContain('Documents');
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => tree.getByText('Reports').element()).not.toBeNull();
 	});
 
 	it('supports flat selection in none propagation mode', async () => {

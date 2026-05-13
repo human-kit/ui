@@ -1,5 +1,6 @@
 <script module lang="ts">
 	const ariaDateFormatterCache: Record<string, Intl.DateTimeFormat> = Object.create(null);
+	const todayLabelFormatterCache: Record<string, Intl.RelativeTimeFormat> = Object.create(null);
 
 	function getAriaDateFormatter(locale: string): Intl.DateTimeFormat {
 		let formatter = ariaDateFormatterCache[locale];
@@ -28,6 +29,23 @@
 
 		return getAriaDateFormatter(locale).format(parsed);
 	}
+
+	function getTodayLabelFormatter(locale: string): Intl.RelativeTimeFormat {
+		let formatter = todayLabelFormatterCache[locale];
+		if (!formatter) {
+			formatter = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+			todayLabelFormatterCache[locale] = formatter;
+		}
+		return formatter;
+	}
+
+	function capitalizeLabel(label: string): string {
+		return label.charAt(0).toLocaleUpperCase() + label.slice(1);
+	}
+
+	function formatTodayDateLabel(locale: string, dateLabel: string): string {
+		return `${capitalizeLabel(getTodayLabelFormatter(locale).format(0, 'day'))}, ${dateLabel}`;
+	}
 </script>
 
 <script lang="ts">
@@ -51,6 +69,7 @@
 	const calendar = useCalendarContext();
 	const layoutVersion = calendar.layoutVersion;
 	const selectionVersion = calendar.selectionVersion;
+	const focusRequestVersion = calendar.focusRequestVersion;
 	const monthIndex = getCalendarMonthIndex();
 
 	const parsedDate = $derived(parseCalendarDate(date));
@@ -79,7 +98,7 @@
 		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isInRange(date);
 	});
-	const isFocused = $derived.by(() => {
+	const isRovingFocusTarget = $derived.by(() => {
 		void $selectionVersion;
 		return calendar.focusedValue === date;
 	});
@@ -87,7 +106,8 @@
 		void $selectionVersion;
 		return calendar.focusVisible;
 	});
-	const isVisuallyFocused = $derived(isFocused && isFocusVisible);
+	let hasDomFocus = $state(false);
+	const isVisuallyFocused = $derived(hasDomFocus && isFocusVisible);
 	const isDisabled = $derived.by(() => {
 		void $layoutVersion;
 		void $selectionVersion;
@@ -115,25 +135,48 @@
 		void $layoutVersion;
 		return formatAriaDateLabel(calendar.locale, date);
 	});
+	const buttonAriaLabel = $derived(
+		isToday ? formatTodayDateLabel(calendar.locale, ariaDateLabel) : ariaDateLabel
+	);
+	const isPressDisabled = $derived(
+		isFocusDisabled || isSelectionDisabled || isUnavailable || calendar.isReadOnly
+	);
 
-	let gridCellElement = $state<HTMLDivElement | undefined>(undefined);
+	let buttonElement = $state<HTMLDivElement | undefined>(undefined);
+	let isHovered = $state(false);
+	let isPressed = $state(false);
+	let pressedKey: 'Enter' | 'Space' | null = $state(null);
+	let handledFocusRequestVersion = $state(0);
+
+	function clearPressState() {
+		isPressed = false;
+		pressedKey = null;
+	}
 
 	$effect(() => {
-		if (!isFocused || isFocusDisabled) return;
-		if (!gridCellElement) return;
-		if (document.activeElement === gridCellElement) return;
-		gridCellElement.focus();
+		const requestVersion = $focusRequestVersion;
+		if (handledFocusRequestVersion === requestVersion) return;
+		if (!isRovingFocusTarget || isFocusDisabled) return;
+		if (!buttonElement) return;
+		handledFocusRequestVersion = requestVersion;
+		if (document.activeElement === buttonElement) return;
+		buttonElement.focus();
 	});
 
 	$effect(() => {
 		if (!isFocusDisabled) return;
-		if (!gridCellElement) return;
-		if (document.activeElement !== gridCellElement) return;
-		gridCellElement.blur();
+		isHovered = false;
+		clearPressState();
+		if (!buttonElement) return;
+		if (document.activeElement !== buttonElement) return;
+		buttonElement.blur();
 	});
 
 	function handleClick() {
 		if (isFocusDisabled) return;
+		if (document.activeElement !== buttonElement) {
+			buttonElement?.focus();
+		}
 		calendar.setFocusedValue(date);
 		if (!isSelectionDisabled) {
 			calendar.selectDate(date);
@@ -142,46 +185,140 @@
 
 	function handleFocus() {
 		if (isFocusDisabled) return;
+		hasDomFocus = true;
 		calendar.setFocusedValue(date);
-		calendar.setFocusVisible(shouldShowFocusVisible(gridCellElement ?? null));
+		calendar.setFocusVisible(shouldShowFocusVisible(buttonElement ?? null));
+	}
+
+	function handleBlur() {
+		hasDomFocus = false;
+		isHovered = false;
+		clearPressState();
+		calendar.setFocusVisible(false);
+	}
+
+	function handlePointerdown(event: PointerEvent) {
+		trackInteractionModality(event, buttonElement ?? null);
+		calendar.setFocusVisible(false);
+		if (isPressDisabled) {
+			event.preventDefault();
+			clearPressState();
+			return;
+		}
+		if (event.button !== 0) return;
+		isPressed = true;
+		pressedKey = null;
+	}
+
+	function handlePointerup(event: PointerEvent) {
+		if (event.button !== 0) return;
+		clearPressState();
+	}
+
+	function handlePointercancel() {
+		clearPressState();
 	}
 
 	function handleMousedown(event: MouseEvent) {
-		trackInteractionModality(event, gridCellElement ?? null);
+		trackInteractionModality(event, buttonElement ?? null);
 		calendar.setFocusVisible(false);
-		if (isSelectionDisabled) {
+		if (isPressDisabled) {
 			event.preventDefault();
+			clearPressState();
+			return;
+		}
+		if (event.button !== 0) return;
+		isPressed = true;
+		pressedKey = null;
+	}
+
+	function handleMouseup(event: MouseEvent) {
+		if (event.button !== 0) return;
+		if (pressedKey === null) {
+			clearPressState();
 		}
 	}
 
 	function handleMouseenter() {
-		if (isFocusDisabled) return;
+		if (isFocusDisabled) {
+			isHovered = false;
+			return;
+		}
+		isHovered = true;
 		calendar.setHoveredValue(date);
 	}
 
 	function handleMouseleave() {
+		isHovered = false;
+		if (pressedKey === null) {
+			clearPressState();
+		}
 		if (isFocusDisabled) return;
 		calendar.setHoveredValue(undefined);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (isFocusDisabled) return;
-		trackInteractionModality(event, gridCellElement ?? null);
+		trackInteractionModality(event, buttonElement ?? null);
+
+		const key =
+			event.key === 'Enter'
+				? 'Enter'
+				: event.key === ' ' || event.key === 'Spacebar'
+					? 'Space'
+					: null;
+
+		if (key) {
+			if (isPressDisabled) {
+				event.preventDefault();
+				clearPressState();
+				return;
+			}
+
+			if (!(event.repeat && isPressed && pressedKey === key)) {
+				isPressed = true;
+				pressedKey = key;
+			}
+		}
+
 		calendar.handleCellKeydown(event, date);
+	}
+
+	function handleKeyup(event: KeyboardEvent) {
+		const key =
+			event.key === 'Enter'
+				? 'Enter'
+				: event.key === ' ' || event.key === 'Spacebar'
+					? 'Space'
+					: null;
+
+		if (!key) return;
+		trackInteractionModality(event, buttonElement ?? null);
+
+		if (pressedKey === key) {
+			clearPressState();
+		}
 	}
 </script>
 
 <td
-	role="presentation"
+	role={hidesOutsideDay ? 'presentation' : 'gridcell'}
 	data-selected={isSelected || undefined}
-	data-focused={isFocused || undefined}
+	data-focused={hasDomFocus || undefined}
 	data-focus-visible={isVisuallyFocused || undefined}
+	data-hovered={isHovered || undefined}
+	data-pressed={isPressed || undefined}
 	data-disabled={isAriaDisabled || undefined}
 	data-unavailable={isUnavailable || undefined}
 	data-outside-month={isOutsideMonth || undefined}
 	data-range-start={isRangeStart || undefined}
 	data-range-end={isRangeEnd || undefined}
 	data-in-range={isInRange || undefined}
+	data-today={isToday || undefined}
+	data-date={hidesOutsideDay ? undefined : date}
+	aria-selected={hidesOutsideDay ? undefined : isSelected}
+	aria-disabled={hidesOutsideDay ? undefined : isAriaDisabled || undefined}
+	aria-current={!hidesOutsideDay && isToday ? 'date' : undefined}
 	{...restProps}
 >
 	{#if hidesOutsideDay}
@@ -194,31 +331,39 @@
 		></div>
 	{:else}
 		<div
-			bind:this={gridCellElement}
+			bind:this={buttonElement}
 			class={className}
-			role="gridcell"
-			tabindex={isFocusDisabled ? -1 : isFocused ? 0 : -1}
+			role="button"
+			tabindex={isFocusDisabled ? -1 : isRovingFocusTarget ? 0 : -1}
 			data-selected={isSelected || undefined}
-			data-focused={isFocused || undefined}
+			data-focused={hasDomFocus || undefined}
 			data-focus-visible={isVisuallyFocused || undefined}
+			data-hovered={isHovered || undefined}
+			data-pressed={isPressed || undefined}
 			data-disabled={isAriaDisabled || hidesOutsideDay || undefined}
 			data-unavailable={isUnavailable || undefined}
 			data-outside-month={isOutsideMonth || undefined}
 			data-range-start={isRangeStart || undefined}
 			data-range-end={isRangeEnd || undefined}
 			data-in-range={isInRange || undefined}
+			data-today={isToday || undefined}
 			data-date={date}
-			aria-selected={isSelected}
 			aria-disabled={isAriaDisabled || hidesOutsideDay || undefined}
 			aria-current={isToday ? 'date' : undefined}
-			aria-label={ariaDateLabel}
+			aria-label={buttonAriaLabel}
 			style={isVisuallyFocused ? undefined : 'outline: none;'}
+			onpointerdown={handlePointerdown}
+			onpointerup={handlePointerup}
+			onpointercancel={handlePointercancel}
 			onmousedown={handleMousedown}
+			onmouseup={handleMouseup}
 			onmouseenter={handleMouseenter}
 			onmouseleave={handleMouseleave}
 			onclick={handleClick}
 			onfocus={handleFocus}
+			onblur={handleBlur}
 			onkeydown={handleKeydown}
+			onkeyup={handleKeyup}
 		>
 			{#if children}
 				{@render children(date)}

@@ -37,7 +37,10 @@
 	const inputId = $derived(`${datePicker.id}-input`);
 
 	function handleMouseDown(event: MouseEvent) {
-		if (datePicker.isDisabled) return;
+		if (datePicker.isDisabled) {
+			event.preventDefault();
+			return;
+		}
 		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		datePicker.setFocusVisible(false);
 
@@ -51,7 +54,12 @@
 	}
 
 	function handleFocus(event: FocusEvent) {
-		if (datePicker.isDisabled) return;
+		if (datePicker.isDisabled) {
+			(event.currentTarget as HTMLElement | null)?.blur();
+			datePicker.syncFocusWithin();
+			datePicker.setFocusVisible(false);
+			return;
+		}
 		datePicker.syncFocusWithin();
 		datePicker.setFocusVisible(shouldShowFocusVisible(event.target as HTMLElement | null));
 		const target = event.target as HTMLElement | null;

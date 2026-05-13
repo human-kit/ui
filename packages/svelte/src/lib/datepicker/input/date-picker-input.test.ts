@@ -112,6 +112,20 @@ describe('DatePicker.Input', () => {
 		const inputGroup = screen.getByRole('group', { name: 'Date input' });
 
 		await inputGroup.click();
+		expect(document.activeElement).not.toBe(inputGroup.element());
 		expect(document.activeElement?.getAttribute('data-date-picker-segment')).not.toBe('true');
+		expect(inputGroup.element()?.getAttribute('data-focus-within')).toBeNull();
+		expect(inputGroup.element()?.getAttribute('data-focus-visible')).toBeNull();
+	});
+
+	it('clears native focus if a disabled input receives focus programmatically', async () => {
+		const screen = render(DatePickerTest, { isDisabled: true });
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+
+		inputGroup.element()?.focus();
+
+		await expect.poll(() => document.activeElement).not.toBe(inputGroup.element());
+		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
+		expect(document.querySelector('[data-focus-visible="true"]')).toBeNull();
 	});
 });

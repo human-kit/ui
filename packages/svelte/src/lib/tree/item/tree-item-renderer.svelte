@@ -347,7 +347,7 @@
 	onclick={handleClick}
 	onkeydown={handleKeyDown}
 	onkeyup={handleKeyUp}
-	{...(node.domProps ?? {})}
+	{...node.domProps ?? {}}
 >
 	{#if node.render}
 		{@render node.render()}

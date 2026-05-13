@@ -8,7 +8,12 @@
 		type CalendarValue
 	} from './context';
 	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { isValidCalendarDateValue, type CalendarDateValue } from './date-utils';
+	import {
+		isValidCalendarDateValue,
+		type CalendarDateValue,
+		type CalendarFirstDayOfWeek,
+		type CalendarMonthHeadingStyle
+	} from './date-utils';
 
 	function isRangeValue(
 		valueToCheck: CalendarValue | undefined
@@ -35,6 +40,8 @@
 		selectionMode?: CalendarSelectionMode;
 		visibleMonths?: number;
 		showOutsideDays?: boolean;
+		firstDayOfWeek?: CalendarFirstDayOfWeek;
+		monthHeadingStyle?: CalendarMonthHeadingStyle;
 		isDateUnavailable?: (date: string) => boolean;
 		isDisabled?: boolean;
 		isReadOnly?: boolean;
@@ -64,6 +71,8 @@
 		selectionMode = 'single',
 		visibleMonths = 1,
 		showOutsideDays = false,
+		firstDayOfWeek,
+		monthHeadingStyle = 'composed',
 		isDateUnavailable,
 		isDisabled = false,
 		isReadOnly = false,
@@ -104,6 +113,8 @@
 			visibleMonths,
 			showOutsideDays,
 			locale: resolvedLocale,
+			firstDayOfWeek,
+			monthHeadingStyle,
 			isDateUnavailable,
 			isDisabled,
 			isReadOnly,

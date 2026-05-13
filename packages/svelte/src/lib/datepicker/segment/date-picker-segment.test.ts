@@ -115,6 +115,19 @@ describe('DatePicker.Segment', () => {
 			.element()
 			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 		expect(monthSegment.element()?.getAttribute('data-focused')).toBeNull();
+		expect(document.activeElement).not.toBe(monthSegment.element());
+		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
+	});
+
+	it('clears native focus if a disabled segment receives focus programmatically', async () => {
+		render(DatePickerTest, { isDisabled: true });
+		const monthSegment = getSegment('month');
+
+		monthSegment.element()?.focus();
+
+		await expect.poll(() => document.activeElement).not.toBe(monthSegment.element());
+		expect(monthSegment.element()?.getAttribute('data-focused')).toBeNull();
+		expect(monthSegment.element()?.getAttribute('data-focus-visible')).toBeNull();
 		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
 	});
 

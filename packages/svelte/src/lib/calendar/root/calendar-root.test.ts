@@ -11,10 +11,14 @@ function pressKey(element: Element, key: string, options?: { shiftKey?: boolean 
 	);
 }
 
+function releaseKey(element: Element, key: string) {
+	element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }));
+}
+
 function getGridCellByDate(date: string) {
-	const element = document.querySelector<HTMLElement>(`[role="gridcell"][data-date="${date}"]`);
+	const element = document.querySelector<HTMLElement>(`[role="button"][data-date="${date}"]`);
 	if (!element) {
-		throw new Error(`Grid cell "${date}" was not rendered.`);
+		throw new Error(`Calendar cell button "${date}" was not rendered.`);
 	}
 
 	return {
@@ -33,6 +37,31 @@ describe('Calendar', () => {
 
 		await expect.element(heading).toBeInTheDocument();
 		await expect.element(grid).toBeInTheDocument();
+	});
+
+	it('renders narrow weekday labels for the current locale', () => {
+		render(CalendarRootTest, {
+			defaultValue: '2026-05-10',
+			locale: 'es-AR',
+			firstDayOfWeek: 'sun',
+			weekdayStyle: 'narrow'
+		});
+
+		const headers = Array.from(document.querySelectorAll('thead th')).map((header) =>
+			header.textContent?.trim()
+		);
+		expect(headers).toEqual(['D', 'L', 'M', 'M', 'J', 'V', 'S']);
+	});
+
+	it('renders month-year headings without locale connectors', async () => {
+		const screen = render(CalendarRootTest, {
+			defaultValue: '2026-05-10',
+			locale: 'es-AR',
+			monthHeadingStyle: 'month-year'
+		});
+
+		const heading = screen.getByRole('heading');
+		expect(heading.element()?.textContent).toBe('mayo 2026');
 	});
 
 	it('shows multiple grids when visibleMonths is greater than 1', async () => {
@@ -73,9 +102,49 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date')
+				document.querySelector('[role="button"][data-selected]')?.getAttribute('data-date')
 			)
 			.toBe('2026-02-10');
+	});
+
+	it('renders gridcell semantics on the table cell and button semantics on the inner cell', () => {
+		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const dayCell = getGridCellByDate('2026-02-10').element();
+		const gridCell = dayCell?.closest('[role="gridcell"]');
+
+		expect(dayCell?.getAttribute('role')).toBe('button');
+		expect(gridCell).toBeTruthy();
+		expect(gridCell?.getAttribute('data-date')).toBe('2026-02-10');
+		expect(gridCell?.getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('exposes button-like hover and pressed interaction states', async () => {
+		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const dayCell = getGridCellByDate('2026-02-10').element()!;
+
+		dayCell.dispatchEvent(new MouseEvent('mouseenter'));
+		await expect.poll(() => dayCell.getAttribute('data-hovered')).toBe('true');
+
+		dayCell.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
+		await expect.poll(() => dayCell.getAttribute('data-pressed')).toBe('true');
+
+		dayCell.dispatchEvent(new PointerEvent('pointerup', { button: 0, bubbles: true }));
+		await expect.poll(() => dayCell.getAttribute('data-pressed')).toBeNull();
+
+		dayCell.dispatchEvent(new MouseEvent('mouseleave'));
+		await expect.poll(() => dayCell.getAttribute('data-hovered')).toBeNull();
+	});
+
+	it('exposes pressed state while activating with keyboard', async () => {
+		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const dayCell = getGridCellByDate('2026-02-10').element()!;
+
+		dayCell.focus();
+		pressKey(dayCell, 'Enter');
+		await expect.poll(() => dayCell.getAttribute('data-pressed')).toBe('true');
+
+		releaseKey(dayCell, 'Enter');
+		await expect.poll(() => dayCell.getAttribute('data-pressed')).toBeNull();
 	});
 
 	it('prevents selecting unavailable dates', async () => {
@@ -89,7 +158,7 @@ describe('Calendar', () => {
 		expect(unavailableCell.element()?.getAttribute('aria-disabled')).toBe('true');
 
 		const selectedCell = document.querySelector(
-			`[data-selected] [role="gridcell"][data-date="${unavailableDate}"]`
+			`[role="button"][data-selected][data-date="${unavailableDate}"]`
 		);
 		expect(selectedCell).toBeFalsy();
 	});
@@ -108,9 +177,7 @@ describe('Calendar', () => {
 		const screen = render(CalendarRootControlledClearTest);
 
 		await expect
-			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"][data-date="2026-02-10"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-selected][data-date="2026-02-10"]'))
 			.toBeTruthy();
 
 		const clearButton = screen.getByTestId('clear-value');
@@ -210,7 +277,7 @@ describe('Calendar', () => {
 		pressKey(document.activeElement!, 'Enter');
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date')
+				document.querySelector('[role="button"][data-selected]')?.getAttribute('data-date')
 			)
 			.toBe('2026-02-14');
 	});
@@ -232,7 +299,7 @@ describe('Calendar', () => {
 		pressKey(document.activeElement!, 'Enter');
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"]')?.getAttribute('data-date')
+				document.querySelector('[role="button"][data-selected]')?.getAttribute('data-date')
 			)
 			.toBe('2026-02-14');
 	});
@@ -251,18 +318,14 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
+				document.querySelector('[role="button"][data-range-start][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-14"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-range-end][data-date="2026-02-14"]'))
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[data-in-range] [role="gridcell"][data-date="2026-02-12"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-in-range][data-date="2026-02-12"]'))
 			.toBeTruthy();
 	});
 
@@ -282,13 +345,11 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
+				document.querySelector('[role="button"][data-range-start][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-12"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-range-end][data-date="2026-02-12"]'))
 			.toBeTruthy();
 	});
 
@@ -307,11 +368,11 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-02"]')
+				document.querySelector('[role="button"][data-range-start][data-date="2026-02-02"]')
 			)
 			.toBeTruthy();
 		expect(
-			document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-08"]')
+			document.querySelector('[role="button"][data-range-end][data-date="2026-02-08"]')
 		).toBeFalsy();
 		expect(document.querySelector('[data-in-range]')).toBeFalsy();
 	});
@@ -347,13 +408,11 @@ describe('Calendar', () => {
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
+				document.querySelector('[role="button"][data-range-start][data-date="2026-02-10"]')
 			)
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-12"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-range-end][data-date="2026-02-12"]'))
 			.toBeTruthy();
 	});
 
@@ -371,14 +430,10 @@ describe('Calendar', () => {
 		pressKey(startElement, 'ArrowRight');
 
 		await expect
-			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-11"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-range-end][data-date="2026-02-11"]'))
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[data-in-range] [role="gridcell"][data-date="2026-02-10"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-in-range][data-date="2026-02-10"]'))
 			.toBeTruthy();
 	});
 
@@ -391,11 +446,11 @@ describe('Calendar', () => {
 		const newStart = getGridCellByDate('2026-02-05');
 		await newStart.click();
 
-		expect(newStart.element()?.getAttribute('aria-selected')).toBe('true');
+		expect(newStart.element()?.closest('[role="gridcell"]')?.getAttribute('aria-selected')).toBe(
+			'true'
+		);
 		await expect
-			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"][data-date="2026-02-05"]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-selected][data-date="2026-02-05"]'))
 			.toBeTruthy();
 	});
 

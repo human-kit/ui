@@ -285,7 +285,10 @@
 			return;
 		}
 
-		ctx.focusById(ctx.getParentId(currentId));
+		const parentId = ctx.getParentId(currentId);
+		if (parentId !== null) {
+			ctx.focusById(parentId);
+		}
 	}
 
 	function syncSelectionAfterVerticalFocus(

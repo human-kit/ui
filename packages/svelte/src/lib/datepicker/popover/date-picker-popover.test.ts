@@ -38,6 +38,40 @@ describe('DatePicker.Popover', () => {
 		expect(dialog.element()).toBeTruthy();
 	});
 
+	it('focuses the selected calendar cell when opened from the trigger with keyboard', async () => {
+		const screen = render(DatePickerTest, { defaultValue: '2026-02-10' });
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+
+		trigger.element()?.focus();
+		await userEvent.keyboard('{Enter}');
+
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
+		expect(document.activeElement?.getAttribute('role')).toBe('button');
+		expect(document.activeElement?.closest('[role="gridcell"]')).toBeTruthy();
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
+	});
+
+	it('clears the calendar cell focus state when tabbing to another popover control', async () => {
+		const screen = render(DatePickerTest, { defaultValue: '2026-02-10' });
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+
+		trigger.element()?.focus();
+		await userEvent.keyboard('{Enter}');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-10');
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
+
+		await userEvent.keyboard('{Tab}');
+
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBeNull();
+		expect(document.querySelector('[role="button"][data-date][data-focused]')).toBeNull();
+		expect(document.querySelector('[role="button"][data-date][data-focus-visible]')).toBeNull();
+		expect(document.querySelector('[role="gridcell"][data-date][data-focused]')).toBeNull();
+		expect(document.querySelector('[role="gridcell"][data-date][data-focus-visible]')).toBeNull();
+	});
+
 	it('composes external onmousedown without losing internal pointer modality handling', async () => {
 		const screen = render(DatePickerPopoverHandlerTest);
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
@@ -45,9 +79,7 @@ describe('DatePicker.Popover', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const dayCell = document.querySelector<HTMLElement>(
-			'[role="gridcell"][data-date="2026-02-12"]'
-		);
+		const dayCell = document.querySelector<HTMLElement>('[role="button"][data-date="2026-02-12"]');
 		expect(dayCell).toBeTruthy();
 		dayCell?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
 		dayCell?.click();
@@ -71,7 +103,9 @@ describe('DatePicker.Popover', () => {
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		const activeCell = document.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]');
+		const activeCell = document.querySelector<HTMLElement>(
+			'[role="button"][data-date][tabindex="0"]'
+		);
 		expect(activeCell).toBeTruthy();
 		activeCell?.focus();
 		await userEvent.keyboard('{ArrowRight}');
@@ -88,7 +122,7 @@ describe('DatePicker.Popover', () => {
 
 	it('ignores unsafe forbidden Popover props and preserves internal dialog id', async () => {
 		const { vi } = await import('vitest');
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
 		try {
 			render(DatePickerPopoverUnsafePropsTest);

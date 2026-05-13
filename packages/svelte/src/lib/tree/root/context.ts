@@ -1,6 +1,6 @@
 import { getContext, setContext } from 'svelte';
 import type { Snippet } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { writable, type Readable, type Writable } from 'svelte/store';
 
 const TREE_KEY = Symbol('tree');
 const TREE_LEVEL_KEY = Symbol('tree-level');
@@ -269,12 +269,28 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	let selectionAnchorId: TreeNodeId | null = selectedKeys.values().next().value ?? null;
 	let visibleNodesCache: TreeVisibleNode[] | null = null;
 	let effectiveSelectedKeysCache: Set<TreeNodeId> | null = null;
+	let structureNotificationQueued = false;
 	const childIdsByParent = new Map<TreeNodeId | null, TreeNodeId[]>();
 	const sectionRootIds = new Map<TreeNodeId | null, TreeNodeId[]>();
 
-	function bump(store: typeof structureVersionStore) {
+	function invalidateStructureCaches() {
 		visibleNodesCache = null;
 		effectiveSelectedKeysCache = null;
+	}
+
+	function bumpStructure() {
+		invalidateStructureCaches();
+		if (structureNotificationQueued) return;
+
+		structureNotificationQueued = true;
+		queueMicrotask(() => {
+			structureNotificationQueued = false;
+			structureVersionStore.update((value) => value + 1);
+		});
+	}
+
+	function bump(store: Writable<number>) {
+		invalidateStructureCaches();
 		store.update((value) => value + 1);
 	}
 
@@ -531,7 +547,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 			}
 		}
 
-		bump(structureVersionStore);
+		bumpStructure();
 	}
 
 	function unregisterNode(id: TreeNodeId) {
@@ -547,7 +563,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		invalidateSelectedKeysCache();
 		expandedKeys.delete(id);
 		if (idsEqual(focusedId, id)) focusedId = null;
-		bump(structureVersionStore);
+		bumpStructure();
 	}
 
 	function registerSection(section: Omit<TreeSectionRegistration, 'order'>) {
@@ -571,12 +587,12 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 				? { ...existingSection, ...section }
 				: { ...section, order: (sectionOrder += 1) }
 		);
-		bump(structureVersionStore);
+		bumpStructure();
 	}
 
 	function unregisterSection(id: TreeNodeId | null) {
 		sections.delete(id);
-		bump(structureVersionStore);
+		bumpStructure();
 	}
 
 	function setNodeElement(id: TreeNodeId, element?: HTMLElement) {
@@ -591,8 +607,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		if (!node) return;
 		if (node.textValue === textValue) return;
 		node.textValue = textValue;
-		visibleNodesCache = null;
-		structureVersionStore.update((value) => value + 1);
+		bumpStructure();
 	}
 
 	function hasChildren(id: TreeNodeId) {

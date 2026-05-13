@@ -15,6 +15,9 @@
 - `showOutsideDays` controls whether days outside the current month are shown; default is `false`.
 - `isDateUnavailable` marks specific days as non-focusable and non-selectable.
 - Use `LocaleProvider` to localize month/day labels and first day of week.
+- Use `firstDayOfWeek` to override the locale-specified first day of the week.
+- Use `monthHeadingStyle="month-year"` on `Calendar.Root` to render headings as separate month and year parts, e.g. `May 2026` instead of locale-composed strings.
+- Use `weekdayStyle="narrow" | "short" | "long"` on `Calendar.Grid` to control weekday header labels.
 - Keyboard navigation uses `Arrow` keys for day/week movement and `Home/End` for month edges.
 
 ## Accessibility
@@ -53,14 +56,14 @@
 
 ```svelte
 <LocaleProvider locale="es-ES">
-	<Calendar.Root>
-		<Calendar.TriggerPrevious />
-		<Calendar.Heading />
-		<Calendar.TriggerNext />
-		<Calendar.Grid>
-			<Calendar.GridHeader />
-			<Calendar.GridBody />
-		</Calendar.Grid>
-	</Calendar.Root>
+ <Calendar.Root>
+  <Calendar.TriggerPrevious />
+  <Calendar.Heading />
+  <Calendar.TriggerNext />
+  <Calendar.Grid weekdayStyle="narrow">
+   <Calendar.GridHeader />
+   <Calendar.GridBody />
+  </Calendar.Grid>
+ </Calendar.Root>
 </LocaleProvider>
 ```

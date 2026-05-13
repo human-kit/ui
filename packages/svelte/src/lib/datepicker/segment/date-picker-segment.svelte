@@ -114,6 +114,9 @@
 		if (segment.type === 'literal') return;
 		if (datePicker.isDisabled) {
 			isFocused = false;
+			(event.currentTarget as HTMLElement | null)?.blur();
+			datePicker.syncFocusWithin();
+			datePicker.setFocusVisible(false);
 			return;
 		}
 		isFocused = true;
