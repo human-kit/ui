@@ -25,6 +25,24 @@ describe('DatePicker.Trigger', () => {
 		await expect.poll(() => triggerElement?.getAttribute('aria-expanded')).toBe('true');
 	});
 
+	it('sets data-pressed while the trigger pointer is held before opening', async () => {
+		const screen = render(DatePickerTest);
+		const trigger = screen.getByRole('button', { name: 'Open calendar' });
+		const triggerElement = trigger.element();
+
+		triggerElement?.dispatchEvent(
+			new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0, buttons: 1 })
+		);
+
+		await expect.poll(() => triggerElement?.getAttribute('data-pressed')).toBe('true');
+		expect(triggerElement?.getAttribute('aria-expanded')).toBe('false');
+
+		triggerElement?.dispatchEvent(
+			new MouseEvent('mouseup', { bubbles: true, cancelable: true, button: 0 })
+		);
+		await expect.poll(() => triggerElement?.getAttribute('data-pressed')).toBeNull();
+	});
+
 	it('does not focus date input segments when clicked with mouse', async () => {
 		const screen = render(DatePickerTest);
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });

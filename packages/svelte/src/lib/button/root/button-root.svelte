@@ -97,9 +97,7 @@
 
 	const renderedType = $derived(type === 'submit' && isPending ? 'button' : type);
 	const renderedPressed = $derived(
-		pressedOverride !== undefined
-			? Boolean(pressedOverride) && !isPending
-			: (pressed || expandedPressed) && !isPending
+		(Boolean(pressedOverride) || pressed || expandedPressed) && !isPending
 	);
 	const renderState = $derived.by<ButtonRenderState>(() => ({
 		isHovered: hovered,
