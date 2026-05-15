@@ -87,6 +87,7 @@ All public Table part prop types are exported from the table barrel, including `
 - `Table.Checkbox`
 - `Table.CheckboxIndicator`
 - `Table.Cell`
+- `Table.InteractiveCell`
 
 ## Usage guidelines
 
@@ -111,6 +112,7 @@ All public Table part prop types are exported from the table barrel, including `
 - Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
 - Use `Table.Checkbox` when you need explicit selection UI inside cells instead of relying only on row or cell presses.
 - Use `Table.CheckboxIndicator` to compose your own visual affordance for checked and indeterminate states.
+- Use `Table.InteractiveCell` for body cells that contain their own focusable controls. When focus is on the cell itself it keeps the same grid keyboard navigation as `Table.Cell`; when focus is inside a descendant control, the descendant owns its keyboard and pointer interactions.
 - `Table.Checkbox` auto-hides in header cells unless `selectionMode="multiple"`, and auto-hides everywhere when `selectionMode="none"`.
 - Hidden columns are excluded from grid navigation, visible column counts, and active resize behavior, but their registered widths are preserved so they can be restored when shown again.
 - Dedicated utility columns like selection checkboxes should usually set an explicit `width`, `minWidth`, and `maxWidth` on `Table.Column` so sibling resizes do not redistribute their space.
@@ -122,7 +124,7 @@ All public Table part prop types are exported from the table barrel, including `
 
 ## Composition contract
 
-- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
+- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.InteractiveCell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
 - Metadata-only part: `Table.Column` does not render its own element. It only registers the public column input for the surrounding header composition.
 - Sorting: `Table.SortTrigger` is the public opt-in for sortable columns. Rendering it inside `Table.ColumnHeaderCell` makes the owning `Table.Column` sortable and toggles `Table.Root.sortDescriptor`.
 - `Table.SortTrigger.children` can consume a `sortDirection` render state so the nested button can expose stateful labels or visuals without reading the root descriptor directly.

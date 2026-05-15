@@ -59,9 +59,9 @@ export type CellContext<T extends RowData = RowData, TValue = unknown> = {
 
 export type CellProps<T extends RowData = RowData, TValue = unknown> = CellContext<T, TValue>;
 
-export type CellRenderer<T extends RowData = RowData, TValue = unknown> = Snippet<[
-	CellContext<T, TValue>
-]>;
+export type CellRenderer<T extends RowData = RowData, TValue = unknown> = Snippet<
+	[CellContext<T, TValue>]
+>;
 
 export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
 	children?: Snippet;
@@ -159,6 +159,8 @@ export type TableCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'childre
 	children?: Snippet;
 	class?: string;
 };
+
+export type TableInteractiveCellProps = TableCellProps;
 
 export type TableEmptyStateProps = {
 	children?: Snippet;

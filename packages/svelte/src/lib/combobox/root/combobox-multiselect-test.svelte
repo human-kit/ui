@@ -25,7 +25,7 @@
 		disabledIds = []
 	}: Props = $props();
 
-	function handleChange(newValue: string | number | (string | number)[] | undefined) {
+	function handleChange(newValue: string | number | null | (string | number)[]) {
 		if (Array.isArray(newValue)) {
 			onValueChange?.(newValue);
 		}

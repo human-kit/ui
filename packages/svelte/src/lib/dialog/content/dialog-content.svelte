@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '../../internal/environment';
 	import { focusTrap } from '../../primitives/focus-trap';
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';

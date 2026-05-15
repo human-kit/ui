@@ -1,5 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import { untrack, type Snippet } from 'svelte';
+	import { dev } from '../../internal/environment';
 	import { setComboBoxContext, type ComboBoxContext } from './context';
 	import type { ListBoxContext } from '../../listbox/root/context';
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
@@ -15,8 +16,8 @@
 		isPending?: boolean;
 		isReadOnly?: boolean;
 		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
-		value?: string | number | (string | number)[];
-		defaultValue?: string | number | (string | number)[];
+		value?: string | number | null | (string | number)[];
+		defaultValue?: string | number | null | (string | number)[];
 		/** Current input value. Can be bound with bind:inputValue */
 		inputValue?: string;
 		defaultInputValue?: string;
@@ -30,8 +31,8 @@
 		trigger?: 'focus' | 'input' | 'press';
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
-		onChange?: (value: string | number | (string | number)[] | undefined) => void;
-		/** Optional: Array of items for dynamic rendering */
+		onChange?: (value: string | number | null | (string | number)[]) => void;
+		/** Optional: Array of items. Used internally to resolve selected labels before options mount. */
 		items?: T[];
 		/** Optional: Snippet to render each item (used with items prop) */
 		renderItem?: Snippet<[T]>;
@@ -86,9 +87,6 @@
 	let listboxRef: HTMLElement | null = $state(null);
 
 	let isOpenInternal = $state(false);
-	// Use function to capture initial value only (not reactive)
-	let inputValueInternal = $state((() => defaultInputValue)());
-	let selectedInternal = $state<Set<string | number>>((() => parseSelection(defaultValue))());
 
 	// Use virtual focus hook for navigation
 	const navigation = useVirtualFocus({
@@ -115,7 +113,7 @@
 	let shouldFilter: boolean = $state(true);
 
 	// Dev-mode prop validation warnings
-	if (import.meta.env.DEV) {
+	if (dev) {
 		$effect(() => {
 			// Only warn if user explicitly passed selectionBehavior="toggle"
 			if (
@@ -137,10 +135,16 @@
 		});
 	}
 
+	$effect(() => {
+		if (selectionMode === 'single' && value === undefined && defaultValue === undefined) {
+			value = null;
+		}
+	});
+
 	function parseSelection(
-		val: string | number | (string | number)[] | undefined
+		val: string | number | null | (string | number)[] | undefined
 	): Set<string | number> {
-		if (val === undefined) return new Set();
+		if (val == null) return new Set();
 		if (Array.isArray(val)) return new Set(val);
 		return new Set([val]);
 	}
@@ -148,13 +152,66 @@
 	// Convert internal Set back to external value based on selectionMode
 	function toExternalValue(
 		internalSet: Set<string | number>
-	): string | number | (string | number)[] | undefined {
+	): string | number | null | (string | number)[] {
 		if (selectionMode === 'single') {
 			const arr = Array.from(internalSet);
-			return arr.length > 0 ? arr[0] : undefined;
+			return arr.length > 0 ? arr[0] : null;
 		}
 		return Array.from(internalSet);
 	}
+
+	function isItemRecord(item: unknown): item is Record<string, unknown> {
+		return typeof item === 'object' && item !== null;
+	}
+
+	function getInternalItemValue(item: T) {
+		if (!isItemRecord(item)) return undefined;
+
+		const id = item.id;
+		if (typeof id === 'string' || typeof id === 'number') return id;
+
+		const value = item.value;
+		if (typeof value === 'string' || typeof value === 'number') return value;
+
+		return undefined;
+	}
+
+	function getInternalItemTextValue(item: T) {
+		if (!isItemRecord(item)) return undefined;
+
+		const textValue = item.textValue;
+		if (typeof textValue === 'string') return textValue;
+
+		const name = item.name;
+		if (typeof name === 'string') return name;
+
+		const label = item.label;
+		if (typeof label === 'string') return label;
+
+		const value = getInternalItemValue(item);
+		return value === undefined ? undefined : String(value);
+	}
+
+	function getItemLabelByValue(selectedId: string | number) {
+		const selectedItem = items?.find((item) => getInternalItemValue(item) === selectedId);
+		return selectedItem ? getInternalItemTextValue(selectedItem) : undefined;
+	}
+
+	function getInitialSelection() {
+		return parseSelection(value !== undefined ? value : defaultValue);
+	}
+
+	function getInitialInputValue() {
+		if (defaultInputValue) return defaultInputValue;
+		if (selectionMode !== 'single') return '';
+
+		const selectedId = Array.from(getInitialSelection())[0];
+		return selectedId === undefined ? '' : (getItemLabelByValue(selectedId) ?? '');
+	}
+
+	// Use functions to capture initial values only (not reactive).
+	let inputValueInternal = $state(getInitialInputValue());
+	let selectedInternal = $state<Set<string | number>>((() => parseSelection(defaultValue))());
 
 	// Reactive controlled mode checks - if prop changes from undefined to defined, behavior updates
 	const isOpenControlled = $derived(isOpen !== undefined);
@@ -219,6 +276,50 @@
 			onInputChange?.(val);
 		}
 	}
+
+	function getSelectedItemLabel(selectedId: string | number) {
+		const registeredLabel = navigation.itemLabels.get(selectedId);
+		if (registeredLabel) return registeredLabel;
+
+		return getItemLabelByValue(selectedId);
+	}
+
+	$effect(() => {
+		if (selectionMode !== 'single') return;
+
+		const selectedId = Array.from(currentSelection)[0];
+		if (selectedId === undefined) {
+			const previousSelectedLabel = selectedLabel;
+			selectedLabel = '';
+
+			if (
+				!isInputControlled &&
+				previousSelectedLabel &&
+				currentInputValue === previousSelectedLabel
+			) {
+				syncInputValue('', { notifyInputChange: false });
+			}
+
+			return;
+		}
+
+		const label = getSelectedItemLabel(selectedId);
+		if (!label) return;
+
+		const previousSelectedLabel = selectedLabel;
+		const shouldSyncInput =
+			!isInputControlled &&
+			(currentInputValue === '' || currentInputValue === previousSelectedLabel);
+
+		selectedLabel = label;
+
+		if (shouldSyncInput) {
+			shouldFilter = false;
+			if (currentInputValue !== label) {
+				syncInputValue(label, { notifyInputChange: false });
+			}
+		}
+	});
 
 	function selectItem(id: string | number, label: string) {
 		let newSelection: Set<string | number>;
@@ -620,9 +721,16 @@
 				}
 				break;
 			case 'Enter':
-				if (currentIsOpen && navigation.focusedId !== null) {
+				event.preventDefault();
+				if (!currentIsOpen) {
+					openPopover();
+					if (currentSelection.size === 0 || selectionMode !== 'single') {
+						navigation.setPendingDirection('first');
+					}
+					break;
+				}
+				if (navigation.focusedId !== null) {
 					selectFocusedItem();
-					event.preventDefault();
 				}
 				break;
 			case 'Escape':

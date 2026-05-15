@@ -22,7 +22,7 @@
 	];
 
 	let filterValue = $state('');
-	let selectedValue = $state<string | number | undefined>();
+	let selectedValue = $state<string | number | null>(null);
 
 	const filteredCountries = $derived(
 		filterValue === ''

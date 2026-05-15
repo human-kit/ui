@@ -17,6 +17,7 @@ export type {
 	TableColumnResizerProps,
 	TableSortTriggerRenderState,
 	TableSortTriggerProps,
+	TableInteractiveCellProps,
 	TableEmptyStateProps,
 	TableFooterProps,
 	TableHeaderProps,
@@ -37,6 +38,7 @@ export { default as TableColumnResizer } from './column-resizer/table-column-res
 export { default as TableCheckbox } from './checkbox/table-checkbox.svelte';
 export { default as TableCheckboxIndicator } from './checkbox-indicator/table-checkbox-indicator.svelte';
 export { default as TableCell } from './cell/table-cell.svelte';
+export { default as TableInteractiveCell } from './interactive-cell/table-interactive-cell.svelte';
 
 export {
 	createTableContext,

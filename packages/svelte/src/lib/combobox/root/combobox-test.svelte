@@ -8,6 +8,9 @@
 		isReadOnly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
 		disabledIds?: string[];
+		initialValue?: string | number | null;
+		defaultValue?: string | number | null | (string | number)[];
+		onValueChange?: (value: string | number | null | (string | number)[]) => void;
 	};
 
 	let {
@@ -16,10 +19,13 @@
 		isPending = false,
 		isReadOnly = false,
 		trigger = 'press',
-		disabledIds = []
+		disabledIds = [],
+		initialValue,
+		defaultValue,
+		onValueChange
 	}: Props = $props();
 
-	let selectedValue = $state<string | number | undefined>();
+	let selectedValue = $state<string | number | null | undefined>((() => initialValue)());
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },
@@ -35,7 +41,17 @@
 	];
 </script>
 
-<ComboBox.Root {id} {isDisabled} {isPending} {isReadOnly} {trigger} bind:value={selectedValue}>
+<ComboBox.Root
+	{id}
+	{isDisabled}
+	{isPending}
+	{isReadOnly}
+	{trigger}
+	items={countries}
+	{defaultValue}
+	bind:value={selectedValue}
+	onChange={onValueChange}
+>
 	<ComboBox.Input placeholder="Search countries..." />
 	<ComboBox.Trigger />
 

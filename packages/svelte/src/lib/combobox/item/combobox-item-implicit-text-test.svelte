@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ComboBox } from '../index';
 
-	let selected = $state<string | number | undefined>();
+	let selected = $state<string | number | null>(null);
 </script>
 
 <ComboBox.Root bind:value={selected}>

@@ -51,7 +51,7 @@
 	let triggerMode: 'focus' | 'input' | 'press' = $state('press');
 	let placeholder = $state('Search countries...');
 	let inputValue = $state('');
-	let selectedValue = $state<string | number | undefined>();
+	let selectedValue = $state<string | number | null>(null);
 
 	const filteredCountries = $derived(
 		inputValue
@@ -61,7 +61,7 @@
 
 	// Controlled state
 	let controlledInputValue = $state('');
-	let controlledSelectedValue = $state<string | number | undefined>();
+	let controlledSelectedValue = $state<string | number | null>(null);
 
 	const controlledFilteredCountries = $derived(
 		controlledInputValue
@@ -73,9 +73,9 @@
 	let multiSelectValue = $state<(string | number)[]>([]);
 	let multiSelectInput = $state('');
 	let listScrollInput = $state('');
-	let listScrollValue = $state<string | number | undefined>();
+	let listScrollValue = $state<string | number | null>(null);
 	let pendingDemoInput = $state('Argentina');
-	let pendingDemoValue = $state<string | number | undefined>('ar');
+	let pendingDemoValue = $state<string | number | null>('ar');
 	let pendingDemo = $state(false);
 
 	const filteredFruits = $derived(
@@ -235,7 +235,7 @@
 						</button>
 						<button
 							onclick={() => {
-								controlledSelectedValue = undefined;
+								controlledSelectedValue = null;
 								controlledInputValue = '';
 							}}
 							class="rounded-lg bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700"

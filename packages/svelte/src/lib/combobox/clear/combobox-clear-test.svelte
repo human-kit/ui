@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ComboBox from '../index.js';
 
-	let value = $state<string | number | undefined>('ar');
+	let value = $state<string | number | null>('ar');
 	let inputValue = $state('Argentina');
 	let isPending = $state(false);
 
@@ -30,5 +30,5 @@
 
 <button type="button" data-set-pending onclick={() => (isPending = true)}>Set pending</button>
 <button type="button" data-clear-pending onclick={() => (isPending = false)}>Clear pending</button>
-<output data-selected-value>{value === undefined ? 'undefined' : String(value)}</output>
+<output data-selected-value>{String(value)}</output>
 <output data-input-value>{inputValue}</output>

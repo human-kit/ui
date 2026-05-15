@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from './combobox-test.svelte';
+import ComboBoxFormTest from './combobox-form-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ComboBox', () => {
@@ -24,6 +25,19 @@ describe('ComboBox', () => {
 			await userEvent.keyboard('{ArrowUp}');
 
 			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		it('opens popover on Enter without submitting the parent form', async () => {
+			const screen = render(ComboBoxFormTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{Enter}');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+			await expect
+				.poll(() => document.querySelector('[data-testid="submit-count"]')?.textContent)
+				.toBe('0');
 		});
 
 		it('navigates down through items with ArrowDown when open', async () => {
@@ -290,6 +304,14 @@ describe('ComboBox', () => {
 	});
 
 	describe('Selection', () => {
+		it('uses null as the default empty value in single mode', async () => {
+			render(ComboBoxTest);
+
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('null');
+		});
+
 		it('selects focused item on Enter and closes popover', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
@@ -321,6 +343,23 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveValue('Brazil');
 		});
 
+		it('shows selected item label from defaultValue on mount', async () => {
+			const screen = render(ComboBoxTest, { defaultValue: 'br' });
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveValue('Brazil');
+		});
+
+		it('shows selected item label from controlled value on mount', async () => {
+			const screen = render(ComboBoxTest, { initialValue: 'br' });
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveValue('Brazil');
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('br');
+		});
+
 		it('deselects when input is cleared', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
@@ -337,7 +376,23 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveValue('');
 			await expect
 				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
-				.toBe('undefined');
+				.toBe('null');
+		});
+
+		it('calls onChange with null when single selection is cleared', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(ComboBoxTest, { onValueChange });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+			expect(onValueChange).toHaveBeenLastCalledWith('ar');
+
+			await input.tripleClick();
+			await userEvent.keyboard('{Backspace}');
+
+			expect(onValueChange).toHaveBeenLastCalledWith(null);
 		});
 
 		it('retains input focus after mouse selection', async () => {

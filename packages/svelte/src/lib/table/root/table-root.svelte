@@ -1,8 +1,10 @@
 <script module lang="ts">
+	import { dev } from '../../internal/environment';
+
 	let warnedMissingAccessibleName = false;
 
 	function warnMissingAccessibleName() {
-		if (!import.meta.env.DEV || warnedMissingAccessibleName) return;
+		if (!dev || warnedMissingAccessibleName) return;
 		warnedMissingAccessibleName = true;
 		console.warn(
 			'[Table.Root]: Provide either "aria-label" or "aria-labelledby" so the grid has an accessible name.'
@@ -449,7 +451,7 @@
 		void announceSortChange(descriptor);
 	});
 
-	if (import.meta.env.DEV) {
+	if (dev) {
 		$effect(() => {
 			if (!ariaLabel && !ariaLabelledby) {
 				warnMissingAccessibleName();
