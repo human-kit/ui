@@ -1,17 +1,28 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from '../root/popover-test.svelte';
-import PopoverTriggerButtonRootTest from './popover-trigger-button-root-test.svelte';
 import PopoverTriggerInDialogTest from './popover-trigger-in-dialog-test.svelte';
-import PopoverTriggerMultiButtonTest from './popover-trigger-multi-button-test.svelte';
 
 describe('Popover.Trigger', () => {
-	// Clean up any portaled content after each test
-	afterEach(() => {
+	function cleanupPopoverTestDom() {
 		const dialogs = document.querySelectorAll('[role="dialog"]');
 		dialogs.forEach((d) => d.remove());
+		document.body.style.overflow = '';
+		document.body
+			.querySelectorAll('[inert]')
+			.forEach((element) => element.removeAttribute('inert'));
+		document.body
+			.querySelectorAll('[aria-hidden="true"]')
+			.forEach((element) => element.removeAttribute('aria-hidden'));
+	}
+
+	beforeEach(() => {
+		document.body.replaceChildren();
+		cleanupPopoverTestDom();
 	});
+
+	afterEach(cleanupPopoverTestDom);
 
 	describe('Accessibility', () => {
 		it('trigger button has aria-haspopup="dialog"', async () => {
@@ -19,6 +30,8 @@ describe('Popover.Trigger', () => {
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 			await expect.element(trigger).toHaveAttribute('aria-haspopup', 'dialog');
+			expect(trigger.element()?.getAttribute('data-popover-trigger')).toBe('true');
+			expect(trigger.element()?.querySelector('button')).toBeNull();
 		});
 
 		it('trigger has aria-expanded="false" when closed', async () => {
@@ -49,21 +62,6 @@ describe('Popover.Trigger', () => {
 
 			const triggerEl = document.querySelector('button[aria-haspopup="dialog"]');
 			expect(triggerEl?.getAttribute('data-pressed')).toBe('true');
-
-			(triggerEl as HTMLButtonElement | null)?.click();
-			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-			expect(triggerEl?.hasAttribute('data-pressed')).toBe(false);
-		});
-
-		it('keeps data-pressed when Popover.Trigger wraps Button.Root', async () => {
-			const screen = render(PopoverTriggerButtonRootTest);
-			const trigger = screen.getByRole('button', { name: 'Open Button Root Popover' });
-
-			await trigger.click();
-			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-
-			const triggerEl = document.querySelector('button[aria-haspopup="dialog"]');
-			await expect.poll(() => triggerEl?.getAttribute('data-pressed')).toBe('true');
 
 			(triggerEl as HTMLButtonElement | null)?.click();
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
@@ -129,31 +127,6 @@ describe('Popover.Trigger', () => {
 			expect(document.querySelector('.nested-popover-content')?.textContent).toContain(
 				'Nested popover content'
 			);
-		});
-
-		it('uses the clicked button as the active trigger when multiple trigger buttons are present', async () => {
-			const screen = render(PopoverTriggerMultiButtonTest);
-			const secondTrigger = screen.getByRole('button', { name: 'Second Popover Trigger' });
-
-			await secondTrigger.click();
-			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-			const firstButton = Array.from(document.querySelectorAll('button')).find(
-				(button) => button.textContent?.trim() === 'First Popover Trigger'
-			);
-			const secondButton = Array.from(document.querySelectorAll('button')).find(
-				(button) => button.textContent?.trim() === 'Second Popover Trigger'
-			);
-
-			expect(secondButton?.getAttribute('aria-expanded')).toBe('true');
-			expect(secondButton?.getAttribute('aria-haspopup')).toBe('dialog');
-			expect(firstButton?.getAttribute('aria-expanded')).toBe('false');
-
-			await userEvent.keyboard('{Escape}');
-			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-			const secondButtonAfterClose = Array.from(document.querySelectorAll('button')).find(
-				(button) => button.textContent?.trim() === 'Second Popover Trigger'
-			);
-			expect(secondButtonAfterClose?.getAttribute('aria-expanded')).toBe('false');
 		});
 	});
 

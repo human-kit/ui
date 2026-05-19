@@ -1,17 +1,29 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DialogTest from '../root/dialog-test.svelte';
-import DialogTriggerMultiButtonTest from './dialog-trigger-multi-button-test.svelte';
 
 describe('Dialog.Trigger', () => {
-	// Clean up any portaled content after each test
-	afterEach(() => {
+	function cleanupDialogTestDom() {
 		const dialogs = document.querySelectorAll('[role="dialog"]');
 		dialogs.forEach((d) => d.remove());
 		const overlays = document.querySelectorAll('[data-dialog-overlay]');
 		overlays.forEach((o) => o.remove());
+		document.body.style.overflow = '';
+		document.body
+			.querySelectorAll('[inert]')
+			.forEach((element) => element.removeAttribute('inert'));
+		document.body
+			.querySelectorAll('[aria-hidden="true"]')
+			.forEach((element) => element.removeAttribute('aria-hidden'));
+	}
+
+	beforeEach(() => {
+		document.body.replaceChildren();
+		cleanupDialogTestDom();
 	});
+
+	afterEach(cleanupDialogTestDom);
 
 	describe('Accessibility', () => {
 		it('trigger button has aria-haspopup="dialog"', async () => {
@@ -19,6 +31,8 @@ describe('Dialog.Trigger', () => {
 			const trigger = screen.getByRole('button', { name: 'Open Dialog' });
 
 			await expect.element(trigger).toHaveAttribute('aria-haspopup', 'dialog');
+			expect(trigger.element()?.getAttribute('data-dialog-trigger')).toBe('true');
+			expect(trigger.element()?.querySelector('button')).toBeNull();
 		});
 
 		it('trigger has aria-expanded="false" when closed', async () => {
@@ -79,31 +93,6 @@ describe('Dialog.Trigger', () => {
 			await userEvent.keyboard(' ');
 
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-		});
-
-		it('uses the clicked button as the active trigger when multiple trigger buttons are present', async () => {
-			const screen = render(DialogTriggerMultiButtonTest);
-			const secondTrigger = screen.getByRole('button', { name: 'Second Dialog Trigger' });
-
-			await secondTrigger.click();
-			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-			const firstButton = Array.from(document.querySelectorAll('button')).find(
-				(button) => button.textContent?.trim() === 'First Dialog Trigger'
-			);
-			const secondButton = Array.from(document.querySelectorAll('button')).find(
-				(button) => button.textContent?.trim() === 'Second Dialog Trigger'
-			);
-
-			expect(secondButton?.getAttribute('aria-expanded')).toBe('true');
-			expect(secondButton?.getAttribute('aria-haspopup')).toBe('dialog');
-			expect(firstButton?.getAttribute('aria-expanded')).toBe('false');
-
-			await userEvent.keyboard('{Escape}');
-			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-			const secondButtonAfterClose = Array.from(document.querySelectorAll('button')).find(
-				(button) => button.textContent?.trim() === 'Second Dialog Trigger'
-			);
-			expect(secondButtonAfterClose?.getAttribute('aria-expanded')).toBe('false');
 		});
 	});
 

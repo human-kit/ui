@@ -1,3 +1,12 @@
+<script lang="ts" module>
+	type PointerPressOwner = {
+		key: symbol;
+		pointerId: number | null;
+	};
+
+	let pointerPressOwner: PointerPressOwner | null = null;
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
@@ -104,6 +113,7 @@
 
 	// ID: use custom if provided, otherwise generate
 	const uniqueId = $derived(customId ?? `listbox-item-${id}`);
+	const pointerPressOwnerKey = Symbol('listbox-item-press');
 
 	let unsubscribeSelection: (() => void) | null = null;
 	let unsubscribeFocus: (() => void) | null = null;
@@ -134,9 +144,19 @@
 			});
 			listboxCtx.keyboardNav.updateItems();
 		}
+
+		window.addEventListener('pointerup', handleGlobalPointerEnd);
+		window.addEventListener('pointercancel', handleGlobalPointerEnd);
+		window.addEventListener('mouseup', handleGlobalPointerEnd);
 	});
 
 	onDestroy(() => {
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('pointerup', handleGlobalPointerEnd);
+			window.removeEventListener('pointercancel', handleGlobalPointerEnd);
+			window.removeEventListener('mouseup', handleGlobalPointerEnd);
+		}
+		clearOwnedPointerPress();
 		listboxCtx.unregisterItem(id);
 		unsubscribeSelection?.();
 		unsubscribeFocus?.();
@@ -172,9 +192,48 @@
 		}
 	});
 
+	function getEventPointerId(event: PointerEvent | MouseEvent) {
+		return 'pointerId' in event ? event.pointerId : null;
+	}
+
+	function ownsPointerPress(event: PointerEvent | MouseEvent) {
+		if (pointerPressOwner?.key !== pointerPressOwnerKey) {
+			return false;
+		}
+
+		const pointerId = getEventPointerId(event);
+
+		return (
+			pointerPressOwner.pointerId === null ||
+			pointerId === null ||
+			pointerPressOwner.pointerId === pointerId
+		);
+	}
+
+	function clearOwnedPointerPress() {
+		if (pointerPressOwner?.key === pointerPressOwnerKey) {
+			pointerPressOwner = null;
+		}
+	}
+
+	function startPointerPress(pointerId: number | null) {
+		pointerPressOwner = { key: pointerPressOwnerKey, pointerId };
+		isPressed = true;
+		pressedKey = null;
+	}
+
 	function clearPressedState() {
 		isPressed = false;
 		pressedKey = null;
+		clearOwnedPointerPress();
+	}
+
+	function handleGlobalPointerEnd(event: PointerEvent | MouseEvent) {
+		if (!ownsPointerPress(event)) {
+			return;
+		}
+
+		clearPressedState();
 	}
 
 	function applyPointerFocusState() {
@@ -262,14 +321,12 @@
 		}
 
 		if (event.button !== 0) return;
-		isPressed = true;
-		pressedKey = null;
+		startPointerPress(event.pointerId);
 	}
 
 	function handlePointerUp(event: PointerEvent) {
 		if (event.button !== 0) return;
-		isPressed = false;
-		pressedKey = null;
+		clearPressedState();
 	}
 
 	function handlePointerCancel() {
@@ -286,7 +343,9 @@
 		transferHoverFocus();
 
 		if ((event.buttons & 1) === 1 && pressedKey === null) {
-			isPressed = true;
+			isPressed = ownsPointerPress(event);
+		} else {
+			clearOwnedPointerPress();
 		}
 	}
 
@@ -304,6 +363,12 @@
 			if (!disableFocusHandling) {
 				listboxCtx.setFocusVisible(false);
 				transferHoverFocus();
+			}
+
+			if ((event.buttons & 1) === 1 && pressedKey === null) {
+				isPressed = ownsPointerPress(event);
+			} else {
+				clearOwnedPointerPress();
 			}
 		}
 	}
@@ -384,8 +449,7 @@
 		}
 
 		if (event.button === 0) {
-			isPressed = true;
-			pressedKey = null;
+			startPointerPress(null);
 		}
 
 		if (disableFocusHandling) {

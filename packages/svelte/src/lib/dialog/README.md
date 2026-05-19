@@ -7,7 +7,7 @@
 ## Usage guidelines
 
 - Place all dialog parts inside `Dialog.Root`.
-- Use `Dialog.Trigger` to wire the opener button.
+- Use `Dialog.Trigger` as the opener button.
 - Render modal layers inside `Dialog.Portal`.
 - Use `Dialog.Overlay` and `Dialog.Content` together for standard modal behavior.
 - Use nested `Dialog.Root` instances when you need modal stacks; topmost behavior is handled internally.
@@ -18,9 +18,7 @@ Import the component and compose its parts:
 
 ```svelte
 <Dialog.Root>
-	<Dialog.Trigger>
-		<button>Open</button>
-	</Dialog.Trigger>
+	<Dialog.Trigger>Open</Dialog.Trigger>
 	<Dialog.Portal>
 		<Dialog.Overlay />
 		<Dialog.Content>...</Dialog.Content>

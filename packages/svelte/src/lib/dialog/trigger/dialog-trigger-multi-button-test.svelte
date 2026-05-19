@@ -3,12 +3,7 @@
 </script>
 
 <Dialog.Root>
-	<Dialog.Trigger>
-		<div>
-			<button type="button">First Dialog Trigger</button>
-			<button type="button">Second Dialog Trigger</button>
-		</div>
-	</Dialog.Trigger>
+	<Dialog.Trigger>Dialog Trigger</Dialog.Trigger>
 
 	<Dialog.Portal>
 		<Dialog.Overlay />

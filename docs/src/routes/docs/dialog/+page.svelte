@@ -39,12 +39,10 @@
 			<DemoSection title="Interactive Playground" description="Test all Dialog props interactively">
 				<Dialog.Root bind:open={isOpen} {defaultOpen} onOpenChange={(open) => (isOpen = open)}>
 					{#snippet children({ close })}
-						<Dialog.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Open Dialog
-							</button>
+						<Dialog.Trigger
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Open Dialog
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay />
@@ -159,12 +157,10 @@
 			<DemoSection title="Custom Overlay" description="Customize the backdrop with any CSS classes">
 				<Dialog.Root>
 					{#snippet children({ close })}
-						<Dialog.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Open with Custom Overlay
-							</button>
+						<Dialog.Trigger
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Open with Custom Overlay
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay class="bg-purple-900/70! backdrop-blur-sm" />
@@ -195,12 +191,10 @@
 			<DemoSection title="Nested Dialogs" description="Open a dialog from within another dialog">
 				<Dialog.Root>
 					{#snippet children({ close })}
-						<Dialog.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Open First Dialog
-							</button>
+						<Dialog.Trigger
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Open First Dialog
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay />
@@ -217,12 +211,10 @@
 								<!-- Nested Dialog -->
 								<Dialog.Root>
 									{#snippet children({ close: closeNested })}
-										<Dialog.Trigger>
-											<button
-												class="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-											>
-												Open Nested Dialog
-											</button>
+										<Dialog.Trigger
+											class="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+										>
+											Open Nested Dialog
 										</Dialog.Trigger>
 										<Dialog.Portal>
 											<Dialog.Overlay />
@@ -266,12 +258,10 @@
 			<DemoSection title="Form Dialog" description="A dialog containing a form with validation">
 				<Dialog.Root>
 					{#snippet children({ close })}
-						<Dialog.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Open Form Dialog
-							</button>
+						<Dialog.Trigger
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Open Form Dialog
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay />
@@ -340,12 +330,10 @@
 			>
 				<Dialog.Root>
 					{#snippet children({ close })}
-						<Dialog.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Open Dialog with ComboBox
-							</button>
+						<Dialog.Trigger
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Open Dialog with ComboBox
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay />
@@ -407,12 +395,10 @@
 			>
 				<Dialog.Root>
 					{#snippet children({ close })}
-						<Dialog.Trigger>
-							<button
-								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-							>
-								Open Level 1
-							</button>
+						<Dialog.Trigger
+							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+						>
+							Open Level 1
 						</Dialog.Trigger>
 						<Dialog.Portal>
 							<Dialog.Overlay />
@@ -427,12 +413,10 @@
 								<!-- Level 2 -->
 								<Dialog.Root>
 									{#snippet children({ close: close2 })}
-										<Dialog.Trigger>
-											<button
-												class="mb-4 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-											>
-												Open Level 2
-											</button>
+										<Dialog.Trigger
+											class="mb-4 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+										>
+											Open Level 2
 										</Dialog.Trigger>
 										<Dialog.Portal>
 											<Dialog.Overlay />
@@ -447,12 +431,10 @@
 												<!-- Level 3 -->
 												<Dialog.Root>
 													{#snippet children({ close: close3 })}
-														<Dialog.Trigger>
-															<button
-																class="mb-4 rounded-lg bg-yellow-600 px-4 py-2 text-white transition-colors hover:bg-yellow-700"
-															>
-																Open Level 3
-															</button>
+														<Dialog.Trigger
+															class="mb-4 rounded-lg bg-yellow-600 px-4 py-2 text-white transition-colors hover:bg-yellow-700"
+														>
+															Open Level 3
 														</Dialog.Trigger>
 														<Dialog.Portal>
 															<Dialog.Overlay />
@@ -467,12 +449,10 @@
 																<!-- Level 4 -->
 																<Dialog.Root>
 																	{#snippet children({ close: close4 })}
-																		<Dialog.Trigger>
-																			<button
-																				class="mb-4 rounded-lg bg-orange-600 px-4 py-2 text-white transition-colors hover:bg-orange-700"
-																			>
-																				Open Level 4
-																			</button>
+																		<Dialog.Trigger
+																			class="mb-4 rounded-lg bg-orange-600 px-4 py-2 text-white transition-colors hover:bg-orange-700"
+																		>
+																			Open Level 4
 																		</Dialog.Trigger>
 																		<Dialog.Portal>
 																			<Dialog.Overlay />
@@ -489,12 +469,10 @@
 																				<!-- Level 5 -->
 																				<Dialog.Root>
 																					{#snippet children({ close: close5 })}
-																						<Dialog.Trigger>
-																							<button
-																								class="mb-4 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
-																							>
-																								Open Level 5
-																							</button>
+																						<Dialog.Trigger
+																							class="mb-4 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+																						>
+																							Open Level 5
 																						</Dialog.Trigger>
 																						<Dialog.Portal>
 																							<Dialog.Overlay />

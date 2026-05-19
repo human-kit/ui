@@ -1,7 +1,11 @@
 <script lang="ts" generics="T extends object = object">
 	import { untrack, type Snippet } from 'svelte';
 	import { dev } from '../../internal/environment';
-	import { setComboBoxContext, type ComboBoxContext } from './context';
+	import {
+		setComboBoxContext,
+		type ComboBoxContext,
+		type ComboBoxFilter
+	} from './context';
 	import type { ListBoxContext } from '../../listbox/root/context';
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
 	import {
@@ -29,6 +33,8 @@
 		isOpen?: boolean;
 		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
 		trigger?: 'focus' | 'input' | 'press';
+		/** Function used to filter items locally. Set to null to disable local filtering. */
+		filter?: ComboBoxFilter | null;
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
 		onChange?: (value: string | number | null | (string | number)[]) => void;
@@ -60,6 +66,7 @@
 		closeOnSelect,
 		isOpen = $bindable(),
 		trigger = 'press',
+		filter = defaultComboBoxFilter,
 		onInputChange,
 		onOpenChange,
 		onChange,
@@ -70,6 +77,10 @@
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby
 	}: ComboBoxProps<T> = $props();
+
+	function defaultComboBoxFilter(textValue: string, inputValue: string) {
+		return textValue.toLowerCase().includes(inputValue.trim().toLowerCase());
+	}
 
 	const instanceId = untrack(() => rootId) ?? generatedInstanceId;
 
@@ -811,6 +822,9 @@
 		},
 		get shouldFilter() {
 			return shouldFilter;
+		},
+		get filter() {
+			return filter;
 		},
 		get focusedItemId() {
 			return navigation.focusedId;

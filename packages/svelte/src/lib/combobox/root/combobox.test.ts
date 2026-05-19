@@ -781,6 +781,74 @@ describe('ComboBox', () => {
 		});
 	});
 
+	describe('Filtering API', () => {
+		it('uses the default contains filter when no filter prop is provided', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('arg');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(1);
+			expect(options[0].textContent).toContain('Argentina');
+		});
+
+		it('uses a custom filter when provided', async () => {
+			const filter = vi.fn((textValue: string, inputValue: string) => {
+				return inputValue.trim() === 'remote' && textValue === 'Brazil';
+			});
+			const screen = render(ComboBoxTest, { filter });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('remote');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(1);
+			expect(options[0].textContent).toContain('Brazil');
+			expect(filter).toHaveBeenCalledWith('Brazil', 'remote');
+		});
+
+		it('does not filter locally when filter is null', async () => {
+			const screen = render(ComboBoxTest, { filter: null });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('arg');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(10);
+		});
+
+		it('supports externally filtered items that do not match the input when filter is null', async () => {
+			const ComboBoxFilteredTest = (await import('./combobox-filtered-test.svelte')).default;
+			const screen = render(ComboBoxFilteredTest, {
+				filter: null,
+				externalFilterMode: 'remote'
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('remote');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(1);
+			expect(options[0].textContent).toContain('Brazil');
+		});
+	});
+
 	describe('Disabled and ReadOnly States', () => {
 		it('does not open when disabled', async () => {
 			const screen = render(ComboBoxTest, { isDisabled: true });

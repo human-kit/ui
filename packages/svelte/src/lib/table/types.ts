@@ -1,5 +1,5 @@
 import type { Component, Snippet } from 'svelte';
-import type { HTMLAttributes } from 'svelte/elements';
+import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
 import type {
 	TableColumnWidth,
 	TableContext,
@@ -144,8 +144,10 @@ export type TableSortTriggerRenderState = {
 	sortDirection: TableSortDirection | undefined;
 };
 
-export type TableSortTriggerProps = {
+export type TableSortTriggerProps = Omit<HTMLButtonAttributes, 'children' | 'class' | 'type'> & {
 	children?: Snippet<[TableSortTriggerRenderState]> | Snippet;
+	class?: string;
+	element?: HTMLButtonElement | null;
 };
 
 export type TableColumnResizerProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {

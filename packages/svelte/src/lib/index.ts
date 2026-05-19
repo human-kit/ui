@@ -10,6 +10,7 @@ export { DatePicker } from './datepicker/index.js';
 export { TimePicker } from './timepicker/index.js';
 export { Dialog } from './dialog/index.js';
 export { ListBox } from './listbox/index.js';
+export { NumberField } from './numberfield/index.js';
 export { Popover } from './popover/index.js';
 export { Table } from './table/index.js';
 export { Tree } from './tree/index.js';
@@ -19,6 +20,7 @@ export { default as Input } from './input/index.js';
 export { default as Label } from './label/index.js';
 export { default as LocaleProvider } from './locale-provider/index.js';
 export { Portal } from './portal/index.js';
+export { default as TextArea } from './textarea/index.js';
 
 export * from './locale-provider/index.js';
 
@@ -32,6 +34,7 @@ export * from './datepicker/index.js';
 export * from './timepicker/index.js';
 export * from './dialog/index.js';
 export * from './listbox/index.js';
+export * from './numberfield/index.js';
 export * from './popover/index.js';
 export * from './table/index.js';
 export * from './tree/index.js';

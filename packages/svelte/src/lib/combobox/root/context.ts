@@ -2,6 +2,8 @@ import { setContext, getContext } from 'svelte';
 import type { Snippet } from 'svelte';
 import type { ListBoxContext } from '../../listbox/root/context';
 
+export type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
+
 /**
  * Context shared between ComboBox and its children.
  */
@@ -34,6 +36,8 @@ export type ComboBoxContext<T extends object = object> = {
 	trigger: 'focus' | 'input' | 'press';
 	/** Whether inputValue should be used for filtering (false = show all items) */
 	shouldFilter: boolean;
+	/** Function used to filter items locally. Null disables local filtering. */
+	filter: ComboBoxFilter | null;
 	/** Currently focused item ID (virtual focus) */
 	focusedItemId: string | number | null;
 	/** Registered item IDs for navigation */

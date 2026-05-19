@@ -40,9 +40,7 @@
 			<Table.Column id="group" textValue="Group" minWidth={100} maxWidth={260}>
 				<Table.ColumnHeaderCell data-testid="group-header-cell">
 					<div class="flex items-center justify-between gap-3">
-						<Table.SortTrigger>
-							<button type="button" data-testid="group-sort-trigger">Group</button>
-						</Table.SortTrigger>
+						<Table.SortTrigger data-testid="group-sort-trigger">Group</Table.SortTrigger>
 						<Table.ColumnResizer
 							data-testid="group-resizer"
 							class="inline-flex w-3 cursor-col-resize justify-center"

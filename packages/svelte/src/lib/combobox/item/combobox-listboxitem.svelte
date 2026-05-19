@@ -54,15 +54,15 @@
 		}
 	});
 
-	// Normalized input for filtering comparison
-	const normalizedInput = $derived(ctx.inputValue.trim().toLowerCase());
+	const filterInput = $derived(ctx.inputValue);
 	const isDisabled = $derived(Boolean(props.disabled) || ctx.isDisabled);
 
 	// Automatic filtering: if text is not resolved yet, keep item visible until mount resolves it.
 	const isVisible = $derived(
-		!normalizedInput ||
+		!filterInput.trim() ||
 			!effectiveTextValue ||
-			effectiveTextValue.toLowerCase().includes(normalizedInput)
+			ctx.filter === null ||
+			ctx.filter(effectiveTextValue, filterInput)
 	);
 
 	// Virtual focus from ComboBox context

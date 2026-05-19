@@ -56,6 +56,11 @@
 			"svelte": "./dist/listbox/index.js",
 			"default": "./dist/listbox/index.js"
 		},
+		"./numberfield": {
+			"types": "./dist/numberfield/index.d.ts",
+			"svelte": "./dist/numberfield/index.js",
+			"default": "./dist/numberfield/index.js"
+		},
 		"./popover": {
 			"types": "./dist/popover/index.d.ts",
 			"svelte": "./dist/popover/index.js",
@@ -75,6 +80,11 @@
 			"types": "./dist/input/index.d.ts",
 			"svelte": "./dist/input/index.js",
 			"default": "./dist/input/index.js"
+		},
+		"./textarea": {
+			"types": "./dist/textarea/index.d.ts",
+			"svelte": "./dist/textarea/index.js",
+			"default": "./dist/textarea/index.js"
 		},
 		"./label": {
 			"types": "./dist/label/index.d.ts",

@@ -72,19 +72,13 @@
 		);
 	});
 
-	function getSortButtonClass(sortDirection: TableSortTriggerRenderState['sortDirection']) {
-		const baseClass =
-			'inline-flex h-8 shrink-0 items-center gap-2 rounded-md border px-2.5 font-mono text-[11px] font-semibold tracking-[0.18em] uppercase transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500';
-
-		if (sortDirection === 'ascending') {
-			return `${baseClass} border-emerald-300 bg-emerald-50 text-emerald-800 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.08)] hover:border-emerald-400 hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-200 dark:hover:border-emerald-400/60 dark:hover:bg-emerald-950/60`;
-		}
-
-		if (sortDirection === 'descending') {
-			return `${baseClass} border-amber-300 bg-amber-50 text-amber-800 shadow-[inset_0_0_0_1px_rgba(245,158,11,0.08)] hover:border-amber-400 hover:bg-amber-100 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:border-amber-400/60 dark:hover:bg-amber-950/60`;
-		}
-
-		return `${baseClass} border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-blue-500/50 dark:hover:text-blue-300`;
+	function getSortButtonClass() {
+		return [
+			'inline-flex h-8 shrink-0 items-center gap-2 rounded-md border px-2.5 font-mono text-[11px] font-semibold tracking-[0.18em] uppercase transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+			'border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-blue-500/50 dark:hover:text-blue-300',
+			'data-[sort-direction=ascending]:border-emerald-300 data-[sort-direction=ascending]:bg-emerald-50 data-[sort-direction=ascending]:text-emerald-800 data-[sort-direction=ascending]:shadow-[inset_0_0_0_1px_rgba(16,185,129,0.08)] data-[sort-direction=ascending]:hover:border-emerald-400 data-[sort-direction=ascending]:hover:bg-emerald-100 dark:data-[sort-direction=ascending]:border-emerald-500/40 dark:data-[sort-direction=ascending]:bg-emerald-950/40 dark:data-[sort-direction=ascending]:text-emerald-200 dark:data-[sort-direction=ascending]:hover:border-emerald-400/60 dark:data-[sort-direction=ascending]:hover:bg-emerald-950/60',
+			'data-[sort-direction=descending]:border-amber-300 data-[sort-direction=descending]:bg-amber-50 data-[sort-direction=descending]:text-amber-800 data-[sort-direction=descending]:shadow-[inset_0_0_0_1px_rgba(245,158,11,0.08)] data-[sort-direction=descending]:hover:border-amber-400 data-[sort-direction=descending]:hover:bg-amber-100 dark:data-[sort-direction=descending]:border-amber-500/40 dark:data-[sort-direction=descending]:bg-amber-950/40 dark:data-[sort-direction=descending]:text-amber-200 dark:data-[sort-direction=descending]:hover:border-amber-400/60 dark:data-[sort-direction=descending]:hover:bg-amber-950/60'
+		].join(' ');
 	}
 
 	function getSortTriggerStatus(sortDirection: TableSortTriggerRenderState['sortDirection']) {
@@ -183,51 +177,42 @@
 								>
 								<div class="flex shrink-0 items-center gap-2">
 									{#if sortableColumns.includes('email')}
-										<Table.SortTrigger>
+										<Table.SortTrigger
+											class={getSortButtonClass()}
+											aria-label="Email column sort button"
+										>
 											{#snippet children({ sortDirection })}
-												<button
-													type="button"
-													class={getSortButtonClass(sortDirection)}
-													aria-label={getSortTriggerLabel('Email', sortDirection)}
+												<svg
+													aria-hidden="true"
+													viewBox="0 0 16 16"
+													class={`h-3.5 w-3.5 transition-transform ${getSortIconClass(sortDirection)}`}
 												>
-													<svg
-														aria-hidden="true"
-														viewBox="0 0 16 16"
-														class={`h-3.5 w-3.5 transition-transform ${getSortIconClass(sortDirection)}`}
-													>
-														<path
-															d="M8 3.25 11 6.25H5L8 3.25Zm0 9.5-3-3h6l-3 3Z"
-															fill="currentColor"
-														/>
-													</svg>
-													<span
-														aria-hidden="true"
-														class={getSortDirectionBadgeClass(sortDirection)}
-													>
-														{getSortDirectionBadge(sortDirection)}
-													</span>
-													<span class="sr-only">{getSortTriggerStatus(sortDirection)}</span>
-												</button>
+													<path
+														d="M8 3.25 11 6.25H5L8 3.25Zm0 9.5-3-3h6l-3 3Z"
+														fill="currentColor"
+													/>
+												</svg>
+												<span aria-hidden="true" class={getSortDirectionBadgeClass(sortDirection)}>
+													{getSortDirectionBadge(sortDirection)}
+												</span>
+												<span class="sr-only">{getSortTriggerLabel('Email', sortDirection)}</span>
 											{/snippet}
 										</Table.SortTrigger>
 									{/if}
 									<Popover.Root bind:open={emailFilterOpen}>
-										<Popover.Trigger>
-											<button
-												type="button"
-												class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 text-gray-500 transition hover:border-blue-200 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-blue-500/50 dark:hover:text-blue-300"
-												aria-label="Open email column filters"
-											>
-												<svg aria-hidden="true" viewBox="0 0 16 16" class="h-3.5 w-3.5">
-													<path
-														d="M2 3.25h12M4.5 8h7M6.75 12.75h2.5"
-														fill="none"
-														stroke="currentColor"
-														stroke-linecap="round"
-														stroke-width="1.5"
-													/>
-												</svg>
-											</button>
+										<Popover.Trigger
+											class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 text-gray-500 transition hover:border-blue-200 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-blue-500/50 dark:hover:text-blue-300"
+											aria-label="Open email column filters"
+										>
+											<svg aria-hidden="true" viewBox="0 0 16 16" class="h-3.5 w-3.5">
+												<path
+													d="M2 3.25h12M4.5 8h7M6.75 12.75h2.5"
+													fill="none"
+													stroke="currentColor"
+													stroke-linecap="round"
+													stroke-width="1.5"
+												/>
+											</svg>
 										</Popover.Trigger>
 										<Popover.Content
 											placement="bottom-end"
@@ -270,31 +255,25 @@
 								>
 								<div class="flex shrink-0 items-center gap-2">
 									{#if sortableColumns.includes('group')}
-										<Table.SortTrigger>
+										<Table.SortTrigger
+											class={getSortButtonClass()}
+											aria-label="Group column sort button"
+										>
 											{#snippet children({ sortDirection })}
-												<button
-													type="button"
-													class={getSortButtonClass(sortDirection)}
-													aria-label={getSortTriggerLabel('Group', sortDirection)}
+												<svg
+													aria-hidden="true"
+													viewBox="0 0 16 16"
+													class={`h-3.5 w-3.5 transition-transform ${getSortIconClass(sortDirection)}`}
 												>
-													<svg
-														aria-hidden="true"
-														viewBox="0 0 16 16"
-														class={`h-3.5 w-3.5 transition-transform ${getSortIconClass(sortDirection)}`}
-													>
-														<path
-															d="M8 3.25 11 6.25H5L8 3.25Zm0 9.5-3-3h6l-3 3Z"
-															fill="currentColor"
-														/>
-													</svg>
-													<span
-														aria-hidden="true"
-														class={getSortDirectionBadgeClass(sortDirection)}
-													>
-														{getSortDirectionBadge(sortDirection)}
-													</span>
-													<span class="sr-only">{getSortTriggerStatus(sortDirection)}</span>
-												</button>
+													<path
+														d="M8 3.25 11 6.25H5L8 3.25Zm0 9.5-3-3h6l-3 3Z"
+														fill="currentColor"
+													/>
+												</svg>
+												<span aria-hidden="true" class={getSortDirectionBadgeClass(sortDirection)}>
+													{getSortDirectionBadge(sortDirection)}
+												</span>
+												<span class="sr-only">{getSortTriggerLabel('Group', sortDirection)}</span>
 											{/snippet}
 										</Table.SortTrigger>
 									{/if}

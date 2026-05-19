@@ -206,13 +206,10 @@
 								data-sortable="true"
 							>
 								<div class="flex h-full min-w-0 items-center gap-2">
-									<Table.SortTrigger>
-										<button
-											type="button"
-											class="min-w-0 flex-1 truncate text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
-										>
-											{column.header ?? column.id}
-										</button>
+									<Table.SortTrigger
+										class="min-w-0 flex-1 truncate text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+									>
+										{column.header ?? column.id}
 									</Table.SortTrigger>
 									{#if column.resizable}
 										<Table.ColumnResizer class={recipe.resizer()}>

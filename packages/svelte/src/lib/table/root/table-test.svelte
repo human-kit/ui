@@ -119,15 +119,13 @@
 			</Table.Column>
 			<Table.Column id="group" textValue="Group">
 				<Table.ColumnHeaderCell>
-					<Table.SortTrigger>
+					<Table.SortTrigger
+						data-testid="group-sort-trigger"
+						data-sort-direction-state={currentSortDescriptor?.direction ?? 'none'}
+					>
 						{#snippet children({ sortDirection })}
-							<button
-								type="button"
-								data-testid="group-sort-trigger"
-								data-sort-direction-state={sortDirection ?? 'none'}
-							>
-								Group
-							</button>
+							Group
+							<span data-testid="group-sort-state">{sortDirection ?? 'none'}</span>
 						{/snippet}
 					</Table.SortTrigger>
 				</Table.ColumnHeaderCell>

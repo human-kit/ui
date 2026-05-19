@@ -6,6 +6,8 @@ export { default as DemoCheckboxShowcase } from './demo-checkbox-showcase.svelte
 export { default as DemoSelect } from './demo-select.svelte';
 export { default as DemoInput } from './demo-input.svelte';
 export { default as DemoInputShowcase } from './demo-input-showcase.svelte';
+export { default as DemoNumberFieldShowcase } from './demo-numberfield-showcase.svelte';
+export { default as DemoTextAreaShowcase } from './demo-textarea-showcase.svelte';
 export { default as DemoState } from './demo-state.svelte';
 export { default as DemoCalendar } from './demo-calendar.svelte';
 export { default as DemoClock } from './demo-clock.svelte';

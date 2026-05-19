@@ -1,12 +1,15 @@
 <script lang="ts">
 	import ComboBox from '../index';
 
+	type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
+
 	type Props = {
 		id?: string;
 		isDisabled?: boolean;
 		isPending?: boolean;
 		isReadOnly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
+		filter?: ComboBoxFilter | null;
 		disabledIds?: string[];
 		initialValue?: string | number | null;
 		defaultValue?: string | number | null | (string | number)[];
@@ -19,6 +22,7 @@
 		isPending = false,
 		isReadOnly = false,
 		trigger = 'press',
+		filter,
 		disabledIds = [],
 		initialValue,
 		defaultValue,
@@ -47,6 +51,7 @@
 	{isPending}
 	{isReadOnly}
 	{trigger}
+	{filter}
 	items={countries}
 	{defaultValue}
 	bind:value={selectedValue}
