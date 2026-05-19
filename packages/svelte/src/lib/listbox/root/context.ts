@@ -110,8 +110,11 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	}
 
 	function registerItem(id: string | number, textValue?: string, element?: HTMLElement) {
+		const hadItem = items.has(id);
 		items.set(id, { textValue, element });
-		notifyItemCountChange();
+		if (!hadItem) {
+			notifyItemCountChange();
+		}
 	}
 
 	function unregisterItem(id: string | number) {

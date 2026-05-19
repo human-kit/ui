@@ -11,7 +11,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { useListBoxContext } from '../root/context';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import {
 		focusWithModality,
 		shouldShowFocusVisible,
@@ -79,7 +79,7 @@
 	const listboxCtx = useListBoxContext();
 
 	let elementRef: HTMLElement;
-	let isSelected = $state(false);
+	let subscribedSelection = $state<boolean | null>(null);
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);
 	let listFocusVisible = $state(false);
@@ -92,6 +92,7 @@
 	const isFocusedComputed = $derived(
 		isFocusedOverride !== undefined ? isFocusedOverride : isFocused
 	);
+	const isSelected = $derived(subscribedSelection ?? listboxCtx.isSelected(id));
 	const isDisabledComputed = $derived(
 		disabled || listboxCtx.disabledIds.has(id) || isParentDisabled
 	);
@@ -123,15 +124,19 @@
 		return textValue || elementRef?.textContent?.trim() || String(id);
 	}
 
+	untrack(() => {
+		listboxCtx.registerItem(id, textValue ?? String(id));
+	});
+
 	onMount(() => {
 		const computedTextValue = getResolvedTextValue();
 
-		// Register with ListBox context for selection state
+		// Update the render-time registration with the mounted element.
 		listboxCtx.registerItem(id, computedTextValue, elementRef);
 		onResolvedTextValue?.(computedTextValue);
 
 		unsubscribeSelection = listboxCtx.subscribeToItem(id, (selected) => {
-			isSelected = selected;
+			subscribedSelection = selected;
 		});
 
 		// Only subscribe to ListBox focus if focus handling is enabled

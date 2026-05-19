@@ -12,6 +12,7 @@ export { Dialog } from './dialog/index.js';
 export { ListBox } from './listbox/index.js';
 export { NumberField } from './numberfield/index.js';
 export { Popover } from './popover/index.js';
+export { Switch } from './switch/index.js';
 export { Table } from './table/index.js';
 export { Tree } from './tree/index.js';
 
@@ -36,6 +37,7 @@ export * from './dialog/index.js';
 export * from './listbox/index.js';
 export * from './numberfield/index.js';
 export * from './popover/index.js';
+export * from './switch/index.js';
 export * from './table/index.js';
 export * from './tree/index.js';
 

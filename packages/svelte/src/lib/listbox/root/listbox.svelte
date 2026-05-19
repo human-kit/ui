@@ -80,7 +80,7 @@
 			return disabledIds;
 		},
 		// Use function to capture initial value only (not reactive)
-		initialSelection: (() => parseSelection(defaultValue))(),
+		initialSelection: (() => parseSelection(value ?? defaultValue))(),
 		onSelectionChange: (newSelection) => {
 			onChange?.(newSelection);
 		}
@@ -118,8 +118,12 @@
 	});
 
 	const itemsArray = $derived(items ? Array.from(items) : []);
-	const hasItems = $derived(itemsArray.length > 0 || itemCount > 0);
+	const hasDynamicItems = $derived(items !== undefined);
 	let hasMounted = $state(false);
+	const registeredItemCount = $derived(hasMounted ? itemCount : ctx.getItemCount());
+	const shouldShowEmptyPlaceholder = $derived(
+		hasDynamicItems ? itemsArray.length === 0 : !children || registeredItemCount === 0
+	);
 
 	let focusWithin = $state(false);
 
@@ -181,7 +185,7 @@
 		{@render (children as Snippet)()}
 	{/if}
 
-	{#if hasMounted && !hasItems && itemCount === 0}
+	{#if shouldShowEmptyPlaceholder}
 		{#if typeof emptyPlaceholder === 'string'}
 			<div role="option" aria-selected="false" aria-disabled="true" data-empty-placeholder>
 				{emptyPlaceholder}
