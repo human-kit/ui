@@ -4,6 +4,23 @@ import type { ListBoxContext } from '../../listbox/root/context';
 
 export type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
 
+export type ComboBoxItemActionSource = 'keyboard' | 'pointer';
+
+export type ComboBoxItemActionDetails = {
+	id: string | number;
+	textValue: string;
+	inputValue: string;
+	source: ComboBoxItemActionSource;
+};
+
+export type ComboBoxItemActionHandler = (details: ComboBoxItemActionDetails) => void;
+
+export type ComboBoxItemActionRegistration = {
+	textValue: string;
+	onAction: ComboBoxItemActionHandler;
+	closeOnAction: boolean;
+};
+
 /**
  * Context shared between ComboBox and its children.
  */
@@ -38,6 +55,8 @@ export type ComboBoxContext<T extends object = object> = {
 	shouldFilter: boolean;
 	/** Function used to filter items locally. Null disables local filtering. */
 	filter: ComboBoxFilter | null;
+	/** Whether action items should be filtered with selectable items. */
+	filterActionItems: boolean;
 	/** Currently focused item ID (virtual focus) */
 	focusedItemId: string | number | null;
 	/** Registered item IDs for navigation */
@@ -88,6 +107,12 @@ export type ComboBoxContext<T extends object = object> = {
 	registerItem: (id: string | number, label: string) => void;
 	/** Unregister an item */
 	unregisterItem: (id: string | number) => void;
+	/** Register an action item that should activate instead of selecting. */
+	registerItemAction: (id: string | number, registration: ComboBoxItemActionRegistration) => void;
+	/** Unregister an action item. */
+	unregisterItemAction: (id: string | number) => void;
+	/** Activate an action item if one is registered. Returns true when handled. */
+	activateItemAction: (id: string | number, source: ComboBoxItemActionSource) => boolean;
 	/** Handle keyboard events (arrow navigation, enter, escape) */
 	handleKeydown: (event: KeyboardEvent) => void;
 	/** Handle input blur - restore selection or deselect if empty */

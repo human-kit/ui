@@ -22,6 +22,7 @@ Description: State container for combobox behavior, including open state, input 
 | `closeOnSelect`     | `boolean`                                                           | `single: true / multiple: false` | Controls whether the popover closes after selection.        |
 | `isOpen`            | `boolean`                                                           | `undefined`                      | Controlled open state. Supports `bind:isOpen`.              |
 | `trigger`           | `'focus' \| 'input' \| 'press'`                                     | `'press'`                        | Opening strategy for the popover.                           |
+| `filterActionItems` | `boolean`                                                           | `true`                           | Whether `onAction` items participate in local filtering.    |
 | `onInputChange`     | `(value: string) => void`                                           | `undefined`                      | Called when the input value changes.                        |
 | `onOpenChange`      | `(open: boolean) => void`                                           | `undefined`                      | Called when open state changes.                             |
 | `onChange`          | `(value: string \| number \| null \| (string \| number)[]) => void` | `undefined`                      | Called when selection changes.                              |

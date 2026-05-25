@@ -14,6 +14,9 @@ export { NumberField } from './numberfield/index.js';
 export { Popover } from './popover/index.js';
 export { Switch } from './switch/index.js';
 export { Table } from './table/index.js';
+export { Tabs } from './tabs/index.js';
+export { Toggle } from './toggle/index.js';
+export { ToggleGroup } from './toggle-group/index.js';
 export { Tree } from './tree/index.js';
 
 // Simple components
@@ -39,6 +42,9 @@ export * from './numberfield/index.js';
 export * from './popover/index.js';
 export * from './switch/index.js';
 export * from './table/index.js';
+export * from './tabs/index.js';
+export * from './toggle/index.js';
+export * from './toggle-group/index.js';
 export * from './tree/index.js';
 
 // Primitives

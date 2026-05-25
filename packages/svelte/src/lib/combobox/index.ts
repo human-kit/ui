@@ -46,7 +46,10 @@ export {
 	getComboBoxContext,
 	setComboBoxContext,
 	useComboBoxContext,
-	type ComboBoxContext
+	type ComboBoxContext,
+	type ComboBoxItemActionDetails,
+	type ComboBoxItemActionHandler,
+	type ComboBoxItemActionSource
 } from './root/context.js';
 
 // Default export as namespace object

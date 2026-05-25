@@ -1,10 +1,13 @@
 <script lang="ts" generics="T extends object = object">
 	import { untrack, type Snippet } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { dev } from '../../internal/environment';
 	import {
 		setComboBoxContext,
 		type ComboBoxContext,
-		type ComboBoxFilter
+		type ComboBoxFilter,
+		type ComboBoxItemActionRegistration,
+		type ComboBoxItemActionSource
 	} from './context';
 	import type { ListBoxContext } from '../../listbox/root/context';
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
@@ -35,6 +38,8 @@
 		trigger?: 'focus' | 'input' | 'press';
 		/** Function used to filter items locally. Set to null to disable local filtering. */
 		filter?: ComboBoxFilter | null;
+		/** Whether items with onAction should participate in local filtering. */
+		filterActionItems?: boolean;
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
 		onChange?: (value: string | number | null | (string | number)[]) => void;
@@ -67,6 +72,7 @@
 		isOpen = $bindable(),
 		trigger = 'press',
 		filter = defaultComboBoxFilter,
+		filterActionItems = true,
 		onInputChange,
 		onOpenChange,
 		onChange,
@@ -118,6 +124,7 @@
 	let popoverPointerDownPending = $state(false);
 	let shouldCloseOnEscapeState = $state(true);
 	let shouldCloseOnBlurState = $state(true);
+	const itemActions = new SvelteMap<string | number, ComboBoxItemActionRegistration>();
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -505,9 +512,41 @@
 			if (listboxCtxRef?.isDisabled(navigation.focusedId)) {
 				return;
 			}
+			if (activateItemAction(navigation.focusedId, 'keyboard')) {
+				return;
+			}
 			const label = navigation.itemLabels.get(navigation.focusedId) ?? String(navigation.focusedId);
 			selectItem(navigation.focusedId, label);
 		}
+	}
+
+	function registerItemAction(id: string | number, registration: ComboBoxItemActionRegistration) {
+		itemActions.set(id, registration);
+	}
+
+	function unregisterItemAction(id: string | number) {
+		itemActions.delete(id);
+	}
+
+	function activateItemAction(id: string | number, source: ComboBoxItemActionSource) {
+		if (isDisabled) return false;
+
+		const action = itemActions.get(id);
+		if (!action) return false;
+
+		const details = {
+			id,
+			textValue: action.textValue,
+			inputValue: currentInputValue,
+			source
+		};
+
+		if (action.closeOnAction) {
+			closePopover(true);
+		}
+
+		action.onAction(details);
+		return true;
 	}
 
 	/**
@@ -826,6 +865,9 @@
 		get filter() {
 			return filter;
 		},
+		get filterActionItems() {
+			return filterActionItems;
+		},
 		get focusedItemId() {
 			return navigation.focusedId;
 		},
@@ -875,7 +917,13 @@
 		onOpenChange: setIsOpen,
 		setFocusedItemId: navigation.setFocused,
 		registerItem: navigation.register,
-		unregisterItem: navigation.unregister,
+		unregisterItem: (id) => {
+			navigation.unregister(id);
+			unregisterItemAction(id);
+		},
+		registerItemAction,
+		unregisterItemAction,
+		activateItemAction,
 		handleKeydown,
 		handleInputBlur,
 		setFocusVisible: setFocusVisibleState,
