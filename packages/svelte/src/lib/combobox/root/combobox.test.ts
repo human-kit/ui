@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from './combobox-test.svelte';
 import ComboBoxFormTest from './combobox-form-test.svelte';
+import ComboBoxControlledExternalTest from './combobox-controlled-external-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ComboBox', () => {
@@ -462,6 +463,34 @@ describe('ComboBox', () => {
 			await userEvent.keyboard('{Escape}');
 
 			await expect.element(input).toHaveValue('');
+		});
+
+		it('keeps controlled inputValue after external value sync when opening and blurring', async () => {
+			const screen = render(ComboBoxControlledExternalTest);
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveValue('CAJA X 5000');
+
+			await screen.getByTestId('sync-external-value').click();
+
+			await expect.element(input).toHaveValue('Unidad');
+
+			await input.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			await expect
+				.poll(() => document.querySelector('[data-item-id="unit"]')?.getAttribute('aria-selected'))
+				.toBe('true');
+			await expect
+				.poll(() =>
+					document.querySelector('[data-item-id="box-5000"]')?.getAttribute('aria-selected')
+				)
+				.toBe('false');
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			await expect.element(input).toHaveValue('Unidad');
 		});
 	});
 

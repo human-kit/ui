@@ -38,6 +38,7 @@
 		isReadOnly?: boolean;
 		isRequired?: boolean;
 		isInvalid?: boolean;
+		'aria-invalid'?: HTMLAttributes<HTMLDivElement>['aria-invalid'];
 		allowWheelScrub?: boolean;
 		allowOutOfRange?: boolean;
 		snapOnStep?: boolean;
@@ -116,6 +117,7 @@
 		isReadOnly = false,
 		isRequired = false,
 		isInvalid = false,
+		'aria-invalid': ariaInvalid,
 		allowWheelScrub = false,
 		allowOutOfRange = false,
 		snapOnStep = false,
@@ -153,7 +155,10 @@
 	const formValue = $derived(currentValue === null ? '' : String(currentValue));
 	const outOfRange = $derived(isValueOutOfRange(currentValue, min, max));
 	const resolvedOutOfRange = $derived(inputState === 'out-of-range' || outOfRange);
-	const resolvedInvalid = $derived(Boolean(isInvalid || inputInvalid || resolvedOutOfRange));
+	const externalInvalid = $derived(ariaInvalid === true || ariaInvalid === 'true');
+	const resolvedInvalid = $derived(
+		Boolean(isInvalid || externalInvalid || inputInvalid || resolvedOutOfRange)
+	);
 	const ariaValueNow = $derived(
 		inputState === 'synced' && currentValue !== null ? currentValue : undefined
 	);

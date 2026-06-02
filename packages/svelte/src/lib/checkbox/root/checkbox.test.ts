@@ -114,6 +114,56 @@ describe('Checkbox.Root', () => {
 		expect(checkbox.element()?.getAttribute('aria-checked')).toBe('true');
 	});
 
+	it('sets data-pressed while primary pointer is held', async () => {
+		const screen = render(CheckboxTest, { keepMounted: true });
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const checkboxElement = checkbox.element();
+		const indicator = document.querySelector('[data-checkbox-indicator="true"]');
+
+		checkboxElement?.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				cancelable: true,
+				button: 0,
+				buttons: 1
+			})
+		);
+
+		await expect.poll(() => checkboxElement?.getAttribute('data-pressed')).toBe('true');
+		await expect.poll(() => indicator?.getAttribute('data-pressed')).toBe('true');
+
+		checkboxElement?.dispatchEvent(
+			new PointerEvent('pointerup', {
+				bubbles: true,
+				cancelable: true,
+				button: 0
+			})
+		);
+
+		await expect.poll(() => checkboxElement?.getAttribute('data-pressed')).toBeNull();
+		await expect.poll(() => indicator?.getAttribute('data-pressed')).toBeNull();
+	});
+
+	it('clears data-pressed when the pointer leaves while pressed', async () => {
+		const screen = render(CheckboxTest);
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const checkboxElement = checkbox.element();
+
+		checkboxElement?.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				cancelable: true,
+				button: 0,
+				buttons: 1
+			})
+		);
+		await expect.poll(() => checkboxElement?.getAttribute('data-pressed')).toBe('true');
+
+		checkboxElement?.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true }));
+
+		await expect.poll(() => checkboxElement?.getAttribute('data-pressed')).toBeNull();
+	});
+
 	it('sets data-focus-visible on keyboard interaction', async () => {
 		const screen = render(CheckboxTest);
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
@@ -134,6 +184,22 @@ describe('Checkbox.Root', () => {
 
 		expect(checkbox.element()?.getAttribute('aria-checked')).toBe('false');
 		expect(checkbox.element()?.getAttribute('data-disabled')).toBe('true');
+	});
+
+	it('does not set data-pressed when disabled', async () => {
+		const screen = render(CheckboxTest, { isDisabled: true });
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+
+		checkbox.element()?.dispatchEvent(
+			new PointerEvent('pointerdown', {
+				bubbles: true,
+				cancelable: true,
+				button: 0,
+				buttons: 1
+			})
+		);
+
+		expect(checkbox.element()?.getAttribute('data-pressed')).toBeNull();
 	});
 
 	it('does not toggle when readonly', async () => {

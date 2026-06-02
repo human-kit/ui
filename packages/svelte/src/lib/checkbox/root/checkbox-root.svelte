@@ -43,7 +43,15 @@
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
 		onfocus?: HTMLAttributes<HTMLSpanElement>['onfocus'];
+		onpointerdown?: HTMLAttributes<HTMLSpanElement>['onpointerdown'];
+		onpointerup?: HTMLAttributes<HTMLSpanElement>['onpointerup'];
+		onpointercancel?: HTMLAttributes<HTMLSpanElement>['onpointercancel'];
+		onpointerenter?: HTMLAttributes<HTMLSpanElement>['onpointerenter'];
+		onpointerleave?: HTMLAttributes<HTMLSpanElement>['onpointerleave'];
 		onmousedown?: HTMLAttributes<HTMLSpanElement>['onmousedown'];
+		onmouseup?: HTMLAttributes<HTMLSpanElement>['onmouseup'];
+		onmouseenter?: HTMLAttributes<HTMLSpanElement>['onmouseenter'];
+		onmouseleave?: HTMLAttributes<HTMLSpanElement>['onmouseleave'];
 	};
 
 	function composeEventHandlers<TEvent extends Event>(
@@ -91,7 +99,15 @@
 		onclick: onClickExternal,
 		onkeydown: onKeyDownExternal,
 		onfocus: onFocusExternal,
+		onpointerdown: onPointerDownExternal,
+		onpointerup: onPointerUpExternal,
+		onpointercancel: onPointerCancelExternal,
+		onpointerenter: onPointerEnterExternal,
+		onpointerleave: onPointerLeaveExternal,
 		onmousedown: onMouseDownExternal,
+		onmouseup: onMouseUpExternal,
+		onmouseenter: onMouseEnterExternal,
+		onmouseleave: onMouseLeaveExternal,
 		...restProps
 	}: CheckboxRootProps = $props();
 
@@ -116,6 +132,14 @@
 		element = rootRef;
 	});
 
+	$effect(() => {
+		if (!isDisabled && !isReadOnly) return;
+		clearPressState();
+		if (isDisabled) {
+			focusVisible = false;
+		}
+	});
+
 	if (untrack(() => isChecked) === undefined) {
 		isChecked = initialState === 'checked';
 	}
@@ -137,6 +161,11 @@
 	const currentChecked = $derived(currentState === 'checked');
 	const currentIndeterminate = $derived(currentState === 'indeterminate');
 	const currentUnchecked = $derived(currentState === 'unchecked');
+
+	function clearPressState() {
+		pressed = false;
+		pressedKey = null;
+	}
 
 	function publishState(nextState: CheckboxState, event?: Event) {
 		const nextChecked = nextState === 'checked';
@@ -245,9 +274,72 @@
 		requestNativeToggle(event);
 	}
 
-	function handlePointerDown(event: PointerEvent | MouseEvent) {
+	function handlePointerDown(event: PointerEvent) {
 		trackInteractionModality(event, rootRef);
 		focusVisible = false;
+
+		if (isDisabled || isReadOnly) {
+			event.preventDefault();
+			clearPressState();
+			return;
+		}
+
+		if (event.button !== 0) return;
+		pressed = true;
+		pressedKey = null;
+	}
+
+	function handlePointerUp(event: PointerEvent) {
+		if (event.button !== 0) return;
+		if (pressedKey === null) {
+			pressed = false;
+		}
+	}
+
+	function handlePointerCancel() {
+		clearPressState();
+	}
+
+	function handlePointerEnter(event: PointerEvent) {
+		if (isDisabled || isReadOnly) return;
+
+		if ((event.buttons & 1) === 1 && pressedKey === null) {
+			pressed = true;
+		}
+	}
+
+	function handlePointerLeave() {
+		if (pressedKey === null) {
+			pressed = false;
+		}
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, rootRef);
+		focusVisible = false;
+
+		if (isDisabled || isReadOnly) {
+			event.preventDefault();
+			clearPressState();
+			return;
+		}
+
+		if (event.button !== 0) return;
+		pressed = true;
+		pressedKey = null;
+	}
+
+	function handleMouseUp(event: MouseEvent) {
+		if (event.button !== 0) return;
+		if (pressedKey === null) {
+			pressed = false;
+		}
+	}
+
+	function handleMouseLeave() {
+		if (pressedKey === null) {
+			pressed = false;
+		}
 	}
 
 	function handleFocus() {
@@ -258,8 +350,7 @@
 	function handleBlur() {
 		focused = false;
 		focusVisible = false;
-		pressed = false;
-		pressedKey = null;
+		clearPressState();
 	}
 
 	function handleInputChange(event: Event) {
@@ -354,8 +445,15 @@
 	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
 	onkeyup={handleKeyUp}
-	onpointerdown={handlePointerDown}
-	onmousedown={composeEventHandlers(onMouseDownExternal ?? undefined, handlePointerDown)}
+	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
+	onpointerup={composeEventHandlers(handlePointerUp, onPointerUpExternal ?? undefined)}
+	onpointercancel={composeEventHandlers(handlePointerCancel, onPointerCancelExternal ?? undefined)}
+	onpointerenter={composeEventHandlers(handlePointerEnter, onPointerEnterExternal ?? undefined)}
+	onpointerleave={composeEventHandlers(handlePointerLeave, onPointerLeaveExternal ?? undefined)}
+	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
+	onmouseup={composeEventHandlers(handleMouseUp, onMouseUpExternal ?? undefined)}
+	onmouseenter={onMouseEnterExternal}
+	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={handleBlur}
 	class={cn(

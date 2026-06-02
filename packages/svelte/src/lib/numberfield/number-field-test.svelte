@@ -14,6 +14,7 @@
 		isReadOnly?: boolean;
 		isRequired?: boolean;
 		isInvalid?: boolean;
+		'aria-invalid'?: boolean | 'true' | 'false';
 		allowWheelScrub?: boolean;
 		allowOutOfRange?: boolean;
 		snapOnStep?: boolean;
@@ -37,6 +38,7 @@
 		isReadOnly = false,
 		isRequired = false,
 		isInvalid = false,
+		'aria-invalid': ariaInvalid,
 		allowWheelScrub = false,
 		allowOutOfRange = false,
 		snapOnStep = false,
@@ -74,6 +76,7 @@
 			{isReadOnly}
 			{isRequired}
 			{isInvalid}
+			aria-invalid={ariaInvalid}
 			{allowWheelScrub}
 			{allowOutOfRange}
 			{snapOnStep}

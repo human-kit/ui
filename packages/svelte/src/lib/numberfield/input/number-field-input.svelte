@@ -50,6 +50,7 @@
 		autocomplete = 'off',
 		element = $bindable<HTMLInputElement | null>(null),
 		oninput: onInputExternal,
+		onbeforeinput: onBeforeInputExternal,
 		onfocus: onFocusExternal,
 		onblur: onBlurExternal,
 		onkeydown: onKeyDownExternal,
@@ -81,8 +82,41 @@
 		return event.currentTarget as HTMLInputElement;
 	}
 
+	function removeAlphabeticCharacters(value: string): string {
+		return value.replace(/\p{L}/gu, '');
+	}
+
+	function hasAlphabeticCharacters(value: string): boolean {
+		return /\p{L}/u.test(value);
+	}
+
+	function handleBeforeInput(event: InputEvent) {
+		if (numberField.isDisabled || numberField.isReadOnly) return;
+		if (!event.data || !hasAlphabeticCharacters(event.data)) return;
+
+		event.preventDefault();
+	}
+
 	function handleInput(event: Event) {
-		numberField.setInputValue(getInputElement(event).value, 'input', event);
+		const input = getInputElement(event);
+		const selectionStart = input.selectionStart;
+		const nextInputValue = removeAlphabeticCharacters(input.value);
+
+		if (input.value !== nextInputValue) {
+			const removedBeforeSelection =
+				selectionStart === null
+					? 0
+					: input.value.slice(0, selectionStart).length -
+						removeAlphabeticCharacters(input.value.slice(0, selectionStart)).length;
+
+			input.value = nextInputValue;
+			if (selectionStart !== null) {
+				const nextSelectionStart = Math.max(0, selectionStart - removedBeforeSelection);
+				input.setSelectionRange(nextSelectionStart, nextSelectionStart);
+			}
+		}
+
+		numberField.setInputValue(nextInputValue, 'input', event);
 	}
 
 	function handleFocus(event: FocusEvent) {
@@ -210,5 +244,6 @@
 	onmouseenter={handleMouseEnter}
 	onmouseleave={handleMouseLeave}
 	onwheel={composeEventHandlers(handleWheel, onWheelExternal ?? undefined)}
+	onbeforeinput={composeEventHandlers(handleBeforeInput, onBeforeInputExternal ?? undefined)}
 	class={cn('outline-none', className)}
 />

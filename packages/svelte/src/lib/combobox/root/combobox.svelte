@@ -441,11 +441,6 @@
 			// If opening with a selection, disable filtering to show all options
 			if (currentSelection.size > 0 && selectionMode === 'single') {
 				shouldFilter = false;
-				// Only reset filter if user didn't type (input matches selection)
-				if (currentInputValue === selectedLabel) {
-					onInputChange?.('');
-				}
-				// Otherwise user typed, keep their filter
 			} else {
 				shouldFilter = true;
 			}

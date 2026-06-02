@@ -9,8 +9,17 @@
 		class?: string;
 	};
 
-	let { children, class: className, onmousedown, ...restProps }: NumberFieldGroupProps = $props();
+	let { children, class: className, onmousedown, 'data-invalid': dataInvalid, ...restProps }: NumberFieldGroupProps =
+		$props();
 	const numberField = useNumberFieldContext();
+
+	function isTruthyDataAttribute(value: unknown) {
+		return value === true || value === '' || value === 'true';
+	}
+
+	const resolvedInvalid = $derived(
+		isTruthyDataAttribute(dataInvalid) || numberField.isInvalid
+	);
 
 	function handleMouseDown(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (event.target instanceof HTMLInputElement) {
@@ -34,7 +43,7 @@
 	data-disabled={numberField.isDisabled || undefined}
 	data-readonly={numberField.isReadOnly || undefined}
 	data-required={numberField.isRequired || undefined}
-	data-invalid={numberField.isInvalid || undefined}
+	data-invalid={resolvedInvalid || undefined}
 	data-focus-within={numberField.focusWithin || undefined}
 	data-scrubbing={numberField.scrubbing || undefined}
 	onmousedown={handleMouseDown}

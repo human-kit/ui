@@ -617,6 +617,16 @@ describe('NumberField', () => {
 		expect(document.querySelector('[data-form-entries]')?.textContent).toBe('');
 	});
 
+	it('maps aria-invalid on Root to group and input invalid attributes', () => {
+		const screen = render(NumberFieldTest, { 'aria-invalid': 'true' });
+		const input = screen.getByRole('spinbutton', { name: 'Amount' });
+		const group = document.querySelector('[data-number-field-group="true"]');
+
+		expect(input.element()?.getAttribute('aria-invalid')).toBe('true');
+		expect(input.element()?.getAttribute('data-invalid')).toBe('true');
+		expect(group?.getAttribute('data-invalid')).toBe('true');
+	});
+
 	it('maps invalid, required, disabled, and readonly state to accessible attributes', () => {
 		const screen = render(NumberFieldTest, {
 			isInvalid: true,
