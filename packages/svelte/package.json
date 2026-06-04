@@ -11,6 +11,11 @@
 			"svelte": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
+		"./accordion": {
+			"types": "./dist/accordion/index.d.ts",
+			"svelte": "./dist/accordion/index.js",
+			"default": "./dist/accordion/index.js"
+		},
 		"./button": {
 			"types": "./dist/button/index.d.ts",
 			"svelte": "./dist/button/index.js",

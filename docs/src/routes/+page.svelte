@@ -12,6 +12,12 @@
 		</p>
 		<nav class="flex flex-wrap justify-center gap-4">
 			<a
+				href={resolve('/docs/accordion')}
+				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
+			>
+				Accordion
+			</a>
+			<a
 				href={buttonDocsHref}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>

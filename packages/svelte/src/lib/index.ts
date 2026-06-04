@@ -1,6 +1,7 @@
 // Main library entry point
 
 // Components (namespace exports)
+export { Accordion } from './accordion/index.js';
 export { Button } from './button/index.js';
 export { Checkbox } from './checkbox/index.js';
 export { ComboBox } from './combobox/index.js';
@@ -29,6 +30,7 @@ export { default as TextArea } from './textarea/index.js';
 export * from './locale-provider/index.js';
 
 // Re-export named exports from components
+export * from './accordion/index.js';
 export * from './button/index.js';
 export * from './checkbox/index.js';
 export * from './combobox/index.js';
