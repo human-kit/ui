@@ -42,6 +42,12 @@
 				Checkbox
 			</a>
 			<a
+				href={resolve('/docs/collapsible')}
+				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
+			>
+				Collapsible
+			</a>
+			<a
 				href={resolve('/docs/switch')}
 				class="rounded-lg bg-neutral-800 px-4 py-2 transition-colors hover:bg-neutral-700"
 			>

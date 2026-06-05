@@ -26,6 +26,11 @@
 			"svelte": "./dist/checkbox/index.js",
 			"default": "./dist/checkbox/index.js"
 		},
+		"./collapsible": {
+			"types": "./dist/collapsible/index.d.ts",
+			"svelte": "./dist/collapsible/index.js",
+			"default": "./dist/collapsible/index.js"
+		},
 		"./switch": {
 			"types": "./dist/switch/index.d.ts",
 			"svelte": "./dist/switch/index.js",

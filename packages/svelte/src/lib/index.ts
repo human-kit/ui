@@ -4,6 +4,7 @@
 export { Accordion } from './accordion/index.js';
 export { Button } from './button/index.js';
 export { Checkbox } from './checkbox/index.js';
+export { Collapsible } from './collapsible/index.js';
 export { ComboBox } from './combobox/index.js';
 export { Calendar } from './calendar/index.js';
 export { Clock } from './clock/index.js';
@@ -33,6 +34,7 @@ export * from './locale-provider/index.js';
 export * from './accordion/index.js';
 export * from './button/index.js';
 export * from './checkbox/index.js';
+export * from './collapsible/index.js';
 export * from './combobox/index.js';
 export * from './calendar/index.js';
 export * from './clock/index.js';
