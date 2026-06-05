@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getDialogContext } from '../root/context';
+	import { getDialogPresenceContext } from '../root/presence-context';
 	import { getOverlayZIndex } from '../root/dialog-stack';
 
 	/**
@@ -22,6 +23,10 @@
 
 	const dialogCtx = ctx;
 
+	// Optional: present only inside Dialog.Portal. Mirrors the content's enter/exit phase so the
+	// backdrop can fade in step with it.
+	const presence = getDialogPresenceContext();
+
 	// Calculate z-index based on dialog level from context
 	const zIndex = $derived(getOverlayZIndex(dialogCtx.stackLevel));
 </script>
@@ -29,6 +34,9 @@
 <div
 	class={className}
 	data-dialog-overlay
+	data-state={presence ? presence.state : 'open'}
+	data-entering={presence?.isEntering || undefined}
+	data-exiting={presence?.isExiting || undefined}
 	style="
 		position: fixed;
 		inset: 0;

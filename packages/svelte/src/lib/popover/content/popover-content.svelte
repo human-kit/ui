@@ -8,6 +8,7 @@
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
+	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { Portal } from '../../portal';
 	import {
 		getPopoverContext,
@@ -92,113 +93,18 @@
 	let isEntering = $state(false);
 	let isExiting = $state(false);
 	let resolvedPlacement = $state<'top' | 'right' | 'bottom' | 'left'>('bottom');
-	let motionTimeout: number | undefined;
-	let pendingMotionFrame: number | undefined;
-	let cleanupMotionListeners: (() => void) | undefined;
-	let motionId = 0;
+	let tracker: MotionTracker | undefined;
 	let previousOpen = $state(false);
 	let closeHandledInternally = false;
 
-	function parseTimeList(value: string) {
-		return value
-			.split(',')
-			.map((entry) => entry.trim())
-			.filter(Boolean)
-			.map((entry) => {
-				if (entry.endsWith('ms')) return Number.parseFloat(entry);
-				if (entry.endsWith('s')) return Number.parseFloat(entry) * 1000;
-				return Number.parseFloat(entry) || 0;
-			});
-	}
-
-	function getMaxTime(duration: string, delay: string) {
-		const durations = parseTimeList(duration);
-		const delays = parseTimeList(delay);
-		const length = Math.max(durations.length, delays.length);
-
-		let maxTime = 0;
-		for (let index = 0; index < length; index += 1) {
-			const total =
-				(durations[index] ?? durations[durations.length - 1] ?? 0) +
-				(delays[index] ?? delays[delays.length - 1] ?? 0);
-			maxTime = Math.max(maxTime, total);
-		}
-
-		return maxTime;
-	}
-
-	function getMotionTime(element: HTMLElement) {
-		const styles = getComputedStyle(element);
-		const transitionTime = getMaxTime(styles.transitionDuration, styles.transitionDelay);
-		const animationTime = getMaxTime(styles.animationDuration, styles.animationDelay);
-		return Math.max(transitionTime, animationTime);
+	function clearTracker() {
+		tracker?.cancel();
+		tracker = undefined;
 	}
 
 	function resolvePlacementSide(value: string) {
 		const side = value.split(/[-\s]/)[0];
 		return side === 'top' || side === 'right' || side === 'left' ? side : 'bottom';
-	}
-
-	function clearMotionTracking() {
-		if (pendingMotionFrame !== undefined) {
-			cancelAnimationFrame(pendingMotionFrame);
-			pendingMotionFrame = undefined;
-		}
-
-		if (motionTimeout !== undefined) {
-			clearTimeout(motionTimeout);
-			motionTimeout = undefined;
-		}
-
-		cleanupMotionListeners?.();
-		cleanupMotionListeners = undefined;
-	}
-
-	function finishEnter(id: number) {
-		if (id !== motionId) return;
-		clearMotionTracking();
-		isEntering = false;
-	}
-
-	function finishExit(id: number) {
-		if (id !== motionId) return;
-		clearMotionTracking();
-		isExiting = false;
-		isMounted = false;
-	}
-
-	function trackMotion(phase: 'enter' | 'exit', element: HTMLElement) {
-		clearMotionTracking();
-		const id = ++motionId;
-
-		pendingMotionFrame = requestAnimationFrame(() => {
-			pendingMotionFrame = undefined;
-			if (id !== motionId || !element.isConnected) return;
-
-			const totalMotionTime = getMotionTime(element);
-			const complete = phase === 'enter' ? () => finishEnter(id) : () => finishExit(id);
-
-			if (totalMotionTime <= 0) {
-				complete();
-				return;
-			}
-
-			const handleMotionEnd = (event: Event) => {
-				if (event.target !== element) return;
-				complete();
-			};
-
-			element.addEventListener('animationend', handleMotionEnd);
-			element.addEventListener('transitionend', handleMotionEnd);
-			cleanupMotionListeners = () => {
-				element.removeEventListener('animationend', handleMotionEnd);
-				element.removeEventListener('transitionend', handleMotionEnd);
-			};
-
-			motionTimeout = window.setTimeout(() => {
-				complete();
-			}, totalMotionTime + 50);
-		});
 	}
 
 	function clearPendingStandaloneTriggerCloseFocus() {
@@ -343,7 +249,7 @@
 		if (trackedStandaloneTrigger) {
 			clearTriggerFocusState(trackedStandaloneTrigger);
 		}
-		clearMotionTracking();
+		clearTracker();
 		clearStandaloneTriggerTracking();
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
@@ -395,21 +301,28 @@
 
 	$effect(() => {
 		if (!isMounted || !popoverRef) {
-			clearMotionTracking();
+			clearTracker();
 			return;
 		}
 
 		if (isEntering) {
-			trackMotion('enter', popoverRef);
+			clearTracker();
+			tracker = trackMotionEnd(popoverRef, () => {
+				isEntering = false;
+			});
 			return;
 		}
 
 		if (isExiting) {
-			trackMotion('exit', popoverRef);
+			clearTracker();
+			tracker = trackMotionEnd(popoverRef, () => {
+				isExiting = false;
+				isMounted = false;
+			});
 			return;
 		}
 
-		clearMotionTracking();
+		clearTracker();
 	});
 </script>
 
