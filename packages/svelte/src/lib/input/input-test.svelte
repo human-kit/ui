@@ -6,6 +6,7 @@
 		isReadOnly?: boolean;
 		isInvalid?: boolean;
 		isRequired?: boolean;
+		autofocus?: boolean;
 		value?: string;
 		onMouseEnter?: (event: MouseEvent) => void;
 		onFocus?: (event: FocusEvent) => void;
@@ -16,6 +17,7 @@
 		isReadOnly = false,
 		isInvalid = false,
 		isRequired = false,
+		autofocus = false,
 		value = $bindable(''),
 		onMouseEnter,
 		onFocus
@@ -33,6 +35,7 @@
 		{isReadOnly}
 		{isInvalid}
 		{isRequired}
+		{autofocus}
 		onmouseenter={onMouseEnter}
 		onfocus={onFocus}
 	/>

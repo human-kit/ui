@@ -79,6 +79,21 @@ describe('Input', () => {
 		expect(document.activeElement).toBe(input.element());
 	});
 
+	it('focuses the input on mount when autofocus is set', async () => {
+		const screen = render(InputTest, { autofocus: true });
+		const input = screen.getByRole('textbox', { name: 'Email' });
+
+		// The input renders after a button, so this proves explicit focus rather than default order.
+		await expect.poll(() => document.activeElement).toBe(input.element());
+	});
+
+	it('does not steal focus on mount when autofocus is unset', async () => {
+		const screen = render(InputTest);
+		const input = screen.getByRole('textbox', { name: 'Email' });
+
+		expect(document.activeElement).not.toBe(input.element());
+	});
+
 	it('maps invalid and required state to data and aria attributes', () => {
 		const screen = render(InputTest, { isInvalid: true, isRequired: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });

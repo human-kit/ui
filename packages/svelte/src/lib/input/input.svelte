@@ -45,6 +45,7 @@
 		isReadOnly = false,
 		isInvalid = false,
 		isRequired = false,
+		autofocus = false,
 		value = $bindable<HTMLInputElement['value']>(),
 		element = $bindable<HTMLInputElement | null>(null),
 		oninput: onInputExternal,
@@ -78,6 +79,15 @@
 
 	$effect(() => {
 		element = inputRef;
+	});
+
+	// Native `autofocus` only focuses the first autofocus element inserted per document, so it
+	// silently fails for inputs that mount inside an already-open popover/dialog or remount as a
+	// view swaps. Focus the element on mount instead so it works every time it appears.
+	$effect(() => {
+		if (autofocus && inputRef) {
+			inputRef.focus();
+		}
 	});
 
 	$effect(() => {
