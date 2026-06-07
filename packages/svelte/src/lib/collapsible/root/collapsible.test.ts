@@ -58,12 +58,16 @@ describe('Collapsible', () => {
 		await expect.element(trigger).toHaveAttribute('aria-expanded', 'false');
 	});
 
-	it('keeps the panel mounted when forceMount is set', async () => {
+	it('keeps the panel mounted (hidden) at rest when forceMount is set', async () => {
 		render(CollapsibleTest, { defaultOpen: false, forceMount: true });
 		const panel = document.querySelector<HTMLElement>('[data-testid="panel"]');
 
-		expect(panel?.hidden).toBe(true);
+		// forceMount: the content stays in the DOM even while closed...
 		expect(panel?.textContent).toContain('Panel content');
+		// ...hidden at rest (only un-hidden while it animates), and out of the a11y tree via inert.
+		expect(panel?.hidden).toBe(true);
+		expect(panel?.hasAttribute('inert')).toBe(true);
+		expect(panel?.getAttribute('data-closed')).toBe('true');
 	});
 
 	it('toggles with keyboard activation', async () => {

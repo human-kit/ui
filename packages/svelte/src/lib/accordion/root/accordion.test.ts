@@ -30,6 +30,19 @@ describe('Accordion', () => {
 		expect(billingPanel?.hasAttribute('inert')).toBe(true);
 	});
 
+	it('keeps a closed panel mounted (hidden) at rest when forceMount is set', async () => {
+		render(AccordionTest, { defaultValue: ['overview'], securityForceMount: true });
+		const securityPanel = document.querySelector<HTMLElement>('[data-testid="panel-security"]');
+
+		expect(securityPanel).toBeTruthy();
+		// forceMount: the content stays in the DOM even while the panel is closed...
+		expect(securityPanel?.textContent).toContain('Security panel');
+		// ...hidden at rest (only un-hidden while it animates), and out of the a11y tree via inert.
+		expect(securityPanel?.hidden).toBe(true);
+		expect(securityPanel?.hasAttribute('inert')).toBe(true);
+		expect(securityPanel?.getAttribute('data-closed')).toBe('true');
+	});
+
 	it('renders each trigger inside a heading element', async () => {
 		render(AccordionTest, { defaultValue: ['overview'] });
 		const header = document.querySelector('[data-testid="header-overview"]');

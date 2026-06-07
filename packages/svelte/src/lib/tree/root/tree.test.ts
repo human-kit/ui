@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
+import { collapseMotion } from '../../primitives/collapse-motion';
+import type { TreeItemTransition } from '../types';
 import TreeTest from './tree-test.svelte';
 import TreeDisabledKeysTest from './tree-disabled-keys-test.svelte';
 import TreeLabelFallbackTest from './tree-label-fallback-test.svelte';
@@ -92,6 +94,56 @@ describe('Tree.Root', () => {
 
 		const focused = tree.element().querySelector('[data-focused]');
 		expect(focused?.textContent).toContain('Budget');
+	});
+
+	it('expands and collapses through a consumer-provided itemTransition', async () => {
+		const screen = render(TreeTest, { defaultExpandedKeys: [], itemTransition: collapseMotion });
+		const tree = screen.getByRole('tree');
+
+		expect(document.body.textContent?.includes('Reports')).toBe(false);
+
+		tree.element().focus();
+		await expect
+			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
+			.toContain('Documents');
+
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => document.body.textContent?.includes('Reports')).toBe(true);
+
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => document.body.textContent?.includes('Reports')).toBe(false);
+	});
+
+	it('runs the itemTransition across the renderer boundary on expand and collapse, but not on initial mount', async () => {
+		const directions: Array<'in' | 'out' | 'both'> = [];
+		const spyTransition: TreeItemTransition = (_node, _params, options) => {
+			directions.push(options.direction);
+			return { duration: 0 };
+		};
+
+		// Rows present at mount (Documents + its expanded children) must NOT animate in.
+		const screen = render(TreeTest, {
+			defaultExpandedKeys: ['documents'],
+			itemTransition: spyTransition
+		});
+		const tree = screen.getByRole('tree');
+
+		await expect.element(tree.getByText('Reports')).toBeInTheDocument();
+		expect(directions).toEqual([]);
+
+		tree.element().focus();
+		await expect
+			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
+			.toContain('Documents');
+
+		// Expanding Reports reveals a new row: it animates in (this only fires with `|global`).
+		await userEvent.keyboard('{ArrowDown}');
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => directions.includes('in')).toBe(true);
+
+		directions.length = 0;
+		await userEvent.keyboard('{ArrowLeft}');
+		await expect.poll(() => directions.includes('out')).toBe(true);
 	});
 
 	it('expands and collapses branches with arrow keys', async () => {

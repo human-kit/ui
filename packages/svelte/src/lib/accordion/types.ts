@@ -38,7 +38,10 @@ export type AccordionItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'
 	element?: HTMLDivElement | null;
 };
 
-export type AccordionHeaderProps = Omit<HTMLAttributes<HTMLHeadingElement>, 'children' | 'class'> & {
+export type AccordionHeaderProps = Omit<
+	HTMLAttributes<HTMLHeadingElement>,
+	'children' | 'class'
+> & {
 	level?: 1 | 2 | 3 | 4 | 5 | 6;
 	children?: Snippet;
 	class?: string;
@@ -58,6 +61,7 @@ export type AccordionPanelProps = Omit<
 	HTMLAttributes<HTMLDivElement>,
 	'children' | 'class' | 'role' | 'hidden' | 'aria-labelledby'
 > & {
+	/** Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation. */
 	forceMount?: boolean;
 	children?: Snippet;
 	class?: string;

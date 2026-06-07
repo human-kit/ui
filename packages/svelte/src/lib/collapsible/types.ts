@@ -29,6 +29,7 @@ export type CollapsiblePanelProps = Omit<
 	HTMLAttributes<HTMLDivElement>,
 	'children' | 'class' | 'hidden'
 > & {
+	/** Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation. */
 	forceMount?: boolean;
 	children?: Snippet;
 	class?: string;

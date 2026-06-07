@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { AccordionPanelProps } from '../types.js';
+	import { createCollapseTransition } from '../../primitives/collapse-transition.svelte';
 	import { useAccordionContext } from '../root/context';
 	import { useAccordionItemContext } from '../item/context';
 
@@ -28,30 +29,48 @@
 		void $stateVersion;
 		return accordion.orientation;
 	});
-	const shouldRender = $derived(open || forceMount);
+
+	const collapse = createCollapseTransition(
+		() => open,
+		() => forceMount
+	);
 
 	$effect(() => {
+		collapse.setPanel(panelRef);
 		element = panelRef;
 	});
 </script>
 
+<!--
+	Base UI-style collapse: the panel is `hidden` only at rest (closed and not animating), so
+	`[hidden] { display: none }` never fights an in-flight animation. `data-starting-style` /
+	`data-ending-style` drive the enter/exit transition, and `--accordion-panel-height` / `-width`
+	carry the measured content size to animate a real `height`/`width`. `inert` keeps the collapsed
+	panel out of focus order and the accessibility tree.
+-->
 <div
 	{...restProps}
 	bind:this={panelRef}
 	id={panelId}
 	role="region"
 	aria-labelledby={triggerId}
-	hidden={!open || undefined}
+	hidden={(!open && collapse.status !== 'ending') || undefined}
 	inert={!open}
 	class={className}
 	data-accordion-panel="true"
 	data-accordion-value={String(item.value)}
 	data-accordion-value-type={typeof item.value}
 	data-open={open || undefined}
-	data-hidden={!open || undefined}
+	data-closed={!open || undefined}
+	data-starting-style={collapse.status === 'starting' || undefined}
+	data-ending-style={collapse.status === 'ending' || undefined}
 	data-orientation={orientation}
+	style:--accordion-panel-height={collapse.height !== undefined
+		? `${collapse.height}px`
+		: undefined}
+	style:--accordion-panel-width={collapse.width !== undefined ? `${collapse.width}px` : undefined}
 >
-	{#if shouldRender}
+	{#if collapse.mounted}
 		{@render children?.()}
 	{/if}
 </div>

@@ -30,6 +30,7 @@
 		onExpandedKeysChange,
 		onSelectionChange,
 		onAction,
+		itemTransition,
 		class: className = '',
 		context = $bindable(),
 		element = $bindable(),
@@ -485,13 +486,13 @@
 				{/if}
 
 				{#each getVisibleNodesForSection(section.id) as node (node.id)}
-					<TreeItemRenderer {node} />
+					<TreeItemRenderer {node} {itemTransition} treeMounted={hasMounted} />
 				{/each}
 			</div>
 		{/each}
 	{:else}
 		{#each getRenderedVisibleNodes() as node (node.id)}
-			<TreeItemRenderer {node} />
+			<TreeItemRenderer {node} {itemTransition} treeMounted={hasMounted} />
 		{/each}
 	{/if}
 

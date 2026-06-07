@@ -4,6 +4,7 @@ export type {
 	TreeEmptyStateRenderProps,
 	TreeHeaderProps,
 	TreeItemProps,
+	TreeItemTransition,
 	TreeChildrenProps,
 	TreeLabelProps,
 	TreeRootProps,
@@ -13,6 +14,8 @@ export type {
 	TreeCheckboxProps,
 	TreeCheckboxIndicatorProps
 } from './types.js';
+
+export { collapseMotion, type CollapseMotionParams } from '../primitives/collapse-motion.js';
 
 export { default as TreeRoot } from './root/tree-root.svelte';
 export { default as TreeSection } from './section/tree-section.svelte';

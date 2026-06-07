@@ -43,18 +43,14 @@
 		{@render collapsibleParts()}
 	</Collapsible.Root>
 {:else}
-	<Collapsible.Root
-		{defaultOpen}
-		{isDisabled}
-		onOpenChange={handleOpenChange}
-		data-testid="root"
-	>
+	<Collapsible.Root {defaultOpen} {isDisabled} onOpenChange={handleOpenChange} data-testid="root">
 		{@render collapsibleParts()}
 	</Collapsible.Root>
 {/if}
 
 {#if showControls}
-	<button type="button" data-testid="set-open" onclick={() => (currentOpen = true)}>Set open</button>
+	<button type="button" data-testid="set-open" onclick={() => (currentOpen = true)}>Set open</button
+	>
 	<button type="button" data-testid="set-closed" onclick={() => (currentOpen = false)}>
 		Set closed
 	</button>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Tree from '../index';
-	import type { TreeContext } from '../index';
+	import type { TreeContext, TreeItemTransition } from '../index';
 
 	type Props = {
 		selectionMode?: 'none' | 'single' | 'multiple';
@@ -16,6 +16,7 @@
 		onExpandedKeysChange?: (keys: Set<string | number>) => void;
 		onSelectionChange?: (keys: Set<string | number>) => void;
 		onContext?: (context: TreeContext) => void;
+		itemTransition?: TreeItemTransition;
 	};
 
 	let {
@@ -31,7 +32,8 @@
 		onAction,
 		onExpandedKeysChange,
 		onSelectionChange,
-		onContext
+		onContext,
+		itemTransition
 	}: Props = $props();
 
 	let context = $state<TreeContext>();
@@ -58,6 +60,7 @@
 	{onAction}
 	{onExpandedKeysChange}
 	{onSelectionChange}
+	{itemTransition}
 >
 	<Tree.Section aria-label="Primary files">
 		<Tree.Header>Files</Tree.Header>

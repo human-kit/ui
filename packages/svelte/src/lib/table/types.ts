@@ -113,6 +113,19 @@ export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> 
 	defaultSortDescriptor?: TableSortDescriptor;
 	columnWidths?: Map<string, TableColumnWidth>;
 	defaultColumnWidths?: Iterable<readonly [string, TableColumnWidth]>;
+	/**
+	 * Width (in px) the table reserves through `min-width` during server
+	 * rendering, before its columns have registered their own widths.
+	 *
+	 * On the server the `<table>` element is serialized before the column
+	 * children run their registration, so the table cannot know its own
+	 * minimum width yet and renders at the container width. On hydration the
+	 * resolved column widths can push the table wider, producing a layout
+	 * shift. Set this to the sum of the columns' resolved widths to reserve
+	 * that space up-front and avoid the jump. Ignored once the real columns
+	 * register on the client.
+	 */
+	ssrMinTableWidth?: number;
 	disabledKeys?: Iterable<TableSelectionKey>;
 	onRowAction?: TableRowActionHandler;
 	onSelectionChange?: (keys: Set<TableSelectionKey>) => void;

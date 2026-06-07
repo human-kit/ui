@@ -8,8 +8,18 @@
 	import { setTreeItemContext } from './context';
 	import { setTreeRenderMode } from '../root/render-mode';
 	import { useTreeContext, type TreeVisibleNode } from '../root/context';
+	import type { TreeItemTransition } from '../types';
+	import type { TransitionConfig } from 'svelte/transition';
 
-	let { node }: { node: TreeVisibleNode } = $props();
+	let {
+		node,
+		itemTransition,
+		treeMounted = false
+	}: {
+		node: TreeVisibleNode;
+		itemTransition?: TreeItemTransition;
+		treeMounted?: boolean;
+	} = $props();
 
 	const tree = useTreeContext();
 	const selectionVersion = tree.selectionVersion;
@@ -60,7 +70,7 @@
 		void $focusVersion;
 		return tree.getFocusVisible() && tree.getFocusedId() === nodeId;
 	});
-	const ariaChecked = $derived.by(() => {
+	const ariaChecked = $derived.by<'mixed' | 'true' | 'false' | undefined>(() => {
 		if (selectionMode !== 'multiple') return undefined;
 		if (selectionState === 'some') return 'mixed';
 		return isSelected ? 'true' : 'false';
@@ -307,51 +317,94 @@
 			tree.setFocusedElement(null);
 		}
 	});
+
+	// All row attributes/handlers live in one object so the markup below can be rendered with or
+	// without a consumer-provided enter/exit `transition:` directive without duplicating them. The
+	// library stays animation-agnostic: no transition is attached unless `itemTransition` is passed.
+	const rowAttributes = $derived({
+		role: 'treeitem',
+		id: `tree-item-${nodeId}`,
+		'data-tree-item': 'true',
+		class: node.className,
+		'aria-expanded': node.hasChildren ? isExpanded : undefined,
+		'aria-selected': selectionMode === 'single' ? isSelected : undefined,
+		'aria-checked': ariaChecked,
+		'aria-disabled': isDisabled || undefined,
+		'aria-level': nodeLevel,
+		'aria-setsize': node.setSize,
+		'aria-posinset': node.posInSet,
+		tabindex: isFocused ? 0 : -1,
+		'data-level': String(nodeLevel),
+		'data-expanded': node.hasChildren && isExpanded ? true : undefined,
+		'data-selected': isSelected || undefined,
+		'data-focused': isFocused || undefined,
+		'data-focus-visible': focusVisible || undefined,
+		'data-hovered': isHovered || undefined,
+		'data-pressed': isPressedComputed || undefined,
+		'data-disabled': isDisabled || undefined,
+		'data-has-child-items': node.hasChildren || undefined,
+		'data-selection-mode': selectionMode !== 'none' ? selectionMode : undefined,
+		'data-selection-state': selectionMode !== 'none' ? selectionState : undefined,
+		style: `padding-inline-start: calc((${nodeLevel} - 1) * var(--tree-indent-size, 1rem));`,
+		onpointerdown: handlePointerDown,
+		onpointerup: handlePointerUp,
+		onpointercancel: handlePointerCancel,
+		onpointerenter: handlePointerEnter,
+		onpointerleave: handlePointerLeave,
+		onmouseenter: handleMouseEnter,
+		onmouseleave: handleMouseLeave,
+		onfocus: handleFocus,
+		onblur: handleBlur,
+		onclick: handleClick,
+		onkeydown: handleKeyDown,
+		onkeyup: handleKeyUp
+	});
+
+	// Bridges the consumer's `itemTransition` to the row. Both must be `|global` (applied below):
+	// the row element lives in this component while its add/remove happens in the parent's `{#each}`,
+	// and a local transition never fires across that boundary. Split into `in:`/`out:` so the entry
+	// animation can be skipped for rows already present on the tree's initial mount — only branches
+	// expanded/collapsed afterwards animate. (`transition:` can't do this: it always reports
+	// `direction: 'both'`, hiding whether it's an enter or an exit.)
+	function rowEnter(
+		element: Element,
+		params: undefined,
+		options: { direction: 'in' | 'out' | 'both' }
+	): TransitionConfig {
+		if (!itemTransition || !treeMounted) return {};
+		return itemTransition(element, params, options);
+	}
+
+	function rowLeave(
+		element: Element,
+		params: undefined,
+		options: { direction: 'in' | 'out' | 'both' }
+	): TransitionConfig {
+		if (!itemTransition) return {};
+		return itemTransition(element, params, options);
+	}
 </script>
 
-<div
-	bind:this={elementRef}
-	role="treeitem"
-	id={`tree-item-${nodeId}`}
-	data-tree-item="true"
-	class={node.className}
-	aria-expanded={node.hasChildren ? isExpanded : undefined}
-	aria-selected={selectionMode === 'single' ? isSelected : undefined}
-	aria-checked={ariaChecked}
-	aria-disabled={isDisabled || undefined}
-	aria-level={nodeLevel}
-	aria-setsize={node.setSize}
-	aria-posinset={node.posInSet}
-	tabindex={isFocused ? 0 : -1}
-	data-level={String(nodeLevel)}
-	data-expanded={node.hasChildren && isExpanded ? true : undefined}
-	data-selected={isSelected || undefined}
-	data-focused={isFocused || undefined}
-	data-focus-visible={focusVisible || undefined}
-	data-hovered={isHovered || undefined}
-	data-pressed={isPressedComputed || undefined}
-	data-disabled={isDisabled || undefined}
-	data-has-child-items={node.hasChildren || undefined}
-	data-selection-mode={selectionMode !== 'none' ? selectionMode : undefined}
-	data-selection-state={selectionMode !== 'none' ? selectionState : undefined}
-	style={`padding-inline-start: calc((${nodeLevel} - 1) * var(--tree-indent-size, 1rem));`}
-	onpointerdown={handlePointerDown}
-	onpointerup={handlePointerUp}
-	onpointercancel={handlePointerCancel}
-	onpointerenter={handlePointerEnter}
-	onpointerleave={handlePointerLeave}
-	onmouseenter={handleMouseEnter}
-	onmouseleave={handleMouseLeave}
-	onfocus={handleFocus}
-	onblur={handleBlur}
-	onclick={handleClick}
-	onkeydown={handleKeyDown}
-	onkeyup={handleKeyUp}
-	{...node.domProps ?? {}}
->
+{#snippet rowBody()}
 	{#if node.render}
 		{@render node.render()}
 	{:else}
 		<span bind:this={labelElementRef} id={labelId} data-tree-label="true">{node.textValue}</span>
 	{/if}
-</div>
+{/snippet}
+
+{#if itemTransition}
+	<div
+		bind:this={elementRef}
+		{...rowAttributes}
+		{...node.domProps ?? {}}
+		in:rowEnter|global
+		out:rowLeave|global
+	>
+		{@render rowBody()}
+	</div>
+{:else}
+	<div bind:this={elementRef} {...rowAttributes} {...node.domProps ?? {}}>
+		{@render rowBody()}
+	</div>
+{/if}

@@ -1,4 +1,5 @@
 // Primitives exports
+export * from './collapse-motion.js';
 export * from './floating.js';
 export * from './focus-trap.js';
 export * from './keyboard-navigation.js';

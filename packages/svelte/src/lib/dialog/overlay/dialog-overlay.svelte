@@ -41,7 +41,6 @@
 		position: fixed;
 		inset: 0;
 		z-index: {zIndex};
-		background-color: rgba(0, 0, 0, 0.5);
 	"
 	{...restProps}
 ></div>
