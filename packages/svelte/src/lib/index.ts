@@ -2,6 +2,7 @@
 
 // Components (namespace exports)
 export { Accordion } from './accordion/index.js';
+export { Autocomplete } from './autocomplete/index.js';
 export { Button } from './button/index.js';
 export { Checkbox } from './checkbox/index.js';
 export { Collapsible } from './collapsible/index.js';
@@ -9,9 +10,11 @@ export { ComboBox } from './combobox/index.js';
 export { Calendar } from './calendar/index.js';
 export { Clock } from './clock/index.js';
 export { DatePicker } from './datepicker/index.js';
+export { DateRangePicker } from './daterangepicker/index.js';
 export { TimePicker } from './timepicker/index.js';
 export { Dialog } from './dialog/index.js';
 export { ListBox } from './listbox/index.js';
+export { Menu } from './menu/index.js';
 export { NumberField } from './numberfield/index.js';
 export { Popover } from './popover/index.js';
 export { Switch } from './switch/index.js';
@@ -32,6 +35,7 @@ export * from './locale-provider/index.js';
 
 // Re-export named exports from components
 export * from './accordion/index.js';
+export * from './autocomplete/index.js';
 export * from './button/index.js';
 export * from './checkbox/index.js';
 export * from './collapsible/index.js';
@@ -39,9 +43,11 @@ export * from './combobox/index.js';
 export * from './calendar/index.js';
 export * from './clock/index.js';
 export * from './datepicker/index.js';
+export * from './daterangepicker/index.js';
 export * from './timepicker/index.js';
 export * from './dialog/index.js';
 export * from './listbox/index.js';
+export * from './menu/index.js';
 export * from './numberfield/index.js';
 export * from './popover/index.js';
 export * from './switch/index.js';

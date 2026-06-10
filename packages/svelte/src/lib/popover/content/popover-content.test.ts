@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverContentTest from './popover-content-test.svelte';
 import PopoverContentControlledCloseTest from './popover-content-controlled-close-test.svelte';
+import PopoverContentNestedTest from './popover-content-nested-test.svelte';
 import PopoverContentStandaloneTest from './popover-content-standalone-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
@@ -182,6 +183,55 @@ describe('Popover.Content', () => {
 
 			exitingDialog.dispatchEvent(new TransitionEvent('transitionend', { bubbles: true }));
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		});
+	});
+
+	describe('Nested popovers', () => {
+		async function openNestedPopovers(screen: ReturnType<typeof render>) {
+			const outerTrigger = screen.getByRole('button', { name: 'Open Outer' });
+			await outerTrigger.click();
+			await expect.poll(() => document.querySelector('.outer-popover')).toBeTruthy();
+
+			const innerTrigger = screen.getByRole('button', { name: 'Open Inner' });
+			await innerTrigger.click();
+			await expect.poll(() => document.querySelector('.inner-popover')).toBeTruthy();
+		}
+
+		it('outside click closes only the topmost popover', async () => {
+			const screen = render(PopoverContentNestedTest);
+			const outside = document.createElement('button');
+			document.body.appendChild(outside);
+
+			try {
+				await openNestedPopovers(screen);
+
+				outside.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+
+				await expect.poll(() => document.querySelector('.inner-popover')).toBeNull();
+				// The outer popover must stay open after the nested one is dismissed.
+				await new Promise((r) => setTimeout(r, 100));
+				expect(document.querySelector('.outer-popover')).toBeTruthy();
+
+				outside.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+				await expect.poll(() => document.querySelector('.outer-popover')).toBeNull();
+			} finally {
+				outside.remove();
+			}
+		});
+
+		it('Escape closes only the topmost popover', async () => {
+			const screen = render(PopoverContentNestedTest);
+
+			await openNestedPopovers(screen);
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.poll(() => document.querySelector('.inner-popover')).toBeNull();
+			await new Promise((r) => setTimeout(r, 100));
+			expect(document.querySelector('.outer-popover')).toBeTruthy();
+
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('.outer-popover')).toBeNull();
 		});
 	});
 

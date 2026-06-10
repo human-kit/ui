@@ -15,6 +15,7 @@
 		type PopoverOpenChangeDetails,
 		type PopoverCloseReason
 	} from '../root/context';
+	import { pushPopoverLayer, removePopoverLayer, isTopmostPopover } from '../root/popover-stack';
 	import {
 		addTriggerBlurCleanup,
 		applyTriggerCloseFocusState,
@@ -96,6 +97,17 @@
 	let tracker: MotionTracker | undefined;
 	let previousOpen = $state(false);
 	let closeHandledInternally = false;
+	let layerId: symbol | null = null;
+
+	function removeLayer() {
+		if (layerId === null) return;
+		removePopoverLayer(layerId);
+		layerId = null;
+	}
+
+	function isTopmost() {
+		return layerId !== null && isTopmostPopover(layerId);
+	}
 
 	function clearTracker() {
 		tracker?.cancel();
@@ -187,13 +199,16 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape' && isOpen && shouldCloseOnEscape) {
+			// Only the topmost layer dismisses, so a nested popover (e.g. a
+			// calendar inside a filter popover) closes without its ancestors.
+			if (!isTopmost()) return;
 			event.preventDefault();
 			close('escape-key', event);
 		}
 	}
 
 	function handleDocumentFocusIn(event: FocusEvent) {
-		if (!shouldCloseOnBlurResolved || !isOpen) return;
+		if (!shouldCloseOnBlurResolved || !isOpen || !isTopmost()) return;
 
 		const target = event.target as Node;
 
@@ -206,7 +221,7 @@
 	}
 
 	function handleScroll(event: Event) {
-		if (!isNonModal || !isOpen || !shouldCloseOnInteractOutside) return;
+		if (!isNonModal || !isOpen || !shouldCloseOnInteractOutside || !isTopmost()) return;
 
 		// Check if scroll is inside the popover or trigger
 		const target = event.target as Node;
@@ -250,6 +265,7 @@
 			clearTriggerFocusState(trackedStandaloneTrigger);
 		}
 		clearTracker();
+		removeLayer();
 		clearStandaloneTriggerTracking();
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
@@ -280,6 +296,9 @@
 
 	$effect(() => {
 		if (isOpen) {
+			if (layerId === null) {
+				layerId = pushPopoverLayer();
+			}
 			const shouldAnimateIn = !isMounted || isExiting;
 			isMounted = true;
 			isExiting = false;
@@ -288,6 +307,8 @@
 			}
 			return;
 		}
+
+		removeLayer();
 
 		if (!isMounted) {
 			isEntering = false;
@@ -351,6 +372,7 @@
 			}}
 			use:clickOutside={{
 				handler: (event) => {
+					if (!isTopmost()) return;
 					event.preventDefault();
 					close('outside-press', event);
 				},
