@@ -118,6 +118,19 @@
 		if (!isOpen || !isTopmost()) return;
 		const target = event.target as Node;
 
+		// Transient focus loss: when a focused element is removed from the DOM (e.g. swapping
+		// the menu's own content between panels) the browser hands focus to <body>. That isn't
+		// an intentional move to a sibling widget, so it must not close the menu. Genuine
+		// outside clicks are still caught by `clickOutside`.
+		if (target === document.body || target === document.documentElement) return;
+
+		// Focus landing in a portalled top layer (a popover/dialog spawned from within the menu,
+		// such as a date picker calendar) is still logically "inside" the menu — mirror the
+		// `clickOutside` top-layer rule so interacting with nested floating UI doesn't close it.
+		if (target instanceof Element && target.closest('[role="dialog"], [data-dialog-content]')) {
+			return;
+		}
+
 		// Focus inside any menu in the chain (this menu, an ancestor, or their triggers)
 		// keeps the chain open.
 		let node: typeof ctx | null = ctx;

@@ -1,7 +1,18 @@
+<script lang="ts" module>
+	type PointerPressOwner = {
+		key: symbol;
+		pointerId: number | null;
+	};
+
+	// Tracks which item currently "owns" a pointer press so that dragging the held pointer
+	// onto a sibling doesn't light it up as pressed — the press belongs to the item it began on.
+	let pointerPressOwner: PointerPressOwner | null = null;
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { untrack } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import { useMenuContext } from '../root/context';
 
 	/**
@@ -50,9 +61,18 @@
 	const isHighlighted = $derived($focusedId !== null && String($focusedId) === String(itemId));
 
 	let itemRef: HTMLElement | null = $state(null);
+	let isPressed = $state(false);
+	const pointerPressOwnerKey = Symbol('menu-item-press');
+
+	const isPressedComputed = $derived(isPressed && !disabled);
 
 	$effect(() => {
 		element = itemRef;
+	});
+
+	// A disabled item can never be pressed; drop any lingering press state.
+	$effect(() => {
+		if (disabled) clearPressedState();
 	});
 
 	// Register (and keep updated) this item with the menu context.
@@ -71,10 +91,64 @@
 		};
 	});
 
+	onMount(() => {
+		window.addEventListener('pointerup', handleGlobalPointerEnd);
+		window.addEventListener('pointercancel', handleGlobalPointerEnd);
+	});
+
+	onDestroy(() => {
+		if (typeof window !== 'undefined') {
+			window.removeEventListener('pointerup', handleGlobalPointerEnd);
+			window.removeEventListener('pointercancel', handleGlobalPointerEnd);
+		}
+		clearOwnedPointerPress();
+	});
+
+	function getEventPointerId(event: PointerEvent | MouseEvent) {
+		return 'pointerId' in event ? event.pointerId : null;
+	}
+
+	function ownsPointerPress(event: PointerEvent | MouseEvent) {
+		if (pointerPressOwner?.key !== pointerPressOwnerKey) return false;
+		const pointerId = getEventPointerId(event);
+		return (
+			pointerPressOwner.pointerId === null ||
+			pointerId === null ||
+			pointerPressOwner.pointerId === pointerId
+		);
+	}
+
+	function clearOwnedPointerPress() {
+		if (pointerPressOwner?.key === pointerPressOwnerKey) {
+			pointerPressOwner = null;
+		}
+	}
+
+	function clearPressedState() {
+		isPressed = false;
+		clearOwnedPointerPress();
+	}
+
+	function handleGlobalPointerEnd(event: PointerEvent) {
+		if (!ownsPointerPress(event)) return;
+		clearPressedState();
+	}
+
 	function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (disabled) return;
 		ctx.selectItem(itemId, event);
 		onClickExternal?.(event);
+	}
+
+	function handlePointerDown(event: PointerEvent) {
+		if (disabled || event.button !== 0) return;
+		pointerPressOwner = { key: pointerPressOwnerKey, pointerId: event.pointerId };
+		isPressed = true;
+	}
+
+	function handlePointerUp(event: PointerEvent) {
+		if (event.button !== 0) return;
+		clearPressedState();
 	}
 
 	function handlePointerEnter(
@@ -84,6 +158,18 @@
 		// Hovering a sibling collapses an open submenu — but defer while the pointer is
 		// travelling toward it (safe-triangle intent), so diagonal moves aren't interrupted.
 		ctx.highlightItemFromPointer(itemId, event.clientX, event.clientY);
+
+		// Re-entering the item that started the press (button still held) restores its
+		// pressed look; arriving on an item that didn't start the press leaves it alone.
+		if ((event.buttons & 1) === 1) {
+			isPressed = ownsPointerPress(event);
+		} else {
+			clearOwnedPointerPress();
+		}
+	}
+
+	function handlePointerLeave() {
+		isPressed = false;
 	}
 </script>
 
@@ -98,8 +184,12 @@
 	data-disabled={disabled || undefined}
 	aria-disabled={disabled || undefined}
 	data-highlighted={isHighlighted || undefined}
+	data-pressed={isPressedComputed || undefined}
 	onclick={handleClick}
+	onpointerdown={handlePointerDown}
+	onpointerup={handlePointerUp}
 	onpointerenter={handlePointerEnter}
+	onpointerleave={handlePointerLeave}
 	{...restProps}
 >
 	{@render children?.()}

@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import MenuTest from './menu-test.svelte';
+import MenuRichContentTest from './menu-rich-content-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 function queryMenus() {
@@ -67,6 +68,7 @@ async function openWithSubmenu(screen: ReturnType<typeof render>) {
 describe('Menu', () => {
 	afterEach(() => {
 		queryMenus().forEach((m) => m.remove());
+		document.querySelectorAll('[role="dialog"]').forEach((d) => d.remove());
 	});
 
 	describe('Trigger + Content', () => {
@@ -328,6 +330,119 @@ describe('Menu', () => {
 
 			await userEvent.keyboard('{ArrowLeft}');
 			await expect.poll(() => queryMenus().length).toBe(1);
+		});
+	});
+
+	describe('Interactive (non-menuitem) content', () => {
+		function menuInput() {
+			return document.querySelector('[data-testid="menu-input"]') as HTMLInputElement | null;
+		}
+
+		it('lets an embedded input receive typed text (including spaces) instead of hijacking keys', async () => {
+			const screen = render(MenuRichContentTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => menuInput()).toBeTruthy();
+
+			const input = menuInput()!;
+			input.focus();
+			// Space and Enter must reach the input; the menu's keyboard nav (which otherwise
+			// preventDefaults them) must not act while focus sits on a non-menuitem element.
+			await userEvent.keyboard('a b');
+
+			expect(input.value).toBe('a b');
+			expect(document.activeElement).toBe(input);
+			expect(openMenuCount()).toBe(1);
+		});
+
+		it('stays open when its focused content is swapped (focus falls back to <body>)', async () => {
+			const screen = render(MenuRichContentTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => menuInput()).toBeTruthy();
+
+			// Activating this button unmounts it, handing focus to <body>. That transient focus
+			// loss must not be treated as an intentional focus-out that closes the menu.
+			await screen.getByRole('button', { name: 'Go to panel' }).click();
+
+			await expect.poll(() => document.querySelector('[data-testid="second-panel"]')).toBeTruthy();
+			expect(openMenuCount()).toBe(1);
+		});
+
+		it('stays open when focus moves into a nested portalled popover', async () => {
+			const screen = render(MenuRichContentTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => menuInput()).toBeTruthy();
+
+			await screen.getByRole('button', { name: 'Open nested' }).click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const nested = document.querySelector('[data-testid="nested-input"]') as HTMLElement;
+			nested.focus();
+
+			// Focus landing in the nested dialog (a top layer spawned from the menu) is "inside".
+			await expect.poll(() => openMenuCount()).toBe(1);
+			expect(document.activeElement).toBe(nested);
+		});
+	});
+
+	describe('Pressed State', () => {
+		it('has data-pressed while the pointer is held on an item', async () => {
+			const screen = render(MenuTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const item = screen.getByRole('menuitem', { name: 'Edit' }).element() as HTMLElement;
+			item.dispatchEvent(
+				new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, pointerId: 1 })
+			);
+
+			await expect.poll(() => item.getAttribute('data-pressed')).toBe('true');
+
+			item.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, pointerId: 1 }));
+
+			await expect.poll(() => item.getAttribute('data-pressed')).toBeNull();
+		});
+
+		it('keeps pointer press state tied to the item that started the press', async () => {
+			const screen = render(MenuTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const first = screen.getByRole('menuitem', { name: 'Edit' }).element() as HTMLElement;
+			const second = screen.getByRole('menuitem', { name: 'Copy link' }).element() as HTMLElement;
+			const pointerId = 1;
+
+			first.dispatchEvent(
+				new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, pointerId })
+			);
+			await expect.poll(() => first.getAttribute('data-pressed')).toBe('true');
+
+			first.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true, buttons: 1, pointerId }));
+			await expect.poll(() => first.getAttribute('data-pressed')).toBeNull();
+
+			// Arriving on a sibling with the button still held must not light it up — the press
+			// belongs to the item it began on.
+			second.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true, buttons: 1, pointerId }));
+			expect(second.getAttribute('data-pressed')).toBeNull();
+
+			// Returning to the originating item restores its pressed look.
+			first.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true, buttons: 1, pointerId }));
+			await expect.poll(() => first.getAttribute('data-pressed')).toBe('true');
+
+			window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, pointerId }));
+			await expect.poll(() => first.getAttribute('data-pressed')).toBeNull();
+		});
+
+		it('never marks a disabled item as pressed', async () => {
+			const screen = render(MenuTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const disabled = screen.getByRole('menuitem', { name: 'Duplicate' }).element() as HTMLElement;
+			disabled.dispatchEvent(
+				new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, pointerId: 1 })
+			);
+
+			expect(disabled.getAttribute('data-pressed')).toBeNull();
 		});
 	});
 });
