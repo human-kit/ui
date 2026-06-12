@@ -119,12 +119,17 @@
 		place-items: center;
 	"
 >
+	<!--
+		`inert` already removes the closed dialog from the a11y tree AND prevents focus, so
+		no `aria-hidden` is needed. Setting both meant that during the exit animation (content
+		still mounted, `isOpen` already false) a descendant that retained focus sat under
+		`aria-hidden`, tripping the browser's "aria-hidden on a focused element" warning.
+	-->
 	<div
 		bind:this={dialogRef}
 		class={className}
 		role="dialog"
 		aria-modal={isOpen ? 'true' : undefined}
-		aria-hidden={isOpen ? undefined : 'true'}
 		inert={!isOpen}
 		data-dialog-content
 		data-state={isOpen ? 'open' : 'closed'}
