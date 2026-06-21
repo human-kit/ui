@@ -20,6 +20,10 @@
 	const triggerId = $derived(accordion.getTriggerId(item.value));
 
 	let panelRef: HTMLDivElement | null = $state(null);
+	// Natural-height wrapper around the content: the panel carries the animated, pinned
+	// `height` + `overflow: hidden`, so it's this inner element that must be observed for the
+	// measured size to track content that grows or shrinks while the panel stays open.
+	let contentRef: HTMLDivElement | null = $state(null);
 
 	const open = $derived.by(() => {
 		void $stateVersion;
@@ -36,7 +40,7 @@
 	);
 
 	$effect(() => {
-		collapse.setPanel(panelRef);
+		collapse.setPanel(panelRef, contentRef);
 		element = panelRef;
 	});
 </script>
@@ -71,6 +75,8 @@
 	style:--accordion-panel-width={collapse.width !== undefined ? `${collapse.width}px` : undefined}
 >
 	{#if collapse.mounted}
-		{@render children?.()}
+		<div bind:this={contentRef} data-accordion-panel-content="true">
+			{@render children?.()}
+		</div>
 	{/if}
 </div>

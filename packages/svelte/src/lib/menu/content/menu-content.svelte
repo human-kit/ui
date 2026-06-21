@@ -5,6 +5,7 @@
 	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { clickOutside } from '../../primitives/click-outside';
+	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
 	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { Portal } from '../../portal';
 	import { useMenuContext } from '../root/context';
@@ -58,6 +59,7 @@
 	let isMounted = $state(false);
 	let isEntering = $state(false);
 	let isExiting = $state(false);
+	let previousOpen = $state(false);
 	let resolvedPlacement = $state<'top' | 'right' | 'bottom' | 'left'>('bottom');
 	let tracker: MotionTracker | undefined;
 	let hasAppliedOpenFocus = false;
@@ -175,6 +177,18 @@
 		ctx.setContentRef(null);
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
+	});
+
+	// Release a focused descendant before the menu marks itself hidden on close, so the
+	// browser doesn't reject `aria-hidden` on an ancestor of the focused element. Covers
+	// every close path, including a parent flipping the bound `open` (e.g. an embedded
+	// "Apply" button) where no internal close handler runs.
+	$effect(() => {
+		const wasOpen = previousOpen;
+		previousOpen = isOpen;
+		if (wasOpen && !isOpen) {
+			releaseFocusedDescendant(menuRef, triggerRef);
+		}
 	});
 
 	$effect(() => {

@@ -14,6 +14,10 @@
 	const collapsible = useCollapsibleContext();
 
 	let panelRef: HTMLDivElement | null = $state(null);
+	// Natural-height wrapper around the content: the panel carries the animated, pinned
+	// `height` + `overflow: hidden`, so it's this inner element that must be observed for the
+	// measured size to track content that grows or shrinks while the panel stays open.
+	let contentRef: HTMLDivElement | null = $state(null);
 
 	const collapse = createCollapseTransition(
 		() => collapsible.isOpen,
@@ -21,7 +25,7 @@
 	);
 
 	$effect(() => {
-		collapse.setPanel(panelRef);
+		collapse.setPanel(panelRef, contentRef);
 		element = panelRef;
 	});
 </script>
@@ -51,6 +55,8 @@
 	style:--collapsible-panel-width={collapse.width !== undefined ? `${collapse.width}px` : undefined}
 >
 	{#if collapse.mounted}
-		{@render children?.()}
+		<div bind:this={contentRef} data-collapsible-panel-content="true">
+			{@render children?.()}
+		</div>
 	{/if}
 </div>

@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import MenuTest from './menu-test.svelte';
 import MenuRichContentTest from './menu-rich-content-test.svelte';
+import MenuControlledCloseTest from './menu-controlled-close-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 function queryMenus() {
@@ -381,6 +382,25 @@ describe('Menu', () => {
 			// Focus landing in the nested dialog (a top layer spawned from the menu) is "inside".
 			await expect.poll(() => openMenuCount()).toBe(1);
 			expect(document.activeElement).toBe(nested);
+		});
+
+		it('releases a focused descendant before the menu becomes aria-hidden on controlled close', async () => {
+			const screen = render(MenuControlledCloseTest);
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => menuInput()).toBeTruthy();
+
+			const input = menuInput()!;
+			input.focus();
+			expect(document.activeElement).toBe(input);
+
+			// Closing via the bound `open` (the Apply button) must not leave focus inside the
+			// menu when it flips to aria-hidden/inert.
+			await screen.getByRole('button', { name: 'Apply' }).click();
+
+			const exitingMenu = queryMenu()!;
+			await expect.poll(() => exitingMenu.getAttribute('data-exiting')).toBe('true');
+			expect(exitingMenu.getAttribute('aria-hidden')).toBe('true');
+			expect(exitingMenu.contains(document.activeElement)).toBe(false);
 		});
 	});
 

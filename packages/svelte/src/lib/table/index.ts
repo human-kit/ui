@@ -64,13 +64,22 @@ export {
 	type TableSortDirection,
 	type TableSortDescriptor,
 	type TableColumnWidth,
+	type TableColumnPin,
+	type TableColumnPinState,
 	type TableGridCoord,
 	type TableSectionKind,
 	type TableSectionContext,
 	type TableRowContext,
 	type TableColumnContext,
-	type CreateTableContextOptions
+	type CreateTableContextOptions,
+	DEFAULT_TABLE_COLUMN_MIN_WIDTH
 } from './root/context.js';
+
+export {
+	getTableSsrMinWidth,
+	type TableColumnWidthSpec,
+	type GetTableSsrMinWidthOptions
+} from './utils/ssr-min-width.js';
 
 import * as TableParts from './index.parts.js';
 export default TableParts;

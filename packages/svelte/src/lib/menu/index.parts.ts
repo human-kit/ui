@@ -2,6 +2,7 @@
 export { default as Root } from './root/menu-root.svelte';
 export { default as Trigger } from './trigger/menu-trigger.svelte';
 export { default as Content } from './content/menu-content.svelte';
+export { default as Overlay } from './overlay/menu-overlay.svelte';
 export { default as Item } from './item/menu-item.svelte';
 export { default as Separator } from './separator/menu-separator.svelte';
 export { default as Group } from './group/menu-group.svelte';

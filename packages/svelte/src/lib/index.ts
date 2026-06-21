@@ -27,8 +27,10 @@ export { Tree } from './tree/index.js';
 // Simple components
 export { default as Input } from './input/index.js';
 export { default as Label } from './label/index.js';
+export { default as Dropzone } from './dropzone/index.js';
 export { default as LocaleProvider } from './locale-provider/index.js';
 export { Portal } from './portal/index.js';
+export { OverflowRow, type OverflowRowState } from './overflow-row/index.js';
 export { default as TextArea } from './textarea/index.js';
 
 export * from './locale-provider/index.js';
@@ -44,6 +46,7 @@ export * from './calendar/index.js';
 export * from './clock/index.js';
 export * from './datepicker/index.js';
 export * from './daterangepicker/index.js';
+export * from './dropzone/index.js';
 export * from './timepicker/index.js';
 export * from './dialog/index.js';
 export * from './listbox/index.js';

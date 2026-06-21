@@ -10,8 +10,14 @@ export type CollapseTransition = {
 	/** Measured content size (px) for the `--*-panel-height` / `--*-panel-width` CSS vars. */
 	readonly height: number | undefined;
 	readonly width: number | undefined;
-	/** Wire up measurement once the panel element exists (call from a `$effect`). */
-	setPanel: (element: HTMLElement | null) => void;
+	/**
+	 * Wire up measurement once the panel element exists (call from a `$effect`). Pass the
+	 * inner content element as `content` when the panel itself carries a pinned
+	 * `height`/`overflow: hidden` — a `ResizeObserver` on the pinned panel never fires when
+	 * the content alone grows, so the natural-height content is what must be observed.
+	 * Falls back to the panel when no content element is given.
+	 */
+	setPanel: (panel: HTMLElement | null, content?: HTMLElement | null) => void;
 };
 
 /**
@@ -34,6 +40,9 @@ export function createCollapseTransition(
 	let width = $state<number | undefined>(undefined);
 
 	let panel: HTMLElement | null = null;
+	// Element actually measured/observed: the content when one is given (its natural size
+	// tracks the real content), otherwise the panel itself.
+	let measured: HTMLElement | null = null;
 	let resizeObserver: ResizeObserver | undefined;
 	let tracker: MotionTracker | undefined;
 	let releaseFrame: number | undefined;
@@ -41,9 +50,9 @@ export function createCollapseTransition(
 
 	function measure() {
 		// Freeze the size while collapsing so the exit animates from the open height, not from 0.
-		if (!panel || status === 'ending') return;
-		height = panel.scrollHeight;
-		width = panel.scrollWidth;
+		if (!measured || status === 'ending') return;
+		height = measured.scrollHeight;
+		width = measured.scrollWidth;
 	}
 
 	function cancelRelease() {
@@ -120,15 +129,17 @@ export function createCollapseTransition(
 		get width() {
 			return width;
 		},
-		setPanel(element) {
-			const next = element ?? null;
-			if (next === panel) return;
+		setPanel(panelElement, content) {
+			const nextPanel = panelElement ?? null;
+			const nextMeasured = content ?? panelElement ?? null;
+			if (nextPanel === panel && nextMeasured === measured) return;
 			resizeObserver?.disconnect();
-			panel = next;
-			if (!panel) return;
+			panel = nextPanel;
+			measured = nextMeasured;
+			if (!measured) return;
 			measure();
 			resizeObserver = new ResizeObserver(() => measure());
-			resizeObserver.observe(panel);
+			resizeObserver.observe(measured);
 		}
 	};
 }

@@ -21,6 +21,7 @@
 	const layoutVersion = table.layoutVersion;
 	const focusVersion = table.focusVersion;
 	const selectionVersion = table.selectionVersion;
+	const widthVersion = table.widthVersion;
 	const cellOrderVersion = row.cellOrderVersion;
 	const rowState = row.rowState;
 
@@ -77,6 +78,12 @@
 	const resolvedColumn = $derived(column?.column);
 	const isColumnHidden = $derived(column?.isHidden ?? false);
 	const visibleColumnIndex = $derived(column?.visibleColumnIndex ?? -1);
+	const pinState = $derived.by(() => {
+		void $layoutVersion;
+		void $widthVersion;
+		const columnId = resolvedColumn?.id;
+		return columnId ? table.getColumnPinState(columnId) : null;
+	});
 	const tagName = $derived(row.section === 'body' && resolvedColumn?.isRowHeader ? 'th' : 'td');
 	const role = $derived.by(() => {
 		if (isColumnHidden) return undefined;
@@ -230,7 +237,14 @@
 		: undefined}
 	data-disabled={isRowDisabled || undefined}
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
+	data-pinned={pinState?.side}
+	data-pin-edge={pinState?.isEdge ? 'true' : undefined}
 	style:box-sizing="border-box"
+	style:position={pinState ? 'sticky' : undefined}
+	style:left={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
+	style:right={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
+	style:z-index={pinState ? 1 : undefined}
+	style:background-color={pinState ? 'inherit' : undefined}
 	style:display={isColumnHidden ? 'none' : 'table-cell'}
 	onfocus={row.section === 'body' ? handleFocus : undefined}
 	onclick={row.section === 'body' ? handleClick : undefined}

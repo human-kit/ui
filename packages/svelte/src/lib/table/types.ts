@@ -1,6 +1,7 @@
 import type { Component, Snippet } from 'svelte';
 import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
 import type {
+	TableColumnPin,
 	TableColumnWidth,
 	TableContext,
 	TableDisabledBehavior,
@@ -13,6 +14,8 @@ import type {
 	TableSortDescriptor
 } from './root/context.js';
 
+export type { TableColumnPin } from './root/context.js';
+
 export type TableColumnProps = {
 	id: string;
 	isRowHeader?: boolean;
@@ -21,6 +24,13 @@ export type TableColumnProps = {
 	defaultWidth?: TableColumnWidth;
 	minWidth?: number;
 	maxWidth?: number;
+	/**
+	 * Freezes the column against the horizontal scroll edge: `'left'` sticks it to
+	 * the start, `'right'` to the end. Multiple columns can pin to the same side —
+	 * they stack in document order and the table computes each one's offset from
+	 * the resolved widths of the columns already pinned ahead of it.
+	 */
+	pin?: TableColumnPin;
 	children?: Snippet;
 };
 
@@ -47,6 +57,7 @@ export type ColumnDef<T extends RowData = RowData, TValue = unknown> = {
 	defaultWidth?: TableColumnWidth;
 	minWidth?: number;
 	maxWidth?: number;
+	pin?: TableColumnPin;
 	cellComponent?: Component<CellProps<T, TValue>>;
 	renderCell?: CellRenderer<T, TValue>;
 };

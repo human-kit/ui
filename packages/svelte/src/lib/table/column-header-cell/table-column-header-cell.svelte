@@ -118,6 +118,14 @@
 		if (isHidden || focusDelegate) return undefined;
 		return table.isCellTabStop(key) ? 0 : -1;
 	});
+	// A pinned header cell stays put while the rest scroll under it. Its z-index (3)
+	// sits above the column resizers (z-index 2) so their handles slide underneath
+	// instead of floating over the frozen column.
+	const pinState = $derived.by(() => {
+		void $layoutVersion;
+		void $widthVersion;
+		return table.getColumnPinState(column.id);
+	});
 
 	function focusResizerInHeader(target: HTMLElement | undefined) {
 		const resizer = target?.querySelector<HTMLElement>('[data-table-column-resizer="true"]');
@@ -249,8 +257,14 @@
 	data-sortable={isSortable || undefined}
 	data-sort-direction={sortDirection}
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
+	data-pinned={pinState?.side}
+	data-pin-edge={pinState?.isEdge ? 'true' : undefined}
 	style:box-sizing="border-box"
-	style:position="relative"
+	style:position={pinState ? 'sticky' : 'relative'}
+	style:left={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
+	style:right={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
+	style:z-index={pinState ? 3 : undefined}
+	style:background-color={pinState ? 'inherit' : undefined}
 	style:overflow="visible"
 	style:width={columnWidthStyle}
 	style:min-width={columnMinWidth !== undefined ? `${columnMinWidth}px` : undefined}

@@ -11,6 +11,7 @@
 		defaultWidth,
 		minWidth,
 		maxWidth,
+		pin,
 		children
 	}: TableColumnProps = $props();
 
@@ -47,6 +48,9 @@
 		},
 		get maxWidth() {
 			return maxWidth;
+		},
+		get pin() {
+			return pin;
 		}
 	});
 
@@ -59,7 +63,8 @@
 			width,
 			defaultWidth,
 			minWidth,
-			maxWidth
+			maxWidth,
+			pin
 		});
 	}
 

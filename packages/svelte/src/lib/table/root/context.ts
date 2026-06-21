@@ -33,6 +33,21 @@ export type TableSortDescriptor = {
 
 export type TableColumnWidth = number | `${number}px` | `${number}%` | `${number}fr`;
 
+export type TableColumnPin = 'left' | 'right';
+
+/**
+ * Resolved sticky placement for a pinned column. `offset` is the distance (px)
+ * from the pinned edge, accumulated from the resolved widths of the columns
+ * already pinned to the same side ahead of this one. `isEdge` marks the inner
+ * column of a pinned group (the rightmost left-pinned / leftmost right-pinned
+ * one) so consumers can render the divider against the scrolling content.
+ */
+export type TableColumnPinState = {
+	side: TableColumnPin;
+	offset: number;
+	isEdge: boolean;
+};
+
 export const DEFAULT_TABLE_COLUMN_MIN_WIDTH = 60;
 
 type ParsedTableColumnWidth = {
@@ -118,6 +133,7 @@ type TableColumnMetadata = {
 	defaultWidth?: TableColumnWidth;
 	minWidth?: number;
 	maxWidth?: number;
+	pin?: TableColumnPin;
 };
 
 type TableColumnLayoutEntry = {
@@ -199,6 +215,8 @@ export type TableContext = {
 	hasAuthoredColumnWidthSpec: (columnId: string) => boolean;
 	getColumnMinWidth: (columnId: string) => number | undefined;
 	getColumnMaxWidth: (columnId: string) => number | undefined;
+	getColumnPin: (columnId: string) => TableColumnPin | undefined;
+	getColumnPinState: (columnId: string) => TableColumnPinState | null;
 	registerColumnSortTrigger: (columnToken: string) => void;
 	unregisterColumnSortTrigger: (columnToken: string) => void;
 	isColumnHidden: (columnId: string) => boolean;
@@ -308,6 +326,7 @@ export type TableColumnContext = {
 	defaultWidth?: TableColumnWidth;
 	minWidth?: number;
 	maxWidth?: number;
+	pin?: TableColumnPin;
 };
 
 export type TableCellContext = {
@@ -592,6 +611,40 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return getColumnRegistrationById(columnId)?.maxWidth;
 	}
 
+	function getColumnPin(columnId: string) {
+		return getColumnRegistrationById(columnId)?.pin;
+	}
+
+	function getColumnPinState(columnId: string): TableColumnPinState | null {
+		const side = getColumnPin(columnId);
+		if (!side || isColumnHidden(columnId)) return null;
+
+		const resolvedWidths = getResolvedVisibleColumnWidths();
+		const visibleColumns = getVisibleOrderedColumnTokens()
+			.map((token) => columns.get(token))
+			.filter((column): column is TableColumnMetadata => column !== undefined);
+		const targetIndex = visibleColumns.findIndex((column) => column.id === columnId);
+		if (targetIndex < 0) return null;
+
+		let offset = 0;
+		let isEdge = true;
+		for (let index = 0; index < visibleColumns.length; index += 1) {
+			if (index === targetIndex) continue;
+			if (getColumnPin(visibleColumns[index].id) !== side) continue;
+			// Columns pinned to the same side that sit *between* this column and its
+			// edge contribute their resolved width to the offset; any same-side pin on
+			// the inner flank means this column is not the group's edge.
+			const isAhead = side === 'left' ? index < targetIndex : index > targetIndex;
+			if (isAhead) {
+				offset += resolvedWidths.get(visibleColumns[index].id) ?? 0;
+			} else {
+				isEdge = false;
+			}
+		}
+
+		return { side, offset, isEdge };
+	}
+
 	function getFixedColumnWidthSpec(columnId: string) {
 		return normalizeColumnWidth(getColumnRegistrationById(columnId)?.width);
 	}
@@ -752,7 +805,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			left.width === right.width &&
 			left.defaultWidth === right.defaultWidth &&
 			left.minWidth === right.minWidth &&
-			left.maxWidth === right.maxWidth
+			left.maxWidth === right.maxWidth &&
+			left.pin === right.pin
 		);
 	}
 
@@ -2717,6 +2771,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		hasAuthoredColumnWidthSpec,
 		getColumnMinWidth,
 		getColumnMaxWidth,
+		getColumnPin,
+		getColumnPinState,
 		isColumnHidden,
 		isColumnResizable,
 		getColumnWidths,

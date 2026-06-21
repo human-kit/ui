@@ -8,6 +8,7 @@
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
+	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
 	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { Portal } from '../../portal';
 	import {
@@ -159,20 +160,9 @@
 		});
 	}
 
-	function releaseFocusedDescendantBeforeHide() {
-		if (!browser || !popoverRef || !triggerRef) return;
-
-		const activeElement = document.activeElement;
-		if (!(activeElement instanceof HTMLElement)) return;
-		if (activeElement === triggerRef || triggerRef.contains(activeElement)) return;
-		if (activeElement !== popoverRef && !popoverRef.contains(activeElement)) return;
-
-		activeElement.blur();
-	}
-
 	function close(reason: PopoverCloseReason = 'imperative-action', event?: Event) {
 		closeHandledInternally = true;
-		releaseFocusedDescendantBeforeHide();
+		releaseFocusedDescendant(popoverRef, triggerRef);
 
 		if (isStandalone) {
 			let canceled = false;
@@ -291,7 +281,7 @@
 			return;
 		}
 
-		releaseFocusedDescendantBeforeHide();
+		releaseFocusedDescendant(popoverRef, triggerRef);
 	});
 
 	$effect(() => {
