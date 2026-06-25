@@ -235,7 +235,6 @@
 	style:left={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
 	style:right={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
 	style:z-index={pinState ? 1 : undefined}
-	style:background-color={pinState ? 'inherit' : undefined}
 	style:display={isColumnHidden ? 'none' : 'table-cell'}
 	onfocus={row.section === 'body' ? handleFocus : undefined}
 	onclick={row.section === 'body' ? handleClick : undefined}

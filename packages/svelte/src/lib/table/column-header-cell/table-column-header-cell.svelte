@@ -264,7 +264,6 @@
 	style:left={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
 	style:right={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
 	style:z-index={pinState ? 3 : undefined}
-	style:background-color={pinState ? 'inherit' : undefined}
 	style:overflow="visible"
 	style:width={columnWidthStyle}
 	style:min-width={columnMinWidth !== undefined ? `${columnMinWidth}px` : undefined}
