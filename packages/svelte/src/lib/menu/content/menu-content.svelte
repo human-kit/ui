@@ -10,6 +10,7 @@
 	import { Portal } from '../../portal';
 	import { useMenuContext } from '../root/context';
 	import { pushMenuLayer, removeMenuLayer, isTopmostMenu } from '../root/menu-stack';
+	import { getFloatingLayerZIndex } from '../../dialog/root/dialog-stack';
 
 	/**
 	 * Menu.Content - The floating menu panel (role="menu").
@@ -64,6 +65,9 @@
 	let tracker: MotionTracker | undefined;
 	let hasAppliedOpenFocus = false;
 	let layerId: symbol | null = null;
+	// Resolved when the menu opens so it stacks above whatever dialog (if any) it was
+	// opened inside — a fixed z-index renders behind nested dialogs (mirrors Popover.Content).
+	let zIndex = $state(getFloatingLayerZIndex());
 
 	function removeLayer() {
 		if (layerId === null) return;
@@ -195,6 +199,7 @@
 		if (isOpen) {
 			if (layerId === null) {
 				layerId = pushMenuLayer();
+				zIndex = getFloatingLayerZIndex();
 			}
 			const shouldAnimateIn = !isMounted || isExiting;
 			isMounted = true;
@@ -302,7 +307,7 @@
 			}}
 			use:ctx.keyboardNav.action
 			onpointerenter={() => ctx.parent?.cancelPendingHighlight()}
-			style="position: fixed; z-index: 9999;"
+			style="position: fixed; z-index: {zIndex};"
 			{...restProps}
 		>
 			{#if children}

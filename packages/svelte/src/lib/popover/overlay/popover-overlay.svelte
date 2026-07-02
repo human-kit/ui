@@ -4,6 +4,7 @@
 	import { Portal } from '../../portal';
 	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { getPopoverContext } from '../root/context';
+	import { getFloatingLayerOverlayZIndex } from '../../dialog/root/dialog-stack';
 
 	/**
 	 * Popover.Overlay - An optional backdrop rendered behind the popover.
@@ -33,6 +34,8 @@
 	let isMounted = $state(false);
 	let isEntering = $state(false);
 	let isExiting = $state(false);
+	// Stacks above the topmost dialog (mirrors the content layer), not a fixed value.
+	let zIndex = $state(getFloatingLayerOverlayZIndex());
 	let tracker: MotionTracker | undefined;
 
 	function clearTracker() {
@@ -44,6 +47,9 @@
 	$effect(() => {
 		if (isOpen) {
 			const shouldAnimateIn = !isMounted || isExiting;
+			if (!isMounted) {
+				zIndex = getFloatingLayerOverlayZIndex();
+			}
 			isMounted = true;
 			isExiting = false;
 			if (shouldAnimateIn) {
@@ -104,7 +110,7 @@
 			data-state={isOpen ? 'open' : 'closed'}
 			data-entering={isEntering || undefined}
 			data-exiting={isExiting || undefined}
-			style="position: fixed; inset: 0; z-index: 9998;"
+			style="position: fixed; inset: 0; z-index: {zIndex};"
 			{...restProps}
 		></div>
 	</Portal>

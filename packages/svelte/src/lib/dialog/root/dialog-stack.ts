@@ -66,3 +66,23 @@ export function getContentZIndex(level: number): number {
 export function getDialogCount(): number {
 	return dialogStack.length;
 }
+
+/**
+ * Z-index a floating layer (popover/calendar) should use so it renders ABOVE the
+ * topmost open dialog — or above page content when no dialog is open. Without this,
+ * a popover opened inside a (nested) dialog kept its fixed z-index and rendered
+ * behind the dialog, because each nested dialog's content sits at a higher z-index
+ * than the popover's old constant. Resolves to 9999 with no dialogs open (the prior
+ * fixed value), and climbs past the dialog stack as dialogs nest.
+ */
+export function getFloatingLayerZIndex(): number {
+	return BASE_Z_INDEX + dialogStack.length * Z_INDEX_INCREMENT + 9;
+}
+
+/**
+ * Z-index for a floating layer's backdrop — one below its content (mirrors the
+ * dialog overlay/content pairing).
+ */
+export function getFloatingLayerOverlayZIndex(): number {
+	return getFloatingLayerZIndex() - 1;
+}

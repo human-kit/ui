@@ -4,6 +4,7 @@
 	import { Portal } from '../../portal';
 	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { useMenuContext } from '../root/context';
+	import { getFloatingLayerOverlayZIndex } from '../../dialog/root/dialog-stack';
 
 	/**
 	 * Menu.Overlay - An optional backdrop rendered behind the menu.
@@ -26,6 +27,9 @@
 	const isOpen = $derived(ctx.isOpen);
 
 	let overlayRef: HTMLElement | undefined = $state();
+	// Resolved on open so the backdrop sits just below the menu panel and above the dialog
+	// it was opened within (mirrors Popover.Overlay).
+	let zIndex = $state(getFloatingLayerOverlayZIndex());
 	let isMounted = $state(false);
 	let isEntering = $state(false);
 	let isExiting = $state(false);
@@ -39,6 +43,7 @@
 	// Mount on open; flip to the exit phase on close while staying mounted for the animation.
 	$effect(() => {
 		if (isOpen) {
+			zIndex = getFloatingLayerOverlayZIndex();
 			const shouldAnimateIn = !isMounted || isExiting;
 			isMounted = true;
 			isExiting = false;
@@ -100,7 +105,7 @@
 			data-state={isOpen ? 'open' : 'closed'}
 			data-entering={isEntering || undefined}
 			data-exiting={isExiting || undefined}
-			style="position: fixed; inset: 0; z-index: 9998;"
+			style="position: fixed; inset: 0; z-index: {zIndex};"
 			{...restProps}
 		></div>
 	</Portal>

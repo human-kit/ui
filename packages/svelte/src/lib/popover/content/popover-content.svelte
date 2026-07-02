@@ -17,6 +17,7 @@
 		type PopoverCloseReason
 	} from '../root/context';
 	import { pushPopoverLayer, removePopoverLayer, isTopmostPopover } from '../root/popover-stack';
+	import { getFloatingLayerZIndex } from '../../dialog/root/dialog-stack';
 	import {
 		addTriggerBlurCleanup,
 		applyTriggerCloseFocusState,
@@ -99,6 +100,9 @@
 	let previousOpen = $state(false);
 	let closeHandledInternally = false;
 	let layerId: symbol | null = null;
+	// Resolved when the popover opens so it stacks above whatever dialog (if any) it
+	// was opened inside — a fixed z-index renders behind nested dialogs.
+	let zIndex = $state(getFloatingLayerZIndex());
 
 	function removeLayer() {
 		if (layerId === null) return;
@@ -288,6 +292,8 @@
 		if (isOpen) {
 			if (layerId === null) {
 				layerId = pushPopoverLayer();
+				// Capture the dialog depth at open time so the panel clears the topmost dialog.
+				zIndex = getFloatingLayerZIndex();
 			}
 			const shouldAnimateIn = !isMounted || isExiting;
 			isMounted = true;
@@ -372,7 +378,7 @@
 			use:focusTrap={{ enabled: isOpen && isModal, restoreFocus: false, initialFocus }}
 			use:scrollLock={isOpen && isModal}
 			use:ariaHideOutside={isOpen && isModal}
-			style="position: fixed; z-index: 9999;"
+			style="position: fixed; z-index: {zIndex};"
 			{...restProps}
 		>
 			{#if children}
