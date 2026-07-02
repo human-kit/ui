@@ -18,8 +18,8 @@ own how files are stored or rendered.
 	onFilesPicked={(files) => upload(files)}
 	class="rounded-md border border-dashed data-[drop-target]:border-primary"
 >
-	{#snippet children({ isDragging })}
-		{isDragging ? 'Soltá los archivos' : 'Hacé clic o arrastrá archivos acá'}
+	{#snippet children({ dragging })}
+		{dragging ? 'Soltá los archivos' : 'Hacé clic o arrastrá archivos acá'}
 	{/snippet}
 </Dropzone>
 ```
@@ -32,8 +32,8 @@ own how files are stored or rendered.
   cannot enforce `accept` on drop).
 - `multiple` allows selecting/dropping more than one file; when false only the first is emitted.
 - Style interaction state with `data-drop-target`, `data-focus-visible`, `data-hovered`, and
-  `data-disabled`. The `children` snippet also receives `{ isDragging, isFocused, isFocusVisible,
-isDisabled }`.
+  `data-disabled`. The `children` snippet also receives `{ dragging, focused, focusVisible,
+disabled }`.
 - Feed `announcement` with a short result message (e.g. `"2 archivos agregados"`) so screen
   reader users hear the outcome of a drop, which does not move focus on its own.
 
@@ -41,7 +41,7 @@ isDisabled }`.
 
 `Dropzone` supports:
 
-- `isDisabled?: boolean`
+- `disabled?: boolean`
 - `accept?: string`
 - `multiple?: boolean`
 - `onFilesPicked?: (files: File[]) => void`

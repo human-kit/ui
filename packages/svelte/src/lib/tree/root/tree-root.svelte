@@ -496,6 +496,6 @@
 	{/if}
 
 	{#if hasMounted && isTreeEmpty() && renderEmptyState}
-		{@render renderEmptyState({ isEmpty: true } satisfies TreeEmptyStateRenderProps)}
+		{@render renderEmptyState({ empty: true } satisfies TreeEmptyStateRenderProps)}
 	{/if}
 </div>

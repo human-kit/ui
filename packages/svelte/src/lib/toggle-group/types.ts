@@ -19,7 +19,7 @@ export type ToggleGroupRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'childre
 	defaultValue?: ToggleGroupValue[];
 	onChange?: (value: ToggleGroupValue[]) => void;
 	selectionMode?: ToggleGroupSelectionMode;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	orientation?: ToggleGroupOrientation;
 	disallowEmptySelection?: boolean;
 	children?: Snippet;

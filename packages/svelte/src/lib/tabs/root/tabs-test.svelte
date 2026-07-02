@@ -8,8 +8,8 @@
 		defaultValue?: TabsValue | null;
 		keyboardActivation?: TabsKeyboardActivation;
 		orientation?: TabsOrientation;
-		isDisabled?: boolean;
-		disabledValues?: TabsValue[];
+		disabled?: boolean;
+		disabledKeys?: TabsValue[];
 		billingDisabled?: boolean;
 		securityForceMount?: boolean;
 		showControls?: boolean;
@@ -21,15 +21,15 @@
 		defaultValue,
 		keyboardActivation = 'automatic',
 		orientation = 'horizontal',
-		isDisabled = false,
-		disabledValues = [],
+		disabled = false,
+		disabledKeys = [],
 		billingDisabled = false,
 		securityForceMount = false,
 		showControls = false
 	}: TabsTestProps = $props();
 
 	let currentValue = $state<TabsValue | null>((() => value)());
-	let currentDisabledValues = $state<TabsValue[]>((() => [...disabledValues])());
+	let currentDisabledKeys = $state<TabsValue[]>((() => [...disabledKeys])());
 	let changeLog = $state<Array<TabsValue | null>>([]);
 
 	function handleChange(nextValue: TabsValue | null) {
@@ -41,7 +41,7 @@
 {#snippet tabParts()}
 	<Tabs.List aria-label="Account sections" data-testid="tabs-list">
 		<Tabs.Tab value="overview" data-testid="tab-overview">Overview</Tabs.Tab>
-		<Tabs.Tab value="billing" isDisabled={billingDisabled} data-testid="tab-billing">
+		<Tabs.Tab value="billing" disabled={billingDisabled} data-testid="tab-billing">
 			Billing
 		</Tabs.Tab>
 		<Tabs.Tab value="security" data-testid="tab-security">Security</Tabs.Tab>
@@ -60,8 +60,8 @@
 		bind:value={currentValue}
 		{keyboardActivation}
 		{orientation}
-		{isDisabled}
-		disabledValues={currentDisabledValues}
+		{disabled}
+		disabledKeys={currentDisabledKeys}
 		onChange={handleChange}
 		data-testid="tabs-root"
 	>
@@ -72,8 +72,8 @@
 		{defaultValue}
 		{keyboardActivation}
 		{orientation}
-		{isDisabled}
-		disabledValues={currentDisabledValues}
+		{disabled}
+		disabledKeys={currentDisabledKeys}
 		onChange={handleChange}
 		data-testid="tabs-root"
 	>
@@ -95,7 +95,7 @@
 	<button
 		type="button"
 		data-testid="disable-billing"
-		onclick={() => (currentDisabledValues = ['billing'])}
+		onclick={() => (currentDisabledKeys = ['billing'])}
 	>
 		Disable billing
 	</button>
@@ -103,4 +103,4 @@
 
 <output data-testid="selected-value">{String(currentValue)}</output>
 <output data-testid="change-log">{JSON.stringify(changeLog)}</output>
-<output data-testid="disabled-values">{JSON.stringify(currentDisabledValues)}</output>
+<output data-testid="disabled-values">{JSON.stringify(currentDisabledKeys)}</output>

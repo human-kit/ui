@@ -19,9 +19,9 @@
 	type ComboBoxProps<T> = {
 		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
 		id?: string;
-		isDisabled?: boolean;
-		isPending?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		pending?: boolean;
+		readonly?: boolean;
 		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
 		value?: string | number | null | (string | number)[];
 		defaultValue?: string | number | null | (string | number)[];
@@ -32,8 +32,8 @@
 		selectionMode?: 'single' | 'multiple';
 		/** Whether to close popover after selection. Default: true for single, false for multiple */
 		closeOnSelect?: boolean;
-		/** Whether the popover is open. Can be bound with bind:isOpen */
-		isOpen?: boolean;
+		/** Whether the popover is open. Can be bound with bind:open */
+		open?: boolean;
 		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
 		trigger?: 'focus' | 'input' | 'press';
 		/** Function used to filter items locally. Set to null to disable local filtering. */
@@ -59,9 +59,9 @@
 
 	let {
 		id: rootId,
-		isDisabled = false,
-		isPending = false,
-		isReadOnly = false,
+		disabled = false,
+		pending = false,
+		readonly = false,
 		value = $bindable(),
 		defaultValue,
 		inputValue = $bindable(),
@@ -69,7 +69,7 @@
 		selectionBehavior,
 		selectionMode = 'single',
 		closeOnSelect,
-		isOpen = $bindable(),
+		open: openProp = $bindable(),
 		trigger = 'press',
 		filter = defaultComboBoxFilter,
 		filterActionItems = true,
@@ -232,11 +232,11 @@
 	let selectedInternal = $state<Set<string | number>>((() => parseSelection(defaultValue))());
 
 	// Reactive controlled mode checks - if prop changes from undefined to defined, behavior updates
-	const isOpenControlled = $derived(isOpen !== undefined);
+	const isOpenControlled = $derived(openProp !== undefined);
 	const isInputControlled = $derived(inputValue !== undefined);
 	const isSelectionControlled = $derived(value !== undefined);
 
-	const currentIsOpen = $derived(isOpenControlled ? isOpen! : isOpenInternal);
+	const currentIsOpen = $derived(isOpenControlled ? openProp! : isOpenInternal);
 	const currentInputValue = $derived(isInputControlled ? inputValue! : inputValueInternal);
 	const currentSelection = $derived(
 		isSelectionControlled ? parseSelection(value) : selectedInternal
@@ -247,7 +247,7 @@
 
 	function setIsOpen(open: boolean) {
 		isOpenInternal = open;
-		isOpen = open; // Update bindable prop
+		openProp = open; // Update bindable prop
 		onOpenChange?.(open);
 		// Reset focus and pending when closing
 		if (!open) {
@@ -433,7 +433,7 @@
 	}
 
 	function openPopover() {
-		if (!isDisabled && !isReadOnly) {
+		if (!disabled && !readonly) {
 			// Don't open if triggerRef is not set yet (prevents race condition with focus trap)
 			if (!triggerRef) {
 				return;
@@ -524,7 +524,7 @@
 	}
 
 	function activateItemAction(id: string | number, source: ComboBoxItemActionSource) {
-		if (isDisabled) return false;
+		if (disabled) return false;
 
 		const action = itemActions.get(id);
 		if (!action) return false;
@@ -603,7 +603,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (isDisabled) return;
+		if (disabled) return;
 		trackInteractionModality(event, event.target as HTMLElement | null);
 
 		// Handle tag virtual focus navigation in multiple mode
@@ -831,10 +831,10 @@
 			return currentSelection;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isPending() {
-			return isPending;
+			return pending;
 		},
 		get isFocusVisible() {
 			return focusVisible;
@@ -846,7 +846,7 @@
 			return shouldCloseOnBlurState;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get selectionMode() {
 			return selectionMode;
@@ -948,13 +948,13 @@
 	role="group"
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
-	aria-busy={isPending ? 'true' : undefined}
+	aria-busy={pending ? 'true' : undefined}
 	class={className}
 	data-combobox
 	data-focused={focusWithin || undefined}
-	data-disabled={isDisabled || undefined}
-	data-pending={isPending || undefined}
-	data-readonly={isReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-pending={pending || undefined}
+	data-readonly={readonly || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}
 	use:setWrapperAsTrigger

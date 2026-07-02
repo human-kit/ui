@@ -74,7 +74,7 @@
 						{#each sections as section (section.value)}
 							<Accordion.Item
 								value={section.value}
-								isDisabled={section.value === 'warranty' && disableWarranty}
+								disabled={section.value === 'warranty' && disableWarranty}
 								class="data-disabled:opacity-50"
 							>
 								<Accordion.Header>

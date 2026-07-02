@@ -22,7 +22,7 @@
 				<div class="w-full max-w-xl">
 					<Collapsible.Root
 						bind:open
-						{isDisabled}
+						disabled={isDisabled}
 						class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
 					>
 						<Collapsible.Trigger
@@ -59,7 +59,7 @@
 								bind:checked={isDisabled}
 								class="size-4 rounded border-gray-300 text-blue-600"
 							/>
-							isDisabled
+							disabled
 						</label>
 
 						<div class="flex flex-wrap gap-2">

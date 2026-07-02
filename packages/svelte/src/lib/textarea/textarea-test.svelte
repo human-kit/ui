@@ -2,10 +2,10 @@
 	import TextArea from './index';
 
 	type Props = {
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isInvalid?: boolean;
-		isRequired?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
+		invalid?: boolean;
+		required?: boolean;
 		autoResize?: boolean;
 		minRows?: number;
 		maxRows?: number;
@@ -15,10 +15,10 @@
 	};
 
 	let {
-		isDisabled = false,
-		isReadOnly = false,
-		isInvalid = false,
-		isRequired = false,
+		disabled = false,
+		readonly = false,
+		invalid = false,
+		required = false,
 		autoResize = false,
 		minRows,
 		maxRows,
@@ -35,10 +35,10 @@
 		bind:value
 		aria-label="Message"
 		placeholder="Write a message"
-		{isDisabled}
-		{isReadOnly}
-		{isInvalid}
-		{isRequired}
+		{disabled}
+		{readonly}
+		{invalid}
+		{required}
 		{autoResize}
 		{minRows}
 		{maxRows}

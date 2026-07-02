@@ -20,7 +20,7 @@
 
 	let {
 		value,
-		isDisabled = false,
+		disabled: disabledProp = false,
 		children,
 		class: className = '',
 		element = $bindable<HTMLButtonElement | null>(null),
@@ -41,7 +41,7 @@
 	let registeredValue = untrack(() => value);
 
 	untrack(() => {
-		tabs.registerTab(registeredValue, { isDisabled });
+		tabs.registerTab(registeredValue, { isDisabled: disabledProp });
 	});
 
 	const selected = $derived.by(() => {
@@ -79,7 +79,7 @@
 			registeredValue = value;
 		}
 		element = buttonRef;
-		tabs.registerTab(registeredValue, { isDisabled, element: buttonRef });
+		tabs.registerTab(registeredValue, { isDisabled: disabledProp, element: buttonRef });
 	});
 
 	onDestroy(() => {
@@ -139,7 +139,7 @@
 	aria-selected={selected ? 'true' : 'false'}
 	aria-controls={panelId}
 	tabindex={tabIndex}
-	isDisabled={disabled}
+	{disabled}
 	class={className}
 	data-tabs-tab="true"
 	data-tabs-value={String(value)}

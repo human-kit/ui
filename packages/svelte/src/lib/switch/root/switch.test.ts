@@ -147,7 +147,7 @@ describe('Switch.Root', () => {
 	});
 
 	it('does not toggle when disabled', async () => {
-		const screen = render(SwitchTest, { isDisabled: true });
+		const screen = render(SwitchTest, { disabled: true });
 		const switchRoot = screen.getByRole('switch', { name: 'Enable notifications' });
 
 		switchRoot
@@ -159,7 +159,7 @@ describe('Switch.Root', () => {
 	});
 
 	it('does not set data-pressed when disabled', async () => {
-		const screen = render(SwitchTest, { isDisabled: true });
+		const screen = render(SwitchTest, { disabled: true });
 		const switchRoot = screen.getByRole('switch', { name: 'Enable notifications' });
 
 		switchRoot.element()?.dispatchEvent(
@@ -175,7 +175,7 @@ describe('Switch.Root', () => {
 	});
 
 	it('does not toggle when readonly', async () => {
-		const screen = render(SwitchTest, { isReadOnly: true });
+		const screen = render(SwitchTest, { readonly: true });
 		const switchRoot = screen.getByRole('switch', { name: 'Enable notifications' });
 
 		switchRoot

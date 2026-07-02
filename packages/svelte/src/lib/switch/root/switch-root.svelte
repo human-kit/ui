@@ -27,11 +27,11 @@
 		name?: string;
 		value?: string;
 		form?: string;
-		isChecked?: boolean;
+		checked?: boolean;
 		defaultChecked?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		required?: boolean;
 		children?: Snippet;
 		class?: string;
@@ -70,11 +70,11 @@
 		name,
 		value = 'on',
 		form,
-		isChecked = $bindable(),
+		checked = $bindable(),
 		defaultChecked = false,
 		onCheckedChange,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		required = false,
 		children,
 		class: className = '',
@@ -99,7 +99,7 @@
 	const instanceId = untrack(() => id) ?? generatedId;
 	const inputId = instanceId;
 	const rootId = `${instanceId}-root`;
-	const initialChecked = untrack(() => isChecked ?? defaultChecked);
+	const initialChecked = untrack(() => checked ?? defaultChecked);
 
 	let checkedInternal = $state(initialChecked);
 	let pressed = $state(false);
@@ -114,19 +114,19 @@
 	});
 
 	$effect(() => {
-		if (!isDisabled && !isReadOnly) return;
+		if (!disabled && !readonly) return;
 		clearPressState();
-		if (isDisabled) {
+		if (disabled) {
 			focusVisible = false;
 		}
 	});
 
-	if (untrack(() => isChecked) === undefined) {
-		isChecked = initialChecked;
+	if (untrack(() => checked) === undefined) {
+		checked = initialChecked;
 	}
 
-	const isCheckedControlled = $derived(isChecked !== undefined);
-	const currentChecked = $derived(isCheckedControlled ? Boolean(isChecked) : checkedInternal);
+	const isCheckedControlled = $derived(checked !== undefined);
+	const currentChecked = $derived(isCheckedControlled ? Boolean(checked) : checkedInternal);
 	const currentUnchecked = $derived(!currentChecked);
 
 	function clearPressState() {
@@ -141,7 +141,7 @@
 			checkedInternal = nextChecked;
 		}
 
-		isChecked = nextChecked;
+		checked = nextChecked;
 
 		if (nextChecked !== previousChecked) {
 			onCheckedChange?.(nextChecked);
@@ -153,7 +153,7 @@
 	}
 
 	function setChecked(nextChecked: boolean, event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		publishChecked(nextChecked, event);
 	}
 
@@ -162,7 +162,7 @@
 	}
 
 	function requestNativeToggle(event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		if (!inputRef) {
 			toggle(event);
 			return;
@@ -175,7 +175,7 @@
 		trackInteractionModality(event, rootRef);
 
 		if (event.defaultPrevented) return;
-		if (isDisabled || isReadOnly) {
+		if (disabled || readonly) {
 			event.preventDefault();
 			return;
 		}
@@ -233,7 +233,7 @@
 		trackInteractionModality(event, rootRef);
 		focusVisible = false;
 
-		if (isDisabled || isReadOnly) {
+		if (disabled || readonly) {
 			event.preventDefault();
 			clearPressState();
 			return;
@@ -256,7 +256,7 @@
 	}
 
 	function handlePointerEnter(event: PointerEvent) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		if ((event.buttons & 1) === 1 && pressedKey === null) {
 			pressed = true;
@@ -273,7 +273,7 @@
 		trackInteractionModality(event, rootRef);
 		focusVisible = false;
 
-		if (isDisabled || isReadOnly) {
+		if (disabled || readonly) {
 			event.preventDefault();
 			clearPressState();
 			return;
@@ -345,10 +345,10 @@
 			return currentChecked;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get required() {
 			return required;
@@ -372,10 +372,10 @@
 	bind:this={rootRef}
 	id={rootId}
 	role="switch"
-	tabindex={isDisabled ? undefined : (tabindex ?? 0)}
+	tabindex={disabled ? undefined : (tabindex ?? 0)}
 	aria-checked={currentChecked ? 'true' : 'false'}
-	aria-disabled={isDisabled || undefined}
-	aria-readonly={isReadOnly || undefined}
+	aria-disabled={disabled || undefined}
+	aria-readonly={readonly || undefined}
 	aria-required={required || undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
@@ -383,8 +383,8 @@
 	data-checked={currentChecked || undefined}
 	data-unchecked={currentUnchecked || undefined}
 	data-pressed={pressed || undefined}
-	data-disabled={isDisabled || undefined}
-	data-readonly={isReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
 	data-required={required || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
@@ -416,9 +416,9 @@
 		{value}
 		{form}
 		checked={currentChecked}
-		disabled={isDisabled}
+		{disabled}
 		{required}
-		readonly={isReadOnly}
+		{readonly}
 		aria-hidden="true"
 		data-switch-input="true"
 		onclick={handleInputClick}

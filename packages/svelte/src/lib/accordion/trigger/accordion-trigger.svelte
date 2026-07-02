@@ -166,7 +166,7 @@
 	type="button"
 	aria-expanded={open ? 'true' : 'false'}
 	aria-controls={panelId}
-	isDisabled={disabled}
+	{disabled}
 	class={className}
 	data-accordion-trigger="true"
 	data-accordion-value={String(item.value)}

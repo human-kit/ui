@@ -98,7 +98,7 @@
 	<ButtonRoot
 		bind:element={buttonRef}
 		type="button"
-		isDisabled={timePicker.isDisabled}
+		disabled={timePicker.isDisabled}
 		class={className}
 		aria-haspopup="dialog"
 		aria-expanded={timePicker.open}

@@ -100,9 +100,9 @@
 	<Checkbox.Root
 		{id}
 		bind:element={checkboxElement}
-		{isChecked}
-		{isIndeterminate}
-		{isDisabled}
+		checked={isChecked}
+		indeterminate={isIndeterminate}
+		disabled={isDisabled}
 		onCheckedChange={applySelection}
 		{title}
 		aria-label={accessibleLabel}

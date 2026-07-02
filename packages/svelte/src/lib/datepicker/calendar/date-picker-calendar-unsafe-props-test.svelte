@@ -11,8 +11,8 @@
 		onChange: () => {
 			unsafeOnChangeCalls += 1;
 		},
-		isDisabled: true,
-		isReadOnly: true,
+		disabled: true,
+		readonly: true,
 		isDateUnavailable: () => true
 	};
 </script>

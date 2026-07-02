@@ -50,7 +50,7 @@
 				bind:value={playgroundValue}
 				selectionMode={playgroundSelectionMode}
 				orientation={playgroundOrientation}
-				isDisabled={playgroundDisabled}
+				disabled={playgroundDisabled}
 				disallowEmptySelection={playgroundDisallowEmpty}
 				onChange={pushChange}
 				aria-label="Text style"
@@ -101,7 +101,7 @@
 						{ value: 'vertical', label: 'vertical' }
 					]}
 				/>
-				<DemoCheckbox label="isDisabled" bind:checked={playgroundDisabled} />
+				<DemoCheckbox label="disabled" bind:checked={playgroundDisabled} />
 				<DemoCheckbox label="disallowEmptySelection" bind:checked={playgroundDisallowEmpty} />
 				<hr class="border-gray-200 dark:border-gray-700" />
 				<DemoState label="value" value={playgroundValue} />
@@ -149,7 +149,7 @@
 				{#each statusToggles as toggle (toggle.value)}
 					<Toggle.Root
 						value={toggle.value}
-						isDisabled={toggle.value === 'archived'}
+						disabled={toggle.value === 'archived'}
 						class="inline-flex min-h-10 items-center justify-start rounded-md px-3 text-sm font-medium text-gray-700 transition-colors data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-rose-500 data-[selected=true]:bg-rose-600 data-[selected=true]:text-white data-[pressed=true]:scale-[0.98] data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 dark:text-gray-200 dark:data-[selected=true]:bg-rose-500 dark:data-[selected=true]:text-gray-950"
 					>
 						{toggle.label}

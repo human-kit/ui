@@ -29,7 +29,7 @@ Composable numeric input with formatted text entry, spinbutton semantics, steppe
 
 ## API Reference
 
-`NumberField.Root` accepts `value`, `defaultValue`, `onChange`, `formatOptions`, `min`, `max`, `step`, `smallStep`, `largeStep`, `isDisabled`, `isReadOnly`, `isRequired`, `isInvalid`, `allowWheelScrub`, `allowOutOfRange`, `snapOnStep`, `name`, `incrementAriaLabel`, and `decrementAriaLabel`.
+`NumberField.Root` accepts `value`, `defaultValue`, `onChange`, `formatOptions`, `min`, `max`, `step`, `smallStep`, `largeStep`, `disabled`, `readonly`, `required`, `invalid`, `allowWheelScrub`, `allowOutOfRange`, `snapOnStep`, `name`, `incrementAriaLabel`, and `decrementAriaLabel`.
 
 ## Accessibility
 

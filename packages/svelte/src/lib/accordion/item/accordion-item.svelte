@@ -5,7 +5,7 @@
 
 	let {
 		value,
-		isDisabled = false,
+		disabled: disabledProp = false,
 		children,
 		class: className = '',
 		element = $bindable<HTMLDivElement | null>(null),
@@ -35,7 +35,7 @@
 			return value;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabledProp;
 		},
 		get triggerId() {
 			return accordion.getTriggerId(value);

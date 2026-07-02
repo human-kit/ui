@@ -10,10 +10,10 @@
 		step?: number;
 		smallStep?: number;
 		largeStep?: number;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isRequired?: boolean;
-		isInvalid?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
+		required?: boolean;
+		invalid?: boolean;
 		'aria-invalid'?: boolean | 'true' | 'false';
 		allowWheelScrub?: boolean;
 		allowOutOfRange?: boolean;
@@ -34,10 +34,10 @@
 		step = 1,
 		smallStep = 0.1,
 		largeStep = 10,
-		isDisabled = false,
-		isReadOnly = false,
-		isRequired = false,
-		isInvalid = false,
+		disabled = false,
+		readonly = false,
+		required = false,
+		invalid = false,
 		'aria-invalid': ariaInvalid,
 		allowWheelScrub = false,
 		allowOutOfRange = false,
@@ -72,10 +72,10 @@
 			{step}
 			{smallStep}
 			{largeStep}
-			{isDisabled}
-			{isReadOnly}
-			{isRequired}
-			{isInvalid}
+			{disabled}
+			{readonly}
+			{required}
+			{invalid}
 			aria-invalid={ariaInvalid}
 			{allowWheelScrub}
 			{allowOutOfRange}

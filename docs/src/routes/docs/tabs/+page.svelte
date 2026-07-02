@@ -93,7 +93,7 @@
 						bind:value
 						{keyboardActivation}
 						{orientation}
-						{disabledValues}
+						disabledKeys={disabledValues}
 						class={orientation === 'vertical'
 							? 'grid gap-4 sm:grid-cols-[160px_minmax(0,1fr)]'
 							: 'space-y-4'}
@@ -207,7 +207,7 @@
 						<hr class="border-gray-200 dark:border-gray-700" />
 						<DemoState label="value" {value} />
 						<DemoState label="activeTab" value={activeTab?.label ?? null} />
-						<DemoState label="disabledValues" value={disabledValues} />
+						<DemoState label="disabledKeys" value={disabledValues} />
 					</div>
 				{/snippet}
 			</DemoSection>

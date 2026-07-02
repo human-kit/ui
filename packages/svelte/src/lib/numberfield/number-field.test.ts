@@ -574,7 +574,7 @@ describe('NumberField', () => {
 	});
 
 	it('blocks form submission when required value is empty', async () => {
-		const screen = render(NumberFieldTest, { isRequired: true, name: 'amount' });
+		const screen = render(NumberFieldTest, { required: true, name: 'amount' });
 		const inputElement = screen
 			.getByRole('spinbutton', { name: 'Amount' })
 			.element() as HTMLInputElement;
@@ -629,10 +629,10 @@ describe('NumberField', () => {
 
 	it('maps invalid, required, disabled, and readonly state to accessible attributes', () => {
 		const screen = render(NumberFieldTest, {
-			isInvalid: true,
-			isRequired: true,
-			isDisabled: true,
-			isReadOnly: true
+			invalid: true,
+			required: true,
+			disabled: true,
+			readonly: true
 		});
 		const input = screen.getByRole('spinbutton', { name: 'Amount' });
 

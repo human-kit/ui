@@ -167,7 +167,7 @@
 							</Table.Checkbox>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
-					<Table.Column id="email" isRowHeader minWidth={30}>
+					<Table.Column id="email" rowHeader minWidth={30}>
 						<Table.ColumnHeaderCell
 							class="px-3 py-2 text-sm font-semibold text-gray-900 outline-none data-[sortable=true]:select-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
 						>

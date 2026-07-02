@@ -153,7 +153,7 @@
 						<Table.Column
 							id={column.id}
 							textValue={column.header ?? column.id}
-							isRowHeader={column.isRowHeader}
+							rowHeader={column.rowHeader}
 							width={column.width}
 							defaultWidth={column.defaultWidth}
 							minWidth={column.minWidth}

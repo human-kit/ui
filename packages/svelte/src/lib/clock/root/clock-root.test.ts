@@ -122,7 +122,7 @@ describe('Clock.Root', () => {
 	});
 
 	it('does not allow interaction when disabled', async () => {
-		render(ClockRootTest, { defaultValue: '14:30', isDisabled: true });
+		render(ClockRootTest, { defaultValue: '14:30', disabled: true });
 
 		await expect.poll(() => getSpinbuttons().item(0)).toBeTruthy();
 		const spinbutton = getSpinbuttons().item(0);

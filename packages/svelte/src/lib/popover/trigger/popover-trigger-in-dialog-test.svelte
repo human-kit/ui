@@ -13,7 +13,7 @@
 				<Popover.Root>
 					<Popover.Trigger>Open Nested Popover</Popover.Trigger>
 
-					<Popover.Content isNonModal={true} class="nested-popover-content">
+					<Popover.Content nonModal={true} class="nested-popover-content">
 						<p>Nested popover content</p>
 					</Popover.Content>
 				</Popover.Root>

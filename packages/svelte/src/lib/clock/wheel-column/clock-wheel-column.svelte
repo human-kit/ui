@@ -486,7 +486,7 @@
 				{type}
 				{option}
 				selected={selectedValue === option.value}
-				onrequestcenter={() => handleCenterRequest(index)}
+				onRequestCenter={() => handleCenterRequest(index)}
 				id={`${clock.id}-wheel-${type}-${option.value}`}
 			/>
 		{/if}

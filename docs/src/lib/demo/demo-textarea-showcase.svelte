@@ -60,10 +60,10 @@
 						bind:element={playgroundElement}
 						bind:value={playgroundValue}
 						placeholder={playgroundPlaceholder}
-						isDisabled={playgroundDisabled}
-						isReadOnly={playgroundReadOnly}
-						isInvalid={playgroundInvalid}
-						isRequired={playgroundRequired}
+						disabled={playgroundDisabled}
+						readonly={playgroundReadOnly}
+						invalid={playgroundInvalid}
+						required={playgroundRequired}
 						autoResize={playgroundAutoResize}
 						{minRows}
 						{maxRows}
@@ -101,10 +101,10 @@
 					class="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900"
 				>
 					<DemoCheckbox label="autoResize" bind:checked={playgroundAutoResize} />
-					<DemoCheckbox label="isDisabled" bind:checked={playgroundDisabled} />
-					<DemoCheckbox label="isReadOnly" bind:checked={playgroundReadOnly} />
-					<DemoCheckbox label="isInvalid" bind:checked={playgroundInvalid} />
-					<DemoCheckbox label="isRequired" bind:checked={playgroundRequired} />
+					<DemoCheckbox label="disabled" bind:checked={playgroundDisabled} />
+					<DemoCheckbox label="readonly" bind:checked={playgroundReadOnly} />
+					<DemoCheckbox label="invalid" bind:checked={playgroundInvalid} />
+					<DemoCheckbox label="required" bind:checked={playgroundRequired} />
 					<p class="text-xs text-gray-500 dark:text-gray-400">
 						Tip: tab into the field to inspect <code>data-focus-visible</code>, then type multiple
 						lines to see auto-resize update the element height.
@@ -179,7 +179,7 @@
 				<TextArea
 					aria-label="Invalid textarea"
 					value="Too short"
-					isInvalid
+					invalid
 					class={demoTextAreaClass}
 				/>
 			</div>
@@ -190,7 +190,7 @@
 				<TextArea
 					aria-label="Read only textarea"
 					value="Readonly content"
-					isReadOnly
+					readonly
 					class={demoTextAreaClass}
 				/>
 			</div>
@@ -201,7 +201,7 @@
 				<TextArea
 					aria-label="Disabled textarea"
 					value="Disabled content"
-					isDisabled
+					disabled
 					class={demoTextAreaClass}
 				/>
 			</div>

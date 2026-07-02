@@ -13,11 +13,11 @@ Description: Interactive boolean switch root that owns checked, focus, and hidde
 | `name`            | `string`                          | `undefined`   | Form field name forwarded to the hidden native input.      |
 | `value`           | `string`                          | `'on'`        | Submitted value when the switch is checked.                |
 | `form`            | `string`                          | `undefined`   | Form owner id forwarded to the hidden native input.        |
-| `isChecked`       | `boolean`                         | `undefined`   | Controlled checked state. Supports `bind:isChecked`.       |
+| `checked`         | `boolean`                         | `undefined`   | Controlled checked state. Supports `bind:checked`.         |
 | `defaultChecked`  | `boolean`                         | `false`       | Initial checked state in uncontrolled mode.                |
 | `onCheckedChange` | `(checked: boolean) => void`      | `undefined`   | Called when the effective checked state changes.           |
-| `isDisabled`      | `boolean`                         | `false`       | Prevents focus and state changes.                          |
-| `isReadOnly`      | `boolean`                         | `false`       | Allows focus but blocks user-driven state changes.         |
+| `disabled`        | `boolean`                         | `false`       | Prevents focus and state changes.                          |
+| `readonly`        | `boolean`                         | `false`       | Allows focus but blocks user-driven state changes.         |
 | `required`        | `boolean`                         | `false`       | Marks the hidden input as required and exposes data state. |
 | `children`        | `Snippet`                         | `undefined`   | Composed switch parts such as `Switch.Thumb`.              |
 | `class`           | `string`                          | `''`          | CSS class names for the root element.                      |
@@ -35,7 +35,7 @@ Description: Internal APIs for publishing and consuming switch state.
 | `useSwitchContext` | `() => SwitchContext`              | `-`     | Returns the context and throws outside root use. |
 
 ```svelte
-<Switch.Root bind:isChecked aria-label="Notifications">
+<Switch.Root bind:checked aria-label="Notifications">
 	<Switch.Thumb />
 </Switch.Root>
 ```

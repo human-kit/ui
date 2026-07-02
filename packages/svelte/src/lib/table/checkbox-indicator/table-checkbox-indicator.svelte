@@ -4,7 +4,7 @@
 	import type { TableCheckboxIndicatorProps } from '../types.js';
 
 	let {
-		keepMounted = false,
+		forceMount = false,
 		children,
 		class: className = '',
 		...restProps
@@ -15,7 +15,7 @@
 </script>
 
 {#if tableCheckbox}
-	{#if keepMounted || visible}
+	{#if forceMount || visible}
 		<span
 			{...restProps}
 			data-checkbox-indicator="true"
@@ -26,15 +26,15 @@
 			data-disabled={tableCheckbox.isDisabled || undefined}
 			data-focused={tableCheckbox.focused || undefined}
 			data-focus-visible={tableCheckbox.focusVisible || undefined}
-			hidden={keepMounted && !visible}
-			aria-hidden={keepMounted && !visible ? 'true' : undefined}
+			hidden={forceMount && !visible}
+			aria-hidden={forceMount && !visible ? 'true' : undefined}
 			class={className}
 		>
 			{@render children?.()}
 		</span>
 	{/if}
 {:else}
-	<Checkbox.Indicator {keepMounted} class={className} {...restProps}>
+	<Checkbox.Indicator {forceMount} class={className} {...restProps}>
 		{@render children?.()}
 	</Checkbox.Indicator>
 {/if}

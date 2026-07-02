@@ -5,12 +5,12 @@
 
 	type Props = {
 		id?: string;
-		isDisabled?: boolean;
-		isPending?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		pending?: boolean;
+		readonly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
 		filter?: ComboBoxFilter | null;
-		disabledIds?: string[];
+		disabledKeys?: string[];
 		initialValue?: string | number | null;
 		defaultValue?: string | number | null | (string | number)[];
 		onValueChange?: (value: string | number | null | (string | number)[]) => void;
@@ -18,12 +18,12 @@
 
 	let {
 		id,
-		isDisabled = false,
-		isPending = false,
-		isReadOnly = false,
+		disabled = false,
+		pending = false,
+		readonly = false,
 		trigger = 'press',
 		filter,
-		disabledIds = [],
+		disabledKeys = [],
 		initialValue,
 		defaultValue,
 		onValueChange
@@ -47,9 +47,9 @@
 
 <ComboBox.Root
 	{id}
-	{isDisabled}
-	{isPending}
-	{isReadOnly}
+	{disabled}
+	{pending}
+	{readonly}
 	{trigger}
 	{filter}
 	items={countries}
@@ -66,7 +66,7 @@
 				<ComboBox.Item
 					id={country.id}
 					textValue={country.name}
-					disabled={disabledIds.includes(country.id)}
+					disabled={disabledKeys.includes(country.id)}
 				>
 					{country.name}
 				</ComboBox.Item>

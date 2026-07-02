@@ -150,7 +150,7 @@ describe('DatePicker.Root', () => {
 	});
 
 	it('does not open calendar or allow value changes in readOnly mode', async () => {
-		render(DatePickerTest, { isReadOnly: true });
+		render(DatePickerTest, { readonly: true });
 		expect(document.querySelector('button[aria-haspopup="dialog"]')).toBeNull();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 
@@ -160,7 +160,7 @@ describe('DatePicker.Root', () => {
 	});
 
 	it('does not open calendar or edit segments when disabled', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+		const screen = render(DatePickerTest, { disabled: true });
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 		const daySegment = getSegment('day');
 

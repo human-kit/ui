@@ -12,7 +12,7 @@ Description: Listbox bridge for combobox options. It delegates selection state a
 | `aria-label`      | `string`                                            | `'Options'` | Accessible label for the internal listbox.                                      |
 | `items`           | `Iterable<T>`                                       | `ctx.items` | Dynamic data source. If omitted, uses items from root context.                  |
 | `children`        | `Snippet<[T]> \| Snippet`                           | `undefined` | Dynamic item renderer or static list content.                                   |
-| `...listBoxProps` | `Omit<ComponentProps<ListBoxRoot>, internal props>` | `-`         | Additional listbox props such as `class`, `emptyPlaceholder`, or `disabledIds`. |
+| `...listBoxProps` | `Omit<ComponentProps<ListBoxRoot>, internal props>` | `-`         | Additional listbox props such as `class`, `emptyPlaceholder`, or `disabledKeys`. |
 
 ### Internally controlled props
 

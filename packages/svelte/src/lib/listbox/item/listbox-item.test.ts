@@ -302,7 +302,7 @@ describe('ListBox.Item', () => {
 		it('supports controlled pressed override and clears it when disabled', async () => {
 			const screen = render(ListBoxTest, {
 				pressedIds: ['banana', 'cherry'],
-				disabledIds: ['cherry']
+				disabledKeys: ['cherry']
 			});
 			const listbox = screen.getByRole('listbox');
 
@@ -336,7 +336,7 @@ describe('ListBox.Item', () => {
 
 	describe('Disabled State', () => {
 		it('has aria-disabled when disabled', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['cherry'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['cherry'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
@@ -344,7 +344,7 @@ describe('ListBox.Item', () => {
 		});
 
 		it('has data-disabled attribute when disabled', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['cherry'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['cherry'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
@@ -352,7 +352,7 @@ describe('ListBox.Item', () => {
 		});
 
 		it('does not get hovered when disabled', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['cherry'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['cherry'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');

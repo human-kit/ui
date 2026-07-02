@@ -10,7 +10,7 @@
 		open: openProp = $bindable(),
 		defaultOpen = false,
 		onOpenChange,
-		isDisabled = false,
+		disabled = false,
 		children,
 		class: className = '',
 		element = $bindable<HTMLDivElement | null>(null),
@@ -27,7 +27,7 @@
 	const isOpen = $derived(isControlled ? Boolean(openProp) : internalOpen);
 
 	function setOpen(next: boolean) {
-		if (isDisabled || next === isOpen) return;
+		if (disabled || next === isOpen) return;
 		if (!isControlled) internalOpen = next;
 		openProp = next;
 		onOpenChange?.(next);
@@ -42,7 +42,7 @@
 			return isOpen;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		triggerId: `${instanceId}-trigger`,
 		panelId: `${instanceId}-panel`,
@@ -64,7 +64,7 @@
 	class={className}
 	data-collapsible-root="true"
 	data-open={isOpen || undefined}
-	data-disabled={isDisabled || undefined}
+	data-disabled={disabled || undefined}
 >
 	{@render children?.()}
 </div>

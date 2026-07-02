@@ -8,12 +8,12 @@
 	import { cn } from '../../utils/cn';
 
 	export type ButtonRenderState = {
-		isHovered: boolean;
-		isPressed: boolean;
-		isFocused: boolean;
-		isFocusVisible: boolean;
-		isDisabled: boolean;
-		isPending: boolean;
+		hovered: boolean;
+		pressed: boolean;
+		focused: boolean;
+		focusVisible: boolean;
+		disabled: boolean;
+		pending: boolean;
 	};
 
 	type ButtonRootProps = Omit<
@@ -22,8 +22,8 @@
 	> & {
 		children?: Snippet<[ButtonRenderState]> | Snippet;
 		class?: string;
-		isPending?: boolean;
-		isDisabled?: boolean;
+		pending?: boolean | null;
+		disabled?: boolean | null;
 		element?: HTMLButtonElement | null;
 		pressed?: boolean;
 	};
@@ -62,8 +62,8 @@
 		type = 'button',
 		children,
 		class: className = '',
-		isPending = false,
-		isDisabled = false,
+		pending: pendingProp = false,
+		disabled: disabledProp = false,
 		element = $bindable<HTMLButtonElement | null>(null),
 		pressed: pressedOverride,
 		onclick: onClickExternal,
@@ -87,6 +87,9 @@
 
 	const resolvedId = untrack(() => id) ?? generatedId;
 
+	const disabled = $derived(Boolean(disabledProp));
+	const pending = $derived(Boolean(pendingProp));
+
 	let buttonRef: HTMLButtonElement | null = $state(null);
 	let hovered = $state(false);
 	let pressed = $state(false);
@@ -95,20 +98,20 @@
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
 	let expandedPressed = $state(false);
 
-	const renderedType = $derived(type === 'submit' && isPending ? 'button' : type);
+	const renderedType = $derived(type === 'submit' && pending ? 'button' : type);
 	const renderedPressed = $derived(
-		(Boolean(pressedOverride) || pressed || expandedPressed) && !isPending
+		(Boolean(pressedOverride) || pressed || expandedPressed) && !pending
 	);
 	const renderState = $derived.by<ButtonRenderState>(() => ({
-		isHovered: hovered,
-		isPressed: renderedPressed,
-		isFocused: focused,
-		isFocusVisible: focusVisible,
-		isDisabled,
-		isPending
+		hovered,
+		pressed: renderedPressed,
+		focused,
+		focusVisible,
+		disabled,
+		pending
 	}));
 	const pendingAnnouncement = $derived.by(() =>
-		isPending ? `${resolveButtonLabel() || 'Button'}, pending` : ''
+		pending ? `${resolveButtonLabel() || 'Button'}, pending` : ''
 	);
 
 	function resolveReferencedLabel(ids: string | null | undefined): string {
@@ -179,9 +182,9 @@
 	});
 
 	$effect(() => {
-		if (!isPending && !isDisabled) return;
+		if (!pending && !disabled) return;
 		clearInteractionState();
-		if (isDisabled) {
+		if (disabled) {
 			focusVisible = false;
 		}
 	});
@@ -190,7 +193,7 @@
 		trackInteractionModality(event, buttonRef);
 		focusVisible = false;
 
-		if (isDisabled || isPending) {
+		if (disabled || pending) {
 			event.preventDefault();
 			clearInteractionState();
 			return;
@@ -213,7 +216,7 @@
 	}
 
 	function handlePointerEnter(event: PointerEvent) {
-		if (isDisabled || isPending) return;
+		if (disabled || pending) return;
 
 		if ((event.buttons & 1) === 1 && pressedKey === null) {
 			pressed = true;
@@ -230,7 +233,7 @@
 		trackInteractionModality(event, buttonRef);
 		focusVisible = false;
 
-		if (isDisabled || isPending) {
+		if (disabled || pending) {
 			event.preventDefault();
 			clearInteractionState();
 			return;
@@ -249,7 +252,7 @@
 	}
 
 	function handleMouseEnter() {
-		if (isDisabled || isPending) {
+		if (disabled || pending) {
 			hovered = false;
 			return;
 		}
@@ -285,7 +288,7 @@
 		trackInteractionModality(event, buttonRef);
 		focusVisible = focused ? true : shouldShowFocusVisible(buttonRef);
 
-		if (isDisabled || isPending) {
+		if (disabled || pending) {
 			event.preventDefault();
 			clearInteractionState();
 			return;
@@ -310,7 +313,7 @@
 		trackInteractionModality(event, buttonRef);
 		focusVisible = focused ? true : shouldShowFocusVisible(buttonRef);
 
-		if (isDisabled || isPending) {
+		if (disabled || pending) {
 			event.preventDefault();
 			clearInteractionState();
 			return;
@@ -327,7 +330,7 @@
 			trackInteractionModality(event, buttonRef);
 		}
 
-		if (isPending) {
+		if (pending) {
 			event.preventDefault();
 			clearInteractionState();
 		}
@@ -339,13 +342,13 @@
 	bind:this={buttonRef}
 	id={resolvedId}
 	type={renderedType}
-	disabled={isDisabled}
+	{disabled}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
-	aria-disabled={isPending ? 'true' : undefined}
+	aria-disabled={pending ? 'true' : undefined}
 	data-button-root="true"
-	data-disabled={isDisabled || undefined}
-	data-pending={isPending || undefined}
+	data-disabled={disabled || undefined}
+	data-pending={pending || undefined}
 	data-hovered={hovered || undefined}
 	data-pressed={renderedPressed || undefined}
 	data-focused={focused || undefined}

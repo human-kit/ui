@@ -14,7 +14,7 @@ primitives as `Popover`.
   first item; `ArrowUp` opens and focuses the last item.
 - Use `Menu.Content` inside `Menu.Root`. It renders the `role="menu"` panel in a portal and
   positions it against the trigger (default placement `bottom-start`).
-- Use `Menu.Item` for actions. Provide `onSelect`, and optionally `disabled`, `closeOnSelect`, or
+- Use `Menu.Item` for actions. Provide `onAction`, and optionally `disabled`, `closeOnSelect`, or
   `textValue` (for typeahead).
 - Group related items with `Menu.Group` + `Menu.GroupLabel`, and divide sections with
   `Menu.Separator`.
@@ -51,23 +51,23 @@ Import the component and compose its parts:
 <Menu.Root>
 	<Menu.Trigger>Options</Menu.Trigger>
 	<Menu.Content>
-		<Menu.Item onSelect={edit}>Edit</Menu.Item>
+		<Menu.Item onAction={edit}>Edit</Menu.Item>
 		<Menu.Item disabled>Duplicate</Menu.Item>
 		<Menu.Separator />
 
 		<Menu.Group>
 			<Menu.GroupLabel>Share</Menu.GroupLabel>
-			<Menu.Item onSelect={copyLink}>Copy link</Menu.Item>
+			<Menu.Item onAction={copyLink}>Copy link</Menu.Item>
 		</Menu.Group>
 
 		<Menu.SubmenuRoot>
 			<Menu.SubmenuTrigger>More actions</Menu.SubmenuTrigger>
 			<Menu.Content>
-				<Menu.Item onSelect={archive}>Archive</Menu.Item>
+				<Menu.Item onAction={archive}>Archive</Menu.Item>
 			</Menu.Content>
 		</Menu.SubmenuRoot>
 
-		<Menu.Item onSelect={remove}>Delete</Menu.Item>
+		<Menu.Item onAction={remove}>Delete</Menu.Item>
 	</Menu.Content>
 </Menu.Root>
 ```

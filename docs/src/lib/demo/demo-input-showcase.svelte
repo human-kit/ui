@@ -103,10 +103,10 @@
 						type={playgroundType}
 						value={playgroundValue}
 						placeholder={playgroundPlaceholder}
-						isDisabled={playgroundDisabled}
-						isReadOnly={playgroundReadOnly}
-						isInvalid={playgroundInvalid}
-						isRequired={playgroundRequired}
+						disabled={playgroundDisabled}
+						readonly={playgroundReadOnly}
+						invalid={playgroundInvalid}
+						required={playgroundRequired}
 						aria-label="Playground input"
 						oninput={handlePlaygroundInput}
 						onfocus={handlePlaygroundFocus}
@@ -118,9 +118,9 @@
 
 					<div class="grid gap-2 rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/80">
 						<DemoState label="value" value={playgroundValue} />
-						<DemoState label="isHovered" value={playgroundHovered} />
-						<DemoState label="isFocused" value={playgroundFocused} />
-						<DemoState label="isFocusVisible" value={playgroundFocusVisible} />
+						<DemoState label="hovered" value={playgroundHovered} />
+						<DemoState label="focused" value={playgroundFocused} />
+						<DemoState label="focusVisible" value={playgroundFocusVisible} />
 						<DemoState label="data-disabled" value={dataDisabled} />
 						<DemoState label="data-readonly" value={dataReadOnly} />
 						<DemoState label="data-invalid" value={dataInvalid} />
@@ -141,10 +141,10 @@
 				<div
 					class="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900"
 				>
-					<DemoCheckbox label="isDisabled" bind:checked={playgroundDisabled} />
-					<DemoCheckbox label="isReadOnly" bind:checked={playgroundReadOnly} />
-					<DemoCheckbox label="isInvalid" bind:checked={playgroundInvalid} />
-					<DemoCheckbox label="isRequired" bind:checked={playgroundRequired} />
+					<DemoCheckbox label="disabled" bind:checked={playgroundDisabled} />
+					<DemoCheckbox label="readonly" bind:checked={playgroundReadOnly} />
+					<DemoCheckbox label="invalid" bind:checked={playgroundInvalid} />
+					<DemoCheckbox label="required" bind:checked={playgroundRequired} />
 					<p class="text-xs text-gray-500 dark:text-gray-400">
 						Tip: tab into the field to inspect <code>data-focus-visible</code>, then click it to see
 						pointer takeover clear that attribute while focus remains.
@@ -171,8 +171,8 @@
 						type="email"
 						value={emailValue}
 						placeholder="name@example.com"
-						isRequired
-						isInvalid={!emailValue.includes('@')}
+						required
+						invalid={!emailValue.includes('@')}
 						aria-label="Email address"
 						oninput={handleEmailInput}
 						class={demoInputClass}
@@ -211,7 +211,7 @@
 				<div class="mt-4 space-y-2">
 					<Input
 						value={readonlyValue}
-						isReadOnly
+						readonly
 						aria-label="Invoice reference"
 						oninput={handleReadonlyInput}
 						class={`${demoInputClass} font-mono`}
@@ -237,7 +237,7 @@
 				class="space-y-2 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
 			>
 				<p class="text-sm font-semibold text-gray-900 dark:text-white">Invalid</p>
-				<Input aria-label="Invalid input" value="bad@" isInvalid class={demoInputClass} />
+				<Input aria-label="Invalid input" value="bad@" invalid class={demoInputClass} />
 			</div>
 			<div
 				class="space-y-2 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
@@ -246,7 +246,7 @@
 				<Input
 					aria-label="Read only input"
 					value="Readonly content"
-					isReadOnly
+					readonly
 					class={demoInputClass}
 				/>
 			</div>
@@ -257,7 +257,7 @@
 				<Input
 					aria-label="Disabled input"
 					value="Disabled content"
-					isDisabled
+					disabled
 					class={demoInputClass}
 				/>
 			</div>

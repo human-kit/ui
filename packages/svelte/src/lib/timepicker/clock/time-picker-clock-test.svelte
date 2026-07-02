@@ -5,7 +5,7 @@
 		defaultValue?: string;
 		hourCycle?: 12 | 24;
 		granularity?: 'hour' | 'minute' | 'second';
-		isDisabled?: boolean;
+		disabled?: boolean;
 		clockClass?: string;
 		useSnippet?: boolean;
 	};
@@ -14,7 +14,7 @@
 		defaultValue = '14:30',
 		hourCycle,
 		granularity = 'minute',
-		isDisabled = false,
+		disabled = false,
 		clockClass = '',
 		useSnippet = false
 	}: Props = $props();
@@ -22,7 +22,7 @@
 	let value = $state<string | null>((() => defaultValue)());
 </script>
 
-<TimePicker.Root bind:value defaultOpen {hourCycle} {granularity} {isDisabled}>
+<TimePicker.Root bind:value defaultOpen {hourCycle} {granularity} {disabled}>
 	<TimePicker.Input aria-label="Time input">
 		{#snippet children(segment)}
 			<TimePicker.Segment {segment} />

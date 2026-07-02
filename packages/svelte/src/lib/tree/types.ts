@@ -25,7 +25,7 @@ export type TreeItemTransition = (
 ) => TransitionConfig;
 
 export type TreeEmptyStateRenderProps = {
-	isEmpty: boolean;
+	empty: boolean;
 };
 
 export type TreeRootProps<T extends object = object> = Omit<
@@ -63,7 +63,7 @@ export type TreeItemProps<T = unknown> = Omit<
 	value?: T;
 	title?: string;
 	textValue?: string;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	children?: Snippet;
 	class?: string;
 };
@@ -113,7 +113,7 @@ export type TreeCheckboxIndicatorProps = Omit<
 	HTMLAttributes<HTMLSpanElement>,
 	'children' | 'class'
 > & {
-	keepMounted?: boolean;
+	forceMount?: boolean;
 	children?: Snippet;
 	class?: string;
 };

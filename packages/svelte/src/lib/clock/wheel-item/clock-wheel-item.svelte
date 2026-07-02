@@ -15,7 +15,7 @@
 		type: ClockEditableSegmentType;
 		option: TimePickerWheelOption;
 		selected?: boolean;
-		onrequestcenter?: () => void;
+		onRequestCenter?: () => void;
 		class?: string;
 	};
 
@@ -23,13 +23,13 @@
 		type,
 		option,
 		selected = false,
-		onrequestcenter,
+		onRequestCenter,
 		class: className = '',
 		...restProps
 	}: TimePickerWheelItemProps = $props();
 
 	function handleClick() {
-		onrequestcenter?.();
+		onRequestCenter?.();
 	}
 </script>
 

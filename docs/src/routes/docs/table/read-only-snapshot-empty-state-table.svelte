@@ -19,7 +19,7 @@
 			>
 				<Table.Header>
 					<Table.Row class="border-b border-gray-200 dark:border-gray-700">
-						<Table.Column id="metric" isRowHeader textValue="Metric"
+						<Table.Column id="metric" rowHeader textValue="Metric"
 							><Table.ColumnHeaderCell
 								class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 outline-none dark:text-gray-300"
 								>Metric</Table.ColumnHeaderCell
@@ -80,7 +80,7 @@
 			>
 				<Table.Header>
 					<Table.Row class="border-b border-gray-200 dark:border-gray-700">
-						<Table.Column id="requester" isRowHeader textValue="Requester"
+						<Table.Column id="requester" rowHeader textValue="Requester"
 							><Table.ColumnHeaderCell
 								class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 outline-none dark:text-gray-300"
 								>Requester</Table.ColumnHeaderCell

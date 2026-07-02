@@ -56,9 +56,9 @@
 - `hourStep?: number`
 - `minuteStep?: number`
 - `secondStep?: number`
-- `isDisabled?: boolean`
-- `isReadOnly?: boolean`
-- `isRequired?: boolean`
+- `disabled?: boolean`
+- `readonly?: boolean`
+- `required?: boolean`
 - `open?: boolean`
 - `defaultOpen?: boolean`
 - `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`

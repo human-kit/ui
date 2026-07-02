@@ -2,7 +2,7 @@
 	import Dropzone from './index';
 
 	type Props = {
-		isDisabled?: boolean;
+		disabled?: boolean;
 		accept?: string;
 		multiple?: boolean;
 		announcement?: string;
@@ -10,7 +10,7 @@
 	};
 
 	let {
-		isDisabled = false,
+		disabled = false,
 		accept,
 		multiple = false,
 		announcement = '',
@@ -23,15 +23,15 @@
 
 	<Dropzone
 		aria-label="Attachments"
-		{isDisabled}
+		{disabled}
 		{accept}
 		{multiple}
 		{announcement}
 		{onFilesPicked}
 	>
-		{#snippet children({ isDragging, isFocusVisible })}
-			<span data-state-dragging={isDragging}>{isDragging ? 'dragging' : 'idle'}</span>
-			<span data-state-focus-visible={isFocusVisible}></span>
+		{#snippet children({ dragging, focusVisible })}
+			<span data-state-dragging={dragging}>{dragging ? 'dragging' : 'idle'}</span>
+			<span data-state-focus-visible={focusVisible}></span>
 		{/snippet}
 	</Dropzone>
 

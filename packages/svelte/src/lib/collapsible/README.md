@@ -20,7 +20,7 @@
 ## Usage Guidelines
 
 - Use `open` / `onOpenChange` for controlled state and `defaultOpen` for uncontrolled state.
-- Use `isDisabled` to prevent the trigger from toggling the panel.
+- Use `disabled` to prevent the trigger from toggling the panel.
 - Use `forceMount` on `Collapsible.Panel` when collapsed content must stay in the DOM.
 - For grouped disclosures where only one section opens at a time, use `Accordion` instead.
 

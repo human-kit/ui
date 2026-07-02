@@ -21,6 +21,7 @@ export type PopoverOverlayProps = ComponentProps<typeof PopoverOverlayComponent>
 export {
 	getPopoverContext,
 	setPopoverContext,
+	usePopoverContext,
 	type PopoverContext,
 	type PopoverCanonicalCloseReason,
 	type PopoverCloseReason,

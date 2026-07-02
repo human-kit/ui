@@ -148,7 +148,7 @@ describe('DatePicker.Input', () => {
 	});
 
 	it('does not move focus into segments when disabled', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+		const screen = render(DatePickerTest, { disabled: true });
 		const inputGroup = screen.getByRole('group', { name: 'Date input' });
 
 		await inputGroup.click();
@@ -159,7 +159,7 @@ describe('DatePicker.Input', () => {
 	});
 
 	it('clears native focus if a disabled input receives focus programmatically', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+		const screen = render(DatePickerTest, { disabled: true });
 		const inputGroup = screen.getByRole('group', { name: 'Date input' });
 
 		inputGroup.element()?.focus();

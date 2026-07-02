@@ -20,7 +20,7 @@
 		class: className = '',
 		children,
 		placement = 'bottom-start',
-		isNonModal = true,
+		nonModal = true,
 		shouldCloseOnEscape = true,
 		shouldCloseOnBlur = true,
 		...contentProps
@@ -196,7 +196,7 @@
 
 <Popover.Root open={ctx.isOpen} triggerRef={ctx.triggerRef} onOpenChange={handleOpenChange}>
 	<Popover.Content
-		{isNonModal}
+		{nonModal}
 		{placement}
 		{shouldCloseOnEscape}
 		{shouldCloseOnBlur}

@@ -33,7 +33,7 @@ describe('Collapsible', () => {
 	});
 
 	it('does not toggle when disabled', async () => {
-		const screen = render(CollapsibleTest, { isDisabled: true });
+		const screen = render(CollapsibleTest, { disabled: true });
 		const trigger = screen.getByRole('button', { name: 'Details' });
 
 		await expect.element(trigger).toBeDisabled();

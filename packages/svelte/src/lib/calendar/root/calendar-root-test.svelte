@@ -12,8 +12,8 @@
 		selectionMode?: CalendarSelectionMode;
 		visibleMonths?: number;
 		showOutsideDays?: boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		defaultValue?: CalendarValue;
 		isDateUnavailable?: (date: string) => boolean;
 		locale?: string;
@@ -26,8 +26,8 @@
 		selectionMode = 'single',
 		visibleMonths = 1,
 		showOutsideDays = false,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		defaultValue,
 		isDateUnavailable,
 		locale,
@@ -52,8 +52,8 @@
 			{showOutsideDays}
 			{firstDayOfWeek}
 			{monthHeadingStyle}
-			{isDisabled}
-			{isReadOnly}
+			{disabled}
+			{readonly}
 			defaultValue={rangeDefaultValue}
 			{isDateUnavailable}
 			aria-label="Test calendar"
@@ -73,8 +73,8 @@
 			{showOutsideDays}
 			{firstDayOfWeek}
 			{monthHeadingStyle}
-			{isDisabled}
-			{isReadOnly}
+			{disabled}
+			{readonly}
 			defaultValue={singleDefaultValue}
 			{isDateUnavailable}
 			aria-label="Test calendar"

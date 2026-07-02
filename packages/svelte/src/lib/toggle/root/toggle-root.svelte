@@ -11,11 +11,11 @@
 
 	export type ToggleRenderState = {
 		selected: boolean;
-		isPressed: boolean;
-		isHovered: boolean;
-		isFocused: boolean;
-		isFocusVisible: boolean;
-		isDisabled: boolean;
+		pressed: boolean;
+		hovered: boolean;
+		focused: boolean;
+		focusVisible: boolean;
+		disabled: boolean;
 	};
 
 	type ToggleRootProps = Omit<
@@ -26,7 +26,7 @@
 		defaultSelected?: boolean;
 		selected?: boolean;
 		onChange?: (selected: boolean) => void;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		children?: Snippet<[ToggleRenderState]> | Snippet;
 		class?: string;
 		element?: HTMLButtonElement | null;
@@ -51,7 +51,7 @@
 		defaultSelected = false,
 		selected = $bindable(),
 		onChange,
-		isDisabled = false,
+		disabled = false,
 		children,
 		class: className = '',
 		element = $bindable<HTMLButtonElement | null>(null),
@@ -99,7 +99,7 @@
 		}
 
 		if (toggleGroup && registeredValue !== undefined) {
-			toggleGroup.registerToggle(registeredValue, { isDisabled, owner: registrationOwner });
+			toggleGroup.registerToggle(registeredValue, { isDisabled: disabled, owner: registrationOwner });
 		}
 	});
 
@@ -112,7 +112,7 @@
 	const renderedDisabled = $derived.by(() => {
 		void $toggleGroupStateVersion;
 		if (toggleGroup && value !== undefined) return toggleGroup.isToggleDisabled(value);
-		return isDisabled;
+		return disabled;
 	});
 	const renderedFocused = $derived.by(() => {
 		void $toggleGroupStateVersion;
@@ -132,11 +132,11 @@
 
 	const renderState = $derived.by<ToggleRenderState>(() => ({
 		selected: renderedSelected,
-		isPressed: pressed,
-		isHovered: hovered,
-		isFocused: renderedFocused,
-		isFocusVisible: renderedFocusVisible,
-		isDisabled: renderedDisabled
+		pressed,
+		hovered,
+		focused: renderedFocused,
+		focusVisible: renderedFocusVisible,
+		disabled: renderedDisabled
 	}));
 
 	$effect(() => {
@@ -184,7 +184,7 @@
 
 		registeredValue = nextRegisteredValue;
 		toggleGroup.registerToggle(nextRegisteredValue, {
-			isDisabled,
+			isDisabled: disabled,
 			element: buttonRef,
 			owner: registrationOwner
 		});

@@ -82,12 +82,12 @@
 	let playgroundFocused = $state(false);
 	let playgroundFocusVisible = $state(false);
 	const playgroundLastState = $derived.by<ButtonRenderState>(() => ({
-		isHovered: playgroundHovered,
-		isPressed: playgroundPressed,
-		isFocused: playgroundFocused,
-		isFocusVisible: playgroundFocusVisible,
-		isDisabled: playgroundDisabled,
-		isPending: playgroundPending
+		hovered: playgroundHovered,
+		pressed: playgroundPressed,
+		focused: playgroundFocused,
+		focusVisible: playgroundFocusVisible,
+		disabled: playgroundDisabled,
+		pending: playgroundPending
 	}));
 
 	let autosavePending = $state(false);
@@ -279,8 +279,8 @@
 					</p>
 					<Button.Root
 						type={playgroundType}
-						isDisabled={playgroundDisabled}
-						isPending={playgroundPending}
+						disabled={playgroundDisabled}
+						pending={playgroundPending}
 						onclick={handlePlaygroundClick}
 						onfocus={handlePlaygroundFocus}
 						onblur={handlePlaygroundBlur}
@@ -294,22 +294,22 @@
 						aria-label={playgroundLabel}
 					>
 						{#snippet children(state)}
-							{#if state.isPending}
+							{#if state.pending}
 								<LoaderCircleIcon class="h-4 w-4 animate-spin" />
 							{/if}
-							<span class:opacity-75={state.isPending}>{playgroundLabel}</span>
+							<span class:opacity-75={state.pending}>{playgroundLabel}</span>
 						{/snippet}
 					</Button.Root>
 
 					<div class="grid gap-2 rounded-2xl bg-gray-50 p-4 dark:bg-gray-800/80">
 						<DemoState label="clickCount" value={playgroundClicks} />
 						<DemoState label="type" value={playgroundType} />
-						<DemoState label="isHovered" value={playgroundLastState.isHovered} />
-						<DemoState label="isPressed" value={playgroundLastState.isPressed} />
-						<DemoState label="isFocused" value={playgroundLastState.isFocused} />
-						<DemoState label="isFocusVisible" value={playgroundLastState.isFocusVisible} />
-						<DemoState label="isPending" value={playgroundLastState.isPending} />
-						<DemoState label="isDisabled" value={playgroundLastState.isDisabled} />
+						<DemoState label="hovered" value={playgroundLastState.hovered} />
+						<DemoState label="pressed" value={playgroundLastState.pressed} />
+						<DemoState label="focused" value={playgroundLastState.focused} />
+						<DemoState label="focusVisible" value={playgroundLastState.focusVisible} />
+						<DemoState label="pending" value={playgroundLastState.pending} />
+						<DemoState label="disabled" value={playgroundLastState.disabled} />
 					</div>
 				</div>
 			</div>
@@ -327,8 +327,8 @@
 				<div
 					class="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900"
 				>
-					<DemoCheckbox label="isDisabled" bind:checked={playgroundDisabled} />
-					<DemoCheckbox label="isPending" bind:checked={playgroundPending} />
+					<DemoCheckbox label="disabled" bind:checked={playgroundDisabled} />
+					<DemoCheckbox label="pending" bind:checked={playgroundPending} />
 					<DemoCheckbox label="block width" bind:checked={playgroundBlock} />
 					<div class="grid grid-cols-2 gap-2 pt-2">
 						<button
@@ -347,7 +347,7 @@
 						</button>
 					</div>
 					<p class="text-xs text-gray-500 dark:text-gray-400">
-						Tip: focus the button with Tab, then hold Space or Enter to see `isPressed` and
+						Tip: focus the button with Tab, then hold Space or Enter to see `pressed` and
 						`data-focus-visible` update together.
 					</p>
 				</div>
@@ -384,10 +384,10 @@
 							Focusable, announced to assistive tech, but activation is suppressed.
 						</p>
 					</div>
-					<Button.Root isPending class={buttonClasses('primary')} aria-label="Save changes">
+					<Button.Root pending class={buttonClasses('primary')} aria-label="Save changes">
 						{#snippet children(state)}
 							<LoaderCircleIcon class="h-4 w-4 animate-spin" />
-							<span class:opacity-75={state.isPending}>Save changes</span>
+							<span class:opacity-75={state.pending}>Save changes</span>
 						{/snippet}
 					</Button.Root>
 				</div>
@@ -403,7 +403,7 @@
 							Native disablement when the action must be fully unavailable.
 						</p>
 					</div>
-					<Button.Root isDisabled class={buttonClasses('secondary')}>Unavailable slot</Button.Root>
+					<Button.Root disabled class={buttonClasses('secondary')}>Unavailable slot</Button.Root>
 				</div>
 			</div>
 		</div>
@@ -423,18 +423,18 @@
 				</p>
 				<div class="mt-4 flex items-center gap-3">
 					<Button.Root
-						isPending={autosavePending}
+						pending={autosavePending}
 						onclick={() => runAsyncDemo('autosave')}
 						class={buttonClasses('quiet')}
 						aria-label="Autosave draft"
 					>
 						{#snippet children(state)}
-							{#if state.isPending}
+							{#if state.pending}
 								<LoaderCircleIcon class="h-4 w-4 animate-spin" />
 							{:else}
 								<CheckIcon class="h-4 w-4" />
 							{/if}
-							<span>{state.isPending ? 'Saving...' : 'Save draft'}</span>
+							<span>{state.pending ? 'Saving...' : 'Save draft'}</span>
 						{/snippet}
 					</Button.Root>
 					<DemoState label="runs" value={autosaveCount} />
@@ -450,18 +450,18 @@
 				</p>
 				<div class="mt-4 flex items-center gap-3">
 					<Button.Root
-						isPending={syncPending}
+						pending={syncPending}
 						onclick={() => runAsyncDemo('sync')}
 						class={buttonClasses('success')}
 						aria-label="Sync billing"
 					>
 						{#snippet children(state)}
-							{#if state.isPending}
+							{#if state.pending}
 								<LoaderCircleIcon class="h-4 w-4 animate-spin" />
 							{:else}
 								<RotateCcwIcon class="h-4 w-4" />
 							{/if}
-							<span>{state.isPending ? 'Syncing...' : 'Sync now'}</span>
+							<span>{state.pending ? 'Syncing...' : 'Sync now'}</span>
 						{/snippet}
 					</Button.Root>
 					<DemoState label="runs" value={syncCount} />
@@ -477,18 +477,18 @@
 				</p>
 				<div class="mt-4 flex items-center gap-3">
 					<Button.Root
-						isPending={exportPending}
+						pending={exportPending}
 						onclick={() => runAsyncDemo('export')}
 						class={buttonClasses('primary')}
 						aria-label="Export report"
 					>
 						{#snippet children(state)}
-							{#if state.isPending}
+							{#if state.pending}
 								<LoaderCircleIcon class="h-4 w-4 animate-spin" />
 							{:else}
 								<DownloadIcon class="h-4 w-4" />
 							{/if}
-							<span>{state.isPending ? 'Generating...' : 'Export CSV'}</span>
+							<span>{state.pending ? 'Generating...' : 'Export CSV'}</span>
 						{/snippet}
 					</Button.Root>
 					<DemoState label="runs" value={exportCount} />
@@ -529,17 +529,17 @@
 				<div class="flex flex-wrap gap-3">
 					<Button.Root
 						type="submit"
-						isPending={formPending}
+						pending={formPending}
 						class={buttonClasses('primary')}
 						aria-label="Save workspace settings"
 					>
 						{#snippet children(state)}
-							{#if state.isPending}
+							{#if state.pending}
 								<LoaderCircleIcon class="h-4 w-4 animate-spin" />
 							{:else}
 								<CheckIcon class="h-4 w-4" />
 							{/if}
-							<span>{state.isPending ? 'Saving settings...' : 'Save settings'}</span>
+							<span>{state.pending ? 'Saving settings...' : 'Save settings'}</span>
 						{/snippet}
 					</Button.Root>
 
@@ -558,7 +558,7 @@
 			>
 				<DemoState label="saveCount" value={formSaves} />
 				<DemoState label="resetCount" value={formResets} />
-				<DemoState label="isPending" value={formPending} />
+				<DemoState label="pending" value={formPending} />
 				<p class="text-xs text-gray-500 dark:text-gray-400">
 					While pending, the submit button renders as `type="button"`, so pressing Enter in the form
 					will not resubmit.

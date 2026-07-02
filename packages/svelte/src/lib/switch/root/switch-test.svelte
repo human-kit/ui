@@ -6,10 +6,10 @@
 		name?: string;
 		value?: string;
 		form?: string;
-		isChecked?: boolean;
+		checked?: boolean;
 		defaultChecked?: boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		required?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
 	};
@@ -19,10 +19,10 @@
 		name,
 		value = 'enabled',
 		form,
-		isChecked = $bindable(),
+		checked = $bindable(),
 		defaultChecked = false,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		required = false,
 		onCheckedChange
 	}: Props = $props();
@@ -33,10 +33,10 @@
 	{name}
 	{value}
 	{form}
-	bind:isChecked
+	bind:checked
 	{defaultChecked}
-	{isDisabled}
-	{isReadOnly}
+	{disabled}
+	{readonly}
 	{required}
 	{onCheckedChange}
 	class="inline-flex h-6 w-10 items-center"
@@ -47,4 +47,4 @@
 	</Switch.Thumb>
 </Switch.Root>
 
-<output data-checked-state>{String(isChecked ?? false)}</output>
+<output data-checked-state>{String(checked ?? false)}</output>

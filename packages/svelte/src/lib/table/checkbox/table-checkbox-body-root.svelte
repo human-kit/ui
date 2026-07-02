@@ -18,8 +18,8 @@
 		id?: string;
 		title?: string;
 		element?: HTMLSpanElement | null;
-		isChecked?: boolean;
-		isDisabled?: boolean;
+		checked?: boolean;
+		disabled?: boolean;
 		pressed?: boolean;
 		focused?: boolean;
 		focusVisible?: boolean;
@@ -37,8 +37,8 @@
 		id,
 		title,
 		element = $bindable(),
-		isChecked = false,
-		isDisabled = false,
+		checked = false,
+		disabled = false,
 		pressed = false,
 		focused = false,
 		focusVisible = false,
@@ -61,10 +61,10 @@
 		element = rootRef;
 	});
 
-	const checkboxState = $derived.by<CheckboxState>(() => (isChecked ? 'checked' : 'unchecked'));
+	const checkboxState = $derived.by<CheckboxState>(() => (checked ? 'checked' : 'unchecked'));
 
 	function setState(nextState: CheckboxState, event?: Event) {
-		if (isDisabled) return;
+		if (disabled) return;
 		onToggle?.(nextState === 'checked', event);
 	}
 
@@ -86,13 +86,13 @@
 			return pressed;
 		},
 		get isChecked() {
-			return isChecked;
+			return checked;
 		},
 		get isIndeterminate() {
 			return false;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
 			return false;
@@ -119,16 +119,16 @@
 	id={getRootId()}
 	{title}
 	role="checkbox"
-	tabindex={isDisabled ? undefined : (tabindex ?? 0)}
-	aria-checked={isChecked ? 'true' : 'false'}
-	aria-disabled={isDisabled || undefined}
+	tabindex={disabled ? undefined : (tabindex ?? 0)}
+	aria-checked={checked ? 'true' : 'false'}
+	aria-disabled={disabled || undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	data-checkbox-root="true"
-	data-checked={isChecked || undefined}
-	data-unchecked={!isChecked || undefined}
+	data-checked={checked || undefined}
+	data-unchecked={!checked || undefined}
 	data-pressed={pressed || undefined}
-	data-disabled={isDisabled || undefined}
+	data-disabled={disabled || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
 	class={cn(

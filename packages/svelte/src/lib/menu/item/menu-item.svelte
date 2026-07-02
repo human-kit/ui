@@ -22,7 +22,7 @@
 		/** Stable identifier (used for typeahead/navigation). Auto-generated if omitted. */
 		value?: string | number;
 		/** Handler invoked when the item is activated. */
-		onSelect?: (event?: Event) => void;
+		onAction?: (event?: Event) => void;
 		/** Whether the item is disabled. */
 		disabled?: boolean;
 		/** Override the Root `closeOnSelect` default for this item. */
@@ -41,7 +41,7 @@
 
 	let {
 		value,
-		onSelect,
+		onAction,
 		disabled = false,
 		closeOnSelect,
 		textValue,
@@ -82,7 +82,7 @@
 			textValue,
 			element: itemRef ?? undefined,
 			disabled,
-			onSelect,
+			onSelect: onAction,
 			closeOnSelect
 		});
 		ctx.keyboardNav.updateItems();

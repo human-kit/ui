@@ -34,7 +34,7 @@
 	bind:element
 	id={collapsible.triggerId}
 	type="button"
-	isDisabled={collapsible.isDisabled}
+	disabled={collapsible.isDisabled}
 	aria-expanded={collapsible.isOpen}
 	aria-controls={collapsible.panelId}
 	class={className}

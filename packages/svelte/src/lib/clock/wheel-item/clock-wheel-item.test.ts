@@ -28,13 +28,13 @@ describe('Clock.WheelItem', () => {
 		expect(item?.getAttribute('data-disabled')).toBe('true');
 	});
 
-	it('invokes onrequestcenter when clicked', async () => {
+	it('invokes onRequestCenter when clicked', async () => {
 		let called = false;
 
 		render(ClockWheelItem, {
 			type: 'second',
 			option: { value: '45', label: '45', disabled: false },
-			onrequestcenter: () => {
+			onRequestCenter: () => {
 				called = true;
 			}
 		});

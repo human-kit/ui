@@ -13,7 +13,7 @@ export type ToggleRootProps = Omit<
 	defaultSelected?: boolean;
 	selected?: boolean;
 	onChange?: (selected: boolean) => void;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	children?: Snippet<[ToggleRenderState]> | Snippet;
 	class?: string;
 	element?: HTMLButtonElement | null;

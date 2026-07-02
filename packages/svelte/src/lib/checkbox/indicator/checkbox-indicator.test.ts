@@ -23,8 +23,8 @@ describe('Checkbox.Indicator', () => {
 		expect(document.querySelector('[data-checkbox-indicator="true"]')).toBeNull();
 	});
 
-	it('supports keepMounted when unchecked', async () => {
-		render(CheckboxTest, { keepMounted: true });
+	it('supports forceMount when unchecked', async () => {
+		render(CheckboxTest, { forceMount: true });
 
 		const indicator = document.querySelector<HTMLElement>('[data-checkbox-indicator="true"]');
 		expect(indicator).toBeTruthy();

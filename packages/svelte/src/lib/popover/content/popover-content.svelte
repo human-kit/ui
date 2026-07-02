@@ -42,7 +42,7 @@
 		/** CSS class for the popover container. */
 		class?: string;
 		/** Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock). */
-		isNonModal?: boolean;
+		nonModal?: boolean;
 		/** Whether clicking outside the popover should close it. */
 		shouldCloseOnInteractOutside?: boolean;
 		/** Whether pressing Escape should close the popover. */
@@ -67,7 +67,7 @@
 		boundaryElement = null,
 		children,
 		class: className = '',
-		isNonModal = false,
+		nonModal = false,
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		shouldCloseOnBlur,
@@ -85,8 +85,8 @@
 	const isStandalone = $derived(ctx === undefined);
 	const triggerRef = $derived(isStandalone ? triggerRefProp : ctx!.triggerRef);
 	const isOpen = $derived(isStandalone ? (openProp ?? false) : ctx!.isOpen);
-	const isModal = $derived(!isNonModal);
-	const shouldCloseOnBlurResolved = $derived(shouldCloseOnBlur ?? isNonModal);
+	const isModal = $derived(!nonModal);
+	const shouldCloseOnBlurResolved = $derived(shouldCloseOnBlur ?? nonModal);
 
 	let popoverRef: HTMLElement | undefined = $state();
 	let cleanupStandaloneTriggerBlurListener: (() => void) | undefined;
@@ -215,7 +215,7 @@
 	}
 
 	function handleScroll(event: Event) {
-		if (!isNonModal || !isOpen || !shouldCloseOnInteractOutside || !isTopmost()) return;
+		if (!nonModal || !isOpen || !shouldCloseOnInteractOutside || !isTopmost()) return;
 
 		// Check if scroll is inside the popover or trigger
 		const target = event.target as Node;

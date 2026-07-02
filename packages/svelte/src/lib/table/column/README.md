@@ -14,7 +14,7 @@ Public prop type: `TableColumnProps`
 | Prop           | Type                        | Default     | Description                                                                                                   |
 | -------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------- |
 | `id`           | `string`                    | `-`         | Stable identifier for the column.                                                                             |
-| `isRowHeader`  | `boolean`                   | `false`     | Marks the associated body column as row-header cells.                                                         |
+| `rowHeader`  | `boolean`                   | `false`     | Marks the associated body column as row-header cells.                                                         |
 | `textValue`    | `string`                    | `undefined` | Optional spoken label used by `Table.Root` sort announcements when it should differ from `id`.                |
 | `width`        | `number \| \`${number}px\`` | `undefined` | Fixed column width. When set, the column keeps that width and user resize interactions are disabled.          |
 | `defaultWidth` | `number \| \`${number}px\`` | `undefined` | Uncontrolled initial width hint for the column. The column remains user-resizable when a resizer is composed. |

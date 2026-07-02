@@ -5,7 +5,7 @@
 
 	let {
 		id,
-		isRowHeader = false,
+		rowHeader = false,
 		textValue,
 		width,
 		defaultWidth,
@@ -32,7 +32,7 @@
 			return table.isColumnHidden(id);
 		},
 		get isRowHeader() {
-			return isRowHeader;
+			return rowHeader;
 		},
 		get textValue() {
 			return textValue;
@@ -58,7 +58,7 @@
 		table.registerColumn({
 			token,
 			id,
-			isRowHeader,
+			isRowHeader: rowHeader,
 			textValue,
 			width,
 			defaultWidth,

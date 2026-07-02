@@ -19,41 +19,41 @@
 		{
 			title: 'Off',
 			description: 'Default unchecked state',
-			isChecked: false,
-			isDisabled: false,
-			isReadOnly: false,
+			checked: false,
+			disabled: false,
+			readonly: false,
 			required: false
 		},
 		{
 			title: 'On',
 			description: 'Enabled state',
-			isChecked: true,
-			isDisabled: false,
-			isReadOnly: false,
+			checked: true,
+			disabled: false,
+			readonly: false,
 			required: false
 		},
 		{
 			title: 'Disabled',
 			description: 'Removed from interaction',
-			isChecked: true,
-			isDisabled: true,
-			isReadOnly: false,
+			checked: true,
+			disabled: true,
+			readonly: false,
 			required: false
 		},
 		{
 			title: 'ReadOnly',
 			description: 'Focusable but immutable',
-			isChecked: true,
-			isDisabled: false,
-			isReadOnly: true,
+			checked: true,
+			disabled: false,
+			readonly: true,
 			required: false
 		},
 		{
 			title: 'Required',
 			description: 'Participates in validation',
-			isChecked: false,
-			isDisabled: false,
-			isReadOnly: false,
+			checked: false,
+			disabled: false,
+			readonly: false,
 			required: true
 		}
 	] as const;
@@ -97,9 +97,9 @@
 				</span>
 
 				<Switch.Root
-					bind:isChecked={playgroundChecked}
-					isDisabled={playgroundDisabled}
-					isReadOnly={playgroundReadOnly}
+					bind:checked={playgroundChecked}
+					disabled={playgroundDisabled}
+					readonly={playgroundReadOnly}
 					required={playgroundRequired}
 					name={formName}
 					value={formValue}
@@ -116,7 +116,7 @@
 				class="grid gap-2 rounded-xl bg-gray-50 p-3 text-xs text-gray-600 dark:bg-gray-800/80 dark:text-gray-300"
 			>
 				<div class="flex items-center justify-between gap-3">
-					<span>isChecked</span>
+					<span>checked</span>
 					<span class="font-medium text-gray-900 dark:text-white">{String(playgroundChecked)}</span>
 				</div>
 				<div class="flex items-center justify-between gap-3">
@@ -128,14 +128,14 @@
 
 		{#snippet controls()}
 			<div class="space-y-4">
-				<DemoCheckbox label="isChecked" bind:checked={playgroundChecked} />
-				<DemoCheckbox label="isDisabled" bind:checked={playgroundDisabled} />
-				<DemoCheckbox label="isReadOnly" bind:checked={playgroundReadOnly} />
+				<DemoCheckbox label="checked" bind:checked={playgroundChecked} />
+				<DemoCheckbox label="disabled" bind:checked={playgroundDisabled} />
+				<DemoCheckbox label="readonly" bind:checked={playgroundReadOnly} />
 				<DemoCheckbox label="required" bind:checked={playgroundRequired} />
 				<hr class="border-gray-200 dark:border-gray-700" />
-				<DemoState label="isChecked" value={playgroundChecked} />
-				<DemoState label="isDisabled" value={playgroundDisabled} />
-				<DemoState label="isReadOnly" value={playgroundReadOnly} />
+				<DemoState label="checked" value={playgroundChecked} />
+				<DemoState label="disabled" value={playgroundDisabled} />
+				<DemoState label="readonly" value={playgroundReadOnly} />
 			</div>
 		{/snippet}
 	</DemoSection>
@@ -155,9 +155,9 @@
 							<p class="text-xs text-gray-500 dark:text-gray-400">{example.description}</p>
 						</div>
 						<Switch.Root
-							isChecked={example.isChecked}
-							isDisabled={example.isDisabled}
-							isReadOnly={example.isReadOnly}
+							checked={example.checked}
+							disabled={example.disabled}
+							readonly={example.readonly}
 							required={example.required}
 							class="group inline-flex h-7 w-12 rounded-full border border-gray-300 bg-gray-200 p-0.5 shadow-inner transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[disabled=true]:opacity-50 data-[readonly=true]:border-teal-500 data-[readonly=true]:bg-teal-100 dark:border-gray-600 dark:bg-gray-800 dark:data-[checked=true]:bg-blue-500 dark:data-[readonly=true]:bg-teal-950"
 							aria-label={example.title}
@@ -188,7 +188,7 @@
 						</p>
 					</div>
 					<Switch.Root
-						bind:isChecked={controlledChecked}
+						bind:checked={controlledChecked}
 						onCheckedChange={pushCheckedEvent}
 						class="group inline-flex h-7 w-12 rounded-full border border-gray-300 bg-gray-200 p-0.5 shadow-inner transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:data-[checked=true]:bg-blue-500"
 						aria-label="Smart routing"
@@ -223,7 +223,7 @@
 				>
 					<h3 class="text-sm font-semibold text-gray-900 dark:text-white">Current State</h3>
 					<div class="mt-3 space-y-2">
-						<DemoState label="isChecked" value={controlledChecked} />
+						<DemoState label="checked" value={controlledChecked} />
 					</div>
 				</div>
 
@@ -262,7 +262,7 @@
 							</span>
 						</span>
 						<Switch.Root
-							bind:isChecked={playgroundChecked}
+							bind:checked={playgroundChecked}
 							name={formName}
 							value={formValue}
 							required={playgroundRequired}
@@ -298,7 +298,7 @@
 							</span>
 						</span>
 						<Switch.Root
-							bind:isChecked={wrappedLabelChecked}
+							bind:checked={wrappedLabelChecked}
 							class="group inline-flex h-7 w-12 rounded-full border border-gray-300 bg-gray-200 p-0.5 shadow-inner transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 dark:border-gray-600 dark:bg-gray-800 dark:data-[checked=true]:bg-blue-500"
 							aria-label="Wrapping label switch"
 						>
@@ -324,7 +324,7 @@
 						</span>
 						<Switch.Root
 							id="switch-release-notes"
-							bind:isChecked={siblingLabelChecked}
+							bind:checked={siblingLabelChecked}
 							class="group inline-flex h-7 w-12 rounded-full border border-gray-300 bg-gray-200 p-0.5 shadow-inner transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 dark:border-gray-600 dark:bg-gray-800 dark:data-[checked=true]:bg-blue-500"
 							aria-label="Sibling label switch"
 						>

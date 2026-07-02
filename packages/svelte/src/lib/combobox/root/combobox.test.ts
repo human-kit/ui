@@ -519,7 +519,7 @@ describe('ComboBox', () => {
 
 	describe('Disabled State', () => {
 		it('does not open when disabled', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			await userEvent.keyboard('{ArrowDown}');
@@ -527,15 +527,15 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
-		it('input has disabled attribute when isDisabled is true', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+		it('input has disabled attribute when disabled is true', async () => {
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toBeDisabled();
 		});
 
-		it('sets pending state attributes on the root when isPending is true', async () => {
-			render(ComboBoxTest, { isPending: true });
+		it('sets pending state attributes on the root when pending is true', async () => {
+			render(ComboBoxTest, { pending: true });
 			const root = document.querySelector('[data-combobox]');
 
 			expect(root?.getAttribute('data-pending')).toBe('true');
@@ -880,7 +880,7 @@ describe('ComboBox', () => {
 
 	describe('Disabled and ReadOnly States', () => {
 		it('does not open when disabled', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			// Try to focus and type - should not open
@@ -892,7 +892,7 @@ describe('ComboBox', () => {
 		});
 
 		it('does not open when readonly', async () => {
-			const screen = render(ComboBoxTest, { isReadOnly: true });
+			const screen = render(ComboBoxTest, { readonly: true });
 			const input = screen.getByRole('combobox');
 
 			// Try to focus and type - should not open
@@ -904,21 +904,21 @@ describe('ComboBox', () => {
 		});
 
 		it('input is disabled when ComboBox is disabled', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toHaveAttribute('disabled');
 		});
 
 		it('input is readonly when ComboBox is readonly', async () => {
-			const screen = render(ComboBoxTest, { isReadOnly: true });
+			const screen = render(ComboBoxTest, { readonly: true });
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toHaveAttribute('readonly');
 		});
 
 		it('keeps input focus after clicking a disabled option so arrow navigation still works', async () => {
-			const screen = render(ComboBoxTest, { disabledIds: ['br'] });
+			const screen = render(ComboBoxTest, { disabledKeys: ['br'] });
 			const input = screen.getByRole('combobox');
 
 			await input.click();

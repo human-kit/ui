@@ -11,7 +11,7 @@
 		defaultValue,
 		onChange,
 		selectionMode = 'single',
-		isDisabled = false,
+		disabled: disabledProp = false,
 		orientation = 'vertical',
 		disallowEmptySelection = false,
 		loop = true,
@@ -33,7 +33,7 @@
 			isControlled,
 			initialValue: isControlled ? untrack(() => value) : untrack(() => defaultValue),
 			selectionMode: (() => selectionMode)(),
-			isDisabled: (() => isDisabled)(),
+			isDisabled: (() => disabledProp)(),
 			orientation: (() => orientation)(),
 			disallowEmptySelection: (() => disallowEmptySelection)(),
 			loop: (() => loop)(),
@@ -65,7 +65,7 @@
 	});
 
 	$effect(() => {
-		accordion.setDisabled(isDisabled);
+		accordion.setDisabled(disabledProp);
 	});
 
 	$effect(() => {

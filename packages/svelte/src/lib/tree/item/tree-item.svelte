@@ -15,7 +15,7 @@
 		value,
 		title,
 		textValue,
-		isDisabled = false,
+		disabled = false,
 		children,
 		class: className = '',
 		...restProps
@@ -65,7 +65,7 @@
 			sectionId,
 			level,
 			textValue: resolvedTextValue,
-			disabled: isDisabled,
+			disabled,
 			hasChildren: hasChildItems,
 			render: children,
 			className,

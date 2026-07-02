@@ -46,8 +46,8 @@
 							bind:value={playgroundValue}
 							bind:open={playgroundOpen}
 							onChange={handleChange}
-							{isDisabled}
-							{isReadOnly}
+							disabled={isDisabled}
+							readonly={isReadOnly}
 							{closeOnSelect}
 							class="group space-y-2"
 						>
@@ -128,8 +128,8 @@
 
 				{#snippet controls()}
 					<div class="space-y-4">
-						<DemoCheckbox label="isDisabled" bind:checked={isDisabled} />
-						<DemoCheckbox label="isReadOnly" bind:checked={isReadOnly} />
+						<DemoCheckbox label="disabled" bind:checked={isDisabled} />
+						<DemoCheckbox label="readonly" bind:checked={isReadOnly} />
 						<DemoCheckbox label="closeOnSelect" bind:checked={closeOnSelect} />
 						<hr class="border-gray-200 dark:border-gray-700" />
 						<DemoState label="value" value={formatRange(playgroundValue)} />

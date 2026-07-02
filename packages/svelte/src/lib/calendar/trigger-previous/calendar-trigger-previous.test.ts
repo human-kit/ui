@@ -16,7 +16,7 @@ describe('Calendar.TriggerPrevious', () => {
 	});
 
 	it('is disabled when calendar is disabled', async () => {
-		const screen = render(CalendarRootTest, { isDisabled: true });
+		const screen = render(CalendarRootTest, { disabled: true });
 		const previousButton = screen.getByRole('button', { name: 'Previous' });
 
 		await expect.element(previousButton).toBeDisabled();

@@ -51,8 +51,8 @@
 - `value?: string | null` (`YYYY-MM-DD`)
 - `defaultValue?: string | null` (`YYYY-MM-DD`)
 - `onChange?: (value: string | null) => void`
-- `isDisabled?: boolean`
-- `isReadOnly?: boolean`
+- `disabled?: boolean`
+- `readonly?: boolean`
 - `minValue?: string` (`YYYY-MM-DD`)
 - `maxValue?: string` (`YYYY-MM-DD`)
 - `isDateUnavailable?: (date: string) => boolean`
@@ -65,7 +65,7 @@
 
 ## Popover API
 
-- `DatePicker.Popover` forwards `Popover.Content` props (for example `placement`, `offset`, `shouldFlip`, `boundaryElement`, `isNonModal`, and close behavior props).
+- `DatePicker.Popover` forwards `Popover.Content` props (for example `placement`, `offset`, `shouldFlip`, `boundaryElement`, `nonModal`, and close behavior props).
 - The following are controlled internally by `DatePicker` and are not accepted on `DatePicker.Popover`: `open`, `triggerRef`, `onOpenChange`, `id`.
 - Defaults:
   - `placement` defaults to `bottom-start`.
@@ -75,7 +75,7 @@
 ## Calendar API
 
 - `DatePicker.Calendar` forwards `Calendar.Root` props except those controlled by `DatePicker.Root`.
-- The following are controlled internally by `DatePicker` and are not accepted on `DatePicker.Calendar`: `selectionMode`, `value`, `defaultValue`, `onChange`, `isDisabled`, `isReadOnly`, `isDateUnavailable`.
+- The following are controlled internally by `DatePicker` and are not accepted on `DatePicker.Calendar`: `selectionMode`, `value`, `defaultValue`, `onChange`, `disabled`, `readonly`, `isDateUnavailable`.
 
 ## Notes
 

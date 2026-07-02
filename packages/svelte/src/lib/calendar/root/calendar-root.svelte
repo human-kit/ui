@@ -43,11 +43,12 @@
 		firstDayOfWeek?: CalendarFirstDayOfWeek;
 		monthHeadingStyle?: CalendarMonthHeadingStyle;
 		isDateUnavailable?: (date: string) => boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		children?: Snippet;
 		class?: string;
 		id?: string;
+		element?: HTMLDivElement | null;
 		'aria-label'?: string;
 	};
 
@@ -74,16 +75,23 @@
 		firstDayOfWeek,
 		monthHeadingStyle = 'composed',
 		isDateUnavailable,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		value = $bindable(),
 		defaultValue,
 		onChange,
 		children,
 		class: className = '',
 		id,
+		element = $bindable<HTMLDivElement | null>(null),
 		'aria-label': ariaLabel
 	}: CalendarRootTypedProps = $props();
+
+	let rootRef: HTMLDivElement | null = $state(null);
+
+	$effect(() => {
+		element = rootRef;
+	});
 
 	function isCalendarRangeValue(valueToCheck: CalendarValue): valueToCheck is CalendarRangeValue {
 		if (!valueToCheck || typeof valueToCheck === 'string') return false;
@@ -116,8 +124,8 @@
 			firstDayOfWeek,
 			monthHeadingStyle,
 			isDateUnavailable,
-			isDisabled,
-			isReadOnly,
+			isDisabled: disabled,
+			isReadOnly: readonly,
 			value,
 			defaultValue: normalizedDefaultValue,
 			onChange: (nextValue: CalendarValue) => {
@@ -141,11 +149,12 @@
 </script>
 
 <div
+	bind:this={rootRef}
 	{id}
 	class={className}
-	data-disabled={isDisabled || undefined}
-	data-readonly={isReadOnly || undefined}
-	inert={isDisabled || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
+	inert={disabled || undefined}
 	aria-label={ariaLabel}
 >
 	{#if children}

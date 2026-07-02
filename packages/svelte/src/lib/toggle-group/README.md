@@ -32,7 +32,7 @@
 - `defaultValue?: ToggleGroupValue[]`
 - `onChange?: (value: ToggleGroupValue[]) => void`
 - `selectionMode?: 'single' | 'multiple'`
-- `isDisabled?: boolean`
+- `disabled?: boolean`
 - `orientation?: 'horizontal' | 'vertical'`
 - `disallowEmptySelection?: boolean`
 - `children?: Snippet`

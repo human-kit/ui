@@ -114,7 +114,7 @@
 >
 	<Table.Header>
 		<Table.Row>
-			<Table.Column id="email" isRowHeader textValue="Email">
+			<Table.Column id="email" rowHeader textValue="Email">
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
 			<Table.Column id="group" textValue="Group">
@@ -137,7 +137,7 @@
 		{#each renderedRows as row (row.id)}
 			<Table.Row
 				id={row.id}
-				isDisabled={disabledKeys ? Array.from(disabledKeys).includes(row.id) : false}
+				disabled={disabledKeys ? Array.from(disabledKeys).includes(row.id) : false}
 			>
 				<Table.Cell>{row.email}</Table.Cell>
 				<Table.Cell>{row.group}</Table.Cell>

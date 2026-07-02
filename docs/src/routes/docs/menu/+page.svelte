@@ -38,15 +38,15 @@
 						{isOpen ? 'Close' : 'Open'} Menu
 					</Menu.Trigger>
 					<Menu.Content class={contentClass}>
-						<Menu.Item class={itemClass} onSelect={() => (lastAction = 'Edit')}>Edit</Menu.Item>
-						<Menu.Item class={itemClass} onSelect={() => (lastAction = 'Duplicate')}>
+						<Menu.Item class={itemClass} onAction={() => (lastAction = 'Edit')}>Edit</Menu.Item>
+						<Menu.Item class={itemClass} onAction={() => (lastAction = 'Duplicate')}>
 							Duplicate
 						</Menu.Item>
 						<Menu.Item class={itemClass} disabled>Archive (disabled)</Menu.Item>
 						<Menu.Separator class="my-1 h-px bg-gray-200 dark:bg-gray-700" />
 						<Menu.Item
 							class={itemClass + ' text-red-600 data-highlighted:bg-red-600 dark:text-red-400'}
-							onSelect={() => (lastAction = 'Delete')}
+							onAction={() => (lastAction = 'Delete')}
 						>
 							Delete
 						</Menu.Item>

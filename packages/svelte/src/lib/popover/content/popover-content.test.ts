@@ -247,7 +247,7 @@ describe('Popover.Content', () => {
 		});
 
 		it('has aria-modal="false" for non-modal popovers', async () => {
-			const screen = render(PopoverContentTest, { isNonModal: true });
+			const screen = render(PopoverContentTest, { nonModal: true });
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 			await trigger.click();
@@ -259,7 +259,7 @@ describe('Popover.Content', () => {
 
 	describe('Close on Blur', () => {
 		it('shouldCloseOnBlur defaults to false for modal popovers', async () => {
-			const screen = render(PopoverContentTest, { isNonModal: false });
+			const screen = render(PopoverContentTest, { nonModal: false });
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 			await trigger.click();
@@ -281,7 +281,7 @@ describe('Popover.Content', () => {
 			document.body.appendChild(externalButton);
 
 			try {
-				const screen = render(PopoverContentTest, { isNonModal: true });
+				const screen = render(PopoverContentTest, { nonModal: true });
 				const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 				await trigger.click();

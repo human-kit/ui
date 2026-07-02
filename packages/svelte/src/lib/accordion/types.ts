@@ -19,7 +19,7 @@ export type AccordionRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'
 	defaultValue?: AccordionValue[];
 	onChange?: (value: AccordionValue[]) => void;
 	selectionMode?: AccordionSelectionMode;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	orientation?: AccordionOrientation;
 	disallowEmptySelection?: boolean;
 	loop?: boolean;
@@ -32,7 +32,7 @@ export type AccordionRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'
 
 export type AccordionItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	value: AccordionValue;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	children?: Snippet;
 	class?: string;
 	element?: HTMLDivElement | null;

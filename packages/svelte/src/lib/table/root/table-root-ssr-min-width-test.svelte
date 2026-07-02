@@ -8,7 +8,7 @@
 			<Table.Column id="index" textValue="#" width={48}>
 				<Table.ColumnHeaderCell>#</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="label" isRowHeader textValue="Label" defaultWidth={350} minWidth={280}>
+			<Table.Column id="label" rowHeader textValue="Label" defaultWidth={350} minWidth={280}>
 				<Table.ColumnHeaderCell>
 					<span>Label</span>
 					<Table.ColumnResizer />

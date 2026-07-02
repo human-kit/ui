@@ -132,7 +132,7 @@
 		{
 			id: 'requestNumber',
 			header: 'Request',
-			isRowHeader: true,
+			rowHeader: true,
 			resizable: true,
 			defaultWidth: 350
 		},

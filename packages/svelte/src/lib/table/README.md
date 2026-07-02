@@ -23,7 +23,7 @@ All public Table part prop types are exported from the table barrel, including `
 					</Table.Checkbox>
 				</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="email" isRowHeader>
+			<Table.Column id="email" rowHeader>
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
 			<Table.Column id="group">
@@ -134,7 +134,7 @@ All public Table part prop types are exported from the table barrel, including `
 - Keyboard navigation uses roving `tabindex` across header and body cells.
 - Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
 - `Table.Checkbox` can receive DOM focus directly while still participating in the table's roving-focus grid.
-- First-column body cells become `rowheader` when their associated column has `isRowHeader`.
+- First-column body cells become `rowheader` when their associated column has `rowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
 - `Table.SortTrigger` renders the trigger button, while the header cell remains the roving-focus target for arrow-key grid navigation.
 - Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.

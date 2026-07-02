@@ -94,7 +94,7 @@
 	);
 	const isSelected = $derived(subscribedSelection ?? listboxCtx.isSelected(id));
 	const isDisabledComputed = $derived(
-		disabled || listboxCtx.disabledIds.has(id) || isParentDisabled
+		disabled || listboxCtx.disabledKeys.has(id) || isParentDisabled
 	);
 	const isPressedComputed = $derived(
 		pressedOverride !== undefined

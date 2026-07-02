@@ -35,7 +35,7 @@ Ship a stable `Tree` v1 with accessible hierarchical navigation, expansion, sele
 
 - [ ] [S][P1][Area: Logic][Owner: Unassigned][Target: v1] **Una sola fuente de verdad para “tiene hijos”:** Alinear `ctx.hasChildren(id)`, registro `hasChildren` en `registerNode` y lo que usa `Tree.Item` / `Tree.ItemTrigger` para evitar desfases en el primer frame o entre expand por teclado y UI.
 
-- [ ] [S][P2][Area: Logic][Owner: Unassigned][Target: TBD] **`isEmpty` en `Tree.Root`:** Revisar si `itemsArray.length === 0` junto con `getVisibleNodes().length === 0` cubre todos los modos (solo `children`, `items` vacío, secciones sin nodos) sin falsos positivos/negativos en `renderEmptyState`.
+- [ ] [S][P2][Area: Logic][Owner: Unassigned][Target: TBD] **`empty` en `Tree.Root`:** Revisar si `itemsArray.length === 0` junto con `getVisibleNodes().length === 0` cubre todos los modos (solo `children`, `items` vacío, secciones sin nodos) sin falsos positivos/negativos en `renderEmptyState`.
 
 ### Accesibilidad
 

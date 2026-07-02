@@ -90,7 +90,7 @@
 	<ButtonRoot
 		bind:element={buttonRef}
 		type="button"
-		isDisabled={datePicker.isDisabled}
+		disabled={datePicker.isDisabled}
 		pressed={datePicker.open}
 		class={className}
 		aria-haspopup="dialog"

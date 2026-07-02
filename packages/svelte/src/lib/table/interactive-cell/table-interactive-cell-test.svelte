@@ -23,7 +23,7 @@
 <Table.Root aria-label="Interactive users table" onRowAction={handleRowAction}>
 	<Table.Header>
 		<Table.Row>
-			<Table.Column id="email" isRowHeader textValue="Email">
+			<Table.Column id="email" rowHeader textValue="Email">
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
 			<Table.Column id="group" textValue="Group">

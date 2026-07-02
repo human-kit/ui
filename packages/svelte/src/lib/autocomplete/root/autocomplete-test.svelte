@@ -5,24 +5,24 @@
 
 	type Props = {
 		id?: string;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		filter?: AutocompleteFilter | null;
 		autoHighlight?: boolean;
 		selectionMode?: 'single' | 'multiple';
-		disabledIds?: string[];
+		disabledKeys?: string[];
 		defaultValue?: string[];
 		onValueChange?: (value: (string | number)[]) => void;
 	};
 
 	let {
 		id,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		filter,
 		autoHighlight = true,
 		selectionMode = 'single',
-		disabledIds = [],
+		disabledKeys = [],
 		defaultValue,
 		onValueChange
 	}: Props = $props();
@@ -46,15 +46,15 @@
 	}
 </script>
 
-<Autocomplete.Root {id} {isDisabled} {isReadOnly} {filter} {autoHighlight} aria-label="Fruits">
+<Autocomplete.Root {id} {disabled} {readonly} {filter} {autoHighlight} aria-label="Fruits">
 	<Autocomplete.Input placeholder="Search fruits..." aria-label="Search fruits" />
 	<Autocomplete.Status />
-	<Autocomplete.List {selectionMode} {defaultValue} {disabledIds} onChange={handleChange}>
+	<Autocomplete.List {selectionMode} {defaultValue} {disabledKeys} onChange={handleChange}>
 		{#each fruits as fruit (fruit.id)}
 			<Autocomplete.Item
 				id={fruit.id}
 				textValue={fruit.name}
-				disabled={disabledIds.includes(fruit.id)}
+				disabled={disabledKeys.includes(fruit.id)}
 			>
 				<!-- Nested content to exercise clicks landing on child elements -->
 				<span data-testid={`label-${fruit.id}`}>{fruit.name}</span>

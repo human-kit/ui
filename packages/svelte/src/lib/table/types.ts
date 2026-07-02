@@ -18,7 +18,7 @@ export type { TableColumnPin } from './root/context.js';
 
 export type TableColumnProps = {
 	id: string;
-	isRowHeader?: boolean;
+	rowHeader?: boolean;
 	textValue?: string;
 	width?: TableColumnWidth;
 	defaultWidth?: TableColumnWidth;
@@ -51,7 +51,7 @@ export type ColumnDef<T extends RowData = RowData, TValue = unknown> = {
 	accessor?: (row: T) => TValue;
 	sortValue?: (row: T) => string | number | boolean | Date | null | undefined;
 	align?: 'left' | 'center' | 'right';
-	isRowHeader?: boolean;
+	rowHeader?: boolean;
 	resizable?: boolean;
 	width?: TableColumnWidth;
 	defaultWidth?: TableColumnWidth;
@@ -153,7 +153,7 @@ export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> 
 
 export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children' | 'id'> & {
 	id?: TableSelectionKey;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	textValue?: string;
 	children?: Snippet;
 	class?: string;
@@ -217,7 +217,7 @@ export type TableCheckboxIndicatorProps = Omit<
 	HTMLAttributes<HTMLSpanElement>,
 	'children' | 'class'
 > & {
-	keepMounted?: boolean;
+	forceMount?: boolean;
 	children?: Snippet;
 	class?: string;
 };

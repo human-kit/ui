@@ -5,7 +5,7 @@
 	type Props = {
 		open?: boolean;
 		defaultOpen?: boolean;
-		isNonModal?: boolean;
+		nonModal?: boolean;
 		shouldCloseOnInteractOutside?: boolean;
 		shouldCloseOnEscape?: boolean;
 		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
@@ -14,7 +14,7 @@
 	let {
 		open,
 		defaultOpen = false,
-		isNonModal = false,
+		nonModal = false,
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		onOpenChange
@@ -26,7 +26,7 @@
 
 	<Popover.Content
 		class="popover-content"
-		{isNonModal}
+		{nonModal}
 		{shouldCloseOnInteractOutside}
 		{shouldCloseOnEscape}
 	>

@@ -50,8 +50,8 @@
 		value?: DateRangePickerRangeValue | null;
 		defaultValue?: DateRangePickerRangeValue | null;
 		onChange?: (value: DateRangePickerRangeValue | null) => void;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		minValue?: DatePickerDateValue;
 		maxValue?: DatePickerDateValue;
 		isDateUnavailable?: (date: DatePickerDateValue) => boolean;
@@ -71,8 +71,8 @@
 		value = $bindable(),
 		defaultValue,
 		onChange,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		minValue,
 		maxValue,
 		isDateUnavailable,
@@ -295,7 +295,7 @@
 		) {
 			return;
 		}
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		const selectionFocusVisible = getInteractionModality() === 'keyboard';
 
 		if (areRangesEqual(valueInternal, normalizedNextValue)) {
@@ -323,7 +323,7 @@
 		reason: DateRangePickerOpenChangeReason = 'imperative-action',
 		event?: Event
 	) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		setOpen(true, { reason, event });
 	}
 
@@ -335,7 +335,7 @@
 	}
 
 	function togglePopover(reason: DateRangePickerOpenChangeReason = 'trigger-press', event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		setOpen(!openInternal, { reason, event });
 	}
 
@@ -427,7 +427,7 @@
 		nextValue: string,
 		fromTyping: boolean
 	) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		const draft = getDraft(part);
 		const rawNumericLength = nextValue.replace(/\D/g, '').length;
@@ -556,7 +556,7 @@
 		type: Exclude<DatePickerSegmentType, 'literal'>,
 		step: number
 	) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		const current = getSegmentNumericValue(
 			type,
 			getDraft(part),
@@ -595,10 +595,10 @@
 			return instanceId;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get open() {
 			return openInternal;
@@ -656,8 +656,8 @@
 <div
 	id={instanceId}
 	class={className}
-	data-disabled={isDisabled || undefined}
-	data-readonly={isReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
 	data-open={openInternal || undefined}
 	data-focus-visible={focusVisible || undefined}
 	data-focus-within={focusWithin || undefined}

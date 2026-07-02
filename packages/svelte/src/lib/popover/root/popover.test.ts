@@ -92,7 +92,7 @@ describe('Popover', () => {
 			document.body.appendChild(externalButton);
 
 			try {
-				const screen = render(PopoverTest, { isNonModal: true });
+				const screen = render(PopoverTest, { nonModal: true });
 				const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 				await trigger.click();
@@ -167,7 +167,7 @@ describe('Popover', () => {
 		});
 
 		it('has aria-modal="false" for non-modal popovers', async () => {
-			const screen = render(PopoverTest, { isNonModal: true });
+			const screen = render(PopoverTest, { nonModal: true });
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 
 			await trigger.click();

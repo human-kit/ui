@@ -115,7 +115,7 @@ describe('Tabs', () => {
 	it('skips disabled tabs and prevents disabled tab activation', async () => {
 		const screen = render(TabsTest, {
 			defaultValue: 'overview',
-			disabledValues: ['billing'],
+			disabledKeys: ['billing'],
 			billingDisabled: true
 		});
 		const billingTab = screen.getByRole('tab', { name: 'Billing' });

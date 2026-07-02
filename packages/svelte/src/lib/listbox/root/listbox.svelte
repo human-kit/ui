@@ -15,8 +15,8 @@
 		emptyPlaceholder?: string | Snippet;
 		/** Iterable of items for dynamic rendering. Used with a snippet that receives each item. */
 		items?: Iterable<T>;
-		/** IDs of items that should be disabled and non-selectable. */
-		disabledIds?: Iterable<string | number>;
+		/** Keys of items that should be disabled and non-selectable. */
+		disabledKeys?: Iterable<string | number>;
 		/** Selection mode: 'single' allows one selection, 'multiple' allows many. */
 		selectionMode?: 'single' | 'multiple';
 		/** Controlled value. When provided, the component is in controlled mode. */
@@ -41,7 +41,7 @@
 		selectionBehavior = 'toggle',
 		emptyPlaceholder = 'No items selected',
 		items,
-		disabledIds,
+		disabledKeys,
 		selectionMode = 'single',
 		value = $bindable(),
 		defaultValue,
@@ -76,8 +76,8 @@
 		get selectionBehavior() {
 			return selectionBehavior;
 		},
-		get disabledIds() {
-			return disabledIds;
+		get disabledKeys() {
+			return disabledKeys;
 		},
 		// Use function to capture initial value only (not reactive)
 		initialSelection: (() => parseSelection(value ?? defaultValue))(),
@@ -99,10 +99,10 @@
 	});
 
 	$effect(() => {
-		ctx.disabledIds.clear();
-		if (disabledIds) {
-			for (const id of disabledIds) {
-				ctx.disabledIds.add(id);
+		ctx.disabledKeys.clear();
+		if (disabledKeys) {
+			for (const id of disabledKeys) {
+				ctx.disabledKeys.add(id);
 			}
 		}
 	});

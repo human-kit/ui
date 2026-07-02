@@ -27,8 +27,8 @@
 		>
 			<Table.Header>
 				<Table.Row class="border-b border-gray-200 dark:border-gray-700">
-					{#each [{ id: 'name', label: 'Name', isRowHeader: true }, { id: 'email', label: 'Email' }, { id: 'region', label: 'Region' }, { id: 'plan', label: 'Plan' }, { id: 'lastSeen', label: 'Last seen' }] as column (column.id)}
-						<Table.Column id={column.id} isRowHeader={column.isRowHeader} textValue={column.label}>
+					{#each [{ id: 'name', label: 'Name', rowHeader: true }, { id: 'email', label: 'Email' }, { id: 'region', label: 'Region' }, { id: 'plan', label: 'Plan' }, { id: 'lastSeen', label: 'Last seen' }] as column (column.id)}
+						<Table.Column id={column.id} rowHeader={column.rowHeader} textValue={column.label}>
 							<Table.ColumnHeaderCell
 								class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-300"
 								>{column.label}</Table.ColumnHeaderCell

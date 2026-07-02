@@ -5,8 +5,8 @@
 	type Props = {
 		defaultValue?: DateRangePickerRangeValue | null;
 		defaultOpen?: boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		minValue?: string;
 		maxValue?: string;
 		isDateUnavailable?: (date: string) => boolean;
@@ -19,8 +19,8 @@
 	let {
 		defaultValue = { start: '2026-02-10', end: '2026-02-12' },
 		defaultOpen = false,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		minValue,
 		maxValue,
 		isDateUnavailable,
@@ -43,8 +43,8 @@
 <DateRangePicker.Root
 	{defaultValue}
 	{defaultOpen}
-	{isDisabled}
-	{isReadOnly}
+	{disabled}
+	{readonly}
 	{minValue}
 	{maxValue}
 	{isDateUnavailable}

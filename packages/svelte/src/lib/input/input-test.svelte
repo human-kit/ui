@@ -2,10 +2,10 @@
 	import Input from './index';
 
 	type Props = {
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isInvalid?: boolean;
-		isRequired?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
+		invalid?: boolean;
+		required?: boolean;
 		autofocus?: boolean;
 		value?: string;
 		onMouseEnter?: (event: MouseEvent) => void;
@@ -13,10 +13,10 @@
 	};
 
 	let {
-		isDisabled = false,
-		isReadOnly = false,
-		isInvalid = false,
-		isRequired = false,
+		disabled = false,
+		readonly = false,
+		invalid = false,
+		required = false,
 		autofocus = false,
 		value = $bindable(''),
 		onMouseEnter,
@@ -31,10 +31,10 @@
 		bind:value
 		aria-label="Email"
 		placeholder="name@example.com"
-		{isDisabled}
-		{isReadOnly}
-		{isInvalid}
-		{isRequired}
+		{disabled}
+		{readonly}
+		{invalid}
+		{required}
 		{autofocus}
 		onmouseenter={onMouseEnter}
 		onfocus={onFocus}

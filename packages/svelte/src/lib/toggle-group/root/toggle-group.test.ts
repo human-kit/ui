@@ -16,7 +16,7 @@ describe('ToggleGroup.Root', () => {
 		const screen = render(ToggleGroupTest, {
 			selectionMode: 'multiple',
 			orientation: 'vertical',
-			isDisabled: true
+			disabled: true
 		});
 		const group = screen.getByRole('group', { name: 'Text style' });
 		const bold = getToggle('toggle-bold');

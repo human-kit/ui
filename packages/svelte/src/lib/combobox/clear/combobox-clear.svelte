@@ -33,8 +33,8 @@
 	type="button"
 	{tabindex}
 	aria-label={ariaLabel}
-	isDisabled={ctx.isDisabled || ctx.isReadOnly || !hasContent}
-	isPending={ctx.isPending}
+	disabled={ctx.isDisabled || ctx.isReadOnly || !hasContent}
+	pending={ctx.isPending}
 	onmousedown={handleMouseDown}
 	onclick={handleClick}
 	class={className}

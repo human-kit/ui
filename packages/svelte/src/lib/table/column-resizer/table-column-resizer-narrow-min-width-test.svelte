@@ -13,7 +13,7 @@
 	>
 		<Table.Header>
 			<Table.Row>
-				<Table.Column id="request" isRowHeader textValue="Request" minWidth={75}>
+				<Table.Column id="request" rowHeader textValue="Request" minWidth={75}>
 					<Table.ColumnHeaderCell data-testid="narrow-request-header-cell">
 						<div class="flex items-center justify-between gap-3">
 							<span>Request</span>

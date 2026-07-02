@@ -8,7 +8,7 @@ export type CollapsibleRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'childre
 	open?: boolean;
 	defaultOpen?: boolean;
 	onOpenChange?: (open: boolean) => void;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	children?: Snippet;
 	class?: string;
 	id?: string;

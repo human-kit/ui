@@ -17,10 +17,10 @@ export type {
 export type TabsRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	keyboardActivation?: TabsKeyboardActivation;
 	orientation?: TabsOrientation;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	value?: TabsValue | null;
 	defaultValue?: TabsValue | null;
-	disabledValues?: Iterable<TabsValue>;
+	disabledKeys?: Iterable<TabsValue>;
 	onChange?: (value: TabsValue | null) => void;
 	children?: Snippet;
 	class?: string;
@@ -40,7 +40,7 @@ export type TabsTabProps = Omit<
 	'children' | 'class' | 'type' | 'value' | 'disabled' | 'role' | 'aria-selected'
 > & {
 	value: TabsValue;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	children?: Snippet;
 	class?: string;
 	element?: HTMLButtonElement | null;

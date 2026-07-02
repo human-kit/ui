@@ -34,10 +34,10 @@
 		step?: NumberFieldStep;
 		smallStep?: number;
 		largeStep?: number;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isRequired?: boolean;
-		isInvalid?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
+		required?: boolean;
+		invalid?: boolean;
 		'aria-invalid'?: HTMLAttributes<HTMLDivElement>['aria-invalid'];
 		allowWheelScrub?: boolean;
 		allowOutOfRange?: boolean;
@@ -113,10 +113,10 @@
 		step = 1,
 		smallStep = 0.1,
 		largeStep = 10,
-		isDisabled = false,
-		isReadOnly = false,
-		isRequired = false,
-		isInvalid = false,
+		disabled = false,
+		readonly = false,
+		required = false,
+		invalid = false,
 		'aria-invalid': ariaInvalid,
 		allowWheelScrub = false,
 		allowOutOfRange = false,
@@ -157,7 +157,7 @@
 	const resolvedOutOfRange = $derived(inputState === 'out-of-range' || outOfRange);
 	const externalInvalid = $derived(ariaInvalid === true || ariaInvalid === 'true');
 	const resolvedInvalid = $derived(
-		Boolean(isInvalid || externalInvalid || inputInvalid || resolvedOutOfRange)
+		Boolean(invalid || externalInvalid || inputInvalid || resolvedOutOfRange)
 	);
 	const ariaValueNow = $derived(
 		inputState === 'synced' && currentValue !== null ? currentValue : undefined
@@ -168,7 +168,7 @@
 	const validationMessage = $derived(
 		resolveValidationMessage({
 			inputState,
-			isInvalid,
+			isInvalid: invalid,
 			inputInvalid,
 			outOfRange: resolvedOutOfRange,
 			min,
@@ -205,7 +205,7 @@
 	});
 
 	$effect(() => {
-		if (!isDisabled) return;
+		if (!disabled) return;
 		focused = false;
 		focusVisible = false;
 		focusWithin = false;
@@ -270,7 +270,7 @@
 	}
 
 	function setInputValue(nextInputValue: string, reason: NumberFieldChangeReason) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		inputValue = nextInputValue;
 		const parsed = parseNumberInput(nextInputValue, resolvedLocale, formatOptions);
@@ -305,7 +305,7 @@
 	}
 
 	function commitInputValue() {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		const parsed = parseNumberInput(inputValue, resolvedLocale, formatOptions);
 
@@ -338,7 +338,7 @@
 		direction: -1 | 1,
 		options: { reason: NumberFieldChangeReason; multiplier?: number }
 	) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		const steppedValue = stepNumberValue(currentValue, direction, {
 			min,
@@ -406,13 +406,13 @@
 			return largeStep;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get isRequired() {
-			return isRequired;
+			return required;
 		},
 		get isInvalid() {
 			return resolvedInvalid;
@@ -469,9 +469,9 @@
 	id={rootId}
 	class={cn(className)}
 	data-number-field-root="true"
-	data-disabled={isDisabled || undefined}
-	data-readonly={isReadOnly || undefined}
-	data-required={isRequired || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
+	data-required={required || undefined}
 	data-invalid={resolvedInvalid || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-scrubbing={scrubbing || undefined}
@@ -481,7 +481,7 @@
 			type="hidden"
 			{name}
 			value={formValue}
-			disabled={isDisabled || undefined}
+			disabled={disabled || undefined}
 			data-number-field-hidden-input="true"
 		/>
 	{/if}

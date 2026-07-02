@@ -109,8 +109,8 @@ describe('TextArea', () => {
 		expectNoFalseFocusAttributes(document);
 	});
 
-	it('disables the native textarea when isDisabled is true', () => {
-		const screen = render(TextAreaTest, { isDisabled: true });
+	it('disables the native textarea when disabled is true', () => {
+		const screen = render(TextAreaTest, { disabled: true });
 		const textArea = screen.getByRole('textbox', { name: 'Message' });
 
 		expect(textArea.element()?.hasAttribute('disabled')).toBe(true);
@@ -118,7 +118,7 @@ describe('TextArea', () => {
 	});
 
 	it('supports read only textareas without losing focusability', async () => {
-		const screen = render(TextAreaTest, { isReadOnly: true });
+		const screen = render(TextAreaTest, { readonly: true });
 		const textArea = screen.getByRole('textbox', { name: 'Message' });
 
 		expect(textArea.element()?.hasAttribute('readonly')).toBe(true);
@@ -132,7 +132,7 @@ describe('TextArea', () => {
 	});
 
 	it('maps invalid and required state to data and aria attributes', () => {
-		const screen = render(TextAreaTest, { isInvalid: true, isRequired: true });
+		const screen = render(TextAreaTest, { invalid: true, required: true });
 		const textArea = screen.getByRole('textbox', { name: 'Message' });
 
 		expect(textArea.element()?.getAttribute('aria-invalid')).toBe('true');

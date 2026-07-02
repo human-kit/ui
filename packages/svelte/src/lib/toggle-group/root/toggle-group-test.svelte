@@ -12,7 +12,7 @@
 		defaultValue?: ToggleGroupValue[];
 		selectionMode?: ToggleGroupSelectionMode;
 		orientation?: ToggleGroupOrientation;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		disallowEmptySelection?: boolean;
 		boldDisabled?: boolean;
 		italicDisabled?: boolean;
@@ -31,7 +31,7 @@
 		defaultValue,
 		selectionMode = 'single',
 		orientation = 'horizontal',
-		isDisabled = false,
+		disabled = false,
 		disallowEmptySelection = false,
 		boldDisabled = false,
 		italicDisabled = false,
@@ -65,7 +65,7 @@
 	{defaultValue}
 	selectionMode={renderedSelectionMode}
 	{orientation}
-	{isDisabled}
+	{disabled}
 	{disallowEmptySelection}
 	{onChange}
 	onkeydown={handleKeyDown}
@@ -75,7 +75,7 @@
 	{#if renderedShowBold}
 		<Toggle.Root
 			value="bold"
-			isDisabled={renderedBoldDisabled}
+			disabled={renderedBoldDisabled}
 			onChange={(selected) => onItemChange?.('bold', selected)}
 			data-testid="toggle-bold"
 		>
@@ -86,7 +86,7 @@
 	{#if showItalic}
 		<Toggle.Root
 			value="italic"
-			isDisabled={italicDisabled}
+			disabled={italicDisabled}
 			onChange={(selected) => onItemChange?.('italic', selected)}
 			data-testid="toggle-italic"
 		>
@@ -97,7 +97,7 @@
 	{#if showUnderline}
 		<Toggle.Root
 			value="underline"
-			isDisabled={underlineDisabled}
+			disabled={underlineDisabled}
 			onChange={(selected) => onItemChange?.('underline', selected)}
 			data-testid="toggle-underline"
 		>

@@ -5,7 +5,7 @@
 		controlled?: boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		forceMount?: boolean;
 		showControls?: boolean;
 	};
@@ -14,7 +14,7 @@
 		controlled = false,
 		open = false,
 		defaultOpen = false,
-		isDisabled = false,
+		disabled = false,
 		forceMount = false,
 		showControls = false
 	}: CollapsibleTestProps = $props();
@@ -36,14 +36,14 @@
 {#if controlled}
 	<Collapsible.Root
 		bind:open={currentOpen}
-		{isDisabled}
+		{disabled}
 		onOpenChange={handleOpenChange}
 		data-testid="root"
 	>
 		{@render collapsibleParts()}
 	</Collapsible.Root>
 {:else}
-	<Collapsible.Root {defaultOpen} {isDisabled} onOpenChange={handleOpenChange} data-testid="root">
+	<Collapsible.Root {defaultOpen} {disabled} onOpenChange={handleOpenChange} data-testid="root">
 		{@render collapsibleParts()}
 	</Collapsible.Root>
 {/if}

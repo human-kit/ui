@@ -308,7 +308,7 @@
 				<div class="flex items-start gap-8">
 					<div class="w-full max-w-xs">
 						<ComboBox.Root
-							isPending={pendingDemo}
+							pending={pendingDemo}
 							trigger="focus"
 							bind:inputValue={pendingDemoInput}
 							bind:value={pendingDemoValue}
@@ -369,7 +369,7 @@
 
 				{#snippet controls()}
 					<div class="space-y-4">
-						<DemoState label="isPending" value={pendingDemo} />
+						<DemoState label="pending" value={pendingDemo} />
 						<DemoState label="inputValue" value={pendingDemoInput} />
 						<DemoState label="selectedValue" value={pendingDemoValue} />
 					</div>

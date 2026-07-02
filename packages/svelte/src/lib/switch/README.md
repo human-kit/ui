@@ -17,7 +17,7 @@
 
 ## Usage guidelines
 
-- Use `isChecked` / `defaultChecked` for the switch state.
+- Use `checked` / `defaultChecked` for the switch state.
 - Use `onCheckedChange` to react to user-driven state changes.
 - Use `value` only for form submission through the hidden native input; it does not represent the visual state.
 - Wrap the switch in a native `<label>` for the simplest accessible labeling pattern.
@@ -25,11 +25,11 @@
 ## API reference
 
 - `Switch.Root`
-  - `isChecked?: boolean`
+  - `checked?: boolean`
   - `defaultChecked?: boolean`
   - `onCheckedChange?: (checked: boolean) => void`
-  - `isDisabled?: boolean`
-  - `isReadOnly?: boolean`
+  - `disabled?: boolean`
+  - `readonly?: boolean`
   - `name?: string`
   - `value?: string`
   - `form?: string`
@@ -40,7 +40,7 @@
 
 - `Switch.Root` exposes `role="switch"` with `aria-checked="true" | "false"`.
 - Press `Space` to toggle the switch.
-- `isReadOnly` keeps the switch focusable while preventing state changes.
+- `readonly` keeps the switch focusable while preventing state changes.
 
 ## Notes
 

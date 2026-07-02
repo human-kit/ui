@@ -31,7 +31,7 @@
 	type="button"
 	class={className}
 	aria-label="Next page"
-	{isDisabled}
+	disabled={isDisabled}
 	onclick={handleClick}
 	{...restProps}
 >

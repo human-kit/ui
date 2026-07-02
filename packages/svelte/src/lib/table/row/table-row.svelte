@@ -12,7 +12,7 @@
 
 	let {
 		id,
-		isDisabled = false,
+		disabled = false,
 		children,
 		class: className = '',
 		...restProps
@@ -69,7 +69,7 @@
 						metaKey: event.metaKey,
 						altKey: event.altKey
 					},
-					isDisabled
+					disabled
 				),
 			onSpace: () =>
 				table.pressRow(
@@ -81,7 +81,7 @@
 						metaKey: event.metaKey,
 						altKey: event.altKey
 					},
-					isDisabled
+					disabled
 				)
 		});
 	}
@@ -159,7 +159,7 @@
 			return id;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		rowState,
 		cellOrderVersion,
@@ -173,7 +173,7 @@
 			token: rowToken,
 			section: section.section,
 			id,
-			disabled: isDisabled,
+			disabled,
 			element: rowElement
 		});
 	}
@@ -265,15 +265,15 @@
 	});
 	const isAriaDisabled = $derived.by(() => {
 		void $selectionVersion;
-		return section.section === 'body' ? table.isRowDisabled(id, isDisabled) : isDisabled;
+		return section.section === 'body' ? table.isRowDisabled(id, disabled) : disabled;
 	});
 	const isSelectionDisabled = $derived.by(() => {
 		void $selectionVersion;
-		return section.section === 'body' ? table.isRowSelectionDisabled(id, isDisabled) : isDisabled;
+		return section.section === 'body' ? table.isRowSelectionDisabled(id, disabled) : disabled;
 	});
 	const isActionable = $derived.by(() => {
 		void $selectionVersion;
-		return section.section === 'body' ? table.isRowActionable(id, isDisabled) : false;
+		return section.section === 'body' ? table.isRowActionable(id, disabled) : false;
 	});
 
 	$effect(() => {

@@ -192,7 +192,7 @@ describe('Toggle.Root', () => {
 	it('does not toggle when disabled', async () => {
 		const changes: boolean[] = [];
 		const screen = render(ToggleTest, {
-			isDisabled: true,
+			disabled: true,
 			onChange: (selected: boolean) => changes.push(selected)
 		});
 		const toggle = screen.getByRole('button', { name: 'Favorite' });

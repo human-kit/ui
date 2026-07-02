@@ -115,7 +115,7 @@ describe('Checkbox.Root', () => {
 	});
 
 	it('sets data-pressed while primary pointer is held', async () => {
-		const screen = render(CheckboxTest, { keepMounted: true });
+		const screen = render(CheckboxTest, { forceMount: true });
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
 		const checkboxElement = checkbox.element();
 		const indicator = document.querySelector('[data-checkbox-indicator="true"]');
@@ -177,7 +177,7 @@ describe('Checkbox.Root', () => {
 	});
 
 	it('does not toggle when disabled', async () => {
-		const screen = render(CheckboxTest, { isDisabled: true });
+		const screen = render(CheckboxTest, { disabled: true });
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
 
 		checkbox.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
@@ -187,7 +187,7 @@ describe('Checkbox.Root', () => {
 	});
 
 	it('does not set data-pressed when disabled', async () => {
-		const screen = render(CheckboxTest, { isDisabled: true });
+		const screen = render(CheckboxTest, { disabled: true });
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
 
 		checkbox.element()?.dispatchEvent(
@@ -203,7 +203,7 @@ describe('Checkbox.Root', () => {
 	});
 
 	it('does not toggle when readonly', async () => {
-		const screen = render(CheckboxTest, { isReadOnly: true });
+		const screen = render(CheckboxTest, { readonly: true });
 		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
 
 		checkbox.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));

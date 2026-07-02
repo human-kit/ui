@@ -70,7 +70,7 @@ describe('DatePicker.Trigger', () => {
 	});
 
 	it('does not open when disabled', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+		const screen = render(DatePickerTest, { disabled: true });
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 
 		trigger.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
@@ -81,7 +81,7 @@ describe('DatePicker.Trigger', () => {
 	});
 
 	it('is not rendered when readOnly', async () => {
-		render(DatePickerTest, { isReadOnly: true });
+		render(DatePickerTest, { readonly: true });
 
 		expect(document.querySelector('button[aria-haspopup="dialog"]')).toBeNull();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();

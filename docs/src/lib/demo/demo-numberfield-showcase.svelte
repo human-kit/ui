@@ -99,10 +99,10 @@
 						{min}
 						{max}
 						{step}
-						{isDisabled}
-						{isReadOnly}
-						{isRequired}
-						{isInvalid}
+						disabled={isDisabled}
+						readonly={isReadOnly}
+						required={isRequired}
+						invalid={isInvalid}
 						{allowWheelScrub}
 						{snapOnStep}
 						formatOptions={{ maximumFractionDigits: 2 }}
@@ -144,10 +144,10 @@
 				<div
 					class="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900"
 				>
-					<DemoCheckbox label="isDisabled" bind:checked={isDisabled} />
-					<DemoCheckbox label="isReadOnly" bind:checked={isReadOnly} />
-					<DemoCheckbox label="isRequired" bind:checked={isRequired} />
-					<DemoCheckbox label="isInvalid" bind:checked={isInvalid} />
+					<DemoCheckbox label="disabled" bind:checked={isDisabled} />
+					<DemoCheckbox label="readonly" bind:checked={isReadOnly} />
+					<DemoCheckbox label="required" bind:checked={isRequired} />
+					<DemoCheckbox label="invalid" bind:checked={isInvalid} />
 					<DemoCheckbox label="allowWheelScrub" bind:checked={allowWheelScrub} />
 					<DemoCheckbox label="snapOnStep" bind:checked={snapOnStep} />
 				</div>

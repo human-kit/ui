@@ -102,7 +102,7 @@ describe('Dropzone', () => {
 
 	it('does not pick or open when disabled', async () => {
 		const onFilesPicked = vi.fn();
-		const screen = render(DropzoneTest, { isDisabled: true, onFilesPicked });
+		const screen = render(DropzoneTest, { disabled: true, onFilesPicked });
 		const button = screen.getByRole('button', { name: 'Attachments' });
 
 		expect(button.element()?.hasAttribute('disabled')).toBe(true);

@@ -41,8 +41,8 @@
 		>
 			<Table.Header>
 				<Table.Row class="border-b border-gray-200 dark:border-gray-700">
-					{#each [{ id: 'customer', label: 'Customer', isRowHeader: true }, { id: 'issuedAt', label: 'Issued' }, { id: 'total', label: 'Total' }, { id: 'status', label: 'Status' }] as column (column.id)}
-						<Table.Column id={column.id} isRowHeader={column.isRowHeader} textValue={column.label}>
+					{#each [{ id: 'customer', label: 'Customer', rowHeader: true }, { id: 'issuedAt', label: 'Issued' }, { id: 'total', label: 'Total' }, { id: 'status', label: 'Status' }] as column (column.id)}
+						<Table.Column id={column.id} rowHeader={column.rowHeader} textValue={column.label}>
 							<Table.ColumnHeaderCell
 								class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 dark:text-gray-300"
 								>{column.label}</Table.ColumnHeaderCell

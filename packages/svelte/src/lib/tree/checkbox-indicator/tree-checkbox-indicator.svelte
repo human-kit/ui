@@ -4,7 +4,7 @@
 	import type { TreeCheckboxIndicatorProps } from '../types';
 
 	let {
-		keepMounted = false,
+		forceMount = false,
 		children,
 		class: className = '',
 		...restProps
@@ -15,7 +15,7 @@
 </script>
 
 {#if treeCheckbox}
-	{#if keepMounted || visible}
+	{#if forceMount || visible}
 		<span
 			{...restProps}
 			data-tree-checkbox-indicator="true"
@@ -26,15 +26,15 @@
 			data-disabled={treeCheckbox.isDisabled || undefined}
 			data-focused={treeCheckbox.focused || undefined}
 			data-focus-visible={treeCheckbox.focusVisible || undefined}
-			hidden={keepMounted && !visible}
-			aria-hidden={keepMounted && !visible ? 'true' : undefined}
+			hidden={forceMount && !visible}
+			aria-hidden={forceMount && !visible ? 'true' : undefined}
 			class={className}
 		>
 			{@render children?.()}
 		</span>
 	{/if}
 {:else}
-	<Checkbox.Indicator {keepMounted} class={className} {...restProps}>
+	<Checkbox.Indicator {forceMount} class={className} {...restProps}>
 		{@render children?.()}
 	</Checkbox.Indicator>
 {/if}

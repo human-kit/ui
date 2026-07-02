@@ -73,7 +73,7 @@
 		<ReproTable.Column
 			id="requestNumber"
 			header="Request"
-			isRowHeader
+			rowHeader
 			resizable
 			defaultWidth={350}
 		/>

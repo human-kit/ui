@@ -29,7 +29,7 @@
 - `selected?: boolean`
 - `defaultSelected?: boolean`
 - `onChange?: (selected: boolean) => void`
-- `isDisabled?: boolean`
+- `disabled?: boolean`
 - `children?: Snippet<[ToggleRenderState]> | Snippet`
 - `...restProps: HTMLButtonAttributes`
 

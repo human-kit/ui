@@ -224,7 +224,7 @@ describe('ListBox', () => {
 
 	describe('Disabled Items', () => {
 		it('skips disabled items during navigation', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['banana'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['banana'] });
 			const listbox = screen.getByRole('listbox');
 
 			await listbox.click();
@@ -236,7 +236,7 @@ describe('ListBox', () => {
 		});
 
 		it('prevents selection of disabled items', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['banana'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['banana'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
@@ -247,7 +247,7 @@ describe('ListBox', () => {
 		});
 
 		it('has aria-disabled on disabled items', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['banana'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['banana'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');

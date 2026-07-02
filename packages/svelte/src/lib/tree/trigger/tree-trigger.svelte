@@ -136,7 +136,7 @@
 		data-tree-trigger="true"
 		data-expanded={isExpanded ? 'true' : undefined}
 		data-disabled={isDisabled ? 'true' : undefined}
-		{isDisabled}
+		disabled={isDisabled}
 		tabindex={-1}
 		onmousedown={(event) => {
 			handleMouseDown(event);

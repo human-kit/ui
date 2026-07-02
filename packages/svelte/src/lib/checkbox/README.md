@@ -19,33 +19,33 @@
 
 ## Usage guidelines
 
-- Use `isChecked` / `defaultChecked` for the checked state and `isIndeterminate` / `defaultIndeterminate` for the mixed state.
-- `isIndeterminate` takes precedence over `isChecked`. When both are `true`, the checkbox is exposed as indeterminate.
+- Use `checked` / `defaultChecked` for the checked state and `indeterminate` / `defaultIndeterminate` for the mixed state.
+- `indeterminate` takes precedence over `checked`. When both are `true`, the checkbox is exposed as indeterminate.
 - Use `value` only for form submission through the hidden native input; it does not represent the visual state.
 - Wrap the checkbox in a native `<label>` for the simplest accessible labeling pattern.
 
 ## API reference
 
 - `Checkbox.Root`
-  - `isChecked?: boolean`
+  - `checked?: boolean`
   - `defaultChecked?: boolean`
-  - `isIndeterminate?: boolean`
+  - `indeterminate?: boolean`
   - `defaultIndeterminate?: boolean`
   - `onCheckedChange?: (checked: boolean) => void`
   - `onIndeterminateChange?: (indeterminate: boolean) => void`
-  - `isDisabled?: boolean`
-  - `isReadOnly?: boolean`
+  - `disabled?: boolean`
+  - `readonly?: boolean`
   - `name?: string`
   - `value?: string`
   - `required?: boolean`
 - `Checkbox.Indicator`
-  - `keepMounted?: boolean`
+  - `forceMount?: boolean`
 
 ## Accessibility
 
 - `Checkbox.Root` exposes `role="checkbox"` with `aria-checked="true" | "false" | "mixed"`.
 - Press `Space` to toggle the checkbox.
-- `isReadOnly` keeps the checkbox focusable while preventing state changes.
+- `readonly` keeps the checkbox focusable while preventing state changes.
 
 ## Notes
 

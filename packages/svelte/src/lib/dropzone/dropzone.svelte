@@ -6,10 +6,10 @@
 
 	export type DropzoneRenderState = {
 		/** A drag is currently hovering the zone with droppable file content. */
-		isDragging: boolean;
-		isFocused: boolean;
-		isFocusVisible: boolean;
-		isDisabled: boolean;
+		dragging: boolean;
+		focused: boolean;
+		focusVisible: boolean;
+		disabled: boolean;
 	};
 
 	type DropzoneProps = Omit<
@@ -18,7 +18,7 @@
 	> & {
 		children?: Snippet<[DropzoneRenderState]> | Snippet;
 		class?: string;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		/** Forwarded to the hidden file input's `accept` and used to filter dropped files. */
 		accept?: string;
 		/** Allow selecting or dropping more than one file. */
@@ -65,7 +65,7 @@
 		id,
 		children,
 		class: className = '',
-		isDisabled = false,
+		disabled = false,
 		accept,
 		multiple = false,
 		onFilesPicked,
@@ -98,10 +98,10 @@
 
 	const acceptTokens = $derived(parseAccept(accept));
 	const renderState = $derived.by<DropzoneRenderState>(() => ({
-		isDragging: dragging,
-		isFocused: focused,
-		isFocusVisible: focusVisible,
-		isDisabled
+		dragging,
+		focused,
+		focusVisible,
+		disabled
 	}));
 
 	$effect(() => {
@@ -109,7 +109,7 @@
 	});
 
 	$effect(() => {
-		if (!isDisabled) return;
+		if (!disabled) return;
 		dragging = false;
 		hovered = false;
 		focused = false;
@@ -135,7 +135,7 @@
 	}
 
 	function handleClick() {
-		if (isDisabled) return;
+		if (disabled) return;
 		openPicker();
 	}
 
@@ -147,14 +147,14 @@
 	}
 
 	function handleDragOver(event: DragEvent) {
-		if (isDisabled || !dragHasFiles(event)) return;
+		if (disabled || !dragHasFiles(event)) return;
 		event.preventDefault();
 		if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
 		dragging = true;
 	}
 
 	function handleDragEnter(event: DragEvent) {
-		if (isDisabled || !dragHasFiles(event)) return;
+		if (disabled || !dragHasFiles(event)) return;
 		event.preventDefault();
 		dragging = true;
 	}
@@ -168,14 +168,14 @@
 	}
 
 	function handleDrop(event: DragEvent) {
-		if (isDisabled) return;
+		if (disabled) return;
 		event.preventDefault();
 		dragging = false;
 		emitFiles(event.dataTransfer?.files ?? null);
 	}
 
 	function handleFocus() {
-		if (isDisabled) return;
+		if (disabled) return;
 		focused = true;
 		focusVisible = shouldShowFocusVisible(buttonRef);
 	}
@@ -201,7 +201,7 @@
 	}
 
 	function handleMouseEnter() {
-		if (isDisabled) {
+		if (disabled) {
 			hovered = false;
 			return;
 		}
@@ -218,10 +218,10 @@
 	bind:this={buttonRef}
 	id={resolvedId}
 	type="button"
-	disabled={isDisabled}
+	{disabled}
 	aria-label={ariaLabel}
 	data-dropzone-root="true"
-	data-disabled={isDisabled || undefined}
+	data-disabled={disabled || undefined}
 	data-drop-target={dragging || undefined}
 	data-hovered={hovered || undefined}
 	data-focused={focused || undefined}

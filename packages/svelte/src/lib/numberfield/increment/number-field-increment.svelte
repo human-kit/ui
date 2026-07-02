@@ -125,7 +125,7 @@
 	tabindex={-1}
 	aria-label={numberField.incrementAriaLabel}
 	aria-controls={numberField.inputId}
-	isDisabled={isStepDisabled}
+	disabled={isStepDisabled}
 	class={className}
 	data-number-field-increment="true"
 	data-disabled={isStepDisabled || undefined}

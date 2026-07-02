@@ -36,10 +36,11 @@
 		hourStep?: number;
 		minuteStep?: number;
 		secondStep?: number;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		column?: Snippet<[ClockColumnInfo]>;
 		children?: Snippet;
 		class?: string;
+		element?: HTMLDivElement | null;
 		'aria-label'?: string;
 	};
 
@@ -57,13 +58,20 @@
 		hourStep = 1,
 		minuteStep = 1,
 		secondStep = 1,
-		isDisabled = false,
+		disabled = false,
 		column: columnSnippet,
 		children,
 		class: className = '',
+		element = $bindable<HTMLDivElement | null>(null),
 		'aria-label': ariaLabel,
 		...restProps
 	}: ClockRootProps = $props();
+
+	let rootRef: HTMLDivElement | null = $state(null);
+
+	$effect(() => {
+		element = rootRef;
+	});
 
 	function hasExplicitPositionClass(value: string): boolean {
 		return /(^|\s)(?:[\w-]+:)*(?:static|fixed|absolute|relative|sticky)(?:\s|$)/.test(value);
@@ -166,7 +174,7 @@
 	}
 
 	function setSegmentValue(type: TimePickerEditableSegmentType, nextValue: string) {
-		if (isDisabled) return;
+		if (disabled) return;
 		if (type === 'dayPeriod') {
 			const normalized = nextValue.trim().toUpperCase();
 			if (normalized === '' || normalized === 'AM' || normalized === 'PM') {
@@ -223,7 +231,7 @@
 	}
 
 	function selectWheelValue(type: TimePickerEditableSegmentType, optionValue: string) {
-		if (isDisabled) return;
+		if (disabled) return;
 
 		if (type === 'dayPeriod') {
 			setSegmentValue(type, optionValue.toUpperCase());
@@ -280,7 +288,7 @@
 			return resolvedLocale;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get granularity() {
 			return granularity;
@@ -305,6 +313,7 @@
 </script>
 
 <div
+	bind:this={rootRef}
 	id={instanceId}
 	class={resolvedClassName}
 	role="group"

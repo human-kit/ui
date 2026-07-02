@@ -60,7 +60,7 @@ describe('Calendar.BodyCell', () => {
 	it('does not expose selected state when calendar is disabled', async () => {
 		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
-			isDisabled: true
+			disabled: true
 		});
 
 		const selectedCell = getGridCellByDate('2026-02-10');
@@ -71,7 +71,7 @@ describe('Calendar.BodyCell', () => {
 	it('does not expose selected state when calendar is read-only', async () => {
 		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
-			isReadOnly: true
+			readonly: true
 		});
 
 		const selectedCell = getGridCellByDate('2026-02-10');
@@ -82,7 +82,7 @@ describe('Calendar.BodyCell', () => {
 	it('does not focus a day cell on click when calendar is disabled', async () => {
 		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
-			isDisabled: true
+			disabled: true
 		});
 		const day = getGridCellByDate('2026-02-10');
 		const dayElement = day.element()!;

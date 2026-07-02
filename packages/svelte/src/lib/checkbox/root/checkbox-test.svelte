@@ -5,14 +5,14 @@
 		id?: string;
 		name?: string;
 		value?: string;
-		isChecked?: boolean;
+		checked?: boolean;
 		defaultChecked?: boolean;
-		isIndeterminate?: boolean;
+		indeterminate?: boolean;
 		defaultIndeterminate?: boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		required?: boolean;
-		keepMounted?: boolean;
+		forceMount?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
 		onIndeterminateChange?: (indeterminate: boolean) => void;
 	};
@@ -21,14 +21,14 @@
 		id,
 		name,
 		value = 'newsletter',
-		isChecked = $bindable(),
+		checked = $bindable(),
 		defaultChecked = false,
-		isIndeterminate = $bindable(),
+		indeterminate = $bindable(),
 		defaultIndeterminate = false,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		required = false,
-		keepMounted = false,
+		forceMount = false,
 		onCheckedChange,
 		onIndeterminateChange
 	}: Props = $props();
@@ -38,22 +38,22 @@
 	{id}
 	{name}
 	{value}
-	bind:isChecked
+	bind:checked
 	{defaultChecked}
-	bind:isIndeterminate
+	bind:indeterminate
 	{defaultIndeterminate}
-	{isDisabled}
-	{isReadOnly}
+	{disabled}
+	{readonly}
 	{required}
 	{onCheckedChange}
 	{onIndeterminateChange}
 	class="inline-flex h-5 w-5 items-center justify-center"
 	aria-label="Accept terms"
 >
-	<Checkbox.Indicator {keepMounted}>
+	<Checkbox.Indicator {forceMount}>
 		<span data-checkbox-icon="true">icon</span>
 	</Checkbox.Indicator>
 </Checkbox.Root>
 
-<output data-checked-state>{String(isChecked ?? false)}</output>
-<output data-indeterminate-state>{String(isIndeterminate ?? false)}</output>
+<output data-checked-state>{String(checked ?? false)}</output>
+<output data-indeterminate-state>{String(indeterminate ?? false)}</output>

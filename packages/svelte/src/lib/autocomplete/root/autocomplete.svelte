@@ -12,8 +12,8 @@
 	type AutocompleteProps = {
 		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
 		id?: string;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		/** Current search query. Can be bound with bind:inputValue. */
 		inputValue?: string;
 		/** Initial query for uncontrolled mode. */
@@ -35,8 +35,8 @@
 
 	let {
 		id: rootId,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		inputValue = $bindable(),
 		defaultInputValue = '',
 		filter = defaultAutocompleteFilter,
@@ -139,10 +139,10 @@
 			return currentValue;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get isFocusVisible() {
 			return focusVisible;
@@ -202,7 +202,7 @@
 <div
 	bind:this={rootElement}
 	class={className}
-	data-disabled={isDisabled || undefined}
+	data-disabled={disabled || undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 >

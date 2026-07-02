@@ -9,7 +9,7 @@
 - Use `Popover.Root` to share open state and trigger reference.
 - Use `Popover.Trigger` as the opener button.
 - Use `Popover.Content` inside `Popover.Root`, or in standalone mode with `open`, `triggerRef`, and `onOpenChange`.
-- Configure `isNonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` to match your interaction model.
+- Configure `nonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` to match your interaction model.
 
 ## onOpenChange details
 

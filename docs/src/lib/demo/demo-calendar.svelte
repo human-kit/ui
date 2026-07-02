@@ -51,8 +51,8 @@
 				bind:value={singleValue}
 				selectionMode="single"
 				{visibleMonths}
-				{isDisabled}
-				{isReadOnly}
+				disabled={isDisabled}
+				readonly={isReadOnly}
 				isDateUnavailable={isWeekend}
 				class="space-y-4"
 			>
@@ -95,8 +95,8 @@
 				bind:value={rangeValue}
 				selectionMode="range"
 				{visibleMonths}
-				{isDisabled}
-				{isReadOnly}
+				disabled={isDisabled}
+				readonly={isReadOnly}
 				isDateUnavailable={isWeekend}
 				class="space-y-4"
 			>
@@ -142,8 +142,8 @@
 			<DemoSelect label="selectionMode" bind:value={selectionMode} options={selectionModeOptions} />
 			<DemoSelect label="locale" bind:value={locale} options={localeOptions} />
 			<DemoInput label="visibleMonths" type="number" bind:value={visibleMonths} />
-			<DemoCheckbox label="isDisabled" bind:checked={isDisabled} />
-			<DemoCheckbox label="isReadOnly" bind:checked={isReadOnly} />
+			<DemoCheckbox label="disabled" bind:checked={isDisabled} />
+			<DemoCheckbox label="readonly" bind:checked={isReadOnly} />
 			<hr class="border-gray-200 dark:border-gray-700" />
 			<DemoState label="selectionMode" value={selectionMode} />
 			<DemoState label="value" {value} />

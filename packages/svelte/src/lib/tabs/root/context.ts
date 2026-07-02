@@ -28,7 +28,7 @@ export type CreateTabsContextOptions = {
 	keyboardActivation?: TabsKeyboardActivation;
 	orientation?: TabsOrientation;
 	isDisabled?: boolean;
-	disabledValues?: Iterable<TabsValue>;
+	disabledKeys?: Iterable<TabsValue>;
 	onValueChange?: (value: TabsValue | null) => void;
 };
 
@@ -43,7 +43,7 @@ export type TabsContext = {
 	focusedValue: TabsValue | null;
 	activationDirection: TabsActivationDirection;
 	listElement: HTMLElement | null;
-	disabledValues: Set<TabsValue>;
+	disabledKeys: Set<TabsValue>;
 	getTabId: (value: TabsValue) => string;
 	getPanelId: (value: TabsValue) => string;
 	registerTab: (
@@ -57,7 +57,7 @@ export type TabsContext = {
 	setKeyboardActivation: (activation: TabsKeyboardActivation) => void;
 	setOrientation: (orientation: TabsOrientation) => void;
 	setDisabled: (disabled: boolean) => void;
-	setDisabledValues: (values?: Iterable<TabsValue>) => void;
+	setDisabledKeys: (values?: Iterable<TabsValue>) => void;
 	setSelectedValue: (value: TabsValue | null) => void;
 	activateTab: (value: TabsValue) => void;
 	setFocusedValue: (value: TabsValue | null) => void;
@@ -99,7 +99,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 	let listElement: HTMLElement | null = null;
 	let shouldSelectFirstOnRegister = options.initialValue === undefined;
 
-	const disabledValues = new Set<TabsValue>(options.disabledValues ?? []);
+	const disabledKeys = new Set<TabsValue>(options.disabledKeys ?? []);
 	const tabs = new Map<TabsValue, TabsTabRegistration>();
 	const panels = new Map<TabsValue, TabsPanelRegistration>();
 	const tabOrder: TabsValue[] = [];
@@ -124,7 +124,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 
 	function isValueDisabled(value: TabsValue) {
 		const tab = tabs.get(value);
-		return Boolean(tab?.isDisabled || disabledValues.has(value));
+		return Boolean(tab?.isDisabled || disabledKeys.has(value));
 	}
 
 	function getEnabledValues() {
@@ -312,10 +312,10 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		bumpState();
 	}
 
-	function setDisabledValues(values?: Iterable<TabsValue>) {
-		disabledValues.clear();
+	function setDisabledKeys(values?: Iterable<TabsValue>) {
+		disabledKeys.clear();
 		for (const value of values ?? []) {
-			disabledValues.add(value);
+			disabledKeys.add(value);
 		}
 		reconcileSelection();
 		bumpState();
@@ -396,7 +396,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		get listElement() {
 			return listElement;
 		},
-		disabledValues,
+		disabledKeys,
 		getTabId,
 		getPanelId,
 		registerTab,
@@ -407,7 +407,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		setKeyboardActivation,
 		setOrientation,
 		setDisabled,
-		setDisabledValues,
+		setDisabledKeys,
 		setSelectedValue,
 		activateTab,
 		setFocusedValue,

@@ -36,7 +36,7 @@
 - Use `value` / `onChange` for controlled state and `defaultValue` for uncontrolled state. Both are arrays of open item values.
 - Set `selectionMode="multiple"` to allow more than one panel open at a time (default is `"single"`).
 - Use `disallowEmptySelection` to keep at least one panel open.
-- Use `disabledValues`-style behaviour through `isDisabled` on `Accordion.Item`, or `isDisabled` on `Accordion.Root` to disable the whole accordion.
+- Use `disabled` on `Accordion.Item` to disable a single item, or `disabled` on `Accordion.Root` to disable the whole accordion.
 - Use `orientation="horizontal"` to switch the arrow-key navigation axis.
 - Use `loop={false}` to stop focus from wrapping at the first and last triggers.
 - Use `forceMount` on `Accordion.Panel` when collapsed panel content must stay in the DOM.

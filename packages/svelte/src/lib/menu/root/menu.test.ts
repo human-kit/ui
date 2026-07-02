@@ -110,7 +110,7 @@ describe('Menu', () => {
 	});
 
 	describe('Selection', () => {
-		it('invokes onSelect and closes the menu on item activation', async () => {
+		it('invokes onAction and closes the menu on item activation', async () => {
 			const onAction = vi.fn();
 			const screen = render(MenuTest, { onAction });
 			await screen.getByRole('button', { name: 'Open Menu' }).click();

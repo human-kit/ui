@@ -26,7 +26,7 @@
 >
 	<Table.Header>
 		<Table.Row>
-			<Table.Column id="email" isRowHeader textValue="Email" minWidth={120}>
+			<Table.Column id="email" rowHeader textValue="Email" minWidth={120}>
 				<Table.ColumnHeaderCell data-testid="email-header-cell">
 					<div class="flex items-center justify-between gap-3">
 						<span>Email</span>

@@ -27,7 +27,7 @@
 		<div class="flex w-full max-w-md flex-col gap-4">
 			<Toggle.Root
 				bind:selected={playgroundSelected}
-				isDisabled={playgroundDisabled}
+				disabled={playgroundDisabled}
 				value="pin"
 				onChange={pushChange}
 				class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-800 shadow-sm transition-colors data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-sky-500 data-[selected=true]:border-emerald-600 data-[selected=true]:bg-emerald-600 data-[selected=true]:text-white data-[pressed=true]:scale-[0.98] data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:data-[selected=true]:border-emerald-500 dark:data-[selected=true]:bg-emerald-500 dark:data-[selected=true]:text-gray-950"
@@ -56,10 +56,10 @@
 		{#snippet controls()}
 			<div class="space-y-4">
 				<DemoCheckbox label="selected" bind:checked={playgroundSelected} />
-				<DemoCheckbox label="isDisabled" bind:checked={playgroundDisabled} />
+				<DemoCheckbox label="disabled" bind:checked={playgroundDisabled} />
 				<hr class="border-gray-200 dark:border-gray-700" />
 				<DemoState label="selected" value={playgroundSelected} />
-				<DemoState label="isDisabled" value={playgroundDisabled} />
+				<DemoState label="disabled" value={playgroundDisabled} />
 				<DemoState label="changes" value={changeEvents} />
 			</div>
 		{/snippet}

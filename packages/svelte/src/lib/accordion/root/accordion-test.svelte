@@ -8,7 +8,7 @@
 		defaultValue?: AccordionValue[];
 		selectionMode?: AccordionSelectionMode;
 		orientation?: AccordionOrientation;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		disallowEmptySelection?: boolean;
 		loop?: boolean;
 		billingDisabled?: boolean;
@@ -22,7 +22,7 @@
 		defaultValue,
 		selectionMode = 'single',
 		orientation = 'vertical',
-		isDisabled = false,
+		disabled = false,
 		disallowEmptySelection = false,
 		loop = true,
 		billingDisabled = false,
@@ -47,7 +47,7 @@
 		<Accordion.Panel data-testid="panel-overview">Overview panel</Accordion.Panel>
 	</Accordion.Item>
 
-	<Accordion.Item value="billing" isDisabled={billingDisabled} data-testid="item-billing">
+	<Accordion.Item value="billing" disabled={billingDisabled} data-testid="item-billing">
 		<Accordion.Header data-testid="header-billing">
 			<Accordion.Trigger data-testid="trigger-billing">Billing</Accordion.Trigger>
 		</Accordion.Header>
@@ -69,7 +69,7 @@
 		bind:value={currentValue}
 		{selectionMode}
 		{orientation}
-		{isDisabled}
+		{disabled}
 		{disallowEmptySelection}
 		{loop}
 		onChange={handleChange}
@@ -82,7 +82,7 @@
 		{defaultValue}
 		{selectionMode}
 		{orientation}
-		{isDisabled}
+		{disabled}
 		{disallowEmptySelection}
 		{loop}
 		onChange={handleChange}

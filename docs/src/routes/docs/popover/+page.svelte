@@ -54,7 +54,7 @@
 						{placement}
 						{offset}
 						{shouldFlip}
-						{isNonModal}
+						nonModal={isNonModal}
 						{shouldCloseOnInteractOutside}
 						{shouldCloseOnEscape}
 						class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
@@ -71,7 +71,7 @@
 						<DemoSelect label="placement" bind:value={placement} options={placementOptions} />
 						<DemoInput label="offset" type="number" bind:value={offset} />
 						<DemoCheckbox label="shouldFlip" bind:checked={shouldFlip} />
-						<DemoCheckbox label="isNonModal" bind:checked={isNonModal} />
+						<DemoCheckbox label="nonModal" bind:checked={isNonModal} />
 						<DemoCheckbox
 							label="shouldCloseOnInteractOutside"
 							bind:checked={shouldCloseOnInteractOutside}
@@ -138,7 +138,7 @@
 								Open Modal
 							</Popover.Trigger>
 							<Popover.Content
-								isNonModal={false}
+								nonModal={false}
 								class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
 							>
 								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Modal Popover</h3>
@@ -158,7 +158,7 @@
 								Open Non-Modal
 							</Popover.Trigger>
 							<Popover.Content
-								isNonModal={true}
+								nonModal={true}
 								class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
 							>
 								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Non-Modal Popover</h3>

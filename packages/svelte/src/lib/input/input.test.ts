@@ -57,8 +57,8 @@ describe('Input', () => {
 		expectNoFalseFocusAttributes(document);
 	});
 
-	it('disables the native input when isDisabled is true', () => {
-		const screen = render(InputTest, { isDisabled: true });
+	it('disables the native input when disabled is true', () => {
+		const screen = render(InputTest, { disabled: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });
 
 		expect(input.element()?.hasAttribute('disabled')).toBe(true);
@@ -66,7 +66,7 @@ describe('Input', () => {
 	});
 
 	it('supports read only inputs without losing focusability', async () => {
-		const screen = render(InputTest, { isReadOnly: true });
+		const screen = render(InputTest, { readonly: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });
 
 		expect(input.element()?.hasAttribute('readonly')).toBe(true);
@@ -95,7 +95,7 @@ describe('Input', () => {
 	});
 
 	it('maps invalid and required state to data and aria attributes', () => {
-		const screen = render(InputTest, { isInvalid: true, isRequired: true });
+		const screen = render(InputTest, { invalid: true, required: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });
 
 		expect(input.element()?.getAttribute('aria-invalid')).toBe('true');

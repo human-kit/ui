@@ -10,10 +10,10 @@
 
 	type TextAreaProps = HTMLTextareaAttributes & {
 		class?: ClassValue;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isInvalid?: boolean;
-		isRequired?: boolean;
+		disabled?: boolean | null;
+		readonly?: boolean | null;
+		invalid?: boolean;
+		required?: boolean | null;
 		value?: TextAreaValue;
 		element?: HTMLTextAreaElement | null;
 		autoResize?: boolean;
@@ -66,14 +66,11 @@
 	let {
 		id,
 		class: className,
-		disabled: disabledProp = false,
-		readonly: readOnlyProp = false,
-		required: requiredProp = false,
+		disabled = false,
+		readonly = false,
+		required = false,
+		invalid = false,
 		'aria-invalid': ariaInvalidProp,
-		isDisabled = false,
-		isReadOnly = false,
-		isInvalid = false,
-		isRequired = false,
 		value = $bindable<TextAreaValue>(),
 		element = $bindable<HTMLTextAreaElement | null>(null),
 		autoResize = false,
@@ -97,10 +94,7 @@
 	let focused = $state(false);
 	let focusVisible = $state(false);
 
-	const resolvedDisabled = $derived(Boolean(isDisabled || disabledProp));
-	const resolvedReadOnly = $derived(Boolean(isReadOnly || readOnlyProp));
-	const resolvedRequired = $derived(Boolean(isRequired || requiredProp));
-	const resolvedInvalid = $derived(Boolean(isInvalid || isAriaInvalidValue(ariaInvalidProp)));
+	const resolvedInvalid = $derived(Boolean(invalid || isAriaInvalidValue(ariaInvalidProp)));
 	const renderedAriaInvalid = $derived.by<AriaInvalidValue | undefined>(() => {
 		if (!resolvedInvalid) return undefined;
 		return ariaInvalidProp === 'grammar' || ariaInvalidProp === 'spelling'
@@ -113,7 +107,7 @@
 	});
 
 	$effect(() => {
-		if (!resolvedDisabled) return;
+		if (!disabled) return;
 		hovered = false;
 		focused = false;
 		focusVisible = false;
@@ -189,7 +183,7 @@
 	}
 
 	function handleFocus() {
-		if (resolvedDisabled) return;
+		if (disabled) return;
 		focused = true;
 		focusVisible = shouldShowFocusVisible(textAreaRef);
 	}
@@ -220,7 +214,7 @@
 	}
 
 	function handleMouseEnter() {
-		if (resolvedDisabled) {
+		if (disabled) {
 			hovered = false;
 			return;
 		}
@@ -238,18 +232,18 @@
 	bind:this={textAreaRef}
 	id={resolvedId}
 	{value}
-	disabled={resolvedDisabled}
-	readonly={resolvedReadOnly}
-	required={resolvedRequired}
+	{disabled}
+	{readonly}
+	{required}
 	aria-invalid={renderedAriaInvalid}
-	aria-readonly={resolvedReadOnly || undefined}
-	aria-required={resolvedRequired || undefined}
+	aria-readonly={readonly || undefined}
+	aria-required={required || undefined}
 	data-textarea-root="true"
 	data-autoresize={autoResize || undefined}
-	data-disabled={resolvedDisabled || undefined}
-	data-readonly={resolvedReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
 	data-invalid={resolvedInvalid || undefined}
-	data-required={resolvedRequired || undefined}
+	data-required={required || undefined}
 	data-hovered={hovered || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}

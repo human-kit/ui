@@ -8,10 +8,10 @@
 	let {
 		keyboardActivation = 'automatic',
 		orientation = 'horizontal',
-		isDisabled = false,
+		disabled = false,
 		value = $bindable(),
 		defaultValue,
-		disabledValues,
+		disabledKeys,
 		onChange,
 		children,
 		class: className = '',
@@ -32,8 +32,8 @@
 			isControlled: isValueControlled,
 			keyboardActivation: (() => keyboardActivation)(),
 			orientation: (() => orientation)(),
-			isDisabled: (() => isDisabled)(),
-			disabledValues: (() => disabledValues)(),
+			isDisabled: (() => disabled)(),
+			disabledKeys: (() => disabledKeys)(),
 			initialValue: isValueControlled
 				? (untrack(() => value) ?? null)
 				: untrack(() => defaultValue),
@@ -59,11 +59,11 @@
 	});
 
 	$effect(() => {
-		tabs.setDisabled(isDisabled);
+		tabs.setDisabled(disabled);
 	});
 
 	$effect(() => {
-		tabs.setDisabledValues(disabledValues);
+		tabs.setDisabledKeys(disabledKeys);
 	});
 
 	$effect(() => {
@@ -79,7 +79,7 @@
 	class={className}
 	data-tabs-root="true"
 	data-orientation={orientation}
-	data-disabled={isDisabled || undefined}
+	data-disabled={disabled || undefined}
 >
 	{@render children?.()}
 </div>

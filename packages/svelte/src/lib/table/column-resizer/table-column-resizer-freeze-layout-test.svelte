@@ -13,7 +13,7 @@
 	>
 		<Table.Header>
 			<Table.Row>
-				<Table.Column id="email" isRowHeader textValue="Email" minWidth={80}>
+				<Table.Column id="email" rowHeader textValue="Email" minWidth={80}>
 					<Table.ColumnHeaderCell>
 						<div class="flex items-center justify-between gap-3">
 							<span>Email address</span>
