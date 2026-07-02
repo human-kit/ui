@@ -10,7 +10,8 @@
 		<Tree.Label>Documents</Tree.Label>
 		<Tree.Children>
 			<Tree.Item id="reports" title="Reports">
-				<Tree.Trigger aria-label="Toggle Reports" data-testid="trigger-reports">Toggle</Tree.Trigger>
+				<Tree.Trigger aria-label="Toggle Reports" data-testid="trigger-reports">Toggle</Tree.Trigger
+				>
 				<Tree.Label>Reports</Tree.Label>
 			</Tree.Item>
 		</Tree.Children>

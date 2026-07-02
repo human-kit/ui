@@ -106,7 +106,10 @@
 
 {#snippet rowContent(title: string, hasChildren: boolean)}
 	{#if hasChildren}
-		<Tree.Trigger class="inline-flex h-7 w-7 shrink-0 items-center justify-center" aria-label={`Toggle ${title}`}>
+		<Tree.Trigger
+			class="inline-flex h-7 w-7 shrink-0 items-center justify-center"
+			aria-label={`Toggle ${title}`}
+		>
 			<svg aria-hidden="true" viewBox="0 0 16 16" class="h-4 w-4">
 				<path
 					d="m5.5 3.75 5 4.25-5 4.25"

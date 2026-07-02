@@ -1416,8 +1416,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const siblingCandidates =
 			targetCell.section === 'header'
 				? Array.from(cells.values()).filter(
-					(candidate) => candidate.section === 'header' && candidate.rowToken === targetCell.rowToken
-				)
+						(candidate) =>
+							candidate.section === 'header' && candidate.rowToken === targetCell.rowToken
+					)
 				: getResolvedBodyCellsForRow(targetCell.rowToken);
 
 		const siblingCells = siblingCandidates

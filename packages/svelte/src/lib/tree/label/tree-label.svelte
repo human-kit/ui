@@ -4,12 +4,7 @@
 	import { getTreeRenderMode } from '../root/render-mode';
 	import type { TreeLabelProps } from '../types';
 
-	let {
-		children,
-		class: className = '',
-		id,
-		...restProps
-	}: TreeLabelProps = $props();
+	let { children, class: className = '', id, ...restProps }: TreeLabelProps = $props();
 
 	const renderMode = getTreeRenderMode();
 	const item = renderMode === 'display' ? useTreeItemContext() : undefined;
@@ -44,7 +39,13 @@
 </script>
 
 {#if renderMode === 'display'}
-	<span bind:this={elementRef} id={resolvedId} data-tree-label="true" class={className} {...restProps}>
+	<span
+		bind:this={elementRef}
+		id={resolvedId}
+		data-tree-label="true"
+		class={className}
+		{...restProps}
+	>
 		{@render children?.()}
 	</span>
 {/if}

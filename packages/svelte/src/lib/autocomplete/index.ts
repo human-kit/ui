@@ -23,7 +23,9 @@ export type AutocompleteRootProps = ComponentProps<typeof AutocompleteRootCompon
 export type AutocompleteInputProps = ComponentProps<typeof AutocompleteInputComponent>;
 export type AutocompleteListProps = ComponentProps<typeof AutocompleteListComponent>;
 export type AutocompleteItemProps = ComponentProps<typeof AutocompleteItemComponent>;
-export type AutocompleteItemIndicatorProps = ComponentProps<typeof AutocompleteItemIndicatorComponent>;
+export type AutocompleteItemIndicatorProps = ComponentProps<
+	typeof AutocompleteItemIndicatorComponent
+>;
 export type AutocompleteEmptyProps = ComponentProps<typeof AutocompleteEmptyComponent>;
 export type AutocompleteStatusProps = ComponentProps<typeof AutocompleteStatusComponent>;
 

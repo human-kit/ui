@@ -33,7 +33,7 @@ own how files are stored or rendered.
 - `multiple` allows selecting/dropping more than one file; when false only the first is emitted.
 - Style interaction state with `data-drop-target`, `data-focus-visible`, `data-hovered`, and
   `data-disabled`. The `children` snippet also receives `{ isDragging, isFocused, isFocusVisible,
-  isDisabled }`.
+isDisabled }`.
 - Feed `announcement` with a short result message (e.g. `"2 archivos agregados"`) so screen
   reader users hear the outcome of a drop, which does not move focus on its own.
 

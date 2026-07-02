@@ -45,8 +45,8 @@
 						<Collapsible.Panel
 							class="border-t border-gray-200 px-4 py-3 text-sm leading-6 text-gray-600 dark:border-gray-700 dark:text-gray-300"
 						>
-							Store these one-time recovery keys somewhere safe. Each key can be used a single time to
-							regain access if you lose your authenticator.
+							Store these one-time recovery keys somewhere safe. Each key can be used a single time
+							to regain access if you lose your authenticator.
 						</Collapsible.Panel>
 					</Collapsible.Root>
 				</div>

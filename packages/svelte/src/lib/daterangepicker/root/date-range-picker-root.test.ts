@@ -19,11 +19,7 @@ function getSegment(part: 'start' | 'end', type: 'day' | 'month' | 'year') {
 	};
 }
 
-async function typeSegment(
-	part: 'start' | 'end',
-	type: 'day' | 'month' | 'year',
-	digits: string
-) {
+async function typeSegment(part: 'start' | 'end', type: 'day' | 'month' | 'year', digits: string) {
 	const element = getSegment(part, type).element();
 	element.focus();
 	await userEvent.keyboard(digits);

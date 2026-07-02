@@ -19,4 +19,6 @@
 	</Accordion.Item>
 </Accordion.Root>
 
-<output data-testid="numeric-string-value">{JSON.stringify(value.map((entry) => `${typeof entry}:${entry}`))}</output>
+<output data-testid="numeric-string-value"
+	>{JSON.stringify(value.map((entry) => `${typeof entry}:${entry}`))}</output
+>

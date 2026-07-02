@@ -9,17 +9,20 @@
 		class?: string;
 	};
 
-	let { children, class: className, onmousedown, 'data-invalid': dataInvalid, ...restProps }: NumberFieldGroupProps =
-		$props();
+	let {
+		children,
+		class: className,
+		onmousedown,
+		'data-invalid': dataInvalid,
+		...restProps
+	}: NumberFieldGroupProps = $props();
 	const numberField = useNumberFieldContext();
 
 	function isTruthyDataAttribute(value: unknown) {
 		return value === true || value === '' || value === 'true';
 	}
 
-	const resolvedInvalid = $derived(
-		isTruthyDataAttribute(dataInvalid) || numberField.isInvalid
-	);
+	const resolvedInvalid = $derived(isTruthyDataAttribute(dataInvalid) || numberField.isInvalid);
 
 	function handleMouseDown(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (event.target instanceof HTMLInputElement) {

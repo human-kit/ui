@@ -151,9 +151,7 @@ describe('Autocomplete', () => {
 			expect(document.activeElement).toBe(inputEl);
 
 			await userEvent.keyboard('{ArrowDown}');
-			await expect
-				.poll(() => inputEl.getAttribute('aria-activedescendant'))
-				.toBeTruthy();
+			await expect.poll(() => inputEl.getAttribute('aria-activedescendant')).toBeTruthy();
 			expect(document.activeElement).toBe(inputEl);
 		});
 	});
@@ -186,7 +184,10 @@ describe('Autocomplete', () => {
 			await screen.getByTestId('label-mango').click();
 
 			// The clicked option owns the focused state...
-			const mango = screen.getByTestId('label-mango').element().closest('[role="option"]') as HTMLElement;
+			const mango = screen
+				.getByTestId('label-mango')
+				.element()
+				.closest('[role="option"]') as HTMLElement;
 			await expect.poll(() => mango.getAttribute('data-focused')).toBe('true');
 			// ...but a pointer click must not produce a keyboard focus ring.
 			expect(mango.hasAttribute('data-focus-visible')).toBe(false);

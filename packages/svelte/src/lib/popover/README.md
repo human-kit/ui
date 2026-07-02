@@ -27,10 +27,10 @@ Import the component and compose its parts:
 
 ```svelte
 <Popover.Root>
-  <Popover.Trigger>Open</Popover.Trigger>
-  <Popover.Content>
-    <div>Content</div>
-  </Popover.Content>
+	<Popover.Trigger>Open</Popover.Trigger>
+	<Popover.Content>
+		<div>Content</div>
+	</Popover.Content>
 </Popover.Root>
 ```
 

@@ -7,14 +7,14 @@
 Name: `Tree.Checkbox`  
 Description: Headless selection-aware checkbox root for trees. It reflects and toggles the owning `Tree.Item` selection state, including indeterminate branch state when descendant propagation is enabled.
 
-| Prop              | Type                                       | Default     | Description                                                          |
-| ----------------- | ------------------------------------------ | ----------- | -------------------------------------------------------------------- |
-| `id`              | `string`                                   | `undefined` | Optional id forwarded to the composed checkbox root.                 |
-| `title`           | `string`                                   | `undefined` | Optional title forwarded to the composed checkbox root.              |
-| `children`        | `Snippet`                                  | `undefined` | Composed child content, typically `Tree.CheckboxIndicator`.          |
-| `class`           | `string`                                   | `''`        | CSS class names for the composed checkbox root element.              |
-| `aria-label`      | `string`                                   | `undefined` | Accessible label override. Defaults to `Select <item label>`.        |
-| `aria-labelledby` | `string`                                   | `undefined` | Accessible label source id when the checkbox should be named by DOM. |
+| Prop              | Type      | Default     | Description                                                          |
+| ----------------- | --------- | ----------- | -------------------------------------------------------------------- |
+| `id`              | `string`  | `undefined` | Optional id forwarded to the composed checkbox root.                 |
+| `title`           | `string`  | `undefined` | Optional title forwarded to the composed checkbox root.              |
+| `children`        | `Snippet` | `undefined` | Composed child content, typically `Tree.CheckboxIndicator`.          |
+| `class`           | `string`  | `''`        | CSS class names for the composed checkbox root element.              |
+| `aria-label`      | `string`  | `undefined` | Accessible label override. Defaults to `Select <item label>`.        |
+| `aria-labelledby` | `string`  | `undefined` | Accessible label source id when the checkbox should be named by DOM. |
 
 ## Usage notes
 
@@ -25,14 +25,14 @@ Description: Headless selection-aware checkbox root for trees. It reflects and t
 
 ```svelte
 <Tree.Item id="documents" title="Documents">
- <Tree.Checkbox
-  aria-label="Select Documents"
-  class="inline-flex h-5 w-5 items-center justify-center rounded border"
- >
-  <Tree.CheckboxIndicator>
-   <CheckIcon class="h-3.5 w-3.5" />
-  </Tree.CheckboxIndicator>
- </Tree.Checkbox>
- <Tree.Label>Documents</Tree.Label>
+	<Tree.Checkbox
+		aria-label="Select Documents"
+		class="inline-flex h-5 w-5 items-center justify-center rounded border"
+	>
+		<Tree.CheckboxIndicator>
+			<CheckIcon class="h-3.5 w-3.5" />
+		</Tree.CheckboxIndicator>
+	</Tree.Checkbox>
+	<Tree.Label>Documents</Tree.Label>
 </Tree.Item>
 ```

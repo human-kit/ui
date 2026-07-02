@@ -34,7 +34,9 @@ describe('Tree.Trigger', () => {
 	it('toggles on Enter and Space when the trigger receives focus', async () => {
 		render(TreeTriggerTest, { defaultExpandedKeys: ['documents'] });
 
-		const documents = document.querySelector<HTMLElement>('[role="treeitem"][id="tree-item-documents"]');
+		const documents = document.querySelector<HTMLElement>(
+			'[role="treeitem"][id="tree-item-documents"]'
+		);
 		const trigger = documents?.querySelector<HTMLElement>('[data-tree-trigger="true"]');
 
 		if (!documents || !trigger) {

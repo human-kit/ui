@@ -47,7 +47,7 @@ Quick usage:
 
 ```svelte
 <script lang="ts">
- import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
+	import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
 </script>
 ```
 

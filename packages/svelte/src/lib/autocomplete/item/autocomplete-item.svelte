@@ -57,7 +57,10 @@
 	// Visible when there is no query, filtering is disabled, the text value hasn't
 	// resolved yet (keep visible until mount resolves it), or the filter matches.
 	const isVisible = $derived(
-		!query.trim() || !effectiveTextValue || ctx.filter === null || ctx.filter(effectiveTextValue, query)
+		!query.trim() ||
+			!effectiveTextValue ||
+			ctx.filter === null ||
+			ctx.filter(effectiveTextValue, query)
 	);
 
 	const isFocused = $derived(ctx.focusedItemId === id);

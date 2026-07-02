@@ -22,7 +22,9 @@ export function getAccordionItemContext() {
 export function useAccordionItemContext() {
 	const context = getAccordionItemContext();
 	if (!context) {
-		throw new Error('Accordion.Header, Accordion.Trigger and Accordion.Panel must be used inside `Accordion.Item`.');
+		throw new Error(
+			'Accordion.Header, Accordion.Trigger and Accordion.Panel must be used inside `Accordion.Item`.'
+		);
 	}
 	return context;
 }

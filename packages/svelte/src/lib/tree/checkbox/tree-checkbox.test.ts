@@ -22,7 +22,9 @@ describe('Tree.Checkbox', () => {
 		});
 
 		const checkbox = document.querySelector<HTMLElement>('[data-tree-checkbox="true"]');
-		const documents = document.querySelector<HTMLElement>('[role="treeitem"][id="tree-item-documents"]');
+		const documents = document.querySelector<HTMLElement>(
+			'[role="treeitem"][id="tree-item-documents"]'
+		);
 
 		if (!checkbox || !documents) throw new Error('Tree checkbox or item not found');
 
@@ -107,8 +109,12 @@ describe('Tree.Checkbox', () => {
 		});
 
 		const tree = document.querySelector<HTMLElement>('[role="tree"]');
-		const documents = document.querySelector<HTMLElement>('[role="treeitem"][id="tree-item-documents"]');
-		const reports = document.querySelector<HTMLElement>('[role="treeitem"][id="tree-item-reports"]');
+		const documents = document.querySelector<HTMLElement>(
+			'[role="treeitem"][id="tree-item-documents"]'
+		);
+		const reports = document.querySelector<HTMLElement>(
+			'[role="treeitem"][id="tree-item-reports"]'
+		);
 		const checkbox = document.querySelector<HTMLElement>('[data-tree-checkbox="true"]');
 
 		if (!tree || !documents || !reports || !checkbox) {

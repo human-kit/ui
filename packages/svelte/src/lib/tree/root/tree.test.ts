@@ -407,7 +407,9 @@ describe('Tree.Root', () => {
 
 	it('reacts when disabledKeys changes after mount', async () => {
 		const screen = render(TreeDisabledKeysTest);
-		const reports = document.querySelector<HTMLElement>('[role="treeitem"][id="tree-item-reports"]');
+		const reports = document.querySelector<HTMLElement>(
+			'[role="treeitem"][id="tree-item-reports"]'
+		);
 
 		if (!reports) throw new Error('Reports treeitem not found');
 		expect(reports.getAttribute('data-disabled')).toBeNull();

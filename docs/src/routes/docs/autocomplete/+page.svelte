@@ -186,7 +186,10 @@
 					<div class="space-y-4">
 						<DemoState label="inputValue" value={externalInput} />
 						<DemoState label="selectedValue" value={externalValue} />
-						<DemoState label="filteredCount" value={`${externalFiltered.length}/${cities.length}`} />
+						<DemoState
+							label="filteredCount"
+							value={`${externalFiltered.length}/${cities.length}`}
+						/>
 					</div>
 				{/snippet}
 			</DemoSection>
@@ -240,14 +243,19 @@
 			</DemoSection>
 
 			<!-- Keyboard Navigation Info -->
-			<DemoSection title="Keyboard Navigation" description="Full keyboard support for accessibility">
+			<DemoSection
+				title="Keyboard Navigation"
+				description="Full keyboard support for accessibility"
+			>
 				<div class="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
 					<div class="flex items-center gap-2">
 						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">↓ / ↑</kbd>
 						<span>Move highlight</span>
 					</div>
 					<div class="flex items-center gap-2">
-						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700">PageUp / PageDown</kbd>
+						<kbd class="rounded bg-gray-200 px-2 py-1 text-xs dark:bg-gray-700"
+							>PageUp / PageDown</kbd
+						>
 						<span>Jump by a page</span>
 					</div>
 					<div class="flex items-center gap-2">

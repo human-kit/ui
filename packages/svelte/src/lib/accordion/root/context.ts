@@ -202,9 +202,7 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		const nextValue = valuesToArray(normalizedValues, itemOrder);
 		const didChange =
 			previousValue.length !== nextValue.length ||
-			previousValue.some(
-				(value, index) => !valuesMatch(value, nextValue[index] as AccordionValue)
-			);
+			previousValue.some((value, index) => !valuesMatch(value, nextValue[index] as AccordionValue));
 
 		if (!didChange) return false;
 

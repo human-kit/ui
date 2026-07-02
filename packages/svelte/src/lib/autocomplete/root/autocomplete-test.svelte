@@ -49,12 +49,7 @@
 <Autocomplete.Root {id} {isDisabled} {isReadOnly} {filter} {autoHighlight} aria-label="Fruits">
 	<Autocomplete.Input placeholder="Search fruits..." aria-label="Search fruits" />
 	<Autocomplete.Status />
-	<Autocomplete.List
-		{selectionMode}
-		{defaultValue}
-		disabledIds={disabledIds}
-		onChange={handleChange}
-	>
+	<Autocomplete.List {selectionMode} {defaultValue} {disabledIds} onChange={handleChange}>
 		{#each fruits as fruit (fruit.id)}
 			<Autocomplete.Item
 				id={fruit.id}

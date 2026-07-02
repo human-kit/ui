@@ -88,8 +88,7 @@
 		const itemNodes = nodes.slice(0, items.length);
 		itemWidths = itemNodes.map((node) => node.getBoundingClientRect().width);
 		const indicator = nodes[nodes.length - 1];
-		indicatorWidth =
-			items.length > 0 && indicator ? indicator.getBoundingClientRect().width : 0;
+		indicatorWidth = items.length > 0 && indicator ? indicator.getBoundingClientRect().width : 0;
 		const styles = getComputedStyle(mirrorEl);
 		gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
 	});
@@ -101,8 +100,7 @@
 			return items.length;
 		}
 		const totalWidth =
-			itemWidths.reduce((sum, width) => sum + width, 0) +
-			gap * Math.max(itemWidths.length - 1, 0);
+			itemWidths.reduce((sum, width) => sum + width, 0) + gap * Math.max(itemWidths.length - 1, 0);
 		if (totalWidth <= availableWidth) return items.length;
 		// Doesn't all fit: reserve room for the overflow indicator.
 		const usableWidth = availableWidth - indicatorWidth - gap;

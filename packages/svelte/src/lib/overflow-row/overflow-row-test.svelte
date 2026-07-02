@@ -49,7 +49,13 @@
 			{/snippet}
 		</OverflowRow>
 	{:else}
-		<OverflowRow {items} getKey={(item) => item.id} class="row" role="list" aria-label="Selected values">
+		<OverflowRow
+			{items}
+			getKey={(item) => item.id}
+			class="row"
+			role="list"
+			aria-label="Selected values"
+		>
 			{#snippet children({ item })}
 				<span data-tag-id={item.id} class="tag">{item.label}</span>
 			{/snippet}

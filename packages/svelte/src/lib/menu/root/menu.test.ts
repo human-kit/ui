@@ -436,16 +436,22 @@ describe('Menu', () => {
 			);
 			await expect.poll(() => first.getAttribute('data-pressed')).toBe('true');
 
-			first.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true, buttons: 1, pointerId }));
+			first.dispatchEvent(
+				new PointerEvent('pointerleave', { bubbles: true, buttons: 1, pointerId })
+			);
 			await expect.poll(() => first.getAttribute('data-pressed')).toBeNull();
 
 			// Arriving on a sibling with the button still held must not light it up — the press
 			// belongs to the item it began on.
-			second.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true, buttons: 1, pointerId }));
+			second.dispatchEvent(
+				new PointerEvent('pointerenter', { bubbles: true, buttons: 1, pointerId })
+			);
 			expect(second.getAttribute('data-pressed')).toBeNull();
 
 			// Returning to the originating item restores its pressed look.
-			first.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true, buttons: 1, pointerId }));
+			first.dispatchEvent(
+				new PointerEvent('pointerenter', { bubbles: true, buttons: 1, pointerId })
+			);
 			await expect.poll(() => first.getAttribute('data-pressed')).toBe('true');
 
 			window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, pointerId }));

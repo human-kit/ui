@@ -14,7 +14,13 @@
 		ComponentProps<typeof ListBox>,
 		// Controlled internally by Autocomplete. The empty state is owned by
 		// `Autocomplete.Empty`, so the ListBox's built-in placeholder is suppressed.
-		'context' | 'element' | 'disableFocusHandling' | 'id' | 'items' | 'children' | 'emptyPlaceholder'
+		| 'context'
+		| 'element'
+		| 'disableFocusHandling'
+		| 'id'
+		| 'items'
+		| 'children'
+		| 'emptyPlaceholder'
 	> & {
 		/** Optional items for dynamic rendering. */
 		items?: Iterable<T>;

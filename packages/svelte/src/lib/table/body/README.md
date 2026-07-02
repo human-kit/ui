@@ -24,9 +24,9 @@ Public prop type: `TableBodyProps`
 Name: `TableBodyVirtualizer`
 Description: Fixed-height body virtualization settings.
 
-| Prop        | Type     | Default | Description                                                    |
-| ----------- | -------- | ------- | -------------------------------------------------------------- |
-| `rowHeight` | `number` | `-`     | Required fixed pixel height used to compute the visible range. |
+| Prop        | Type     | Default | Description                                                                                                                                                          |
+| ----------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rowHeight` | `number` | `-`     | Required fixed pixel height used to compute the visible range.                                                                                                       |
 | `overscan`  | `number` | `18`    | Optional explicit override for the extra rows rendered above and below the viewport. When omitted, the body renders 18 extra rows above and below the visible range. |
 
 ### Context utilities

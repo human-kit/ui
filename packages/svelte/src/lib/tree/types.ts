@@ -83,13 +83,7 @@ export type TreeLabelProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children'> &
 
 export type TreeTriggerProps = Omit<
 	HTMLButtonAttributes,
-	| 'type'
-	| 'children'
-	| 'class'
-	| 'aria-expanded'
-	| 'aria-controls'
-	| 'disabled'
-	| 'tabindex'
+	'type' | 'children' | 'class' | 'aria-expanded' | 'aria-controls' | 'disabled' | 'tabindex'
 > & {
 	children?: Snippet;
 	class?: string;

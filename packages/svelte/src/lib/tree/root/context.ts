@@ -60,11 +60,11 @@ export type TreeSectionContext = {
 	setHeader: (
 		header:
 			| {
-				id: string;
-				render?: Snippet;
-				className?: string;
-				domProps?: Record<string, unknown>;
-			}
+					id: string;
+					render?: Snippet;
+					className?: string;
+					domProps?: Record<string, unknown>;
+			  }
 			| undefined
 	) => void;
 	getHeaderId: () => string | undefined;
@@ -335,10 +335,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	) {
 		let changed = false;
 
-		if (
-			config.selectionMode !== undefined &&
-			config.selectionMode !== currentSelectionMode
-		) {
+		if (config.selectionMode !== undefined && config.selectionMode !== currentSelectionMode) {
 			currentSelectionMode = config.selectionMode;
 			changed = true;
 		}
@@ -682,12 +679,16 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 			if (selected) {
 				nextSelection.clear();
 				nextSelection.add(id);
-			} else if (!(currentDisallowEmptySelection && nextSelection.has(id) && nextSelection.size === 1)) {
+			} else if (
+				!(currentDisallowEmptySelection && nextSelection.has(id) && nextSelection.size === 1)
+			) {
 				nextSelection.delete(id);
 			}
 		} else if (selected) {
 			nextSelection.add(id);
-		} else if (!(currentDisallowEmptySelection && nextSelection.has(id) && nextSelection.size === 1)) {
+		} else if (
+			!(currentDisallowEmptySelection && nextSelection.has(id) && nextSelection.size === 1)
+		) {
 			if (currentSelectionPropagation === 'descendants') {
 				applyDescendantDeselection(nextSelection, id);
 			} else {
@@ -697,7 +698,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 
 		selectedKeys = nextSelection;
 		invalidateSelectedKeysCache();
-		selectionAnchorId = selected ? id : (selectedKeys.size > 0 ? Array.from(selectedKeys)[0] : null);
+		selectionAnchorId = selected ? id : selectedKeys.size > 0 ? Array.from(selectedKeys)[0] : null;
 
 		if (!setsEqual(previousSelection, getEffectiveSelectedKeys())) {
 			emitSelectionChange();
@@ -876,11 +877,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		const isAdditive = Boolean(interaction.ctrlKey || interaction.metaKey);
 
 		if (currentSelectionMode === 'single') {
-			if (
-				currentSelectionBehavior === 'toggle' &&
-				wasSelected &&
-				!currentDisallowEmptySelection
-			) {
+			if (currentSelectionBehavior === 'toggle' && wasSelected && !currentDisallowEmptySelection) {
 				nextSelection.clear();
 			} else {
 				nextSelection.clear();
@@ -994,7 +991,9 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		const index = focusableNodes.findIndex((node) => idsEqual(node.id, id));
 		if (index === -1) {
 			const visibleIndex = getVisibleIndex(id);
-			const previousNodes = focusableNodes.filter((node) => getVisibleIndex(node.id) < visibleIndex);
+			const previousNodes = focusableNodes.filter(
+				(node) => getVisibleIndex(node.id) < visibleIndex
+			);
 			return previousNodes[previousNodes.length - 1]?.id ?? focusableNodes[0]?.id ?? null;
 		}
 		return focusableNodes[Math.max(index - 1, 0)]?.id ?? null;

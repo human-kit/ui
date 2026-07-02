@@ -56,14 +56,14 @@
 
 ```svelte
 <LocaleProvider locale="es-ES">
- <Calendar.Root>
-  <Calendar.TriggerPrevious />
-  <Calendar.Heading />
-  <Calendar.TriggerNext />
-  <Calendar.Grid weekdayStyle="narrow">
-   <Calendar.GridHeader />
-   <Calendar.GridBody />
-  </Calendar.Grid>
- </Calendar.Root>
+	<Calendar.Root>
+		<Calendar.TriggerPrevious />
+		<Calendar.Heading />
+		<Calendar.TriggerNext />
+		<Calendar.Grid weekdayStyle="narrow">
+			<Calendar.GridHeader />
+			<Calendar.GridBody />
+		</Calendar.Grid>
+	</Calendar.Root>
 </LocaleProvider>
 ```
