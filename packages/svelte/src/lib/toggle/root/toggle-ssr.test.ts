@@ -2,7 +2,6 @@
 
 import { describe, expect, it } from 'vitest';
 import { render } from 'svelte/server';
-import ToggleTest from './toggle-test.svelte';
 import ToggleUncontrolledTest from './toggle-uncontrolled-test.svelte';
 
 function getToggleTag(source: string) {

@@ -8,7 +8,6 @@
 	};
 
 	const props: CalendarGridMonthScopeProps = $props();
-	// svelte-ignore state_referenced_locally
 	setCalendarMonthIndex(props.monthIndex);
 </script>
 

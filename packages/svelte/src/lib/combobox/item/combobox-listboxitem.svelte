@@ -50,7 +50,6 @@
 
 	// Text value for filtering and display.
 	// If textValue prop is omitted, resolve it from rendered content on mount.
-	// svelte-ignore state_referenced_locally
 	let resolvedTextValue = $state<string | null>(props.textValue ?? null);
 	const effectiveTextValue = $derived(resolvedTextValue ?? '');
 

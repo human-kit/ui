@@ -42,15 +42,13 @@ function createLiteralPercentFormatterOptions(
 ): Intl.NumberFormatOptions | undefined {
 	if (!options || options.style !== 'percent') return options;
 
-	const {
-		style: _style,
-		currency: _currency,
-		currencyDisplay: _currencyDisplay,
-		currencySign: _currencySign,
-		unit: _unit,
-		unitDisplay: _unitDisplay,
-		...decimalOptions
-	} = options;
+	const decimalOptions: Intl.NumberFormatOptions = { ...options };
+	delete decimalOptions.style;
+	delete decimalOptions.currency;
+	delete decimalOptions.currencyDisplay;
+	delete decimalOptions.currencySign;
+	delete decimalOptions.unit;
+	delete decimalOptions.unitDisplay;
 
 	const resolvedPercentOptions = createFormatter(locale, options).resolvedOptions();
 
@@ -137,11 +135,7 @@ function formatLiteralPercentValue(
 		.join('');
 }
 
-function normalizeLocalizedNumber(
-	input: string,
-	locale: string | undefined,
-	formatOptions: Intl.NumberFormatOptions | undefined
-): string {
+function normalizeLocalizedNumber(input: string, locale: string | undefined): string {
 	const symbols = getNumberSymbols(locale);
 	const digits = getLocalizedDigits(locale);
 	let normalized = input.replace(bidiControlPattern, '').trim();
@@ -226,7 +220,7 @@ export function parseNumberInput(
 	const trimmed = input.trim();
 	if (!trimmed) return { kind: 'empty', value: null };
 
-	const normalized = normalizeLocalizedNumber(trimmed, locale, formatOptions);
+	const normalized = normalizeLocalizedNumber(trimmed, locale);
 	let numericText = normalized.replace(/%$/, '');
 
 	if (numericText === '') return { kind: 'invalid', value: null };

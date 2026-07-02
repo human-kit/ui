@@ -154,7 +154,7 @@ describe('Tree.Root', () => {
 		await expect
 			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
 			.toContain('Documents');
-		let focused = tree.element().querySelector('[data-focused]') as HTMLElement | null;
+		const focused = tree.element().querySelector('[data-focused]') as HTMLElement | null;
 		expect(focused?.textContent).toContain('Documents');
 
 		await userEvent.keyboard('{ArrowRight}');

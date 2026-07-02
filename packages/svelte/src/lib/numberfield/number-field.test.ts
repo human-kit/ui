@@ -551,7 +551,7 @@ describe('NumberField', () => {
 	});
 
 	it('updates from pointer scrub', async () => {
-		const screen = render(NumberFieldTest, { defaultValue: 1 });
+		render(NumberFieldTest, { defaultValue: 1 });
 		const scrubArea = document.querySelector('[data-testid="scrub-area"]');
 
 		scrubArea?.dispatchEvent(pointerEvent('pointerdown', 0));

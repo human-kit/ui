@@ -10,7 +10,6 @@
 
 	let props: LocaleProviderProps = $props();
 
-	// svelte-ignore state_referenced_locally
 	const localeStore = writable<string | undefined>(props.locale);
 	setLocaleContext({ locale: localeStore });
 

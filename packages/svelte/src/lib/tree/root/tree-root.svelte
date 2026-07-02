@@ -7,7 +7,6 @@
 		createTreeContext,
 		setTreeContext,
 		setTreeLevelContext,
-		type TreeContext,
 		type TreeNodeId
 	} from './context';
 	import { setTreeRenderMode } from './render-mode';
