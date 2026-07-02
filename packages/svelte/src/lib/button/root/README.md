@@ -22,8 +22,8 @@ Description: Native button root with pressed, hovered, focused, focus-visible, d
 Name: `ButtonRenderState`  
 Description: Render-state payload available to the `children` snippet.
 
-| Prop             | Type      | Default | Description                                                           |
-| ---------------- | --------- | ------- | --------------------------------------------------------------------- |
+| Prop           | Type      | Default | Description                                                           |
+| -------------- | --------- | ------- | --------------------------------------------------------------------- |
 | `hovered`      | `boolean` | `false` | Whether the button is currently hovered by a mouse.                   |
 | `pressed`      | `boolean` | `false` | Whether the button is currently being pressed. Cleared while pending. |
 | `focused`      | `boolean` | `false` | Whether the button currently holds DOM focus.                         |

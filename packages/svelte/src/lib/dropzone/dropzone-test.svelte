@@ -21,14 +21,7 @@
 <form>
 	<button type="button">Before</button>
 
-	<Dropzone
-		aria-label="Attachments"
-		{disabled}
-		{accept}
-		{multiple}
-		{announcement}
-		{onFilesPicked}
-	>
+	<Dropzone aria-label="Attachments" {disabled} {accept} {multiple} {announcement} {onFilesPicked}>
 		{#snippet children({ dragging, focusVisible })}
 			<span data-state-dragging={dragging}>{dragging ? 'dragging' : 'idle'}</span>
 			<span data-state-focus-visible={focusVisible}></span>

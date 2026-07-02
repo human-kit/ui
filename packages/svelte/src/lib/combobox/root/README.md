@@ -10,9 +10,9 @@ Description: State container for combobox behavior, including open state, input 
 | Prop                | Type                                                                | Default                          | Description                                                 |
 | ------------------- | ------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------- |
 | `id`                | `string`                                                            | `$props.id()`                    | Stable id used to derive internal ARIA ids.                 |
-| `disabled`        | `boolean`                                                           | `false`                          | Disables all user interaction.                              |
-| `pending`         | `boolean`                                                           | `false`                          | Exposes busy async state on the root via `data-pending`.    |
-| `readonly`        | `boolean`                                                           | `false`                          | Keeps the component interactive but prevents value changes. |
+| `disabled`          | `boolean`                                                           | `false`                          | Disables all user interaction.                              |
+| `pending`           | `boolean`                                                           | `false`                          | Exposes busy async state on the root via `data-pending`.    |
+| `readonly`          | `boolean`                                                           | `false`                          | Keeps the component interactive but prevents value changes. |
 | `value`             | `string \| number \| null \| (string \| number)[]`                  | `null` in single mode            | Controlled selection value. Supports `bind:value`.          |
 | `defaultValue`      | `string \| number \| null \| (string \| number)[]`                  | `undefined`                      | Initial selection value in uncontrolled mode.               |
 | `inputValue`        | `string`                                                            | `undefined`                      | Controlled input value. Supports `bind:inputValue`.         |
@@ -20,7 +20,7 @@ Description: State container for combobox behavior, including open state, input 
 | `selectionBehavior` | `'toggle' \| 'replace'`                                             | `'toggle'`                       | Selection behavior when selecting an option.                |
 | `selectionMode`     | `'single' \| 'multiple'`                                            | `'single'`                       | Single-select or multi-select mode.                         |
 | `closeOnSelect`     | `boolean`                                                           | `single: true / multiple: false` | Controls whether the popover closes after selection.        |
-| `open`            | `boolean`                                                           | `undefined`                      | Controlled open state. Supports `bind:open`.              |
+| `open`              | `boolean`                                                           | `undefined`                      | Controlled open state. Supports `bind:open`.                |
 | `trigger`           | `'focus' \| 'input' \| 'press'`                                     | `'press'`                        | Opening strategy for the popover.                           |
 | `filterActionItems` | `boolean`                                                           | `true`                           | Whether `onAction` items participate in local filtering.    |
 | `onInputChange`     | `(value: string) => void`                                           | `undefined`                      | Called when the input value changes.                        |

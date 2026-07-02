@@ -99,7 +99,10 @@
 		}
 
 		if (toggleGroup && registeredValue !== undefined) {
-			toggleGroup.registerToggle(registeredValue, { isDisabled: disabled, owner: registrationOwner });
+			toggleGroup.registerToggle(registeredValue, {
+				isDisabled: disabled,
+				owner: registrationOwner
+			});
 		}
 	});
 

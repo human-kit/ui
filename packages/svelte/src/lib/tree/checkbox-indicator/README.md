@@ -7,11 +7,11 @@
 Name: `Tree.CheckboxIndicator`  
 Description: Indicator wrapper for `Tree.Checkbox`. It only renders when the checkbox is checked or indeterminate unless `forceMount` is enabled.
 
-| Prop          | Type      | Default     | Description                                                 |
-| ------------- | --------- | ----------- | ----------------------------------------------------------- |
+| Prop         | Type      | Default     | Description                                                 |
+| ------------ | --------- | ----------- | ----------------------------------------------------------- |
 | `forceMount` | `boolean` | `false`     | Keeps the indicator mounted when the checkbox is unchecked. |
-| `children`    | `Snippet` | `undefined` | Indicator content, typically an icon.                       |
-| `class`       | `string`  | `''`        | CSS class names for the indicator wrapper.                  |
+| `children`   | `Snippet` | `undefined` | Indicator content, typically an icon.                       |
+| `class`      | `string`  | `''`        | CSS class names for the indicator wrapper.                  |
 
 ## Usage notes
 
