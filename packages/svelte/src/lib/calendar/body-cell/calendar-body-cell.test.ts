@@ -35,9 +35,7 @@ describe('Calendar.BodyCell', () => {
 	it('marks defaultValue date as selected', async () => {
 		render(CalendarRootTest, { defaultValue: '2026-02-10' });
 		await expect
-			.poll(() =>
-				document.querySelector('[role="button"][data-date="2026-02-10"][data-selected]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-date="2026-02-10"][data-selected]'))
 			.toBeTruthy();
 	});
 
@@ -124,14 +122,10 @@ describe('Calendar.BodyCell', () => {
 			)
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[role="button"][data-date="2026-02-13"][data-range-end]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-date="2026-02-13"][data-range-end]'))
 			.toBeTruthy();
 		await expect
-			.poll(() =>
-				document.querySelector('[role="button"][data-date="2026-02-12"][data-in-range]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-date="2026-02-12"][data-in-range]'))
 			.toBeTruthy();
 	});
 
@@ -146,9 +140,7 @@ describe('Calendar.BodyCell', () => {
 		validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
 		await expect
-			.poll(() =>
-				document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]'))
 			.toBeTruthy();
 
 		validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
@@ -157,9 +149,7 @@ describe('Calendar.BodyCell', () => {
 		unreachableCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
 		await expect
-			.poll(() =>
-				document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]')
-			)
+			.poll(() => document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]'))
 			.toBeTruthy();
 		expect(
 			document.querySelector('[role="button"][data-date="2026-02-08"][data-range-end]')

@@ -91,9 +91,7 @@ describe('DatePicker.Root', () => {
 			.poll(() => document.querySelector('[role="gridcell"][data-date="2026-02-14"]'))
 			.toBeTruthy();
 		// The clickable handler is on the inner `[role="button"]` div, not the td.
-		const dayCell = document.querySelector<HTMLElement>(
-			'[role="button"][data-date="2026-02-14"]'
-		);
+		const dayCell = document.querySelector<HTMLElement>('[role="button"][data-date="2026-02-14"]');
 		expect(dayCell).toBeTruthy();
 		dayCell?.click();
 
