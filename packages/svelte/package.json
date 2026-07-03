@@ -1,8 +1,31 @@
 {
 	"name": "@human-kit/svelte-components",
 	"version": "1.0.0-alpha.22",
+	"description": "Accessible, reusable UI components for Svelte 5.",
 	"license": "MIT",
+	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
+	"homepage": "https://github.com/Agustin-Delgado/svelte-components#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Agustin-Delgado/svelte-components.git",
+		"directory": "packages/svelte"
+	},
+	"bugs": {
+		"url": "https://github.com/Agustin-Delgado/svelte-components/issues"
+	},
+	"keywords": [
+		"svelte",
+		"svelte5",
+		"components",
+		"ui",
+		"accessible",
+		"a11y",
+		"headless",
+		"design-system",
+		"tailwind"
+	],
 	"type": "module",
+	"sideEffects": false,
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -15,6 +38,21 @@
 			"types": "./dist/accordion/index.d.ts",
 			"svelte": "./dist/accordion/index.js",
 			"default": "./dist/accordion/index.js"
+		},
+		"./autocomplete": {
+			"types": "./dist/autocomplete/index.d.ts",
+			"svelte": "./dist/autocomplete/index.js",
+			"default": "./dist/autocomplete/index.js"
+		},
+		"./dropzone": {
+			"types": "./dist/dropzone/index.d.ts",
+			"svelte": "./dist/dropzone/index.js",
+			"default": "./dist/dropzone/index.js"
+		},
+		"./overflow-row": {
+			"types": "./dist/overflow-row/index.d.ts",
+			"svelte": "./dist/overflow-row/index.js",
+			"default": "./dist/overflow-row/index.js"
 		},
 		"./button": {
 			"types": "./dist/button/index.d.ts",
@@ -150,12 +188,15 @@
 			"types": "./dist/utils/index.d.ts",
 			"svelte": "./dist/utils/index.js",
 			"default": "./dist/utils/index.js"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"files": [
 		"dist",
 		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
+		"!dist/**/*.spec.*",
+		"!dist/**/*-test.svelte",
+		"!dist/**/*-test.svelte.d.ts"
 	],
 	"scripts": {
 		"package": "svelte-kit sync && svelte-package && publint",
