@@ -17,3 +17,16 @@ storybook-static
 
 # Vercel
 .vercel
+
+# Local artifacts / crash dumps
+*.stackdump
+
+# Temp test outputs and scratch files
+tmp-*
+*-test-output.txt
+test-out.log
+vitest-*.json
+
+# Stray package-manager files (this repo uses Bun)
+pnpm-lock.yaml
+pnpm-workspace.yaml
