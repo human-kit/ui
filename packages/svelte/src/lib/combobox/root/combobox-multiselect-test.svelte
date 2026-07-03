@@ -7,7 +7,7 @@
 		onValueChange?: (value: (string | number)[]) => void;
 		trigger?: 'focus' | 'input' | 'press';
 		closeOnSelect?: boolean;
-		disabledIds?: string[];
+		disabledKeys?: string[];
 	}
 
 	let {
@@ -22,10 +22,10 @@
 		onValueChange,
 		trigger = 'press',
 		closeOnSelect = false,
-		disabledIds = []
+		disabledKeys = []
 	}: Props = $props();
 
-	function handleChange(newValue: string | number | (string | number)[] | undefined) {
+	function handleChange(newValue: string | number | null | (string | number)[]) {
 		if (Array.isArray(newValue)) {
 			onValueChange?.(newValue);
 		}
@@ -55,7 +55,7 @@
 	<ComboBox.Popover>
 		<ComboBox.List>
 			{#each items as item (item.id)}
-				<ComboBox.Item id={item.id} textValue={item.name} disabled={disabledIds.includes(item.id)}>
+				<ComboBox.Item id={item.id} textValue={item.name} disabled={disabledKeys.includes(item.id)}>
 					{item.name}
 					<ComboBox.ItemIndicator />
 				</ComboBox.Item>

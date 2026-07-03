@@ -9,10 +9,10 @@
 
 	type InputProps = HTMLInputAttributes & {
 		class?: ClassValue;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isInvalid?: boolean;
-		isRequired?: boolean;
+		disabled?: boolean | null;
+		readonly?: boolean | null;
+		invalid?: boolean;
+		required?: boolean | null;
 		value?: HTMLInputAttributes['value'];
 		element?: HTMLInputElement | null;
 	};
@@ -37,14 +37,12 @@
 		id,
 		type = 'text',
 		class: className,
-		disabled: disabledProp = false,
-		readonly: readOnlyProp = false,
-		required: requiredProp = false,
+		disabled = false,
+		readonly = false,
+		required = false,
+		invalid = false,
 		'aria-invalid': ariaInvalidProp,
-		isDisabled = false,
-		isReadOnly = false,
-		isInvalid = false,
-		isRequired = false,
+		autofocus = false,
 		value = $bindable<HTMLInputElement['value']>(),
 		element = $bindable<HTMLInputElement | null>(null),
 		oninput: onInputExternal,
@@ -65,10 +63,7 @@
 	let focused = $state(false);
 	let focusVisible = $state(false);
 
-	const resolvedDisabled = $derived(Boolean(isDisabled || disabledProp));
-	const resolvedReadOnly = $derived(Boolean(isReadOnly || readOnlyProp));
-	const resolvedRequired = $derived(Boolean(isRequired || requiredProp));
-	const resolvedInvalid = $derived(Boolean(isInvalid || isAriaInvalidValue(ariaInvalidProp)));
+	const resolvedInvalid = $derived(Boolean(invalid || isAriaInvalidValue(ariaInvalidProp)));
 	const renderedAriaInvalid = $derived.by<AriaInvalidValue | undefined>(() => {
 		if (!resolvedInvalid) return undefined;
 		return ariaInvalidProp === 'grammar' || ariaInvalidProp === 'spelling'
@@ -80,15 +75,24 @@
 		element = inputRef;
 	});
 
+	// Native `autofocus` only focuses the first autofocus element inserted per document, so it
+	// silently fails for inputs that mount inside an already-open popover/dialog or remount as a
+	// view swaps. Focus the element on mount instead so it works every time it appears.
 	$effect(() => {
-		if (!resolvedDisabled) return;
+		if (autofocus && inputRef) {
+			inputRef.focus();
+		}
+	});
+
+	$effect(() => {
+		if (!disabled) return;
 		hovered = false;
 		focused = false;
 		focusVisible = false;
 	});
 
 	function handleFocus() {
-		if (resolvedDisabled) return;
+		if (disabled) return;
 		focused = true;
 		focusVisible = shouldShowFocusVisible(inputRef);
 	}
@@ -118,7 +122,7 @@
 	}
 
 	function handleMouseEnter() {
-		if (resolvedDisabled) {
+		if (disabled) {
 			hovered = false;
 			return;
 		}
@@ -137,17 +141,17 @@
 	id={resolvedId}
 	{type}
 	{value}
-	disabled={resolvedDisabled}
-	readonly={resolvedReadOnly}
-	required={resolvedRequired}
+	{disabled}
+	{readonly}
+	{required}
 	aria-invalid={renderedAriaInvalid}
-	aria-readonly={resolvedReadOnly || undefined}
-	aria-required={resolvedRequired || undefined}
+	aria-readonly={readonly || undefined}
+	aria-required={required || undefined}
 	data-input-root="true"
-	data-disabled={resolvedDisabled || undefined}
-	data-readonly={resolvedReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
 	data-invalid={resolvedInvalid || undefined}
-	data-required={resolvedRequired || undefined}
+	data-required={required || undefined}
 	data-hovered={hovered || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}

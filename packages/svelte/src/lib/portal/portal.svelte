@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '../internal/environment';
 
 	type PortalProps = {
 		/** Target element or selector to render into. Defaults to document.body */

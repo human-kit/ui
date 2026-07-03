@@ -10,9 +10,10 @@ export type KeyboardNavigationOptions = {
 	orientation?: 'vertical' | 'horizontal' | 'both';
 
 	/**
-	 * Whether navigation wraps around at the ends
+	 * Whether navigation wraps around at the ends.
+	 * Accepts a getter so the value can change reactively after creation.
 	 */
-	loop?: boolean;
+	loop?: boolean | (() => boolean);
 
 	/**
 	 * Selector for finding navigable items within the container
@@ -40,15 +41,24 @@ export type KeyboardNavigationOptions = {
 	homeEndKeys?: boolean;
 
 	/**
-	 * Whether to handle typeahead (character search)
+	 * Whether to handle typeahead (character search).
+	 * Accepts a getter so the value can change reactively after creation.
 	 */
-	typeahead?: boolean;
+	typeahead?: boolean | (() => boolean);
 };
 
 export type KeyboardNavigationState = {
 	focusedId: Writable<string | number | null>;
 	focusedElement: Writable<HTMLElement | null>;
 };
+
+/**
+ * Every navigable container registers itself here so a parent navigation scope can tell
+ * when an item (or keydown target) actually belongs to a *nested* widget. Without this, a
+ * `ListBox` or another menu rendered inside a `Menu.Content` would have its options matched
+ * by the parent's `itemSelector` and its keystrokes hijacked by the parent's handler.
+ */
+const navigationContainers = new WeakSet<HTMLElement>();
 
 export type KeyboardNavigationReturn = {
 	/** Current state stores */
@@ -95,14 +105,18 @@ export function createKeyboardNavigation(
 ): KeyboardNavigationReturn {
 	const {
 		orientation = 'vertical',
-		loop = false,
 		itemSelector = '[data-navigation-item]:not([data-disabled])',
 		onSelect,
 		onFocusChange,
 		onSelectAll,
-		homeEndKeys = true,
-		typeahead = false
+		homeEndKeys = true
 	} = options;
+
+	// `loop` and `typeahead` may be getters so they can change reactively after creation.
+	const getLoop = () =>
+		typeof options.loop === 'function' ? options.loop() : (options.loop ?? false);
+	const getTypeahead = () =>
+		typeof options.typeahead === 'function' ? options.typeahead() : (options.typeahead ?? false);
 
 	const focusedId = writable<string | number | null>(null);
 	const focusedElement = writable<HTMLElement | null>(null);
@@ -112,9 +126,37 @@ export function createKeyboardNavigation(
 	let typeaheadBuffer = '';
 	let typeaheadTimeout: ReturnType<typeof setTimeout> | null = null;
 
+	/** Nearest ancestor registered as a navigation container, or `null` if none. */
+	function nearestNavigationContainer(element: HTMLElement): HTMLElement | null {
+		let current: HTMLElement | null = element.parentElement;
+		while (current) {
+			if (navigationContainers.has(current)) return current;
+			current = current.parentElement;
+		}
+		return null;
+	}
+
 	function getItems(): HTMLElement[] {
 		if (!container) return [];
-		return Array.from(container.querySelectorAll<HTMLElement>(itemSelector));
+		const scope = container;
+		// Exclude items owned by a nested navigation widget (e.g. a ListBox or another menu
+		// embedded in this container's content); those have their own keyboard handling.
+		return Array.from(scope.querySelectorAll<HTMLElement>(itemSelector)).filter(
+			(el) => nearestNavigationContainer(el) === scope
+		);
+	}
+
+	/**
+	 * Whether this controller should act on a keydown. We only drive navigation when focus is
+	 * on the container itself or on one of *our* items — never when it sits on an input, a
+	 * button, or an item owned by a nested widget, which must own their own keys (typing,
+	 * caret movement, activation).
+	 */
+	function isNavigableTarget(target: EventTarget | null): boolean {
+		if (!container) return false;
+		if (target === container) return true;
+		if (!(target instanceof HTMLElement)) return false;
+		return target.matches(itemSelector) && nearestNavigationContainer(target) === container;
 	}
 
 	function updateItems() {
@@ -176,7 +218,7 @@ export function createKeyboardNavigation(
 
 		if (currentIdx === -1) {
 			nextIdx = 0;
-		} else if (loop) {
+		} else if (getLoop()) {
 			nextIdx = (currentIdx + 1) % items.length;
 		} else {
 			nextIdx = Math.min(currentIdx + 1, items.length - 1);
@@ -194,7 +236,7 @@ export function createKeyboardNavigation(
 
 		if (currentIdx === -1) {
 			prevIdx = items.length - 1;
-		} else if (loop) {
+		} else if (getLoop()) {
 			prevIdx = (currentIdx - 1 + items.length) % items.length;
 		} else {
 			prevIdx = Math.max(currentIdx - 1, 0);
@@ -246,7 +288,7 @@ export function createKeyboardNavigation(
 	}
 
 	function handleTypeahead(char: string) {
-		if (!typeahead) return;
+		if (!getTypeahead()) return;
 
 		if (typeaheadTimeout) {
 			clearTimeout(typeaheadTimeout);
@@ -270,6 +312,9 @@ export function createKeyboardNavigation(
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		// Bail when focus is on nested/interactive content so it keeps its native key behaviour.
+		if (!isNavigableTarget(event.target)) return;
+
 		const { key, ctrlKey, metaKey } = event;
 
 		const nextKeys =
@@ -345,13 +390,14 @@ export function createKeyboardNavigation(
 		}
 
 		// Typeahead (single printable character)
-		if (typeahead && key.length === 1 && !ctrlKey && !metaKey) {
+		if (getTypeahead() && key.length === 1 && !ctrlKey && !metaKey) {
 			handleTypeahead(key);
 		}
 	}
 
 	function action(node: HTMLElement) {
 		container = node;
+		navigationContainers.add(node);
 		updateItems();
 
 		node.addEventListener('keydown', handleKeydown);
@@ -375,6 +421,7 @@ export function createKeyboardNavigation(
 			destroy() {
 				node.removeEventListener('keydown', handleKeydown);
 				node.removeEventListener('focus', handleContainerFocus, true);
+				navigationContainers.delete(node);
 				container = null;
 				if (typeaheadTimeout) {
 					clearTimeout(typeaheadTimeout);

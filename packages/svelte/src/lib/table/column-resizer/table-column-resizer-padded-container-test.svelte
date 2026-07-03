@@ -16,7 +16,7 @@
 	>
 		<Table.Header>
 			<Table.Row>
-				<Table.Column id="name" isRowHeader textValue="Name">
+				<Table.Column id="name" rowHeader textValue="Name">
 					<Table.ColumnHeaderCell data-testid="padded-name-header-cell">
 						<div class="flex items-center justify-between gap-3">
 							<span>Name</span>

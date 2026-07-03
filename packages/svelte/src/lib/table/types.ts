@@ -1,6 +1,7 @@
-import type { Snippet } from 'svelte';
-import type { HTMLAttributes } from 'svelte/elements';
+import type { Component, Snippet } from 'svelte';
+import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
 import type {
+	TableColumnPin,
 	TableColumnWidth,
 	TableContext,
 	TableDisabledBehavior,
@@ -13,16 +14,65 @@ import type {
 	TableSortDescriptor
 } from './root/context.js';
 
+export type { TableColumnPin } from './root/context.js';
+
 export type TableColumnProps = {
 	id: string;
-	isRowHeader?: boolean;
+	rowHeader?: boolean;
 	textValue?: string;
 	width?: TableColumnWidth;
 	defaultWidth?: TableColumnWidth;
 	minWidth?: number;
 	maxWidth?: number;
+	/**
+	 * Freezes the column against the horizontal scroll edge: `'left'` sticks it to
+	 * the start, `'right'` to the end. Multiple columns can pin to the same side —
+	 * they stack in document order and the table computes each one's offset from
+	 * the resolved widths of the columns already pinned ahead of it.
+	 */
+	pin?: TableColumnPin;
 	children?: Snippet;
 };
+
+export type RowData = Record<string, unknown> & {
+	id: TableSelectionKey;
+};
+
+export type Row<T extends RowData = RowData> = {
+	id: T['id'];
+	original: T;
+};
+
+export type ColumnDef<T extends RowData = RowData, TValue = unknown> = {
+	id: string;
+	header?: string;
+	textValue?: string;
+	accessorKey?: Extract<keyof T, string>;
+	accessor?: (row: T) => TValue;
+	sortValue?: (row: T) => string | number | boolean | Date | null | undefined;
+	align?: 'left' | 'center' | 'right';
+	rowHeader?: boolean;
+	resizable?: boolean;
+	width?: TableColumnWidth;
+	defaultWidth?: TableColumnWidth;
+	minWidth?: number;
+	maxWidth?: number;
+	pin?: TableColumnPin;
+	cellComponent?: Component<CellProps<T, TValue>>;
+	renderCell?: CellRenderer<T, TValue>;
+};
+
+export type CellContext<T extends RowData = RowData, TValue = unknown> = {
+	row: Row<T>;
+	value: TValue;
+	column: ColumnDef<T, TValue>;
+};
+
+export type CellProps<T extends RowData = RowData, TValue = unknown> = CellContext<T, TValue>;
+
+export type CellRenderer<T extends RowData = RowData, TValue = unknown> = Snippet<
+	[CellContext<T, TValue>]
+>;
 
 export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
 	children?: Snippet;
@@ -74,6 +124,19 @@ export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> 
 	defaultSortDescriptor?: TableSortDescriptor;
 	columnWidths?: Map<string, TableColumnWidth>;
 	defaultColumnWidths?: Iterable<readonly [string, TableColumnWidth]>;
+	/**
+	 * Width (in px) the table reserves through `min-width` during server
+	 * rendering, before its columns have registered their own widths.
+	 *
+	 * On the server the `<table>` element is serialized before the column
+	 * children run their registration, so the table cannot know its own
+	 * minimum width yet and renders at the container width. On hydration the
+	 * resolved column widths can push the table wider, producing a layout
+	 * shift. Set this to the sum of the columns' resolved widths to reserve
+	 * that space up-front and avoid the jump. Ignored once the real columns
+	 * register on the client.
+	 */
+	ssrMinTableWidth?: number;
 	disabledKeys?: Iterable<TableSelectionKey>;
 	onRowAction?: TableRowActionHandler;
 	onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
@@ -90,7 +153,7 @@ export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> 
 
 export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children' | 'id'> & {
 	id?: TableSelectionKey;
-	isDisabled?: boolean;
+	disabled?: boolean;
 	textValue?: string;
 	children?: Snippet;
 	class?: string;
@@ -105,8 +168,10 @@ export type TableSortTriggerRenderState = {
 	sortDirection: TableSortDirection | undefined;
 };
 
-export type TableSortTriggerProps = {
+export type TableSortTriggerProps = Omit<HTMLButtonAttributes, 'children' | 'class' | 'type'> & {
 	children?: Snippet<[TableSortTriggerRenderState]> | Snippet;
+	class?: string;
+	element?: HTMLButtonElement | null;
 };
 
 export type TableColumnResizerProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
@@ -120,6 +185,8 @@ export type TableCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'childre
 	children?: Snippet;
 	class?: string;
 };
+
+export type TableInteractiveCellProps = TableCellProps;
 
 export type TableEmptyStateProps = {
 	children?: Snippet;
@@ -150,7 +217,7 @@ export type TableCheckboxIndicatorProps = Omit<
 	HTMLAttributes<HTMLSpanElement>,
 	'children' | 'class'
 > & {
-	keepMounted?: boolean;
+	forceMount?: boolean;
 	children?: Snippet;
 	class?: string;
 };

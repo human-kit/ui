@@ -15,8 +15,8 @@
 		emptyPlaceholder?: string | Snippet;
 		/** Iterable of items for dynamic rendering. Used with a snippet that receives each item. */
 		items?: Iterable<T>;
-		/** IDs of items that should be disabled and non-selectable. */
-		disabledIds?: Iterable<string | number>;
+		/** Keys of items that should be disabled and non-selectable. */
+		disabledKeys?: Iterable<string | number>;
 		/** Selection mode: 'single' allows one selection, 'multiple' allows many. */
 		selectionMode?: 'single' | 'multiple';
 		/** Controlled value. When provided, the component is in controlled mode. */
@@ -41,7 +41,7 @@
 		selectionBehavior = 'toggle',
 		emptyPlaceholder = 'No items selected',
 		items,
-		disabledIds,
+		disabledKeys,
 		selectionMode = 'single',
 		value = $bindable(),
 		defaultValue,
@@ -76,11 +76,11 @@
 		get selectionBehavior() {
 			return selectionBehavior;
 		},
-		get disabledIds() {
-			return disabledIds;
+		get disabledKeys() {
+			return disabledKeys;
 		},
 		// Use function to capture initial value only (not reactive)
-		initialSelection: (() => parseSelection(defaultValue))(),
+		initialSelection: (() => parseSelection(value ?? defaultValue))(),
 		onSelectionChange: (newSelection) => {
 			onChange?.(newSelection);
 		}
@@ -99,10 +99,10 @@
 	});
 
 	$effect(() => {
-		ctx.disabledIds.clear();
-		if (disabledIds) {
-			for (const id of disabledIds) {
-				ctx.disabledIds.add(id);
+		ctx.disabledKeys.clear();
+		if (disabledKeys) {
+			for (const id of disabledKeys) {
+				ctx.disabledKeys.add(id);
 			}
 		}
 	});
@@ -118,8 +118,12 @@
 	});
 
 	const itemsArray = $derived(items ? Array.from(items) : []);
-	const hasItems = $derived(itemsArray.length > 0 || itemCount > 0);
+	const hasDynamicItems = $derived(items !== undefined);
 	let hasMounted = $state(false);
+	const registeredItemCount = $derived(hasMounted ? itemCount : ctx.getItemCount());
+	const shouldShowEmptyPlaceholder = $derived(
+		hasDynamicItems ? itemsArray.length === 0 : !children || registeredItemCount === 0
+	);
 
 	let focusWithin = $state(false);
 
@@ -181,7 +185,7 @@
 		{@render (children as Snippet)()}
 	{/if}
 
-	{#if hasMounted && !hasItems && itemCount === 0}
+	{#if shouldShowEmptyPlaceholder}
 		{#if typeof emptyPlaceholder === 'string'}
 			<div role="option" aria-selected="false" aria-disabled="true" data-empty-placeholder>
 				{emptyPlaceholder}

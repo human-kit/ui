@@ -39,14 +39,15 @@
 		hourStep?: number;
 		minuteStep?: number;
 		secondStep?: number;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
-		isRequired?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
+		required?: boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
 		onOpenChange?: (open: boolean, details: TimePickerOpenChangeDetails) => void;
 		children?: Snippet;
 		class?: string;
+		element?: HTMLDivElement | null;
 		'aria-label'?: string;
 	};
 
@@ -64,16 +65,23 @@
 		hourStep = 1,
 		minuteStep = 1,
 		secondStep = 1,
-		isDisabled = false,
-		isReadOnly = false,
-		isRequired = false,
+		disabled = false,
+		readonly = false,
+		required = false,
 		open = $bindable(),
 		defaultOpen = false,
 		onOpenChange,
 		children,
 		class: className = '',
+		element = $bindable<HTMLDivElement | null>(null),
 		'aria-label': ariaLabel
 	}: TimePickerRootProps = $props();
+
+	let rootRef: HTMLDivElement | null = $state(null);
+
+	$effect(() => {
+		element = rootRef;
+	});
 
 	const instanceId = untrack(() => id) ?? generatedInstanceId;
 	const localeContext = useLocaleContextOptional();
@@ -274,7 +282,7 @@
 	}
 
 	function setSegmentValue(type: Exclude<TimePickerSegmentType, 'literal'>, nextValue: string) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		if (type === 'dayPeriod') {
 			const normalized = nextValue.trim().toUpperCase();
 			if (normalized === '' || normalized === 'AM' || normalized === 'PM') {
@@ -331,7 +339,7 @@
 	}
 
 	function openPopover(reason: TimePickerOpenChangeReason = 'imperative-action', event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		setOpen(true, { reason, event });
 	}
 
@@ -340,7 +348,7 @@
 	}
 
 	function togglePopover(reason: TimePickerOpenChangeReason = 'trigger-press', event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		setOpen(!openInternal, { reason, event });
 	}
 
@@ -357,7 +365,7 @@
 		type: Exclude<TimePickerSegmentType, 'literal'>,
 		digit: string
 	): boolean {
-		if (isDisabled || isReadOnly) return false;
+		if (disabled || readonly) return false;
 		if (!/^\d$/.test(digit)) return false;
 		if (type === 'dayPeriod') return false;
 
@@ -409,7 +417,7 @@
 	}
 
 	function adjustSegmentValue(type: Exclude<TimePickerSegmentType, 'literal'>, step: number) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		if (type === 'dayPeriod') {
 			segmentDraft.dayPeriod = segmentDraft.dayPeriod === 'PM' ? 'AM' : 'PM';
 			commitFromDraft();
@@ -427,8 +435,8 @@
 		setSegmentValue(type, next);
 	}
 
-	function registerSegmentRef(type: TimePickerEditableSegmentType, element: HTMLElement | null) {
-		segmentRefs[type] = element;
+	function registerSegmentRef(type: TimePickerEditableSegmentType, node: HTMLElement | null) {
+		segmentRefs[type] = node;
 	}
 
 	function focusNextSegment(type: TimePickerEditableSegmentType): boolean {
@@ -482,7 +490,7 @@
 	}
 
 	function setValue(nextValue: TimePickerTimeValue | null) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		if (nextValue !== null && !isValidTimePickerValue(nextValue)) return;
 		if (
 			nextValue &&
@@ -502,7 +510,7 @@
 	}
 
 	function selectWheelValue(type: TimePickerEditableSegmentType, optionValue: string) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		if (type === 'dayPeriod') {
 			setSegmentValue(type, optionValue.toUpperCase());
@@ -552,13 +560,13 @@
 			return instanceId;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get isRequired() {
-			return isRequired;
+			return required;
 		},
 		get granularity() {
 			return granularity;
@@ -618,7 +626,7 @@
 	setTimePickerContext(context);
 </script>
 
-<div id={instanceId} class={className} aria-label={ariaLabel}>
+<div bind:this={rootRef} id={instanceId} class={className} aria-label={ariaLabel}>
 	{#if children}
 		{@render children()}
 	{/if}

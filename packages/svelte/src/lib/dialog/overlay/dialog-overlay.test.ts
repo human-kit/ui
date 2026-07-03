@@ -79,10 +79,11 @@ describe('Dialog.Overlay', () => {
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
 			const overlay = document.querySelector('[data-dialog-overlay]') as HTMLElement;
-			const content = document.querySelector('[role="dialog"]') as HTMLElement;
+			// The content's stacking z-index lives on its positioning layer (the panel's parent).
+			const positioner = document.querySelector('[data-dialog-positioner]') as HTMLElement;
 
 			const overlayZIndex = parseInt(window.getComputedStyle(overlay).zIndex);
-			const contentZIndex = parseInt(window.getComputedStyle(content).zIndex);
+			const contentZIndex = parseInt(window.getComputedStyle(positioner).zIndex);
 
 			expect(overlayZIndex).toBeLessThan(contentZIndex);
 		});

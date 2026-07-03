@@ -70,7 +70,7 @@ describe('Table.SortTrigger', () => {
 		await expect.poll(() => groupSortTrigger.getAttribute('data-sorted')).toBeNull();
 	});
 
-	it('allows tabbing from the header cell into the nested trigger button', async () => {
+	it('allows tabbing from the header cell into the trigger button', async () => {
 		render(TableTest);
 
 		const groupHeader = document.querySelectorAll<HTMLElement>('thead [role="columnheader"]')[1]!;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { writable } from 'svelte/store';
 	import { setTableRowContext, useTableContext, useTableSectionContext } from '../root/context';
 	import type { TableRowProps } from '../types.js';
@@ -11,7 +12,7 @@
 
 	let {
 		id,
-		isDisabled = false,
+		disabled = false,
 		children,
 		class: className = '',
 		...restProps
@@ -21,8 +22,70 @@
 	const section = useTableSectionContext();
 	const rowToken = table.createInstanceToken('row');
 	const cellOrder: string[] = [];
+	const cellOrderSet = new SvelteSet<string>();
+	const cellIndexByToken = new SvelteMap<string, number>();
 	const cellElements: Record<string, () => HTMLElement | undefined> = {};
 	const cellOrderVersion = writable(0);
+	const isBodyRow = section.section === 'body';
+	const shouldSeedInitialRegistration = true;
+	const rowState = writable({
+		isSelected: false,
+		isAriaDisabled: false,
+		isSelectionDisabled: false,
+		isActionable: false
+	});
+	let bodyCellOrderSealed = !isBodyRow;
+
+	function handleFocus() {
+		if (section.section !== 'body') return;
+		if (isAriaDisabled) return;
+		if (!table.isRowTabStop(rowToken)) return;
+		table.setFocusedRow(rowToken, table.getRowFocusEdge(rowToken) ?? 'start');
+		table.setFocusVisible(shouldShowFocusVisible(rowElement ?? null));
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, rowElement ?? null);
+		table.setFocusVisible(false);
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (section.section !== 'body') return;
+		if (event.target !== rowElement) return;
+		handleTableBodyKeydown({
+			event,
+			table,
+			focusTarget: rowElement,
+			isDisabled: isAriaDisabled,
+			onHome: () => table.moveToBodyRowStart(),
+			onEnd: () => table.moveToBodyRowEnd(),
+			onEnter: () =>
+				table.pressRow(
+					id,
+					'keyboard-enter',
+					{
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					},
+					disabled
+				),
+			onSpace: () =>
+				table.pressRow(
+					id,
+					'keyboard-space',
+					{
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					},
+					disabled
+				)
+		});
+	}
+	let tracksDynamicBodyCellOrder = !isBodyRow;
 
 	let rowElement = $state<HTMLTableRowElement | undefined>(undefined);
 
@@ -30,32 +93,63 @@
 		cellOrderVersion.update((value) => value + 1);
 	}
 
+	function promoteBodyCellOrderTracking() {
+		if (!isBodyRow || tracksDynamicBodyCellOrder) return;
+		tracksDynamicBodyCellOrder = true;
+		notifyCellOrderChange();
+	}
+
 	function registerCellToken(token: string, getElement?: () => HTMLElement | undefined) {
-		if (!cellOrder.includes(token)) {
+		const alreadyOrdered = cellOrderSet.has(token);
+		if (!alreadyOrdered) {
+			cellOrderSet.add(token);
+			cellIndexByToken.set(token, cellOrder.length);
 			cellOrder.push(token);
-			notifyCellOrderChange();
 		}
 		if (getElement) {
 			cellElements[token] = getElement;
+		}
+
+		if (isBodyRow && !tracksDynamicBodyCellOrder) {
+			if (bodyCellOrderSealed && !alreadyOrdered) {
+				promoteBodyCellOrderTracking();
+			}
+			return;
+		}
+
+		if (!alreadyOrdered) {
+			notifyCellOrderChange();
 		}
 	}
 
 	function unregisterCellToken(token: string) {
 		delete cellElements[token];
-		const index = cellOrder.indexOf(token);
+		const index = cellIndexByToken.get(token) ?? -1;
 		if (index >= 0) {
 			cellOrder.splice(index, 1);
+			cellOrderSet.delete(token);
+			cellIndexByToken.delete(token);
+			for (let nextIndex = index; nextIndex < cellOrder.length; nextIndex += 1) {
+				cellIndexByToken.set(cellOrder[nextIndex], nextIndex);
+			}
+			if (isBodyRow && !tracksDynamicBodyCellOrder) {
+				if (bodyCellOrderSealed) {
+					promoteBodyCellOrderTracking();
+				}
+				return;
+			}
+
 			notifyCellOrderChange();
 		}
 	}
 
 	function getCellIndex(token: string) {
 		const element = cellElements[token]?.();
-		if (rowElement && element) {
+		if ((section.section !== 'body' || tracksDynamicBodyCellOrder) && rowElement && element) {
 			const index = Array.from(rowElement.children).indexOf(element);
 			if (index >= 0) return index;
 		}
-		return cellOrder.indexOf(token);
+		return cellIndexByToken.get(token) ?? -1;
 	}
 
 	setTableRowContext({
@@ -65,8 +159,9 @@
 			return id;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
+		rowState,
 		cellOrderVersion,
 		registerCellToken,
 		unregisterCellToken,
@@ -78,12 +173,14 @@
 			token: rowToken,
 			section: section.section,
 			id,
-			disabled: isDisabled,
+			disabled,
 			element: rowElement
 		});
 	}
 
-	syncRowRegistration();
+	if (shouldSeedInitialRegistration) {
+		syncRowRegistration();
+	}
 
 	$effect(() => {
 		syncRowRegistration();
@@ -94,12 +191,36 @@
 			return;
 		}
 
+		let disposed = false;
+		if (isBodyRow) {
+			queueMicrotask(() => {
+				if (!disposed) {
+					bodyCellOrderSealed = true;
+				}
+			});
+		}
+
 		const observer = new MutationObserver(() => {
+			if (isBodyRow && !bodyCellOrderSealed) {
+				return;
+			}
+
+			if (!isBodyRow) {
+				table.notifyLayoutChange();
+				return;
+			}
+
+			if (isBodyRow && !tracksDynamicBodyCellOrder) {
+				promoteBodyCellOrderTracking();
+				return;
+			}
+
 			scheduleCellOrderNotify();
 		});
 		observer.observe(rowElement, { childList: true });
 
 		return () => {
+			disposed = true;
 			observer.disconnect();
 		};
 	});
@@ -144,66 +265,34 @@
 	});
 	const isAriaDisabled = $derived.by(() => {
 		void $selectionVersion;
-		return section.section === 'body' ? table.isRowDisabled(id, isDisabled) : isDisabled;
+		return section.section === 'body' ? table.isRowDisabled(id, disabled) : disabled;
 	});
 	const isSelectionDisabled = $derived.by(() => {
 		void $selectionVersion;
-		return section.section === 'body' ? table.isRowSelectionDisabled(id, isDisabled) : isDisabled;
+		return section.section === 'body' ? table.isRowSelectionDisabled(id, disabled) : disabled;
 	});
 	const isActionable = $derived.by(() => {
 		void $selectionVersion;
-		return section.section === 'body' ? table.isRowActionable(id, isDisabled) : false;
+		return section.section === 'body' ? table.isRowActionable(id, disabled) : false;
 	});
 
-	function handleFocus() {
-		if (section.section !== 'body') return;
-		if (isAriaDisabled) return;
-		if (!table.isRowTabStop(rowToken)) return;
-		table.setFocusedRow(rowToken, table.getRowFocusEdge(rowToken) ?? 'start');
-		table.setFocusVisible(shouldShowFocusVisible(rowElement ?? null));
-	}
+	$effect(() => {
+		const next = {
+			isSelected,
+			isAriaDisabled,
+			isSelectionDisabled,
+			isActionable
+		};
 
-	function handleMouseDown(event: MouseEvent) {
-		trackInteractionModality(event, rowElement ?? null);
-		table.setFocusVisible(false);
-	}
-
-	function handleKeyDown(event: KeyboardEvent) {
-		if (section.section !== 'body') return;
-		if (event.target !== rowElement) return;
-		handleTableBodyKeydown({
-			event,
-			table,
-			focusTarget: rowElement,
-			isDisabled: isAriaDisabled,
-			onHome: () => table.moveToBodyRowStart(),
-			onEnd: () => table.moveToBodyRowEnd(),
-			onEnter: () =>
-				table.pressRow(
-					id,
-					'keyboard-enter',
-					{
-						shiftKey: event.shiftKey,
-						ctrlKey: event.ctrlKey,
-						metaKey: event.metaKey,
-						altKey: event.altKey
-					},
-					isDisabled
-				),
-			onSpace: () =>
-				table.pressRow(
-					id,
-					'keyboard-space',
-					{
-						shiftKey: event.shiftKey,
-						ctrlKey: event.ctrlKey,
-						metaKey: event.metaKey,
-						altKey: event.altKey
-					},
-					isDisabled
-				)
-		});
-	}
+		rowState.update((current) =>
+			current.isSelected === next.isSelected &&
+			current.isAriaDisabled === next.isAriaDisabled &&
+			current.isSelectionDisabled === next.isSelectionDisabled &&
+			current.isActionable === next.isActionable
+				? current
+				: next
+		);
+	});
 </script>
 
 <tr

@@ -20,9 +20,7 @@
 
 <Dialog.Root>
 	{#snippet children({ close })}
-		<Dialog.Trigger>
-			<button type="button" data-testid="dialog-trigger">Open Dialog</button>
-		</Dialog.Trigger>
+		<Dialog.Trigger data-testid="dialog-trigger">Open Dialog</Dialog.Trigger>
 
 		<Dialog.Portal>
 			<Dialog.Overlay />

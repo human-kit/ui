@@ -76,7 +76,7 @@
 								</Table.Checkbox>
 							</Table.ColumnHeaderCell>
 						</Table.Column>
-						<Table.Column id="name" isRowHeader>
+						<Table.Column id="name" rowHeader>
 							<Table.ColumnHeaderCell
 								class="px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white"
 							>

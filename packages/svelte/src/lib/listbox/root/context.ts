@@ -13,8 +13,8 @@ export type ListBoxContext = {
 	selectionMode: 'single' | 'multiple';
 	/** Current selection behavior. */
 	selectionBehavior: 'toggle' | 'replace';
-	/** Set of disabled item IDs. */
-	disabledIds: Set<string | number>;
+	/** Set of disabled item keys. */
+	disabledKeys: Set<string | number>;
 
 	/** Returns a copy of the currently selected keys. */
 	getSelectedKeys: () => Set<string | number>;
@@ -78,8 +78,8 @@ export type CreateListBoxContextOptions = {
 	selectionMode?: 'single' | 'multiple';
 	/** Selection behavior: 'toggle' or 'replace'. Default: 'toggle'. */
 	selectionBehavior?: 'toggle' | 'replace';
-	/** Initial set of disabled item IDs. */
-	disabledIds?: Iterable<string | number>;
+	/** Initial set of disabled item keys. */
+	disabledKeys?: Iterable<string | number>;
 	/** Initial selection for uncontrolled mode. */
 	initialSelection?: Set<string | number>;
 	/** Callback fired when selection changes. */
@@ -90,12 +90,12 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	const {
 		selectionMode = 'single',
 		selectionBehavior = 'toggle',
-		disabledIds: initialDisabledIds,
+		disabledKeys: initialDisabledKeys,
 		initialSelection = new Set(),
 		onSelectionChange
 	} = options;
 
-	const disabledIds = new Set(initialDisabledIds ?? []);
+	const disabledKeys = new Set(initialDisabledKeys ?? []);
 	const items = new Map<string | number, { textValue?: string; element?: HTMLElement }>();
 
 	let selectedKeys = new Set<string | number>(initialSelection);
@@ -110,8 +110,11 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	}
 
 	function registerItem(id: string | number, textValue?: string, element?: HTMLElement) {
+		const hadItem = items.has(id);
 		items.set(id, { textValue, element });
-		notifyItemCountChange();
+		if (!hadItem) {
+			notifyItemCountChange();
+		}
 	}
 
 	function unregisterItem(id: string | number) {
@@ -138,7 +141,7 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	}
 
 	function isDisabled(id: string | number): boolean {
-		return disabledIds.has(id);
+		return disabledKeys.has(id);
 	}
 
 	function isSelected(id: string | number): boolean {
@@ -354,7 +357,7 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	const ctx: ListBoxContext = {
 		selectionMode,
 		selectionBehavior,
-		disabledIds,
+		disabledKeys,
 		getSelectedKeys,
 		getFocusedId,
 		isSelected,

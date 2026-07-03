@@ -47,7 +47,7 @@
 							</Table.Checkbox>
 						</Table.ColumnHeaderCell>
 					</Table.Column>
-					<Table.Column id="subject" isRowHeader textValue="Subject">
+					<Table.Column id="subject" rowHeader textValue="Subject">
 						<Table.ColumnHeaderCell
 							class="px-3 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-gray-300"
 							>Subject</Table.ColumnHeaderCell

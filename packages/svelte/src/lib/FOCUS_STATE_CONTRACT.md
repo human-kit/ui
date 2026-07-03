@@ -61,3 +61,4 @@ The following components implement this contract:
 - **Calendar** — grid cells with roving tabindex.
 - **ComboBox** — input + listbox with virtual focus.
 - **ListBox** — items with roving tabindex.
+- **NumberField** — spinbutton input, stepper buttons, wheel, and pointer scrub area.

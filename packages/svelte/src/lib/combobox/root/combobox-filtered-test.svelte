@@ -1,12 +1,22 @@
 <script lang="ts">
 	import ComboBox from '../index';
 
+	type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
+	type ExternalFilterMode = 'contains' | 'remote';
+
 	type Props = {
 		onInputChange?: (value: string) => void;
 		trigger?: 'focus' | 'input' | 'press';
+		filter?: ComboBoxFilter | null;
+		externalFilterMode?: ExternalFilterMode;
 	};
 
-	let { onInputChange, trigger = 'focus' }: Props = $props();
+	let {
+		onInputChange,
+		trigger = 'focus',
+		filter,
+		externalFilterMode = 'contains'
+	}: Props = $props();
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },
@@ -22,13 +32,15 @@
 	];
 
 	let filterValue = $state('');
-	let selectedValue = $state<string | number | undefined>();
+	let selectedValue = $state<string | number | null>(null);
 
-	const filteredCountries = $derived(
-		filterValue === ''
-			? countries
-			: countries.filter((c) => c.name.toLowerCase().includes(filterValue.toLowerCase()))
-	);
+	const filteredCountries = $derived(getFilteredCountries(filterValue));
+
+	function getFilteredCountries(value: string) {
+		if (value === '') return countries;
+		if (externalFilterMode === 'remote') return countries.filter((country) => country.id === 'br');
+		return countries.filter((country) => country.name.toLowerCase().includes(value.toLowerCase()));
+	}
 
 	function handleInputChange(val: string) {
 		filterValue = val;
@@ -36,7 +48,7 @@
 	}
 </script>
 
-<ComboBox.Root bind:value={selectedValue} {trigger} onInputChange={handleInputChange}>
+<ComboBox.Root bind:value={selectedValue} {trigger} {filter} onInputChange={handleInputChange}>
 	<ComboBox.Input placeholder="Search countries..." />
 
 	<ComboBox.Popover>

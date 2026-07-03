@@ -1,8 +1,10 @@
 <script module lang="ts">
+	import { dev } from '../../internal/environment';
+
 	let warnedMissingAccessibleName = false;
 
 	function warnMissingAccessibleName() {
-		if (!import.meta.env.DEV || warnedMissingAccessibleName) return;
+		if (!dev || warnedMissingAccessibleName) return;
 		warnedMissingAccessibleName = true;
 		console.warn(
 			'[Table.Root]: Provide either "aria-label" or "aria-labelledby" so the grid has an accessible name.'
@@ -39,6 +41,7 @@
 		defaultSortDescriptor,
 		columnWidths = $bindable(),
 		defaultColumnWidths,
+		ssrMinTableWidth,
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby,
 		disabledKeys,
@@ -449,7 +452,7 @@
 		void announceSortChange(descriptor);
 	});
 
-	if (import.meta.env.DEV) {
+	if (dev) {
 		$effect(() => {
 			if (!ariaLabel && !ariaLabelledby) {
 				warnMissingAccessibleName();
@@ -493,7 +496,10 @@
 	role="grid"
 	class={className}
 	style:--table-visible-column-count={ariaColCount ? `${ariaColCount}` : undefined}
-	style:table-layout={hasResizable || hasDefinedColumnWidths || resolvedTableWidth !== undefined
+	style:table-layout={hasResizable ||
+	hasDefinedColumnWidths ||
+	resolvedTableWidth !== undefined ||
+	ssrMinTableWidth !== undefined
 		? 'fixed'
 		: undefined}
 	style:width={resolvedTableWidth !== undefined
@@ -503,7 +509,9 @@
 		? `${minimumTableWidth}px`
 		: resolvedTableWidth !== undefined
 			? '0'
-			: undefined}
+			: ssrMinTableWidth !== undefined
+				? `${ssrMinTableWidth}px`
+				: undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-colcount={ariaColCount}

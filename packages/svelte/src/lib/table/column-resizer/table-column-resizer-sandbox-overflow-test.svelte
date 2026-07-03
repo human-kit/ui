@@ -31,7 +31,7 @@
 						<Table.Checkbox />
 					</Table.ColumnHeaderCell>
 				</Table.Column>
-				<Table.Column id="request" textValue="Request" isRowHeader defaultWidth={350}>
+				<Table.Column id="request" textValue="Request" rowHeader defaultWidth={350}>
 					<Table.ColumnHeaderCell data-testid="sandbox-request-header-cell">
 						<div class="flex items-center justify-between gap-3">
 							<span>Request</span>

@@ -13,9 +13,7 @@
 <!-- Level 1 Dialog -->
 <Dialog.Root onOpenChange={(open) => !open && onDialog1Close?.()}>
 	{#snippet children({ close })}
-		<Dialog.Trigger>
-			<button type="button" data-testid="trigger-1">Open Dialog 1</button>
-		</Dialog.Trigger>
+		<Dialog.Trigger data-testid="trigger-1">Open Dialog 1</Dialog.Trigger>
 
 		<Dialog.Portal>
 			<Dialog.Overlay data-testid="overlay-1" />
@@ -26,9 +24,7 @@
 				<!-- Level 2 Dialog (Nested) -->
 				<Dialog.Root onOpenChange={(open) => !open && onDialog2Close?.()}>
 					{#snippet children({ close: close2 })}
-						<Dialog.Trigger>
-							<button type="button" data-testid="trigger-2">Open Dialog 2</button>
-						</Dialog.Trigger>
+						<Dialog.Trigger data-testid="trigger-2">Open Dialog 2</Dialog.Trigger>
 
 						<Dialog.Portal>
 							<Dialog.Overlay data-testid="overlay-2" />
@@ -39,9 +35,7 @@
 								<!-- Level 3 Dialog (Double Nested) -->
 								<Dialog.Root onOpenChange={(open) => !open && onDialog3Close?.()}>
 									{#snippet children({ close: close3 })}
-										<Dialog.Trigger>
-											<button type="button" data-testid="trigger-3">Open Dialog 3</button>
-										</Dialog.Trigger>
+										<Dialog.Trigger data-testid="trigger-3">Open Dialog 3</Dialog.Trigger>
 
 										<Dialog.Portal>
 											<Dialog.Overlay data-testid="overlay-3" />

@@ -16,7 +16,7 @@ describe('Calendar.TriggerNext', () => {
 	});
 
 	it('is disabled when calendar is disabled', async () => {
-		const screen = render(CalendarRootTest, { isDisabled: true });
+		const screen = render(CalendarRootTest, { disabled: true });
 		const nextButton = screen.getByRole('button', { name: 'Next' });
 
 		await expect.element(nextButton).toBeDisabled();

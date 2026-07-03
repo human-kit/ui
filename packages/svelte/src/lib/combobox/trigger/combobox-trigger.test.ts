@@ -25,7 +25,7 @@ describe('ComboBox.Trigger', () => {
 		});
 
 		it('reflects pending state from the combobox root', async () => {
-			const screen = render(ComboBoxTest, { isPending: true });
+			const screen = render(ComboBoxTest, { pending: true });
 			const trigger = screen.getByRole('button', { name: 'Open menu' });
 
 			await expect.element(trigger).toHaveAttribute('data-pending', 'true');

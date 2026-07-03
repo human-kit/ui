@@ -37,7 +37,7 @@
 	<Table.Header>
 		<Table.Row>
 			{#each orderedColumns as column (column.id)}
-				<Table.Column id={column.id} isRowHeader={column.isRowHeader} textValue={column.label}>
+				<Table.Column id={column.id} rowHeader={column.isRowHeader} textValue={column.label}>
 					<Table.ColumnHeaderCell data-testid={`${column.id}-header`}>
 						{column.label}
 					</Table.ColumnHeaderCell>

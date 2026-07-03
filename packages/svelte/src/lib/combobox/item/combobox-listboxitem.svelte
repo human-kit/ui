@@ -10,7 +10,7 @@
 	import type { ComponentProps } from 'svelte';
 	import { untrack, onDestroy, setContext } from 'svelte';
 	import ListBoxItem from '../../listbox/item/listbox-item.svelte';
-	import { useComboBoxContext } from '../root/context';
+	import { useComboBoxContext, type ComboBoxItemActionHandler } from '../root/context';
 
 	/**
 	 * ComboBox.ListBoxItem wraps ListBox.Item and provides ComboBox-specific behavior:
@@ -30,9 +30,14 @@
 		| 'onResolvedTextValue'
 		| 'scrollOnFocus'
 		| 'isParentDisabled'
-	>;
+	> & {
+		/** Called when this item is activated as an action instead of selected. */
+		onAction?: ComboBoxItemActionHandler;
+		/** Whether to close the popover after running onAction. */
+		closeOnAction?: boolean;
+	};
 
-	let { id, ...props }: ComboBoxListBoxItemProps = $props();
+	let { id, onAction, closeOnAction = true, ...props }: ComboBoxListBoxItemProps = $props();
 
 	const ctx = useComboBoxContext();
 
@@ -45,6 +50,7 @@
 
 	// Text value for filtering and display.
 	// If textValue prop is omitted, resolve it from rendered content on mount.
+	// svelte-ignore state_referenced_locally
 	let resolvedTextValue = $state<string | null>(props.textValue ?? null);
 	const effectiveTextValue = $derived(resolvedTextValue ?? '');
 
@@ -54,15 +60,17 @@
 		}
 	});
 
-	// Normalized input for filtering comparison
-	const normalizedInput = $derived(ctx.inputValue.trim().toLowerCase());
+	const filterInput = $derived(ctx.inputValue);
 	const isDisabled = $derived(Boolean(props.disabled) || ctx.isDisabled);
+	const isActionItem = $derived(Boolean(onAction));
 
 	// Automatic filtering: if text is not resolved yet, keep item visible until mount resolves it.
 	const isVisible = $derived(
-		!normalizedInput ||
+		(isActionItem && !ctx.filterActionItems) ||
+			!filterInput.trim() ||
 			!effectiveTextValue ||
-			effectiveTextValue.toLowerCase().includes(normalizedInput)
+			ctx.filter === null ||
+			ctx.filter(effectiveTextValue, filterInput)
 	);
 
 	// Virtual focus from ComboBox context
@@ -74,6 +82,7 @@
 
 	// Track registration state to avoid re-registering
 	let isRegistered = $state(false);
+	let isActionRegistered = $state(false);
 
 	// Reactive registration: register when visible, unregister when hidden
 	$effect(() => {
@@ -81,6 +90,8 @@
 		const disabled = isDisabled;
 		const label = effectiveTextValue || String(id);
 		const itemId = id;
+		const action = onAction;
+		const shouldClose = closeOnAction;
 
 		untrack(() => {
 			if (visible && !disabled && !isRegistered) {
@@ -89,6 +100,18 @@
 			} else if ((!visible || disabled) && isRegistered) {
 				ctx.unregisterItem(itemId);
 				isRegistered = false;
+			}
+
+			if (visible && !disabled && action) {
+				ctx.registerItemAction(itemId, {
+					textValue: label,
+					onAction: action,
+					closeOnAction: shouldClose
+				});
+				isActionRegistered = true;
+			} else if (isActionRegistered) {
+				ctx.unregisterItemAction(itemId);
+				isActionRegistered = false;
 			}
 		});
 	});
@@ -100,6 +123,13 @@
 		if (isRegistered) {
 			ctx.registerItem(id, label);
 		}
+		if (isActionRegistered && onAction) {
+			ctx.registerItemAction(id, {
+				textValue: label,
+				onAction,
+				closeOnAction
+			});
+		}
 	}
 
 	// Cleanup on component destroy - use onDestroy for clearer semantics
@@ -107,11 +137,17 @@
 		if (isRegistered) {
 			ctx.unregisterItem(id);
 		}
+		if (isActionRegistered) {
+			ctx.unregisterItemAction(id);
+		}
 	});
 
 	// Custom select handler that uses ComboBox context
 	function handleSelect(itemId: string | number, label: string) {
 		ctx.setFocusedItemId(itemId);
+		if (ctx.activateItemAction(itemId, 'pointer')) {
+			return;
+		}
 		ctx.select(itemId, label);
 	}
 

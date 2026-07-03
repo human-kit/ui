@@ -90,7 +90,7 @@ describe('ComboBox Multi-Select', () => {
 		it('skips disabled items during keyboard navigation and selection', async () => {
 			const onValueChange = vi.fn();
 			const screen = render(ComboBoxMultiselectTest, {
-				disabledIds: ['banana'],
+				disabledKeys: ['banana'],
 				onValueChange
 			});
 			const input = screen.getByRole('combobox');

@@ -56,13 +56,13 @@ describe('TimePicker.Root', () => {
 	});
 
 	it('does not open in readOnly mode because trigger is hidden', async () => {
-		render(TimePickerTest, { isReadOnly: true });
+		render(TimePickerTest, { readonly: true });
 		expect(document.querySelector('button[aria-haspopup="dialog"]')).toBeNull();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 	});
 
 	it('does not open popover when disabled', async () => {
-		const screen = render(TimePickerTest, { isDisabled: true });
+		const screen = render(TimePickerTest, { disabled: true });
 		const trigger = screen.getByRole('button', { name: 'Open time picker' });
 
 		trigger.element()?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));

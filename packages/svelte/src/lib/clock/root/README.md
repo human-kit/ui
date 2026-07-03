@@ -19,10 +19,11 @@ Description: Standalone wheel-based time state container that resolves visible c
 | `secondStep`   | `number`                          | `1`         | Second increment used by wheel and keyboard navigation.    |
 | `minValue`     | `string`                          | `undefined` | Optional lower bound for selectable values.                |
 | `maxValue`     | `string`                          | `undefined` | Optional upper bound for selectable values.                |
-| `isDisabled`   | `boolean`                         | `false`     | Disables wheel interaction and value updates.              |
+| `disabled`     | `boolean`                         | `false`     | Disables wheel interaction and value updates.              |
 | `column`       | `Snippet<[ClockColumnInfo]>`      | `undefined` | Optional custom renderer for each resolved column.         |
 | `children`     | `Snippet`                         | `undefined` | Optional additional content rendered inside the root.      |
 | `class`        | `string`                          | `''`        | CSS class names for the root element.                      |
+| `element`      | `HTMLDivElement \| null`          | `bindable`  | Reference to the root DOM element.                         |
 | `aria-label`   | `string`                          | `undefined` | Accessible label for the root group.                       |
 
 ### Context utilities

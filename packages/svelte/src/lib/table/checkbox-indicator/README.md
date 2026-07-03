@@ -11,7 +11,7 @@ Public prop type: `TableCheckboxIndicatorProps`
 
 | Prop           | Type                              | Default     | Description                                                                     |
 | -------------- | --------------------------------- | ----------- | ------------------------------------------------------------------------------- |
-| `keepMounted`  | `boolean`                         | `false`     | Keeps the indicator mounted while hidden when the checkbox is unchecked.        |
+| `forceMount`   | `boolean`                         | `false`     | Keeps the indicator mounted while hidden when the checkbox is unchecked.        |
 | `children`     | `Snippet`                         | `undefined` | Rendered indicator content, such as a check icon or dash icon.                  |
 | `class`        | `string`                          | `''`        | CSS class names for the indicator wrapper.                                      |
 | `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-`         | Additional native attributes forwarded to the composed checkbox indicator span. |

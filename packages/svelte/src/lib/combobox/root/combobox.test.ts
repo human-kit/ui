@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from './combobox-test.svelte';
+import ComboBoxFormTest from './combobox-form-test.svelte';
+import ComboBoxControlledExternalTest from './combobox-controlled-external-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ComboBox', () => {
@@ -24,6 +26,19 @@ describe('ComboBox', () => {
 			await userEvent.keyboard('{ArrowUp}');
 
 			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		it('opens popover on Enter without submitting the parent form', async () => {
+			const screen = render(ComboBoxFormTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{Enter}');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+			await expect
+				.poll(() => document.querySelector('[data-testid="submit-count"]')?.textContent)
+				.toBe('0');
 		});
 
 		it('navigates down through items with ArrowDown when open', async () => {
@@ -290,6 +305,14 @@ describe('ComboBox', () => {
 	});
 
 	describe('Selection', () => {
+		it('uses null as the default empty value in single mode', async () => {
+			render(ComboBoxTest);
+
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('null');
+		});
+
 		it('selects focused item on Enter and closes popover', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
@@ -321,6 +344,23 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveValue('Brazil');
 		});
 
+		it('shows selected item label from defaultValue on mount', async () => {
+			const screen = render(ComboBoxTest, { defaultValue: 'br' });
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveValue('Brazil');
+		});
+
+		it('shows selected item label from controlled value on mount', async () => {
+			const screen = render(ComboBoxTest, { initialValue: 'br' });
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveValue('Brazil');
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('br');
+		});
+
 		it('deselects when input is cleared', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
@@ -337,7 +377,23 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveValue('');
 			await expect
 				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
-				.toBe('undefined');
+				.toBe('null');
+		});
+
+		it('calls onChange with null when single selection is cleared', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(ComboBoxTest, { onValueChange });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+			expect(onValueChange).toHaveBeenLastCalledWith('ar');
+
+			await input.tripleClick();
+			await userEvent.keyboard('{Backspace}');
+
+			expect(onValueChange).toHaveBeenLastCalledWith(null);
 		});
 
 		it('retains input focus after mouse selection', async () => {
@@ -408,6 +464,34 @@ describe('ComboBox', () => {
 
 			await expect.element(input).toHaveValue('');
 		});
+
+		it('keeps controlled inputValue after external value sync when opening and blurring', async () => {
+			const screen = render(ComboBoxControlledExternalTest);
+			const input = screen.getByRole('combobox');
+
+			await expect.element(input).toHaveValue('CAJA X 5000');
+
+			await screen.getByTestId('sync-external-value').click();
+
+			await expect.element(input).toHaveValue('Unidad');
+
+			await input.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			await expect
+				.poll(() => document.querySelector('[data-item-id="unit"]')?.getAttribute('aria-selected'))
+				.toBe('true');
+			await expect
+				.poll(() =>
+					document.querySelector('[data-item-id="box-5000"]')?.getAttribute('aria-selected')
+				)
+				.toBe('false');
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			await expect.element(input).toHaveValue('Unidad');
+		});
 	});
 
 	describe('Popover Opening', () => {
@@ -435,7 +519,7 @@ describe('ComboBox', () => {
 
 	describe('Disabled State', () => {
 		it('does not open when disabled', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			await userEvent.keyboard('{ArrowDown}');
@@ -443,15 +527,15 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
-		it('input has disabled attribute when isDisabled is true', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+		it('input has disabled attribute when disabled is true', async () => {
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toBeDisabled();
 		});
 
-		it('sets pending state attributes on the root when isPending is true', async () => {
-			render(ComboBoxTest, { isPending: true });
+		it('sets pending state attributes on the root when pending is true', async () => {
+			render(ComboBoxTest, { pending: true });
 			const root = document.querySelector('[data-combobox]');
 
 			expect(root?.getAttribute('data-pending')).toBe('true');
@@ -726,9 +810,77 @@ describe('ComboBox', () => {
 		});
 	});
 
+	describe('Filtering API', () => {
+		it('uses the default contains filter when no filter prop is provided', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('arg');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(1);
+			expect(options[0].textContent).toContain('Argentina');
+		});
+
+		it('uses a custom filter when provided', async () => {
+			const filter = vi.fn((textValue: string, inputValue: string) => {
+				return inputValue.trim() === 'remote' && textValue === 'Brazil';
+			});
+			const screen = render(ComboBoxTest, { filter });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('remote');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(1);
+			expect(options[0].textContent).toContain('Brazil');
+			expect(filter).toHaveBeenCalledWith('Brazil', 'remote');
+		});
+
+		it('does not filter locally when filter is null', async () => {
+			const screen = render(ComboBoxTest, { filter: null });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('arg');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(10);
+		});
+
+		it('supports externally filtered items that do not match the input when filter is null', async () => {
+			const ComboBoxFilteredTest = (await import('./combobox-filtered-test.svelte')).default;
+			const screen = render(ComboBoxFilteredTest, {
+				filter: null,
+				externalFilterMode: 'remote'
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('remote');
+
+			const listbox = screen.getByRole('listbox').element();
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+
+			expect(options.length).toBe(1);
+			expect(options[0].textContent).toContain('Brazil');
+		});
+	});
+
 	describe('Disabled and ReadOnly States', () => {
 		it('does not open when disabled', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			// Try to focus and type - should not open
@@ -740,7 +892,7 @@ describe('ComboBox', () => {
 		});
 
 		it('does not open when readonly', async () => {
-			const screen = render(ComboBoxTest, { isReadOnly: true });
+			const screen = render(ComboBoxTest, { readonly: true });
 			const input = screen.getByRole('combobox');
 
 			// Try to focus and type - should not open
@@ -752,21 +904,21 @@ describe('ComboBox', () => {
 		});
 
 		it('input is disabled when ComboBox is disabled', async () => {
-			const screen = render(ComboBoxTest, { isDisabled: true });
+			const screen = render(ComboBoxTest, { disabled: true });
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toHaveAttribute('disabled');
 		});
 
 		it('input is readonly when ComboBox is readonly', async () => {
-			const screen = render(ComboBoxTest, { isReadOnly: true });
+			const screen = render(ComboBoxTest, { readonly: true });
 			const input = screen.getByRole('combobox');
 
 			await expect.element(input).toHaveAttribute('readonly');
 		});
 
 		it('keeps input focus after clicking a disabled option so arrow navigation still works', async () => {
-			const screen = render(ComboBoxTest, { disabledIds: ['br'] });
+			const screen = render(ComboBoxTest, { disabledKeys: ['br'] });
 			const input = screen.getByRole('combobox');
 
 			await input.click();

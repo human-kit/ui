@@ -57,8 +57,8 @@ describe('Input', () => {
 		expectNoFalseFocusAttributes(document);
 	});
 
-	it('disables the native input when isDisabled is true', () => {
-		const screen = render(InputTest, { isDisabled: true });
+	it('disables the native input when disabled is true', () => {
+		const screen = render(InputTest, { disabled: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });
 
 		expect(input.element()?.hasAttribute('disabled')).toBe(true);
@@ -66,7 +66,7 @@ describe('Input', () => {
 	});
 
 	it('supports read only inputs without losing focusability', async () => {
-		const screen = render(InputTest, { isReadOnly: true });
+		const screen = render(InputTest, { readonly: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });
 
 		expect(input.element()?.hasAttribute('readonly')).toBe(true);
@@ -79,8 +79,23 @@ describe('Input', () => {
 		expect(document.activeElement).toBe(input.element());
 	});
 
+	it('focuses the input on mount when autofocus is set', async () => {
+		const screen = render(InputTest, { autofocus: true });
+		const input = screen.getByRole('textbox', { name: 'Email' });
+
+		// The input renders after a button, so this proves explicit focus rather than default order.
+		await expect.poll(() => document.activeElement).toBe(input.element());
+	});
+
+	it('does not steal focus on mount when autofocus is unset', async () => {
+		const screen = render(InputTest);
+		const input = screen.getByRole('textbox', { name: 'Email' });
+
+		expect(document.activeElement).not.toBe(input.element());
+	});
+
 	it('maps invalid and required state to data and aria attributes', () => {
-		const screen = render(InputTest, { isInvalid: true, isRequired: true });
+		const screen = render(InputTest, { invalid: true, required: true });
 		const input = screen.getByRole('textbox', { name: 'Email' });
 
 		expect(input.element()?.getAttribute('aria-invalid')).toBe('true');

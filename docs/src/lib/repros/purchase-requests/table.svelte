@@ -29,6 +29,7 @@
 		emptyPlaceholder?: string;
 		virtualizer?: TableBodyVirtualizer;
 		class?: string;
+		rowProbe?: Snippet<[T]>;
 		columns?: Snippet<[TableColumnsContext<T>]>;
 		children?: Snippet;
 	};
@@ -38,6 +39,7 @@
 		emptyPlaceholder = 'No rows found',
 		virtualizer,
 		class: className = '',
+		rowProbe,
 		selectedKeys = $bindable(),
 		sortDescriptor = $bindable<TableSortDescriptor | undefined>(),
 		columns,
@@ -151,7 +153,10 @@
 		{@render children()}
 	{/if}
 
-	<div class="h-full max-h-[inherit] min-h-0 max-w-full overflow-auto">
+	<div
+		class="h-full max-h-[inherit] min-h-0 max-w-full overflow-auto"
+		data-purchase-request-scroll-container
+	>
 		<Table.Root
 			bind:selectedKeys
 			bind:sortDescriptor
@@ -190,7 +195,7 @@
 						<Table.Column
 							id={column.id}
 							textValue={column.header ?? column.id}
-							isRowHeader={column.isRowHeader}
+							rowHeader={column.rowHeader}
 							width={column.width}
 							defaultWidth={column.defaultWidth}
 							minWidth={column.minWidth}
@@ -201,13 +206,10 @@
 								data-sortable="true"
 							>
 								<div class="flex h-full min-w-0 items-center gap-2">
-									<Table.SortTrigger>
-										<button
-											type="button"
-											class="min-w-0 flex-1 truncate text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
-										>
-											{column.header ?? column.id}
-										</button>
+									<Table.SortTrigger
+										class="min-w-0 flex-1 truncate text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+									>
+										{column.header ?? column.id}
 									</Table.SortTrigger>
 									{#if column.resizable}
 										<Table.ColumnResizer class={recipe.resizer()}>
@@ -223,9 +225,12 @@
 
 			<Table.Body items={sortedItems} {virtualizer}>
 				{#snippet children(item)}
-					<Table.Row id={item.id} class={recipe.bodyRow()}>
+					<Table.Row id={item.id} class={recipe.bodyRow()} data-purchase-request-row={item.id}>
 						{#if showSelection}
 							<Table.Cell class={recipe.selectionCell()}>
+								{#if rowProbe}
+									{@render rowProbe(item)}
+								{/if}
 								<Table.Checkbox class={recipe.checkbox()}>
 									<Table.CheckboxIndicator class={recipe.checkboxIndicator()}>
 										<svg aria-hidden="true" viewBox="0 0 16 16" class="size-3.5">
@@ -243,10 +248,13 @@
 							</Table.Cell>
 						{/if}
 
-						{#each resolvedColumns as column (column.id)}
+						{#each resolvedColumns as column, columnIndex (column.id)}
 							{@const value = getColumnValue(item, column)}
 							{@const cellContext = { item, value, column } satisfies CellRenderContext<T>}
 							<Table.Cell class={cx(recipe.bodyCell(), alignmentClass(column.align))}>
+								{#if rowProbe && !showSelection && columnIndex === 0}
+									{@render rowProbe(item)}
+								{/if}
 								<div class="min-w-0 truncate">
 									{#if column.cell}
 										{@render column.cell(cellContext)}

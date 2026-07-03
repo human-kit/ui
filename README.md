@@ -34,6 +34,7 @@ This repository contains the publishable library and the docs/demo app.
 - `LocaleProvider`
 - `Popover`
 - `Portal`
+- `Tree`
 - `primitives` and utilities (`cn`)
 
 ## Package Installation (Consumers)

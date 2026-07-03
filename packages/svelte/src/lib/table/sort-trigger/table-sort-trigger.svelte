@@ -1,22 +1,40 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onDestroy, onMount } from 'svelte';
 	import { useTableCellContext, useTableColumnContext, useTableContext } from '../root/context';
 	import type { TableSortTriggerProps, TableSortTriggerRenderState } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { ButtonRoot } from '../../button/index.js';
 
-	let { children }: TableSortTriggerProps = $props();
+	type SortTriggerMouseEvent = MouseEvent & {
+		currentTarget: EventTarget & HTMLButtonElement;
+	};
+	type SortTriggerKeyboardEvent = KeyboardEvent & {
+		currentTarget: EventTarget & HTMLButtonElement;
+	};
+	type SortTriggerFocusEvent = FocusEvent & {
+		currentTarget: EventTarget & HTMLButtonElement;
+	};
+
+	let {
+		children,
+		class: className = '',
+		element = $bindable<HTMLButtonElement | null>(null),
+		onfocus: onFocusExternal,
+		onmousedown: onMouseDownExternal,
+		onclick: onClickExternal,
+		onkeydown: onKeyDownExternal,
+		...restProps
+	}: TableSortTriggerProps = $props();
 
 	const table = useTableContext();
 	const column = useTableColumnContext();
 	const cell = useTableCellContext();
 	const sortVersion = table.sortVersion;
 
-	let wrapperRef = $state<HTMLElement | null>(null);
-	let activeTrigger = $state<HTMLElement | null>(null);
+	let buttonRef = $state<HTMLButtonElement | null>(null);
 
 	const sortDirection = $derived.by(() => {
 		void $sortVersion;
@@ -26,77 +44,36 @@
 		sortDirection
 	}));
 
-	function getTriggerElement() {
-		if (!wrapperRef) return null;
-		return wrapperRef.querySelector<HTMLElement>('button, [role="button"]');
-	}
-
-	function syncTriggerMetadata(trigger: HTMLElement | null) {
-		if (!trigger) return;
-
-		if (trigger instanceof HTMLButtonElement && !trigger.hasAttribute('type')) {
-			trigger.type = 'button';
-		}
-
-		trigger.setAttribute('data-table-sort-trigger', 'true');
-		if (sortDirection) {
-			trigger.setAttribute('data-sorted', 'true');
-			trigger.setAttribute('data-sort-direction', sortDirection);
-		} else {
-			trigger.removeAttribute('data-sorted');
-			trigger.removeAttribute('data-sort-direction');
-		}
-	}
-
-	function refreshActiveTrigger() {
-		activeTrigger = getTriggerElement();
-		syncTriggerMetadata(activeTrigger);
-	}
-
 	$effect(() => {
+		element = buttonRef;
 		table.registerColumnSortTrigger(column.token);
-		syncTriggerMetadata(activeTrigger);
 
 		return () => {
 			table.unregisterColumnSortTrigger(column.token);
 		};
 	});
 
-	function handleFocusIn(event: FocusEvent) {
-		const target = event.target instanceof HTMLElement ? event.target : activeTrigger;
+	function handleFocus(event: SortTriggerFocusEvent) {
 		table.setFocusedCell(cell.cellKey);
-		table.setFocusVisible(shouldShowFocusVisible(target ?? null));
+		table.setFocusVisible(shouldShowFocusVisible(event.currentTarget));
+		onFocusExternal?.(event);
 	}
 
-	function handleMouseDown(event: MouseEvent) {
-		const target = event.target as HTMLElement | null;
-		const trigger = target?.closest('button, [role="button"]') as HTMLElement | null;
-		if (!trigger || !wrapperRef?.contains(trigger)) return;
-
-		trackInteractionModality(event, trigger);
+	function handleMouseDown(event: SortTriggerMouseEvent) {
+		trackInteractionModality(event, event.currentTarget);
 		table.setFocusVisible(false);
 		event.stopPropagation();
+		onMouseDownExternal?.(event);
 	}
 
-	function handleClick(event: MouseEvent) {
-		const target = event.target as HTMLElement | null;
-		const trigger = target?.closest('button, [role="button"]') as HTMLElement | null;
-		if (!trigger || !wrapperRef?.contains(trigger)) return;
-
-		activeTrigger = trigger;
-		syncTriggerMetadata(activeTrigger);
+	function handleClick(event: SortTriggerMouseEvent) {
 		event.stopPropagation();
 		table.toggleSort(column.id);
+		onClickExternal?.(event);
 	}
 
-	function handleKeyDown(event: KeyboardEvent) {
-		const target = event.target as HTMLElement | null;
-		const trigger = target?.closest('button, [role="button"]') as HTMLElement | null;
-		if (!trigger || !wrapperRef?.contains(trigger)) return;
-
-		activeTrigger = trigger;
-		syncTriggerMetadata(activeTrigger);
-		trackInteractionModality(event, trigger);
+	function handleKeyDown(event: SortTriggerKeyboardEvent) {
+		trackInteractionModality(event, event.currentTarget);
 
 		if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
 			event.preventDefault();
@@ -156,28 +133,26 @@
 			case 'Enter':
 			case ' ':
 				event.stopPropagation();
+				onKeyDownExternal?.(event);
 				return;
 		}
+
+		onKeyDownExternal?.(event);
 	}
-
-	onMount(() => {
-		refreshActiveTrigger();
-		wrapperRef?.addEventListener('focusin', handleFocusIn);
-		wrapperRef?.addEventListener('mousedown', handleMouseDown);
-		wrapperRef?.addEventListener('click', handleClick);
-		wrapperRef?.addEventListener('keydown', handleKeyDown);
-	});
-
-	onDestroy(() => {
-		wrapperRef?.removeEventListener('focusin', handleFocusIn);
-		wrapperRef?.removeEventListener('mousedown', handleMouseDown);
-		wrapperRef?.removeEventListener('click', handleClick);
-		wrapperRef?.removeEventListener('keydown', handleKeyDown);
-	});
 </script>
 
-<div bind:this={wrapperRef} style="display: contents;">
-	{#if children}
-		{@render (children as Snippet<[TableSortTriggerRenderState]>)(renderState)}
-	{/if}
-</div>
+<ButtonRoot
+	{...restProps}
+	bind:element={buttonRef}
+	type="button"
+	class={className}
+	data-table-sort-trigger="true"
+	data-sorted={sortDirection ? 'true' : undefined}
+	data-sort-direction={sortDirection}
+	onfocus={handleFocus}
+	onmousedown={handleMouseDown}
+	onclick={handleClick}
+	onkeydown={handleKeyDown}
+>
+	{@render (children as Snippet<[TableSortTriggerRenderState]>)(renderState)}
+</ButtonRoot>

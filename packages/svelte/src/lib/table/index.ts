@@ -1,6 +1,12 @@
 export * as Table from './index.parts.js';
 
 export type {
+	CellContext,
+	CellProps,
+	CellRenderer,
+	ColumnDef,
+	Row,
+	RowData,
 	TableBodyProps,
 	TableBodyVirtualizer,
 	TableCellProps,
@@ -11,6 +17,7 @@ export type {
 	TableColumnResizerProps,
 	TableSortTriggerRenderState,
 	TableSortTriggerProps,
+	TableInteractiveCellProps,
 	TableEmptyStateProps,
 	TableFooterProps,
 	TableHeaderProps,
@@ -31,6 +38,7 @@ export { default as TableColumnResizer } from './column-resizer/table-column-res
 export { default as TableCheckbox } from './checkbox/table-checkbox.svelte';
 export { default as TableCheckboxIndicator } from './checkbox-indicator/table-checkbox-indicator.svelte';
 export { default as TableCell } from './cell/table-cell.svelte';
+export { default as TableInteractiveCell } from './interactive-cell/table-interactive-cell.svelte';
 
 export {
 	createTableContext,
@@ -56,13 +64,22 @@ export {
 	type TableSortDirection,
 	type TableSortDescriptor,
 	type TableColumnWidth,
+	type TableColumnPin,
+	type TableColumnPinState,
 	type TableGridCoord,
 	type TableSectionKind,
 	type TableSectionContext,
 	type TableRowContext,
 	type TableColumnContext,
-	type CreateTableContextOptions
+	type CreateTableContextOptions,
+	DEFAULT_TABLE_COLUMN_MIN_WIDTH
 } from './root/context.js';
+
+export {
+	getTableSsrMinWidth,
+	type TableColumnWidthSpec,
+	type GetTableSsrMinWidthOptions
+} from './utils/ssr-min-width.js';
 
 import * as TableParts from './index.parts.js';
 export default TableParts;

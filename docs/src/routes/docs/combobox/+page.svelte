@@ -47,11 +47,18 @@
 		{ id: 'tokyo', name: 'Tokyo' }
 	];
 
+	let contacts = $state([
+		{ id: 'ada-lovelace', name: 'Ada Lovelace' },
+		{ id: 'grace-hopper', name: 'Grace Hopper' },
+		{ id: 'katherine-johnson', name: 'Katherine Johnson' },
+		{ id: 'margaret-hamilton', name: 'Margaret Hamilton' }
+	]);
+
 	// Interactive playground state
 	let triggerMode: 'focus' | 'input' | 'press' = $state('press');
 	let placeholder = $state('Search countries...');
 	let inputValue = $state('');
-	let selectedValue = $state<string | number | undefined>();
+	let selectedValue = $state<string | number | null>(null);
 
 	const filteredCountries = $derived(
 		inputValue
@@ -61,7 +68,7 @@
 
 	// Controlled state
 	let controlledInputValue = $state('');
-	let controlledSelectedValue = $state<string | number | undefined>();
+	let controlledSelectedValue = $state<string | number | null>(null);
 
 	const controlledFilteredCountries = $derived(
 		controlledInputValue
@@ -73,10 +80,13 @@
 	let multiSelectValue = $state<(string | number)[]>([]);
 	let multiSelectInput = $state('');
 	let listScrollInput = $state('');
-	let listScrollValue = $state<string | number | undefined>();
+	let listScrollValue = $state<string | number | null>(null);
 	let pendingDemoInput = $state('Argentina');
-	let pendingDemoValue = $state<string | number | undefined>('ar');
+	let pendingDemoValue = $state<string | number | null>('ar');
 	let pendingDemo = $state(false);
+	let actionInput = $state('');
+	let actionValue = $state<string | number | null>(null);
+	let lastAction = $state('No action yet');
 
 	const filteredFruits = $derived(
 		multiSelectInput
@@ -89,6 +99,14 @@
 			? cities.filter((city) => city.name.toLowerCase().includes(listScrollInput.toLowerCase()))
 			: cities
 	);
+
+	const filteredContacts = $derived(
+		actionInput
+			? contacts.filter((contact) => contact.name.toLowerCase().includes(actionInput.toLowerCase()))
+			: contacts
+	);
+
+	const canCreateContact = $derived(Boolean(actionInput.trim()));
 
 	const filteredPendingCountries = $derived(
 		pendingDemoInput
@@ -109,6 +127,36 @@
 		setTimeout(() => {
 			pendingDemo = false;
 		}, 1400);
+	}
+
+	function createContact(value: string) {
+		const name = value.trim();
+		if (!name) return;
+
+		const baseId = name
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-|-$/g, '');
+		let id = baseId || 'contact';
+		let suffix = 2;
+
+		while (contacts.some((contact) => contact.id === id)) {
+			id = `${baseId || 'contact'}-${suffix}`;
+			suffix += 1;
+		}
+
+		const existingContact = contacts.find(
+			(contact) => contact.name.toLowerCase() === name.toLowerCase()
+		);
+		const nextContact = existingContact ?? { id, name };
+
+		if (!existingContact) {
+			contacts = [...contacts, { id, name }];
+		}
+
+		actionValue = nextContact.id;
+		actionInput = nextContact.name;
+		lastAction = existingContact ? `Selected ${name}` : `Created and selected ${name}`;
 	}
 </script>
 
@@ -235,7 +283,7 @@
 						</button>
 						<button
 							onclick={() => {
-								controlledSelectedValue = undefined;
+								controlledSelectedValue = null;
 								controlledInputValue = '';
 							}}
 							class="rounded-lg bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700"
@@ -260,7 +308,7 @@
 				<div class="flex items-start gap-8">
 					<div class="w-full max-w-xs">
 						<ComboBox.Root
-							isPending={pendingDemo}
+							pending={pendingDemo}
 							trigger="focus"
 							bind:inputValue={pendingDemoInput}
 							bind:value={pendingDemoValue}
@@ -321,9 +369,87 @@
 
 				{#snippet controls()}
 					<div class="space-y-4">
-						<DemoState label="isPending" value={pendingDemo} />
+						<DemoState label="pending" value={pendingDemo} />
 						<DemoState label="inputValue" value={pendingDemoInput} />
 						<DemoState label="selectedValue" value={pendingDemoValue} />
+					</div>
+				{/snippet}
+			</DemoSection>
+
+			<DemoSection
+				title="Action Items"
+				description="Use onAction for command-style items, then update controlled state when the action should create and select a value."
+			>
+				<div class="flex items-start gap-8">
+					<div class="w-full max-w-sm">
+						<ComboBox.Root
+							trigger="input"
+							filterActionItems={false}
+							bind:inputValue={actionInput}
+							bind:value={actionValue}
+						>
+							<div class="flex gap-1">
+								<ComboBox.Input
+									placeholder="Search or create a contact..."
+									class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+								/>
+								<ComboBox.Clear
+									class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+								/>
+								<ComboBox.Trigger
+									class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600"
+								/>
+							</div>
+
+							<ComboBox.Popover
+								class="mt-1 w-(--trigger-width) overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+							>
+								<ComboBox.List
+									class="max-h-60 overflow-auto p-1"
+									emptyPlaceholder="No contacts found"
+								>
+									<ComboBox.Item
+										id="create-contact"
+										textValue="Create contact"
+										disabled={!canCreateContact}
+										onAction={({ inputValue }) => createContact(inputValue)}
+										class="cursor-pointer rounded-md border-b border-gray-100 px-3 py-2 text-blue-700 hover:bg-blue-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:text-gray-400 data-[focused=true]:bg-blue-50 dark:border-gray-700 dark:text-blue-300 dark:hover:bg-blue-950/40 dark:data-[disabled=true]:text-gray-500 dark:data-[focused=true]:bg-blue-950/40"
+									>
+										{#if actionInput.trim()}
+											Create "{actionInput.trim()}"
+										{:else}
+											Create contact
+										{/if}
+									</ComboBox.Item>
+
+									{#each filteredContacts as contact (contact.id)}
+										<ComboBox.Item
+											id={contact.id}
+											textValue={contact.name}
+											class="cursor-pointer rounded-md px-3 py-2 text-gray-900 hover:bg-gray-100 data-[focused=true]:bg-gray-100 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-white dark:hover:bg-gray-700 dark:data-[focused=true]:bg-gray-700"
+										>
+											{contact.name}
+										</ComboBox.Item>
+									{/each}
+								</ComboBox.List>
+							</ComboBox.Popover>
+						</ComboBox.Root>
+					</div>
+
+					<div
+						class="max-w-xs rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+					>
+						<p class="font-medium text-gray-900 dark:text-white">Last action</p>
+						<p class="mt-1">{lastAction}</p>
+					</div>
+				</div>
+
+				{#snippet controls()}
+					<div class="space-y-4">
+						<DemoState label="inputValue" value={actionInput} />
+						<DemoState label="selectedValue" value={actionValue} />
+						<DemoState label="lastAction" value={lastAction} />
+						<DemoState label="contacts" value={contacts.length} />
 					</div>
 				{/snippet}
 			</DemoSection>

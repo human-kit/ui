@@ -37,7 +37,7 @@
 						</Table.Checkbox>
 					</Table.ColumnHeaderCell>
 				</Table.Column>
-				<Table.Column id="email" isRowHeader textValue="Email" minWidth={120}>
+				<Table.Column id="email" rowHeader textValue="Email" minWidth={120}>
 					<Table.ColumnHeaderCell>
 						<div class="flex items-center justify-between gap-3">
 							<span>Email</span>

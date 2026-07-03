@@ -4,11 +4,11 @@
 	type Props = {
 		defaultValue?: string;
 		defaultOpen?: boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		hourCycle?: 12 | 24;
 		granularity?: 'hour' | 'minute' | 'second';
-		isRequired?: boolean;
+		required?: boolean;
 		minValue?: string;
 		maxValue?: string;
 		popoverAriaLabel?: string;
@@ -17,11 +17,11 @@
 	let {
 		defaultValue = '14:30',
 		defaultOpen = false,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		hourCycle = 24,
 		granularity = 'minute',
-		isRequired = false,
+		required = false,
 		minValue,
 		maxValue,
 		popoverAriaLabel = 'Time picker'
@@ -35,11 +35,11 @@
 <TimePicker.Root
 	{defaultValue}
 	{defaultOpen}
-	{isDisabled}
-	{isReadOnly}
+	{disabled}
+	{readonly}
 	{hourCycle}
 	{granularity}
-	{isRequired}
+	{required}
 	{minValue}
 	{maxValue}
 	onChange={(nextValue) => {

@@ -2,10 +2,10 @@
 	import ComboBox from '../index.js';
 
 	type Props = {
-		isPending?: boolean;
+		pending?: boolean;
 	};
 
-	let { isPending = false }: Props = $props();
+	let { pending = false }: Props = $props();
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },
@@ -13,7 +13,7 @@
 	];
 </script>
 
-<ComboBox.Root {isPending}>
+<ComboBox.Root {pending}>
 	<ComboBox.Input placeholder="Search countries..." />
 	<ComboBox.Button />
 

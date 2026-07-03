@@ -22,11 +22,12 @@ Description: State container for segmented time input, popover lifecycle, wheel 
 | `secondStep`   | `number`                           | `1`         | Second increment for segment and wheel interactions.         |
 | `minValue`     | `string`                           | `undefined` | Optional lower bound for valid values.                       |
 | `maxValue`     | `string`                           | `undefined` | Optional upper bound for valid values.                       |
-| `isDisabled`   | `boolean`                          | `false`     | Disables user interaction.                                   |
-| `isReadOnly`   | `boolean`                          | `false`     | Prevents value changes while keeping focus/navigation.       |
-| `isRequired`   | `boolean`                          | `false`     | Propagates required state to input accessibility attributes. |
+| `disabled`     | `boolean`                          | `false`     | Disables user interaction.                                   |
+| `readonly`     | `boolean`                          | `false`     | Prevents value changes while keeping focus/navigation.       |
+| `required`     | `boolean`                          | `false`     | Propagates required state to input accessibility attributes. |
 | `children`     | `Snippet`                          | `undefined` | Composed `TimePicker` parts.                                 |
 | `class`        | `string`                           | `''`        | CSS class names for the root element.                        |
+| `element`      | `HTMLDivElement \| null`           | `bindable`  | Reference to the root DOM element.                           |
 | `aria-label`   | `string`                           | `undefined` | Accessible label for the root wrapper.                       |
 
 ### Context utilities

@@ -169,9 +169,10 @@ describe('Nested Dialogs', () => {
 			const overlay2 = document.querySelector('[data-testid="overlay-2"]') as HTMLElement;
 			const content2 = document.querySelector('[data-testid="content-2"]') as HTMLElement;
 
-			const z1Content = parseInt(content1.style.zIndex);
+			// Content stacking z-index lives on the positioning layer (the panel's parent).
+			const z1Content = parseInt((content1.parentElement as HTMLElement).style.zIndex);
 			const z2Overlay = parseInt(overlay2.style.zIndex);
-			const z2Content = parseInt(content2.style.zIndex);
+			const z2Content = parseInt((content2.parentElement as HTMLElement).style.zIndex);
 
 			// Overlay 2 should be above content 1
 			expect(z2Overlay).toBeGreaterThan(z1Content);
@@ -198,9 +199,10 @@ describe('Nested Dialogs', () => {
 			const content2 = document.querySelector('[data-testid="content-2"]') as HTMLElement;
 			const content3 = document.querySelector('[data-testid="content-3"]') as HTMLElement;
 
-			const z1 = parseInt(content1.style.zIndex);
-			const z2 = parseInt(content2.style.zIndex);
-			const z3 = parseInt(content3.style.zIndex);
+			// Content stacking z-index lives on the positioning layer (the panel's parent).
+			const z1 = parseInt((content1.parentElement as HTMLElement).style.zIndex);
+			const z2 = parseInt((content2.parentElement as HTMLElement).style.zIndex);
+			const z3 = parseInt((content3.parentElement as HTMLElement).style.zIndex);
 
 			expect(z2).toBeGreaterThan(z1);
 			expect(z3).toBeGreaterThan(z2);

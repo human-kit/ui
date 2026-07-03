@@ -5,12 +5,13 @@
 
 	let {
 		id,
-		isRowHeader = false,
+		rowHeader = false,
 		textValue,
 		width,
 		defaultWidth,
 		minWidth,
 		maxWidth,
+		pin,
 		children
 	}: TableColumnProps = $props();
 
@@ -31,7 +32,7 @@
 			return table.isColumnHidden(id);
 		},
 		get isRowHeader() {
-			return isRowHeader;
+			return rowHeader;
 		},
 		get textValue() {
 			return textValue;
@@ -47,6 +48,9 @@
 		},
 		get maxWidth() {
 			return maxWidth;
+		},
+		get pin() {
+			return pin;
 		}
 	});
 
@@ -54,12 +58,13 @@
 		table.registerColumn({
 			token,
 			id,
-			isRowHeader,
+			isRowHeader: rowHeader,
 			textValue,
 			width,
 			defaultWidth,
 			minWidth,
-			maxWidth
+			maxWidth,
+			pin
 		});
 	}
 

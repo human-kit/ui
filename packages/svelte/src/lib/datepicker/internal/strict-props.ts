@@ -1,7 +1,9 @@
+import { dev } from '../../internal/environment';
+
 const warnedMessages = new Set<string>();
 
 function warnOnce(message: string) {
-	if (!import.meta.env.DEV) return;
+	if (!dev) return;
 	if (warnedMessages.has(message)) return;
 	warnedMessages.add(message);
 	console.warn(message);

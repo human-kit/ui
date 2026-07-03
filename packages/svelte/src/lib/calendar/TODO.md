@@ -9,7 +9,7 @@ Track Calendar work with a single mandatory TODO format.
 - [x] [M][P0][Area: Core API][Owner: Unassigned][Target: Done] Implement controlled/uncontrolled root (`value`, `defaultValue`, `onChange`).
 - [x] [M][P0][Area: Navigation][Owner: Unassigned][Target: Done] Implement paginated navigation via `visibleMonths`.
 - [x] [M][P0][Area: Selection][Owner: Unassigned][Target: Done] Implement single-date selection.
-- [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Support `isDisabled`, `isReadOnly`, and `isDateUnavailable`.
+- [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Support `disabled`, `readonly`, and `isDateUnavailable`.
 - [x] [M][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Deliver keyboard-accessible grid baseline.
 - [x] [M][P0][Area: Delivery][Owner: Unassigned][Target: Done] Ship exports, docs page, and initial tests.
 - [x] [S][P1][Area: Selection][Owner: Unassigned][Target: Done] Implement range selection.

@@ -10,7 +10,7 @@
 		<Table.Row>
 			<Table.Column
 				id="email"
-				isRowHeader
+				rowHeader
 				textValue="Email"
 				width={220}
 				minWidth={220}

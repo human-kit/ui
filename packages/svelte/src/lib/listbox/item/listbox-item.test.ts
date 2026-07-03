@@ -223,6 +223,66 @@ describe('ListBox.Item', () => {
 			await expect.poll(() => options[0].getAttribute('data-pressed')).toBeNull();
 		});
 
+		it('keeps pointer press state tied to the item that started the press', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			const firstOption = options[0] as HTMLElement;
+			const secondOption = options[1] as HTMLElement;
+			const pointerId = 1;
+
+			firstOption.dispatchEvent(
+				new PointerEvent('pointerdown', {
+					bubbles: true,
+					cancelable: true,
+					button: 0,
+					buttons: 1,
+					pointerId
+				})
+			);
+			await expect.poll(() => firstOption.getAttribute('data-pressed')).toBe('true');
+
+			firstOption.dispatchEvent(
+				new PointerEvent('pointerleave', {
+					cancelable: true,
+					button: 0,
+					buttons: 1,
+					pointerId
+				})
+			);
+			await expect.poll(() => firstOption.getAttribute('data-pressed')).toBeNull();
+
+			secondOption.dispatchEvent(
+				new PointerEvent('pointerenter', {
+					cancelable: true,
+					button: 0,
+					buttons: 1,
+					pointerId
+				})
+			);
+			expect(secondOption.getAttribute('data-pressed')).toBeNull();
+
+			firstOption.dispatchEvent(
+				new PointerEvent('pointerenter', {
+					cancelable: true,
+					button: 0,
+					buttons: 1,
+					pointerId
+				})
+			);
+			await expect.poll(() => firstOption.getAttribute('data-pressed')).toBe('true');
+
+			window.dispatchEvent(
+				new PointerEvent('pointerup', {
+					button: 0,
+					buttons: 0,
+					pointerId
+				})
+			);
+			await expect.poll(() => firstOption.getAttribute('data-pressed')).toBeNull();
+		});
+
 		it('has data-pressed while Enter is held on the focused item', async () => {
 			const screen = render(ListBoxTest);
 			const listbox = screen.getByRole('listbox');
@@ -242,7 +302,7 @@ describe('ListBox.Item', () => {
 		it('supports controlled pressed override and clears it when disabled', async () => {
 			const screen = render(ListBoxTest, {
 				pressedIds: ['banana', 'cherry'],
-				disabledIds: ['cherry']
+				disabledKeys: ['cherry']
 			});
 			const listbox = screen.getByRole('listbox');
 
@@ -276,7 +336,7 @@ describe('ListBox.Item', () => {
 
 	describe('Disabled State', () => {
 		it('has aria-disabled when disabled', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['cherry'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['cherry'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
@@ -284,7 +344,7 @@ describe('ListBox.Item', () => {
 		});
 
 		it('has data-disabled attribute when disabled', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['cherry'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['cherry'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
@@ -292,7 +352,7 @@ describe('ListBox.Item', () => {
 		});
 
 		it('does not get hovered when disabled', async () => {
-			const screen = render(ListBoxTest, { disabledIds: ['cherry'] });
+			const screen = render(ListBoxTest, { disabledKeys: ['cherry'] });
 			const listbox = screen.getByRole('listbox');
 
 			const options = listbox.element().querySelectorAll('[role="option"]');

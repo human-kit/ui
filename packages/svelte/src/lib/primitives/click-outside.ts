@@ -13,17 +13,24 @@ export type ClickOutsideOptions = {
 };
 
 /**
- * Check if an element is in a "top layer" (portal, dialog, popover, etc.)
- * that was spawned from within the reference node.
- * This prevents clicks on nested portals from triggering clickOutside.
+ * Check if a click landed on a "top layer" (dialog, popover, etc.) stacked
+ * *above* the reference node — i.e. a portal spawned from within it.
+ *
+ * Portaled overlays append to the document in mount order, so a layer that
+ * follows `node` in document order opened after it (a nested popover/dialog) and
+ * its clicks must not dismiss `node`. A layer that *precedes* `node` is an
+ * enclosing ancestor overlay (e.g. the dialog this popover lives in) — and since
+ * a modal layer marks everything outside itself `inert`, an outside click often
+ * resolves to that ancestor. Treating it as "inside" would wrongly keep `node`
+ * open, so those clicks must still dismiss, exactly like clicking the page.
  */
-function isInTopLayer(target: Node): boolean {
+function isInTopLayer(node: Node, target: Node): boolean {
 	if (!(target instanceof Element)) return false;
 
-	// Check if the element or any ancestor is marked as top-layer
-	// This includes our popovers, nested dialogs, and other portaled content
 	const topLayerElement = target.closest('[data-dialog-content], [role="dialog"]');
-	return topLayerElement !== null;
+	if (topLayerElement === null) return false;
+
+	return (node.compareDocumentPosition(topLayerElement) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
 }
 
 /**
@@ -50,9 +57,9 @@ export function clickOutside(node: HTMLElement, options: ClickOutsideOptions) {
 			if (el && el.contains(target)) return;
 		}
 
-		// Don't trigger if clicking on a top-layer element (portal content)
-		// This prevents closing when clicking on nested popovers/dialogs
-		if (isInTopLayer(target)) return;
+		// Don't trigger if clicking on a top-layer element stacked above this node
+		// (a nested popover/dialog). An enclosing ancestor overlay still dismisses.
+		if (isInTopLayer(node, target)) return;
 
 		handler(event);
 	}

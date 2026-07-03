@@ -1,4 +1,17 @@
 export type CalendarDateValue = string;
+export type CalendarFirstDayOfWeek = 'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat';
+export type CalendarWeekdayStyle = 'narrow' | 'short' | 'long';
+export type CalendarMonthHeadingStyle = 'composed' | 'month-year';
+
+const firstDayOfWeekIndexes: Record<CalendarFirstDayOfWeek, number> = {
+	sun: 0,
+	mon: 1,
+	tue: 2,
+	wed: 3,
+	thu: 4,
+	fri: 5,
+	sat: 6
+};
 
 import {
 	createUtcDate,
@@ -65,9 +78,21 @@ export function getFirstDayOfWeek(locale: string): number {
 	return 0;
 }
 
-export function getWeekdayLabels(locale: string, firstDayOfWeek: number): string[] {
+export function resolveFirstDayOfWeek(
+	locale: string,
+	firstDayOfWeek?: CalendarFirstDayOfWeek
+): number {
+	if (firstDayOfWeek) return firstDayOfWeekIndexes[firstDayOfWeek];
+	return getFirstDayOfWeek(locale);
+}
+
+export function getWeekdayLabels(
+	locale: string,
+	firstDayOfWeek: number,
+	weekdayStyle: CalendarWeekdayStyle = 'short'
+): string[] {
 	const formatter = new Intl.DateTimeFormat(locale, {
-		weekday: 'short',
+		weekday: weekdayStyle,
 		timeZone: 'UTC'
 	});
 
@@ -115,7 +140,24 @@ export function buildMonthGrid(
 	return weeks;
 }
 
-export function formatMonthHeading(date: Date, locale: string): string {
+export function formatMonthHeading(
+	date: Date,
+	locale: string,
+	monthHeadingStyle: CalendarMonthHeadingStyle = 'composed'
+): string {
+	if (monthHeadingStyle === 'month-year') {
+		const month = new Intl.DateTimeFormat(locale, {
+			month: 'long',
+			timeZone: 'UTC'
+		}).format(date);
+		const year = new Intl.DateTimeFormat(locale, {
+			year: 'numeric',
+			timeZone: 'UTC'
+		}).format(date);
+
+		return `${month} ${year}`;
+	}
+
 	return new Intl.DateTimeFormat(locale, {
 		month: 'long',
 		year: 'numeric',

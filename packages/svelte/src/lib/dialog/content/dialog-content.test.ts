@@ -120,20 +120,20 @@ describe('Dialog.Content', () => {
 	});
 
 	describe('Positioning', () => {
-		it('is positioned with fixed positioning', async () => {
+		it('places the panel inside a fixed positioning layer', async () => {
 			const screen = render(DialogTest);
 			const trigger = screen.getByRole('button', { name: 'Open Dialog' });
 
 			await trigger.click();
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-			const style = window.getComputedStyle(dialog);
-
-			expect(style.position).toBe('fixed');
+			const positioner = document.querySelector('[data-dialog-positioner]') as HTMLElement;
+			expect(positioner).toBeTruthy();
+			expect(positioner.contains(document.querySelector('[role="dialog"]'))).toBe(true);
+			expect(window.getComputedStyle(positioner).position).toBe('fixed');
 		});
 
-		it('is centered with transform', async () => {
+		it('centers the panel via grid, leaving the panel transform free for animations', async () => {
 			const screen = render(DialogTest);
 			const trigger = screen.getByRole('button', { name: 'Open Dialog' });
 
@@ -141,24 +141,25 @@ describe('Dialog.Content', () => {
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
 			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			const positioner = dialog.parentElement as HTMLElement;
+			const positionerStyle = window.getComputedStyle(positioner);
 
-			// Check inline style contains centering properties
-			expect(dialog.style.top).toBe('50%');
-			expect(dialog.style.left).toBe('50%');
-			expect(dialog.style.transform).toContain('translate(-50%, -50%)');
+			// Centering lives on the layer (grid), not as a transform on the panel — so zoom/slide
+			// enter/exit animations don't fight an inline centering transform.
+			expect(positionerStyle.display).toBe('grid');
+			expect(positionerStyle.placeItems).toContain('center');
+			expect(dialog.style.transform).toBe('');
 		});
 
-		it('has z-index for stacking', async () => {
+		it('has z-index for stacking on the positioning layer', async () => {
 			const screen = render(DialogTest);
 			const trigger = screen.getByRole('button', { name: 'Open Dialog' });
 
 			await trigger.click();
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
-			const style = window.getComputedStyle(dialog);
-
-			expect(parseInt(style.zIndex)).toBeGreaterThan(0);
+			const positioner = document.querySelector('[data-dialog-positioner]') as HTMLElement;
+			expect(parseInt(window.getComputedStyle(positioner).zIndex)).toBeGreaterThan(0);
 		});
 	});
 

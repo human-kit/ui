@@ -107,11 +107,65 @@ describe('DatePicker.Input', () => {
 		expect(inputGroup.element()?.getAttribute('id')).toContain('-input');
 	});
 
-	it('does not move focus into segments when disabled', async () => {
-		const screen = render(DatePickerTest, { isDisabled: true });
+	it('exposes a labelable proxy input and forwards invalid state and blur', async () => {
+		const screen = render(DatePickerTest, {
+			inputId: 'request_date',
+			inputName: 'request_date',
+			inputLabel: 'Request date',
+			inputAriaInvalid: true
+		});
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+		const proxyInput = document.getElementById('request_date');
+		const outsideButton = screen.getByTestId('outside-button');
+		const blurCount = screen.getByTestId('date-picker-blur-count');
+
+		expect(proxyInput).toBeInstanceOf(HTMLInputElement);
+		expect(proxyInput?.getAttribute('name')).toBe('request_date');
+		expect(proxyInput?.getAttribute('aria-invalid')).toBe('true');
+		expect(inputGroup.element()?.getAttribute('data-invalid')).toBe('true');
+
+		await userEvent.click(screen.getByText('Request date'));
+		await expect
+			.poll(() => document.activeElement?.getAttribute('data-date-picker-segment'))
+			.toBe('true');
+
+		await outsideButton.click();
+		await expect.poll(() => blurCount.element()?.textContent).toBe('1');
+	});
+
+	it('does not render invalid state for an incomplete draft without external invalid state', async () => {
+		const screen = render(DatePickerEmptyTest);
 		const inputGroup = screen.getByRole('group', { name: 'Date input' });
 
 		await inputGroup.click();
+		await expect
+			.poll(() => document.activeElement?.getAttribute('data-date-picker-segment'))
+			.toBe('true');
+		await userEvent.keyboard('1');
+
+		expect(inputGroup.element()?.getAttribute('aria-invalid')).toBeNull();
+		expect(inputGroup.element()?.getAttribute('data-invalid')).toBeNull();
+	});
+
+	it('does not move focus into segments when disabled', async () => {
+		const screen = render(DatePickerTest, { disabled: true });
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+
+		await inputGroup.click();
+		expect(document.activeElement).not.toBe(inputGroup.element());
 		expect(document.activeElement?.getAttribute('data-date-picker-segment')).not.toBe('true');
+		expect(inputGroup.element()?.getAttribute('data-focus-within')).toBeNull();
+		expect(inputGroup.element()?.getAttribute('data-focus-visible')).toBeNull();
+	});
+
+	it('clears native focus if a disabled input receives focus programmatically', async () => {
+		const screen = render(DatePickerTest, { disabled: true });
+		const inputGroup = screen.getByRole('group', { name: 'Date input' });
+
+		inputGroup.element()?.focus();
+
+		await expect.poll(() => document.activeElement).not.toBe(inputGroup.element());
+		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
+		expect(document.querySelector('[data-focus-visible="true"]')).toBeNull();
 	});
 });

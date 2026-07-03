@@ -7,14 +7,17 @@ import {
 	compareDates,
 	formatCalendarDate,
 	formatMonthHeading,
-	getFirstDayOfWeek,
 	getTodayUtcDate,
 	getWeekdayLabels,
 	isValidCalendarDateValue,
 	parseCalendarDate,
+	resolveFirstDayOfWeek,
 	startOfMonth,
 	type CalendarDateValue,
-	type CalendarDayCell
+	type CalendarDayCell,
+	type CalendarFirstDayOfWeek,
+	type CalendarMonthHeadingStyle,
+	type CalendarWeekdayStyle
 } from './date-utils';
 
 const KEY = Symbol('calendar');
@@ -42,6 +45,8 @@ export type CreateCalendarContextOptions<
 	visibleMonths?: number;
 	showOutsideDays?: boolean;
 	locale?: string;
+	firstDayOfWeek?: CalendarFirstDayOfWeek;
+	monthHeadingStyle?: CalendarMonthHeadingStyle;
 	isDisabled?: boolean;
 	isReadOnly?: boolean;
 	value?: CalendarValueBySelectionMode<TSelectionMode>;
@@ -53,6 +58,7 @@ export type CreateCalendarContextOptions<
 export type CalendarContext = {
 	layoutVersion: Readable<number>;
 	selectionVersion: Readable<number>;
+	focusRequestVersion: Readable<number>;
 	locale: string;
 	selectionMode: CalendarSelectionMode;
 	firstDayOfWeek: number;
@@ -67,6 +73,7 @@ export type CalendarContext = {
 	focusVisible: boolean;
 	weekdayLabels: string[];
 	headingLabel: string;
+	getWeekdayLabels: (weekdayStyle?: CalendarWeekdayStyle) => string[];
 	isSelected: (date: CalendarDateValue) => boolean;
 	isRangeStart: (date: CalendarDateValue) => boolean;
 	isRangeEnd: (date: CalendarDateValue) => boolean;
@@ -97,6 +104,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		visibleMonths = 1,
 		showOutsideDays = false,
 		locale = Intl.DateTimeFormat().resolvedOptions().locale,
+		firstDayOfWeek,
+		monthHeadingStyle = 'composed',
 		isDisabled = false,
 		isReadOnly = false,
 		isDateUnavailable,
@@ -217,9 +226,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let previousVisibleMonths = visibleMonths;
 	let previousShowOutsideDays = showOutsideDays;
 	let previousLocale = locale;
-	let cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
+	let previousFirstDayOfWeek = firstDayOfWeek;
+	let previousMonthHeadingStyle = monthHeadingStyle;
+	let cachedFirstDayOfWeek = resolveFirstDayOfWeek(locale, firstDayOfWeek);
 	const layoutVersion = writable(0);
 	const selectionVersion = writable(0);
+	const focusRequestVersion = writable(0);
 
 	function clearUnavailableCache() {
 		unavailableCache = new Map();
@@ -260,6 +272,10 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		selectionVersion.update((value) => value + 1);
 	}
 
+	function requestFocusedCellFocus() {
+		focusRequestVersion.update((value) => value + 1);
+	}
+
 	function syncExternal(next: CreateCalendarContextOptions) {
 		let shouldNotifyLayout = false;
 		let shouldNotifySelection = false;
@@ -268,13 +284,17 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		const nextVisibleMonths = Math.max(1, next.visibleMonths ?? 1);
 		const nextShowOutsideDays = next.showOutsideDays ?? false;
 		const nextLocale = next.locale ?? Intl.DateTimeFormat().resolvedOptions().locale;
+		const nextFirstDayOfWeek = next.firstDayOfWeek;
+		const nextMonthHeadingStyle = next.monthHeadingStyle ?? 'composed';
 		const nextUnavailableFn = next.isDateUnavailable;
 
 		if (
 			nextUnavailableFn !== previousUnavailableFn ||
 			nextVisibleMonths !== previousVisibleMonths ||
 			nextShowOutsideDays !== previousShowOutsideDays ||
-			nextLocale !== previousLocale
+			nextLocale !== previousLocale ||
+			nextFirstDayOfWeek !== previousFirstDayOfWeek ||
+			nextMonthHeadingStyle !== previousMonthHeadingStyle
 		) {
 			clearUnavailableCache();
 			shouldNotifyLayout = true;
@@ -284,6 +304,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		previousVisibleMonths = nextVisibleMonths;
 		previousShowOutsideDays = nextShowOutsideDays;
 		previousLocale = nextLocale;
+		previousFirstDayOfWeek = nextFirstDayOfWeek;
+		previousMonthHeadingStyle = nextMonthHeadingStyle;
 
 		if (selectionMode !== nextSelectionMode) {
 			selectionMode = nextSelectionMode;
@@ -301,7 +323,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		visibleMonths = nextVisibleMonths;
 		showOutsideDays = nextShowOutsideDays;
 		locale = nextLocale;
-		cachedFirstDayOfWeek = getFirstDayOfWeek(locale);
+		firstDayOfWeek = nextFirstDayOfWeek;
+		monthHeadingStyle = nextMonthHeadingStyle;
+		cachedFirstDayOfWeek = resolveFirstDayOfWeek(locale, firstDayOfWeek);
 
 		if (isDisabled !== (next.isDisabled ?? false) || isReadOnly !== (next.isReadOnly ?? false)) {
 			shouldNotifyLayout = true;
@@ -474,7 +498,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			return {
 				monthIndex,
 				monthStart,
-				heading: formatMonthHeading(monthStart, locale),
+				heading: formatMonthHeading(monthStart, locale, monthHeadingStyle),
 				weeks: buildMonthGrid(monthStart, firstDayOfWeek, showOutsideDays)
 			};
 		});
@@ -753,7 +777,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	function handleCellKeydown(event: KeyboardEvent, date: CalendarDateValue) {
-		setFocusVisible(true);
 		const keyDate = isValidCalendarDateValue(currentFocused) ? currentFocused : date;
 		let movedDate: CalendarDateValue | undefined;
 
@@ -776,47 +799,64 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		switch (event.key) {
 			case 'ArrowRight':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveFocusByDays(keyDate, 1);
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'ArrowLeft':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveFocusByDays(keyDate, -1);
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'ArrowDown':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveFocusByDays(keyDate, 7);
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'ArrowUp':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveFocusByDays(keyDate, -7);
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'Home':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveToMonthEdge(keyDate, 'start');
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'End':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveToMonthEdge(keyDate, 'end');
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'PageUp':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveFocusByMonths(keyDate, -1);
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'PageDown':
 				event.preventDefault();
+				setFocusVisible(true);
 				movedDate = moveFocusByMonths(keyDate, 1);
+				if (movedDate) requestFocusedCellFocus();
 				extendRangeWithKeyboard(movedDate);
 				break;
 			case 'Enter':
 			case ' ':
 				event.preventDefault();
+				setFocusVisible(true);
 				if (
 					selectionMode === 'range' &&
 					currentRangeStart &&
@@ -831,6 +871,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				break;
 			case 'Escape':
 				event.preventDefault();
+				setFocusVisible(true);
 				cancelPendingRangeSelection();
 				break;
 		}
@@ -839,6 +880,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	const context: CalendarContext = {
 		layoutVersion,
 		selectionVersion,
+		focusRequestVersion,
 		get locale() {
 			return locale;
 		},
@@ -880,6 +922,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		},
 		get headingLabel() {
 			return getHeadingLabel();
+		},
+		getWeekdayLabels(weekdayStyle: CalendarWeekdayStyle = 'short') {
+			return getWeekdayLabels(locale, cachedFirstDayOfWeek, weekdayStyle);
 		},
 		isSelected,
 		isRangeStart,

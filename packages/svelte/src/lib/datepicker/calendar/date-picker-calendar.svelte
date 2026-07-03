@@ -9,8 +9,8 @@
 		| 'value'
 		| 'defaultValue'
 		| 'onChange'
-		| 'isDisabled'
-		| 'isReadOnly'
+		| 'disabled'
+		| 'readonly'
 		| 'isDateUnavailable';
 
 	type DatePickerCalendarProps = Omit<
@@ -26,8 +26,8 @@
 		'value',
 		'defaultValue',
 		'onChange',
-		'isDisabled',
-		'isReadOnly',
+		'disabled',
+		'readonly',
 		'isDateUnavailable'
 	];
 
@@ -53,8 +53,8 @@
 	showOutsideDays={false}
 	value={datePicker.value ?? undefined}
 	onChange={handleChange}
-	isDisabled={datePicker.isDisabled}
-	isReadOnly={datePicker.isReadOnly}
+	disabled={datePicker.isDisabled}
+	readonly={datePicker.isReadOnly}
 	isDateUnavailable={datePicker.isDateUnavailable}
 	class={className}
 	{...restProps}

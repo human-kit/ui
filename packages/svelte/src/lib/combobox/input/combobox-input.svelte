@@ -115,8 +115,8 @@
 	aria-describedby={ariaDescribedby}
 	autocomplete="off"
 	value={ctx.displayValue}
-	isDisabled={ctx.isDisabled}
-	isReadOnly={ctx.isReadOnly}
+	disabled={ctx.isDisabled}
+	readonly={ctx.isReadOnly}
 	oninput={composeEventHandlers(handleInput, onInputExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}

@@ -5,13 +5,13 @@
 	import { useCheckboxContext } from '../root/context';
 
 	type CheckboxIndicatorProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
-		keepMounted?: boolean;
+		forceMount?: boolean;
 		children?: Snippet;
 		class?: string;
 	};
 
 	let {
-		keepMounted = false,
+		forceMount = false,
 		children,
 		class: className = '',
 		...restProps
@@ -21,7 +21,7 @@
 	const visible = $derived(checkbox.state !== 'unchecked');
 </script>
 
-{#if keepMounted || visible}
+{#if forceMount || visible}
 	<span
 		{...restProps}
 		data-checkbox-indicator="true"
@@ -34,8 +34,8 @@
 		data-required={checkbox.required || undefined}
 		data-focused={checkbox.focused || undefined}
 		data-focus-visible={checkbox.focusVisible || undefined}
-		hidden={keepMounted && !visible}
-		aria-hidden={keepMounted && !visible ? 'true' : undefined}
+		hidden={forceMount && !visible}
+		aria-hidden={forceMount && !visible ? 'true' : undefined}
 		class={cn('contents', className)}
 	>
 		{@render children?.()}

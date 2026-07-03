@@ -5,9 +5,7 @@
 </script>
 
 <Popover.Root bind:open>
-	<Popover.Trigger>
-		<button type="button">Open Popover</button>
-	</Popover.Trigger>
+	<Popover.Trigger>Open Popover</Popover.Trigger>
 
 	<Popover.Content class="popover-content presence-animation">
 		<div class="popover-body">

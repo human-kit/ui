@@ -23,19 +23,15 @@ All public Table part prop types are exported from the table barrel, including `
 					</Table.Checkbox>
 				</Table.ColumnHeaderCell>
 			</Table.Column>
-			<Table.Column id="email" isRowHeader>
+			<Table.Column id="email" rowHeader>
 				<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 			</Table.Column>
 			<Table.Column id="group">
 				<Table.ColumnHeaderCell>
-					<Table.SortTrigger>
+					<Table.SortTrigger aria-label="Group sort button">
 						{#snippet children({ sortDirection })}
-							<button
-								type="button"
-								aria-label={`Group sort button. ${sortDirection ?? 'not sorted'}.`}
-							>
-								Sort group
-							</button>
+							Sort group
+							<span class="sr-only">{sortDirection ?? 'not sorted'}</span>
 						{/snippet}
 					</Table.SortTrigger>
 				</Table.ColumnHeaderCell>
@@ -87,6 +83,7 @@ All public Table part prop types are exported from the table barrel, including `
 - `Table.Checkbox`
 - `Table.CheckboxIndicator`
 - `Table.Cell`
+- `Table.InteractiveCell`
 
 ## Usage guidelines
 
@@ -111,6 +108,7 @@ All public Table part prop types are exported from the table barrel, including `
 - Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
 - Use `Table.Checkbox` when you need explicit selection UI inside cells instead of relying only on row or cell presses.
 - Use `Table.CheckboxIndicator` to compose your own visual affordance for checked and indeterminate states.
+- Use `Table.InteractiveCell` for body cells that contain their own focusable controls. When focus is on the cell itself it keeps the same grid keyboard navigation as `Table.Cell`; when focus is inside a descendant control, the descendant owns its keyboard and pointer interactions.
 - `Table.Checkbox` auto-hides in header cells unless `selectionMode="multiple"`, and auto-hides everywhere when `selectionMode="none"`.
 - Hidden columns are excluded from grid navigation, visible column counts, and active resize behavior, but their registered widths are preserved so they can be restored when shown again.
 - Dedicated utility columns like selection checkboxes should usually set an explicit `width`, `minWidth`, and `maxWidth` on `Table.Column` so sibling resizes do not redistribute their space.
@@ -122,10 +120,10 @@ All public Table part prop types are exported from the table barrel, including `
 
 ## Composition contract
 
-- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
+- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.InteractiveCell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
 - Metadata-only part: `Table.Column` does not render its own element. It only registers the public column input for the surrounding header composition.
 - Sorting: `Table.SortTrigger` is the public opt-in for sortable columns. Rendering it inside `Table.ColumnHeaderCell` makes the owning `Table.Column` sortable and toggles `Table.Root.sortDescriptor`.
-- `Table.SortTrigger.children` can consume a `sortDirection` render state so the nested button can expose stateful labels or visuals without reading the root descriptor directly.
+- `Table.SortTrigger.children` can consume a `sortDirection` render state so the trigger button can expose stateful labels or visuals without reading the root descriptor directly.
 - Resizing: `Table.ColumnResizer` is the only public opt-in for resizing. Rendering it inside a `Table.ColumnHeaderCell` enables resizing for the owning `Table.Column`.
 - Public input types: import the `Table*Props` types you need from `@human-kit/svelte-components/table` or the main package barrel instead of deriving contracts from component internals.
 - Internal normalized state: table context stores normalized column metadata internally as `TableColumnMetadata`. That metadata is not the public input contract for wrappers or consumers.
@@ -136,8 +134,8 @@ All public Table part prop types are exported from the table barrel, including `
 - Keyboard navigation uses roving `tabindex` across header and body cells.
 - Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
 - `Table.Checkbox` can receive DOM focus directly while still participating in the table's roving-focus grid.
-- First-column body cells become `rowheader` when their associated column has `isRowHeader`.
+- First-column body cells become `rowheader` when their associated column has `rowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
-- `Table.SortTrigger` wires a nested trigger button, while the header cell remains the roving-focus target for arrow-key grid navigation.
+- `Table.SortTrigger` renders the trigger button, while the header cell remains the roving-focus target for arrow-key grid navigation.
 - Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.
 - Column resize handles are keyboard accessible separators. Press `Enter` to enter resize mode, use the horizontal arrow keys to resize, `Home` to jump to the minimum width, `End` to auto-fit to content width, and press `Enter` again to exit resize mode while keeping focus on the handle.

@@ -25,9 +25,14 @@ function getGridCellByDate(date: string) {
 		throw new Error(`Grid cell "${date}" was not rendered.`);
 	}
 
+	// The clickable handler lives on the inner `[role="button"]` div, not on the
+	// `[role="gridcell"]` td. A .click() on the td would not reach that handler,
+	// so delegate the click to the inner interactive element.
+	const button = element.querySelector<HTMLElement>('[role="button"]') ?? element;
+
 	return {
 		element: () => element,
-		click: () => element.click()
+		click: () => button.click()
 	};
 }
 

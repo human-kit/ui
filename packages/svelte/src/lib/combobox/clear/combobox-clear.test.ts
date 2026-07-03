@@ -12,7 +12,7 @@ describe('ComboBox.Clear', () => {
 
 		await expect
 			.poll(() => document.querySelector('[data-selected-value]')?.textContent)
-			.toBe('undefined');
+			.toBe('null');
 		await expect.poll(() => document.querySelector('[data-input-value]')?.textContent).toBe('');
 	});
 

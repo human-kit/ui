@@ -19,7 +19,7 @@ describe('Calendar.Grid', () => {
 	});
 
 	it('sets aria-readonly when calendar is readOnly', async () => {
-		render(CalendarRootTest, { isReadOnly: true });
+		render(CalendarRootTest, { readonly: true });
 		await expect
 			.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-readonly'))
 			.toBe('true');

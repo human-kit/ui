@@ -57,7 +57,7 @@
 						{#each stickyColumns as column (column.id)}
 							<Table.Column
 								id={column.id}
-								isRowHeader={column.id === 'service'}
+								rowHeader={column.id === 'service'}
 								textValue={column.label}
 								width={'width' in column ? column.width : undefined}
 								defaultWidth={'defaultWidth' in column ? column.defaultWidth : undefined}

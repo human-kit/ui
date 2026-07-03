@@ -4,14 +4,14 @@
 	type Props = {
 		selectionMode?: 'single' | 'multiple';
 		selectionBehavior?: 'toggle' | 'replace';
-		disabledIds?: Iterable<string | number>;
+		disabledKeys?: Iterable<string | number>;
 		pressedIds?: Iterable<string | number>;
 	};
 
 	let {
 		selectionMode = 'single',
 		selectionBehavior = 'toggle',
-		disabledIds,
+		disabledKeys,
 		pressedIds
 	}: Props = $props();
 
@@ -26,7 +26,7 @@
 	];
 </script>
 
-<ListBox.Root {selectionMode} {selectionBehavior} {disabledIds} aria-label="Fruits list">
+<ListBox.Root {selectionMode} {selectionBehavior} {disabledKeys} aria-label="Fruits list">
 	{#each fruits as fruit (fruit.id)}
 		<ListBox.Item
 			id={fruit.id}

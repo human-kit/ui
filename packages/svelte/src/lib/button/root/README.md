@@ -11,8 +11,8 @@ Description: Native button root with pressed, hovered, focused, focus-visible, d
 | -------------- | ----------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------- |
 | `id`           | `string`                                  | `$props.id()` | Stable id for the native button and pending announcement labelling.                                  |
 | `type`         | `'button' \| 'submit' \| 'reset'`         | `'button'`    | Native button type. While pending, `submit` is rendered as `button`.                                 |
-| `isPending`    | `boolean`                                 | `false`       | Keeps the button focusable while disabling press and hover behavior.                                 |
-| `isDisabled`   | `boolean`                                 | `false`       | Disables the native button.                                                                          |
+| `pending`      | `boolean`                                 | `false`       | Keeps the button focusable while disabling press and hover behavior.                                 |
+| `disabled`     | `boolean`                                 | `false`       | Disables the native button.                                                                          |
 | `children`     | `Snippet<[ButtonRenderState]> \| Snippet` | `undefined`   | Optional renderer receiving the current interaction state.                                           |
 | `class`        | `string`                                  | `''`          | CSS class names applied to the button element.                                                       |
 | `...restProps` | `HTMLButtonAttributes`                    | `-`           | Additional native button attributes forwarded to the element, excluding reserved disabled semantics. |
@@ -22,21 +22,21 @@ Description: Native button root with pressed, hovered, focused, focus-visible, d
 Name: `ButtonRenderState`  
 Description: Render-state payload available to the `children` snippet.
 
-| Prop             | Type      | Default | Description                                                           |
-| ---------------- | --------- | ------- | --------------------------------------------------------------------- |
-| `isHovered`      | `boolean` | `false` | Whether the button is currently hovered by a mouse.                   |
-| `isPressed`      | `boolean` | `false` | Whether the button is currently being pressed. Cleared while pending. |
-| `isFocused`      | `boolean` | `false` | Whether the button currently holds DOM focus.                         |
-| `isFocusVisible` | `boolean` | `false` | Whether focus is visibly keyboard or virtual driven.                  |
-| `isDisabled`     | `boolean` | `false` | Whether the button is disabled.                                       |
-| `isPending`      | `boolean` | `false` | Whether the button is pending.                                        |
+| Prop           | Type      | Default | Description                                                           |
+| -------------- | --------- | ------- | --------------------------------------------------------------------- |
+| `hovered`      | `boolean` | `false` | Whether the button is currently hovered by a mouse.                   |
+| `pressed`      | `boolean` | `false` | Whether the button is currently being pressed. Cleared while pending. |
+| `focused`      | `boolean` | `false` | Whether the button currently holds DOM focus.                         |
+| `focusVisible` | `boolean` | `false` | Whether focus is visibly keyboard or virtual driven.                  |
+| `disabled`     | `boolean` | `false` | Whether the button is disabled.                                       |
+| `pending`      | `boolean` | `false` | Whether the button is pending.                                        |
 
 ```svelte
-<Button.Root type="submit" isPending={saving} aria-label="Save changes">
-	{#snippet children({ isPending, isPressed })}
-		<span class:opacity-0={isPending}>Save</span>
-		{#if isPending}
-			<ProgressCircle aria-label="Saving" isIndeterminate />
+<Button.Root type="submit" pending={saving} aria-label="Save changes">
+	{#snippet children({ pending })}
+		<span class:opacity-0={pending}>Save</span>
+		{#if pending}
+			<ProgressCircle aria-label="Saving" indeterminate />
 		{/if}
 	{/snippet}
 </Button.Root>

@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ComboBoxTest from '../root/combobox-test.svelte';
 import ComboBoxScrollableListTest from '../popover/combobox-scrollable-list-test.svelte';
+import ComboBoxItemActionTest from './combobox-item-action-test.svelte';
 
 describe('ComboBox.Item', () => {
 	describe('Accessibility', () => {
@@ -210,6 +211,117 @@ describe('ComboBox.Item', () => {
 			expect(scrollIntoViewSpy).not.toHaveBeenCalled();
 
 			scrollIntoViewSpy.mockRestore();
+		});
+
+		it('runs item action on click without selecting', async () => {
+			const onAction = vi.fn();
+			const onValueChange = vi.fn();
+			const screen = render(ComboBoxItemActionTest, { onAction, onValueChange });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('Peru');
+
+			const actionItem = screen.getByText('Create "Peru"');
+			await actionItem.click();
+
+			expect(onAction).toHaveBeenCalledWith({
+				id: 'create',
+				textValue: 'Create "Peru"',
+				inputValue: 'Peru',
+				source: 'pointer'
+			});
+			expect(onValueChange).not.toHaveBeenCalled();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			await expect.element(screen.getByText('null')).toBeInTheDocument();
+		});
+
+		it('runs item action on Enter without selecting and keeps input focus', async () => {
+			const onAction = vi.fn();
+			const onValueChange = vi.fn();
+			const screen = render(ComboBoxItemActionTest, { onAction, onValueChange });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('Peru');
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+
+			expect(onAction).toHaveBeenCalledWith({
+				id: 'create',
+				textValue: 'Create "Peru"',
+				inputValue: 'Peru',
+				source: 'keyboard'
+			});
+			expect(onValueChange).not.toHaveBeenCalled();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+			expect(document.activeElement).toBe(input.element());
+			await expect.element(screen.getByText('null')).toBeInTheDocument();
+		});
+
+		it('keeps the popover open when closeOnAction is false', async () => {
+			const onAction = vi.fn();
+			const screen = render(ComboBoxItemActionTest, {
+				onAction,
+				closeOnAction: false
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('Peru');
+			const actionItem = screen.getByText('Create "Peru"');
+			await actionItem.click();
+
+			expect(onAction).toHaveBeenCalledWith({
+				id: 'create',
+				textValue: 'Create "Peru"',
+				inputValue: 'Peru',
+				source: 'pointer'
+			});
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		it('keeps action items visible when root filterActionItems is false', async () => {
+			const onAction = vi.fn();
+			const screen = render(ComboBoxItemActionTest, {
+				onAction,
+				alwaysRenderAction: true,
+				actionTextValue: 'Create contact',
+				filterActionItems: false
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('Peru');
+
+			const actionItem = screen.getByText('Create "Peru"');
+			await expect.element(actionItem).toBeInTheDocument();
+			await actionItem.click();
+
+			expect(onAction).toHaveBeenCalledWith({
+				id: 'create',
+				textValue: 'Create contact',
+				inputValue: 'Peru',
+				source: 'pointer'
+			});
+		});
+
+		it('does not run item action when the item is disabled', async () => {
+			const onAction = vi.fn();
+			const screen = render(ComboBoxItemActionTest, {
+				onAction,
+				disabledAction: true
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('Peru');
+			const actionItem = screen.getByText('Create "Peru"');
+			actionItem
+				.element()
+				.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+			expect(onAction).not.toHaveBeenCalled();
 		});
 	});
 });

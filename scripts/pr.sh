@@ -132,6 +132,23 @@ if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --
   exit 1
 fi
 
+# Run formatter first and commit any resulting changes before the rest of the flow
+echo -e "${YELLOW}→ Running formatter (bun format)...${NC}"
+if ! bun run format; then
+  echo -e "${RED}✗ Formatter failed. Fix errors and try again.${NC}"
+  exit 1
+fi
+
+if ! git diff --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+  echo -e "${YELLOW}→ Committing formatting changes...${NC}"
+  git add -A
+  git commit -m "style: apply formatting" --quiet
+  echo -e "${GREEN}✓ Formatting changes committed.${NC}"
+else
+  echo -e "${GREEN}✓ Already formatted — no changes.${NC}"
+fi
+echo ""
+
 git fetch origin --quiet || true
 
 BASE_REF="origin/main"

@@ -2,18 +2,22 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { focusTrap, type FocusTrapOptions } from '../../primitives/focus-trap';
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
+	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
+	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { Portal } from '../../portal';
 	import {
 		getPopoverContext,
 		type PopoverOpenChangeDetails,
 		type PopoverCloseReason
 	} from '../root/context';
+	import { pushPopoverLayer, removePopoverLayer, isTopmostPopover } from '../root/popover-stack';
+	import { getFloatingLayerZIndex } from '../../dialog/root/dialog-stack';
 	import {
 		addTriggerBlurCleanup,
 		applyTriggerCloseFocusState,
@@ -38,7 +42,7 @@
 		/** CSS class for the popover container. */
 		class?: string;
 		/** Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock). */
-		isNonModal?: boolean;
+		nonModal?: boolean;
 		/** Whether clicking outside the popover should close it. */
 		shouldCloseOnInteractOutside?: boolean;
 		/** Whether pressing Escape should close the popover. */
@@ -63,7 +67,7 @@
 		boundaryElement = null,
 		children,
 		class: className = '',
-		isNonModal = false,
+		nonModal = false,
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		shouldCloseOnBlur,
@@ -81,8 +85,8 @@
 	const isStandalone = $derived(ctx === undefined);
 	const triggerRef = $derived(isStandalone ? triggerRefProp : ctx!.triggerRef);
 	const isOpen = $derived(isStandalone ? (openProp ?? false) : ctx!.isOpen);
-	const isModal = $derived(!isNonModal);
-	const shouldCloseOnBlurResolved = $derived(shouldCloseOnBlur ?? isNonModal);
+	const isModal = $derived(!nonModal);
+	const shouldCloseOnBlurResolved = $derived(shouldCloseOnBlur ?? nonModal);
 
 	let popoverRef: HTMLElement | undefined = $state();
 	let cleanupStandaloneTriggerBlurListener: (() => void) | undefined;
@@ -92,113 +96,32 @@
 	let isEntering = $state(false);
 	let isExiting = $state(false);
 	let resolvedPlacement = $state<'top' | 'right' | 'bottom' | 'left'>('bottom');
-	let motionTimeout: number | undefined;
-	let pendingMotionFrame: number | undefined;
-	let cleanupMotionListeners: (() => void) | undefined;
-	let motionId = 0;
+	let tracker: MotionTracker | undefined;
 	let previousOpen = $state(false);
 	let closeHandledInternally = false;
+	let layerId: symbol | null = null;
+	// Resolved when the popover opens so it stacks above whatever dialog (if any) it
+	// was opened inside — a fixed z-index renders behind nested dialogs.
+	let zIndex = $state(getFloatingLayerZIndex());
 
-	function parseTimeList(value: string) {
-		return value
-			.split(',')
-			.map((entry) => entry.trim())
-			.filter(Boolean)
-			.map((entry) => {
-				if (entry.endsWith('ms')) return Number.parseFloat(entry);
-				if (entry.endsWith('s')) return Number.parseFloat(entry) * 1000;
-				return Number.parseFloat(entry) || 0;
-			});
+	function removeLayer() {
+		if (layerId === null) return;
+		removePopoverLayer(layerId);
+		layerId = null;
 	}
 
-	function getMaxTime(duration: string, delay: string) {
-		const durations = parseTimeList(duration);
-		const delays = parseTimeList(delay);
-		const length = Math.max(durations.length, delays.length);
-
-		let maxTime = 0;
-		for (let index = 0; index < length; index += 1) {
-			const total =
-				(durations[index] ?? durations[durations.length - 1] ?? 0) +
-				(delays[index] ?? delays[delays.length - 1] ?? 0);
-			maxTime = Math.max(maxTime, total);
-		}
-
-		return maxTime;
+	function isTopmost() {
+		return layerId !== null && isTopmostPopover(layerId);
 	}
 
-	function getMotionTime(element: HTMLElement) {
-		const styles = getComputedStyle(element);
-		const transitionTime = getMaxTime(styles.transitionDuration, styles.transitionDelay);
-		const animationTime = getMaxTime(styles.animationDuration, styles.animationDelay);
-		return Math.max(transitionTime, animationTime);
+	function clearTracker() {
+		tracker?.cancel();
+		tracker = undefined;
 	}
 
 	function resolvePlacementSide(value: string) {
 		const side = value.split(/[-\s]/)[0];
 		return side === 'top' || side === 'right' || side === 'left' ? side : 'bottom';
-	}
-
-	function clearMotionTracking() {
-		if (pendingMotionFrame !== undefined) {
-			cancelAnimationFrame(pendingMotionFrame);
-			pendingMotionFrame = undefined;
-		}
-
-		if (motionTimeout !== undefined) {
-			clearTimeout(motionTimeout);
-			motionTimeout = undefined;
-		}
-
-		cleanupMotionListeners?.();
-		cleanupMotionListeners = undefined;
-	}
-
-	function finishEnter(id: number) {
-		if (id !== motionId) return;
-		clearMotionTracking();
-		isEntering = false;
-	}
-
-	function finishExit(id: number) {
-		if (id !== motionId) return;
-		clearMotionTracking();
-		isExiting = false;
-		isMounted = false;
-	}
-
-	function trackMotion(phase: 'enter' | 'exit', element: HTMLElement) {
-		clearMotionTracking();
-		const id = ++motionId;
-
-		pendingMotionFrame = requestAnimationFrame(() => {
-			pendingMotionFrame = undefined;
-			if (id !== motionId || !element.isConnected) return;
-
-			const totalMotionTime = getMotionTime(element);
-			const complete = phase === 'enter' ? () => finishEnter(id) : () => finishExit(id);
-
-			if (totalMotionTime <= 0) {
-				complete();
-				return;
-			}
-
-			const handleMotionEnd = (event: Event) => {
-				if (event.target !== element) return;
-				complete();
-			};
-
-			element.addEventListener('animationend', handleMotionEnd);
-			element.addEventListener('transitionend', handleMotionEnd);
-			cleanupMotionListeners = () => {
-				element.removeEventListener('animationend', handleMotionEnd);
-				element.removeEventListener('transitionend', handleMotionEnd);
-			};
-
-			motionTimeout = window.setTimeout(() => {
-				complete();
-			}, totalMotionTime + 50);
-		});
 	}
 
 	function clearPendingStandaloneTriggerCloseFocus() {
@@ -241,20 +164,9 @@
 		});
 	}
 
-	function releaseFocusedDescendantBeforeHide() {
-		if (!browser || !popoverRef || !triggerRef) return;
-
-		const activeElement = document.activeElement;
-		if (!(activeElement instanceof HTMLElement)) return;
-		if (activeElement === triggerRef || triggerRef.contains(activeElement)) return;
-		if (activeElement !== popoverRef && !popoverRef.contains(activeElement)) return;
-
-		activeElement.blur();
-	}
-
 	function close(reason: PopoverCloseReason = 'imperative-action', event?: Event) {
 		closeHandledInternally = true;
-		releaseFocusedDescendantBeforeHide();
+		releaseFocusedDescendant(popoverRef, triggerRef);
 
 		if (isStandalone) {
 			let canceled = false;
@@ -281,13 +193,16 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape' && isOpen && shouldCloseOnEscape) {
+			// Only the topmost layer dismisses, so a nested popover (e.g. a
+			// calendar inside a filter popover) closes without its ancestors.
+			if (!isTopmost()) return;
 			event.preventDefault();
 			close('escape-key', event);
 		}
 	}
 
 	function handleDocumentFocusIn(event: FocusEvent) {
-		if (!shouldCloseOnBlurResolved || !isOpen) return;
+		if (!shouldCloseOnBlurResolved || !isOpen || !isTopmost()) return;
 
 		const target = event.target as Node;
 
@@ -300,7 +215,7 @@
 	}
 
 	function handleScroll(event: Event) {
-		if (!isNonModal || !isOpen || !shouldCloseOnInteractOutside) return;
+		if (!nonModal || !isOpen || !shouldCloseOnInteractOutside || !isTopmost()) return;
 
 		// Check if scroll is inside the popover or trigger
 		const target = event.target as Node;
@@ -343,7 +258,8 @@
 		if (trackedStandaloneTrigger) {
 			clearTriggerFocusState(trackedStandaloneTrigger);
 		}
-		clearMotionTracking();
+		clearTracker();
+		removeLayer();
 		clearStandaloneTriggerTracking();
 		document.removeEventListener('keydown', handleKeydown);
 		document.removeEventListener('focusin', handleDocumentFocusIn);
@@ -369,11 +285,16 @@
 			return;
 		}
 
-		releaseFocusedDescendantBeforeHide();
+		releaseFocusedDescendant(popoverRef, triggerRef);
 	});
 
 	$effect(() => {
 		if (isOpen) {
+			if (layerId === null) {
+				layerId = pushPopoverLayer();
+				// Capture the dialog depth at open time so the panel clears the topmost dialog.
+				zIndex = getFloatingLayerZIndex();
+			}
 			const shouldAnimateIn = !isMounted || isExiting;
 			isMounted = true;
 			isExiting = false;
@@ -382,6 +303,8 @@
 			}
 			return;
 		}
+
+		removeLayer();
 
 		if (!isMounted) {
 			isEntering = false;
@@ -395,21 +318,28 @@
 
 	$effect(() => {
 		if (!isMounted || !popoverRef) {
-			clearMotionTracking();
+			clearTracker();
 			return;
 		}
 
 		if (isEntering) {
-			trackMotion('enter', popoverRef);
+			clearTracker();
+			tracker = trackMotionEnd(popoverRef, () => {
+				isEntering = false;
+			});
 			return;
 		}
 
 		if (isExiting) {
-			trackMotion('exit', popoverRef);
+			clearTracker();
+			tracker = trackMotionEnd(popoverRef, () => {
+				isExiting = false;
+				isMounted = false;
+			});
 			return;
 		}
 
-		clearMotionTracking();
+		clearTracker();
 	});
 </script>
 
@@ -438,6 +368,7 @@
 			}}
 			use:clickOutside={{
 				handler: (event) => {
+					if (!isTopmost()) return;
 					event.preventDefault();
 					close('outside-press', event);
 				},
@@ -447,7 +378,7 @@
 			use:focusTrap={{ enabled: isOpen && isModal, restoreFocus: false, initialFocus }}
 			use:scrollLock={isOpen && isModal}
 			use:ariaHideOutside={isOpen && isModal}
-			style="position: fixed; z-index: 9999;"
+			style="position: fixed; z-index: {zIndex};"
 			{...restProps}
 		>
 			{#if children}

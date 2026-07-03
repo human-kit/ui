@@ -11,6 +11,11 @@
 			"svelte": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
+		"./accordion": {
+			"types": "./dist/accordion/index.d.ts",
+			"svelte": "./dist/accordion/index.js",
+			"default": "./dist/accordion/index.js"
+		},
 		"./button": {
 			"types": "./dist/button/index.d.ts",
 			"svelte": "./dist/button/index.js",
@@ -20,6 +25,16 @@
 			"types": "./dist/checkbox/index.d.ts",
 			"svelte": "./dist/checkbox/index.js",
 			"default": "./dist/checkbox/index.js"
+		},
+		"./collapsible": {
+			"types": "./dist/collapsible/index.d.ts",
+			"svelte": "./dist/collapsible/index.js",
+			"default": "./dist/collapsible/index.js"
+		},
+		"./switch": {
+			"types": "./dist/switch/index.d.ts",
+			"svelte": "./dist/switch/index.js",
+			"default": "./dist/switch/index.js"
 		},
 		"./combobox": {
 			"types": "./dist/combobox/index.d.ts",
@@ -41,6 +56,11 @@
 			"svelte": "./dist/datepicker/index.js",
 			"default": "./dist/datepicker/index.js"
 		},
+		"./daterangepicker": {
+			"types": "./dist/daterangepicker/index.d.ts",
+			"svelte": "./dist/daterangepicker/index.js",
+			"default": "./dist/daterangepicker/index.js"
+		},
 		"./timepicker": {
 			"types": "./dist/timepicker/index.d.ts",
 			"svelte": "./dist/timepicker/index.js",
@@ -56,6 +76,16 @@
 			"svelte": "./dist/listbox/index.js",
 			"default": "./dist/listbox/index.js"
 		},
+		"./menu": {
+			"types": "./dist/menu/index.d.ts",
+			"svelte": "./dist/menu/index.js",
+			"default": "./dist/menu/index.js"
+		},
+		"./numberfield": {
+			"types": "./dist/numberfield/index.d.ts",
+			"svelte": "./dist/numberfield/index.js",
+			"default": "./dist/numberfield/index.js"
+		},
 		"./popover": {
 			"types": "./dist/popover/index.d.ts",
 			"svelte": "./dist/popover/index.js",
@@ -66,10 +96,35 @@
 			"svelte": "./dist/table/index.js",
 			"default": "./dist/table/index.js"
 		},
+		"./tabs": {
+			"types": "./dist/tabs/index.d.ts",
+			"svelte": "./dist/tabs/index.js",
+			"default": "./dist/tabs/index.js"
+		},
+		"./toggle": {
+			"types": "./dist/toggle/index.d.ts",
+			"svelte": "./dist/toggle/index.js",
+			"default": "./dist/toggle/index.js"
+		},
+		"./toggle-group": {
+			"types": "./dist/toggle-group/index.d.ts",
+			"svelte": "./dist/toggle-group/index.js",
+			"default": "./dist/toggle-group/index.js"
+		},
+		"./tree": {
+			"types": "./dist/tree/index.d.ts",
+			"svelte": "./dist/tree/index.js",
+			"default": "./dist/tree/index.js"
+		},
 		"./input": {
 			"types": "./dist/input/index.d.ts",
 			"svelte": "./dist/input/index.js",
 			"default": "./dist/input/index.js"
+		},
+		"./textarea": {
+			"types": "./dist/textarea/index.d.ts",
+			"svelte": "./dist/textarea/index.js",
+			"default": "./dist/textarea/index.js"
 		},
 		"./label": {
 			"types": "./dist/label/index.d.ts",

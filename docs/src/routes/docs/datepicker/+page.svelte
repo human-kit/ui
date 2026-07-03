@@ -36,8 +36,8 @@
 						<DatePicker.Root
 							bind:value={playgroundValue}
 							bind:open={playgroundOpen}
-							{isDisabled}
-							{isReadOnly}
+							disabled={isDisabled}
+							readonly={isReadOnly}
 							{closeOnSelect}
 							class="group space-y-2"
 						>
@@ -102,8 +102,8 @@
 
 				{#snippet controls()}
 					<div class="space-y-4">
-						<DemoCheckbox label="isDisabled" bind:checked={isDisabled} />
-						<DemoCheckbox label="isReadOnly" bind:checked={isReadOnly} />
+						<DemoCheckbox label="disabled" bind:checked={isDisabled} />
+						<DemoCheckbox label="readonly" bind:checked={isReadOnly} />
 						<DemoCheckbox label="closeOnSelect" bind:checked={closeOnSelect} />
 						<p class="text-xs text-gray-500 dark:text-gray-400">
 							In read-only mode, the calendar trigger is hidden.

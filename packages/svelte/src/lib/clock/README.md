@@ -42,10 +42,11 @@ Default columns are rendered automatically when no `column` snippet is provided:
 - `hourStep?: number`
 - `minuteStep?: number`
 - `secondStep?: number`
-- `isDisabled?: boolean`
+- `disabled?: boolean`
 - `column?: Snippet<[ClockColumnInfo]>` — custom per-column rendering
 - `children?: Snippet` — arbitrary children. When `column` is used, children render after columns (useful for overlays like `Clock.Axis`).
 - `class?: string`
+- `element?: HTMLDivElement | null` (bindable)
 - `aria-label?: string`
 
 Visible columns are resolved automatically in stable order: `hour → minute? → second? → dayPeriod?`.

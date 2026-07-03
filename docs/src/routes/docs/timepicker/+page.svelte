@@ -44,8 +44,8 @@
 							bind:open={playgroundOpen}
 							{hourCycle}
 							{granularity}
-							{isDisabled}
-							{isReadOnly}
+							disabled={isDisabled}
+							readonly={isReadOnly}
 							class="group space-y-2"
 						>
 							<div
@@ -106,8 +106,8 @@
 								granularity = checked ? 'second' : 'minute';
 							}}
 						/>
-						<DemoCheckbox label="isDisabled" bind:checked={isDisabled} />
-						<DemoCheckbox label="isReadOnly" bind:checked={isReadOnly} />
+						<DemoCheckbox label="disabled" bind:checked={isDisabled} />
+						<DemoCheckbox label="readonly" bind:checked={isReadOnly} />
 						<hr class="border-gray-200 dark:border-gray-700" />
 						<DemoState label="value" value={playgroundValue} />
 						<DemoState label="open" value={playgroundOpen} />

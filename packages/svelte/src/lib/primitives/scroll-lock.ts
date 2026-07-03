@@ -11,15 +11,27 @@ function getScrollbarWidth(): number {
 	return window.innerWidth - document.documentElement.clientWidth;
 }
 
+/**
+ * When the page reserves a stable scrollbar gutter (`scrollbar-gutter: stable`), hiding the
+ * scrollbar does not change the layout width, so the JS padding compensation below must be skipped
+ * — adding it would itself shift the page. Read off the root, where the gutter is reserved.
+ */
+function reservesStableGutter(): boolean {
+	return getComputedStyle(document.documentElement)
+		.getPropertyValue('scrollbar-gutter')
+		.includes('stable');
+}
+
 function lock() {
 	if (lockCount === 0) {
 		originalOverflow = document.body.style.overflow;
 		originalPaddingRight = document.body.style.paddingRight;
 
 		const scrollbarWidth = getScrollbarWidth();
+		const skipCompensation = reservesStableGutter();
 
 		document.body.style.overflow = 'hidden';
-		if (scrollbarWidth > 0) {
+		if (!skipCompensation && scrollbarWidth > 0) {
 			document.body.style.paddingRight = `${scrollbarWidth}px`;
 		}
 	}

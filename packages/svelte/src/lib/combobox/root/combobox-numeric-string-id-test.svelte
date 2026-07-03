@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ComboBox } from '../index';
 
-	let selected = $state<string | number | undefined>();
+	let selected = $state<string | number | null>(null);
 </script>
 
 <ComboBox.Root bind:value={selected}>
@@ -16,5 +16,5 @@
 	</ComboBox.Popover>
 </ComboBox.Root>
 
-<div data-testid="selected">{selected === undefined ? '' : String(selected)}</div>
-<div data-testid="selected-type">{selected === undefined ? '' : typeof selected}</div>
+<div data-testid="selected">{selected === null ? '' : String(selected)}</div>
+<div data-testid="selected-type">{selected === null ? '' : typeof selected}</div>

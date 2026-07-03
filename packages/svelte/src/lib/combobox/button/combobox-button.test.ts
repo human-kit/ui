@@ -16,7 +16,7 @@ describe('ComboBox.Button', () => {
 	});
 
 	it('inherits pending state through the trigger alias', async () => {
-		const screen = render(ComboBoxButtonTest, { isPending: true });
+		const screen = render(ComboBoxButtonTest, { pending: true });
 		const button = screen.getByRole('button', { name: 'Open menu' });
 
 		await expect.element(button).toHaveAttribute('data-pending', 'true');

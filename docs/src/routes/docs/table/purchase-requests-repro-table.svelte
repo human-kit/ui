@@ -70,13 +70,7 @@
 		selectionMode="multiple"
 		bind:selectedKeys={selectedPurchaseRequestIds}
 	>
-		<ReproTable.Column
-			id="requestNumber"
-			header="Request"
-			isRowHeader
-			resizable
-			defaultWidth={350}
-		/>
+		<ReproTable.Column id="requestNumber" header="Request" rowHeader resizable defaultWidth={350} />
 		<ReproTable.Column id="requester" header="Requester" resizable />
 		<ReproTable.Column id="area" header="Area" resizable />
 		<ReproTable.Column id="status" header="Status" resizable />

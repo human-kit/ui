@@ -19,8 +19,8 @@ Description: State container for segmented date input, popover lifecycle, calend
 | `minValue`          | `DatePickerDateValue`                          | `undefined` | Optional lower bound for selectable dates.                |
 | `maxValue`          | `DatePickerDateValue`                          | `undefined` | Optional upper bound for selectable dates.                |
 | `isDateUnavailable` | `(date: DatePickerDateValue) => boolean`       | `undefined` | Optional predicate to block unavailable dates.            |
-| `isDisabled`        | `boolean`                                      | `false`     | Disables interaction and selection.                       |
-| `isReadOnly`        | `boolean`                                      | `false`     | Prevents value changes while preserving navigation.       |
+| `disabled`          | `boolean`                                      | `false`     | Disables interaction and selection.                       |
+| `readonly`          | `boolean`                                      | `false`     | Prevents value changes while preserving navigation.       |
 | `children`          | `Snippet`                                      | `undefined` | Composed `DatePicker` parts.                              |
 | `class`             | `string`                                       | `''`        | CSS class names for root wrapper.                         |
 | `aria-label`        | `string`                                       | `undefined` | Accessible label for the root wrapper.                    |

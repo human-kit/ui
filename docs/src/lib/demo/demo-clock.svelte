@@ -63,7 +63,7 @@
 			bind:value
 			{granularity}
 			hourCycle={resolvedHourCycle}
-			{isDisabled}
+			disabled={isDisabled}
 			class="flex gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
 		>
 			{#snippet column(col)}
@@ -88,7 +88,7 @@
 			<DemoSelect label="granularity" bind:value={granularity} options={granularityOptions} />
 			<DemoSelect label="hourCycle" bind:value={hourCycleStr} options={hourCycleOptions} />
 			<DemoSelect label="locale" bind:value={locale} options={localeOptions} />
-			<DemoCheckbox label="isDisabled" bind:checked={isDisabled} />
+			<DemoCheckbox label="disabled" bind:checked={isDisabled} />
 			<hr class="border-gray-200 dark:border-gray-700" />
 			<DemoState label="value" {value} />
 		</div>

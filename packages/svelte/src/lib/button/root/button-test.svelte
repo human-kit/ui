@@ -2,8 +2,8 @@
 	import { Button } from '../index';
 
 	type Props = {
-		isDisabled?: boolean;
-		isPending?: boolean;
+		disabled?: boolean;
+		pending?: boolean;
 		type?: 'button' | 'submit' | 'reset';
 		ariaLabel?: string;
 		onMouseEnter?: (event: MouseEvent) => void;
@@ -11,8 +11,8 @@
 	};
 
 	let {
-		isDisabled = false,
-		isPending = false,
+		disabled = false,
+		pending: pendingProp = false,
 		type = 'button',
 		ariaLabel = 'Save',
 		onMouseEnter,
@@ -22,7 +22,7 @@
 	let pendingOverride = $state<boolean | null>(null);
 	let clickCount = $state(0);
 	let submitCount = $state(0);
-	const pending = $derived(pendingOverride ?? isPending);
+	const pending = $derived(pendingOverride ?? pendingProp);
 
 	function handleClick() {
 		clickCount += 1;
@@ -40,8 +40,8 @@
 
 	<Button.Root
 		{type}
-		{isDisabled}
-		isPending={pending}
+		{disabled}
+		{pending}
 		onclick={handleClick}
 		onmouseenter={onMouseEnter}
 		onfocus={onFocus}
@@ -52,13 +52,13 @@
 			<span data-button-label>{pending ? 'Saving' : 'Save'}</span>
 			<span
 				data-render-state="true"
-				data-render-pressed={state.isPressed || undefined}
-				data-render-hovered={state.isHovered || undefined}
-				data-render-pending={state.isPending || undefined}
-				data-render-focused={state.isFocused || undefined}
-				data-render-focus-visible={state.isFocusVisible || undefined}
+				data-render-pressed={state.pressed || undefined}
+				data-render-hovered={state.hovered || undefined}
+				data-render-pending={state.pending || undefined}
+				data-render-focused={state.focused || undefined}
+				data-render-focus-visible={state.focusVisible || undefined}
 			>
-				{state.isPressed ? 'pressed' : state.isPending ? 'pending' : 'idle'}
+				{state.pressed ? 'pressed' : state.pending ? 'pending' : 'idle'}
 			</span>
 		{/snippet}
 	</Button.Root>

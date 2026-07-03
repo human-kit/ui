@@ -89,7 +89,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('marks segment as readonly in readOnly mode', async () => {
-		render(DatePickerTest, { isReadOnly: true });
+		render(DatePickerTest, { readonly: true });
 		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-readonly')).toBe('true');
@@ -97,7 +97,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('disables segment interaction in disabled mode', async () => {
-		render(DatePickerTest, { isDisabled: true });
+		render(DatePickerTest, { disabled: true });
 		const monthSegment = getSegment('month');
 
 		expect(monthSegment.element()?.getAttribute('aria-disabled')).toBe('true');
@@ -105,7 +105,7 @@ describe('DatePicker.Segment', () => {
 	});
 
 	it('does not set focus states when clicking a disabled segment', async () => {
-		render(DatePickerTest, { isDisabled: true });
+		render(DatePickerTest, { disabled: true });
 		const monthSegment = getSegment('month');
 
 		monthSegment
@@ -115,6 +115,19 @@ describe('DatePicker.Segment', () => {
 			.element()
 			?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 		expect(monthSegment.element()?.getAttribute('data-focused')).toBeNull();
+		expect(document.activeElement).not.toBe(monthSegment.element());
+		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
+	});
+
+	it('clears native focus if a disabled segment receives focus programmatically', async () => {
+		render(DatePickerTest, { disabled: true });
+		const monthSegment = getSegment('month');
+
+		monthSegment.element()?.focus();
+
+		await expect.poll(() => document.activeElement).not.toBe(monthSegment.element());
+		expect(monthSegment.element()?.getAttribute('data-focused')).toBeNull();
+		expect(monthSegment.element()?.getAttribute('data-focus-visible')).toBeNull();
 		expect(document.querySelector('[data-focus-within="true"]')).toBeNull();
 	});
 

@@ -7,10 +7,9 @@
 ## Usage guidelines
 
 - Use `Popover.Root` to share open state and trigger reference.
-- Use `Popover.Trigger` when you want to auto-wire an existing button in children.
-- Use `Popover.TriggerButton` when you want a pre-wired trigger button component.
+- Use `Popover.Trigger` as the opener button.
 - Use `Popover.Content` inside `Popover.Root`, or in standalone mode with `open`, `triggerRef`, and `onOpenChange`.
-- Configure `isNonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` to match your interaction model.
+- Configure `nonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` to match your interaction model.
 
 ## onOpenChange details
 
@@ -28,9 +27,7 @@ Import the component and compose its parts:
 
 ```svelte
 <Popover.Root>
-	<Popover.Trigger>
-		<button>Open</button>
-	</Popover.Trigger>
+	<Popover.Trigger>Open</Popover.Trigger>
 	<Popover.Content>
 		<div>Content</div>
 	</Popover.Content>
@@ -38,5 +35,5 @@ Import the component and compose its parts:
 ```
 
 - `Popover.Root`
-- `Popover.Trigger` or `Popover.TriggerButton`
+- `Popover.Trigger`
 - `Popover.Content`

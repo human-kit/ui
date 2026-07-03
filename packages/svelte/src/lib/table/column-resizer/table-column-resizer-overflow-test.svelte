@@ -13,7 +13,7 @@
 	>
 		<Table.Header>
 			<Table.Row>
-				<Table.Column id="name" isRowHeader textValue="Name" width={240}>
+				<Table.Column id="name" rowHeader textValue="Name" width={240}>
 					<Table.ColumnHeaderCell data-testid="overflow-name-header-cell">
 						<div class="flex items-center justify-between gap-3">
 							<span>Name</span>

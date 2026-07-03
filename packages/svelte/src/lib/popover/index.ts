@@ -1,3 +1,9 @@
+import type { ComponentProps } from 'svelte';
+import type PopoverContentComponent from './content/popover-content.svelte';
+import type PopoverOverlayComponent from './overlay/popover-overlay.svelte';
+import type PopoverRootComponent from './root/popover-root.svelte';
+import type PopoverTriggerComponent from './trigger/popover-trigger.svelte';
+
 // Namespace export for component composition: <Popover.Root>, <Popover.Trigger>, etc.
 export * as Popover from './index.parts.js';
 
@@ -5,12 +11,17 @@ export * as Popover from './index.parts.js';
 export { default as PopoverRoot } from './root/popover-root.svelte';
 export { default as PopoverContent } from './content/popover-content.svelte';
 export { default as PopoverTrigger } from './trigger/popover-trigger.svelte';
-export { default as PopoverTriggerButton } from './trigger/popover-trigger-button.svelte';
+export { default as PopoverOverlay } from './overlay/popover-overlay.svelte';
+export type PopoverRootProps = ComponentProps<typeof PopoverRootComponent>;
+export type PopoverContentProps = ComponentProps<typeof PopoverContentComponent>;
+export type PopoverTriggerProps = ComponentProps<typeof PopoverTriggerComponent>;
+export type PopoverOverlayProps = ComponentProps<typeof PopoverOverlayComponent>;
 
 // Context and types
 export {
 	getPopoverContext,
 	setPopoverContext,
+	usePopoverContext,
 	type PopoverContext,
 	type PopoverCanonicalCloseReason,
 	type PopoverCloseReason,

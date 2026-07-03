@@ -52,3 +52,11 @@ export function setPopoverContext(ctx: PopoverContext) {
 export function getPopoverContext(): PopoverContext | undefined {
 	return getContext<PopoverContext>(POPOVER_CONTEXT_KEY);
 }
+
+export function usePopoverContext(part: string): PopoverContext {
+	const ctx = getPopoverContext();
+	if (!ctx) {
+		throw new Error(`${part} must be used inside a Popover.Root`);
+	}
+	return ctx;
+}

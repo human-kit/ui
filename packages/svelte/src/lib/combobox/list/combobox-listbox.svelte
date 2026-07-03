@@ -38,6 +38,7 @@
 	const ctx = useComboBoxContext();
 	let listboxCtx: ListBoxContext | undefined = $state();
 	let listboxElement: HTMLElement | undefined = $state();
+	const listboxSelection = $derived(Array.from(ctx.selectedValue));
 
 	// Wire listbox context to combobox context when available
 	$effect(() => {
@@ -67,10 +68,10 @@
 	bind:context={listboxCtx}
 	bind:element={listboxElement}
 	id={`combobox-listbox-${ctx.instanceId}`}
-	items={items ?? (ctx.items as T[] | undefined)}
+	{items}
 	{children}
 	selectionMode={ctx.selectionMode}
-	value={ctx.selectedValue}
+	value={listboxSelection}
 	onChange={handleSelectionChange}
 	aria-label={ariaLabel}
 	disableFocusHandling={true}

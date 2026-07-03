@@ -53,7 +53,9 @@
 
 	function resolveInitialCalendarFocus(): HTMLElement | null {
 		const dialog = document.getElementById(dialogId);
-		const activeDayCell = dialog?.querySelector<HTMLElement>('[role="gridcell"][tabindex="0"]');
+		const activeDayCell = dialog?.querySelector<HTMLElement>(
+			'[role="button"][data-date][tabindex="0"]'
+		);
 		return activeDayCell ?? null;
 	}
 

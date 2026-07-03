@@ -86,7 +86,7 @@
 						</Table.Checkbox>
 					</Table.ColumnHeaderCell>
 				</Table.Column>
-				<Table.Column id="email" isRowHeader textValue="Email">
+				<Table.Column id="email" rowHeader textValue="Email">
 					<Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
 				</Table.Column>
 				<Table.Column id="group" textValue="Group">
@@ -100,7 +100,7 @@
 				{#snippet children(row)}
 					<Table.Row
 						id={row.id}
-						isDisabled={disabledKeys ? Array.from(disabledKeys).includes(row.id) : false}
+						disabled={disabledKeys ? Array.from(disabledKeys).includes(row.id) : false}
 					>
 						<Table.Cell data-testid={`selection-cell-${row.id}`}>
 							<Table.Checkbox style={checkboxStyle} data-testid={`row-checkbox-${row.id}`}>
@@ -131,7 +131,7 @@
 				{#each rows as row (row.id)}
 					<Table.Row
 						id={row.id}
-						isDisabled={disabledKeys ? Array.from(disabledKeys).includes(row.id) : false}
+						disabled={disabledKeys ? Array.from(disabledKeys).includes(row.id) : false}
 					>
 						<Table.Cell data-testid={`selection-cell-${row.id}`}>
 							<Table.Checkbox style={checkboxStyle} data-testid={`row-checkbox-${row.id}`}>

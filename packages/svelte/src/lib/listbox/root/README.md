@@ -12,7 +12,7 @@ Description: Main listbox state container that manages registration, selection, 
 | `selectionBehavior` | `'toggle' \| 'replace'`                  | `'toggle'`            | Selection behavior for already selected options.             |
 | `emptyPlaceholder`  | `string \| Snippet`                      | `'No items selected'` | Fallback content when no options are available.              |
 | `items`             | `Iterable<T>`                            | `undefined`           | Dynamic source collection for rendering.                     |
-| `disabledIds`       | `Iterable<string \| number>`             | `undefined`           | Option ids that should be disabled.                          |
+| `disabledKeys`      | `Iterable<string \| number>`             | `undefined`           | Option keys that should be disabled.                         |
 | `selectionMode`     | `'single' \| 'multiple'`                 | `'single'`            | Selection mode for the listbox.                              |
 | `value`             | `Iterable<string \| number>`             | `undefined`           | Controlled selection values.                                 |
 | `defaultValue`      | `Iterable<string \| number>`             | `undefined`           | Initial uncontrolled selection values.                       |
@@ -35,6 +35,6 @@ Description: Low-level APIs for creating and consuming listbox state outside vis
 | `useListBoxContext()`                           | `() => ListBoxContext`                            | `-`         | Returns context and throws outside `ListBox.Root`.           |
 | `CreateListBoxContextOptions.selectionMode`     | `'single' \| 'multiple'`                          | `'single'`  | Initial selection mode.                                      |
 | `CreateListBoxContextOptions.selectionBehavior` | `'toggle' \| 'replace'`                           | `'toggle'`  | Initial selection behavior.                                  |
-| `CreateListBoxContextOptions.disabledIds`       | `Iterable<string \| number>`                      | `undefined` | Initial disabled ids.                                        |
+| `CreateListBoxContextOptions.disabledKeys`      | `Iterable<string \| number>`                      | `undefined` | Initial disabled keys.                                       |
 | `CreateListBoxContextOptions.initialSelection`  | `Set<string \| number>`                           | `new Set()` | Initial uncontrolled selection set.                          |
 | `CreateListBoxContextOptions.onSelectionChange` | `(selection) => void`                             | `undefined` | Callback for selection updates.                              |

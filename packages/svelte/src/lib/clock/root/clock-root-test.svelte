@@ -9,7 +9,7 @@
 		granularity?: 'hour' | 'minute' | 'second';
 		minValue?: string;
 		maxValue?: string;
-		isDisabled?: boolean;
+		disabled?: boolean;
 		useSnippet?: boolean;
 		showAxis?: boolean;
 		axisHeight?: number;
@@ -21,7 +21,7 @@
 		granularity = 'minute',
 		minValue,
 		maxValue,
-		isDisabled = false,
+		disabled = false,
 		useSnippet = false,
 		showAxis = false,
 		axisHeight
@@ -37,7 +37,7 @@
 		{granularity}
 		{minValue}
 		{maxValue}
-		{isDisabled}
+		{disabled}
 		class="flex gap-2"
 	>
 		{#snippet column(col: ClockColumnInfo)}
@@ -54,7 +54,7 @@
 		{granularity}
 		{minValue}
 		{maxValue}
-		{isDisabled}
+		{disabled}
 		class="flex gap-2"
 	/>
 {/if}

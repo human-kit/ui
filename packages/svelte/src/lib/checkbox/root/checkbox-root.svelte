@@ -26,14 +26,14 @@
 		element?: HTMLSpanElement | null;
 		name?: string;
 		value?: string;
-		isChecked?: boolean;
+		checked?: boolean;
 		defaultChecked?: boolean;
-		isIndeterminate?: boolean;
+		indeterminate?: boolean;
 		defaultIndeterminate?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
 		onIndeterminateChange?: (indeterminate: boolean) => void;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		required?: boolean;
 		children?: Snippet;
 		class?: string;
@@ -43,7 +43,15 @@
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
 		onfocus?: HTMLAttributes<HTMLSpanElement>['onfocus'];
+		onpointerdown?: HTMLAttributes<HTMLSpanElement>['onpointerdown'];
+		onpointerup?: HTMLAttributes<HTMLSpanElement>['onpointerup'];
+		onpointercancel?: HTMLAttributes<HTMLSpanElement>['onpointercancel'];
+		onpointerenter?: HTMLAttributes<HTMLSpanElement>['onpointerenter'];
+		onpointerleave?: HTMLAttributes<HTMLSpanElement>['onpointerleave'];
 		onmousedown?: HTMLAttributes<HTMLSpanElement>['onmousedown'];
+		onmouseup?: HTMLAttributes<HTMLSpanElement>['onmouseup'];
+		onmouseenter?: HTMLAttributes<HTMLSpanElement>['onmouseenter'];
+		onmouseleave?: HTMLAttributes<HTMLSpanElement>['onmouseleave'];
 	};
 
 	function composeEventHandlers<TEvent extends Event>(
@@ -56,9 +64,9 @@
 		};
 	}
 
-	function resolveState(isChecked: boolean, isIndeterminate: boolean): CheckboxState {
-		if (isIndeterminate) return 'indeterminate';
-		return isChecked ? 'checked' : 'unchecked';
+	function resolveState(checked: boolean, indeterminate: boolean): CheckboxState {
+		if (indeterminate) return 'indeterminate';
+		return checked ? 'checked' : 'unchecked';
 	}
 
 	function getNextState(currentState: CheckboxState): CheckboxState {
@@ -74,14 +82,14 @@
 		element = $bindable(),
 		name,
 		value = 'on',
-		isChecked = $bindable(),
+		checked = $bindable(),
 		defaultChecked = false,
-		isIndeterminate = $bindable(),
+		indeterminate = $bindable(),
 		defaultIndeterminate = false,
 		onCheckedChange,
 		onIndeterminateChange,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		required = false,
 		children,
 		class: className = '',
@@ -91,7 +99,15 @@
 		onclick: onClickExternal,
 		onkeydown: onKeyDownExternal,
 		onfocus: onFocusExternal,
+		onpointerdown: onPointerDownExternal,
+		onpointerup: onPointerUpExternal,
+		onpointercancel: onPointerCancelExternal,
+		onpointerenter: onPointerEnterExternal,
+		onpointerleave: onPointerLeaveExternal,
 		onmousedown: onMouseDownExternal,
+		onmouseup: onMouseUpExternal,
+		onmouseenter: onMouseEnterExternal,
+		onmouseleave: onMouseLeaveExternal,
 		...restProps
 	}: CheckboxRootProps = $props();
 
@@ -99,8 +115,8 @@
 	const inputId = instanceId;
 	const rootId = `${instanceId}-root`;
 
-	const initialChecked = untrack(() => isChecked ?? defaultChecked);
-	const initialIndeterminate = untrack(() => isIndeterminate ?? defaultIndeterminate);
+	const initialChecked = untrack(() => checked ?? defaultChecked);
+	const initialIndeterminate = untrack(() => indeterminate ?? defaultIndeterminate);
 	const initialState = resolveState(initialChecked, initialIndeterminate);
 
 	let checkedInternal = $state(initialState === 'checked');
@@ -116,27 +132,40 @@
 		element = rootRef;
 	});
 
-	if (untrack(() => isChecked) === undefined) {
-		isChecked = initialState === 'checked';
+	$effect(() => {
+		if (!disabled && !readonly) return;
+		clearPressState();
+		if (disabled) {
+			focusVisible = false;
+		}
+	});
+
+	if (untrack(() => checked) === undefined) {
+		checked = initialState === 'checked';
 	}
 
-	if (untrack(() => isIndeterminate) === undefined) {
-		isIndeterminate = initialState === 'indeterminate';
+	if (untrack(() => indeterminate) === undefined) {
+		indeterminate = initialState === 'indeterminate';
 	}
 
-	const isCheckedControlled = $derived(isChecked !== undefined);
-	const isIndeterminateControlled = $derived(isIndeterminate !== undefined);
+	const isCheckedControlled = $derived(checked !== undefined);
+	const isIndeterminateControlled = $derived(indeterminate !== undefined);
 
 	const currentState = $derived.by(() =>
 		resolveState(
-			isCheckedControlled ? Boolean(isChecked) : checkedInternal,
-			isIndeterminateControlled ? Boolean(isIndeterminate) : indeterminateInternal
+			isCheckedControlled ? Boolean(checked) : checkedInternal,
+			isIndeterminateControlled ? Boolean(indeterminate) : indeterminateInternal
 		)
 	);
 
 	const currentChecked = $derived(currentState === 'checked');
 	const currentIndeterminate = $derived(currentState === 'indeterminate');
 	const currentUnchecked = $derived(currentState === 'unchecked');
+
+	function clearPressState() {
+		pressed = false;
+		pressedKey = null;
+	}
 
 	function publishState(nextState: CheckboxState, event?: Event) {
 		const nextChecked = nextState === 'checked';
@@ -152,8 +181,8 @@
 			indeterminateInternal = nextIndeterminate;
 		}
 
-		isChecked = nextChecked;
-		isIndeterminate = nextIndeterminate;
+		checked = nextChecked;
+		indeterminate = nextIndeterminate;
 
 		if (nextChecked !== previousChecked) {
 			onCheckedChange?.(nextChecked);
@@ -169,7 +198,7 @@
 	}
 
 	function setState(nextState: CheckboxState, event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		publishState(nextState, event);
 	}
 
@@ -178,7 +207,7 @@
 	}
 
 	function requestNativeToggle(event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		if (!inputRef) {
 			toggle(event);
 			return;
@@ -191,7 +220,7 @@
 		trackInteractionModality(event, rootRef);
 
 		if (event.defaultPrevented) return;
-		if (isDisabled || isReadOnly) {
+		if (disabled || readonly) {
 			event.preventDefault();
 			return;
 		}
@@ -245,9 +274,72 @@
 		requestNativeToggle(event);
 	}
 
-	function handlePointerDown(event: PointerEvent | MouseEvent) {
+	function handlePointerDown(event: PointerEvent) {
 		trackInteractionModality(event, rootRef);
 		focusVisible = false;
+
+		if (disabled || readonly) {
+			event.preventDefault();
+			clearPressState();
+			return;
+		}
+
+		if (event.button !== 0) return;
+		pressed = true;
+		pressedKey = null;
+	}
+
+	function handlePointerUp(event: PointerEvent) {
+		if (event.button !== 0) return;
+		if (pressedKey === null) {
+			pressed = false;
+		}
+	}
+
+	function handlePointerCancel() {
+		clearPressState();
+	}
+
+	function handlePointerEnter(event: PointerEvent) {
+		if (disabled || readonly) return;
+
+		if ((event.buttons & 1) === 1 && pressedKey === null) {
+			pressed = true;
+		}
+	}
+
+	function handlePointerLeave() {
+		if (pressedKey === null) {
+			pressed = false;
+		}
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, rootRef);
+		focusVisible = false;
+
+		if (disabled || readonly) {
+			event.preventDefault();
+			clearPressState();
+			return;
+		}
+
+		if (event.button !== 0) return;
+		pressed = true;
+		pressedKey = null;
+	}
+
+	function handleMouseUp(event: MouseEvent) {
+		if (event.button !== 0) return;
+		if (pressedKey === null) {
+			pressed = false;
+		}
+	}
+
+	function handleMouseLeave() {
+		if (pressedKey === null) {
+			pressed = false;
+		}
 	}
 
 	function handleFocus() {
@@ -258,8 +350,7 @@
 	function handleBlur() {
 		focused = false;
 		focusVisible = false;
-		pressed = false;
-		pressedKey = null;
+		clearPressState();
 	}
 
 	function handleInputChange(event: Event) {
@@ -310,10 +401,10 @@
 			return currentIndeterminate;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get required() {
 			return required;
@@ -334,10 +425,10 @@
 	bind:this={rootRef}
 	id={rootId}
 	role="checkbox"
-	tabindex={isDisabled ? undefined : (tabindex ?? 0)}
+	tabindex={disabled ? undefined : (tabindex ?? 0)}
 	aria-checked={currentIndeterminate ? 'mixed' : currentChecked ? 'true' : 'false'}
-	aria-disabled={isDisabled || undefined}
-	aria-readonly={isReadOnly || undefined}
+	aria-disabled={disabled || undefined}
+	aria-readonly={readonly || undefined}
 	aria-required={required || undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
@@ -346,16 +437,23 @@
 	data-unchecked={currentUnchecked || undefined}
 	data-indeterminate={currentIndeterminate || undefined}
 	data-pressed={pressed || undefined}
-	data-disabled={isDisabled || undefined}
-	data-readonly={isReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
 	data-required={required || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
 	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
 	onkeyup={handleKeyUp}
-	onpointerdown={handlePointerDown}
-	onmousedown={composeEventHandlers(onMouseDownExternal ?? undefined, handlePointerDown)}
+	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
+	onpointerup={composeEventHandlers(handlePointerUp, onPointerUpExternal ?? undefined)}
+	onpointercancel={composeEventHandlers(handlePointerCancel, onPointerCancelExternal ?? undefined)}
+	onpointerenter={composeEventHandlers(handlePointerEnter, onPointerEnterExternal ?? undefined)}
+	onpointerleave={composeEventHandlers(handlePointerLeave, onPointerLeaveExternal ?? undefined)}
+	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
+	onmouseup={composeEventHandlers(handleMouseUp, onMouseUpExternal ?? undefined)}
+	onmouseenter={onMouseEnterExternal}
+	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={handleBlur}
 	class={cn(
@@ -371,9 +469,9 @@
 		{name}
 		{value}
 		checked={currentChecked}
-		disabled={isDisabled}
+		{disabled}
 		{required}
-		readonly={isReadOnly}
+		{readonly}
 		aria-hidden="true"
 		data-checkbox-input="true"
 		onclick={handleInputClick}

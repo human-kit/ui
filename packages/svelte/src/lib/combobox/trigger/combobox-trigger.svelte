@@ -28,8 +28,8 @@
 	aria-label={ctx.isOpen ? 'Close menu' : 'Open menu'}
 	aria-expanded={ctx.isOpen}
 	aria-controls={`combobox-listbox-${ctx.instanceId}`}
-	isDisabled={ctx.isDisabled || ctx.isReadOnly}
-	isPending={ctx.isPending}
+	disabled={ctx.isDisabled || ctx.isReadOnly}
+	pending={ctx.isPending}
 	pressed={ctx.isOpen}
 	onmousedown={handleMouseDown}
 	class={className}

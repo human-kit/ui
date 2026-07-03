@@ -59,15 +59,15 @@ describe('TimePicker.Input', () => {
 	});
 
 	it('does not move focus into segments when disabled', async () => {
-		const screen = render(TimePickerTest, { isDisabled: true });
+		const screen = render(TimePickerTest, { disabled: true });
 		const inputGroup = screen.getByRole('group', { name: 'Time input' });
 
 		await inputGroup.click();
 		expect(document.activeElement?.getAttribute('data-time-picker-segment')).not.toBe('true');
 	});
 
-	it('reflects aria-required when root isRequired is true', async () => {
-		const screen = render(TimePickerTest, { isRequired: true });
+	it('reflects aria-required when root required is true', async () => {
+		const screen = render(TimePickerTest, { required: true });
 		const inputGroup = screen.getByRole('group', { name: 'Time input' });
 
 		expect(inputGroup.element()?.getAttribute('aria-required')).toBe('true');

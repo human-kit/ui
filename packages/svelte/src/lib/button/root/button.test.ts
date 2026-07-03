@@ -86,8 +86,8 @@ describe('Button.Root', () => {
 		expectNoFalseFocusAttributes(document);
 	});
 
-	it('disables the native button when isDisabled is true', async () => {
-		const screen = render(ButtonTest, { isDisabled: true });
+	it('disables the native button when disabled is true', async () => {
+		const screen = render(ButtonTest, { disabled: true });
 		const button = screen.getByRole('button', { name: 'Save' });
 		const buttonElement = button.element() as HTMLButtonElement | null;
 
@@ -99,7 +99,7 @@ describe('Button.Root', () => {
 	});
 
 	it('keeps the button focusable but blocks press, hover, and submit while pending', async () => {
-		render(ButtonTest, { isPending: true, type: 'submit' });
+		render(ButtonTest, { pending: true, type: 'submit' });
 		const button = document.querySelector<HTMLButtonElement>('[data-button-root="true"]');
 
 		expect(button?.hasAttribute('disabled')).toBe(false);
@@ -144,7 +144,7 @@ describe('Button.Root', () => {
 		let focusEvents = 0;
 
 		render(ButtonTest, {
-			isPending: true,
+			pending: true,
 			onMouseEnter: () => {
 				hoverEvents += 1;
 			},

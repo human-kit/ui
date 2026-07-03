@@ -5,7 +5,7 @@
 	type Props = {
 		open?: boolean;
 		defaultOpen?: boolean;
-		isNonModal?: boolean;
+		nonModal?: boolean;
 		shouldCloseOnInteractOutside?: boolean;
 		shouldCloseOnEscape?: boolean;
 		shouldCloseOnBlur?: boolean;
@@ -16,7 +16,7 @@
 	let {
 		open,
 		defaultOpen = false,
-		isNonModal = false,
+		nonModal = false,
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		shouldCloseOnBlur,
@@ -26,13 +26,11 @@
 </script>
 
 <Popover.Root {open} {defaultOpen} {onOpenChange}>
-	<Popover.Trigger>
-		<button type="button">Open Popover</button>
-	</Popover.Trigger>
+	<Popover.Trigger>Open Popover</Popover.Trigger>
 
 	<Popover.Content
 		class={`popover-content ${className}`.trim()}
-		{isNonModal}
+		{nonModal}
 		{shouldCloseOnInteractOutside}
 		{shouldCloseOnEscape}
 		{shouldCloseOnBlur}

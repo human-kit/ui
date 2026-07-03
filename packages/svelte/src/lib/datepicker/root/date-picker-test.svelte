@@ -4,35 +4,44 @@
 	type Props = {
 		defaultValue?: string;
 		defaultOpen?: boolean;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		minValue?: string;
 		maxValue?: string;
 		isDateUnavailable?: (date: string) => boolean;
+		inputId?: string;
+		inputName?: string;
+		inputLabel?: string;
+		inputAriaInvalid?: boolean;
 		popoverAriaLabel?: string;
 	};
 
 	let {
 		defaultValue = '2026-02-10',
 		defaultOpen = false,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		minValue,
 		maxValue,
 		isDateUnavailable,
+		inputId,
+		inputName,
+		inputLabel,
+		inputAriaInvalid,
 		popoverAriaLabel = 'Calendar'
 	}: Props = $props();
 
 	let selectedValue = $state<string | null>('');
 	let openState = $state((() => defaultOpen)());
 	let openReason = $state('');
+	let blurCount = $state(0);
 </script>
 
 <DatePicker.Root
 	{defaultValue}
 	{defaultOpen}
-	{isDisabled}
-	{isReadOnly}
+	{disabled}
+	{readonly}
 	{minValue}
 	{maxValue}
 	{isDateUnavailable}
@@ -44,7 +53,20 @@
 		openReason = details.reason;
 	}}
 >
-	<DatePicker.Input class="date-picker-input" aria-label="Date input">
+	{#if inputLabel && inputId}
+		<label for={inputId}>{inputLabel}</label>
+	{/if}
+
+	<DatePicker.Input
+		id={inputId}
+		name={inputName}
+		class="date-picker-input"
+		aria-label="Date input"
+		aria-invalid={inputAriaInvalid}
+		onblur={() => {
+			blurCount += 1;
+		}}
+	>
 		{#snippet children(segment)}
 			<DatePicker.Segment class="date-picker-segment" {segment} />
 		{/snippet}
@@ -83,4 +105,5 @@
 <p data-testid="date-picker-value">{selectedValue}</p>
 <p data-testid="date-picker-open">{String(openState)}</p>
 <p data-testid="date-picker-open-reason">{openReason}</p>
+<p data-testid="date-picker-blur-count">{blurCount}</p>
 <button type="button" data-testid="outside-button">Outside</button>

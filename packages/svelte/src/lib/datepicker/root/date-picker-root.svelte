@@ -44,8 +44,8 @@
 		value?: DatePickerDateValue | null;
 		defaultValue?: DatePickerDateValue | null;
 		onChange?: (value: DatePickerDateValue | null) => void;
-		isDisabled?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		readonly?: boolean;
 		minValue?: DatePickerDateValue;
 		maxValue?: DatePickerDateValue;
 		isDateUnavailable?: (date: DatePickerDateValue) => boolean;
@@ -65,8 +65,8 @@
 		value = $bindable(),
 		defaultValue,
 		onChange,
-		isDisabled = false,
-		isReadOnly = false,
+		disabled = false,
+		readonly = false,
 		minValue,
 		maxValue,
 		isDateUnavailable,
@@ -208,7 +208,7 @@
 
 	function setValue(nextValue: DatePickerDateValue, source: 'calendar' | 'input' = 'calendar') {
 		if (!isValidDatePickerValue(nextValue) || isDateUnavailableInternal(nextValue)) return;
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		const selectionFocusVisible = getInteractionModality() === 'keyboard';
 
 		if (valueInternal === nextValue) {
@@ -231,7 +231,7 @@
 	}
 
 	function openPopover(reason: DatePickerOpenChangeReason = 'imperative-action', event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		setOpen(true, { reason, event });
 	}
 
@@ -240,7 +240,7 @@
 	}
 
 	function togglePopover(reason: DatePickerOpenChangeReason = 'trigger-press', event?: Event) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		setOpen(!openInternal, { reason, event });
 	}
 
@@ -284,7 +284,7 @@
 		nextValue: string,
 		fromTyping: boolean
 	) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 
 		const rawNumericLength = nextValue.replace(/\D/g, '').length;
 		const normalized = normalizeSegmentInput(type, nextValue);
@@ -387,7 +387,7 @@
 	}
 
 	function adjustSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>, step: number) {
-		if (isDisabled || isReadOnly) return;
+		if (disabled || readonly) return;
 		const current = getSegmentNumericValue(type, segmentDraft, valueInternal);
 		const next = clampSegment(type, current + step);
 		setSegmentValue(type, formatSegment(type, next));
@@ -420,10 +420,10 @@
 			return instanceId;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get open() {
 			return openInternal;
@@ -481,8 +481,8 @@
 <div
 	id={instanceId}
 	class={className}
-	data-disabled={isDisabled || undefined}
-	data-readonly={isReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
 	data-open={openInternal || undefined}
 	data-focus-visible={focusVisible || undefined}
 	data-focus-within={focusWithin || undefined}

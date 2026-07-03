@@ -82,7 +82,7 @@ describe('TimePicker.Clock', () => {
 	});
 
 	it('disables wheel interaction when TimePicker is disabled', async () => {
-		render(TimePickerClockTest, { defaultValue: '14:30', isDisabled: true });
+		render(TimePickerClockTest, { defaultValue: '14:30', disabled: true });
 
 		await expect.poll(() => getSpinbuttons().length).toBeGreaterThan(0);
 

@@ -1,6 +1,14 @@
 <script lang="ts" generics="T extends object = object">
 	import { untrack, type Snippet } from 'svelte';
-	import { setComboBoxContext, type ComboBoxContext } from './context';
+	import { SvelteMap } from 'svelte/reactivity';
+	import { dev } from '../../internal/environment';
+	import {
+		setComboBoxContext,
+		type ComboBoxContext,
+		type ComboBoxFilter,
+		type ComboBoxItemActionRegistration,
+		type ComboBoxItemActionSource
+	} from './context';
 	import type { ListBoxContext } from '../../listbox/root/context';
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
 	import {
@@ -11,12 +19,12 @@
 	type ComboBoxProps<T> = {
 		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
 		id?: string;
-		isDisabled?: boolean;
-		isPending?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		pending?: boolean;
+		readonly?: boolean;
 		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
-		value?: string | number | (string | number)[];
-		defaultValue?: string | number | (string | number)[];
+		value?: string | number | null | (string | number)[];
+		defaultValue?: string | number | null | (string | number)[];
 		/** Current input value. Can be bound with bind:inputValue */
 		inputValue?: string;
 		defaultInputValue?: string;
@@ -24,14 +32,18 @@
 		selectionMode?: 'single' | 'multiple';
 		/** Whether to close popover after selection. Default: true for single, false for multiple */
 		closeOnSelect?: boolean;
-		/** Whether the popover is open. Can be bound with bind:isOpen */
-		isOpen?: boolean;
+		/** Whether the popover is open. Can be bound with bind:open */
+		open?: boolean;
 		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
 		trigger?: 'focus' | 'input' | 'press';
+		/** Function used to filter items locally. Set to null to disable local filtering. */
+		filter?: ComboBoxFilter | null;
+		/** Whether items with onAction should participate in local filtering. */
+		filterActionItems?: boolean;
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
-		onChange?: (value: string | number | (string | number)[] | undefined) => void;
-		/** Optional: Array of items for dynamic rendering */
+		onChange?: (value: string | number | null | (string | number)[]) => void;
+		/** Optional: Array of items. Used internally to resolve selected labels before options mount. */
 		items?: T[];
 		/** Optional: Snippet to render each item (used with items prop) */
 		renderItem?: Snippet<[T]>;
@@ -47,9 +59,9 @@
 
 	let {
 		id: rootId,
-		isDisabled = false,
-		isPending = false,
-		isReadOnly = false,
+		disabled = false,
+		pending = false,
+		readonly = false,
 		value = $bindable(),
 		defaultValue,
 		inputValue = $bindable(),
@@ -57,8 +69,10 @@
 		selectionBehavior,
 		selectionMode = 'single',
 		closeOnSelect,
-		isOpen = $bindable(),
+		open: openProp = $bindable(),
 		trigger = 'press',
+		filter = defaultComboBoxFilter,
+		filterActionItems = true,
 		onInputChange,
 		onOpenChange,
 		onChange,
@@ -69,6 +83,10 @@
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabelledby
 	}: ComboBoxProps<T> = $props();
+
+	function defaultComboBoxFilter(textValue: string, inputValue: string) {
+		return textValue.toLowerCase().includes(inputValue.trim().toLowerCase());
+	}
 
 	const instanceId = untrack(() => rootId) ?? generatedInstanceId;
 
@@ -86,9 +104,6 @@
 	let listboxRef: HTMLElement | null = $state(null);
 
 	let isOpenInternal = $state(false);
-	// Use function to capture initial value only (not reactive)
-	let inputValueInternal = $state((() => defaultInputValue)());
-	let selectedInternal = $state<Set<string | number>>((() => parseSelection(defaultValue))());
 
 	// Use virtual focus hook for navigation
 	const navigation = useVirtualFocus({
@@ -109,13 +124,14 @@
 	let popoverPointerDownPending = $state(false);
 	let shouldCloseOnEscapeState = $state(true);
 	let shouldCloseOnBlurState = $state(true);
+	const itemActions = new SvelteMap<string | number, ComboBoxItemActionRegistration>();
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
 	let shouldFilter: boolean = $state(true);
 
 	// Dev-mode prop validation warnings
-	if (import.meta.env.DEV) {
+	if (dev) {
 		$effect(() => {
 			// Only warn if user explicitly passed selectionBehavior="toggle"
 			if (
@@ -137,10 +153,16 @@
 		});
 	}
 
+	$effect(() => {
+		if (selectionMode === 'single' && value === undefined && defaultValue === undefined) {
+			value = null;
+		}
+	});
+
 	function parseSelection(
-		val: string | number | (string | number)[] | undefined
+		val: string | number | null | (string | number)[] | undefined
 	): Set<string | number> {
-		if (val === undefined) return new Set();
+		if (val == null) return new Set();
 		if (Array.isArray(val)) return new Set(val);
 		return new Set([val]);
 	}
@@ -148,20 +170,73 @@
 	// Convert internal Set back to external value based on selectionMode
 	function toExternalValue(
 		internalSet: Set<string | number>
-	): string | number | (string | number)[] | undefined {
+	): string | number | null | (string | number)[] {
 		if (selectionMode === 'single') {
 			const arr = Array.from(internalSet);
-			return arr.length > 0 ? arr[0] : undefined;
+			return arr.length > 0 ? arr[0] : null;
 		}
 		return Array.from(internalSet);
 	}
 
+	function isItemRecord(item: unknown): item is Record<string, unknown> {
+		return typeof item === 'object' && item !== null;
+	}
+
+	function getInternalItemValue(item: T) {
+		if (!isItemRecord(item)) return undefined;
+
+		const id = item.id;
+		if (typeof id === 'string' || typeof id === 'number') return id;
+
+		const value = item.value;
+		if (typeof value === 'string' || typeof value === 'number') return value;
+
+		return undefined;
+	}
+
+	function getInternalItemTextValue(item: T) {
+		if (!isItemRecord(item)) return undefined;
+
+		const textValue = item.textValue;
+		if (typeof textValue === 'string') return textValue;
+
+		const name = item.name;
+		if (typeof name === 'string') return name;
+
+		const label = item.label;
+		if (typeof label === 'string') return label;
+
+		const value = getInternalItemValue(item);
+		return value === undefined ? undefined : String(value);
+	}
+
+	function getItemLabelByValue(selectedId: string | number) {
+		const selectedItem = items?.find((item) => getInternalItemValue(item) === selectedId);
+		return selectedItem ? getInternalItemTextValue(selectedItem) : undefined;
+	}
+
+	function getInitialSelection() {
+		return parseSelection(value !== undefined ? value : defaultValue);
+	}
+
+	function getInitialInputValue() {
+		if (defaultInputValue) return defaultInputValue;
+		if (selectionMode !== 'single') return '';
+
+		const selectedId = Array.from(getInitialSelection())[0];
+		return selectedId === undefined ? '' : (getItemLabelByValue(selectedId) ?? '');
+	}
+
+	// Use functions to capture initial values only (not reactive).
+	let inputValueInternal = $state(getInitialInputValue());
+	let selectedInternal = $state<Set<string | number>>((() => parseSelection(defaultValue))());
+
 	// Reactive controlled mode checks - if prop changes from undefined to defined, behavior updates
-	const isOpenControlled = $derived(isOpen !== undefined);
+	const isOpenControlled = $derived(openProp !== undefined);
 	const isInputControlled = $derived(inputValue !== undefined);
 	const isSelectionControlled = $derived(value !== undefined);
 
-	const currentIsOpen = $derived(isOpenControlled ? isOpen! : isOpenInternal);
+	const currentIsOpen = $derived(isOpenControlled ? openProp! : isOpenInternal);
 	const currentInputValue = $derived(isInputControlled ? inputValue! : inputValueInternal);
 	const currentSelection = $derived(
 		isSelectionControlled ? parseSelection(value) : selectedInternal
@@ -172,7 +247,7 @@
 
 	function setIsOpen(open: boolean) {
 		isOpenInternal = open;
-		isOpen = open; // Update bindable prop
+		openProp = open; // Update bindable prop
 		onOpenChange?.(open);
 		// Reset focus and pending when closing
 		if (!open) {
@@ -219,6 +294,50 @@
 			onInputChange?.(val);
 		}
 	}
+
+	function getSelectedItemLabel(selectedId: string | number) {
+		const registeredLabel = navigation.itemLabels.get(selectedId);
+		if (registeredLabel) return registeredLabel;
+
+		return getItemLabelByValue(selectedId);
+	}
+
+	$effect(() => {
+		if (selectionMode !== 'single') return;
+
+		const selectedId = Array.from(currentSelection)[0];
+		if (selectedId === undefined) {
+			const previousSelectedLabel = selectedLabel;
+			selectedLabel = '';
+
+			if (
+				!isInputControlled &&
+				previousSelectedLabel &&
+				currentInputValue === previousSelectedLabel
+			) {
+				syncInputValue('', { notifyInputChange: false });
+			}
+
+			return;
+		}
+
+		const label = getSelectedItemLabel(selectedId);
+		if (!label) return;
+
+		const previousSelectedLabel = selectedLabel;
+		const shouldSyncInput =
+			!isInputControlled &&
+			(currentInputValue === '' || currentInputValue === previousSelectedLabel);
+
+		selectedLabel = label;
+
+		if (shouldSyncInput) {
+			shouldFilter = false;
+			if (currentInputValue !== label) {
+				syncInputValue(label, { notifyInputChange: false });
+			}
+		}
+	});
 
 	function selectItem(id: string | number, label: string) {
 		let newSelection: Set<string | number>;
@@ -314,7 +433,7 @@
 	}
 
 	function openPopover() {
-		if (!isDisabled && !isReadOnly) {
+		if (!disabled && !readonly) {
 			// Don't open if triggerRef is not set yet (prevents race condition with focus trap)
 			if (!triggerRef) {
 				return;
@@ -322,11 +441,6 @@
 			// If opening with a selection, disable filtering to show all options
 			if (currentSelection.size > 0 && selectionMode === 'single') {
 				shouldFilter = false;
-				// Only reset filter if user didn't type (input matches selection)
-				if (currentInputValue === selectedLabel) {
-					onInputChange?.('');
-				}
-				// Otherwise user typed, keep their filter
 			} else {
 				shouldFilter = true;
 			}
@@ -393,9 +507,41 @@
 			if (listboxCtxRef?.isDisabled(navigation.focusedId)) {
 				return;
 			}
+			if (activateItemAction(navigation.focusedId, 'keyboard')) {
+				return;
+			}
 			const label = navigation.itemLabels.get(navigation.focusedId) ?? String(navigation.focusedId);
 			selectItem(navigation.focusedId, label);
 		}
+	}
+
+	function registerItemAction(id: string | number, registration: ComboBoxItemActionRegistration) {
+		itemActions.set(id, registration);
+	}
+
+	function unregisterItemAction(id: string | number) {
+		itemActions.delete(id);
+	}
+
+	function activateItemAction(id: string | number, source: ComboBoxItemActionSource) {
+		if (disabled) return false;
+
+		const action = itemActions.get(id);
+		if (!action) return false;
+
+		const details = {
+			id,
+			textValue: action.textValue,
+			inputValue: currentInputValue,
+			source
+		};
+
+		if (action.closeOnAction) {
+			closePopover(true);
+		}
+
+		action.onAction(details);
+		return true;
 	}
 
 	/**
@@ -457,7 +603,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (isDisabled) return;
+		if (disabled) return;
 		trackInteractionModality(event, event.target as HTMLElement | null);
 
 		// Handle tag virtual focus navigation in multiple mode
@@ -620,9 +766,16 @@
 				}
 				break;
 			case 'Enter':
-				if (currentIsOpen && navigation.focusedId !== null) {
+				event.preventDefault();
+				if (!currentIsOpen) {
+					openPopover();
+					if (currentSelection.size === 0 || selectionMode !== 'single') {
+						navigation.setPendingDirection('first');
+					}
+					break;
+				}
+				if (navigation.focusedId !== null) {
 					selectFocusedItem();
-					event.preventDefault();
 				}
 				break;
 			case 'Escape':
@@ -678,10 +831,10 @@
 			return currentSelection;
 		},
 		get isDisabled() {
-			return isDisabled;
+			return disabled;
 		},
 		get isPending() {
-			return isPending;
+			return pending;
 		},
 		get isFocusVisible() {
 			return focusVisible;
@@ -693,7 +846,7 @@
 			return shouldCloseOnBlurState;
 		},
 		get isReadOnly() {
-			return isReadOnly;
+			return readonly;
 		},
 		get selectionMode() {
 			return selectionMode;
@@ -703,6 +856,12 @@
 		},
 		get shouldFilter() {
 			return shouldFilter;
+		},
+		get filter() {
+			return filter;
+		},
+		get filterActionItems() {
+			return filterActionItems;
 		},
 		get focusedItemId() {
 			return navigation.focusedId;
@@ -753,7 +912,13 @@
 		onOpenChange: setIsOpen,
 		setFocusedItemId: navigation.setFocused,
 		registerItem: navigation.register,
-		unregisterItem: navigation.unregister,
+		unregisterItem: (id) => {
+			navigation.unregister(id);
+			unregisterItemAction(id);
+		},
+		registerItemAction,
+		unregisterItemAction,
+		activateItemAction,
 		handleKeydown,
 		handleInputBlur,
 		setFocusVisible: setFocusVisibleState,
@@ -783,13 +948,13 @@
 	role="group"
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
-	aria-busy={isPending ? 'true' : undefined}
+	aria-busy={pending ? 'true' : undefined}
 	class={className}
 	data-combobox
 	data-focused={focusWithin || undefined}
-	data-disabled={isDisabled || undefined}
-	data-pending={isPending || undefined}
-	data-readonly={isReadOnly || undefined}
+	data-disabled={disabled || undefined}
+	data-pending={pending || undefined}
+	data-readonly={readonly || undefined}
 	data-focus-within={focusWithin || undefined}
 	data-focus-visible={focusVisible || undefined}
 	use:setWrapperAsTrigger

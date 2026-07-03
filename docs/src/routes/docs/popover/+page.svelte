@@ -45,18 +45,16 @@
 				description="Test all Popover props interactively"
 			>
 				<Popover.Root bind:open={isOpen}>
-					<Popover.Trigger>
-						<button
-							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-						>
-							{isOpen ? 'Close' : 'Open'} Popover
-						</button>
+					<Popover.Trigger
+						class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+					>
+						{isOpen ? 'Close' : 'Open'} Popover
 					</Popover.Trigger>
 					<Popover.Content
 						{placement}
 						{offset}
 						{shouldFlip}
-						{isNonModal}
+						nonModal={isNonModal}
 						{shouldCloseOnInteractOutside}
 						{shouldCloseOnEscape}
 						class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
@@ -73,7 +71,7 @@
 						<DemoSelect label="placement" bind:value={placement} options={placementOptions} />
 						<DemoInput label="offset" type="number" bind:value={offset} />
 						<DemoCheckbox label="shouldFlip" bind:checked={shouldFlip} />
-						<DemoCheckbox label="isNonModal" bind:checked={isNonModal} />
+						<DemoCheckbox label="nonModal" bind:checked={isNonModal} />
 						<DemoCheckbox
 							label="shouldCloseOnInteractOutside"
 							bind:checked={shouldCloseOnInteractOutside}
@@ -101,12 +99,10 @@
 					</div>
 
 					<Popover.Root bind:open={controlledOpen}>
-						<Popover.Trigger>
-							<button
-								class="rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
-							>
-								Trigger Button
-							</button>
+						<Popover.Trigger
+							class="rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
+						>
+							Trigger Button
 						</Popover.Trigger>
 						<Popover.Content class="w-70 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800">
 							<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Controlled Popover</h3>
@@ -136,15 +132,13 @@
 					<div class="text-center">
 						<p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Modal (default)</p>
 						<Popover.Root>
-							<Popover.Trigger>
-								<button
-									class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-								>
-									Open Modal
-								</button>
+							<Popover.Trigger
+								class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+							>
+								Open Modal
 							</Popover.Trigger>
 							<Popover.Content
-								isNonModal={false}
+								nonModal={false}
 								class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
 							>
 								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Modal Popover</h3>
@@ -158,15 +152,13 @@
 					<div class="text-center">
 						<p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Non-Modal</p>
 						<Popover.Root>
-							<Popover.Trigger>
-								<button
-									class="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
-								>
-									Open Non-Modal
-								</button>
+							<Popover.Trigger
+								class="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+							>
+								Open Non-Modal
 							</Popover.Trigger>
 							<Popover.Content
-								isNonModal={true}
+								nonModal={true}
 								class="w-62.5 rounded-xl bg-white p-4 shadow-xl dark:bg-gray-800"
 							>
 								<h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Non-Modal Popover</h3>
@@ -186,12 +178,10 @@
 						{#each ['', '-start', '-end'] as align (align)}
 							{@const pl = `${side}${align}` as ExtendedPlacement}
 							<Popover.Root>
-								<Popover.Trigger>
-									<button
-										class="w-full rounded-lg bg-gray-600 px-3 py-2 text-sm text-white transition-colors hover:bg-gray-700"
-									>
-										{pl}
-									</button>
+								<Popover.Trigger
+									class="w-full rounded-lg bg-gray-600 px-3 py-2 text-sm text-white transition-colors hover:bg-gray-700"
+								>
+									{pl}
 								</Popover.Trigger>
 								<Popover.Content
 									placement={pl}
@@ -211,12 +201,10 @@
 				description="Popovers can contain any content including forms and interactive elements"
 			>
 				<Popover.Root>
-					<Popover.Trigger>
-						<button
-							class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-						>
-							User Menu
-						</button>
+					<Popover.Trigger
+						class="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+					>
+						User Menu
 					</Popover.Trigger>
 					<Popover.Content class="w-75 rounded-xl bg-white shadow-xl dark:bg-gray-800">
 						<div class="border-b border-gray-200 p-4 dark:border-gray-700">

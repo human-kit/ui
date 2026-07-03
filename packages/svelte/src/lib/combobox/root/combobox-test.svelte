@@ -1,25 +1,35 @@
 <script lang="ts">
 	import ComboBox from '../index';
 
+	type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
+
 	type Props = {
 		id?: string;
-		isDisabled?: boolean;
-		isPending?: boolean;
-		isReadOnly?: boolean;
+		disabled?: boolean;
+		pending?: boolean;
+		readonly?: boolean;
 		trigger?: 'focus' | 'input' | 'press';
-		disabledIds?: string[];
+		filter?: ComboBoxFilter | null;
+		disabledKeys?: string[];
+		initialValue?: string | number | null;
+		defaultValue?: string | number | null | (string | number)[];
+		onValueChange?: (value: string | number | null | (string | number)[]) => void;
 	};
 
 	let {
 		id,
-		isDisabled = false,
-		isPending = false,
-		isReadOnly = false,
+		disabled = false,
+		pending = false,
+		readonly = false,
 		trigger = 'press',
-		disabledIds = []
+		filter,
+		disabledKeys = [],
+		initialValue,
+		defaultValue,
+		onValueChange
 	}: Props = $props();
 
-	let selectedValue = $state<string | number | undefined>();
+	let selectedValue = $state<string | number | null | undefined>((() => initialValue)());
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },
@@ -35,7 +45,18 @@
 	];
 </script>
 
-<ComboBox.Root {id} {isDisabled} {isPending} {isReadOnly} {trigger} bind:value={selectedValue}>
+<ComboBox.Root
+	{id}
+	{disabled}
+	{pending}
+	{readonly}
+	{trigger}
+	{filter}
+	items={countries}
+	{defaultValue}
+	bind:value={selectedValue}
+	onChange={onValueChange}
+>
 	<ComboBox.Input placeholder="Search countries..." />
 	<ComboBox.Trigger />
 
@@ -45,7 +66,7 @@
 				<ComboBox.Item
 					id={country.id}
 					textValue={country.name}
-					disabled={disabledIds.includes(country.id)}
+					disabled={disabledKeys.includes(country.id)}
 				>
 					{country.name}
 				</ComboBox.Item>

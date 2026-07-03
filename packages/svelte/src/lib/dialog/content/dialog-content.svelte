@@ -2,12 +2,13 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '../../internal/environment';
 	import { focusTrap } from '../../primitives/focus-trap';
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
 	import { getDialogContext } from '../root/context';
+	import { getDialogPresenceContext } from '../root/presence-context';
 	import { pushDialog, popDialog, isTopmostDialog, getContentZIndex } from '../root/dialog-stack';
 
 	/**
@@ -41,9 +42,20 @@
 
 	const dialogCtx = ctx;
 
+	// Optional: present only when rendered inside Dialog.Portal. Drives enter/exit animation and
+	// lets the Portal time the exit from this element. Falls back to "always open" when absent.
+	const presence = getDialogPresenceContext();
+	const isOpen = $derived(presence ? presence.state === 'open' : true);
+
 	let dialogRef: HTMLElement | undefined = $state();
 	let dialogId: symbol | null = null;
 	let dialogLevel = $state(0);
+
+	// Register this element so Dialog.Portal can measure its exit animation before unmounting.
+	$effect(() => {
+		presence?.setMotionTarget(dialogRef ?? null);
+		return () => presence?.setMotionTarget(null);
+	});
 
 	function close(reason: 'escape-key' | 'outside-press' | 'imperative-action', event?: Event) {
 		dialogCtx.close(reason, event);
@@ -59,7 +71,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && shouldCloseOnEscape) {
+		if (event.key === 'Escape' && isOpen && shouldCloseOnEscape) {
 			// Only handle if this is the topmost dialog
 			if (dialogId && isTopmostDialog(dialogId)) {
 				event.preventDefault();
@@ -92,30 +104,49 @@
 	const zIndex = $derived(getContentZIndex(dialogLevel));
 </script>
 
+<!--
+	Centering layer. The panel is centered via grid (not a `transform`), leaving the panel's own
+	`transform` free for enter/exit animations (zoom/slide) — the same freedom Popover.Content has
+	because it positions with top/left. The layer carries the stacking z-index.
+-->
 <div
-	bind:this={dialogRef}
-	class={className}
-	role="dialog"
-	aria-modal="true"
-	data-dialog-content
-	use:clickOutside={{
-		handler: closeIfTopmost,
-		enabled: shouldCloseOnInteractOutside,
-		ignore: [dialogCtx.triggerRef]
-	}}
-	use:focusTrap={true}
-	use:scrollLock={true}
-	use:ariaHideOutside={true}
+	data-dialog-positioner
 	style="
 		position: fixed;
+		inset: 0;
 		z-index: {zIndex};
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		display: grid;
+		place-items: center;
 	"
-	{...restProps}
 >
-	{#if children}
-		{@render children()}
-	{/if}
+	<!--
+		`inert` already removes the closed dialog from the a11y tree AND prevents focus, so
+		no `aria-hidden` is needed. Setting both meant that during the exit animation (content
+		still mounted, `isOpen` already false) a descendant that retained focus sat under
+		`aria-hidden`, tripping the browser's "aria-hidden on a focused element" warning.
+	-->
+	<div
+		bind:this={dialogRef}
+		class={className}
+		role="dialog"
+		aria-modal={isOpen ? 'true' : undefined}
+		inert={!isOpen}
+		data-dialog-content
+		data-state={isOpen ? 'open' : 'closed'}
+		data-entering={presence?.isEntering || undefined}
+		data-exiting={presence?.isExiting || undefined}
+		use:clickOutside={{
+			handler: closeIfTopmost,
+			enabled: isOpen && shouldCloseOnInteractOutside,
+			ignore: [dialogCtx.triggerRef]
+		}}
+		use:focusTrap={isOpen}
+		use:scrollLock={isOpen}
+		use:ariaHideOutside={isOpen}
+		{...restProps}
+	>
+		{#if children}
+			{@render children()}
+		{/if}
+	</div>
 </div>
