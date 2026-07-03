@@ -1,5 +1,62 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.22
+
+### Minor Changes
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add the new `Toggle` primitive with a single `Root` part.
+  - support controlled and uncontrolled selected state with `selected`, `defaultSelected`, and `onChange`
+  - expose native button semantics with `aria-pressed`, disabled behavior, and keyboard activation
+  - add styling hooks for selected, unselected, pressed, hover, focus, and focus-visible states
+  - expose the `./toggle` package entry and add docs/demo coverage
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add a `filter` prop to `ComboBox.Root` so consumers can customize local option filtering or pass `null` to disable it for externally filtered lists.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add the new `Tabs` primitive with `Root`, `List`, `Tab`, `Indicator`, and `Panel` parts.
+  - support controlled and uncontrolled selection, including `null` values
+  - add automatic and manual keyboard activation with horizontal and vertical roving focus
+  - include accessible tab and tabpanel wiring, SSR-ready default selection, disabled tabs, and indicator positioning hooks
+  - expose the `./tabs` package entry and add docs/demo coverage
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add an `autofocus` prop to `Input` that reliably focuses the element on mount.
+
+  Native `autofocus` only focuses the first autofocus element inserted per document, so it silently fails for inputs that mount inside an already-open popover/dialog or that remount as a view swaps. The prop focuses the underlying input on mount instead, so it works every time the input appears.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `Menu`, an accessible dropdown / action menu following the WAI-ARIA menu button pattern.
+  - Compose `Menu.Root`, `Menu.Trigger`, and `Menu.Content` (portal + floating + `role="menu"` panel), built on the same positioning/presence primitives as `Popover`.
+  - `Menu.Item` with `onSelect`, `disabled`, `closeOnSelect`, and `textValue`; arrow-key navigation, typeahead, Home/End, and hover highlighting via roving focus.
+  - `Menu.Separator`, plus `Menu.Group` + `Menu.GroupLabel` with `aria-labelledby` wiring.
+  - `Menu.SubmenuRoot` + `Menu.SubmenuTrigger` for nested submenus, with a layer stack so only the topmost menu handles Escape / outside-press, `ArrowRight`/`ArrowLeft` open/close, and sibling submenus collapse on hover.
+  - `Menu.Root` exposes `open`/`defaultOpen`/`onOpenChange` (with cancelable `details`), `loop`, `typeahead`, and `closeOnSelect`. Escape and selection return focus to the trigger; Tab and outside interaction close the whole chain.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add the ToggleGroup primitive with single and multiple selection, roving focus, disabled reconciliation, SSR-safe default selection, documentation, and demo coverage.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add short helper types to the public `table` module for column-driven wrappers and consumer-defined table abstractions.
+  - export `RowData`, `Row`, `ColumnDef`, `CellContext`, `CellProps`, and `CellRenderer`
+  - keep these helpers generic so consumers can build any wrapper shape on top of the existing table primitives
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add a new headless `Tree` component with hierarchical keyboard navigation, controlled and uncontrolled expansion state, configurable selection propagation, section headers, and docs/demo coverage.
+
+### Patch Changes
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Bias `Table.Body` virtualization overscan toward the current scroll direction when no explicit `overscan` distribution is provided, reducing the chance of visible blanking ahead of the viewport during fast scrolling.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Summary
+
+  Add the composable `NumberField` component with locale-aware formatting, spinbutton semantics, steppers, wheel scrubbing, and pointer scrubbing.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix nested popovers dismissing together: add a popover layer stack so only the topmost open popover handles Escape, outside-press, outside-scroll, and focus-out. Closing a nested popover (e.g. a date picker calendar inside a filter popover) no longer closes its ancestors.
+
+- [#53](https://github.com/Agustin-Delgado/svelte-components/pull/53) [`d26a8cd`](https://github.com/Agustin-Delgado/svelte-components/commit/d26a8cd141a855d13d57d952a66f3c72543ab1b0) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Table Body typing and overscan
+
+  Improve `Table.Body` item-driven typings and virtualization defaults.
+  - Infer the `children(item)` snippet parameter from the `items` element type in item-driven mode.
+  - Make body virtualization derive `overscan` automatically from the current viewport row count when it is not provided.
+
+- [#55](https://github.com/Agustin-Delgado/svelte-components/pull/55) [`6661958`](https://github.com/Agustin-Delgado/svelte-components/commit/6661958b309bafb2f3189aa6197017f739d4d563) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Summary
+
+  Add the headless `TextArea` primitive with native textarea semantics, shared focus state attributes, RAC-style state props, and opt-in auto-resize.
+
 ## 1.0.0-alpha.21
 
 ### Patch Changes
