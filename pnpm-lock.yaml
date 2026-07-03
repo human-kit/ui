@@ -56,7 +56,7 @@ importers:
     dependencies:
       '@human-kit/ui':
         specifier: workspace:*
-        version: link:../packages/svelte
+        version: link:../packages/ui
       '@sveltejs/adapter-vercel':
         specifier: ^6.3.1
         version: 6.3.4(@sveltejs/kit@2.69.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)))(svelte@5.56.4(@typescript-eslint/types@8.62.1))(typescript@5.9.3)(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)))(rollup@4.62.2)
@@ -95,7 +95,7 @@ importers:
         specifier: ^7.1.10
         version: 7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)
 
-  packages/svelte:
+  packages/ui:
     dependencies:
       '@floating-ui/dom':
         specifier: ^1.7.4

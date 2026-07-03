@@ -2,13 +2,13 @@
 
 @plugin "@toolwind/corner-shape";
 
-@source '../../packages/svelte/src/lib/**/*.{svelte,ts}';
+@source '../../packages/ui/src/lib/**/*.{svelte,ts}';
 
 @plugin "@toolwind/corner-shape";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@source '../../packages/svelte/src/lib/**/*.{svelte,ts}';
+@source '../../packages/ui/src/lib/**/*.{svelte,ts}';
 
 @theme {
 	--font-sans: 'Inter', sans-serif;

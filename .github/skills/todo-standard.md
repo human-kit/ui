@@ -6,7 +6,7 @@ Keep roadmap/backlog files consistent and CI-safe across components.
 
 ## Applies to
 
-Component-level TODO files under `packages/svelte/src/lib/**/TODO.md`.
+Component-level TODO files under `packages/ui/src/lib/**/TODO.md`.
 
 > Canonical filename: `TODO.md` (not `TODOS.md`).
 

@@ -26,11 +26,11 @@ Design and implement a new public `Table` component for the Svelte library, usin
 
 ### Relevant Components and Utilities
 
-- `packages/svelte/src/lib/listbox`
-- `packages/svelte/src/lib/calendar`
-- `packages/svelte/src/lib/primitives/keyboard-navigation.ts`
-- `packages/svelte/src/lib/FOCUS_STATE_CONTRACT.md`
-- `packages/svelte/src/lib/test-utils/focus-contract.ts`
+- `packages/ui/src/lib/listbox`
+- `packages/ui/src/lib/calendar`
+- `packages/ui/src/lib/primitives/keyboard-navigation.ts`
+- `packages/ui/src/lib/FOCUS_STATE_CONTRACT.md`
+- `packages/ui/src/lib/test-utils/focus-contract.ts`
 
 ## Decisions Already Made
 
@@ -427,7 +427,7 @@ Responsibilities:
 
 ## Root State
 
-Create `packages/svelte/src/lib/table/root/context.ts` with responsibilities for:
+Create `packages/ui/src/lib/table/root/context.ts` with responsibilities for:
 
 - column registration
 - row registration
@@ -521,24 +521,24 @@ interface GridNavigation {
 
 ### New Component Files
 
-- `packages/svelte/src/lib/table/index.ts`
-- `packages/svelte/src/lib/table/index.parts.ts`
-- `packages/svelte/src/lib/table/README.md`
-- `packages/svelte/src/lib/table/TODO.md`
+- `packages/ui/src/lib/table/index.ts`
+- `packages/ui/src/lib/table/index.parts.ts`
+- `packages/ui/src/lib/table/README.md`
+- `packages/ui/src/lib/table/TODO.md`
 
 ### Root
 
-- `packages/svelte/src/lib/table/root/table-root.svelte`
-- `packages/svelte/src/lib/table/root/context.ts`
-- `packages/svelte/src/lib/table/root/table-root.test.ts`
-- `packages/svelte/src/lib/table/root/table-test.svelte`
-- `packages/svelte/src/lib/table/root/README.md`
+- `packages/ui/src/lib/table/root/table-root.svelte`
+- `packages/ui/src/lib/table/root/context.ts`
+- `packages/ui/src/lib/table/root/table-root.test.ts`
+- `packages/ui/src/lib/table/root/table-test.svelte`
+- `packages/ui/src/lib/table/root/README.md`
 
 ### Public Parts
 
-- `packages/svelte/src/lib/table/column/table-column.svelte`
-- `packages/svelte/src/lib/table/column/README.md`
-- `packages/svelte/src/lib/table/column/table-column.test.ts`
+- `packages/ui/src/lib/table/column/table-column.svelte`
+- `packages/ui/src/lib/table/column/README.md`
+- `packages/ui/src/lib/table/column/table-column.test.ts`
 
 ## Phase 2: Column Resizing Plan
 
@@ -765,19 +765,19 @@ It should not require positional props like `index` or `for`.
 
 ### Planned File Additions
 
-- `packages/svelte/src/lib/table/column-resizer/table-column-resizer.svelte`
-- `packages/svelte/src/lib/table/column-resizer/README.md`
-- `packages/svelte/src/lib/table/column-resizer/table-column-resizer.test.ts`
+- `packages/ui/src/lib/table/column-resizer/table-column-resizer.svelte`
+- `packages/ui/src/lib/table/column-resizer/README.md`
+- `packages/ui/src/lib/table/column-resizer/table-column-resizer.test.ts`
 
 Planned touched files:
 
-- `packages/svelte/src/lib/table/index.parts.ts`
-- `packages/svelte/src/lib/table/index.ts`
-- `packages/svelte/src/lib/table/root/context.ts`
-- `packages/svelte/src/lib/table/root/table-root.svelte`
-- `packages/svelte/src/lib/table/column/table-column.svelte`
-- `packages/svelte/src/lib/table/column-header-cell/table-column-header-cell.svelte`
-- `packages/svelte/src/lib/table/root/table-root.test.ts`
+- `packages/ui/src/lib/table/index.parts.ts`
+- `packages/ui/src/lib/table/index.ts`
+- `packages/ui/src/lib/table/root/context.ts`
+- `packages/ui/src/lib/table/root/table-root.svelte`
+- `packages/ui/src/lib/table/column/table-column.svelte`
+- `packages/ui/src/lib/table/column-header-cell/table-column-header-cell.svelte`
+- `packages/ui/src/lib/table/root/table-root.test.ts`
 - `docs/src/routes/docs/table/+page.svelte`
 
 ### Testing Plan
@@ -810,32 +810,32 @@ Minimum regression coverage:
 - double-click auto-fit
 - resize in nested/grouped headers
 - resizable footer-specific behavior
-- `packages/svelte/src/lib/table/header/table-header.svelte`
-- `packages/svelte/src/lib/table/header/README.md`
-- `packages/svelte/src/lib/table/header/table-header.test.ts`
-- `packages/svelte/src/lib/table/body/table-body.svelte`
-- `packages/svelte/src/lib/table/body/README.md`
-- `packages/svelte/src/lib/table/body/table-body.test.ts`
-- `packages/svelte/src/lib/table/empty-state/table-empty-state.svelte`
-- `packages/svelte/src/lib/table/empty-state/README.md`
-- `packages/svelte/src/lib/table/empty-state/table-empty-state.test.ts`
-- `packages/svelte/src/lib/table/footer/table-footer.svelte`
-- `packages/svelte/src/lib/table/footer/README.md`
-- `packages/svelte/src/lib/table/footer/table-footer.test.ts`
-- `packages/svelte/src/lib/table/row/table-row.svelte`
-- `packages/svelte/src/lib/table/row/README.md`
-- `packages/svelte/src/lib/table/row/table-row.test.ts`
-- `packages/svelte/src/lib/table/column-header-cell/table-column-header-cell.svelte`
-- `packages/svelte/src/lib/table/column-header-cell/README.md`
-- `packages/svelte/src/lib/table/column-header-cell/table-column-header-cell.test.ts`
-- `packages/svelte/src/lib/table/cell/table-cell.svelte`
-- `packages/svelte/src/lib/table/cell/README.md`
-- `packages/svelte/src/lib/table/cell/table-cell.test.ts`
+- `packages/ui/src/lib/table/header/table-header.svelte`
+- `packages/ui/src/lib/table/header/README.md`
+- `packages/ui/src/lib/table/header/table-header.test.ts`
+- `packages/ui/src/lib/table/body/table-body.svelte`
+- `packages/ui/src/lib/table/body/README.md`
+- `packages/ui/src/lib/table/body/table-body.test.ts`
+- `packages/ui/src/lib/table/empty-state/table-empty-state.svelte`
+- `packages/ui/src/lib/table/empty-state/README.md`
+- `packages/ui/src/lib/table/empty-state/table-empty-state.test.ts`
+- `packages/ui/src/lib/table/footer/table-footer.svelte`
+- `packages/ui/src/lib/table/footer/README.md`
+- `packages/ui/src/lib/table/footer/table-footer.test.ts`
+- `packages/ui/src/lib/table/row/table-row.svelte`
+- `packages/ui/src/lib/table/row/README.md`
+- `packages/ui/src/lib/table/row/table-row.test.ts`
+- `packages/ui/src/lib/table/column-header-cell/table-column-header-cell.svelte`
+- `packages/ui/src/lib/table/column-header-cell/README.md`
+- `packages/ui/src/lib/table/column-header-cell/table-column-header-cell.test.ts`
+- `packages/ui/src/lib/table/cell/table-cell.svelte`
+- `packages/ui/src/lib/table/cell/README.md`
+- `packages/ui/src/lib/table/cell/table-cell.test.ts`
 
 ### Package Integrations
 
-- `packages/svelte/src/lib/index.ts`
-- `packages/svelte/package.json`
+- `packages/ui/src/lib/index.ts`
+- `packages/ui/package.json`
 - `docs/src/routes/docs/table/+page.svelte`
 - `README.md`
 - `.changeset/*`

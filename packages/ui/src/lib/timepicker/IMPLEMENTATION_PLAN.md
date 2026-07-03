@@ -244,7 +244,7 @@ This order minimizes risk: behavior correctness first, wheel timing second, API/
 - `pnpm run test -- --run`
 - `pnpm run lint`
 - `pnpm run build`
-- `pnpm exec changeset` — generate changeset file (CI requires it for `packages/svelte/src/**` changes)
+- `pnpm exec changeset` — generate changeset file (CI requires it for `packages/ui/src/**` changes)
 
 ## Notes
 

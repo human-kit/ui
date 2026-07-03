@@ -5,7 +5,7 @@ This repository contains the publishable library and the docs/demo app.
 
 ## Quick Overview
 
-- npm library: `@human-kit/ui` (in `packages/svelte`).
+- npm library: `@human-kit/ui` (in `packages/ui`).
 - Docs/demo app: `docs` (SvelteKit + Vite).
 - Versioning and releases: `.changeset`.
 - PR automation: `scripts/pr.sh`.
@@ -86,7 +86,7 @@ Workspaces are defined in `pnpm-workspace.yaml` (`packages/*` and `docs`).
 | `dev`         | Starts the `docs` development environment using a pnpm filter. |
 | `build`       | Packages the `@human-kit/ui` library.                          |
 | `build:docs`  | Builds the `docs` site for production.                         |
-| `test`        | Runs library tests (`packages/svelte`).                        |
+| `test`        | Runs library tests (`packages/ui`).                            |
 | `typecheck`   | Runs type checking for library and docs.                       |
 | `check`       | Runs `check` in all workspaces (`pnpm -r`).                    |
 | `format`      | Formats the whole repo with Prettier.                          |
@@ -115,7 +115,7 @@ Workspaces are defined in `pnpm-workspace.yaml` (`packages/*` and `docs`).
 | `typescript`                   | TypeScript compiler and type system.                      |
 | `typescript-eslint`            | TypeScript parser and lint rules for ESLint.              |
 
-## Library `package.json` (`packages/svelte`) Explained
+## Library `package.json` (`packages/ui`) Explained
 
 ### Packaging and Quality Scripts
 
@@ -142,7 +142,7 @@ Workspaces are defined in `pnpm-workspace.yaml` (`packages/*` and `docs`).
 
 1. Work on a feature branch and run `pnpm run pr`.
    - The script formats, validates, creates/updates changeset, commits, pushes, and opens/updates the PR.
-2. CI validates lint/typecheck/tests/build and enforces changeset presence for `packages/svelte/src/**` changes.
+2. CI validates lint/typecheck/tests/build and enforces changeset presence for `packages/ui/src/**` changes.
 3. Merge the PR into `main`.
 4. Release is automated by GitHub Actions (`.github/workflows/release.yml`) using Changesets:
    - It opens/updates a version PR (`chore: version packages`) or

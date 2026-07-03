@@ -8,7 +8,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Agustin-Delgado/svelte-components.git",
-		"directory": "packages/svelte"
+		"directory": "packages/ui"
 	},
 	"bugs": {
 		"url": "https://github.com/Agustin-Delgado/svelte-components/issues"
@@ -205,7 +205,8 @@
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*",
 		"!dist/**/*-test.svelte",
-		"!dist/**/*-test.svelte.d.ts"
+		"!dist/**/*-test.svelte.d.ts",
+		"!dist/**/TODO.md"
 	],
 	"scripts": {
 		"package": "svelte-kit sync && svelte-package && publint",
@@ -220,24 +221,6 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.0",
 		"tailwind-merge": "^3.4.0"
-	},
-	"devDependencies": {
-		"@sveltejs/kit": "^2.49.1",
-		"@sveltejs/package": "^2.3.0",
-		"@sveltejs/vite-plugin-svelte": "^6.2.1",
-		"@testing-library/svelte": "^5.3.1",
-		"@types/node": "^20",
-		"@vitest/browser": "^4.0.16",
-		"@vitest/browser-playwright": "^4.0.16",
-		"happy-dom": "^20.0.11",
-		"jsdom": "^27.4.0",
-		"playwright": "^1.57.0",
-		"publint": "^0.2.0",
-		"svelte": "^5.41.0",
-		"svelte-check": "^4.3.4",
-		"vite": "^7.1.10",
-		"vitest": "^4.0.16",
-		"vitest-browser-svelte": "^2.0.1"
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"

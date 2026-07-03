@@ -63,15 +63,15 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('packages/svelte/node_modules/playwright/package.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('packages/ui/node_modules/playwright/package.json') }}
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: cd packages/svelte && pnpm exec playwright install chromium --with-deps
+        run: cd packages/ui && pnpm exec playwright install chromium --with-deps
 
       - name: Install Playwright deps (cached)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: cd packages/svelte && pnpm exec playwright install-deps chromium
+        run: cd packages/ui && pnpm exec playwright install-deps chromium
 
       - run: pnpm run test -- --run
 
@@ -103,7 +103,7 @@ jobs:
       - name: Check for changeset
         run: |
           # Skip check if PR doesn't touch library source
-          CHANGED=$(git diff --name-only origin/main...HEAD -- 'packages/svelte/src/**' || true)
+          CHANGED=$(git diff --name-only origin/main...HEAD -- 'packages/ui/src/**' || true)
           if [ -z "$CHANGED" ]; then
             echo "No library source changes detected, skipping changeset check."
             exit 0

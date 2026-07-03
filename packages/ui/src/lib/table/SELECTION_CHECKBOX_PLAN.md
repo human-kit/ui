@@ -210,7 +210,7 @@ If focus delegation is added for this part, it should be designed as a reusable 
 
 ### Phase 2: New Part
 
-- add `packages/svelte/src/lib/table/selection-checkbox/`
+- add `packages/ui/src/lib/table/selection-checkbox/`
 - implement `table-selection-checkbox.svelte`
 - export it from `index.parts.ts` and `index.ts`
 

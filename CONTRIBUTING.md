@@ -22,7 +22,7 @@ pnpm run dev        # start the docs/demo app
 
 ## Repository layout
 
-- `packages/svelte/` — the publishable library (`@human-kit/ui`).
+- `packages/ui/` — the publishable library (`@human-kit/ui`).
 - `docs/` — documentation site and interactive playground.
 - `.changeset/` — versioning and release notes.
 - `scripts/` — repo automation (PR workflow, changeset helpers, TODO linting).
@@ -30,7 +30,7 @@ pnpm run dev        # start the docs/demo app
 ## Development workflow
 
 1. Create a feature branch off `main`.
-2. Make your change. Add or update tests in `packages/svelte/src/lib` alongside
+2. Make your change. Add or update tests in `packages/ui/src/lib` alongside
    the component you touched.
 3. Run the checks locally before pushing:
 
@@ -49,7 +49,7 @@ changeset, commits, pushes, and opens/updates the PR for you.
 
 ## Changesets
 
-Any change to `packages/svelte/src/**` requires a changeset — CI enforces this.
+Any change to `packages/ui/src/**` requires a changeset — CI enforces this.
 
 ```bash
 pnpm exec changeset

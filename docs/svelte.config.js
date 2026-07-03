@@ -10,8 +10,8 @@ const config = {
 	kit: {
 		adapter: adapter({ runtime: 'nodejs22.x' }),
 		alias: {
-			'@human-kit/ui/*': '../packages/svelte/src/lib/*',
-			'@human-kit/ui': '../packages/svelte/src/lib'
+			'@human-kit/ui/*': '../packages/ui/src/lib/*',
+			'@human-kit/ui': '../packages/ui/src/lib'
 		}
 	}
 };

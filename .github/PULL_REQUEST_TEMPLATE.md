@@ -12,7 +12,7 @@
 
 ## Checklist
 
-- [ ] I added a changeset (`pnpm exec changeset`) for changes to `packages/svelte/src/**`
+- [ ] I added a changeset (`pnpm exec changeset`) for changes to `packages/ui/src/**`
 - [ ] `pnpm run lint` passes
 - [ ] `pnpm run typecheck` passes
 - [ ] `pnpm run test` passes
