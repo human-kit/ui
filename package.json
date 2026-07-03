@@ -1,5 +1,5 @@
 {
-	"name": "@agustin/monorepo",
+	"name": "@human-kit/monorepo",
 	"private": true,
 	"type": "module",
 	"workspaces": [
@@ -20,7 +20,7 @@
 		"lint": "prettier --check . && eslint . && bun run todo:check",
 		"changeset:auto:draft": "node scripts/changeset-auto.mjs --draft --only-if-missing",
 		"changeset:auto:apply": "node scripts/changeset-auto.mjs --apply --only-if-missing",
-		"release": "bun run build && bunx changeset publish",
+		"release": "bun run build && node scripts/publish.mjs",
 		"pr": "bash scripts/pr.sh"
 	},
 	"devDependencies": {

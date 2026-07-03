@@ -1,8 +1,8 @@
 {
   "mode": "pre",
-  "tag": "alpha",
+  "tag": "beta",
   "initialVersions": {
-    "@human-kit/svelte-components": "1.0.0-alpha.0"
+    "@human-kit/svelte-components": "1.0.0-alpha.22"
   },
   "changesets": [
     "blue-camels-cough",

@@ -71,7 +71,7 @@ bun run dev
 
 | Field        | What it does                                              |
 | ------------ | --------------------------------------------------------- |
-| `name`       | Internal monorepo name (`@agustin/monorepo`).             |
+| `name`       | Internal monorepo name (`@human-kit/monorepo`).           |
 | `private`    | Prevents accidentally publishing the root package to npm. |
 | `type`       | Uses ESM (`"module"`) for JS scripts/config.              |
 | `workspaces` | Defines workspaces: `packages/*` and `docs`.              |

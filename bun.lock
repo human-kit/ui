@@ -45,7 +45,7 @@
     },
     "packages/svelte": {
       "name": "@human-kit/svelte-components",
-      "version": "1.0.0-alpha.20",
+      "version": "1.0.0-alpha.22",
       "dependencies": {
         "@floating-ui/dom": "^1.7.4",
         "class-variance-authority": "^0.7.1",
