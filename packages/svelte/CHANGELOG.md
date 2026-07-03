@@ -1,5 +1,15 @@
 # @human-kit/svelte-components
 
+## 1.0.0-alpha.21
+
+### Patch Changes
+
+- [#53](https://github.com/Agustin-Delgado/svelte-components/pull/53) [`d26a8cd`](https://github.com/Agustin-Delgado/svelte-components/commit/d26a8cd141a855d13d57d952a66f3c72543ab1b0) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - # Table Body typing and overscan
+
+  Improve `Table.Body` item-driven typings and virtualization defaults.
+  - Infer the `children(item)` snippet parameter from the `items` element type in item-driven mode.
+  - Increase the default body virtualization `overscan` from `6` to `18` rows when it is not provided.
+
 ## 1.0.0-alpha.20
 
 ### Minor Changes
