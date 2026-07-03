@@ -1,8 +1,8 @@
 ---
-'@human-kit/svelte-components': major
+'@human-kit/ui': major
 ---
 
-Initial release of @human-kit/svelte-components
+Initial release of @human-kit/ui
 
 - ComboBox (single & multi-select with tags, virtual focus, filtering)
 - Dialog (modal with portal, overlay, nested dialogs, focus trap)

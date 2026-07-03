@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '@human-kit/svelte-components';
-	import { DatePicker } from '@human-kit/svelte-components/datepicker';
+	import { LocaleProvider } from '@human-kit/ui';
+	import { DatePicker } from '@human-kit/ui/datepicker';
 	import { DemoSection, DemoCheckbox, DemoState } from '$lib/demo';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 

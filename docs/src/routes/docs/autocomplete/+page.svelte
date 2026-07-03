@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
-	import { Autocomplete } from '@human-kit/svelte-components';
+	import { Autocomplete } from '@human-kit/ui';
 
 	const fruits = [
 		{ id: 'apple', name: 'Apple', emoji: '🍎', note: 'Crunchy and sweet' },

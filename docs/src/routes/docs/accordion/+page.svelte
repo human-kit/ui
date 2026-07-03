@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { DemoSection, DemoSelect, DemoState } from '$lib/demo';
-	import { Accordion } from '@human-kit/svelte-components/accordion';
+	import { Accordion } from '@human-kit/ui/accordion';
 	import type {
 		AccordionOrientation,
 		AccordionSelectionMode,
 		AccordionValue
-	} from '@human-kit/svelte-components/accordion';
+	} from '@human-kit/ui/accordion';
 
 	type Section = {
 		value: AccordionValue;

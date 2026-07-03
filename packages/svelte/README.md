@@ -1,4 +1,4 @@
-# @human-kit/svelte-components
+# @human-kit/ui
 
 Accessible, reusable UI components for **Svelte 5**.
 
@@ -8,9 +8,9 @@ per-component subpath exports so bundlers only include what you import.
 ## Installation
 
 ```bash
-npm install @human-kit/svelte-components
+npm install @human-kit/ui
 # or
-bun add @human-kit/svelte-components
+pnpm add @human-kit/ui
 ```
 
 Svelte 5 is a peer dependency:
@@ -27,7 +27,7 @@ Import from the package root:
 
 ```svelte
 <script lang="ts">
-	import { Dialog, ComboBox, Input, Label } from '@human-kit/svelte-components';
+	import { Dialog, ComboBox, Input, Label } from '@human-kit/ui';
 </script>
 ```
 
@@ -35,24 +35,24 @@ Or import a single component via its subpath for the leanest bundle:
 
 ```svelte
 <script lang="ts">
-	import { Dialog } from '@human-kit/svelte-components/dialog';
+	import { Dialog } from '@human-kit/ui/dialog';
 </script>
 ```
 
 ## Components
 
-| Category    | Components                                                                 |
-| ----------- | ------------------------------------------------------------------------- |
-| Overlays    | `Dialog`, `Popover`, `Menu`, `Portal`                                     |
+| Category    | Components                                                                    |
+| ----------- | ----------------------------------------------------------------------------- |
+| Overlays    | `Dialog`, `Popover`, `Menu`, `Portal`                                         |
 | Forms       | `Input`, `TextArea`, `Label`, `Checkbox`, `Switch`, `NumberField`, `Dropzone` |
-| Selection   | `ComboBox`, `Autocomplete`, `ListBox`, `Toggle`, `ToggleGroup`            |
-| Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`        |
-| Layout      | `Accordion`, `Collapsible`, `Tabs`, `Table`, `Tree`, `OverflowRow`        |
-| Actions     | `Button`                                                                   |
-| Utilities   | `LocaleProvider`, primitives, and the `cn` class helper                   |
+| Selection   | `ComboBox`, `Autocomplete`, `ListBox`, `Toggle`, `ToggleGroup`                |
+| Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`            |
+| Layout      | `Accordion`, `Collapsible`, `Tabs`, `Table`, `Tree`, `OverflowRow`            |
+| Actions     | `Button`                                                                      |
+| Utilities   | `LocaleProvider`, primitives, and the `cn` class helper                       |
 
 Each component is also available as a subpath export (for example
-`@human-kit/svelte-components/calendar`).
+`@human-kit/ui/calendar`).
 
 ## Styling
 

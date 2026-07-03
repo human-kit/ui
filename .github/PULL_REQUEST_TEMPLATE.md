@@ -12,9 +12,9 @@
 
 ## Checklist
 
-- [ ] I added a changeset (`bunx changeset`) for changes to `packages/svelte/src/**`
-- [ ] `bun run lint` passes
-- [ ] `bun run typecheck` passes
-- [ ] `bun run test` passes
+- [ ] I added a changeset (`pnpm exec changeset`) for changes to `packages/svelte/src/**`
+- [ ] `pnpm run lint` passes
+- [ ] `pnpm run typecheck` passes
+- [ ] `pnpm run test` passes
 - [ ] I added or updated tests where relevant
 - [ ] I updated documentation where relevant

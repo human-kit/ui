@@ -1,5 +1,5 @@
 import type { Component } from 'svelte';
-import type { CellContext, CellProps, Row, RowData } from '@human-kit/svelte-components/table';
+import type { CellContext, CellProps, Row, RowData } from '@human-kit/ui/table';
 
 import type { ColumnDefValue, ResolvedColumn } from './types';
 

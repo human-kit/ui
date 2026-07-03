@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Input } from '@human-kit/svelte-components';
+	import { Input } from '@human-kit/ui';
 	import { DemoCheckbox, DemoInput, DemoSection, DemoSelect, DemoState } from '$lib/demo';
 
 	type InputType = 'text' | 'email' | 'search' | 'password' | 'url';

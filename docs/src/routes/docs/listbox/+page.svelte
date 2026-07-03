@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 	import { DemoSection, DemoSelect, DemoState } from '$lib/demo';
-	import { ListBox } from '@human-kit/svelte-components';
+	import { ListBox } from '@human-kit/ui';
 
 	const fruits = [
 		{ id: 'apple', name: 'ðŸŽ Apple' },

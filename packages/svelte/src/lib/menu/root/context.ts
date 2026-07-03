@@ -2,12 +2,7 @@ import { setContext, getContext } from 'svelte';
 import type { KeyboardNavigationReturn } from '../../primitives/keyboard-navigation';
 
 export type MenuCanonicalCloseReason =
-	| 'escape-key'
-	| 'outside-press'
-	| 'focus-out'
-	| 'item-select'
-	| 'imperative-action'
-	| 'none';
+	'escape-key' | 'outside-press' | 'focus-out' | 'item-select' | 'imperative-action' | 'none';
 
 export type MenuCloseReason = MenuCanonicalCloseReason;
 

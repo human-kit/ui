@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
-	import { Collapsible } from '@human-kit/svelte-components/collapsible';
+	import { Collapsible } from '@human-kit/ui/collapsible';
 
 	let open = $state(false);
 	let isDisabled = $state(false);

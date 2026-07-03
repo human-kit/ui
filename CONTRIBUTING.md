@@ -1,25 +1,28 @@
 # Contributing
 
-Thanks for your interest in improving `@human-kit/svelte-components`. This guide
+Thanks for your interest in improving `@human-kit/ui`. This guide
 covers how to get set up and the workflow we use for changes.
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) 1.x (primary package manager and task runner)
+- [pnpm](https://pnpm.io) 9+ (package manager and task runner)
 - Node.js 20+
+
+> The repo pins pnpm via the `packageManager` field, so `corepack enable` will
+> use the exact version automatically.
 
 ## Getting started
 
 ```bash
 git clone https://github.com/Agustin-Delgado/svelte-components.git
 cd svelte-components
-bun install
-bun run dev        # start the docs/demo app
+pnpm install
+pnpm run dev        # start the docs/demo app
 ```
 
 ## Repository layout
 
-- `packages/svelte/` — the publishable library (`@human-kit/svelte-components`).
+- `packages/svelte/` — the publishable library (`@human-kit/ui`).
 - `docs/` — documentation site and interactive playground.
 - `.changeset/` — versioning and release notes.
 - `scripts/` — repo automation (PR workflow, changeset helpers, TODO linting).
@@ -32,16 +35,16 @@ bun run dev        # start the docs/demo app
 3. Run the checks locally before pushing:
 
    ```bash
-   bun run lint        # prettier + eslint + TODO format
-   bun run typecheck   # svelte-check for library and docs
-   bun run test        # vitest (unit + browser)
-   bun run build       # package the library
+   pnpm run lint        # prettier + eslint + TODO format
+   pnpm run typecheck   # svelte-check for library and docs
+   pnpm run test        # vitest (unit + browser)
+   pnpm run build       # package the library
    ```
 
 4. Add a changeset describing your change (see below).
 5. Open a pull request against `main`.
 
-You can also run `bun run pr`, which formats, validates, creates/updates a
+You can also run `pnpm run pr`, which formats, validates, creates/updates a
 changeset, commits, pushes, and opens/updates the PR for you.
 
 ## Changesets
@@ -49,7 +52,7 @@ changeset, commits, pushes, and opens/updates the PR for you.
 Any change to `packages/svelte/src/**` requires a changeset — CI enforces this.
 
 ```bash
-bunx changeset
+pnpm exec changeset
 ```
 
 Pick the bump type (patch / minor / major) and write a short, user-facing

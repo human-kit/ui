@@ -1,7 +1,7 @@
 ﻿<script lang="ts">
-	import { Popover } from '@human-kit/svelte-components/popover';
+	import { Popover } from '@human-kit/ui/popover';
 	import { DemoSection, DemoCheckbox, DemoSelect, DemoInput, DemoState } from '$lib/demo';
-	import type { ExtendedPlacement } from '@human-kit/svelte-components/primitives';
+	import type { ExtendedPlacement } from '@human-kit/ui/primitives';
 
 	// Interactive playground state
 	let placement: ExtendedPlacement = $state('bottom');

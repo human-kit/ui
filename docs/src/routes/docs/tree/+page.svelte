@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DemoSection, DemoSelect, DemoState } from '$lib/demo';
-	import { Tree } from '@human-kit/svelte-components';
+	import { Tree } from '@human-kit/ui';
 
 	type TreeNode = {
 		id: string;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Switch } from '@human-kit/svelte-components';
+	import { Switch } from '@human-kit/ui';
 	import { DemoCheckbox, DemoSection, DemoState } from '$lib/demo';
 
 	let playgroundChecked = $state(false);

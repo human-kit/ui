@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
-	import { Popover } from '@human-kit/svelte-components/popover';
-	import { Table } from '@human-kit/svelte-components/table';
+	import { Popover } from '@human-kit/ui/popover';
+	import { Table } from '@human-kit/ui/table';
 	import type {
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode,
 		TableSortDescriptor,
 		TableSortTriggerRenderState
-	} from '@human-kit/svelte-components/table';
+	} from '@human-kit/ui/table';
 	import {
 		disabledUserIds,
 		tableSelectionCheckboxClass,

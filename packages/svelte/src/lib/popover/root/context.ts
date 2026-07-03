@@ -1,12 +1,7 @@
 import { setContext, getContext } from 'svelte';
 
 export type PopoverCanonicalCloseReason =
-	| 'escape-key'
-	| 'outside-press'
-	| 'focus-out'
-	| 'close-press'
-	| 'imperative-action'
-	| 'none';
+	'escape-key' | 'outside-press' | 'focus-out' | 'close-press' | 'imperative-action' | 'none';
 
 export type PopoverCloseReason = PopoverCanonicalCloseReason;
 

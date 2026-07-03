@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TextArea } from '@human-kit/svelte-components';
+	import { TextArea } from '@human-kit/ui';
 	import { DemoCheckbox, DemoInput, DemoSection, DemoState } from '$lib/demo';
 
 	const demoTextAreaClass =

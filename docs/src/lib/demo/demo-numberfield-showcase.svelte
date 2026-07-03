@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '@human-kit/svelte-components';
-	import { NumberField } from '@human-kit/svelte-components/numberfield';
+	import { LocaleProvider } from '@human-kit/ui';
+	import { NumberField } from '@human-kit/ui/numberfield';
 	import { DemoCheckbox, DemoInput, DemoSection, DemoState } from '$lib/demo';
 
 	const rootClass = 'group space-y-2';

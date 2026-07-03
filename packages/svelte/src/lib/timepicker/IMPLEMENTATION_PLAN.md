@@ -31,7 +31,7 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 
 **Validation**
 
-- `bun run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
 
 ### 1b) Publish `null` when all segments are cleared
 
@@ -50,7 +50,7 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 
 **Validation**
 
-- `bun run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
 
 ### 2) Event forwarding consistency
 
@@ -64,7 +64,7 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 
 - User handlers accidentally suppress internal logic.
 
-- `bun run test -- --run src/lib/timepicker/input/time-picker-input.test.ts src/lib/timepicker/trigger/time-picker-trigger.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/input/time-picker-input.test.ts src/lib/timepicker/trigger/time-picker-trigger.test.ts`
 
 - Add safety restoration to current draft value when drift is detected.
 
@@ -76,7 +76,7 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 - IME/paste edge cases and cross-browser input events.
   **Validation**
 
-- `bun run test -- --run src/lib/timepicker/segment/time-picker-segment.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/segment/time-picker-segment.test.ts`
 
 **Files**
 
@@ -101,7 +101,7 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 - Async timing loops (`scroll`, `scrollend`, debounce). The silent flag must be cleared reliably (on `scrollend` or animation completion).
   **Validation**
 
-- `bun run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/clock/panel/clock-panel.test.ts`
+- `pnpm run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/clock/panel/clock-panel.test.ts`
 
 ### 6) ResizeObserver loop mitigation
 
@@ -113,7 +113,7 @@ Implement all open items from `TODO.md` in one delivery, prioritizing correctnes
 **Validation**
 
 - Re-run wheel and root tests:
-- `bun run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/timepicker/root/time-picker-root.test.ts`
+- `pnpm run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/timepicker/root/time-picker-root.test.ts`
 
 ## Phase 3 — Accessibility and API surface
 
@@ -232,19 +232,19 @@ This order minimizes risk: behavior correctness first, wheel timing second, API/
 
 ### Targeted runs after each phase
 
-- `bun run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
-- `bun run test -- --run src/lib/timepicker/input/time-picker-input.test.ts src/lib/timepicker/trigger/time-picker-trigger.test.ts`
-- `bun run test -- --run src/lib/timepicker/segment/time-picker-segment.test.ts`
-- `bun run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/clock/panel/clock-panel.test.ts`
-- `bun run test -- --run src/lib/timepicker/root/time-utils.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/root/time-picker-root.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/input/time-picker-input.test.ts src/lib/timepicker/trigger/time-picker-trigger.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/segment/time-picker-segment.test.ts`
+- `pnpm run test -- --run src/lib/clock/wheel-column/clock-wheel-column.test.ts src/lib/clock/panel/clock-panel.test.ts`
+- `pnpm run test -- --run src/lib/timepicker/root/time-utils.test.ts`
 
 ### Final gate
 
-- `bun run typecheck`
-- `bun run test -- --run`
-- `bun run lint`
-- `bun run build`
-- `bunx changeset` — generate changeset file (CI requires it for `packages/svelte/src/**` changes)
+- `pnpm run typecheck`
+- `pnpm run test -- --run`
+- `pnpm run lint`
+- `pnpm run build`
+- `pnpm exec changeset` — generate changeset file (CI requires it for `packages/svelte/src/**` changes)
 
 ## Notes
 

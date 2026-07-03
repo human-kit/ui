@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': patch
+'@human-kit/ui': patch
 ---
 
 Update `Table.ColumnResizer` keyboard interaction to use an explicit Enter-to-resize mode.

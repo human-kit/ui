@@ -2,12 +2,7 @@ import type { DatePickerDateValue } from './date-utils';
 import { getCandidateValueFromDraft, type DatePickerSegmentDraft } from './segment-state';
 
 export type DatePickerDraftStatus =
-	| 'empty'
-	| 'incomplete'
-	| 'invalid'
-	| 'out-of-range'
-	| 'unavailable'
-	| 'valid';
+	'empty' | 'incomplete' | 'invalid' | 'out-of-range' | 'unavailable' | 'valid';
 
 export type DatePickerDraftEvaluation = {
 	status: DatePickerDraftStatus;

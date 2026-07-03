@@ -59,9 +59,9 @@ Fill this out for PRs that modify interaction, keyboard navigation, overlays, or
 ## 6) Suggested Commands
 
 - Focused (example):
-  - `bun run test -- --run src/lib/datepicker src/lib/popover src/lib/listbox src/lib/combobox src/lib/dialog src/lib/calendar`
+  - `pnpm run test -- --run src/lib/datepicker src/lib/popover src/lib/listbox src/lib/combobox src/lib/dialog src/lib/calendar`
 - Full:
-  - `bun run test -- --run`
+  - `pnpm run test -- --run`
 
 ## 7) Final Decision
 

@@ -24,4 +24,4 @@ if (existsSync(preConfigUrl)) {
 	console.log('Stable mode: publishing under npm dist-tag "latest".');
 }
 
-execSync(`bunx changeset ${publishArgs}`, { stdio: 'inherit' });
+execSync(`pnpm exec changeset ${publishArgs}`, { stdio: 'inherit' });

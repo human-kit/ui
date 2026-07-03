@@ -1,4 +1,4 @@
-import type { TableColumnProps } from '@human-kit/svelte-components/table';
+import type { TableColumnProps } from '@human-kit/ui/table';
 import type { Component, Snippet } from 'svelte';
 
 export type ColumnDefAlignment = 'left' | 'center' | 'right';

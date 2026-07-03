@@ -1,7 +1,7 @@
 ﻿<script lang="ts">
 	import { DemoCheckbox, DemoSection, DemoState } from '$lib/demo';
-	import { ComboBox } from '@human-kit/svelte-components/combobox';
-	import { Dialog } from '@human-kit/svelte-components/dialog';
+	import { ComboBox } from '@human-kit/ui/combobox';
+	import { Dialog } from '@human-kit/ui/dialog';
 
 	// Interactive playground state
 	let shouldCloseOnEscape = $state(true);

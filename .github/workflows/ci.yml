@@ -15,18 +15,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: bun-${{ runner.os }}-
+          node-version: 20
+          cache: pnpm
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      - run: bun run lint
+      - run: pnpm run lint
 
   typecheck:
     name: Typecheck
@@ -34,18 +32,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: bun-${{ runner.os }}-
+          node-version: 20
+          cache: pnpm
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      - run: bun run typecheck
+      - run: pnpm run typecheck
 
   test:
     name: Test
@@ -53,16 +49,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: bun-${{ runner.os }}-
+          node-version: 20
+          cache: pnpm
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -73,13 +67,13 @@ jobs:
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: cd packages/svelte && bunx playwright install chromium --with-deps
+        run: cd packages/svelte && pnpm exec playwright install chromium --with-deps
 
       - name: Install Playwright deps (cached)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: cd packages/svelte && bunx playwright install-deps chromium
+        run: cd packages/svelte && pnpm exec playwright install-deps chromium
 
-      - run: bun run test -- --run
+      - run: pnpm run test -- --run
 
   build:
     name: Build
@@ -87,18 +81,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: bun-${{ runner.os }}-
+          node-version: 20
+          cache: pnpm
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      - run: bun run build
+      - run: pnpm run build
 
   changeset-check:
     name: Changeset Check
@@ -121,7 +113,7 @@ jobs:
           CHANGESETS=$(find .changeset -name '*.md' ! -name 'README.md' 2>/dev/null || true)
           if [ -z "$CHANGESETS" ]; then
             echo "::error::This PR changes library source code but is missing a changeset."
-            echo "Run 'bunx changeset' to add one describing your changes."
+            echo "Run 'pnpm exec changeset' to add one describing your changes."
             exit 1
           fi
 

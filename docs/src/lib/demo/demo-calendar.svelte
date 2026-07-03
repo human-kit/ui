@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Calendar, LocaleProvider } from '@human-kit/svelte-components';
-	import type { CalendarSelectionMode } from '@human-kit/svelte-components';
+	import { Calendar, LocaleProvider } from '@human-kit/ui';
+	import type { CalendarSelectionMode } from '@human-kit/ui';
 	import DemoSection from './demo-section.svelte';
 	import DemoInput from './demo-input.svelte';
 	import DemoSelect from './demo-select.svelte';

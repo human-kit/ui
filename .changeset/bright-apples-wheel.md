@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': minor
+'@human-kit/ui': minor
 ---
 
 Refactor TimePicker panel to Apple-like wheel architecture.

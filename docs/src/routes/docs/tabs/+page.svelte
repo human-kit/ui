@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { DemoSection, DemoSelect, DemoState } from '$lib/demo';
-	import { Tabs } from '@human-kit/svelte-components/tabs';
-	import type {
-		TabsKeyboardActivation,
-		TabsOrientation,
-		TabsValue
-	} from '@human-kit/svelte-components/tabs';
+	import { Tabs } from '@human-kit/ui/tabs';
+	import type { TabsKeyboardActivation, TabsOrientation, TabsValue } from '@human-kit/ui/tabs';
 
 	type ProjectTab = {
 		value: TabsValue;

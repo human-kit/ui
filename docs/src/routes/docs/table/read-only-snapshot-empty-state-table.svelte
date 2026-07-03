@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DemoSection } from '$lib/demo';
-	import { Table } from '@human-kit/svelte-components/table';
+	import { Table } from '@human-kit/ui/table';
 	import { financeSnapshot } from './table-demo-data';
 </script>
 

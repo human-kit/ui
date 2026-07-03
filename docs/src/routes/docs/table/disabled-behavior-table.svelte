@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
-	import { Table } from '@human-kit/svelte-components/table';
-	import type {
-		TableDisabledBehavior,
-		TableSelectionKey
-	} from '@human-kit/svelte-components/table';
+	import { Table } from '@human-kit/ui/table';
+	import type { TableDisabledBehavior, TableSelectionKey } from '@human-kit/ui/table';
 	import {
 		tableSelectionCheckboxClass,
 		tableSelectionIndicatorClass,

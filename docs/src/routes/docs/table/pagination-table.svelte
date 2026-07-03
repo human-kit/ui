@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DemoSection, DemoState } from '$lib/demo';
-	import { Table } from '@human-kit/svelte-components/table';
+	import { Table } from '@human-kit/ui/table';
 	import { invoiceRows } from './table-demo-data';
 
 	let invoicePage = $state(1);

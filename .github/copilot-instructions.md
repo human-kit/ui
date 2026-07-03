@@ -2,19 +2,19 @@
 
 ## Project Map
 
-- This is a Bun monorepo: publishable library in `packages/svelte`, docs/playground app in `docs`.
+- This is a pnpm monorepo: publishable library in `packages/svelte`, docs/playground app in `docs`.
 - Main public entrypoint is `packages/svelte/src/lib/index.ts`; each component also has subpath exports (see `packages/svelte/package.json` `exports`).
-- Docs intentionally import source, not built dist: `docs/vite.config.ts` aliases `@human-kit/svelte-components` to `../packages/svelte/src/lib`.
+- Docs intentionally import source, not built dist: `docs/vite.config.ts` aliases `@human-kit/ui` to `../packages/svelte/src/lib`.
 
 ## Core Dev Workflows
 
-- Install dependencies: `bun install`.
-- Run docs playground: `bun run dev` (root script filters to `docs`).
-- Package library (sync + package + publint): `bun run build`.
-- Run library tests: `bun run test -- --run`.
-- Run type checks: `bun run typecheck`.
-- Run formatting/lint checks: `bun run format`, `bun run lint`.
-- Browser tests use Playwright Chromium (`packages/svelte/vitest.config.ts`); if missing locally run `cd packages/svelte && bunx playwright install chromium`.
+- Install dependencies: `pnpm install`.
+- Run docs playground: `pnpm run dev` (root script filters to `docs`).
+- Package library (sync + package + publint): `pnpm run build`.
+- Run library tests: `pnpm run test -- --run`.
+- Run type checks: `pnpm run typecheck`.
+- Run formatting/lint checks: `pnpm run format`, `pnpm run lint`.
+- Browser tests use Playwright Chromium (`packages/svelte/vitest.config.ts`); if missing locally run `cd packages/svelte && pnpm exec playwright install chromium`.
 
 ## Component Architecture Patterns
 

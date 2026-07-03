@@ -679,16 +679,20 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 			if (selected) {
 				nextSelection.clear();
 				nextSelection.add(id);
-			} else if (
-				!(currentDisallowEmptySelection && nextSelection.has(id) && nextSelection.size === 1)
-			) {
+			} else if (!(
+				currentDisallowEmptySelection &&
+				nextSelection.has(id) &&
+				nextSelection.size === 1
+			)) {
 				nextSelection.delete(id);
 			}
 		} else if (selected) {
 			nextSelection.add(id);
-		} else if (
-			!(currentDisallowEmptySelection && nextSelection.has(id) && nextSelection.size === 1)
-		) {
+		} else if (!(
+			currentDisallowEmptySelection &&
+			nextSelection.has(id) &&
+			nextSelection.size === 1
+		)) {
 			if (currentSelectionPropagation === 'descendants') {
 				applyDescendantDeselection(nextSelection, id);
 			} else {

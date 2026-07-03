@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': minor
+'@human-kit/ui': minor
 ---
 
 Add new ComboBox trigger and clear parts, plus pending and scroll improvements.

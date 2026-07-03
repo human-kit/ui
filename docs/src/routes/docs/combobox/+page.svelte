@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 	import { DemoInput, DemoSection, DemoSelect, DemoState } from '$lib/demo';
-	import { ComboBox } from '@human-kit/svelte-components';
+	import { ComboBox } from '@human-kit/ui';
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },

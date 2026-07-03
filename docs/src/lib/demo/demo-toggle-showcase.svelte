@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toggle } from '@human-kit/svelte-components/toggle';
+	import { Toggle } from '@human-kit/ui/toggle';
 	import { DemoCheckbox, DemoSection, DemoState } from '$lib/demo';
 
 	let playgroundSelected = $state(false);

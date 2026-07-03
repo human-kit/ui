@@ -103,8 +103,7 @@ export type TableBodyItemsProps<T extends TableRowItem = TableRowItem> = TableBo
 };
 
 export type TableBodyProps<T extends TableRowItem = TableRowItem> =
-	| TableBodyManualProps
-	| TableBodyItemsProps<T>;
+	TableBodyManualProps | TableBodyItemsProps<T>;
 
 export type TableFooterProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
 	children?: Snippet;

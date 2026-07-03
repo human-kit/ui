@@ -2,14 +2,14 @@
 	lang="ts"
 	generics="T extends Record<string, unknown> & { id: string | number } = Record<string, unknown> & { id: string | number }"
 >
-	import { Table } from '@human-kit/svelte-components/table';
+	import { Table } from '@human-kit/ui/table';
 	import type { Snippet } from 'svelte';
 	import type {
 		TableBodyVirtualizer,
 		TableRootProps,
 		TableSelectionMode,
 		TableSortDescriptor
-	} from '@human-kit/svelte-components/table';
+	} from '@human-kit/ui/table';
 	import TableColumnBridge from './column.svelte';
 	import type {
 		CellRenderContext,

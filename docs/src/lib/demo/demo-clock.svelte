@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Clock, LocaleProvider } from '@human-kit/svelte-components';
-	import type { ClockGranularity, ClockHourCycle } from '@human-kit/svelte-components';
+	import { Clock, LocaleProvider } from '@human-kit/ui';
+	import type { ClockGranularity, ClockHourCycle } from '@human-kit/ui';
 	import DemoSection from './demo-section.svelte';
 	import DemoSelect from './demo-select.svelte';
 	import DemoCheckbox from './demo-checkbox.svelte';

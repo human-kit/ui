@@ -9,7 +9,7 @@
 	import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
 	import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
-	import { Button, type ButtonRenderState } from '@human-kit/svelte-components';
+	import { Button, type ButtonRenderState } from '@human-kit/ui';
 	import { DemoCheckbox, DemoInput, DemoSection, DemoSelect, DemoState } from '$lib/demo';
 
 	type ButtonVariant = 'primary' | 'secondary' | 'quiet' | 'danger' | 'success';

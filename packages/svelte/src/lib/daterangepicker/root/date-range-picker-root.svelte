@@ -270,8 +270,7 @@
 	function setOpen(
 		nextOpen: boolean,
 		details?:
-			| DateRangePickerOpenChangeDetails
-			| { reason?: DateRangePickerOpenChangeReason; event?: Event }
+			DateRangePickerOpenChangeDetails | { reason?: DateRangePickerOpenChangeReason; event?: Event }
 	) {
 		if (openInternal === nextOpen) return;
 		const eventDetails = resolveDatePickerOpenChangeDetails(details);

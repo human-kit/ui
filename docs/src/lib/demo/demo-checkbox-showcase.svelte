@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
-	import { Checkbox } from '@human-kit/svelte-components';
+	import { Checkbox } from '@human-kit/ui';
 	import { DemoCheckbox, DemoSection, DemoState } from '$lib/demo';
 
 	type CheckboxVisualState = 'unchecked' | 'checked' | 'indeterminate';

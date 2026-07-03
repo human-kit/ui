@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a problem with @human-kit/svelte-components
+description: Report a problem with @human-kit/ui
 labels: [bug]
 body:
   - type: markdown
@@ -9,7 +9,7 @@ body:
     id: version
     attributes:
       label: Package version
-      description: Which version of @human-kit/svelte-components are you using?
+      description: Which version of @human-kit/ui are you using?
       placeholder: e.g. 1.0.0
     validations:
       required: true

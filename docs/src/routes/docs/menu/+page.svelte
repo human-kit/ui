@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu } from '@human-kit/svelte-components/menu';
+	import { Menu } from '@human-kit/ui/menu';
 	import { DemoSection, DemoCheckbox, DemoState } from '$lib/demo';
 
 	// Interactive playground state

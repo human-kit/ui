@@ -5,7 +5,7 @@
 	import RowCostProbe from '$lib/repros/purchase-requests/row-cost-probe.svelte';
 	import StaticReproTable from '$lib/repros/purchase-requests/static-table.svelte';
 	import type { StaticResolvedColumn } from '$lib/repros/purchase-requests/static-types';
-	import type { TableSortDescriptor } from '@human-kit/svelte-components/table';
+	import type { TableSortDescriptor } from '@human-kit/ui/table';
 	import { tick } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 

@@ -19,22 +19,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: bun-${{ runner.os }}-
+          node-version: 20
+          cache: pnpm
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:
-          version: bunx changeset version
-          publish: bun run release
+          version: pnpm exec changeset version
+          publish: pnpm run release
           title: 'chore: version packages'
           commit: 'chore: version packages'
         env:

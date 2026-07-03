@@ -27,6 +27,8 @@ tmp-*
 test-out.log
 vitest-*.json
 
-# Stray package-manager files (this repo uses Bun)
-pnpm-lock.yaml
-pnpm-workspace.yaml
+# Stray package-manager files (this repo uses pnpm)
+bun.lock
+bun.lockb
+package-lock.json
+yarn.lock

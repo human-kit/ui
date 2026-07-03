@@ -5,7 +5,7 @@ This repository contains the publishable library and the docs/demo app.
 
 ## Quick Overview
 
-- npm library: `@human-kit/svelte-components` (in `packages/svelte`).
+- npm library: `@human-kit/ui` (in `packages/svelte`).
 - Docs/demo app: `docs` (SvelteKit + Vite).
 - Versioning and releases: `.changeset`.
 - PR automation: `scripts/pr.sh`.
@@ -15,12 +15,13 @@ This repository contains the publishable library and the docs/demo app.
 ```text
 .
 |- packages/
-|  |- svelte/          # publishable package @human-kit/svelte-components
+|  |- svelte/          # publishable package @human-kit/ui
 |- docs/               # documentation site and playground
 |- .changeset/         # semantic versioning and release notes
 |- scripts/            # utility scripts (e.g. PR workflow)
 |- package.json        # monorepo orchestration
-|- bun.lock            # Bun lockfile
+|- pnpm-workspace.yaml # pnpm workspace definition
+|- pnpm-lock.yaml      # pnpm lockfile
 ```
 
 ## Components Exported by the Library
@@ -40,14 +41,14 @@ This repository contains the publishable library and the docs/demo app.
 ## Package Installation (Consumers)
 
 ```bash
-npm install @human-kit/svelte-components
+npm install @human-kit/ui
 ```
 
 Quick usage:
 
 ```svelte
 <script lang="ts">
-	import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
+	import { ComboBox, Dialog, Input, Label } from '@human-kit/ui';
 </script>
 ```
 
@@ -55,44 +56,46 @@ Quick usage:
 
 Recommended requirements:
 
-- Bun 1.x
+- pnpm 9+
 - Node.js 20+
 
 Install and basic commands:
 
 ```bash
-bun install
-bun run dev
+pnpm install
+pnpm run dev
 ```
 
 ## Root `package.json` Explained
 
 ### Main Fields
 
-| Field        | What it does                                              |
-| ------------ | --------------------------------------------------------- |
-| `name`       | Internal monorepo name (`@human-kit/monorepo`).           |
-| `private`    | Prevents accidentally publishing the root package to npm. |
-| `type`       | Uses ESM (`"module"`) for JS scripts/config.              |
-| `workspaces` | Defines workspaces: `packages/*` and `docs`.              |
+| Field            | What it does                                              |
+| ---------------- | --------------------------------------------------------- |
+| `name`           | Internal monorepo name (`@human-kit/monorepo`).           |
+| `private`        | Prevents accidentally publishing the root package to npm. |
+| `type`           | Uses ESM (`"module"`) for JS scripts/config.              |
+| `packageManager` | Pins the pnpm version used across the repo and CI.        |
+
+Workspaces are defined in `pnpm-workspace.yaml` (`packages/*` and `docs`).
 
 ### Scripts (What Each One Does)
 
-| Script        | What it does                                                |
-| ------------- | ----------------------------------------------------------- |
-| `dev`         | Starts the `docs` development environment using Bun filter. |
-| `build`       | Packages the `@human-kit/svelte-components` library.        |
-| `build:docs`  | Builds the `docs` site for production.                      |
-| `test`        | Runs library tests (`packages/svelte`).                     |
-| `typecheck`   | Runs type checking for library and docs.                    |
-| `check`       | Runs `check` in all workspaces (`--filter '*'`).            |
-| `format`      | Formats the whole repo with Prettier.                       |
-| `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                |
-| `lint:md:fix` | Attempts to auto-fix Markdown issues.                       |
-| `todo:check`  | Validates required TODO checklist metadata format.          |
-| `lint`        | Validates formatting, ESLint, and TODO metadata format.     |
-| `release`     | Builds and publishes with Changesets (`changeset publish`). |
-| `pr`          | Runs `scripts/pr.sh` for automated PR workflow.             |
+| Script        | What it does                                                   |
+| ------------- | -------------------------------------------------------------- |
+| `dev`         | Starts the `docs` development environment using a pnpm filter. |
+| `build`       | Packages the `@human-kit/ui` library.                          |
+| `build:docs`  | Builds the `docs` site for production.                         |
+| `test`        | Runs library tests (`packages/svelte`).                        |
+| `typecheck`   | Runs type checking for library and docs.                       |
+| `check`       | Runs `check` in all workspaces (`pnpm -r`).                    |
+| `format`      | Formats the whole repo with Prettier.                          |
+| `lint:md`     | Runs Markdown lint with `markdownlint-cli2`.                   |
+| `lint:md:fix` | Attempts to auto-fix Markdown issues.                          |
+| `todo:check`  | Validates required TODO checklist metadata format.             |
+| `lint`        | Validates formatting, ESLint, and TODO metadata format.        |
+| `release`     | Builds and publishes with Changesets (`changeset publish`).    |
+| `pr`          | Runs `scripts/pr.sh` for automated PR workflow.                |
 
 ### Root Dev Dependencies (Purpose)
 
@@ -137,7 +140,7 @@ bun run dev
 
 ## Release Workflow
 
-1. Work on a feature branch and run `bun run pr`.
+1. Work on a feature branch and run `pnpm run pr`.
    - The script formats, validates, creates/updates changeset, commits, pushes, and opens/updates the PR.
 2. CI validates lint/typecheck/tests/build and enforces changeset presence for `packages/svelte/src/**` changes.
 3. Merge the PR into `main`.
@@ -152,8 +155,8 @@ bun run dev
 - The automation only writes a changeset when missing; maintainers still review/confirm bump type and notes in PR.
 - Provider order: `GEMINI_API_KEY` (preferred) -> `OPENAI_API_KEY` (fallback) -> deterministic non-AI summary.
 - Local helpers:
-  - `bun run changeset:auto:draft` (preview generated markdown)
-  - `bun run changeset:auto:apply` (write generated file if missing)
+  - `pnpm run changeset:auto:draft` (preview generated markdown)
+  - `pnpm run changeset:auto:apply` (write generated file if missing)
 
 ## TODO Standard
 
@@ -175,8 +178,8 @@ Canonical line template:
 
 Validation:
 
-- Run `bun run todo:check` to validate TODO formatting.
-- `bun run lint` includes TODO validation and will fail on format violations.
+- Run `pnpm run todo:check` to validate TODO formatting.
+- `pnpm run lint` includes TODO validation and will fail on format violations.
 
 ## Tech Stack
 

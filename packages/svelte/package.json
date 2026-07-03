@@ -1,7 +1,7 @@
 {
-	"name": "@human-kit/svelte-components",
+	"name": "@human-kit/ui",
 	"version": "1.0.0-alpha.22",
-	"description": "Accessible, reusable UI components for Svelte 5.",
+	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
 	"license": "MIT",
 	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
 	"homepage": "https://github.com/Agustin-Delgado/svelte-components#readme",
@@ -17,14 +17,23 @@
 		"svelte",
 		"svelte5",
 		"components",
+		"component-library",
 		"ui",
+		"ui-kit",
 		"accessible",
 		"a11y",
 		"headless",
 		"design-system",
-		"tailwind"
+		"tailwind",
+		"human-kit"
 	],
 	"type": "module",
+	"engines": {
+		"node": ">=20"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"sideEffects": false,
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -200,7 +209,7 @@
 	],
 	"scripts": {
 		"package": "svelte-kit sync && svelte-package && publint",
-		"prepublishOnly": "bun run package",
+		"prepublishOnly": "pnpm run package",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test": "vitest",

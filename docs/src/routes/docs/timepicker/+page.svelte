@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '@human-kit/svelte-components';
-	import { TimePicker } from '@human-kit/svelte-components/timepicker';
+	import { LocaleProvider } from '@human-kit/ui';
+	import { TimePicker } from '@human-kit/ui/timepicker';
 	import { DemoSection, DemoCheckbox, DemoState } from '$lib/demo';
 
 	let playgroundValue = $state<string | null>(null);

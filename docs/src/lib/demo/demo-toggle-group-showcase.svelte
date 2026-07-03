@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Toggle } from '@human-kit/svelte-components/toggle';
-	import { ToggleGroup } from '@human-kit/svelte-components/toggle-group';
+	import { Toggle } from '@human-kit/ui/toggle';
+	import { ToggleGroup } from '@human-kit/ui/toggle-group';
 	import { DemoCheckbox, DemoSection, DemoSelect, DemoState } from '$lib/demo';
 	import type {
 		ToggleGroupOrientation,
 		ToggleGroupSelectionMode,
 		ToggleGroupValue
-	} from '@human-kit/svelte-components/toggle-group';
+	} from '@human-kit/ui/toggle-group';
 
 	let playgroundValue = $state<ToggleGroupValue[]>(['bold']);
 	let playgroundSelectionMode = $state<ToggleGroupSelectionMode>('multiple');

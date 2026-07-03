@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': minor
+'@human-kit/ui': minor
 ---
 
 Add the new Calendar component as a public feature release.

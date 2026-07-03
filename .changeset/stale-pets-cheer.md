@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': minor
+'@human-kit/ui': minor
 ---
 
 Add a new headless Checkbox component with Root and Indicator parts.
