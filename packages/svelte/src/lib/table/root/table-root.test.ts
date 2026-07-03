@@ -179,7 +179,7 @@ describe('Table.Root', () => {
 		emailHeader.focus();
 		await userEvent.keyboard('{ArrowRight}');
 
-		await expect.poll(() => document.activeElement?.textContent?.trim()).toBe('Group');
+		await expect.poll(() => document.activeElement).toBe(groupHeader);
 		expect(groupHeader.getAttribute('data-focused')).toBe('true');
 	});
 
@@ -736,7 +736,7 @@ describe('Table.Root', () => {
 		await expect
 			.poll(
 				() =>
-					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]:not([data-button-live-region])')?.textContent
 			)
 			.toBe('Group sorted ascending.');
 	});
@@ -766,7 +766,7 @@ describe('Table.Root', () => {
 		await expect
 			.poll(
 				() =>
-					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]:not([data-button-live-region])')?.textContent
 			)
 			.toBe('');
 	});
@@ -778,7 +778,7 @@ describe('Table.Root', () => {
 			disabledKeys: ['zahra']
 		});
 
-		const liveRegion = document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]');
+		const liveRegion = document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]:not([data-button-live-region])');
 		const selectionUnavailableDescription = document.getElementById(
 			document
 				.querySelector<HTMLElement>('tbody [aria-describedby]')
@@ -803,7 +803,7 @@ describe('Table.Root', () => {
 		await expect
 			.poll(
 				() =>
-					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]:not([data-button-live-region])')?.textContent
 			)
 			.toBe('Group sorted ascending.');
 
@@ -811,7 +811,7 @@ describe('Table.Root', () => {
 		await expect
 			.poll(
 				() =>
-					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]:not([data-button-live-region])')?.textContent
 			)
 			.toBe('Group sorted descending.');
 	});
@@ -838,7 +838,7 @@ describe('Table.Root', () => {
 		await expect
 			.poll(
 				() =>
-					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]')?.textContent
+					document.querySelector<HTMLElement>('[role="status"][aria-live="polite"]:not([data-button-live-region])')?.textContent
 			)
 			.toBe('Sorting cleared.');
 	});

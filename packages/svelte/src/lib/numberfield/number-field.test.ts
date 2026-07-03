@@ -120,7 +120,7 @@ describe('NumberField', () => {
 		expect(inputElement.getAttribute('data-input-state')).toBe('partial');
 		expect(inputElement.getAttribute('data-invalid')).toBeNull();
 
-		setInputText(inputElement, 'abc');
+		setInputText(inputElement, '1.2.3');
 
 		await expect.poll(getValueOutput).toBe('5');
 		expect(inputElement.getAttribute('aria-valuenow')).toBeNull();
@@ -188,7 +188,7 @@ describe('NumberField', () => {
 			.getByRole('spinbutton', { name: 'Amount' })
 			.element() as HTMLInputElement;
 
-		setInputText(inputElement, 'abc');
+		setInputText(inputElement, '1.2.3');
 		await expect.poll(() => inputElement.validationMessage).toBe('Enter a valid number.');
 		expect(inputElement.checkValidity()).toBe(false);
 
@@ -591,7 +591,7 @@ describe('NumberField', () => {
 			.getByRole('spinbutton', { name: 'Amount' })
 			.element() as HTMLInputElement;
 
-		setInputText(inputElement, 'abc');
+		setInputText(inputElement, '1.2.3');
 		await expect.poll(() => inputElement.checkValidity()).toBe(false);
 		await screen.getByRole('button', { name: 'Submit' }).click();
 

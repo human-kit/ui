@@ -22,7 +22,7 @@ export type CollapseMotionParams = {
  * of popping. A keyed `{#each}` keeps the row mounted for the whole exit transition automatically.
  */
 export function collapseMotion(node: Element, params: CollapseMotionParams = {}): TransitionConfig {
-	const { duration = 1000, delay = 0, easing = cubicOut, axis = 'y' } = params;
+	const { duration = 200, delay = 0, easing = cubicOut, axis = 'y' } = params;
 	const { css: slideCss } = slide(node, { duration, delay, easing, axis });
 
 	return {

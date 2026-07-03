@@ -15,23 +15,39 @@ function getGridCellByDate(date: string) {
 	};
 }
 
+// The interactive element is the inner `[role="button"]` div (it owns the
+// onclick/onmouseenter handlers and the data-selected / data-range-* flags),
+// nested inside the `[role="gridcell"]` td. Interaction and selection-state
+// assertions must target this element, not the td.
+function getDayButton(date: string) {
+	const element = document.querySelector<HTMLElement>(`[role="button"][data-date="${date}"]`);
+	if (!element) {
+		throw new Error(`Day button "${date}" was not rendered.`);
+	}
+
+	return {
+		element: () => element,
+		click: () => element.click()
+	};
+}
+
 describe('Calendar.BodyCell', () => {
 	it('marks defaultValue date as selected', async () => {
 		render(CalendarRootTest, { defaultValue: '2026-02-10' });
 		await expect
 			.poll(() =>
-				document.querySelector('[data-selected] [role="gridcell"][data-date="2026-02-10"]')
+				document.querySelector('[role="button"][data-date="2026-02-10"][data-selected]')
 			)
 			.toBeTruthy();
 	});
 
 	it('updates selected date on click', async () => {
 		render(CalendarRootTest, { defaultValue: '2026-02-10' });
-		const nextDate = getGridCellByDate('2026-02-12');
+		const nextDate = getDayButton('2026-02-12');
 
 		await nextDate.click();
 		const selectedCell = document.querySelector(
-			'[data-selected] [role="gridcell"][data-date="2026-02-12"]'
+			'[role="button"][data-date="2026-02-12"][data-selected]'
 		);
 		expect(selectedCell).toBeTruthy();
 	});
@@ -99,22 +115,22 @@ describe('Calendar.BodyCell', () => {
 			defaultValue: { start: '2026-02-10' }
 		});
 
-		const endCandidate = getGridCellByDate('2026-02-13');
+		const endCandidate = getDayButton('2026-02-13');
 		endCandidate.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-start] [role="gridcell"][data-date="2026-02-10"]')
+				document.querySelector('[role="button"][data-date="2026-02-10"][data-range-start]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-13"]')
+				document.querySelector('[role="button"][data-date="2026-02-13"][data-range-end]')
 			)
 			.toBeTruthy();
 		await expect
 			.poll(() =>
-				document.querySelector('[data-in-range] [role="gridcell"][data-date="2026-02-12"]')
+				document.querySelector('[role="button"][data-date="2026-02-12"][data-in-range]')
 			)
 			.toBeTruthy();
 	});
@@ -126,27 +142,27 @@ describe('Calendar.BodyCell', () => {
 			isDateUnavailable: (date: string) => date === '2026-02-07'
 		});
 
-		const validPreviewCell = getGridCellByDate('2026-02-05');
+		const validPreviewCell = getDayButton('2026-02-05');
 		validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-05"]')
+				document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]')
 			)
 			.toBeTruthy();
 
 		validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
 
-		const unreachableCell = getGridCellByDate('2026-02-08');
+		const unreachableCell = getDayButton('2026-02-08');
 		unreachableCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
 		await expect
 			.poll(() =>
-				document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-05"]')
+				document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]')
 			)
 			.toBeTruthy();
 		expect(
-			document.querySelector('[data-range-end] [role="gridcell"][data-date="2026-02-08"]')
+			document.querySelector('[role="button"][data-date="2026-02-08"][data-range-end]')
 		).toBeFalsy();
 	});
 });

@@ -43,7 +43,7 @@ describe('Dialog presence (exit animation)', () => {
 		await expect.poll(() => node.isConnected).toBe(false);
 	});
 
-	it('marks the exiting content inert and aria-hidden so focus leaves with the close', async () => {
+	it('marks the exiting content inert so focus leaves with the close', async () => {
 		addExitAnimation();
 		const screen = render(DialogTest);
 		await screen.getByRole('button', { name: 'Open Dialog' }).click();
@@ -53,8 +53,10 @@ describe('Dialog presence (exit animation)', () => {
 		(document.querySelector('.close-btn') as HTMLElement).click();
 
 		// While it lingers for the animation it is on its way out: it must not trap focus or stay in
-		// the accessibility tree.
-		await expect.poll(() => node.getAttribute('aria-hidden')).toBe('true');
-		expect(node.hasAttribute('inert')).toBe(true);
+		// the accessibility tree. `inert` covers both — it removes the node from the a11y tree AND
+		// prevents focus — so it is used alone (adding `aria-hidden` on top would trip the browser's
+		// "aria-hidden on a focused element" warning while a descendant still holds focus).
+		await expect.poll(() => node.hasAttribute('inert')).toBe(true);
+		expect(node.getAttribute('data-state')).toBe('closed');
 	});
 });
