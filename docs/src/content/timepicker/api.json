@@ -283,7 +283,106 @@
 		{
 			"name": "Popover",
 			"description": "The floating panel that hosts the clock. Forwards Popover.Content props (placement, offset, shouldFlip, …); open state, trigger wiring, and id are controlled internally. Placement defaults to bottom and initial focus lands on the first wheel column.",
-			"props": [],
+			"props": [
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "Offset along the main axis from the anchor element."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": "'bottom'",
+					"description": "Placement relative to the anchor element."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to flip when there's insufficient space."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "Boundary element for positioning constraints."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the popover."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the popover container."
+				},
+				{
+					"name": "nonModal",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether clicking outside the popover should close it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the popover."
+				},
+				{
+					"name": "shouldCloseOnBlur",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+				},
+				{
+					"name": "initialFocus",
+					"type": "FocusTrapOptions['initialFocus']",
+					"required": false,
+					"default": null,
+					"description": "Element or selector to focus first when modal trap activates."
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state (standalone mode)."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element (standalone mode)."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes (standalone mode)."
+				}
+			],
 			"dataAttributes": []
 		},
 		{

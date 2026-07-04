@@ -323,6 +323,76 @@
 					"required": false,
 					"default": null,
 					"description": "Popover content, typically ComboBox.List."
+				},
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "Offset along the main axis from the anchor element."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": "'bottom-start'",
+					"description": "Placement relative to the anchor element."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to flip when there's insufficient space."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "Boundary element for positioning constraints."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the popover container."
+				},
+				{
+					"name": "nonModal",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether clicking outside the popover should close it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the popover."
+				},
+				{
+					"name": "shouldCloseOnBlur",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+				},
+				{
+					"name": "initialFocus",
+					"type": "FocusTrapOptions['initialFocus']",
+					"required": false,
+					"default": null,
+					"description": "Element or selector to focus first when modal trap activates."
 				}
 			],
 			"dataAttributes": []
@@ -344,6 +414,41 @@
 					"required": false,
 					"default": null,
 					"description": "Content of the listbox. Receives item in dynamic mode."
+				},
+				{
+					"name": "emptyPlaceholder",
+					"type": "string | Snippet",
+					"required": false,
+					"default": "'No items selected'",
+					"description": "Content shown when the list is empty. Can be a string or a Snippet."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Keys of items that should be disabled and non-selectable."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the listbox container."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": "'Options'",
+					"description": "Accessible label for the listbox. Announced by screen readers."
+				},
+				{
+					"name": "disableFocusHandling",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disable DOM focus handling on the root container for virtual-focus compositions."
 				}
 			],
 			"dataAttributes": []
@@ -365,6 +470,62 @@
 					"required": false,
 					"default": "true",
 					"description": "Whether to close the popover after running onAction."
+				},
+				{
+					"name": "id",
+					"type": "string | number",
+					"required": true,
+					"default": null,
+					"description": "Unique identifier for this item. Used for selection tracking."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Text value for typeahead search. If not provided, extracted from content."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether this item is disabled and non-selectable."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the item element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render inside the item."
+				},
+				{
+					"name": "isFocusVisibleOverride",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the focus-visible presentation state."
+				},
+				{
+					"name": "onItemHoverStart",
+					"type": "(id: string | number, label: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when pointer hover should move logical focus to this item."
+				},
+				{
+					"name": "pressed",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the visual pressed state. When provided, this value is used instead of internal press tracking."
 				}
 			],
 			"dataAttributes": []

@@ -80,7 +80,7 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": ""
+					"description": "Id applied to the root element. Auto-generated when omitted."
 				},
 				{
 					"name": "element",

@@ -278,27 +278,6 @@
 					"required": false,
 					"default": null,
 					"description": "The single Table.ColumnHeaderCell this column wraps."
-				},
-				{
-					"name": "class",
-					"type": "string",
-					"required": false,
-					"default": null,
-					"description": ""
-				},
-				{
-					"name": "step",
-					"type": "number",
-					"required": false,
-					"default": null,
-					"description": ""
-				},
-				{
-					"name": "shiftStep",
-					"type": "number",
-					"required": false,
-					"default": null,
-					"description": ""
 				}
 			],
 			"dataAttributes": []
@@ -345,14 +324,14 @@
 					"type": "undefined",
 					"required": false,
 					"default": null,
-					"description": ""
+					"description": "Row data array for items mode; each item renders through the children snippet."
 				},
 				{
 					"name": "virtualizer",
 					"type": "undefined",
 					"required": false,
 					"default": null,
-					"description": ""
+					"description": "Virtualization config for rendering only visible rows in large datasets."
 				},
 				{
 					"name": "children",
@@ -366,7 +345,7 @@
 					"type": "undefined",
 					"required": false,
 					"default": null,
-					"description": ""
+					"description": "Snippet rendered when items is empty."
 				}
 			],
 			"dataAttributes": [
@@ -719,13 +698,6 @@
 					"required": false,
 					"default": null,
 					"description": "Id of the element that labels the checkbox."
-				},
-				{
-					"name": "forceMount",
-					"type": "boolean",
-					"required": false,
-					"default": null,
-					"description": ""
 				}
 			],
 			"dataAttributes": [
@@ -799,7 +771,22 @@
 		{
 			"name": "Cell",
 			"description": "A body or footer cell participating in grid keyboard navigation. First-column body cells render as rowheader when their column has rowHeader.",
-			"props": [],
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
 			"dataAttributes": [
 				{
 					"name": "data-actionable",
@@ -842,7 +829,22 @@
 		{
 			"name": "InteractiveCell",
 			"description": "A body cell for content with its own focusable controls. The cell keeps grid keyboard navigation while focus is on it; focused descendants own their interactions.",
-			"props": [],
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
 			"dataAttributes": [
 				{
 					"name": "data-actionable",

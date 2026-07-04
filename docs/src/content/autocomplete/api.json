@@ -170,6 +170,62 @@
 					"required": false,
 					"default": null,
 					"description": "Content of the list. Receives item in dynamic mode."
+				},
+				{
+					"name": "selectionBehavior",
+					"type": "'toggle' | 'replace'",
+					"required": false,
+					"default": "'toggle'",
+					"description": "How selection behaves: 'toggle' allows deselection, 'replace' always selects."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Keys of items that should be disabled and non-selectable."
+				},
+				{
+					"name": "selectionMode",
+					"type": "'single' | 'multiple'",
+					"required": false,
+					"default": "'single'",
+					"description": "Selection mode: 'single' allows one selection, 'multiple' allows many."
+				},
+				{
+					"name": "value",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Controlled value. When provided, the component is in controlled mode."
+				},
+				{
+					"name": "defaultValue",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Initial selection for uncontrolled mode."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the listbox container."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": "'Options'",
+					"description": "Accessible label for the listbox. Announced by screen readers."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: Set<string | number>) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback fired when the selection changes."
 				}
 			],
 			"dataAttributes": []
@@ -177,7 +233,50 @@
 		{
 			"name": "Item",
 			"description": "A selectable option inside the list. Matched against the query through its textValue and exposes selection and focus state through data attributes.",
-			"props": [],
+			"props": [
+				{
+					"name": "id",
+					"type": "string | number",
+					"required": true,
+					"default": null,
+					"description": "Unique identifier for this item. Used for selection tracking."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Text value for typeahead search. If not provided, extracted from content."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether this item is disabled and non-selectable."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the item element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render inside the item."
+				},
+				{
+					"name": "pressed",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the visual pressed state. When provided, this value is used instead of internal press tracking."
+				}
+			],
 			"dataAttributes": []
 		},
 		{

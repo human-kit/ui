@@ -72,30 +72,132 @@ function getScriptBody(svelteSource) {
  * variant declarations extending it (e.g. CalendarRootSingleProps /
  * CalendarRootRangeProps on top of CalendarRootProps), deduped by name.
  */
-function collectPropsMembers(sourceFile, partName) {
+function collectPropsDeclarations(sourceFile, partName, componentPascal, otherPartTypeNames) {
 	const candidates = [...sourceFile.getTypeAliases(), ...sourceFile.getInterfaces()].filter(
 		(decl) => decl.getName().endsWith('Props')
 	);
 	if (candidates.length === 0) return undefined;
-	// Prefer the declaration matching the part (e.g. AccordionRootProps for Root).
-	const base = candidates.find((d) => d.getName().endsWith(`${partName}Props`)) ?? candidates[0];
+	// Prefer the exact `<Component><Part>Props` name (TableCellProps over the
+	// unrelated CellProps), then any declaration matching the part suffix.
+	const base =
+		(componentPascal &&
+			candidates.find((d) => d.getName() === `${componentPascal}${partName}Props`)) ||
+		candidates.find((d) => d.getName().endsWith(`${partName}Props`)) ||
+		candidates[0];
 	const baseName = base.getName().slice(0, -'Props'.length);
-	const variants = candidates.filter((d) => d !== base && d.getName().startsWith(baseName));
-	return [base, ...variants].flatMap((decl) => getPropsMembers(decl));
+	// Variant declarations (TableBodyItemsProps on top of TableBodyProps), but
+	// never another part's own type (TableColumnResizerProps is ColumnResizer's,
+	// not a Column variant).
+	const variants = candidates.filter(
+		(d) => d !== base && d.getName().startsWith(baseName) && !otherPartTypeNames?.has(d.getName())
+	);
+	return [base, ...variants];
+}
+
+/**
+ * Find wrapped-component references in the props declarations:
+ * `ComponentProps<typeof X>` (optionally inside `Omit<..., 'a' | 'b'>`),
+ * where X is `SomeImport` or `Namespace.Part`. Returns
+ * `[{ expr, excluded: Set<string> }]` for each reference found.
+ */
+function findWrappedRefs(declarations) {
+	const refs = [];
+
+	function visit(typeNode, excluded) {
+		if (!typeNode) return;
+		if (Node.isIntersectionTypeNode(typeNode)) {
+			for (const node of typeNode.getTypeNodes()) visit(node, excluded);
+			return;
+		}
+		if (!Node.isTypeReference(typeNode)) return;
+		const name = typeNode.getTypeName().getText();
+		const args = typeNode.getTypeArguments();
+		if (name === 'Omit' && args.length === 2) {
+			const keys = new Set(excluded);
+			// Collect 'a' | 'b' string-literal keys (single literal or union).
+			const keyNodes = Node.isUnionTypeNode(args[1]) ? args[1].getTypeNodes() : [args[1]];
+			for (const keyNode of keyNodes) {
+				const literal = keyNode.getText().match(/^['"](.+)['"]$/);
+				if (literal) keys.add(literal[1]);
+			}
+			visit(args[0], keys);
+			return;
+		}
+		if (name === 'ComponentProps' && args.length === 1 && Node.isTypeQuery(args[0])) {
+			refs.push({ expr: args[0].getExprName().getText(), excluded });
+		}
+	}
+
+	for (const decl of declarations) {
+		if (!Node.isTypeAliasDeclaration(decl)) continue;
+		visit(decl.getTypeNode(), new Set());
+	}
+	return refs;
+}
+
+/**
+ * Resolve a wrapped-component expression (`ListBoxItem` or `Popover.Content`)
+ * to its .svelte file, using the importing file's import statements.
+ */
+async function resolveWrappedFile(expr, importerSource, importerDir) {
+	const [ident, qualifiedPart] = expr.split('.');
+	const defaultImport = importerSource.match(
+		new RegExp(`import\\s+${ident}\\s+from\\s+['"]([^'"]+)['"]`)
+	);
+	// named import: `import { Popover } from '...'` / `import { ListBoxRoot as ListBox } from '...'`
+	const namedImport = importerSource.match(
+		new RegExp(
+			`import\\s*(?:type\\s*)?\\{([^}]*\\b${ident}\\b[^}]*)\\}\\s*from\\s+['"]([^'"]+)['"]`
+		)
+	);
+	const importMatch = defaultImport ?? namedImport;
+	if (!importMatch) return undefined;
+
+	// Aliased named import: resolve the original exported name.
+	let originalName = ident;
+	if (!defaultImport) {
+		const alias = namedImport[1].match(new RegExp(`(\\w+)\\s+as\\s+${ident}\\b`));
+		if (alias) originalName = alias[1];
+	}
+	const spec = (defaultImport ? importMatch[1] : namedImport[2]).replace(/\.js$/, '');
+	const resolved = path.resolve(importerDir, spec);
+
+	// Direct .svelte import.
+	if (!qualifiedPart) {
+		const file = spec.endsWith('.svelte') ? resolved : `${resolved}.svelte`;
+		if (await exists(file)) return file;
+	}
+	// Component-folder import: look the part up in its index.parts.ts, either
+	// as `Namespace.Part` or as a flat alias (`ListBoxRoot` -> part `Root`).
+	for (const dir of [resolved, path.dirname(resolved)]) {
+		if (!(await exists(path.join(dir, 'index.parts.ts')))) continue;
+		const parts = await getParts(dir);
+		if (qualifiedPart) return parts.find((p) => p.name === qualifiedPart)?.file;
+		return parts
+			.filter((p) => originalName.endsWith(p.name))
+			.sort((a, b) => b.name.length - a.name.length)[0]?.file;
+	}
+	return undefined;
 }
 
 /** Collect PropertySignature members from an interface or a (possibly intersected) type literal. */
-function getPropsMembers(declaration) {
+function getPropsMembers(declaration, depth = 0) {
 	if (Node.isInterfaceDeclaration(declaration)) return declaration.getMembers();
+	return typeNodeMembers(declaration.getTypeNode(), declaration.getSourceFile(), depth);
+}
 
-	const typeNode = declaration.getTypeNode();
-	if (!typeNode) return [];
+function typeNodeMembers(typeNode, sourceFile, depth) {
+	if (!typeNode || depth > 3) return [];
 	if (Node.isTypeLiteral(typeNode)) return typeNode.getMembers();
 	if (Node.isIntersectionTypeNode(typeNode)) {
-		return typeNode
-			.getTypeNodes()
-			.filter(Node.isTypeLiteral)
-			.flatMap((literal) => literal.getMembers());
+		return typeNode.getTypeNodes().flatMap((node) => typeNodeMembers(node, sourceFile, depth + 1));
+	}
+	// Follow references to local aliases (TableInteractiveCellProps = TableCellProps).
+	// Foreign references (Omit<...>, HTMLAttributes) resolve to nothing here.
+	if (Node.isTypeReference(typeNode)) {
+		const name = typeNode.getTypeName().getText();
+		const local = sourceFile.getTypeAlias(name) ?? sourceFile.getInterface(name);
+		if (local) return getPropsMembers(local, depth + 1);
 	}
 	return [];
 }
@@ -164,6 +266,89 @@ function extractDataAttributes(svelteSource) {
 	return [...names].sort().map((name) => ({ name, description: '' }));
 }
 
+/**
+ * Extract the prop objects for a part, following `ComponentProps<typeof X>`
+ * wrapper references into the wrapped component's own props (Omit keys
+ * excluded, wrapper-declared props and defaults winning over wrapped ones).
+ * Returns undefined when no *Props declaration exists at all.
+ */
+async function extractPartProps({
+	partFile,
+	partName,
+	scriptBody,
+	typesSource,
+	componentPascal,
+	otherPartTypeNames,
+	depth = 0
+}) {
+	// Prefer exported types from types.ts; fall back to the inline script type.
+	let declarations;
+	let declarationSource = scriptBody;
+	if (typesSource) {
+		const typesSourceFile = project.createSourceFile(`virtual/types-${depth}.ts`, typesSource, {
+			overwrite: true
+		});
+		declarations = collectPropsDeclarations(
+			typesSourceFile,
+			partName,
+			componentPascal,
+			otherPartTypeNames
+		);
+		declarationSource = typesSource;
+	}
+	if (!declarations) {
+		const scriptSourceFile = project.createSourceFile(`virtual/script-${depth}.ts`, scriptBody, {
+			overwrite: true
+		});
+		declarations = collectPropsDeclarations(
+			scriptSourceFile,
+			partName,
+			componentPascal,
+			otherPartTypeNames
+		);
+		declarationSource = scriptBody;
+	}
+	if (!declarations) return undefined;
+
+	const ownMembers = declarations.flatMap((decl) => getPropsMembers(decl));
+	const ownDefaults = getPropDefaults(scriptBody);
+	const props = extractProps(ownMembers, ownDefaults);
+
+	if (depth >= 2) return props;
+	// findWrappedRefs invalidates nothing, but the recursive extractPartProps
+	// call below reuses the virtual source files — so gather the refs (plain
+	// data) before recursing.
+	const wrappedRefs = findWrappedRefs(declarations).map((ref) => ({ ...ref }));
+
+	for (const ref of wrappedRefs) {
+		const wrappedFile = await resolveWrappedFile(
+			ref.expr,
+			declarationSource,
+			path.dirname(partFile)
+		);
+		if (!wrappedFile) {
+			console.warn(`! could not resolve wrapped component "${ref.expr}" from ${partFile}`);
+			continue;
+		}
+		const wrappedSource = await readFile(wrappedFile, 'utf-8');
+		const wrappedProps = await extractPartProps({
+			partFile: wrappedFile,
+			partName: ref.expr.split('.').pop(),
+			scriptBody: getScriptBody(wrappedSource),
+			typesSource: undefined,
+			depth: depth + 1
+		});
+		const seen = new Set(props.map((p) => p.name));
+		for (const prop of wrappedProps ?? []) {
+			if (ref.excluded.has(prop.name) || seen.has(prop.name)) continue;
+			seen.add(prop.name);
+			// The wrapper's own $props() defaults override the wrapped ones.
+			props.push({ ...prop, default: ownDefaults.get(prop.name) ?? prop.default });
+		}
+	}
+	return props;
+}
+
 /** Preserve hand-curated descriptions from a previous api.json. */
 function mergeDescriptions(part, previousPart) {
 	if (!previousPart) return part;
@@ -201,27 +386,27 @@ async function extractComponent(component) {
 		? JSON.parse(await readFile(outFile, 'utf-8'))
 		: undefined;
 
+	const componentPascal = component
+		.split('-')
+		.map((s) => s[0].toUpperCase() + s.slice(1))
+		.join('');
 	const result = { component, parts: [] };
 
 	for (const part of parts) {
 		const svelteSource = await readFile(`${part.file}`, 'utf-8');
 		const scriptBody = getScriptBody(svelteSource);
 
-		// Prefer exported types from types.ts; fall back to the inline script type.
-		let members;
-		if (typesSource) {
-			const typesSourceFile = project.createSourceFile('virtual/types.ts', typesSource, {
-				overwrite: true
-			});
-			members = collectPropsMembers(typesSourceFile, part.name);
-		}
-		if (!members) {
-			const scriptSourceFile = project.createSourceFile('virtual/script.ts', scriptBody, {
-				overwrite: true
-			});
-			members = collectPropsMembers(scriptSourceFile, part.name);
-		}
-		if (!members) {
+		const props = await extractPartProps({
+			partFile: part.file,
+			partName: part.name,
+			scriptBody,
+			typesSource,
+			componentPascal,
+			otherPartTypeNames: new Set(
+				parts.filter((p) => p.name !== part.name).map((p) => `${componentPascal}${p.name}Props`)
+			)
+		});
+		if (props === undefined) {
 			console.warn(`! ${component}/${part.name}: no *Props declaration found`);
 		}
 
@@ -231,7 +416,7 @@ async function extractComponent(component) {
 				{
 					name: part.name,
 					description: '',
-					props: members ? extractProps(members, getPropDefaults(scriptBody)) : [],
+					props: props ?? [],
 					dataAttributes: extractDataAttributes(svelteSource)
 				},
 				previousPart

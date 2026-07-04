@@ -316,7 +316,106 @@
 		{
 			"name": "Popover",
 			"description": "The floating panel that hosts the range calendar. Forwards Popover.Content props (placement, offset, shouldFlip, …); open state, trigger wiring, and id are controlled internally.",
-			"props": [],
+			"props": [
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "Offset along the main axis from the anchor element."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": "'bottom'",
+					"description": "Placement relative to the anchor element."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to flip when there's insufficient space."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "Boundary element for positioning constraints."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the popover."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the popover container."
+				},
+				{
+					"name": "nonModal",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether clicking outside the popover should close it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the popover."
+				},
+				{
+					"name": "shouldCloseOnBlur",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+				},
+				{
+					"name": "initialFocus",
+					"type": "FocusTrapOptions['initialFocus']",
+					"required": false,
+					"default": null,
+					"description": "Element or selector to focus first when modal trap activates."
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state (standalone mode)."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element (standalone mode)."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes (standalone mode)."
+				}
+			],
 			"dataAttributes": []
 		},
 		{
@@ -336,6 +435,104 @@
 					"required": false,
 					"default": null,
 					"description": "Calendar parts: triggers, heading, and grid."
+				},
+				{
+					"name": "selectionMode",
+					"type": "CalendarSelectionMode",
+					"required": false,
+					"default": "'single'",
+					"description": "Selection behavior: 'single' selects one YYYY-MM-DD date, 'range' selects a { start, end } pair."
+				},
+				{
+					"name": "visibleMonths",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "How many months are rendered at once and how paging advances."
+				},
+				{
+					"name": "showOutsideDays",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether days outside the current month are shown in the grid."
+				},
+				{
+					"name": "firstDayOfWeek",
+					"type": "CalendarFirstDayOfWeek",
+					"required": false,
+					"default": null,
+					"description": "Overrides the first day of the week specified by the active locale."
+				},
+				{
+					"name": "monthHeadingStyle",
+					"type": "CalendarMonthHeadingStyle",
+					"required": false,
+					"default": "'composed'",
+					"description": "How the heading is rendered: 'composed' uses a locale-composed string, 'month-year' renders separate month and year parts."
+				},
+				{
+					"name": "isDateUnavailable",
+					"type": "(date: string) => boolean",
+					"required": false,
+					"default": null,
+					"description": "Marks specific days as non-selectable. Unavailable cells stay focusable but expose aria-disabled."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables the whole calendar, including paging triggers and day selection."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the calendar navigable while preventing selection changes."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the calendar when no visible label is associated."
+				},
+				{
+					"name": "value",
+					"type": "CalendarDateValue",
+					"required": false,
+					"default": null,
+					"description": "Controlled selected date (single mode) or range (range mode). Bindable."
+				},
+				{
+					"name": "defaultValue",
+					"type": "CalendarDateValue",
+					"required": false,
+					"default": null,
+					"description": "Initially selected date or range when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: CalendarDateValue) => void",
+					"required": false,
+					"default": null,
+					"description": "Called with the new date or range after a user selection."
 				}
 			],
 			"dataAttributes": []

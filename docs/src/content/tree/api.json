@@ -422,13 +422,6 @@
 					"required": false,
 					"default": null,
 					"description": "Id of the element that labels the checkbox."
-				},
-				{
-					"name": "forceMount",
-					"type": "boolean",
-					"required": false,
-					"default": null,
-					"description": ""
 				}
 			],
 			"dataAttributes": [
