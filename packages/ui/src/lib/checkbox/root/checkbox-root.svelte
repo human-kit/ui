@@ -5,7 +5,6 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { cn } from '../../utils/cn';
 	import { setCheckboxContext, type CheckboxContext, type CheckboxState } from './context';
 
 	type CheckboxRootProps = Omit<
@@ -456,10 +455,8 @@
 	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={handleBlur}
-	class={cn(
-		'relative inline-flex shrink-0 items-center justify-center align-middle outline-none',
-		className
-	)}
+	class={className}
+	style:position="relative"
 >
 	<input
 		bind:this={inputRef}

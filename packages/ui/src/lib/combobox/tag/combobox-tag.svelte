@@ -13,7 +13,6 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getContext } from 'svelte';
-	import { cn } from '../../utils/cn';
 	import { useComboBoxContext } from '../root/context';
 
 	/**
@@ -47,11 +46,7 @@
 	data-disabled={tagCtx.disabled || undefined}
 	data-focused={isFocused || undefined}
 	onmousedown={handleMouseDown}
-	class={cn(
-		'inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-sm data-[focused=true]:ring-2 data-[focused=true]:ring-blue-500 data-[focused=true]:outline-none dark:bg-gray-700',
-		tagCtx.disabled && 'opacity-50',
-		className
-	)}
+	class={className}
 	{...restProps}
 >
 	{@render children()}

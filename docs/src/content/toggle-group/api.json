@@ -1,0 +1,113 @@
+{
+	"component": "toggle-group",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The group container. Renders a div with role=\"group\", coordinates selection across nested Toggle.Root buttons, and manages roving focus.",
+			"props": [
+				{
+					"name": "value",
+					"type": "ToggleGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "Controlled array of selected toggle values. Bindable. Used for both single and multiple selection."
+				},
+				{
+					"name": "defaultValue",
+					"type": "ToggleGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "Initial selected values when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: ToggleGroupValue[]) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the user changes the selection."
+				},
+				{
+					"name": "selectionMode",
+					"type": "ToggleGroupSelectionMode",
+					"required": false,
+					"default": "'single'",
+					"description": "Whether at most one (`'single'`) or several (`'multiple'`) toggles can be selected."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables every toggle in the group."
+				},
+				{
+					"name": "orientation",
+					"type": "ToggleGroupOrientation",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "Layout orientation. Controls which arrow keys move roving focus."
+				},
+				{
+					"name": "disallowEmptySelection",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps at least one enabled toggle selected."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the group, typically `Toggle.Root` buttons."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the group element. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered group element."
+				},
+				{
+					"name": "context",
+					"type": "ToggleGroupContext",
+					"required": false,
+					"default": null,
+					"description": "Bindable reference to the internal group context, for advanced composition."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the whole group is disabled."
+				},
+				{
+					"name": "data-multiple",
+					"description": "Present when `selectionMode` is \"multiple\"."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The group orientation (\"horizontal\" or \"vertical\")."
+				},
+				{
+					"name": "data-toggle-group-root",
+					"description": "Identifies the group element."
+				}
+			]
+		}
+	]
+}

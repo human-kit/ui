@@ -1,0 +1,511 @@
+{
+	"component": "numberfield",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The number field container. Owns the numeric state, formatting, and validation, provides context to all parts, and renders a hidden input that submits the raw number when `name` is set.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element. Auto-generated when omitted."
+				},
+				{
+					"name": "value",
+					"type": "number | null",
+					"required": false,
+					"default": "undefined",
+					"description": "Controlled numeric value. Bindable. Always a raw number; the visible text is formatted separately."
+				},
+				{
+					"name": "defaultValue",
+					"type": "number | null",
+					"required": false,
+					"default": "null",
+					"description": "Initial value when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: number | null) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the committed numeric value changes."
+				},
+				{
+					"name": "formatOptions",
+					"type": "Intl.NumberFormatOptions",
+					"required": false,
+					"default": null,
+					"description": "Intl.NumberFormat options used to format the visible input text (currency, percent, unit, fraction digits, ...)."
+				},
+				{
+					"name": "min",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Minimum allowed value."
+				},
+				{
+					"name": "max",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Maximum allowed value."
+				},
+				{
+					"name": "step",
+					"type": "NumberFieldStep",
+					"required": false,
+					"default": "1",
+					"description": "Amount applied by arrow keys, stepper buttons, wheel, and scrubbing. `'any'` steps by 1 without step-based validation."
+				},
+				{
+					"name": "smallStep",
+					"type": "number",
+					"required": false,
+					"default": "0.1",
+					"description": "Step applied while holding `Ctrl`/`Cmd` with the arrow keys."
+				},
+				{
+					"name": "largeStep",
+					"type": "number",
+					"required": false,
+					"default": "10",
+					"description": "Step applied while holding `Shift` with the arrow keys."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Removes the field from interaction and focus order."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the input focusable while preventing value changes."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the input as required for form validation."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the field as invalid and exposes `aria-invalid` and `data-invalid`."
+				},
+				{
+					"name": "aria-invalid",
+					"type": "HTMLAttributes<HTMLDivElement>['aria-invalid']",
+					"required": false,
+					"default": null,
+					"description": "Overrides the computed `aria-invalid` value."
+				},
+				{
+					"name": "allowWheelScrub",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Lets the mouse wheel step the value while the input is focused."
+				},
+				{
+					"name": "allowOutOfRange",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Allows typed values outside `min`/`max` to be committed. When `false`, out-of-range drafts stay editable while focused and clamp on commit."
+				},
+				{
+					"name": "snapOnStep",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Snaps stepped values to the nearest multiple of `step`."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Name of the hidden input that submits the raw numeric value with a form."
+				},
+				{
+					"name": "incrementAriaLabel",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the localized accessible label of the increment button."
+				},
+				{
+					"name": "decrementAriaLabel",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the localized accessible label of the decrement button."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while any part of the field has focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-hidden-input",
+					"description": "Identifies the hidden native input used for form submission."
+				},
+				{
+					"name": "data-number-field-root",
+					"description": "Identifies the root element."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the field is required."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		},
+		{
+			"name": "Group",
+			"description": "Groups the visible controls (input and stepper buttons) and mirrors the field state through data attributes.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while any part of the field has focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-group",
+					"description": "Identifies the group element."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the field is required."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		},
+		{
+			"name": "Input",
+			"description": "The visible text input with role=\"spinbutton\". Handles formatted text entry, keyboard stepping, and native validity.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLInputElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the input has focus."
+				},
+				{
+					"name": "data-input-state",
+					"description": "Relation between the draft text and the committed value: \"synced\", \"partial\", \"invalid\", or \"out-of-range\"."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-input",
+					"description": "Identifies the input element."
+				},
+				{
+					"name": "data-out-of-range",
+					"description": "Present while the current value is outside `min`/`max`."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the field is required."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		},
+		{
+			"name": "Increment",
+			"description": "Stepper button that increases the value by `step`. Excluded from the tab order and labeled with a localized default.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the button, typically an icon or symbol."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the button cannot step further or the field is disabled."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-increment",
+					"description": "Identifies the increment button."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		},
+		{
+			"name": "Decrement",
+			"description": "Stepper button that decreases the value by `step`. Excluded from the tab order and labeled with a localized default.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the button, typically an icon or symbol."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the button cannot step further or the field is disabled."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-decrement",
+					"description": "Identifies the decrement button."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		},
+		{
+			"name": "ScrubArea",
+			"description": "Turns its content into a pointer-drag control that steps the value while dragging.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the scrub area, such as a label and `NumberField.ScrubAreaCursor`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "direction",
+					"type": "NumberFieldScrubDirection",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "Axis of pointer movement that changes the value."
+				},
+				{
+					"name": "pixelSensitivity",
+					"type": "number",
+					"required": false,
+					"default": "2",
+					"description": "Pixels of pointer movement required per step."
+				},
+				{
+					"name": "teleportDistance",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Wraps the virtual cursor after it travels this many pixels, allowing unlimited scrubbing in a bounded area."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-direction",
+					"description": "The configured scrub direction (\"horizontal\" or \"vertical\")."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-scrub-area",
+					"description": "Identifies the scrub area element."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		},
+		{
+			"name": "ScrubAreaCursor",
+			"description": "Optional virtual cursor rendered while scrubbing, following the pointer inside the scrub area.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered as the virtual cursor."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the field is invalid."
+				},
+				{
+					"name": "data-number-field-scrub-area-cursor",
+					"description": "Identifies the scrub area cursor element."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is readonly."
+				},
+				{
+					"name": "data-scrubbing",
+					"description": "Present while a pointer scrub is in progress."
+				}
+			]
+		}
+	]
+}

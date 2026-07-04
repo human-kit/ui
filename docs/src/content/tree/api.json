@@ -1,0 +1,503 @@
+{
+	"component": "tree",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The stateful tree container. Renders role=\"tree\" and manages focus, expansion, selection, and actions for all items.",
+			"props": [
+				{
+					"name": "expandedKeys",
+					"type": "Iterable<TreeNodeId>",
+					"required": false,
+					"default": null,
+					"description": "Controlled set of expanded branch ids. Bindable."
+				},
+				{
+					"name": "defaultExpandedKeys",
+					"type": "Iterable<TreeNodeId>",
+					"required": false,
+					"default": null,
+					"description": "Initially expanded branch ids when uncontrolled."
+				},
+				{
+					"name": "selectedKeys",
+					"type": "Iterable<TreeNodeId>",
+					"required": false,
+					"default": null,
+					"description": "Controlled set of selected item ids. Bindable."
+				},
+				{
+					"name": "defaultSelectedKeys",
+					"type": "Iterable<TreeNodeId>",
+					"required": false,
+					"default": null,
+					"description": "Initially selected item ids when uncontrolled."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<TreeNodeId>",
+					"required": false,
+					"default": null,
+					"description": "Ids of items affected by `disabledBehavior`."
+				},
+				{
+					"name": "selectionMode",
+					"type": "TreeSelectionMode",
+					"required": false,
+					"default": "'none'",
+					"description": "Whether items can be selected: 'none', 'single', or 'multiple'."
+				},
+				{
+					"name": "selectionBehavior",
+					"type": "TreeSelectionBehavior",
+					"required": false,
+					"default": "'toggle'",
+					"description": "'toggle' adds and removes items from the selection; 'replace' makes plain interaction replace it."
+				},
+				{
+					"name": "disabledBehavior",
+					"type": "TreeDisabledBehavior",
+					"required": false,
+					"default": "'all'",
+					"description": "'all' makes disabled items fully non-interactive; 'selection' keeps them focusable and actionable while blocking selection."
+				},
+				{
+					"name": "selectionPropagation",
+					"type": "TreeSelectionPropagation",
+					"required": false,
+					"default": "'none'",
+					"description": "'none' keeps selection flat; 'descendants' propagates selection through a subtree and marks partially selected ancestors as indeterminate."
+				},
+				{
+					"name": "disallowEmptySelection",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Prevents the user from deselecting the last selected item."
+				},
+				{
+					"name": "items",
+					"type": "Iterable<T>",
+					"required": false,
+					"default": null,
+					"description": "Data collection for dynamic rendering; each entry is passed to the children snippet."
+				},
+				{
+					"name": "children",
+					"type": "Snippet | Snippet<[T]>",
+					"required": false,
+					"default": null,
+					"description": "Static tree content, or a snippet rendered once per entry when `items` is provided."
+				},
+				{
+					"name": "renderEmptyState",
+					"type": "Snippet<[TreeEmptyStateRenderProps]>",
+					"required": false,
+					"default": null,
+					"description": "Rendered when the tree has no items."
+				},
+				{
+					"name": "onExpandedKeysChange",
+					"type": "(keys: Set<TreeNodeId>) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the set of expanded branches changes."
+				},
+				{
+					"name": "onSelectionChange",
+					"type": "(keys: Set<TreeNodeId>) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the selection changes."
+				},
+				{
+					"name": "onAction",
+					"type": "TreeActionHandler",
+					"required": false,
+					"default": null,
+					"description": "Called with the item id when an item is activated via click or Enter."
+				},
+				{
+					"name": "itemTransition",
+					"type": "TreeItemTransition",
+					"required": false,
+					"default": null,
+					"description": "Enter/exit transition applied to each item row on expand/collapse. Defaults to none."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "context",
+					"type": "TreeContext",
+					"required": false,
+					"default": null,
+					"description": "Bindable handle exposing the tree state for advanced composition."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement",
+					"required": false,
+					"default": null,
+					"description": "Bindable reference to the rendered tree element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-empty",
+					"description": "Present when the tree has no items."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus inside the tree should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while focus is inside the tree."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while focus is inside the tree."
+				},
+				{
+					"name": "data-selection-mode",
+					"description": "The active selection mode ('single' | 'multiple'); absent when selection is disabled."
+				},
+				{
+					"name": "data-tree-registration",
+					"description": "Identifies the hidden container used to register item structure; not a styling target."
+				}
+			]
+		},
+		{
+			"name": "Section",
+			"description": "Groups related top-level items under an optional header. Renders role=\"group\".",
+			"props": [
+				{
+					"name": "id",
+					"type": "TreeNodeId",
+					"required": false,
+					"default": null,
+					"description": "Unique id for the section node. Auto-generated when omitted."
+				},
+				{
+					"name": "value",
+					"type": "T",
+					"required": false,
+					"default": null,
+					"description": "Arbitrary data associated with the section."
+				},
+				{
+					"name": "items",
+					"type": "Iterable<T>",
+					"required": false,
+					"default": null,
+					"description": "Data collection for dynamic rendering; each entry is passed to the children snippet."
+				},
+				{
+					"name": "children",
+					"type": "Snippet | Snippet<[T]>",
+					"required": false,
+					"default": null,
+					"description": "The section header and items, or a snippet rendered once per entry when `items` is provided."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Header",
+			"description": "A visual label for a section's items.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The header label content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Item",
+			"description": "A single tree node. Renders the flattened role=\"treeitem\" row and exposes focus, hover, selection, and pressed state on it.",
+			"props": [
+				{
+					"name": "id",
+					"type": "TreeNodeId",
+					"required": false,
+					"default": null,
+					"description": "Unique id used in the expansion, selection, and disabled key sets."
+				},
+				{
+					"name": "value",
+					"type": "T",
+					"required": false,
+					"default": null,
+					"description": "Arbitrary data associated with the item."
+				},
+				{
+					"name": "title",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Human-readable title for the node, used as its text value."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the text used for typeahead matching."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables this item according to the root's `disabledBehavior`."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The row content (trigger, checkbox, label) and an optional `Tree.Children` subtree."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Children",
+			"description": "Marks the nested subtree of an item. Its presence makes the parent expandible on first render and during SSR.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The nested `Tree.Item` nodes."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Label",
+			"description": "The text label of an item row; also labels the row for assistive technology.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The label content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-tree-label",
+					"description": "Identifies the label element."
+				}
+			]
+		},
+		{
+			"name": "Trigger",
+			"description": "An explicit expand/collapse button for a branch. Only rendered when the item has children, and not part of arrow-key navigation.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The trigger content, typically an expansion icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the item is disabled."
+				},
+				{
+					"name": "data-expanded",
+					"description": "Present while the branch is expanded."
+				},
+				{
+					"name": "data-pressed-when-expanded",
+					"description": "Always present; marks the trigger as a control whose pressed styling should follow the expanded state."
+				},
+				{
+					"name": "data-tree-trigger",
+					"description": "Identifies the trigger element."
+				}
+			]
+		},
+		{
+			"name": "Checkbox",
+			"description": "An explicit selection affordance for an item row, kept in sync with the tree selection (including indeterminate ancestors).",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the rendered checkbox. Auto-generated when omitted."
+				},
+				{
+					"name": "title",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Native tooltip text for the checkbox."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The checkbox content, typically a `Tree.CheckboxIndicator`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label when no visible label is associated."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of the element that labels the checkbox."
+				},
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-tree-checkbox",
+					"description": "Identifies the checkbox element."
+				}
+			]
+		},
+		{
+			"name": "CheckboxIndicator",
+			"description": "The visual mark inside a tree checkbox. Mounted while the checkbox is checked or indeterminate.",
+			"props": [
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keep the indicator mounted even while the checkbox is unchecked."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The indicator content, typically a check or minus icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checked",
+					"description": "Present while the checkbox is checked."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the checkbox is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the checkbox has focus."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the checkbox is indeterminate (partially selected subtree)."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the checkbox is actively pressed."
+				},
+				{
+					"name": "data-tree-checkbox-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present while the checkbox is unchecked (with `forceMount`)."
+				}
+			]
+		}
+	]
+}

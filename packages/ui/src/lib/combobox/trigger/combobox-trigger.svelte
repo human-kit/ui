@@ -48,7 +48,8 @@
 			stroke-width="2"
 			stroke-linecap="round"
 			stroke-linejoin="round"
-			class="transition-transform {ctx.isOpen ? 'rotate-180' : ''}"
+			data-open={ctx.isOpen || undefined}
+			style:transform={ctx.isOpen ? 'rotate(180deg)' : undefined}
 		>
 			<path d="m6 9 6 6 6-6" />
 		</svg>

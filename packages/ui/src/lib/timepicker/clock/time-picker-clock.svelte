@@ -54,7 +54,7 @@
 	);
 </script>
 
-<div class={className || 'flex items-stretch gap-2'} data-clock="true" {...restProps}>
+<div class={className} data-clock="true" {...restProps}>
 	{#each visibleColumns as col (col.type)}
 		{#if columnSnippet}
 			{@render columnSnippet(col)}

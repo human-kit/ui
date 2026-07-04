@@ -1,0 +1,261 @@
+{
+	"component": "listbox",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The listbox container. Manages option registration, selection state, focus, and keyboard navigation.",
+			"props": [
+				{
+					"name": "selectionBehavior",
+					"type": "'toggle' | 'replace'",
+					"required": false,
+					"default": "'toggle'",
+					"description": "How selection behaves: 'toggle' allows deselection, 'replace' always selects."
+				},
+				{
+					"name": "emptyPlaceholder",
+					"type": "string | Snippet",
+					"required": false,
+					"default": "'No items selected'",
+					"description": "Content shown when the list is empty. Can be a string or a Snippet."
+				},
+				{
+					"name": "items",
+					"type": "Iterable<T>",
+					"required": false,
+					"default": null,
+					"description": "Iterable of items for dynamic rendering. Used with a snippet that receives each item."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Keys of items that should be disabled and non-selectable."
+				},
+				{
+					"name": "selectionMode",
+					"type": "'single' | 'multiple'",
+					"required": false,
+					"default": "'single'",
+					"description": "Selection mode: 'single' allows one selection, 'multiple' allows many."
+				},
+				{
+					"name": "value",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Controlled value. When provided, the component is in controlled mode."
+				},
+				{
+					"name": "defaultValue",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Initial selection for uncontrolled mode."
+				},
+				{
+					"name": "children",
+					"type": "Snippet | Snippet<[T]>",
+					"required": false,
+					"default": null,
+					"description": "Content of the listbox. Can be static children or a snippet receiving items."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the listbox container."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "HTML id attribute for the listbox element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the listbox. Announced by screen readers."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: Set<string | number>) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback fired when the selection changes."
+				},
+				{
+					"name": "disableFocusHandling",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disable DOM focus handling on the root container for virtual-focus compositions."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-empty-placeholder",
+					"description": "Identifies the placeholder option rendered when the list has no items."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while focus is inside the listbox."
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "A selectable option. Registers itself with the root and exposes selected, focused, hovered, pressed, and disabled states through data attributes.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string | number",
+					"required": true,
+					"default": null,
+					"description": "Unique identifier for this item. Used for selection tracking."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Text value for typeahead search. If not provided, extracted from content."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether this item is disabled and non-selectable."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the item element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render inside the item."
+				},
+				{
+					"name": "customId",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Override the generated ID. Useful for components with custom ID requirements."
+				},
+				{
+					"name": "disableFocusHandling",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disable real DOM focus handling. When true, no tabindex is set and focus events are skipped."
+				},
+				{
+					"name": "isFocusedOverride",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the focused state. When provided, this value is used instead of internal focus tracking."
+				},
+				{
+					"name": "isFocusVisibleOverride",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the focus-visible presentation state."
+				},
+				{
+					"name": "onItemSelect",
+					"type": "(id: string | number, label: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Override the select behavior. When provided, called instead of default listbox selection."
+				},
+				{
+					"name": "onResolvedTextValue",
+					"type": "(label: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback with resolved text value when mounted (from prop or rendered content)."
+				},
+				{
+					"name": "onItemHoverStart",
+					"type": "(id: string | number, label: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when pointer hover should move logical focus to this item."
+				},
+				{
+					"name": "scrollOnFocus",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether to scroll this item into view when focused. Useful for virtual focus patterns."
+				},
+				{
+					"name": "isParentDisabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Additional disabled state from parent."
+				},
+				{
+					"name": "pressed",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the visual pressed state. When provided, this value is used instead of internal press tracking."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the item is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the item is focused."
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present while the pointer is over the item."
+				},
+				{
+					"name": "data-item-id",
+					"description": "The item id used for selection."
+				},
+				{
+					"name": "data-item-id-type",
+					"description": "Whether the item id is a \"string\" or a \"number\"."
+				},
+				{
+					"name": "data-navigation-item",
+					"description": "Identifies the item as a keyboard-navigation target."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the item is actively pressed."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present while the item is selected."
+				}
+			]
+		}
+	]
+}

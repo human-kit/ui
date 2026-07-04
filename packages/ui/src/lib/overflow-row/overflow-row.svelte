@@ -12,7 +12,6 @@
 <script lang="ts" generics="T">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn } from '../utils/cn.js';
 
 	type Props = {
 		/** The full list to render on a single line. */
@@ -122,7 +121,9 @@
 {#if items.length > 0}
 	<div
 		bind:this={containerEl}
-		class={cn(className, overflowEnabled && 'flex-nowrap overflow-x-clip')}
+		class={className}
+		style:flex-wrap={overflowEnabled ? 'nowrap' : null}
+		style:overflow-x={overflowEnabled ? 'clip' : null}
 		{...rest}
 	>
 		{#each visibleItems as item, index (getKey(item, index))}
@@ -145,8 +146,8 @@
 		-->
 		<div
 			bind:this={mirrorEl}
-			class={cn(className, 'pointer-events-none invisible absolute top-0 left-0 flex-nowrap')}
-			style="width: max-content; max-width: none;"
+			class={className}
+			style="width: max-content; max-width: none; position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; flex-wrap: nowrap;"
 			aria-hidden="true"
 			inert
 		>

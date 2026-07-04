@@ -217,10 +217,7 @@
 		"test:ssr": "vitest --config vitest.ssr.config.ts"
 	},
 	"dependencies": {
-		"@floating-ui/dom": "^1.7.4",
-		"class-variance-authority": "^0.7.1",
-		"clsx": "^2.1.0",
-		"tailwind-merge": "^3.4.0"
+		"@floating-ui/dom": "^1.7.4"
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"

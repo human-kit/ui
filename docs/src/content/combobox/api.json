@@ -1,0 +1,496 @@
+{
+	"component": "combobox",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "State container for the combobox. Owns open state, input value, selection logic, filtering, and keyboard interaction.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Stable ID used to generate internal ARIA IDs (recommended for SSR)."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables all user interaction."
+				},
+				{
+					"name": "pending",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Exposes busy async state via data-pending. Trigger and clear become non-interactive while pending."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the combobox interactive but prevents value changes."
+				},
+				{
+					"name": "value",
+					"type": "string | number | null | (string | number)[]",
+					"required": false,
+					"default": null,
+					"description": "Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value"
+				},
+				{
+					"name": "defaultValue",
+					"type": "string | number | null | (string | number)[]",
+					"required": false,
+					"default": null,
+					"description": "Initial selection for uncontrolled mode."
+				},
+				{
+					"name": "inputValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Current input value. Can be bound with bind:inputValue"
+				},
+				{
+					"name": "defaultInputValue",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "Initial input value for uncontrolled mode."
+				},
+				{
+					"name": "selectionBehavior",
+					"type": "'toggle' | 'replace'",
+					"required": false,
+					"default": null,
+					"description": "How selecting an already selected option behaves: 'toggle' deselects it, 'replace' keeps it selected."
+				},
+				{
+					"name": "selectionMode",
+					"type": "'single' | 'multiple'",
+					"required": false,
+					"default": "'single'",
+					"description": "Single-select or multi-select mode."
+				},
+				{
+					"name": "closeOnSelect",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether to close popover after selection. Default: true for single, false for multiple"
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether the popover is open. Can be bound with bind:open"
+				},
+				{
+					"name": "trigger",
+					"type": "'focus' | 'input' | 'press'",
+					"required": false,
+					"default": "'press'",
+					"description": "How the popover opens: 'focus' | 'input' | 'press'. Default: 'press'"
+				},
+				{
+					"name": "filter",
+					"type": "ComboBoxFilter | null",
+					"required": false,
+					"default": "defaultComboBoxFilter",
+					"description": "Function used to filter items locally. Set to null to disable local filtering."
+				},
+				{
+					"name": "filterActionItems",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether items with onAction should participate in local filtering."
+				},
+				{
+					"name": "onInputChange",
+					"type": "(value: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the input value changes."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the popover open state changes."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: string | number | null | (string | number)[]) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the selection changes."
+				},
+				{
+					"name": "items",
+					"type": "T[]",
+					"required": false,
+					"default": null,
+					"description": "Optional: Array of items. Used internally to resolve selected labels before options mount."
+				},
+				{
+					"name": "renderItem",
+					"type": "Snippet<[T]>",
+					"required": false,
+					"default": null,
+					"description": "Optional: Snippet to render each item (used with items prop)"
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Composed combobox parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class names for the root group element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the combobox group"
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "ID of element that labels this combobox group"
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-combobox",
+					"description": "Identifies the combobox root element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the combobox is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while focus is inside the combobox."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the combobox has focus."
+				},
+				{
+					"name": "data-pending",
+					"description": "Present while the combobox is in a pending (busy) state."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the combobox is readonly."
+				}
+			]
+		},
+		{
+			"name": "Input",
+			"description": "Text input with role=\"combobox\" that syncs the typed value, active descendant, and keyboard handling with the root.",
+			"props": [
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the input"
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "ID of element that labels this input"
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "ID of element that describes this input (e.g., usage instructions)"
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the input element."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Trigger",
+			"description": "Optional button that toggles the popover without stealing focus from the input.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the trigger button."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Custom trigger content. If omitted, a chevron icon is rendered."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-open",
+					"description": "Present while the popover is open."
+				}
+			]
+		},
+		{
+			"name": "Button",
+			"description": "Compatibility alias for ComboBox.Trigger. Prefer ComboBox.Trigger in new code.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the trigger element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Custom trigger content. If omitted, a chevron icon is rendered."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-open",
+					"description": "Present while the popover is open."
+				}
+			]
+		},
+		{
+			"name": "Clear",
+			"description": "Optional button that resets the input value and clears the selection without stealing focus from the input. Disabled when there is nothing to clear.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the clear button."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Custom clear content. If omitted, an X icon is rendered."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Popover",
+			"description": "Floating container for the options, positioned relative to the combobox input group. Composes Popover.Root and Popover.Content in non-modal mode.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Popover content, typically ComboBox.List."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "List",
+			"description": "Listbox bridge for the options. Delegates selection state and mode to ComboBox.Root and accepts additional ListBox.Root props such as class and emptyPlaceholder.",
+			"props": [
+				{
+					"name": "items",
+					"type": "Iterable<T>",
+					"required": false,
+					"default": null,
+					"description": "Optional items for dynamic rendering - overrides items from ComboBox context"
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[T]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the listbox. Receives item in dynamic mode."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Item",
+			"description": "A selectable option with combobox-specific filtering, virtual focus, and registration logic. Requires a unique id; use onAction for command-style items that run instead of selecting.",
+			"props": [
+				{
+					"name": "onAction",
+					"type": "ComboBoxItemActionHandler",
+					"required": false,
+					"default": null,
+					"description": "Called when this item is activated as an action instead of selected."
+				},
+				{
+					"name": "closeOnAction",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to close the popover after running onAction."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "ItemIndicator",
+			"description": "Visual selection indicator rendered inside ComboBox.Item. Defaults to a checkmark icon.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render when selected (defaults to checkmark icon)"
+				},
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Force show the indicator regardless of selection state"
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the indicator wrapper."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-state",
+					"description": "\"checked\" while the item is selected, \"unchecked\" otherwise."
+				}
+			]
+		},
+		{
+			"name": "Tags",
+			"description": "Container that renders the selected values as tags in multiple mode. Supports an optional single-line overflow mode.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[{ item: TagItem }]>",
+					"required": true,
+					"default": null,
+					"description": "Snippet to render each tag. Receives { item: { value, label } }"
+				},
+				{
+					"name": "overflow",
+					"type": "Snippet<[TagsOverflow]>",
+					"required": false,
+					"default": null,
+					"description": "Optional overflow indicator. When provided, the tag row is constrained to\na single line: tags that don't fit are not rendered, and this snippet\nrenders at the end with how many are hidden (plus `visible`/`total`, so the\nconsumer can e.g. show a summary when nothing fits). Expected to render a\nsingle element. Without `overflow`, every tag renders and wrapping is left\nto the consumer's styles (the previous behaviour)."
+				},
+				{
+					"name": "reserve",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "Horizontal space (px) to keep free inside the parent for siblings such as\nthe search input, so the overflow calc doesn't claim the whole row. Only\nused in overflow mode."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class names for the tags container."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Tag",
+			"description": "Visual token representing one selected value in multiple selection mode.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": true,
+					"default": null,
+					"description": "Content of the tag - use ComboBox.TagRemove for remove button"
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the combobox is disabled."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the tag is focused."
+				},
+				{
+					"name": "data-tag-id",
+					"description": "The selected item id represented by the tag."
+				}
+			]
+		},
+		{
+			"name": "TagRemove",
+			"description": "Button that removes its tag from the selection.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the button (defaults to X icon)"
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the remove button."
+				}
+			],
+			"dataAttributes": []
+		}
+	]
+}

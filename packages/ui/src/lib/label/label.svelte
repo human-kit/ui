@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { HTMLLabelAttributes } from 'svelte/elements';
-	import type { ClassValue } from 'class-variance-authority/types';
-	import { cn } from '../utils/cn';
+	import type { ClassValue } from '../utils/cn';
 
 	type LabelProps = HTMLLabelAttributes & {
 		class?: ClassValue;
@@ -12,10 +11,7 @@
 
 <label
 	{...props}
-	class={cn(
-		`text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70`,
-		className
-	)}
+	class={className}
 >
 	{@render children?.()}
 </label>

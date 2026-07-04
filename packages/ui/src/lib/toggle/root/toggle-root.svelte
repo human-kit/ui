@@ -6,7 +6,6 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { cn } from '../../utils/cn';
 	import { getToggleGroupContext, type ToggleGroupValue } from '../../toggle-group/root/context.js';
 
 	export type ToggleRenderState = {
@@ -404,7 +403,7 @@
 	data-focus-visible={renderedFocusVisible || undefined}
 	data-grouped={grouped || undefined}
 	tabindex={renderedTabIndex}
-	class={cn('outline-none', className)}
+	class={className}
 	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
 	onfocus={composeEventHandlers(onFocusExternal ?? undefined, handleFocus)}
 	onblur={composeEventHandlers(onBlurExternal ?? undefined, handleBlur)}

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { cn } from '../../utils/cn';
 	import { useCheckboxContext } from '../root/context';
 
 	type CheckboxIndicatorProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
@@ -36,7 +35,7 @@
 		data-focus-visible={checkbox.focusVisible || undefined}
 		hidden={forceMount && !visible}
 		aria-hidden={forceMount && !visible ? 'true' : undefined}
-		class={cn('contents', className)}
+		class={className}
 	>
 		{@render children?.()}
 	</span>

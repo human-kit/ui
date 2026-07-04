@@ -31,7 +31,13 @@
 <div
 	aria-hidden="true"
 	data-clock-axis
-	class={`pointer-events-none absolute top-1/2 left-0 w-full -translate-y-1/2 ${className}`}
+	class={className}
+	style:position="absolute"
+	style:top="50%"
+	style:left="0"
+	style:width="100%"
+	style:transform="translateY(-50%)"
+	style:pointer-events="none"
 	style={resolvedStyle}
 	{...restProps}
 ></div>

@@ -1,0 +1,181 @@
+{
+	"component": "dialog",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "State container for the dialog. Holds open state and the trigger reference, and passes state helpers ({ close, open, toggle, isOpen }) to its children snippet.",
+			"props": [
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial open state for uncontrolled mode."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element. Can be set manually or via Dialog.Trigger."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[DialogStateHelpers]>",
+					"required": false,
+					"default": null,
+					"description": "Children snippet receives state helpers: { close, open, toggle, isOpen }"
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Trigger",
+			"description": "Button that registers itself as the dialog trigger and toggles the dialog on click.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-dialog-trigger",
+					"description": "Identifies the trigger button."
+				}
+			]
+		},
+		{
+			"name": "Portal",
+			"description": "Portal wrapper that renders the dialog layers into the document body only while the dialog is open (staying mounted through exit animations).",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render in portal (Overlay and Content)"
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Overlay",
+			"description": "Backdrop layer rendered behind the dialog content. Its z-index is derived from the dialog's position in the stack.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the overlay."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-dialog-overlay",
+					"description": "Identifies the overlay element."
+				},
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-state",
+					"description": "\"open\" while the dialog is open, \"closed\" during exit."
+				}
+			]
+		},
+		{
+			"name": "Content",
+			"description": "The modal panel (role=\"dialog\", aria-modal). Applies focus trapping, outside-interaction handling, scroll lock, and aria-hiding of outside content; close interactions only apply to the topmost dialog in a stack.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the dialog."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the dialog container."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether clicking outside the dialog should close it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the dialog."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-dialog-content",
+					"description": "Identifies the dialog panel element."
+				},
+				{
+					"name": "data-dialog-positioner",
+					"description": "Identifies the fixed positioning wrapper that centers the panel."
+				},
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-state",
+					"description": "\"open\" while the dialog is open, \"closed\" during exit."
+				}
+			]
+		}
+	]
+}

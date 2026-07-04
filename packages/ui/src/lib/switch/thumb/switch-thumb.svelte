@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn } from '../../utils/cn';
 	import { useSwitchContext } from '../root/context';
 
 	type SwitchThumbProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
+		/** Optional content rendered inside the thumb. */
 		children?: Snippet;
 		class?: string;
 	};
@@ -26,7 +26,7 @@
 	data-focused={switchRoot.focused || undefined}
 	data-focus-visible={switchRoot.focusVisible || undefined}
 	aria-hidden="true"
-	class={cn('block', className)}
+	class={className}
 >
 	{@render children?.()}
 </span>

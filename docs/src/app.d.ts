@@ -4,6 +4,18 @@ declare module '*.svelte' {
 	export default component;
 }
 
+declare module '*.md' {
+	import type { Component } from 'svelte';
+	export const metadata: { title: string; description?: string; category?: string };
+	const component: Component;
+	export default component;
+}
+
+declare module '*.svelte?highlight' {
+	const source: { code: string; html: string };
+	export default source;
+}
+
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 declare global {
 	namespace App {

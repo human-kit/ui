@@ -1,0 +1,233 @@
+{
+	"component": "popover",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "State container for the popover. Shares open state, the trigger reference, and open/close/toggle actions with the trigger and content parts.",
+			"props": [
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial open state for uncontrolled mode."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element. Can be set manually or via Popover.Trigger."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Children (Trigger and Content)"
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Content",
+			"description": "The floating role=\"dialog\" panel, rendered in a portal and positioned against the trigger. Works inside Popover.Root or in standalone controlled mode via `open`, `triggerRef`, and `onOpenChange`.",
+			"props": [
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "Offset along the main axis from the anchor element."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": "'bottom'",
+					"description": "Placement relative to the anchor element."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to flip when there's insufficient space."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "Boundary element for positioning constraints."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the popover."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the popover container."
+				},
+				{
+					"name": "nonModal",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether clicking outside the popover should close it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the popover."
+				},
+				{
+					"name": "shouldCloseOnBlur",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+				},
+				{
+					"name": "initialFocus",
+					"type": "FocusTrapOptions['initialFocus']",
+					"required": false,
+					"default": null,
+					"description": "Element or selector to focus first when modal trap activates."
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state (standalone mode)."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element (standalone mode)."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes (standalone mode)."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-placement",
+					"description": "The resolved side of the trigger the panel is on (\"top\" | \"right\" | \"bottom\" | \"left\")."
+				},
+				{
+					"name": "data-state",
+					"description": "\"open\" while the popover is open, \"closed\" during exit."
+				}
+			]
+		},
+		{
+			"name": "Trigger",
+			"description": "Button that registers itself as the popover trigger and toggles the popover on click (aria-haspopup=\"dialog\", aria-expanded).",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-popover-trigger",
+					"description": "Identifies the trigger button."
+				}
+			]
+		},
+		{
+			"name": "Overlay",
+			"description": "Optional backdrop rendered behind the popover. Place it as a sibling of Popover.Content inside Popover.Root; it runs its own enter/exit presence so it fades in step with the panel.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the overlay."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-popover-overlay",
+					"description": "Identifies the overlay element."
+				},
+				{
+					"name": "data-state",
+					"description": "\"open\" while the popover is open, \"closed\" during exit."
+				}
+			]
+		}
+	]
+}

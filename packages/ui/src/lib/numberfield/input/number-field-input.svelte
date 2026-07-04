@@ -4,7 +4,6 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { cn } from '../../utils/cn';
 	import { useNumberFieldContext } from '../root/context';
 	import { normalizeStep } from '../root/number-utils';
 
@@ -245,5 +244,5 @@
 	onmouseleave={handleMouseLeave}
 	onwheel={composeEventHandlers(handleWheel, onWheelExternal ?? undefined)}
 	onbeforeinput={composeEventHandlers(handleBeforeInput, onBeforeInputExternal ?? undefined)}
-	class={cn('outline-none', className)}
+	class={className}
 />

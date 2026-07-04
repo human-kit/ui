@@ -20,11 +20,16 @@
 		HTMLButtonAttributes,
 		'children' | 'class' | 'disabled' | 'aria-disabled'
 	> & {
+		/** Content. Receives the live render state (hovered, pressed, focused, pending…) when used as a one-argument snippet. */
 		children?: Snippet<[ButtonRenderState]> | Snippet;
 		class?: string;
+		/** Keeps the button focusable while blocking activation, and announces the pending state politely. */
 		pending?: boolean | null;
+		/** Disables the button natively. */
 		disabled?: boolean | null;
+		/** Bindable reference to the rendered button element. */
 		element?: HTMLButtonElement | null;
+		/** Overrides the internally tracked pressed state. */
 		pressed?: boolean;
 	};
 
@@ -353,7 +358,7 @@
 	data-pressed={renderedPressed || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
-	class={cn('outline-none', className)}
+	class={cn(className)}
 	onclick={composeEventHandlers(handleClick, onClickExternal ?? undefined, {
 		skipExternalOnDefaultPrevented: true
 	})}

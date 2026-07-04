@@ -1,0 +1,555 @@
+{
+	"component": "menu",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "State container for the menu. Shares open state, the trigger reference, and navigation settings (loop, typeahead, closeOnSelect) with all parts.",
+			"props": [
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial open state for uncontrolled mode."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: MenuOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes."
+				},
+				{
+					"name": "loop",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether arrow navigation wraps around the ends."
+				},
+				{
+					"name": "typeahead",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether typeahead (type to focus a matching item) is enabled."
+				},
+				{
+					"name": "closeOnSelect",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether selecting an item closes the menu. Items can override this."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element. Can be set manually or via Menu.Trigger."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Children (Trigger and Content)."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Trigger",
+			"description": "Button that opens the menu (aria-haspopup=\"menu\", aria-expanded). ArrowDown/Enter/Space open and focus the first item; ArrowUp opens and focuses the last item.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-menu-trigger",
+					"description": "Identifies the trigger button."
+				}
+			]
+		},
+		{
+			"name": "Content",
+			"description": "The floating role=\"menu\" panel. Renders in a portal and positions itself against the trigger; also used as the panel of a submenu.",
+			"props": [
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "Offset along the main axis from the trigger element."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": null,
+					"description": "Placement relative to the trigger element. Defaults to `bottom-start`\n for a root menu and `right-start` for a submenu."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to flip when there's insufficient space."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "Boundary element for positioning constraints."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the menu."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether interacting outside the menu should close it."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the menu."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the menu container."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-menu-content",
+					"description": "Identifies the menu panel element."
+				},
+				{
+					"name": "data-placement",
+					"description": "The resolved side of the trigger the panel is on (\"top\" | \"right\" | \"bottom\" | \"left\")."
+				},
+				{
+					"name": "data-state",
+					"description": "\"open\" while the menu is open, \"closed\" during exit."
+				}
+			]
+		},
+		{
+			"name": "Overlay",
+			"description": "Optional backdrop rendered behind the menu. Place it as a sibling of Menu.Content inside Menu.Root; in a submenu chain only the root menu should render one.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the overlay."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-menu-overlay",
+					"description": "Identifies the overlay element."
+				},
+				{
+					"name": "data-state",
+					"description": "\"open\" while the menu is open, \"closed\" during exit."
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "An interactive role=\"menuitem\" action. Accepts `onAction`, `disabled`, `closeOnSelect` (overrides the Root default), `textValue` for typeahead, and an optional stable `value`.",
+			"props": [
+				{
+					"name": "value",
+					"type": "string | number",
+					"required": false,
+					"default": null,
+					"description": "Stable identifier (used for typeahead/navigation). Auto-generated if omitted."
+				},
+				{
+					"name": "onAction",
+					"type": "(event?: Event) => void",
+					"required": false,
+					"default": null,
+					"description": "Handler invoked when the item is activated."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the item is disabled."
+				},
+				{
+					"name": "closeOnSelect",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the Root `closeOnSelect` default for this item."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Text used for typeahead matching. Falls back to the item's text content."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Item content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the item."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the item element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the item is disabled."
+				},
+				{
+					"name": "data-highlighted",
+					"description": "Present while the item is highlighted via keyboard navigation or pointer hover."
+				},
+				{
+					"name": "data-item-id",
+					"description": "The item's stable identifier (its `value` prop, or an auto-generated id)."
+				},
+				{
+					"name": "data-item-id-type",
+					"description": "\"number\" when the item's `value` is numeric; absent for string ids."
+				},
+				{
+					"name": "data-navigation-item",
+					"description": "Marks the element as a keyboard-navigable menu item."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the item is actively pressed via pointer."
+				}
+			]
+		},
+		{
+			"name": "Separator",
+			"description": "A visual divider between menu items (role=\"separator\").",
+			"props": [
+				{
+					"name": "orientation",
+					"type": "'horizontal' | 'vertical'",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "Orientation of the separator."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the separator."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the separator element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-menu-separator",
+					"description": "Identifies the separator element."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The separator orientation (\"horizontal\" | \"vertical\")."
+				}
+			]
+		},
+		{
+			"name": "Group",
+			"description": "Groups related items (role=\"group\"), labelled by an optional Menu.GroupLabel via aria-labelledby.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Group content, usually a Menu.GroupLabel followed by Menu.Item parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the group."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the group element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-menu-group",
+					"description": "Identifies the group element."
+				}
+			]
+		},
+		{
+			"name": "GroupLabel",
+			"description": "Accessible label for a Menu.Group. The surrounding group references it through aria-labelledby.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Optional explicit id (auto-generated otherwise)."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Label content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the label."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the label element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-menu-group-label",
+					"description": "Identifies the group label element."
+				}
+			]
+		},
+		{
+			"name": "SubmenuRoot",
+			"description": "State container for a nested submenu. Place it inside a Menu.Content with a Menu.SubmenuTrigger and its own Menu.Content; navigation settings inherit from the parent menu.",
+			"props": [
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial open state for uncontrolled mode."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: MenuOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes."
+				},
+				{
+					"name": "loop",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether arrow navigation wraps. Inherits from the parent menu by default."
+				},
+				{
+					"name": "typeahead",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether typeahead is enabled. Inherits from the parent menu by default."
+				},
+				{
+					"name": "closeOnSelect",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether selecting an item closes the menu. Inherits from the parent by default."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the submenu trigger element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Children (SubmenuTrigger and Content)."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "SubmenuTrigger",
+			"description": "A role=\"menuitem\" that opens its submenu on hover, ArrowRight, Enter, or Space. Behaves as a navigable item of the parent menu.",
+			"props": [
+				{
+					"name": "value",
+					"type": "string | number",
+					"required": false,
+					"default": null,
+					"description": "Stable identifier (used for parent navigation). Auto-generated if omitted."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the trigger is disabled."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Text used for typeahead matching. Falls back to text content."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Trigger content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the trigger."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the trigger element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the trigger is disabled."
+				},
+				{
+					"name": "data-highlighted",
+					"description": "Present while the trigger is highlighted via keyboard navigation or pointer hover."
+				},
+				{
+					"name": "data-item-id",
+					"description": "The trigger's stable identifier (its `value` prop, or an auto-generated id)."
+				},
+				{
+					"name": "data-item-id-type",
+					"description": "\"number\" when the trigger's `value` is numeric; absent for string ids."
+				},
+				{
+					"name": "data-menu-trigger",
+					"description": "Marks the element as the trigger of its submenu."
+				},
+				{
+					"name": "data-navigation-item",
+					"description": "Marks the element as a keyboard-navigable item of the parent menu."
+				},
+				{
+					"name": "data-submenu-trigger",
+					"description": "Identifies the submenu trigger element."
+				}
+			]
+		}
+	]
+}

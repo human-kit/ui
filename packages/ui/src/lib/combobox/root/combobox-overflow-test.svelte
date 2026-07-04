@@ -61,16 +61,24 @@
 		border: 1px solid #ccc;
 	}
 
-	/* The visible row hugs its content; tags never wrap or shrink. */
+	/* The visible row hugs its content; tags never wrap or shrink. The library is
+	   headless (ships no default font-size), so the fixture pins one — as a real
+	   consumer would — to keep the overflow measurement deterministic. */
 	:global(.tags-row) {
 		display: flex;
 		align-items: center;
 		gap: 4px;
+		font-size: 0.875rem;
 	}
 
+	/* Fixed tag width so the overflow math is deterministic regardless of font
+	   rendering (the headless library no longer ships a default tag size). */
 	:global(.tags-row [data-tag-id]) {
+		box-sizing: border-box;
 		flex-shrink: 0;
+		width: 40px;
 		white-space: nowrap;
+		overflow: hidden;
 		padding: 0 6px;
 	}
 </style>

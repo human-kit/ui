@@ -1,0 +1,337 @@
+{
+	"component": "tabs",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The tabs container. Holds the selected value and provides context to the list, tabs, indicator, and panels.",
+			"props": [
+				{
+					"name": "keyboardActivation",
+					"type": "TabsKeyboardActivation",
+					"required": false,
+					"default": "'automatic'",
+					"description": "'automatic' activates tabs as arrow keys move focus; 'manual' waits for Enter or Space."
+				},
+				{
+					"name": "orientation",
+					"type": "TabsOrientation",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "Layout axis of the tab list; also switches the arrow-key navigation axis."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables the whole tabs group."
+				},
+				{
+					"name": "value",
+					"type": "TabsValue | null",
+					"required": false,
+					"default": null,
+					"description": "Controlled selected tab value. Bindable. Pass null for no active tab."
+				},
+				{
+					"name": "defaultValue",
+					"type": "TabsValue | null",
+					"required": false,
+					"default": null,
+					"description": "Initially selected tab value when uncontrolled. Pass null when no tab should start active."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<TabsValue>",
+					"required": false,
+					"default": null,
+					"description": "Values of tabs that cannot be focused or activated."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: TabsValue | null) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the selected tab changes."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The list and panel parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element and used to derive tab and panel ids. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "context",
+					"type": "TabsContext",
+					"required": false,
+					"default": null,
+					"description": "Bindable handle exposing the tabs state (selected and focused values, orientation, activation helpers) for advanced composition."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the whole tabs group is disabled."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The configured orientation ('horizontal' | 'vertical')."
+				},
+				{
+					"name": "data-tabs-root",
+					"description": "Identifies the root element."
+				}
+			]
+		},
+		{
+			"name": "List",
+			"description": "The tab strip. Renders role=\"tablist\" and manages roving focus between tabs.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The tab and indicator parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered list element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the whole tabs group is disabled."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The configured orientation ('horizontal' | 'vertical')."
+				},
+				{
+					"name": "data-tabs-list",
+					"description": "Identifies the list element."
+				}
+			]
+		},
+		{
+			"name": "Tab",
+			"description": "A single tab button. Renders role=\"tab\" with aria-selected and aria-controls pointing at its panel.",
+			"props": [
+				{
+					"name": "value",
+					"type": "TabsValue",
+					"required": true,
+					"default": null,
+					"description": "Unique value linking this tab to the panel with the same value."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Prevents this tab from being focused or activated."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The tab label content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-activation-direction",
+					"description": "Direction the selection moved from the previously active tab ('left' | 'right' | 'up' | 'down')."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the tab is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the tab has focus."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The configured orientation ('horizontal' | 'vertical')."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present while the tab is the active tab."
+				},
+				{
+					"name": "data-tabs-tab",
+					"description": "Identifies the tab element."
+				},
+				{
+					"name": "data-tabs-value",
+					"description": "The tab's value, stringified."
+				},
+				{
+					"name": "data-tabs-value-type",
+					"description": "The runtime type of the tab's value ('string' | 'number')."
+				}
+			]
+		},
+		{
+			"name": "Indicator",
+			"description": "An optional visual marker for the active tab. Measures the active tab and exposes its position and size through the --active-tab-left/top/width/height CSS variables.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Optional content rendered inside the indicator."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered span element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-activation-direction",
+					"description": "Direction the selection moved from the previously active tab ('left' | 'right' | 'up' | 'down')."
+				},
+				{
+					"name": "data-hidden",
+					"description": "Present when no tab is active."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The configured orientation ('horizontal' | 'vertical')."
+				},
+				{
+					"name": "data-tabs-indicator",
+					"description": "Identifies the indicator element."
+				}
+			]
+		},
+		{
+			"name": "Panel",
+			"description": "The content associated with a tab. Renders role=\"tabpanel\" with aria-labelledby, and is hidden while its tab is inactive.",
+			"props": [
+				{
+					"name": "value",
+					"type": "TabsValue",
+					"required": true,
+					"default": null,
+					"description": "Value of the tab this panel belongs to."
+				},
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keep the inactive panel mounted (hidden) instead of unmounting it, preserving its DOM state."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The panel content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered panel element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-hidden",
+					"description": "Present while the panel's tab is inactive and the panel is hidden."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present while the panel's tab is active."
+				},
+				{
+					"name": "data-tabs-panel",
+					"description": "Identifies the panel element."
+				},
+				{
+					"name": "data-tabs-value",
+					"description": "The panel's value, stringified."
+				},
+				{
+					"name": "data-tabs-value-type",
+					"description": "The runtime type of the panel's value ('string' | 'number')."
+				}
+			]
+		}
+	]
+}

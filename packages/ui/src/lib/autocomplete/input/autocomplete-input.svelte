@@ -6,7 +6,6 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { cn } from '../../utils/cn';
 
 	type AutocompleteInputProps = HTMLInputAttributes & {
 		/** Accessible label for the input. */
@@ -122,6 +121,6 @@
 	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
-	class={cn('outline-none', className)}
+	class={className}
 	{...restProps}
 />

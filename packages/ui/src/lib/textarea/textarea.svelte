@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { ClassValue } from 'class-variance-authority/types';
 	import { tick, untrack } from 'svelte';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
-	import { cn } from '../utils/cn';
+	import type { ClassValue } from '../utils/cn';
 
 	type AriaInvalidValue = HTMLTextareaAttributes['aria-invalid'];
 	type TextAreaValue = HTMLTextareaAttributes['value'];
@@ -255,5 +254,5 @@
 	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
 	onmouseenter={composeEventHandlers(handleMouseEnter, onMouseEnterExternal ?? undefined)}
 	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
-	class={cn('outline-none', className)}
+	class={className}
 ></textarea>

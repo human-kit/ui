@@ -1,19 +1,24 @@
 <script lang="ts">
-	import type { ClassValue } from 'class-variance-authority/types';
 	import { untrack } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
-	import { cn } from '../utils/cn';
+	import type { ClassValue } from '../utils/cn';
 
 	type AriaInvalidValue = HTMLInputAttributes['aria-invalid'];
 
 	type InputProps = HTMLInputAttributes & {
 		class?: ClassValue;
+		/** Disables the input natively. */
 		disabled?: boolean | null;
+		/** Native readonly, also exposed as `aria-readonly`. */
 		readonly?: boolean | null;
+		/** Marks the value as invalid: maps to `aria-invalid` and `data-invalid`. */
 		invalid?: boolean;
+		/** Native required, also exposed as `aria-required`. */
 		required?: boolean | null;
+		/** Current value. Bindable. */
 		value?: HTMLInputAttributes['value'];
+		/** Bindable reference to the rendered input element. */
 		element?: HTMLInputElement | null;
 	};
 
@@ -163,5 +168,5 @@
 	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
 	onmouseenter={composeEventHandlers(handleMouseEnter, onMouseEnterExternal ?? undefined)}
 	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
-	class={cn('outline-none', className)}
+	class={className}
 />

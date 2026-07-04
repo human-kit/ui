@@ -5,7 +5,6 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { cn } from '../../utils/cn';
 	import { setSwitchContext, type SwitchContext } from './context';
 
 	type SwitchRootProps = Omit<
@@ -22,21 +21,35 @@
 		| 'onkeydown'
 		| 'value'
 	> & {
+		/** Id applied to the hidden input so `label[for]` can target the switch. Auto-generated when omitted. */
 		id?: string;
+		/** Bindable reference to the rendered root element. */
 		element?: HTMLSpanElement | null;
+		/** Name submitted with the form when the switch is checked. */
 		name?: string;
+		/** Value submitted with the form when the switch is checked. Does not affect the visual state. */
 		value?: string;
+		/** Associates the hidden input with a form by id. */
 		form?: string;
+		/** Controlled checked state. Bindable. */
 		checked?: boolean;
+		/** Initial checked state when uncontrolled. */
 		defaultChecked?: boolean;
+		/** Called when the user toggles the switch. */
 		onCheckedChange?: (checked: boolean) => void;
+		/** Removes the switch from interaction and focus order. */
 		disabled?: boolean;
+		/** Keeps the switch focusable while preventing state changes. */
 		readonly?: boolean;
+		/** Marks the hidden input as required for form validation. */
 		required?: boolean;
 		children?: Snippet;
 		class?: string;
+		/** Accessible label when no visible label is associated. */
 		'aria-label'?: string;
+		/** Id of the element that labels the switch. */
 		'aria-labelledby'?: string;
+		/** Overrides the default tab order. */
 		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
@@ -402,10 +415,8 @@
 	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={handleBlur}
-	class={cn(
-		'relative inline-flex shrink-0 items-center justify-start align-middle outline-none',
-		className
-	)}
+	class={className}
+	style:position="relative"
 >
 	<input
 		bind:this={inputRef}

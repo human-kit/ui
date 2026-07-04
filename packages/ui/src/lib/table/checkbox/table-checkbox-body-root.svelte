@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn } from '../../utils/cn';
 	import { setCheckboxContext, type CheckboxState } from '../../checkbox/root/context';
 
 	type TableCheckboxBodyRootProps = Omit<
@@ -131,10 +130,8 @@
 	data-disabled={disabled || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
-	class={cn(
-		'relative inline-flex shrink-0 items-center justify-center align-middle outline-none',
-		className
-	)}
+	class={className}
+	style:position="relative"
 >
 	{@render children?.()}
 </span>

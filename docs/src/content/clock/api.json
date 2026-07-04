@@ -1,0 +1,281 @@
+{
+	"component": "clock",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The stateful container. Resolves visible wheel columns from granularity and hourCycle in stable order (hour → minute? → second? → dayPeriod?) and renders default columns when no column snippet is provided.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element. Auto-generated when omitted."
+				},
+				{
+					"name": "value",
+					"type": "TimePickerTimeValue | null",
+					"required": false,
+					"default": null,
+					"description": "Controlled time value ('HH:mm' or 'HH:mm:ss'). Bindable. null represents the empty state."
+				},
+				{
+					"name": "defaultValue",
+					"type": "TimePickerTimeValue | null",
+					"required": false,
+					"default": null,
+					"description": "Initial time value when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: TimePickerTimeValue | null) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the committed time value changes. Wheel selection commits immediately on snap."
+				},
+				{
+					"name": "minValue",
+					"type": "TimePickerTimeValue",
+					"required": false,
+					"default": null,
+					"description": "Earliest selectable time. Out-of-range items are disabled. Midnight-wrapping ranges are not supported."
+				},
+				{
+					"name": "maxValue",
+					"type": "TimePickerTimeValue",
+					"required": false,
+					"default": null,
+					"description": "Latest selectable time. Out-of-range items are disabled."
+				},
+				{
+					"name": "hourCycle",
+					"type": "TimePickerHourCycle",
+					"required": false,
+					"default": null,
+					"description": "Forces 12- or 24-hour rendering. Defaults to the active locale. 12-hour mode adds a day-period column; values stay normalized to 24-hour."
+				},
+				{
+					"name": "granularity",
+					"type": "TimePickerGranularity",
+					"required": false,
+					"default": "'minute'",
+					"description": "Smallest editable unit: 'hour', 'minute', or 'second'. 'hour' emits HH:00 values."
+				},
+				{
+					"name": "hourStep",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "Increment between selectable hours."
+				},
+				{
+					"name": "minuteStep",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "Increment between selectable minutes."
+				},
+				{
+					"name": "secondStep",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "Increment between selectable seconds."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables all wheel columns."
+				},
+				{
+					"name": "column",
+					"type": "Snippet<[ClockColumnInfo]>",
+					"required": false,
+					"default": null,
+					"description": "Custom per-column rendering; receives { type, label? } for each visible column. Defaults to auto-rendered columns."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Arbitrary children. When column is used, children render after the columns — useful for overlays like Clock.Axis."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the clock when no visible label is associated."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-clock",
+					"description": "Identifies the clock root element."
+				}
+			]
+		},
+		{
+			"name": "Axis",
+			"description": "Root-level visual overlay rendered across all columns, e.g. a central selection band aligned with the snapped items.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "height",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Height of the axis band in pixels. Defaults to the item height."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-clock-axis",
+					"description": "Identifies the axis overlay element."
+				}
+			]
+		},
+		{
+			"name": "WheelColumn",
+			"description": "One scrollable wheel (role=\"spinbutton\") for one editable segment: hour, minute, second, or dayPeriod.",
+			"props": [
+				{
+					"name": "type",
+					"type": "ClockEditableSegmentType",
+					"required": true,
+					"default": null,
+					"description": "Which segment this wheel edits: 'hour', 'minute', 'second', or 'dayPeriod'."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[TimePickerWheelOption]>",
+					"required": false,
+					"default": null,
+					"description": "Renders one item per option; receives the wheel option for the column."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible name for the column. Defaults to the localized segment label."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while the column contains focus."
+				},
+				{
+					"name": "data-wheel-highlight",
+					"description": "Identifies the column's central highlight band."
+				},
+				{
+					"name": "data-wheel-spacer",
+					"description": "Identifies the padding spacers that let edge items reach the center."
+				}
+			]
+		},
+		{
+			"name": "WheelItem",
+			"description": "Headless item inside a wheel column. Renders one option and exposes its state through data attributes, leaving all visual styling to consumers.",
+			"props": [
+				{
+					"name": "type",
+					"type": "ClockEditableSegmentType",
+					"required": true,
+					"default": null,
+					"description": "The segment type of the column this item belongs to."
+				},
+				{
+					"name": "option",
+					"type": "TimePickerWheelOption",
+					"required": true,
+					"default": null,
+					"description": "The wheel option to render, as received from the column's children snippet."
+				},
+				{
+					"name": "selected",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the item as selected. Resolved from root state when rendered via the column snippet."
+				},
+				{
+					"name": "onRequestCenter",
+					"type": "() => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the item requests to be scrolled to the center of the wheel."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-centered",
+					"description": "Present while the item sits in the center of the wheel."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the item cannot be selected (out of range or stepped out)."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present when the item is the committed value for its column."
+				},
+				{
+					"name": "data-type",
+					"description": "The segment type of the item's column."
+				},
+				{
+					"name": "data-value",
+					"description": "The option value the item represents."
+				},
+				{
+					"name": "data-wheel-item",
+					"description": "Identifies a wheel item element."
+				}
+			]
+		}
+	]
+}

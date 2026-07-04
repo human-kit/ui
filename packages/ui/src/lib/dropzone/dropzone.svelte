@@ -2,7 +2,6 @@
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
-	import { cn } from '../utils/cn';
 
 	export type DropzoneRenderState = {
 		/** A drag is currently hovering the zone with droppable file content. */
@@ -226,7 +225,7 @@
 	data-hovered={hovered || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
-	class={cn('outline-none', className)}
+	class={className}
 	onclick={composeEventHandlers(handleClick, onClickExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}

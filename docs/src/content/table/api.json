@@ -1,0 +1,886 @@
+{
+	"component": "table",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The stateful table container. Renders an interactive grid over native table markup and manages focus, selection, sorting, column widths, and column visibility.",
+			"props": [
+				{
+					"name": "selectionMode",
+					"type": "TableSelectionMode",
+					"required": false,
+					"default": "'none'",
+					"description": "Whether rows can be selected: 'none', 'single', or 'multiple'."
+				},
+				{
+					"name": "selectionBehavior",
+					"type": "TableSelectionBehavior",
+					"required": false,
+					"default": "'toggle'",
+					"description": "'toggle' allows deselecting an already selected row; 'replace' keeps selected rows selected when pressed again."
+				},
+				{
+					"name": "disabledBehavior",
+					"type": "TableDisabledBehavior",
+					"required": false,
+					"default": "'all'",
+					"description": "'all' makes disabled rows fully non-interactive; 'selection' only blocks selection."
+				},
+				{
+					"name": "disallowEmptySelection",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Prevents the user from deselecting the last selected row."
+				},
+				{
+					"name": "hiddenColumns",
+					"type": "Iterable<string>",
+					"required": false,
+					"default": null,
+					"description": "Controlled list of hidden column ids. Bindable. Hidden columns keep their registered widths so they can be restored."
+				},
+				{
+					"name": "defaultHiddenColumns",
+					"type": "Iterable<string>",
+					"required": false,
+					"default": null,
+					"description": "Initially hidden column ids when uncontrolled."
+				},
+				{
+					"name": "selectedKeys",
+					"type": "Iterable<TableSelectionKey>",
+					"required": false,
+					"default": null,
+					"description": "Controlled set of selected row ids. Bindable."
+				},
+				{
+					"name": "defaultSelectedKeys",
+					"type": "Iterable<TableSelectionKey>",
+					"required": false,
+					"default": null,
+					"description": "Initially selected row ids when uncontrolled."
+				},
+				{
+					"name": "sortDescriptor",
+					"type": "TableSortDescriptor",
+					"required": false,
+					"default": null,
+					"description": "Controlled sort state (column id and direction). Bindable. Setting it back to undefined clears the sort."
+				},
+				{
+					"name": "defaultSortDescriptor",
+					"type": "TableSortDescriptor",
+					"required": false,
+					"default": null,
+					"description": "Initial sort state when uncontrolled."
+				},
+				{
+					"name": "columnWidths",
+					"type": "Map<string, TableColumnWidth>",
+					"required": false,
+					"default": null,
+					"description": "Controlled column widths keyed by column id. Bindable. Width specs can be px, '%', or 'fr'."
+				},
+				{
+					"name": "defaultColumnWidths",
+					"type": "Iterable<readonly [string, TableColumnWidth]>",
+					"required": false,
+					"default": null,
+					"description": "Initial column widths when uncontrolled; the user can still resize them."
+				},
+				{
+					"name": "ssrMinTableWidth",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Width (in px) the table reserves through `min-width` during server\nrendering, before its columns have registered their own widths.\n\nOn the server the `<table>` element is serialized before the column\nchildren run their registration, so the table cannot know its own\nminimum width yet and renders at the container width. On hydration the\nresolved column widths can push the table wider, producing a layout\nshift. Set this to the sum of the columns' resolved widths to reserve\nthat space up-front and avoid the jump. Ignored once the real columns\nregister on the client."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<TableSelectionKey>",
+					"required": false,
+					"default": null,
+					"description": "Ids of rows that stay rendered but are affected by `disabledBehavior`."
+				},
+				{
+					"name": "onRowAction",
+					"type": "TableRowActionHandler",
+					"required": false,
+					"default": null,
+					"description": "Called with the row id when a row is activated."
+				},
+				{
+					"name": "onSelectionChange",
+					"type": "(keys: Set<TableSelectionKey>) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the row selection changes."
+				},
+				{
+					"name": "onSortChange",
+					"type": "(descriptor: TableSortDescriptor | undefined) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the sort state changes; receives undefined when sorting is cleared."
+				},
+				{
+					"name": "onColumnWidthsChange",
+					"type": "(widths: Map<string, TableColumnWidth>) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when column widths change."
+				},
+				{
+					"name": "onHiddenColumnsChange",
+					"type": "(columnIds: string[]) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when column visibility changes."
+				},
+				{
+					"name": "onColumnResizeStart",
+					"type": "(columnId: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Called with the column id when a resize interaction starts."
+				},
+				{
+					"name": "onColumnResizeEnd",
+					"type": "(widths: Map<string, TableColumnWidth>) => void",
+					"required": false,
+					"default": null,
+					"description": "Called with the final width map when a resize interaction ends."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The header, body, and footer parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "context",
+					"type": "TableContext",
+					"required": false,
+					"default": null,
+					"description": "Bindable handle exposing the table state for advanced composition."
+				},
+				{
+					"name": "element",
+					"type": "HTMLTableElement",
+					"required": false,
+					"default": null,
+					"description": "Bindable reference to the rendered table element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled-behavior",
+					"description": "The configured disabled behavior ('all' | 'selection')."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus inside the table should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while focus is inside the table."
+				},
+				{
+					"name": "data-selection-behavior",
+					"description": "The configured selection behavior ('toggle' | 'replace')."
+				},
+				{
+					"name": "data-selection-mode",
+					"description": "The configured selection mode ('none' | 'single' | 'multiple')."
+				},
+				{
+					"name": "data-table-column-resizer",
+					"description": "Marks resize handles inside the table; the root switches to a fixed table layout when any are present."
+				},
+				{
+					"name": "data-table-implicit-width",
+					"description": "Present on a column's col element while it still uses an implicit width (before widths are materialized by a resize)."
+				}
+			]
+		},
+		{
+			"name": "Column",
+			"description": "Metadata-only wrapper for a column. Renders no DOM itself; it registers the column and should wrap a single Table.ColumnHeaderCell.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "Unique column id used for sorting, visibility, and width state."
+				},
+				{
+					"name": "rowHeader",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Makes this column's body cells render as rowheader."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Spoken column label used for polite sort announcements when it should differ from the column id."
+				},
+				{
+					"name": "width",
+					"type": "TableColumnWidth",
+					"required": false,
+					"default": null,
+					"description": "Fixed width (px, '%', or 'fr'). Fixed-width columns ignore resize attempts even if a resizer is composed."
+				},
+				{
+					"name": "defaultWidth",
+					"type": "TableColumnWidth",
+					"required": false,
+					"default": null,
+					"description": "Initial uncontrolled width that can still be resized by the user."
+				},
+				{
+					"name": "minWidth",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Minimum width in px the column can shrink to."
+				},
+				{
+					"name": "maxWidth",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Maximum width in px the column can grow to."
+				},
+				{
+					"name": "pin",
+					"type": "TableColumnPin",
+					"required": false,
+					"default": null,
+					"description": "Freezes the column against the horizontal scroll edge: `'left'` sticks it to\nthe start, `'right'` to the end. Multiple columns can pin to the same side —\nthey stack in document order and the table computes each one's offset from\nthe resolved widths of the columns already pinned ahead of it."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The single Table.ColumnHeaderCell this column wraps."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "step",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "shiftStep",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Header",
+			"description": "The table head section containing the header row.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The header row with its columns."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-table-header",
+					"description": "Identifies the header element."
+				}
+			]
+		},
+		{
+			"name": "Body",
+			"description": "The table body section. Renders the data rows and hosts the empty state.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "items",
+					"type": "undefined",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "virtualizer",
+					"type": "undefined",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "empty",
+					"type": "undefined",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-empty",
+					"description": "Present while the body has no rows."
+				},
+				{
+					"name": "data-table-body",
+					"description": "Identifies the body element."
+				},
+				{
+					"name": "data-virtual-spacer",
+					"description": "Identifies the top or bottom spacer rows used by virtualization ('top' | 'bottom')."
+				}
+			]
+		},
+		{
+			"name": "EmptyState",
+			"description": "A placeholder row shown inside the body while the table has no rows. Use it instead of conditionally rendering freeform body content.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The empty state content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-empty",
+					"description": "Identifies the empty state row."
+				}
+			]
+		},
+		{
+			"name": "Footer",
+			"description": "The table foot section, for summary rows.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The footer row(s)."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-table-footer",
+					"description": "Identifies the footer element."
+				}
+			]
+		},
+		{
+			"name": "Row",
+			"description": "A table row. Body rows take an id to participate in selection, focus navigation, and row actions.",
+			"props": [
+				{
+					"name": "id",
+					"type": "TableSelectionKey",
+					"required": false,
+					"default": null,
+					"description": "Unique row id used for selection, disabled state, and row actions."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables this row according to the root's `disabledBehavior`."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Plain-text description of the row for assistive announcements."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The row's cells."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-actionable",
+					"description": "Present when activating the row triggers a row action."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the row is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the row itself is focused and focus should be visibly indicated."
+				},
+				{
+					"name": "data-focus-visible-within",
+					"description": "Present while an element inside the row has visibly indicated focus."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while focus is inside the row."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the row itself has focus."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present while the row is selected."
+				},
+				{
+					"name": "data-selection-disabled",
+					"description": "Present when the row cannot be selected."
+				}
+			]
+		},
+		{
+			"name": "ColumnHeaderCell",
+			"description": "A header cell. Remains the roving-focus target for its column even when it contains a sort trigger or resizer.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The header cell content, optionally including Table.SortTrigger and Table.ColumnResizer."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-column-index",
+					"description": "Index of the cell's column among visible columns."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the cell is focused and focus should be visibly indicated."
+				},
+				{
+					"name": "data-focus-visible-within",
+					"description": "Present while an element inside the cell has visibly indicated focus."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while focus is inside the cell."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the cell has focus."
+				},
+				{
+					"name": "data-pin-edge",
+					"description": "The edge the owning column is pinned to ('left' | 'right')."
+				},
+				{
+					"name": "data-pinned",
+					"description": "Present when the owning column is pinned."
+				},
+				{
+					"name": "data-sort-direction",
+					"description": "The active sort direction while this column is sorted ('ascending' | 'descending')."
+				},
+				{
+					"name": "data-sortable",
+					"description": "Present when the owning column is sortable."
+				}
+			]
+		},
+		{
+			"name": "SortTrigger",
+			"description": "The explicit opt-in button for sorting. Rendering it inside a header cell makes the owning column sortable and toggles the root's sortDescriptor.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[TableSortTriggerRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The trigger content; can consume a `sortDirection` render state for stateful labels or visuals."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-sort-direction",
+					"description": "The active sort direction while the owning column is sorted ('ascending' | 'descending')."
+				},
+				{
+					"name": "data-sorted",
+					"description": "Present while the owning column is the active sort column."
+				},
+				{
+					"name": "data-table-sort-trigger",
+					"description": "Identifies the sort trigger element."
+				}
+			]
+		},
+		{
+			"name": "ColumnResizer",
+			"description": "A keyboard-accessible resize handle. Rendering it inside a header cell makes the owning column resizable.",
+			"props": [
+				{
+					"name": "step",
+					"type": "number",
+					"required": false,
+					"default": "16",
+					"description": "Width change in px per arrow key press in keyboard resize mode."
+				},
+				{
+					"name": "shiftStep",
+					"type": "number",
+					"required": false,
+					"default": "48",
+					"description": "Width change in px per arrow key press while holding Shift."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The visual handle content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the handle is focused and focus should be visibly indicated."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the handle has focus."
+				},
+				{
+					"name": "data-resizable",
+					"description": "Present when the owning column can currently be resized."
+				},
+				{
+					"name": "data-resizable-direction",
+					"description": "The direction the handle resizes toward (currently always 'right')."
+				},
+				{
+					"name": "data-resizing",
+					"description": "Present while a pointer or keyboard resize is in progress."
+				},
+				{
+					"name": "data-table-column-resizer",
+					"description": "Identifies the resize handle element."
+				},
+				{
+					"name": "data-testid",
+					"description": "Identifies the hidden resize status live region ('column-resize-status'); not a styling target."
+				}
+			]
+		},
+		{
+			"name": "Checkbox",
+			"description": "An explicit selection control inside header or body cells. Auto-hides in header cells unless selectionMode is 'multiple', and everywhere when selection is disabled.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the rendered checkbox. Auto-generated when omitted."
+				},
+				{
+					"name": "title",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Native tooltip text for the checkbox."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The checkbox content, typically a `Table.CheckboxIndicator`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label when no visible label is associated."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of the element that labels the checkbox."
+				},
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-table-checkbox",
+					"description": "Identifies the checkbox element."
+				}
+			]
+		},
+		{
+			"name": "CheckboxIndicator",
+			"description": "The visual mark inside a table checkbox, composing custom affordances for checked and indeterminate states.",
+			"props": [
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keep the indicator mounted even while the checkbox is unchecked."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The indicator content, typically a check or minus icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present while the checkbox is checked."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the checkbox is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the checkbox has focus."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the checkbox is indeterminate (partial selection)."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the checkbox is actively pressed."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present while the checkbox is unchecked (with `forceMount`)."
+				}
+			]
+		},
+		{
+			"name": "Cell",
+			"description": "A body or footer cell participating in grid keyboard navigation. First-column body cells render as rowheader when their column has rowHeader.",
+			"props": [],
+			"dataAttributes": [
+				{
+					"name": "data-actionable",
+					"description": "Present when activating the cell's row triggers a row action."
+				},
+				{
+					"name": "data-column-index",
+					"description": "Index of the cell's column among visible columns."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the cell's row is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the cell is focused and focus should be visibly indicated."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the cell has focus."
+				},
+				{
+					"name": "data-pin-edge",
+					"description": "The edge the owning column is pinned to ('left' | 'right')."
+				},
+				{
+					"name": "data-pinned",
+					"description": "Present when the owning column is pinned."
+				},
+				{
+					"name": "data-row-selected",
+					"description": "Present while the cell's row is selected."
+				},
+				{
+					"name": "data-selection-disabled",
+					"description": "Present when the cell's row cannot be selected."
+				}
+			]
+		},
+		{
+			"name": "InteractiveCell",
+			"description": "A body cell for content with its own focusable controls. The cell keeps grid keyboard navigation while focus is on it; focused descendants own their interactions.",
+			"props": [],
+			"dataAttributes": [
+				{
+					"name": "data-actionable",
+					"description": "Present when activating the cell's row triggers a row action."
+				},
+				{
+					"name": "data-column-index",
+					"description": "Index of the cell's column among visible columns."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the cell's row is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the cell is focused and focus should be visibly indicated."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the cell has focus."
+				},
+				{
+					"name": "data-pin-edge",
+					"description": "The edge the owning column is pinned to ('left' | 'right')."
+				},
+				{
+					"name": "data-pinned",
+					"description": "Present when the owning column is pinned."
+				},
+				{
+					"name": "data-row-selected",
+					"description": "Present while the cell's row is selected."
+				},
+				{
+					"name": "data-selection-disabled",
+					"description": "Present when the cell's row cannot be selected."
+				}
+			]
+		}
+	]
+}

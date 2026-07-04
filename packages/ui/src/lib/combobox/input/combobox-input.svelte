@@ -6,7 +6,6 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { cn } from '../../utils/cn';
 
 	type ComboBoxInputProps = HTMLInputAttributes & {
 		/** Accessible label for the input */
@@ -122,9 +121,6 @@
 	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
-	class={cn(
-		'bg-depth-2 sunken placeholder:text-muted-foreground hover:bg-depth-1 focus:ring-border h-8 w-full rounded-xs border px-2 text-sm shadow-xs transition-all ease-out outline-none focus:ring focus:ring-offset-1 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-		className
-	)}
+	class={className}
 	{...restProps}
 />
