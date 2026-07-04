@@ -4,8 +4,7 @@ description: A headless tab primitive with roving focus, automatic or manual key
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Manual from './demos/manual.svelte';
@@ -72,4 +71,4 @@ Set `orientation="vertical"` to stack the tab list and switch arrow-key navigati
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

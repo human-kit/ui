@@ -4,8 +4,7 @@ description: Floating content anchored to a trigger, with modal and non-modal in
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Placement from './demos/placement.svelte';
@@ -68,4 +67,4 @@ By default the popover is modal: focus is trapped, scroll is locked, and outside
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

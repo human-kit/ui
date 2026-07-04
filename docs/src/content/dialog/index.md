@@ -4,8 +4,7 @@ description: An accessible modal dialog with trigger, portal, overlay, and conte
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Controlled from './demos/controlled.svelte';
@@ -71,4 +70,4 @@ Nest a `Dialog.Root` inside another dialog's content to build modal stacks. The 
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

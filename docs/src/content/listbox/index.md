@@ -4,8 +4,7 @@ description: A headless selectable list primitive with keyboard navigation, sing
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Multiple from './demos/multiple.svelte';
@@ -64,4 +63,4 @@ Use `disabled` on `ListBox.Item` (or `disabledKeys` on the root) to make individ
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

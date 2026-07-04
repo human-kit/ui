@@ -4,8 +4,7 @@ description: A composable boolean switch with controlled and uncontrolled state,
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import States from './demos/states.svelte';
@@ -62,4 +61,4 @@ Every visual state is exposed through `data-*` attributes on both parts, so all 
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

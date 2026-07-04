@@ -4,8 +4,7 @@ description: An accessible combination of text input, popover, and listbox with 
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Tags from './demos/tags.svelte';
@@ -75,4 +74,4 @@ Set `pending` on `ComboBox.Root` to expose async loading state: the root gets `d
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

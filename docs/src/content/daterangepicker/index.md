@@ -4,8 +4,7 @@ description: A composable date range picker pairing two segmented date inputs wi
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Bounds from './demos/bounds.svelte';
@@ -82,4 +81,4 @@ A composable date range picker that pairs two segmented date inputs — start an
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

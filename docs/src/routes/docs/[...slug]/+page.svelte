@@ -3,12 +3,12 @@
 </script>
 
 <svelte:head>
-	<title>{data.meta.title} · HK</title>
+	<title>{data.meta.title} · Svelte Components</title>
 	{#if data.meta.description}
 		<meta name="description" content={data.meta.description} />
 	{/if}
 </svelte:head>
 
-<article class="prose-docs mx-auto max-w-3xl">
+<article class="hd-prose mx-auto max-w-3xl">
 	<data.content />
 </article>

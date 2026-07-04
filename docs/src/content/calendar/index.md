@@ -4,8 +4,7 @@ description: A composable calendar with single-date and range selection, keyboar
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Range from './demos/range.svelte';
@@ -74,4 +73,4 @@ Wrap the calendar in a `LocaleProvider` to localize the month heading, weekday l
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

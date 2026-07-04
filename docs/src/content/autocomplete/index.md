@@ -4,8 +4,7 @@ description: An always-visible, filterable list — a search input on top of a L
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Multiple from './demos/multiple.svelte';
@@ -73,4 +72,4 @@ Set `filter={null}` on `Autocomplete.Root` to disable local filtering and comput
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

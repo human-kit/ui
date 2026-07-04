@@ -4,8 +4,7 @@ description: A headless native text input with modality-aware focus state, nativ
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Validation from './demos/validation.svelte';
@@ -50,4 +49,4 @@ Use `disabled`, `readonly`, `invalid`, and `required` to control validation and 
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

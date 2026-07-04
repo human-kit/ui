@@ -4,8 +4,7 @@ description: A headless single disclosure primitive with controlled or uncontrol
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Controlled from './demos/controlled.svelte';
@@ -55,4 +54,4 @@ Bind `open` (or pair `open` with `onOpenChange`) to drive the panel from outside
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

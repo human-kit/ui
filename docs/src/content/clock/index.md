@@ -4,8 +4,7 @@ description: A standalone wheel-based time picker with spinbutton columns for ho
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Bounds from './demos/bounds.svelte';
@@ -72,4 +71,4 @@ Set `hourCycle={12}` to render a day-period column. Values are always normalized
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

@@ -4,8 +4,7 @@ description: A headless native multiline text input with modality-aware focus st
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import States from './demos/states.svelte';
@@ -61,4 +60,4 @@ Enable `autoResize` when the textarea should grow with content, and bound the he
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

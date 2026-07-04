@@ -11,7 +11,7 @@
 		"dev": "pnpm --filter docs dev",
 		"build": "pnpm --filter @human-kit/ui run package",
 		"build:docs": "pnpm --filter docs build",
-		"docs:api": "node scripts/extract-api.mjs",
+		"docs:api": "pnpm --filter docs run api",
 		"test": "pnpm --filter @human-kit/ui test",
 		"typecheck": "pnpm --filter @human-kit/ui check && pnpm --filter docs check",
 		"check": "pnpm -r run check",

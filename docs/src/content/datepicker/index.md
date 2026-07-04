@@ -4,8 +4,7 @@ description: A composable date picker pairing a segmented date input with a cale
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Bounds from './demos/bounds.svelte';
@@ -77,4 +76,4 @@ A composable date picker that pairs a segmented date input with a calendar popov
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

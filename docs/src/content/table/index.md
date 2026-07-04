@@ -4,8 +4,7 @@ description: A headless interactive table primitive with grid-style keyboard nav
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Selection from './demos/selection.svelte';
@@ -87,6 +86,6 @@ Pagination stays consumer-owned: slice the dataset before rendering and drive th
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />
 
 More advanced patterns — column visibility, fixed and pinned columns, sticky headers, column resizing, and row actions — are supported by the same parts; see the API reference above for the corresponding props.

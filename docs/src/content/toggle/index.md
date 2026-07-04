@@ -4,8 +4,7 @@ description: A headless two-state button with controlled and uncontrolled select
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Buttons from './demos/buttons.svelte';
@@ -63,4 +62,4 @@ Bind `selected` to drive the toggle externally, and use `onChange` to react to u
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

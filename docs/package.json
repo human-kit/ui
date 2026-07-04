@@ -7,9 +7,12 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"api": "humandocs extract-api --lib ../packages/ui/src/lib --content src/content"
 	},
 	"dependencies": {
+		"@human-kit/humandocs": "^0.1.2",
+		"@human-kit/markdown": "^0.2.0",
 		"@human-kit/ui": "workspace:*",
 		"@sveltejs/adapter-vercel": "^6.3.1",
 		"svelte-render-scan": "^1.1.0",
@@ -21,9 +24,7 @@
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/vite": "^4.1.14",
 		"@toolwind/corner-shape": "^0.0.8-3",
-		"mdsvex": "^0.12.7",
 		"rehype-slug": "^6.0.0",
-		"shiki": "^4.3.0",
 		"svelte": "^5.41.0",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.14",

@@ -4,8 +4,7 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Single from './demos/single.svelte';
@@ -66,4 +65,4 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

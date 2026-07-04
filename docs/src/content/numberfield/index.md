@@ -4,8 +4,7 @@ description: Composable numeric input with formatted text entry, spinbutton sema
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Formatting from './demos/formatting.svelte';
@@ -73,4 +72,4 @@ The visible text is formatted with `Intl.NumberFormat` via `formatOptions`, whil
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

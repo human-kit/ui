@@ -4,8 +4,7 @@ description: A composable time picker pairing a segmented time input with a popo
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Bounds from './demos/bounds.svelte';
@@ -75,4 +74,4 @@ Set `hourCycle={12}` to render an AM/PM segment and a day-period wheel column. V
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

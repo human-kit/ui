@@ -4,8 +4,7 @@ description: A headless hierarchical collection primitive with keyboard navigati
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Checkboxes from './demos/checkboxes.svelte';
@@ -81,4 +80,4 @@ With `selectionMode="multiple"`, `Tree.Checkbox` and `Tree.CheckboxIndicator` gi
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />

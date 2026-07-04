@@ -4,8 +4,7 @@ description: A headless disclosure primitive with roving focus, single or multip
 ---
 
 <script>
-	import Demo from '$lib/docs/demo.svelte';
-	import ApiReference from '$lib/docs/api-reference.svelte';
+	import { Demo, ApiReference } from '@human-kit/humandocs/components';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Multiple from './demos/multiple.svelte';
@@ -63,4 +62,4 @@ Set `selectionMode="multiple"` to allow more than one panel open at a time (defa
 
 ## API reference
 
-<ApiReference {api} />
+<ApiReference api={api} />
