@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.meta.title} · human-kit</title>
+	<title>{data.meta.title} · HK</title>
 	{#if data.meta.description}
 		<meta name="description" content={data.meta.description} />
 	{/if}
