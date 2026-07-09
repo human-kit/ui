@@ -1,0 +1,10 @@
+export { default as ApiReference } from './api-reference.svelte';
+export { default as DataAttributesTable } from './data-attributes-table.svelte';
+export { default as Demo } from './demo.svelte';
+export { default as DocsShell } from './docs-shell.svelte';
+export { default as Header } from './header.svelte';
+export { default as PropsTable } from './props-table.svelte';
+export { default as Sidebar } from './sidebar.svelte';
+export { default as ThemeToggle } from './theme-toggle.svelte';
+export { default as Toc } from './toc.svelte';
+export { provideTocRegistry, registerHeadings, getRegisteredHeadings } from './toc-registry.svelte.js';

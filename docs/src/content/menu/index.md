@@ -4,7 +4,7 @@ description: An accessible dropdown / action menu with arrow-key navigation, typ
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Groups from './demos/groups.svelte';

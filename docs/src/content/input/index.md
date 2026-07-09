@@ -4,7 +4,7 @@ description: A headless native text input with modality-aware focus state, nativ
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Validation from './demos/validation.svelte';

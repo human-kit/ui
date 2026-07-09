@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@human-kit/humandocs/theme.css';
+@import './lib/docs/theme.css';
 
 @plugin "@toolwind/corner-shape";
 

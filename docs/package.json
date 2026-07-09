@@ -8,11 +8,10 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"api": "humandocs extract-api --lib ../packages/ui/src/lib --content src/content"
+		"api": "hk-extract-api --lib ../packages/ui/src/lib --content src/content"
 	},
 	"dependencies": {
-		"@human-kit/humandocs": "^0.1.3",
-		"@human-kit/markdown": "^0.2.0",
+		"@human-kit/markdown": "^0.3.0",
 		"@human-kit/ui": "workspace:*",
 		"@sveltejs/adapter-vercel": "^6.3.1",
 		"svelte-render-scan": "^1.1.0",

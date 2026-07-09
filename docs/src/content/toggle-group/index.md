@@ -4,7 +4,7 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Single from './demos/single.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DocsShell } from '@human-kit/humandocs/components';
+	import { DocsShell } from '$lib/docs/components/index.js';
 	import { nav } from '$lib/docs/nav.js';
 
 	let { children } = $props();

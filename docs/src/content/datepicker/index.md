@@ -4,7 +4,7 @@ description: A composable date picker pairing a segmented date input with a cale
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Bounds from './demos/bounds.svelte';

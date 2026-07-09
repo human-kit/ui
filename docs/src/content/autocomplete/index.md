@@ -4,7 +4,7 @@ description: An always-visible, filterable list — a search input on top of a L
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Multiple from './demos/multiple.svelte';

@@ -4,7 +4,7 @@ description: An accessible modal dialog with trigger, portal, overlay, and conte
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import Controlled from './demos/controlled.svelte';

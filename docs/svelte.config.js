@@ -1,7 +1,7 @@
 import adapter from '@sveltejs/adapter-vercel';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { humandocsMarkdown } from '@human-kit/markdown';
-import { highlight } from '@human-kit/humandocs/highlighter';
+import { highlight } from '@human-kit/markdown/shiki';
 import rehypeSlug from 'rehype-slug';
 
 /** @type {import('@sveltejs/kit').Config} */

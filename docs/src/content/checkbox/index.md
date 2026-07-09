@@ -4,7 +4,7 @@ description: A composable tri-state checkbox with separate checked and indetermi
 ---
 
 <script>
-	import { Demo, ApiReference } from '@human-kit/humandocs/components';
+	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
 	import States from './demos/states.svelte';
