@@ -3,6 +3,8 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import TimePickerTest from './time-picker-test.svelte';
 import TimePickerBindableTest from './time-picker-bindable-test.svelte';
+import TimePickerHourCycleTest from './time-picker-hour-cycle-test.svelte';
+import TimePickerLocaleTest from './time-picker-locale-test.svelte';
 
 function getSegment(type: 'hour' | 'minute' | 'second' | 'dayPeriod') {
 	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);
@@ -120,6 +122,40 @@ describe('TimePicker.Root', () => {
 			.toBe('');
 	});
 
+	it('rebuilds segment draft when hourCycle changes with a committed value', async () => {
+		const screen = render(TimePickerHourCycleTest);
+
+		await expect.poll(() => getSegment('hour').element()?.textContent).toBe('2');
+		await expect.poll(() => getSegment('dayPeriod').element()?.textContent).toBe('PM');
+
+		await screen.getByTestId('set-24h').click();
+
+		await expect.poll(() => getSegment('hour').element()?.textContent).toBe('14');
+		expect(document.querySelector('[role="spinbutton"][data-type="dayPeriod"]')).toBeNull();
+
+		// Editing after the cycle switch must keep the committed hour intact.
+		const minuteSegment = getSegment('minute');
+		minuteSegment.element()?.focus();
+		await userEvent.keyboard('{ArrowUp}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+			.toBe('14:31');
+	});
+
+	it('converts the draft back to 12h when hourCycle switches again', async () => {
+		const screen = render(TimePickerHourCycleTest);
+
+		await screen.getByTestId('set-24h').click();
+		await expect.poll(() => getSegment('hour').element()?.textContent).toBe('14');
+
+		await screen.getByTestId('set-12h').click();
+
+		await expect.poll(() => getSegment('hour').element()?.textContent).toBe('2');
+		await expect.poll(() => getSegment('dayPeriod').element()?.textContent).toBe('PM');
+		expect(document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('14:30');
+	});
+
 	it('syncs wheel interaction through root commit into bound value', async () => {
 		const screen = render(TimePickerBindableTest);
 		const trigger = screen.getByRole('button', { name: 'Open time picker' });
@@ -138,5 +174,52 @@ describe('TimePicker.Root', () => {
 			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
 			.toBe('15:30');
 		await expect.poll(() => getSegment('hour').element()?.textContent).toBe('15');
+	});
+
+	describe('locale-aware dayPeriod display', () => {
+		function getExpectedDayPeriod(locale: string, period: 'AM' | 'PM') {
+			return new Intl.DateTimeFormat(locale, { hour: 'numeric', hour12: true, timeZone: 'UTC' })
+				.formatToParts(new Date(Date.UTC(2024, 0, 1, period === 'PM' ? 15 : 9, 0, 0)))
+				.find((part) => part.type === 'dayPeriod')
+				?.value?.trim();
+		}
+
+		it('shows the Spanish dayPeriod text for the segment while keeping internal tokens', async () => {
+			const expectedPm = getExpectedDayPeriod('es', 'PM');
+			expect(expectedPm).toBeTruthy();
+			expect(expectedPm).not.toBe('PM');
+
+			render(TimePickerLocaleTest, { locale: 'es', defaultValue: '14:30', hourCycle: 12 });
+
+			await expect.poll(() => getSegment('dayPeriod').element()?.textContent).toBe(expectedPm);
+		});
+
+		it('shows Spanish dayPeriod labels in the wheel while keeping AM/PM values', async () => {
+			const expectedAm = getExpectedDayPeriod('es', 'AM');
+			const expectedPm = getExpectedDayPeriod('es', 'PM');
+
+			const screen = render(TimePickerLocaleTest, {
+				locale: 'es',
+				defaultValue: '14:30',
+				hourCycle: 12
+			});
+			const trigger = screen.getByRole('button', { name: 'Open time picker' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			const panel = document.querySelector<HTMLElement>('[data-clock="true"]');
+			const amItem = panel?.querySelector<HTMLElement>(
+				'[data-wheel-item][data-type="dayPeriod"][data-value="AM"]'
+			);
+			const pmItem = panel?.querySelector<HTMLElement>(
+				'[data-wheel-item][data-type="dayPeriod"][data-value="PM"]'
+			);
+
+			expect(amItem).toBeTruthy();
+			expect(pmItem).toBeTruthy();
+			expect(amItem?.textContent?.trim()).toBe(expectedAm);
+			expect(pmItem?.textContent?.trim()).toBe(expectedPm);
+		});
 	});
 });

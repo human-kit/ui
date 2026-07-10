@@ -27,7 +27,6 @@ Description: State container for combobox behavior, including open state, input 
 | `onOpenChange`      | `(open: boolean) => void`                                           | `undefined`                      | Called when open state changes.                             |
 | `onChange`          | `(value: string \| number \| null \| (string \| number)[]) => void` | `undefined`                      | Called when selection changes.                              |
 | `items`             | `T[]`                                                               | `undefined`                      | Optional item collection for dynamic rendering.             |
-| `renderItem`        | `Snippet<[T]>`                                                      | `undefined`                      | Optional item renderer for dynamic mode.                    |
 | `children`          | `Snippet`                                                           | `undefined`                      | Composed combobox parts.                                    |
 | `class`             | `string`                                                            | `''`                             | CSS class names for the root group element.                 |
 | `aria-label`        | `string`                                                            | `undefined`                      | Accessible label for the combobox group.                    |

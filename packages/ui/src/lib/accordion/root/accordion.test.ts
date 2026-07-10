@@ -110,6 +110,45 @@ describe('Accordion', () => {
 		await expect.poll(() => openTriggerValues()).toEqual([]);
 	});
 
+	it('keeps a disabled item open in controlled mode without emitting onChange', async () => {
+		render(AccordionTest, {
+			controlled: true,
+			value: ['billing'],
+			billingDisabled: true
+		});
+
+		await expect.poll(() => openTriggerValues()).toEqual(['billing']);
+		expect(document.querySelector('[data-testid="change-log"]')?.textContent).toBe('[]');
+	});
+
+	it('closes an open item and emits onChange when it becomes disabled in uncontrolled mode', async () => {
+		const screen = render(AccordionTest, { defaultValue: ['billing'] });
+
+		await expect.poll(() => openTriggerValues()).toEqual(['billing']);
+
+		await screen.rerender({ billingDisabled: true });
+
+		await expect.poll(() => openTriggerValues()).toEqual([]);
+		await expect
+			.poll(() => document.querySelector('[data-testid="change-log"]')?.textContent)
+			.toBe('[[]]');
+	});
+
+	it('keeps the UI unchanged in controlled mode when the parent ignores onChange', async () => {
+		const screen = render(AccordionTest, {
+			controlled: true,
+			value: ['overview'],
+			applyChanges: false
+		});
+
+		await userEvent.click(screen.getByTestId('trigger-security'));
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="change-log"]')?.textContent)
+			.toBe('[["security"]]');
+		await expect.poll(() => openTriggerValues()).toEqual(['overview']);
+	});
+
 	it('moves focus between triggers with vertical arrow keys, Home and End', async () => {
 		const screen = render(AccordionTest, { defaultValue: ['overview'] });
 		const overviewTrigger = screen.getByRole('button', { name: 'Overview' });
@@ -129,6 +168,29 @@ describe('Accordion', () => {
 		await expect
 			.poll(() => document.activeElement)
 			.toBe(screen.getByRole('button', { name: 'Overview' }).element());
+	});
+
+	it('inverts horizontal arrow keys in RTL layouts', async () => {
+		const previousDir = document.documentElement.dir;
+		document.documentElement.dir = 'rtl';
+
+		try {
+			const screen = render(AccordionTest, { orientation: 'horizontal' });
+			const overviewTrigger = screen.getByRole('button', { name: 'Overview' });
+
+			overviewTrigger.element()?.focus();
+			// Visually left in RTL is the next logical trigger.
+			await userEvent.keyboard('{ArrowLeft}');
+			await expect
+				.poll(() => document.activeElement)
+				.toBe(screen.getByRole('button', { name: 'Billing' }).element());
+
+			// Visually right in RTL is the previous logical trigger.
+			await userEvent.keyboard('{ArrowRight}');
+			await expect.poll(() => document.activeElement).toBe(overviewTrigger.element());
+		} finally {
+			document.documentElement.dir = previousDir;
+		}
 	});
 
 	it('wraps focus at the ends when loop is enabled', async () => {

@@ -47,10 +47,12 @@
 				forbiddenCalendarProps
 			) as Omit<ComponentProps<typeof Calendar.Root>, ForbiddenCalendarProp>
 	);
-	const calendarValue = $derived<CalendarRangeValue | undefined>(
+	// `null` means "controlled and empty" for the calendar; `undefined` would
+	// make it uncontrolled and keep a stale selection after the picker clears.
+	const calendarValue = $derived<CalendarRangeValue | null>(
 		dateRangePicker.value
 			? { start: dateRangePicker.value.start, end: dateRangePicker.value.end }
-			: undefined
+			: null
 	);
 
 	function handleChange(nextValue: CalendarRangeValue) {

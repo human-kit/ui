@@ -4,7 +4,7 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
-	import { clickOutside } from '../../primitives/click-outside';
+	import { clickOutside, isTargetInTopLayerAbove } from '../../primitives/click-outside';
 	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
 	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
 	import { Portal } from '../../portal';
@@ -99,6 +99,8 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		// Another layer already consumed this key — one keypress dismisses one thing.
+		if (event.defaultPrevented) return;
 		if (!isOpen || !isTopmost()) return;
 		if (event.key === 'Escape' && shouldCloseOnEscape) {
 			event.preventDefault();
@@ -113,8 +115,14 @@
 			ctx.close('escape-key', event);
 			return;
 		}
-		// Tab moves focus out of the menu, which closes the whole chain.
+		// Tab moves focus out of the menu, which closes the whole chain. Hand focus to the
+		// root trigger first (without preventDefault) so the browser's default Tab continues
+		// to the trigger's natural successor — otherwise it would resume from the portalled
+		// content and land at the end of the document.
 		if (event.key === 'Tab') {
+			let root: typeof ctx = ctx;
+			while (root.parent) root = root.parent;
+			root.triggerRef?.focus();
 			closeChainOutward('focus-out', event);
 		}
 	}
@@ -130,10 +138,10 @@
 		// outside clicks are still caught by `clickOutside`.
 		if (target === document.body || target === document.documentElement) return;
 
-		// Focus landing in a portalled top layer (a popover/dialog spawned from within the menu,
-		// such as a date picker calendar) is still logically "inside" the menu — mirror the
-		// `clickOutside` top-layer rule so interacting with nested floating UI doesn't close it.
-		if (target instanceof Element && target.closest('[role="dialog"], [data-dialog-content]')) {
+		// Focus landing in a portalled top layer stacked above this menu (a popover/dialog/menu
+		// spawned from within it, such as a date picker calendar) is still logically "inside" —
+		// same rule as `clickOutside`, so interacting with nested floating UI doesn't close it.
+		if (menuRef && isTargetInTopLayerAbove(menuRef, target)) {
 			return;
 		}
 
@@ -299,7 +307,25 @@
 			use:clickOutside={{
 				handler: (event) => {
 					if (!isTopmost()) return;
-					event.preventDefault();
+					// A press inside an ancestor menu of the chain (its panel or its trigger)
+					// dismisses only this submenu — the user is still interacting with the
+					// menu system, so closing the whole chain (and re-toggling the root
+					// trigger) was wrong. Presses truly outside still close everything.
+					const target = event.target as Node;
+					let ancestor: typeof ctx.parent = ctx.parent;
+					while (ancestor) {
+						const inContent =
+							ancestor.contentRef?.contains(target) || target === ancestor.contentRef;
+						const inTrigger =
+							ancestor.triggerRef?.contains(target) || target === ancestor.triggerRef;
+						if (inContent || inTrigger) {
+							ctx.close('outside-press', event);
+							return;
+						}
+						ancestor = ancestor.parent;
+					}
+					// No preventDefault: the outside press keeps its native behavior
+					// (focusing the clicked element, placing the caret).
 					closeChainOutward('outside-press', event);
 				},
 				enabled: isOpen && shouldCloseOnInteractOutside,

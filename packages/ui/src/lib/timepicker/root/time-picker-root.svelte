@@ -132,6 +132,7 @@
 			: createEmptyTimePickerDraft()
 	);
 	let segmentTypeBuffer = $state<TimePickerDraft>(createEmptyTimePickerDraft());
+	let lastDraftHourCycle = initialHourCycle;
 
 	const segmentRefs: Record<TimePickerEditableSegmentType, HTMLElement | null> = {
 		hour: null,
@@ -154,10 +155,19 @@
 
 	$effect(() => {
 		const nextValue = value === undefined ? null : isValidTimePickerValue(value) ? value : null;
-		if (nextValue === lastPublishedValue) return;
+		const nextHourCycle = resolvedHourCycle;
+		const didHourCycleChange = nextHourCycle !== lastDraftHourCycle;
+		lastDraftHourCycle = nextHourCycle;
+		if (nextValue === lastPublishedValue) {
+			if (didHourCycleChange && lastPublishedValue) {
+				segmentDraft = toDraftFromTimeValue(lastPublishedValue, nextHourCycle);
+				segmentTypeBuffer = createEmptyTimePickerDraft();
+			}
+			return;
+		}
 		publishCommittedValue(nextValue, false);
 		segmentDraft = nextValue
-			? toDraftFromTimeValue(nextValue, resolvedHourCycle)
+			? toDraftFromTimeValue(nextValue, nextHourCycle)
 			: createEmptyTimePickerDraft();
 		segmentTypeBuffer = createEmptyTimePickerDraft();
 	});
@@ -283,6 +293,9 @@
 
 	function setSegmentValue(type: Exclude<TimePickerSegmentType, 'literal'>, nextValue: string) {
 		if (disabled || readonly) return;
+		// Any non-typing mutation invalidates the pending multi-digit buffer.
+		// `typeSegmentDigit` re-seeds it explicitly after calling this function.
+		segmentTypeBuffer[type] = '';
 		if (type === 'dayPeriod') {
 			const normalized = nextValue.trim().toUpperCase();
 			if (normalized === '' || normalized === 'AM' || normalized === 'PM') {
@@ -551,7 +564,8 @@
 			hasRangeBounds,
 			getCandidateFromPartial,
 			isOutOfRange: (candidate) =>
-				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity),
+			locale: resolvedLocale
 		});
 	}
 

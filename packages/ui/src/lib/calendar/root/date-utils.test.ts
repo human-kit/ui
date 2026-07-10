@@ -6,6 +6,7 @@ import {
 	formatCalendarDate,
 	formatMonthHeading,
 	getFirstDayOfWeek,
+	getTodayUtcDate,
 	getWeekdayLabels,
 	isValidCalendarDateValue,
 	parseCalendarDate,
@@ -42,6 +43,17 @@ describe('calendar date utils', () => {
 		expect(grid.every((week) => week.length === 7)).toBe(true);
 	});
 
+	it('computes today from the local civil date, stored as a UTC-normalized value', () => {
+		const now = new Date();
+		const expected = [
+			String(now.getFullYear()).padStart(4, '0'),
+			String(now.getMonth() + 1).padStart(2, '0'),
+			String(now.getDate()).padStart(2, '0')
+		].join('-');
+
+		expect(formatCalendarDate(getTodayUtcDate())).toBe(expected);
+	});
+
 	it('supports month and day arithmetic', () => {
 		const base = parseCalendarDate('2026-02-10')!;
 		expect(formatCalendarDate(addDays(base, 1))).toBe('2026-02-11');
@@ -71,6 +83,43 @@ describe('calendar date utils', () => {
 	it('allows overriding the locale first day of week', () => {
 		expect(resolveFirstDayOfWeek('es-AR', 'sun')).toBe(0);
 		expect(resolveFirstDayOfWeek('es-AR', 'mon')).toBe(1);
+	});
+
+	it('reads week info from locales that only implement getWeekInfo() (Firefox)', () => {
+		const OriginalLocale = Intl.Locale;
+
+		// Intl.Locale-like object without the V8-only `weekInfo` getter.
+		class GetWeekInfoOnlyLocale {
+			constructor(public readonly tag: string) {}
+			getWeekInfo() {
+				return { firstDay: 1 };
+			}
+		}
+
+		try {
+			(Intl as { Locale: unknown }).Locale = GetWeekInfoOnlyLocale;
+			expect(getFirstDayOfWeek('es-AR')).toBe(1);
+		} finally {
+			(Intl as { Locale: unknown }).Locale = OriginalLocale;
+		}
+	});
+
+	it('reads week info from locales that expose the weekInfo getter (V8)', () => {
+		const OriginalLocale = Intl.Locale;
+
+		class WeekInfoGetterLocale {
+			constructor(public readonly tag: string) {}
+			get weekInfo() {
+				return { firstDay: 7 };
+			}
+		}
+
+		try {
+			(Intl as { Locale: unknown }).Locale = WeekInfoGetterLocale;
+			expect(getFirstDayOfWeek('en-US')).toBe(0);
+		} finally {
+			(Intl as { Locale: unknown }).Locale = OriginalLocale;
+		}
 	});
 
 	it('formats month heading as month and year without locale connector', () => {

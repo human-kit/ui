@@ -25,7 +25,7 @@
 <div class="w-full max-w-sm">
 	<ComboBox.Root selectionMode="multiple" bind:value bind:inputValue>
 		<div
-			class="flex flex-wrap items-center gap-1 rounded-lg border border-gray-300 bg-white px-2 py-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+			class="flex flex-wrap items-center gap-1 rounded-lg border border-neutral-300 bg-white px-2 py-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
 		>
 			<ComboBox.Tags class="contents">
 				{#snippet children({ item })}
@@ -41,22 +41,22 @@
 			</ComboBox.Tags>
 			<ComboBox.Input
 				placeholder={value.length === 0 ? 'Select fruits...' : ''}
-				class="min-w-20 flex-1 border-0 bg-transparent px-1 py-0.5 text-gray-900 outline-none placeholder:text-gray-500 dark:text-white dark:placeholder:text-gray-400"
+				class="min-w-20 flex-1 border-0 bg-transparent px-1 py-0.5 text-neutral-900 outline-none placeholder:text-neutral-500 dark:text-white dark:placeholder:text-neutral-400"
 			/>
-			<ComboBox.Trigger class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+			<ComboBox.Trigger class="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">
 				<ChevronDown class="size-4" />
 			</ComboBox.Trigger>
 		</div>
 
 		<ComboBox.Popover
-			class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+			class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
 		>
 			<ComboBox.List emptyPlaceholder="No fruits found">
 				{#each filtered as fruit (fruit.id)}
 					<ComboBox.Item
 						id={fruit.id}
 						textValue={fruit.name}
-						class="flex cursor-pointer items-center justify-between px-3 py-2 text-gray-900 hover:bg-gray-100 data-[focused=true]:bg-gray-100 data-[selected=true]:bg-blue-50 dark:text-white dark:hover:bg-gray-700 dark:data-[focused=true]:bg-gray-700 dark:data-[selected=true]:bg-blue-900/30"
+						class="flex cursor-pointer items-center justify-between px-3 py-2 text-neutral-900 hover:bg-neutral-100 data-[focused=true]:bg-neutral-100 data-[selected=true]:bg-blue-50 dark:text-white dark:hover:bg-neutral-700 dark:data-[focused=true]:bg-neutral-700 dark:data-[selected=true]:bg-blue-900/30"
 					>
 						{fruit.name}
 						<ComboBox.ItemIndicator class="text-blue-600 dark:text-blue-400" />

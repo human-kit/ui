@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { untrack } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
 	import {
@@ -39,18 +40,23 @@
 	// Stack level for z-index calculation
 	let stackLevel = $state(0);
 
-	const isControlled = $derived(openProp !== undefined);
-	const isOpen = $derived(isControlled ? openProp! : isOpenInternal);
+	// Controlled-ness is captured once at init: a parent that passes `open`
+	// owns the state for the lifetime of the component.
+	const isControlled = untrack(() => openProp !== undefined);
+	const isOpen = $derived(isControlled ? Boolean(openProp) : isOpenInternal);
 
 	function setOpen(value: boolean) {
 		if (isControlled) {
+			// In controlled mode the parent owns the state: it reacts in `onOpenChange`
+			// and flows the value back down (or ignores it to reject the change).
+			// Writing `openProp` here would locally override the parent's prop.
 			onOpenChange?.(value);
-		} else {
-			isOpenInternal = value;
-			onOpenChange?.(value);
+			return;
 		}
+		isOpenInternal = value;
 		// Sync bindable prop
 		openProp = value;
+		onOpenChange?.(value);
 	}
 
 	function toggle() {
@@ -62,7 +68,11 @@
 	}
 
 	function closeDialog(reason: DialogCloseReason = 'imperative-action', event?: Event) {
+		const wasOpen = isOpen;
 		setOpen(false);
+		// A controlled parent may have rejected the close (by not flowing `false`
+		// back down) — don't steal focus while the dialog is still open.
+		if (!wasOpen || isOpen) return;
 		if (triggerRef) {
 			focusWithModality(triggerRef, resolveCloseInteractionModality(reason, event));
 		}

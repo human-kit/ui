@@ -40,6 +40,9 @@
 			onValueChange: (nextValue) => {
 				value = nextValue;
 				onChange?.(nextValue);
+			},
+			onValueSync: (nextValue) => {
+				value = nextValue;
 			}
 		})
 	);

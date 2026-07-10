@@ -1,26 +1,20 @@
 /**
- * Global stack of open popover layers. Ensures only the topmost open popover
- * reacts to Escape and outside-press, so dismissing a nested popover (e.g. a
- * date picker calendar inside a filter popover) doesn't also close its ancestors.
+ * Popover layer helpers, backed by the unified layer stack. A popover is only
+ * "topmost" when no other dismissable layer (another popover, a menu, or a
+ * dialog opened after it) sits above it — so dismissing a nested layer never
+ * also closes its ancestors, across component kinds.
  */
-type PopoverLayer = { id: symbol };
 
-const stack: PopoverLayer[] = [];
+import { pushLayer, removeLayer, isTopmostLayer } from '../../primitives/layer-stack';
 
 export function pushPopoverLayer(): symbol {
-	const id = Symbol('popover-layer');
-	stack.push({ id });
-	return id;
+	return pushLayer('popover');
 }
 
 export function removePopoverLayer(id: symbol): void {
-	const index = stack.findIndex((layer) => layer.id === id);
-	if (index !== -1) {
-		stack.splice(index, 1);
-	}
+	removeLayer(id);
 }
 
 export function isTopmostPopover(id: symbol): boolean {
-	if (stack.length === 0) return false;
-	return stack[stack.length - 1].id === id;
+	return isTopmostLayer(id);
 }

@@ -2,7 +2,9 @@
 	import { tick, untrack } from 'svelte';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { isAriaInvalidValue } from '../utils/aria-invalid';
 	import type { ClassValue } from '../utils/cn';
+	import { composeEventHandlers } from '../utils/compose-event-handlers';
 
 	type AriaInvalidValue = HTMLTextareaAttributes['aria-invalid'];
 	type TextAreaValue = HTMLTextareaAttributes['value'];
@@ -19,20 +21,6 @@
 		minRows?: number;
 		maxRows?: number;
 	};
-
-	function composeEventHandlers<TEvent extends Event>(
-		internalHandler: ((event: TEvent) => void) | undefined,
-		externalHandler: ((event: TEvent) => void) | undefined
-	): (event: TEvent) => void {
-		return (event: TEvent) => {
-			internalHandler?.(event);
-			externalHandler?.(event);
-		};
-	}
-
-	function isAriaInvalidValue(value: AriaInvalidValue | undefined): boolean {
-		return value === true || value === 'true' || value === 'grammar' || value === 'spelling';
-	}
 
 	function parsePixelValue(value: string): number {
 		const parsed = Number.parseFloat(value);
@@ -70,6 +58,7 @@
 		required = false,
 		invalid = false,
 		'aria-invalid': ariaInvalidProp,
+		autofocus = false,
 		value = $bindable<TextAreaValue>(),
 		element = $bindable<HTMLTextAreaElement | null>(null),
 		autoResize = false,
@@ -103,6 +92,18 @@
 
 	$effect(() => {
 		element = textAreaRef;
+		return () => {
+			element = null;
+		};
+	});
+
+	// Native `autofocus` only focuses the first autofocus element inserted per document, so it
+	// silently fails for textareas that mount inside an already-open popover/dialog or remount as
+	// a view swaps. Focus the element on mount instead so it works every time it appears.
+	$effect(() => {
+		if (autofocus && textAreaRef) {
+			textAreaRef.focus();
+		}
 	});
 
 	$effect(() => {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Menu } from '../index';
+	import type { MenuOpenChangeDetails } from './context';
 
 	type Props = {
 		closeOnSelect?: boolean;
@@ -7,6 +8,8 @@
 		withSubmenu?: boolean;
 		loop?: boolean;
 		typeahead?: boolean;
+		onOpenChange?: (open: boolean, details: MenuOpenChangeDetails) => void;
+		onSubmenuOpenChange?: (open: boolean, details: MenuOpenChangeDetails) => void;
 	};
 
 	let {
@@ -14,11 +17,13 @@
 		onAction,
 		withSubmenu = false,
 		loop = true,
-		typeahead = true
+		typeahead = true,
+		onOpenChange,
+		onSubmenuOpenChange
 	}: Props = $props();
 </script>
 
-<Menu.Root {closeOnSelect} {loop} {typeahead}>
+<Menu.Root {closeOnSelect} {loop} {typeahead} {onOpenChange}>
 	<Menu.Trigger>Open Menu</Menu.Trigger>
 	<Menu.Content>
 		<Menu.Item value="edit" onAction={() => onAction?.('edit')}>Edit</Menu.Item>
@@ -32,7 +37,7 @@
 		</Menu.Group>
 
 		{#if withSubmenu}
-			<Menu.SubmenuRoot>
+			<Menu.SubmenuRoot onOpenChange={onSubmenuOpenChange}>
 				<Menu.SubmenuTrigger value="more">More actions</Menu.SubmenuTrigger>
 				<Menu.Content>
 					<Menu.Item value="archive" onAction={() => onAction?.('archive')}>Archive</Menu.Item>
@@ -41,6 +46,11 @@
 			</Menu.SubmenuRoot>
 		{/if}
 
-		<Menu.Item value="delete" onAction={() => onAction?.('delete')}>Delete</Menu.Item>
+		<Menu.Item value="delete" textValue="Remove" onAction={() => onAction?.('delete')}>
+			Delete
+		</Menu.Item>
 	</Menu.Content>
 </Menu.Root>
+
+<!-- The trigger's natural Tab successor; lets tests assert where focus lands after Tab. -->
+<button type="button">After</button>

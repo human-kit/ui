@@ -5,7 +5,7 @@ import CalendarGridBodyCustomTest from './calendar-grid-body-custom-test.svelte'
 
 describe('Calendar.GridBody', () => {
 	it('renders six week rows', async () => {
-		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		render(CalendarRootTest, { defaultValue: '2026-02-10', firstDayOfWeek: 'sun' });
 		const rows = document.querySelectorAll('tbody tr[data-week]');
 		expect(rows.length).toBe(4);
 	});

@@ -14,6 +14,9 @@
 
 <script lang="ts">
 	import { tick } from 'svelte';
+	import { readable } from 'svelte/store';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -59,12 +62,19 @@
 		...restProps
 	}: TableRootProps = $props();
 
+	const localeContext = useLocaleContextOptional();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
+
 	let tableElement = $state<HTMLTableElement | undefined>(undefined);
 	let focusWithin = $state(false);
 	let focusVisible = $state(false);
 	let pendingControlledHiddenColumns = $state<string[] | null>(null);
 	let pendingControlledSelection = $state<Set<TableSelectionKey> | null>(null);
 	let pendingControlledColumnWidths = $state<Map<string, TableColumnWidth> | null>(null);
+	let pendingControlledSortDescriptor = $state<{
+		descriptor: TableSortDescriptor | undefined;
+	} | null>(null);
 	let sortAnnouncement = $state('');
 	let hasObservedSortState = $state(false);
 	let hasInitializedSortSync = $state(false);
@@ -93,6 +103,7 @@
 				onSelectionChange?.(new Set(keys));
 			},
 			onSortChange: (descriptor) => {
+				pendingControlledSortDescriptor = { descriptor };
 				sortDescriptor = descriptor;
 				onSortChange?.(descriptor);
 			},
@@ -139,6 +150,15 @@
 			if (!rightSet.has(columnId)) return false;
 		}
 		return true;
+	}
+
+	function hasSameSortDescriptor(
+		left: TableSortDescriptor | undefined,
+		right: TableSortDescriptor | undefined
+	) {
+		if (left === right) return true;
+		if (!left || !right) return false;
+		return left.column === right.column && left.direction === right.direction;
 	}
 
 	function hasSameColumnWidths(
@@ -290,16 +310,20 @@
 			.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
 			.replace(/[-_]+/g, ' ')
 			.trim();
-		if (!normalized) return 'Column';
+		if (!normalized) return resolveLocalizedString($localeStore, 'table.columnFallback');
 		return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 	}
 
 	function getSortAnnouncement(descriptor: TableSortDescriptor | undefined) {
-		if (!descriptor) return 'Sorting cleared.';
+		if (!descriptor) return resolveLocalizedString($localeStore, 'table.sortingCleared');
 		const label =
 			ctx.getColumnTextValue(descriptor.column)?.trim() ||
 			formatColumnAnnouncementLabel(descriptor.column);
-		return `${label} sorted ${descriptor.direction}.`;
+		return resolveLocalizedString(
+			$localeStore,
+			descriptor.direction === 'descending' ? 'table.sortedDescending' : 'table.sortedAscending',
+			{ label }
+		);
 	}
 
 	async function announceSortChange(descriptor: TableSortDescriptor | undefined) {
@@ -414,6 +438,14 @@
 			}
 		}
 
+		if (
+			pendingControlledSortDescriptor &&
+			hasSameSortDescriptor(pendingControlledSortDescriptor.descriptor, sortDescriptor)
+		) {
+			pendingControlledSortDescriptor = null;
+			return;
+		}
+		pendingControlledSortDescriptor = null;
 		ctx.setSortDescriptor(sortDescriptor);
 	});
 
@@ -551,7 +583,7 @@
 >
 
 <span id={ctx.selectionUnavailableDescriptionId} style={visuallyHiddenStyle}
-	>Selection unavailable for this row.</span
+	>{resolveLocalizedString($localeStore, 'table.selectionUnavailable')}</span
 >
 
 <style>

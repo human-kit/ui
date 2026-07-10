@@ -60,11 +60,22 @@
 		submenuCtx.open('trigger-press');
 	}
 
+	// `untrack` keeps the shared trigger ref out of this effect's dependencies — the
+	// cleanup writes it to null and the body back to the node, which would otherwise loop.
 	$effect(() => {
-		element = triggerRef;
-		if (triggerRef) {
-			submenuCtx.setTriggerRef(triggerRef);
+		const node = triggerRef;
+		element = node;
+		if (node) {
+			untrack(() => submenuCtx.setTriggerRef(node));
 		}
+		return () => {
+			// Drop the stale ref on unmount so no close path tries to refocus a removed node.
+			untrack(() => {
+				if (node && submenuCtx.triggerRef === node) {
+					submenuCtx.setTriggerRef(null);
+				}
+			});
+		};
 	});
 
 	// Register in the PARENT menu so arrow navigation includes this trigger.
@@ -91,7 +102,9 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent & { currentTarget: EventTarget & HTMLDivElement }) {
-		if (!disabled && (event.key === 'ArrowRight' || event.key === 'Enter' || event.key === ' ')) {
+		// Enter/Space bubble to the parent menu's keyboard navigation, whose onSelect already
+		// opens the submenu — handling them here too would open it twice.
+		if (!disabled && event.key === 'ArrowRight') {
 			event.preventDefault();
 			openSubmenu('first');
 		}
@@ -121,6 +134,7 @@
 	data-navigation-item
 	data-item-id={itemId}
 	data-item-id-type={idType}
+	data-text-value={textValue}
 	data-disabled={disabled || undefined}
 	aria-disabled={disabled || undefined}
 	data-highlighted={isHighlighted || undefined}

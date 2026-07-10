@@ -6,6 +6,6 @@ describe('Table.ColumnHeaderCell', () => {
 	it('reflects sortable state on sortable columns', async () => {
 		render(TableTest);
 		const headers = document.querySelectorAll<HTMLElement>('thead [role="columnheader"]');
-		expect(headers[1]?.getAttribute('data-sortable')).toBe('true');
+		await expect.poll(() => headers[1]?.getAttribute('data-sortable')).toBe('true');
 	});
 });

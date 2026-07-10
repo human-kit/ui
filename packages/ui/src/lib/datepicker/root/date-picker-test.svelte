@@ -77,11 +77,11 @@
 		<DatePicker.Calendar class="date-picker-calendar">
 			<div class="flex items-center justify-between gap-2 p-2">
 				<DatePicker.TriggerPrevious
-					class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+					class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
 				/>
 				<DatePicker.Heading class="text-sm font-medium" />
 				<DatePicker.TriggerNext
-					class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+					class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
 				/>
 			</div>
 			<DatePicker.Grid class="w-full border-separate border-spacing-1 px-2 pb-2">

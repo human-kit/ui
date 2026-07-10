@@ -25,6 +25,7 @@
 	const tree = renderMode === 'display' ? useTreeContext() : undefined;
 	const item = renderMode === 'display' ? useTreeItemContext() : undefined;
 	const expansionVersion = tree?.expansionVersion;
+	const configVersion = tree?.configVersion;
 
 	let buttonRef = $state<HTMLButtonElement | null>(null);
 
@@ -34,7 +35,11 @@
 		return item.isExpanded();
 	});
 	const hasChildren = $derived(item?.hasChildren() ?? false);
-	const isDisabled = $derived(item?.isDisabled() ?? false);
+	const isDisabled = $derived.by(() => {
+		if (!item || !configVersion) return false;
+		void $configVersion;
+		return item.isDisabled();
+	});
 
 	function callClickExternal(event: MouseEvent) {
 		(onClickExternal as ((event: MouseEvent) => void) | undefined)?.(event);

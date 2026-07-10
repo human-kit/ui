@@ -81,10 +81,6 @@
 		return event.currentTarget as HTMLInputElement;
 	}
 
-	function removeAlphabeticCharacters(value: string): string {
-		return value.replace(/\p{L}/gu, '');
-	}
-
 	function hasAlphabeticCharacters(value: string): boolean {
 		return /\p{L}/u.test(value);
 	}
@@ -97,25 +93,10 @@
 	}
 
 	function handleInput(event: Event) {
-		const input = getInputElement(event);
-		const selectionStart = input.selectionStart;
-		const nextInputValue = removeAlphabeticCharacters(input.value);
-
-		if (input.value !== nextInputValue) {
-			const removedBeforeSelection =
-				selectionStart === null
-					? 0
-					: input.value.slice(0, selectionStart).length -
-						removeAlphabeticCharacters(input.value.slice(0, selectionStart)).length;
-
-			input.value = nextInputValue;
-			if (selectionStart !== null) {
-				const nextSelectionStart = Math.max(0, selectionStart - removedBeforeSelection);
-				input.setSelectionRange(nextSelectionStart, nextSelectionStart);
-			}
-		}
-
-		numberField.setInputValue(nextInputValue, 'input', event);
+		// Pasted text with unsupported alphabetic characters (e.g. "1e5") is kept
+		// as-is and flagged invalid by the parser instead of being stripped and
+		// reinterpreted as a different number.
+		numberField.setInputValue(getInputElement(event).value, 'input', event);
 	}
 
 	function handleFocus(event: FocusEvent) {
@@ -161,22 +142,21 @@
 			event.preventDefault();
 			numberField.stepBy(event.key === 'PageUp' ? 1 : -1, {
 				reason: 'keyboard',
-				event
+				event,
+				multiplier: numberField.largeStep / normalizeStep(numberField.step)
 			});
 			return;
 		}
 
 		if (event.key === 'Home' && numberField.min !== undefined) {
 			event.preventDefault();
-			numberField.setInputValue(String(numberField.min), 'keyboard', event);
-			numberField.commitInputValue('keyboard', event);
+			numberField.commitValue(numberField.min, 'keyboard', event);
 			return;
 		}
 
 		if (event.key === 'End' && numberField.max !== undefined) {
 			event.preventDefault();
-			numberField.setInputValue(String(numberField.max), 'keyboard', event);
-			numberField.commitInputValue('keyboard', event);
+			numberField.commitValue(numberField.max, 'keyboard', event);
 			return;
 		}
 

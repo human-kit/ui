@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
+import CheckboxControlledTest from './checkbox-controlled-test.svelte';
+import CheckboxFormTest from './checkbox-form-test.svelte';
 import CheckboxLabelTest from './checkbox-label-test.svelte';
 import CheckboxTest from './checkbox-test.svelte';
 
@@ -224,5 +226,93 @@ describe('Checkbox.Root', () => {
 		label?.click();
 
 		expect(input?.checked).toBe(true);
+	});
+
+	it('does not toggle on associated label click when readonly', async () => {
+		render(CheckboxLabelTest, { readonly: true });
+
+		const root = document.querySelector('[data-checkbox-root="true"]');
+		const input = document.querySelector<HTMLInputElement>('[data-checkbox-input="true"]');
+		const label = document.querySelector<HTMLLabelElement>('label');
+
+		label?.click();
+
+		expect(root?.getAttribute('aria-checked')).toBe('false');
+		expect(input?.checked).toBe(false);
+	});
+
+	it('keeps the controlled state when the parent ignores onCheckedChange', async () => {
+		const checkedChanges: boolean[] = [];
+		const screen = render(CheckboxControlledTest, {
+			onCheckedChange: (checked: boolean) => checkedChanges.push(checked)
+		});
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const input = document.querySelector<HTMLInputElement>('[data-checkbox-input="true"]');
+
+		input?.click();
+
+		expect(checkedChanges).toEqual([true]);
+		expect(checkbox.element()?.getAttribute('aria-checked')).toBe('false');
+		expect(input?.checked).toBe(false);
+	});
+
+	it('updates the controlled state when the parent accepts onCheckedChange', async () => {
+		const screen = render(CheckboxControlledTest, { acceptChanges: true });
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const input = document.querySelector<HTMLInputElement>('[data-checkbox-input="true"]');
+
+		input?.click();
+
+		await expect.poll(() => checkbox.element()?.getAttribute('aria-checked')).toBe('true');
+	});
+
+	it('restores the default state when the form resets', async () => {
+		const screen = render(CheckboxFormTest);
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const input = document.querySelector<HTMLInputElement>('[data-checkbox-input="true"]');
+		const form = document.querySelector('form');
+
+		input?.click();
+		await expect.poll(() => checkbox.element()?.getAttribute('aria-checked')).toBe('true');
+
+		form?.reset();
+
+		await expect.poll(() => checkbox.element()?.getAttribute('aria-checked')).toBe('false');
+		expect(input?.checked).toBe(false);
+	});
+
+	it('restores defaultChecked when the form resets', async () => {
+		const screen = render(CheckboxFormTest, { defaultChecked: true });
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const input = document.querySelector<HTMLInputElement>('[data-checkbox-input="true"]');
+		const form = document.querySelector('form');
+
+		input?.click();
+		await expect.poll(() => checkbox.element()?.getAttribute('aria-checked')).toBe('false');
+
+		form?.reset();
+
+		await expect.poll(() => checkbox.element()?.getAttribute('aria-checked')).toBe('true');
+		expect(input?.checked).toBe(true);
+	});
+
+	it('invokes consumer onkeyup and onblur handlers', async () => {
+		let keyups = 0;
+		let blurs = 0;
+		const screen = render(CheckboxTest, {
+			onkeyup: () => keyups++,
+			onblur: () => blurs++
+		});
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+
+		checkbox.element()?.focus();
+		await userEvent.keyboard('{Space}');
+
+		expect(keyups).toBe(1);
+		expect(checkbox.element()?.getAttribute('aria-checked')).toBe('true');
+
+		checkbox.element()?.blur();
+
+		expect(blurs).toBe(1);
 	});
 });

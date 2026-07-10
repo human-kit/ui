@@ -36,8 +36,10 @@
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
 	let suppressNextFocusVisible = $state(false);
 	const nodeId = untrack(() => node.id);
-	const nodeLevel = untrack(() => node.level);
-	const nodeDisabled = untrack(() => node.disabled);
+	// Rows are keyed by `node.id`, so this component instance is reused across
+	// re-registrations of the same node: `level`/`disabled` must stay reactive.
+	const nodeLevel = $derived(node.level);
+	const nodeDisabled = $derived(node.disabled);
 	const labelId = untrack(() => tree.createGeneratedId('tree-item-label'));
 
 	const isExpanded = $derived.by(() => {
@@ -119,7 +121,7 @@
 
 	setTreeItemContext({
 		id: nodeId,
-		level: nodeLevel,
+		level: untrack(() => node.level),
 		getLabel: () => getResolvedLabel(),
 		getLabelId: () => labelId,
 		getLabelElement: () => labelElementRef,

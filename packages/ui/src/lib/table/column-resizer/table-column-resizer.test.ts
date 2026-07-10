@@ -402,8 +402,17 @@ describe('Table.ColumnResizer', () => {
 			})
 		);
 
+		// The residual click right after the drag must be swallowed: the header
+		// cell must NOT receive focus (focusCellByKey must not run).
 		groupHeader.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		expect(document.activeElement).not.toBe(groupHeader);
+		expect(groupHeader.getAttribute('data-focused')).toBeNull();
 		expect(document.querySelector('[data-testid="sort-descriptor"]')?.textContent).toBe('');
+
+		// The suppression is one-shot: the next click focuses the header normally.
+		groupHeader.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		await expect.poll(() => document.activeElement).toBe(groupHeader);
+		await expect.poll(() => groupHeader.getAttribute('data-focused')).toBe('true');
 
 		await groupSortTrigger.click();
 		await expect
@@ -824,7 +833,7 @@ describe('Table.ColumnResizer', () => {
 		expect(emailHeaderCell.style.overflow).toBe('visible');
 		expect(emailResizer.style.position).toBe('absolute');
 		expect(emailResizer.style.zIndex).toBe('2');
-		expect(emailResizer.style.right).toBe('0px');
+		expect(emailResizer.style.insetInlineEnd).toBe('0px');
 		expect(emailResizer.style.transform).toBe('translateX(50%)');
 		expect(emailResizer.style.width).toBe('0.75rem');
 		expect(emailResizer.style.height).toBe('100%');

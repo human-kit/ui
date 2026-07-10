@@ -6,6 +6,14 @@ export type MenuCanonicalCloseReason =
 
 export type MenuCloseReason = MenuCanonicalCloseReason;
 
+/**
+ * Close reasons accepted internally by `MenuContext.close`. `'sibling-open'` marks a submenu
+ * being displaced by hovering a sibling item/trigger: consumers observe it as the canonical
+ * `'imperative-action'`, and it never refocuses the closed submenu's trigger (focus belongs
+ * to the hovered sibling).
+ */
+export type MenuInternalCloseReason = MenuCloseReason | 'sibling-open';
+
 export type MenuOpenReason = 'trigger-press' | 'imperative-action' | 'none';
 
 export type MenuChangeReason = MenuOpenReason | MenuCloseReason;
@@ -73,7 +81,7 @@ export type MenuContext = {
 	/** Open the menu. */
 	open: (reason?: MenuOpenReason, event?: Event) => void;
 	/** Close the menu and return focus to the trigger. */
-	close: (reason?: MenuCloseReason, event?: Event) => void;
+	close: (reason?: MenuInternalCloseReason, event?: Event) => void;
 	/** Called when the open state changes. */
 	onOpenChange: (open: boolean, details: MenuOpenChangeDetails) => void;
 

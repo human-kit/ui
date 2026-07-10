@@ -86,6 +86,34 @@ describe('Button.Root', () => {
 		expectNoFalseFocusAttributes(document);
 	});
 
+	it('treats the pressed prop as an override: pressed={false} suppresses data-pressed while the pointer is held', async () => {
+		const screen = render(ButtonTest, { pressed: false });
+		const button = screen.getByRole('button', { name: 'Save' });
+		const buttonElement = button.element() as HTMLButtonElement;
+
+		buttonElement.dispatchEvent(
+			new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0, buttons: 1 })
+		);
+
+		// Let any (incorrect) state update settle before asserting.
+		await new Promise((resolve) => setTimeout(resolve, 20));
+		expect(buttonElement.getAttribute('data-pressed')).toBeNull();
+		expect(
+			document.querySelector('[data-render-state]')?.getAttribute('data-render-pressed')
+		).toBeNull();
+
+		buttonElement.dispatchEvent(
+			new MouseEvent('mouseup', { bubbles: true, cancelable: true, button: 0 })
+		);
+	});
+
+	it('forces data-pressed when the pressed prop is true without interaction', async () => {
+		const screen = render(ButtonTest, { pressed: true });
+		const button = screen.getByRole('button', { name: 'Save' });
+
+		await expect.poll(() => button.element()?.getAttribute('data-pressed')).toBe('true');
+	});
+
 	it('disables the native button when disabled is true', async () => {
 		const screen = render(ButtonTest, { disabled: true });
 		const button = screen.getByRole('button', { name: 'Save' });
@@ -104,6 +132,7 @@ describe('Button.Root', () => {
 
 		expect(button?.hasAttribute('disabled')).toBe(false);
 		expect(button?.getAttribute('aria-disabled')).toBe('true');
+		expect(button?.getAttribute('aria-busy')).toBe('true');
 		expect(button?.getAttribute('data-pending')).toBe('true');
 		expect(button?.getAttribute('type')).toBe('button');
 

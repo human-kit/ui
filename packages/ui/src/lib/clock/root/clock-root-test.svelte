@@ -7,6 +7,7 @@
 		defaultValue?: string | null;
 		hourCycle?: 12 | 24;
 		granularity?: 'hour' | 'minute' | 'second';
+		hourStep?: number;
 		minValue?: string;
 		maxValue?: string;
 		disabled?: boolean;
@@ -19,6 +20,7 @@
 		defaultValue = '14:30',
 		hourCycle = 24,
 		granularity = 'minute',
+		hourStep = 1,
 		minValue,
 		maxValue,
 		disabled = false,
@@ -28,13 +30,15 @@
 	}: Props = $props();
 
 	let value = $state<string | null>(untrack(() => defaultValue ?? null));
+	let cycle = $state<12 | 24>(untrack(() => hourCycle));
 </script>
 
 {#if useSnippet}
 	<Clock.Root
 		bind:value
-		{hourCycle}
+		hourCycle={cycle}
 		{granularity}
+		{hourStep}
 		{minValue}
 		{maxValue}
 		{disabled}
@@ -50,8 +54,9 @@
 {:else}
 	<Clock.Root
 		bind:value
-		{hourCycle}
+		hourCycle={cycle}
 		{granularity}
+		{hourStep}
 		{minValue}
 		{maxValue}
 		{disabled}
@@ -60,3 +65,6 @@
 {/if}
 
 <p data-testid="clock-value">{value}</p>
+<button type="button" data-testid="toggle-cycle" onclick={() => (cycle = cycle === 12 ? 24 : 12)}>
+	Toggle cycle
+</button>

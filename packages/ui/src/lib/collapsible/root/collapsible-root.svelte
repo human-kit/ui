@@ -28,8 +28,12 @@
 
 	function setOpen(next: boolean) {
 		if (disabled || next === isOpen) return;
-		if (!isControlled) internalOpen = next;
-		openProp = next;
+		if (!isControlled) {
+			// Uncontrolled: apply the change and keep `bind:open` in sync.
+			internalOpen = next;
+			openProp = next;
+		}
+		// Controlled: request the change and let the parent apply it via the prop.
 		onOpenChange?.(next);
 	}
 

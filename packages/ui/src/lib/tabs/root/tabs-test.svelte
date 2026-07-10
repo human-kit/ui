@@ -13,11 +13,12 @@
 		billingDisabled?: boolean;
 		securityForceMount?: boolean;
 		showControls?: boolean;
+		cancelKeyDown?: boolean;
 	};
 
 	let {
 		controlled = false,
-		value = 'overview',
+		value,
 		defaultValue,
 		keyboardActivation = 'automatic',
 		orientation = 'horizontal',
@@ -25,10 +26,11 @@
 		disabledKeys = [],
 		billingDisabled = false,
 		securityForceMount = false,
-		showControls = false
+		showControls = false,
+		cancelKeyDown = false
 	}: TabsTestProps = $props();
 
-	let currentValue = $state<TabsValue | null>((() => value)());
+	let currentValue = $state<TabsValue | null | undefined>((() => value)());
 	let currentDisabledKeys = $state<TabsValue[]>((() => [...disabledKeys])());
 	let changeLog = $state<Array<TabsValue | null>>([]);
 
@@ -36,10 +38,16 @@
 		currentValue = nextValue;
 		changeLog = [...changeLog, nextValue];
 	}
+
+	function handleListKeyDown(event: KeyboardEvent) {
+		if (cancelKeyDown) {
+			event.preventDefault();
+		}
+	}
 </script>
 
 {#snippet tabParts()}
-	<Tabs.List aria-label="Account sections" data-testid="tabs-list">
+	<Tabs.List aria-label="Account sections" onkeydown={handleListKeyDown} data-testid="tabs-list">
 		<Tabs.Tab value="overview" data-testid="tab-overview">Overview</Tabs.Tab>
 		<Tabs.Tab value="billing" disabled={billingDisabled} data-testid="tab-billing">
 			Billing

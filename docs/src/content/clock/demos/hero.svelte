@@ -9,7 +9,7 @@
 	granularity="minute"
 	hourCycle={24}
 	aria-label="Time"
-	class="flex gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+	class="flex gap-2 rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
 >
 	{#snippet column(col)}
 		<Clock.WheelColumn type={col.type} class="z-20 h-44 w-16 rounded-md">
@@ -27,4 +27,4 @@
 	/>
 </Clock.Root>
 
-<p class="mt-4 text-sm text-gray-600 dark:text-gray-400">Value: {value ?? 'null'}</p>
+<p class="mt-4 text-sm text-neutral-600 dark:text-neutral-400">Value: {value ?? 'null'}</p>

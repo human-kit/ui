@@ -7,7 +7,7 @@
 	let indeterminate = $state(true);
 
 	const buttonClass =
-		'rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800';
+		'rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800';
 
 	function set(nextChecked: boolean, nextIndeterminate: boolean) {
 		checked = nextChecked;
@@ -21,7 +21,7 @@
 			bind:checked
 			bind:indeterminate
 			aria-label="Select all rows"
-			class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm outline-none transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[checked=true]:text-white data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[indeterminate=true]:border-amber-500 data-[indeterminate=true]:bg-amber-500 data-[indeterminate=true]:text-white dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+			class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 shadow-sm outline-none transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[checked=true]:text-white data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[indeterminate=true]:border-amber-500 data-[indeterminate=true]:bg-amber-500 data-[indeterminate=true]:text-white dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
 		>
 			<Checkbox.Indicator class="contents">
 				{#if indeterminate}
@@ -31,7 +31,7 @@
 				{/if}
 			</Checkbox.Indicator>
 		</Checkbox.Root>
-		<span class="text-sm font-medium text-gray-900 dark:text-white">Select all rows</span>
+		<span class="text-sm font-medium text-neutral-900 dark:text-white">Select all rows</span>
 	</label>
 
 	<div class="grid grid-cols-3 gap-2">

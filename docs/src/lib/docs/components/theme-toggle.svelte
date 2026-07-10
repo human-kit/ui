@@ -8,7 +8,7 @@
 	type="button"
 	onclick={() => theme.toggle()}
 	aria-label="Toggle color theme"
-	class="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+	class="rounded-md p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
 >
 	<!-- Which icon shows is driven by the `.dark` class (set by the anti-FOUC
 	     script before paint), not by JS state, so it never flips on hydration. -->

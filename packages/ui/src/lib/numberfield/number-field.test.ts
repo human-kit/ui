@@ -500,6 +500,42 @@ describe('NumberField', () => {
 		expect(decrement?.getAttribute('data-disabled')).toBe('true');
 	});
 
+	it('clears the hold repeat at max and does not resume when the value moves away', async () => {
+		const screen = render(NumberFieldTest, { defaultValue: 4, min: 0, max: 5 });
+		const increment = screen.getByRole('button', { name: 'Increment' }).element();
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		// The button disables itself at max, which can suppress its own pointerup,
+		// so the hold ends without clearRepeatTimers ever running on the button.
+		increment?.dispatchEvent(pointerEvent('pointerdown', 0));
+		await expect.poll(getValueOutput).toBe('5');
+		await wait(650);
+
+		inputElement.focus();
+		await userEvent.keyboard('{ArrowDown}');
+		await expect.poll(getValueOutput).toBe('4');
+
+		await wait(200);
+		expect(getValueOutput()).toBe('4');
+	});
+
+	it('stops the hold repeat when pointerup happens outside the button', async () => {
+		const screen = render(NumberFieldTest, { defaultValue: 0 });
+		const increment = screen.getByRole('button', { name: 'Increment' }).element();
+
+		increment?.dispatchEvent(pointerEvent('pointerdown', 0));
+		await wait(520);
+		window.dispatchEvent(pointerEvent('pointerup', 0));
+
+		const valueAfterStop = getValueOutput();
+		expect(Number(valueAfterStop)).toBeGreaterThan(1);
+
+		await wait(180);
+		expect(getValueOutput()).toBe(valueAfterStop);
+	});
+
 	it('stops repeat timers on pointer release', async () => {
 		await expectRepeatStopsOn('pointerup');
 	});
@@ -525,14 +561,101 @@ describe('NumberField', () => {
 		await userEvent.keyboard('{Shift>}{ArrowUp}{/Shift}');
 		await expect.poll(getValueOutput).toBe('17');
 
+		// PageUp/PageDown step by largeStep (10 by default), matching Shift+Arrow,
+		// per the APG spinbutton pattern. Previously they stepped by the base step.
 		await userEvent.keyboard('{PageDown}');
-		await expect.poll(getValueOutput).toBe('15');
+		await expect.poll(getValueOutput).toBe('7');
 
 		await userEvent.keyboard('{Home}');
 		await expect.poll(getValueOutput).toBe('0');
 
 		await userEvent.keyboard('{End}');
 		await expect.poll(getValueOutput).toBe('20');
+	});
+
+	it('commits localized min and max values on Home and End in dot-grouping locales', async () => {
+		const screen = render(NumberFieldTest, {
+			defaultValue: 2,
+			min: 0.5,
+			max: 1234.5,
+			locale: 'de-DE'
+		});
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		inputElement.focus();
+		await userEvent.keyboard('{Home}');
+
+		await expect.poll(getValueOutput).toBe('0.5');
+		expect(inputElement).toHaveValue('0,5');
+		expect(inputElement.getAttribute('data-input-state')).toBe('synced');
+
+		await userEvent.keyboard('{End}');
+
+		await expect.poll(getValueOutput).toBe('1234.5');
+		expect(inputElement).toHaveValue('1.234,5');
+		expect(inputElement.getAttribute('data-input-state')).toBe('synced');
+	});
+
+	it('applies smallStep on Ctrl+Arrow even when snapOnStep is enabled', async () => {
+		const screen = render(NumberFieldTest, {
+			defaultValue: 10,
+			step: 1,
+			smallStep: 0.1,
+			snapOnStep: true
+		});
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		inputElement.focus();
+		await userEvent.keyboard('{Control>}{ArrowUp}{/Control}');
+		await expect.poll(getValueOutput).toBe('10.1');
+
+		await userEvent.keyboard('{Control>}{ArrowDown}{/Control}');
+		await expect.poll(getValueOutput).toBe('10');
+	});
+
+	it('keeps trailing decimal drafts partial and commits the typed integer on blur', async () => {
+		const screen = render(NumberFieldTest);
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		inputElement.focus();
+		await userEvent.type(inputElement, '1.');
+
+		await expect.poll(() => inputElement.getAttribute('data-input-state')).toBe('partial');
+		expect(inputElement).toHaveValue('1.');
+		expect(inputElement.getAttribute('aria-invalid')).toBeNull();
+		expect(inputElement.getAttribute('data-invalid')).toBeNull();
+
+		inputElement.blur();
+
+		await expect.poll(getValueOutput).toBe('1');
+		await expect.poll(() => inputElement.value).toBe('1');
+		expect(inputElement.getAttribute('data-input-state')).toBe('synced');
+	});
+
+	it('marks pasted scientific notation as invalid instead of reparsing the residue', async () => {
+		const changes: Array<number | null> = [];
+		const screen = render(NumberFieldTest, {
+			defaultValue: 2,
+			onChange: (value) => changes.push(value)
+		});
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		setInputText(inputElement, '1e5');
+
+		await expect.poll(() => inputElement.getAttribute('data-input-state')).toBe('invalid');
+		expect(inputElement).toHaveValue('1e5');
+		expect(inputElement.getAttribute('data-invalid')).toBe('true');
+		expect(inputElement.getAttribute('aria-invalid')).toBe('true');
+		expect(getValueOutput()).toBe('2');
+		expect(changes).toEqual([]);
 	});
 
 	it('updates from wheel only when wheel scrub is enabled', async () => {

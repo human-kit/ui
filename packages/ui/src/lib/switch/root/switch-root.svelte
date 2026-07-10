@@ -53,7 +53,9 @@
 		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
+		onkeyup?: HTMLAttributes<HTMLSpanElement>['onkeyup'];
 		onfocus?: HTMLAttributes<HTMLSpanElement>['onfocus'];
+		onblur?: HTMLAttributes<HTMLSpanElement>['onblur'];
 		onpointerdown?: HTMLAttributes<HTMLSpanElement>['onpointerdown'];
 		onpointerup?: HTMLAttributes<HTMLSpanElement>['onpointerup'];
 		onpointercancel?: HTMLAttributes<HTMLSpanElement>['onpointercancel'];
@@ -96,7 +98,9 @@
 		tabindex,
 		onclick: onClickExternal,
 		onkeydown: onKeyDownExternal,
+		onkeyup: onKeyUpExternal,
 		onfocus: onFocusExternal,
+		onblur: onBlurExternal,
 		onpointerdown: onPointerDownExternal,
 		onpointerup: onPointerUpExternal,
 		onpointercancel: onPointerCancelExternal,
@@ -134,11 +138,13 @@
 		}
 	});
 
-	if (untrack(() => checked) === undefined) {
+	// Controlled-ness is decided once, from whether the prop was provided at init.
+	const isCheckedControlled = untrack(() => checked) !== undefined;
+
+	// In uncontrolled mode, write the initial state back so `bind:` parents see the default.
+	if (!isCheckedControlled) {
 		checked = initialChecked;
 	}
-
-	const isCheckedControlled = $derived(checked !== undefined);
 	const currentChecked = $derived(isCheckedControlled ? Boolean(checked) : checkedInternal);
 	const currentUnchecked = $derived(!currentChecked);
 
@@ -152,9 +158,8 @@
 
 		if (!isCheckedControlled) {
 			checkedInternal = nextChecked;
+			checked = nextChecked;
 		}
-
-		checked = nextChecked;
 
 		if (nextChecked !== previousChecked) {
 			onCheckedChange?.(nextChecked);
@@ -325,7 +330,15 @@
 		const target = event.currentTarget;
 		if (!(target instanceof HTMLInputElement)) return;
 
+		if (disabled || readonly) {
+			target.checked = currentChecked;
+			return;
+		}
+
 		publishChecked(target.checked, event);
+
+		// Keep the native input in sync when a controlled parent rejects the change.
+		target.checked = currentChecked;
 	}
 
 	function handleInputFocus() {
@@ -339,6 +352,24 @@
 	$effect(() => {
 		if (!inputRef) return;
 		inputRef.checked = currentChecked;
+	});
+
+	$effect(() => {
+		const form = inputRef?.form;
+		if (!form) return;
+
+		const handleFormReset = () => {
+			// The browser resets the native input after the `reset` event; re-sync afterwards.
+			queueMicrotask(() => {
+				publishChecked(initialChecked);
+				if (inputRef) {
+					inputRef.checked = currentChecked;
+				}
+			});
+		};
+
+		form.addEventListener('reset', handleFormReset);
+		return () => form.removeEventListener('reset', handleFormReset);
 	});
 
 	setSwitchContext({
@@ -403,7 +434,7 @@
 	data-focus-visible={focusVisible || undefined}
 	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
-	onkeyup={handleKeyUp}
+	onkeyup={composeEventHandlers(handleKeyUp, onKeyUpExternal ?? undefined)}
 	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
 	onpointerup={composeEventHandlers(handlePointerUp, onPointerUpExternal ?? undefined)}
 	onpointercancel={composeEventHandlers(handlePointerCancel, onPointerCancelExternal ?? undefined)}
@@ -414,7 +445,7 @@
 	onmouseenter={onMouseEnterExternal}
 	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
-	onblur={handleBlur}
+	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
 	class={className}
 	style:position="relative"
 >

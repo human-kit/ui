@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import {
 		setPopoverContext,
 		type PopoverCanonicalCloseReason,
@@ -47,8 +47,10 @@
 	// Use function to capture initial value only (not reactive)
 	let isOpenInternal = $state((() => defaultOpen)());
 
-	const isControlled = $derived(open !== undefined);
-	const isOpen = $derived(isControlled ? open! : isOpenInternal);
+	// Controlled-ness is captured once at init: a parent that passes `open`
+	// owns the state for the lifetime of the component.
+	const isControlled = untrack(() => open !== undefined);
+	const isOpen = $derived(isControlled ? Boolean(open) : isOpenInternal);
 
 	function setOpenWithDetails(
 		value: boolean,
@@ -69,10 +71,12 @@
 		onOpenChange?.(value, details);
 		if (details.isCanceled) return;
 
-		if (!isControlled) {
-			isOpenInternal = value;
-		}
+		// In controlled mode the parent owns the state: it reacts in `onOpenChange`
+		// and flows the value back down (or ignores it to reject the change).
+		// Writing `open` here would locally override the parent's prop.
+		if (isControlled) return;
 
+		isOpenInternal = value;
 		open = value;
 	}
 

@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { createListBoxContext, type ListBoxContext } from './context';
 	import { trackInteractionModality } from '../../primitives/input-modality';
 
@@ -67,7 +67,10 @@
 		return new Set(val);
 	}
 
-	const isControlled = $derived(value !== undefined);
+	// Controlled when a `value` prop is provided at initialization. In controlled
+	// mode the parent owns the selection: `select` only emits `onChange` and the
+	// sync effect below applies whatever the parent passes down.
+	const isControlled = untrack(() => value !== undefined);
 
 	const ctx = createListBoxContext({
 		get selectionMode() {
@@ -81,7 +84,12 @@
 		},
 		// Use function to capture initial value only (not reactive)
 		initialSelection: (() => parseSelection(value ?? defaultValue))(),
+		isControlled,
 		onSelectionChange: (newSelection) => {
+			if (!isControlled) {
+				// Uncontrolled mode: keep `bind:value` in sync with the selection.
+				value = Array.from(newSelection);
+			}
 			onChange?.(newSelection);
 		}
 	});
@@ -92,19 +100,22 @@
 	const { action: keyboardAction } = ctx.keyboardNav;
 
 	$effect(() => {
-		if (isControlled && value !== undefined) {
+		if (value !== undefined) {
 			const newSelection = parseSelection(value);
 			ctx.setSelection(newSelection);
 		}
 	});
 
 	$effect(() => {
-		ctx.disabledKeys.clear();
-		if (disabledKeys) {
-			for (const id of disabledKeys) {
+		const keys = disabledKeys ? Array.from(disabledKeys) : [];
+		// `ctx.disabledKeys` is a reactive set; mutate inside `untrack` so this
+		// effect only re-runs when the `disabledKeys` prop changes.
+		untrack(() => {
+			ctx.disabledKeys.clear();
+			for (const id of keys) {
 				ctx.disabledKeys.add(id);
 			}
-		}
+		});
 	});
 
 	let itemCount = $state(0);
@@ -169,7 +180,7 @@
 	aria-multiselectable={selectionMode === 'multiple'}
 	aria-label={ariaLabel}
 	class={className}
-	tabindex={disableFocusHandling ? undefined : 0}
+	tabindex={disableFocusHandling ? undefined : focusWithin ? -1 : 0}
 	data-focus-within={focusWithin || undefined}
 	use:keyboardAction
 	onfocusin={handleFocusIn}

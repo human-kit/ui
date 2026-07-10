@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import { readable } from 'svelte/store';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import {
 		DEFAULT_TABLE_COLUMN_MIN_WIDTH,
 		getTableCellContext,
@@ -12,6 +15,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
 
 	let {
 		step = 16,
@@ -20,6 +24,10 @@
 		class: className = '',
 		...restProps
 	}: TableColumnResizerProps = $props();
+
+	const localeContext = useLocaleContextOptional();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
 
 	const table = useTableContext();
 	const column = useTableColumnContext();
@@ -31,6 +39,15 @@
 	cellContext?.notifyResizerPresent?.();
 
 	let element = $state<HTMLDivElement | undefined>(undefined);
+	// The handle sits on the column's inline-end edge and is shifted half of
+	// its width outwards; the physical shift direction depends on the layout
+	// direction, resolved once the element mounts.
+	let handleRtl = $state(false);
+
+	$effect(() => {
+		handleRtl = element ? isRightToLeft() : false;
+	});
+
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);
 	let keyboardResizeActive = $state(false);
@@ -73,7 +90,9 @@
 	});
 	const accessibleLabel = $derived.by(() => {
 		const text = column.textValue?.trim() || column.id.replace(/[-_]+/g, ' ').trim();
-		return `Resize ${text || 'column'} column`;
+		const label =
+			text || resolveLocalizedString($localeStore, 'table.columnFallback').toLowerCase();
+		return resolveLocalizedString($localeStore, 'table.resizeColumn', { label });
 	});
 	const accessibleValueText = $derived.by(() => {
 		const width = currentWidth;
@@ -83,7 +102,7 @@
 
 	function getAnnouncementLabel() {
 		const text = column.textValue?.trim() || column.id.replace(/[-_]+/g, ' ').trim();
-		return text || 'Column';
+		return text || resolveLocalizedString($localeStore, 'table.columnFallback');
 	}
 
 	function getHeaderWidth() {
@@ -92,7 +111,7 @@
 
 	function isRightToLeft() {
 		const target = element?.closest('table') ?? element;
-		return target ? getComputedStyle(target).direction === 'rtl' : false;
+		return isRtl(target);
 	}
 
 	function cleanupPointerListeners() {
@@ -149,7 +168,10 @@
 	}
 
 	function announceWidth(width: number) {
-		const message = `${getAnnouncementLabel()} width ${width}px.`;
+		const message = resolveLocalizedString($localeStore, 'table.columnWidth', {
+			label: getAnnouncementLabel(),
+			width
+		});
 		cleanupAnnouncementTimeout();
 		resizeAnnouncement = '';
 		announceTimeout = setTimeout(() => {
@@ -472,15 +494,22 @@
 					startKeyboardResizeMode();
 					return;
 				case 'ArrowLeft':
+				case 'ArrowRight': {
 					event.preventDefault();
 					event.stopPropagation();
-					focusHeaderCell();
+					// The handle sits between its own header (logically previous)
+					// and the next column's header. In RTL layouts the physical
+					// arrows are inverted so navigation follows the visual direction.
+					const movesToNextHeader = isRightToLeft()
+						? event.key === 'ArrowLeft'
+						: event.key === 'ArrowRight';
+					if (movesToNextHeader) {
+						focusAdjacentHeaderCell('right');
+					} else {
+						focusHeaderCell();
+					}
 					return;
-				case 'ArrowRight':
-					event.preventDefault();
-					event.stopPropagation();
-					focusAdjacentHeaderCell('right');
-					return;
+				}
 				case 'ArrowUp':
 					event.preventDefault();
 					event.stopPropagation();
@@ -573,8 +602,8 @@
 		style:position="absolute"
 		style:z-index="2"
 		style:top="0"
-		style:right="0"
-		style:transform="translateX(50%)"
+		style:inset-inline-end="0"
+		style:transform={handleRtl ? 'translateX(-50%)' : 'translateX(50%)'}
 		style:width="0.75rem"
 		style:height="100%"
 		style:display="flex"

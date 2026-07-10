@@ -49,7 +49,7 @@ export type CreateCalendarContextOptions<
 	monthHeadingStyle?: CalendarMonthHeadingStyle;
 	isDisabled?: boolean;
 	isReadOnly?: boolean;
-	value?: CalendarValueBySelectionMode<TSelectionMode>;
+	value?: CalendarValueBySelectionMode<TSelectionMode> | null;
 	defaultValue?: CalendarValueBySelectionMode<TSelectionMode>;
 	isDateUnavailable?: (date: CalendarDateValue) => boolean;
 	onChange?: (value: CalendarValueBySelectionMode<TSelectionMode>) => void;
@@ -83,6 +83,7 @@ export type CalendarContext = {
 	isOutsideVisibleRange: (date: CalendarDateValue, monthIndex: number) => boolean;
 	setFocusedValue: (date: CalendarDateValue) => void;
 	setFocusVisible: (visible: boolean) => void;
+	consumeFocusRequest: (version: number) => boolean;
 	setHoveredValue: (date: CalendarDateValue | undefined) => void;
 	selectDate: (date: CalendarDateValue) => void;
 	goToNextPage: () => void;
@@ -112,13 +113,31 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		onChange
 	} = options;
 
+	visibleMonths = Math.max(1, visibleMonths);
+
 	const { value, defaultValue } = options;
 
 	function isRangeValue(
-		valueToCheck: CalendarValue | undefined
+		valueToCheck: CalendarValue | null | undefined
 	): valueToCheck is CalendarRangeValue {
 		if (!valueToCheck || typeof valueToCheck === 'string') return false;
 		return true;
+	}
+
+	function areExternalValuesEqual(
+		a: CalendarValue | null | undefined,
+		b: CalendarValue | null | undefined
+	): boolean {
+		if (a === b) return true;
+		if (!isRangeValue(a) || !isRangeValue(b)) return false;
+		return a.start === b.start && a.end === b.end;
+	}
+
+	function snapshotExternalValue(
+		valueToSnapshot: CalendarValue | null | undefined
+	): CalendarValue | null | undefined {
+		if (!isRangeValue(valueToSnapshot)) return valueToSnapshot;
+		return { start: valueToSnapshot.start, end: valueToSnapshot.end };
 	}
 
 	function normalizeRange(start: CalendarDateValue, end: CalendarDateValue): CalendarRangeValue {
@@ -186,10 +205,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	const fallbackToday = formatCalendarDate(getTodayUtcDate());
+	// `null` means "controlled and empty", so it must not fall back to defaultValue.
 	const initialSingleSelected =
 		selectionMode === 'single' && typeof value === 'string' && isValidCalendarDateValue(value)
 			? value
 			: selectionMode === 'single' &&
+				  value !== null &&
 				  typeof defaultValue === 'string' &&
 				  isValidCalendarDateValue(defaultValue)
 				? defaultValue
@@ -198,7 +219,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	const initialRangeSelected =
 		selectionMode === 'range' && isRangeValue(value)
 			? value
-			: selectionMode === 'range' && isRangeValue(defaultValue)
+			: selectionMode === 'range' && value !== null && isRangeValue(defaultValue)
 				? defaultValue
 				: undefined;
 
@@ -223,6 +244,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let pendingRangePathCache = new Map<CalendarDateValue, boolean>();
 	let pendingRangePathCacheStart: CalendarDateValue | undefined;
 	let previousUnavailableFn = isDateUnavailable;
+	let previousValue = snapshotExternalValue(value);
+	let previousDefaultValue = snapshotExternalValue(defaultValue);
 	let previousVisibleMonths = visibleMonths;
 	let previousShowOutsideDays = showOutsideDays;
 	let previousLocale = locale;
@@ -232,6 +255,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	const layoutVersion = writable(0);
 	const selectionVersion = writable(0);
 	const focusRequestVersion = writable(0);
+	let lastConsumedFocusRequestVersion = 0;
 
 	function clearUnavailableCache() {
 		unavailableCache = new Map();
@@ -276,6 +300,15 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		focusRequestVersion.update((value) => value + 1);
 	}
 
+	// Each focus request may be consumed at most once (by the roving focus
+	// target). Cells mounted after a request was already handled (e.g. month
+	// navigation with the mouse) must not steal focus on mount.
+	function consumeFocusRequest(version: number): boolean {
+		if (version <= lastConsumedFocusRequestVersion) return false;
+		lastConsumedFocusRequestVersion = version;
+		return true;
+	}
+
 	function syncExternal(next: CreateCalendarContextOptions) {
 		let shouldNotifyLayout = false;
 		let shouldNotifySelection = false;
@@ -307,7 +340,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		previousFirstDayOfWeek = nextFirstDayOfWeek;
 		previousMonthHeadingStyle = nextMonthHeadingStyle;
 
-		if (selectionMode !== nextSelectionMode) {
+		const selectionModeChanged = selectionMode !== nextSelectionMode;
+		if (selectionModeChanged) {
 			selectionMode = nextSelectionMode;
 			currentSelected = undefined;
 			currentRangeStart = undefined;
@@ -338,9 +372,18 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		const nextValue = next.value;
 		const nextDefaultValue = next.defaultValue;
+		// Only re-apply the external value when it actually changed, so parent
+		// rerenders with the same value do not reset focus, the visible month or
+		// an in-progress range draft.
+		const valueChanged = !areExternalValuesEqual(nextValue, previousValue);
+		const defaultValueChanged = !areExternalValuesEqual(nextDefaultValue, previousDefaultValue);
+		previousValue = snapshotExternalValue(nextValue);
+		previousDefaultValue = snapshotExternalValue(nextDefaultValue);
+		const shouldApplyValue = valueChanged || selectionModeChanged;
+		const shouldApplyDefaultValue = defaultValueChanged || selectionModeChanged;
 
 		if (selectionMode === 'single') {
-			if (nextValue !== undefined) {
+			if (shouldApplyValue && nextValue !== undefined) {
 				if (typeof nextValue === 'string' && isValidCalendarDateValue(nextValue)) {
 					if (currentSelected !== nextValue || currentFocused !== nextValue) {
 						shouldNotifySelection = true;
@@ -350,10 +393,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 					currentVisibleMonth = startOfMonth(parseCalendarDate(nextValue) ?? currentVisibleMonth);
 					shouldNotifyLayout = true;
 				} else if (currentSelected !== undefined) {
+					// `null` (controlled and empty) or an invalid string clears the selection.
 					currentSelected = undefined;
 					shouldNotifySelection = true;
 				}
 			} else if (
+				shouldApplyDefaultValue &&
+				nextValue === undefined &&
 				!currentSelected &&
 				typeof nextDefaultValue === 'string' &&
 				isValidCalendarDateValue(nextDefaultValue)
@@ -373,7 +419,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			currentHoveredDate = undefined;
 			clearPendingRangePathCache();
 		} else {
-			if (nextValue !== undefined) {
+			if (shouldApplyValue && nextValue !== undefined) {
 				if (isRangeValue(nextValue)) {
 					const nextStart =
 						nextValue.start && isValidCalendarDateValue(nextValue.start)
@@ -408,6 +454,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 						shouldNotifyLayout = true;
 					}
 				} else if (currentRangeStart || currentRangeEnd) {
+					// `null` (controlled and empty) clears both ends of the range.
 					currentRangeStart = undefined;
 					currentRangeEnd = undefined;
 					currentRangeAnchor = undefined;
@@ -416,7 +463,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 					clearPendingRangePathCache();
 					shouldNotifySelection = true;
 				}
-			} else if (!currentRangeStart && !currentRangeEnd && isRangeValue(nextDefaultValue)) {
+			} else if (
+				shouldApplyDefaultValue &&
+				nextValue === undefined &&
+				!currentRangeStart &&
+				!currentRangeEnd &&
+				isRangeValue(nextDefaultValue)
+			) {
 				const nextStart =
 					nextDefaultValue.start && isValidCalendarDateValue(nextDefaultValue.start)
 						? nextDefaultValue.start
@@ -597,10 +650,14 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (nextHovered === currentHoveredDate) return;
 
 		if (!nextHovered) {
+			// Mouseleave: clear the hover preview so Enter cannot commit a stale end.
+			currentHoveredDate = undefined;
+			currentPreviewEnd = undefined;
+			notifySelection();
 			return;
 		}
 
-		if (nextHovered && !isRangePathSelectable(currentRangeStart, nextHovered)) {
+		if (!isRangePathSelectable(currentRangeStart, nextHovered)) {
 			return;
 		}
 
@@ -869,11 +926,17 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				}
 				selectDate(keyDate);
 				break;
-			case 'Escape':
+			case 'Escape': {
+				// Only consume Escape when there is a pending range draft to cancel,
+				// so a second Escape can propagate (e.g. to close a popover).
+				const hasPendingRangeSelection =
+					selectionMode === 'range' && !!currentRangeStart && !currentRangeEnd;
+				if (!hasPendingRangeSelection) break;
 				event.preventDefault();
 				setFocusVisible(true);
 				cancelPendingRangeSelection();
 				break;
+			}
 		}
 	}
 
@@ -935,6 +998,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		isOutsideVisibleRange,
 		setFocusedValue,
 		setFocusVisible,
+		consumeFocusRequest,
 		setHoveredValue,
 		selectDate,
 		goToNextPage,

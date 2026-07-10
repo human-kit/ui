@@ -22,6 +22,7 @@
 		showUnderline?: boolean;
 		showNestedInput?: boolean;
 		cancelKeyDown?: boolean;
+		disableBoldOnItalicChange?: boolean;
 		onChange?: (value: ToggleGroupValue[]) => void;
 		onItemChange?: (value: string, selected: boolean) => void;
 	};
@@ -41,6 +42,7 @@
 		showUnderline = true,
 		showNestedInput = false,
 		cancelKeyDown = false,
+		disableBoldOnItalicChange = false,
 		onChange,
 		onItemChange
 	}: Props = $props();
@@ -87,7 +89,12 @@
 		<Toggle.Root
 			value="italic"
 			disabled={italicDisabled}
-			onChange={(selected) => onItemChange?.('italic', selected)}
+			onChange={(selected) => {
+				if (disableBoldOnItalicChange) {
+					boldDisabledOverride = true;
+				}
+				onItemChange?.('italic', selected);
+			}}
 			data-testid="toggle-italic"
 		>
 			Italic

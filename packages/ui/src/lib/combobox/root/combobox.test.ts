@@ -492,9 +492,75 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 			await expect.element(input).toHaveValue('Unidad');
 		});
+
+		it('fires onOpenChange(false) only once per Escape', async () => {
+			const onOpenChange = vi.fn();
+			const screen = render(ComboBoxTest, { onOpenChange });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+			onOpenChange.mockClear();
+
+			await userEvent.keyboard('{Escape}');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+
+			// Give the popover's deferred close callback a chance to run,
+			// then ensure it did not produce a duplicate notification.
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			expect(onOpenChange.mock.calls.filter(([open]) => open === false)).toHaveLength(1);
+		});
+
+		it('restores the selected label on blur after selecting via click and typing', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			// Select Argentina with the pointer (mousedown inside the popover marks
+			// a pointer-down that must not linger after the click completes)
+			await input.click();
+			const listbox = screen.getByRole('listbox').element();
+			const firstOption = listbox.querySelector(
+				'[role="option"]:not([data-empty-placeholder])'
+			) as HTMLElement;
+			await userEvent.click(firstOption);
+
+			await expect.element(input).toHaveValue('Argentina');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+
+			// Type a non-matching query, then move focus out
+			await input.tripleClick();
+			await userEvent.keyboard('xyz');
+			await expect.element(input).toHaveValue('xyz');
+
+			await userEvent.keyboard('{Tab}');
+
+			// A stale popover pointer-down marker must not swallow this blur:
+			// the input restores the selected label.
+			await expect.element(input).toHaveValue('Argentina');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+		});
 	});
 
 	describe('Popover Opening', () => {
+		it('keeps arrow navigation working when reopening right after closing', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			// Close and immediately reopen while the exit animation may still be
+			// running (items stay mounted and registered through the animation)
+			await userEvent.keyboard('{Escape}');
+			await input.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			await userEvent.keyboard('{ArrowDown}');
+			await expect
+				.poll(() => input.element().getAttribute('aria-activedescendant'))
+				.toBeTruthy();
+		});
+
 		it('opens on click when trigger is press (default)', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
@@ -1320,6 +1386,45 @@ describe('ComboBox', () => {
 				})
 				.toBeGreaterThan(1);
 		});
+
+		it('keeps the typed filter when typing opens the popover with a previous selection', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			// Select Argentina
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+			await expect.element(input).toHaveValue('Argentina');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
+
+			// Replace the input content by typing "b" - the open caused by typing
+			// must not reset the filter to show all items
+			await userEvent.keyboard('{Control>}a{/Control}b');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			const listbox = screen.getByRole('listbox').element();
+			await expect
+				.poll(() => {
+					const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+					return options.length;
+				})
+				.toBe(1);
+			const options = listbox.querySelectorAll('[role="option"]:not([data-empty-placeholder])');
+			expect(options[0].textContent).toContain('Brazil');
+
+			// Virtual focus must not remain on the previous selection
+			const activeDescendant = input.element().getAttribute('aria-activedescendant');
+			expect(activeDescendant ?? '').not.toMatch(/-ar$/);
+
+			// Enter selects the first matching item, not the previous selection
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+			await expect.element(input).toHaveValue('Brazil');
+			await expect
+				.poll(() => document.querySelector('[data-selected-value]')?.textContent)
+				.toBe('br');
+		});
 	});
 
 	describe('onInputChange Callback Behavior', () => {
@@ -1568,6 +1673,56 @@ describe('ComboBox', () => {
 			await input.click();
 
 			await expect.poll(() => root?.getAttribute('data-focus-visible')).toBeNull();
+		});
+	});
+
+	describe('IME Composition', () => {
+		it('ignores Enter while composing so no item is selected', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await expect.poll(() => input.element().getAttribute('aria-activedescendant')).toBeTruthy();
+
+			input.element().dispatchEvent(
+				new KeyboardEvent('keydown', {
+					key: 'Enter',
+					isComposing: true,
+					bubbles: true,
+					cancelable: true
+				})
+			);
+
+			// Let any (incorrect) state update settle before asserting
+			await new Promise((resolve) => setTimeout(resolve, 20));
+
+			// Still open, nothing selected (single mode defaults the empty value to null)
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+			expect(document.querySelector('[data-selected-value]')?.textContent).toBe('null');
+		});
+
+		it('ignores arrow keys while composing so virtual focus does not move', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await expect.poll(() => input.element().getAttribute('aria-activedescendant')).toBeTruthy();
+			const activeDescendant = input.element().getAttribute('aria-activedescendant');
+
+			input.element().dispatchEvent(
+				new KeyboardEvent('keydown', {
+					key: 'ArrowDown',
+					isComposing: true,
+					bubbles: true,
+					cancelable: true
+				})
+			);
+
+			// Let any (incorrect) state update settle before asserting
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			expect(input.element().getAttribute('aria-activedescendant')).toBe(activeDescendant);
 		});
 	});
 });

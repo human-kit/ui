@@ -21,4 +21,11 @@ describe('Calendar.TriggerNext', () => {
 
 		await expect.element(nextButton).toBeDisabled();
 	});
+
+	it('localizes the default aria-label in Spanish through LocaleProvider', async () => {
+		const screen = render(CalendarRootTest, { locale: 'es' });
+		const nextButton = screen.getByRole('button', { name: 'Página siguiente' });
+
+		await expect.element(nextButton).toHaveAttribute('aria-label', 'Página siguiente');
+	});
 });

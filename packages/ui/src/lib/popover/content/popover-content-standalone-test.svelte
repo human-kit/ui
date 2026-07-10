@@ -25,4 +25,5 @@
 
 <Popover.Content {open} {triggerRef} onOpenChange={handleOpenChange}>
 	<div>Standalone content</div>
+	<button type="button" class="inner-btn">Inner Action</button>
 </Popover.Content>

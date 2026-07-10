@@ -2,7 +2,7 @@ export type NumberFieldStep = number | 'any';
 
 export type NumberParseResult =
 	| { kind: 'empty'; value: null }
-	| { kind: 'partial'; value: null }
+	| { kind: 'partial'; value: number | null }
 	| { kind: 'invalid'; value: null }
 	| { kind: 'valid'; value: number };
 
@@ -135,6 +135,49 @@ function formatLiteralPercentValue(
 		.join('');
 }
 
+function getFormatterLiteralParts(
+	locale: string | undefined,
+	formatOptions: Intl.NumberFormatOptions | undefined
+): string[] {
+	const formatter = createFormatter(locale, formatOptions);
+	const numericPartTypes = new Set<Intl.NumberFormatPartTypes>([
+		'integer',
+		'group',
+		'decimal',
+		'fraction',
+		'minusSign',
+		'plusSign'
+	]);
+	const literals = new Set<string>();
+
+	for (const sampleValue of [-12345.6, 12345.6]) {
+		for (const part of formatter.formatToParts(sampleValue)) {
+			if (numericPartTypes.has(part.type)) continue;
+			if (part.value) literals.add(part.value);
+		}
+	}
+
+	return [...literals];
+}
+
+function hasUnsupportedAlphabeticCharacters(
+	input: string,
+	locale: string | undefined,
+	formatOptions: Intl.NumberFormatOptions | undefined
+): boolean {
+	if (!/\p{L}/u.test(input)) return false;
+
+	let stripped = input;
+	for (const literal of getFormatterLiteralParts(locale, formatOptions)) {
+		stripped = stripped.split(literal).join('');
+	}
+	for (const localizedDigit of getLocalizedDigits(locale).keys()) {
+		stripped = stripped.split(localizedDigit).join('');
+	}
+
+	return /\p{L}/u.test(stripped);
+}
+
 function normalizeLocalizedNumber(input: string, locale: string | undefined): string {
 	const symbols = getNumberSymbols(locale);
 	const digits = getLocalizedDigits(locale);
@@ -220,6 +263,10 @@ export function parseNumberInput(
 	const trimmed = input.trim();
 	if (!trimmed) return { kind: 'empty', value: null };
 
+	if (hasUnsupportedAlphabeticCharacters(trimmed, locale, formatOptions)) {
+		return { kind: 'invalid', value: null };
+	}
+
 	const normalized = normalizeLocalizedNumber(trimmed, locale);
 	let numericText = normalized.replace(/%$/, '');
 
@@ -227,6 +274,13 @@ export function parseNumberInput(
 
 	if (/^[+-]$/.test(numericText) || /^[+-]?\.$/.test(numericText)) {
 		return { kind: 'partial', value: null };
+	}
+
+	if (/^[+-]?\d+\.$/.test(numericText)) {
+		return {
+			kind: 'partial',
+			value: roundNumberValueToFormat(Number(numericText), locale, formatOptions)
+		};
 	}
 
 	if (
@@ -310,7 +364,8 @@ export function stepNumberValue(
 		snapOnStep?: boolean;
 	}
 ): number {
-	const resolvedStep = normalizeStep(options.step) * (options.multiplier ?? 1);
+	const baseStep = normalizeStep(options.step);
+	const resolvedStep = baseStep * (options.multiplier ?? 1);
 	const baseValue = getStepBaseValue(value, options.min, options.max);
 	const precision = Math.max(
 		decimalPlaces(baseValue),
@@ -318,8 +373,10 @@ export function stepNumberValue(
 		decimalPlaces(options.min ?? 0)
 	);
 	const nextValue = roundToPrecision(baseValue + resolvedStep * direction, precision);
+	const snapStep: NumberFieldStep | undefined =
+		options.step !== 'any' && resolvedStep < baseStep ? resolvedStep : options.step;
 	const steppedValue = options.snapOnStep
-		? snapNumberToStep(nextValue, options.step, options.min)
+		? snapNumberToStep(nextValue, snapStep, options.min)
 		: nextValue;
 
 	return clampNumber(steppedValue, options.min, options.max);

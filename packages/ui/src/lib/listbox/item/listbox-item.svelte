@@ -241,12 +241,19 @@
 		clearPressedState();
 	}
 
+	function listboxHasDomFocus() {
+		const root = elementRef?.closest('[role="listbox"]');
+		return !!root && !!document.activeElement && root.contains(document.activeElement);
+	}
+
 	function applyPointerFocusState() {
 		suppressNextFocusVisible = true;
 		listboxCtx.setFocusVisible(false);
 		listboxCtx.setFocusedId(id);
 		listboxCtx.keyboardNav.setCurrentId(id);
-		if (elementRef) {
+		// Only move real DOM focus on hover when focus is already inside the
+		// listbox; otherwise hovering would steal focus from elsewhere on the page.
+		if (elementRef && listboxHasDomFocus()) {
 			focusWithModality(elementRef, 'pointer');
 		}
 	}

@@ -181,6 +181,7 @@
 	data-navigation-item
 	data-item-id={itemId}
 	data-item-id-type={idType}
+	data-text-value={textValue}
 	data-disabled={disabled || undefined}
 	aria-disabled={disabled || undefined}
 	data-highlighted={isHighlighted || undefined}

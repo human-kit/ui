@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import TreeItemTest from './tree-item-test.svelte';
+import TreeItemDisabledTest from './tree-item-disabled-test.svelte';
 
 describe('Tree.Item', () => {
 	it('renders expansion semantics and nested levels', async () => {
@@ -107,6 +108,22 @@ describe('Tree.Item', () => {
 
 		documents.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
 		await expect.element(documents).not.toHaveAttribute('data-pressed');
+	});
+
+	it('updates disabled semantics when the disabled prop changes after mount', async () => {
+		const screen = render(TreeItemDisabledTest);
+		const reports = document.querySelector<HTMLElement>(
+			'[role="treeitem"][id="tree-item-reports"]'
+		);
+
+		if (!reports) throw new Error('Reports treeitem not found');
+		expect(reports.getAttribute('aria-disabled')).toBeNull();
+		expect(reports.getAttribute('data-disabled')).toBeNull();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Disable reports' }));
+
+		await expect.element(reports).toHaveAttribute('aria-disabled', 'true');
+		await expect.element(reports).toHaveAttribute('data-disabled', 'true');
 	});
 
 	it('does not move focus when a row is only hovered', async () => {

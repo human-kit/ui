@@ -9,7 +9,7 @@
 		bind:value
 		hourCycle={12}
 		aria-label="Time"
-		class="flex gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+		class="flex gap-2 rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
 	>
 		{#snippet column(col)}
 			<Clock.WheelColumn type={col.type} class="h-44 w-16 rounded-md">
@@ -25,6 +25,6 @@
 	</Clock.Root>
 </LocaleProvider>
 
-<p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+<p class="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
 	Emitted value stays 24-hour: {value ?? 'null'}
 </p>

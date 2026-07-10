@@ -7,6 +7,7 @@
 	} from '../../primitives/input-modality';
 	import { useAccordionContext } from '../root/context';
 	import { useAccordionItemContext } from '../item/context';
+	import { isRtl } from '../../internal/rtl';
 	import type { AccordionTriggerProps } from '../types.js';
 
 	type AccordionTriggerMouseEvent = MouseEvent & {
@@ -121,8 +122,12 @@
 		}
 
 		if (!disabled && !accordion.isDisabled) {
-			const nextKeys = orientation === 'horizontal' ? ['ArrowRight'] : ['ArrowDown'];
-			const previousKeys = orientation === 'horizontal' ? ['ArrowLeft'] : ['ArrowUp'];
+			// In horizontal orientation the arrows are physical: under RTL the
+			// visual "next" trigger is the previous one in DOM order (APG).
+			const horizontal = orientation === 'horizontal';
+			const rtl = horizontal && isRtl(buttonRef);
+			const nextKeys = horizontal ? [rtl ? 'ArrowLeft' : 'ArrowRight'] : ['ArrowDown'];
+			const previousKeys = horizontal ? [rtl ? 'ArrowRight' : 'ArrowLeft'] : ['ArrowUp'];
 
 			if (nextKeys.includes(event.key)) {
 				event.preventDefault();

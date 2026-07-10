@@ -23,12 +23,12 @@
 <Tabs.Root defaultValue="overview" class="w-full max-w-md space-y-4">
 	<Tabs.List
 		aria-label="Project sections"
-		class="relative flex gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm dark:border-gray-700 dark:bg-gray-900"
+		class="relative flex gap-1 rounded-lg border border-neutral-200 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900"
 	>
 		{#each tabs as tab (tab.value)}
 			<Tabs.Tab
 				value={tab.value}
-				class="relative z-10 flex-1 rounded-md px-3 py-2 text-center text-sm font-medium text-gray-600 outline-none transition-colors hover:bg-gray-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 data-selected:text-gray-950 dark:text-gray-300 dark:hover:bg-gray-800 dark:data-selected:text-white"
+				class="relative z-10 flex-1 rounded-md px-3 py-2 text-center text-sm font-medium text-neutral-600 outline-none transition-colors hover:bg-neutral-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 data-selected:text-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:data-selected:text-white"
 			>
 				{tab.label}
 			</Tabs.Tab>
@@ -43,7 +43,7 @@
 	{#each tabs as tab (tab.value)}
 		<Tabs.Panel
 			value={tab.value}
-			class="rounded-lg border border-gray-200 bg-white p-4 text-sm leading-6 text-gray-600 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+			class="rounded-lg border border-neutral-200 bg-white p-4 text-sm leading-6 text-neutral-600 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
 		>
 			{tab.body}
 		</Tabs.Panel>

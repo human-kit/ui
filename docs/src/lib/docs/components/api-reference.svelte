@@ -32,13 +32,15 @@
 
 	{#if part.props.length > 0}
 		<PropsTable part={part.name.toLowerCase()} props={part.props} />
-		<p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
+		<p class="mt-2 text-xs text-neutral-500 dark:text-neutral-500">
 			* required. Native HTML attributes of the underlying element are also accepted.
 		</p>
 	{/if}
 
 	{#if part.dataAttributes.length > 0}
-		<h4 class="mt-4 mb-2 text-sm font-semibold text-gray-900 dark:text-white">Data attributes</h4>
+		<h4 class="mt-4 mb-2 text-sm font-semibold text-neutral-900 dark:text-white">
+			Data attributes
+		</h4>
 		<DataAttributesTable attributes={part.dataAttributes} />
 	{/if}
 {/each}

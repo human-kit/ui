@@ -177,6 +177,44 @@ describe('Menu', () => {
 			expectNoFalseFocusAttributes();
 		});
 
+		it('moves focus past the trigger and closes the chain on Tab', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			await openWithSubmenu(screen);
+
+			await userEvent.keyboard('{Tab}');
+
+			await expect.poll(() => openMenuCount()).toBe(0);
+			// Focus must continue to the trigger's natural successor, not fall off the
+			// portalled menu content at the end of the document.
+			await expect
+				.poll(() => (document.activeElement as HTMLElement | null)?.textContent?.trim())
+				.toBe('After');
+
+			// Park the real cursor on a neutral spot (the clicks above left it where menu
+			// items render, and later menus opening under it would get hover-highlighted).
+			await screen.getByRole('button', { name: 'After' }).hover();
+		});
+
+		it('keeps the highlight when a close is cancelled by the consumer', async () => {
+			const screen = render(MenuTest, {
+				onOpenChange: (open, details) => {
+					if (!open) details.cancel();
+				}
+			});
+			const trigger = screen.getByRole('button', { name: 'Open Menu' });
+			trigger.element().focus();
+
+			await userEvent.keyboard('{ArrowDown}');
+			await expect.poll(() => queryMenu()).toBeTruthy();
+			await expect.poll(highlightedText).toBe('Edit');
+
+			await userEvent.keyboard('{Escape}');
+
+			// The cancelled close must not clear the interaction state as a side effect.
+			expect(openMenuCount()).toBe(1);
+			await expect.poll(highlightedText).toBe('Edit');
+		});
+
 		it('skips disabled items while navigating', async () => {
 			const screen = render(MenuTest);
 			const trigger = screen.getByRole('button', { name: 'Open Menu' });
@@ -259,6 +297,42 @@ describe('Menu', () => {
 		});
 	});
 
+	describe('Typeahead', () => {
+		async function openByPointer(typeahead = true) {
+			const screen = render(MenuTest, { typeahead });
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+			return screen;
+		}
+
+		it('highlights the item whose text starts with the typed character', async () => {
+			await openByPointer();
+
+			await userEvent.keyboard('c');
+
+			await expect.poll(highlightedText).toBe('Copy link');
+		});
+
+		it('prefers textValue over the rendered text content', async () => {
+			await openByPointer();
+
+			// "Delete" declares textValue="Remove", so "r" matches it and "d" must not.
+			await userEvent.keyboard('r');
+			await expect.poll(highlightedText).toBe('Delete');
+		});
+
+		it('does nothing when typeahead is disabled', async () => {
+			await openByPointer(false);
+			const before = highlightedText();
+
+			await userEvent.keyboard('c');
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			expect(highlightedText()).not.toBe('Copy link');
+			expect(highlightedText()).toBe(before);
+		});
+	});
+
 	describe('Submenu', () => {
 		it('opens a submenu via the submenu trigger and selects a nested item', async () => {
 			const onAction = vi.fn();
@@ -317,6 +391,68 @@ describe('Menu', () => {
 			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.awayEnter);
 
 			await expect.poll(() => openMenuCount(), { timeout: 200, interval: 16 }).toBe(1);
+		});
+
+		it('activates the hovered sibling with Enter after hover-closing the submenu', async () => {
+			const onAction = vi.fn();
+			const screen = render(MenuTest, { onAction, withSubmenu: true });
+			const { root, geo } = await openWithSubmenu(screen);
+
+			// Hover a sibling item while moving away from the submenu → the submenu closes
+			// immediately and the sibling becomes the highlighted, focused item.
+			move(root, geo.awayApex);
+			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.awayEnter);
+			await expect.poll(() => openMenuCount()).toBe(1);
+			await expect.poll(highlightedText).toBe('Delete');
+
+			// Give any (buggy) scheduled trigger refocus a chance to run before pressing Enter.
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve))
+			);
+
+			await userEvent.keyboard('{Enter}');
+
+			// Enter must activate the highlighted sibling, not refocus/reopen the closed submenu.
+			expect(onAction).toHaveBeenCalledWith('delete');
+			await expect.poll(() => openMenuCount()).toBe(0);
+		});
+
+		it('notifies onOpenChange exactly once when the submenu opens via keyboard', async () => {
+			const onSubmenuOpenChange = vi.fn();
+			const screen = render(MenuTest, { withSubmenu: true, onSubmenuOpenChange });
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const submenuTrigger = screen.getByRole('menuitem', { name: 'More actions' });
+			submenuTrigger.element().focus();
+			await userEvent.keyboard('{Enter}');
+
+			await expect.poll(() => queryMenus().length).toBe(2);
+			expect(
+				onSubmenuOpenChange.mock.calls.filter(([open]) => open === true)
+			).toHaveLength(1);
+		});
+
+		it('does not re-notify onOpenChange when the pointer re-enters the open submenu trigger', async () => {
+			const onSubmenuOpenChange = vi.fn();
+			const screen = render(MenuTest, { withSubmenu: true, onSubmenuOpenChange });
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const submenuTrigger = screen
+				.getByRole('menuitem', { name: 'More actions' })
+				.element() as HTMLElement;
+			submenuTrigger.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
+			await expect.poll(() => queryMenus().length).toBe(2);
+
+			// Leaving and re-entering the trigger of the already-open submenu is a no-op.
+			submenuTrigger.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
+			await new Promise((resolve) => setTimeout(resolve, 50));
+
+			expect(queryMenus().length).toBe(2);
+			expect(
+				onSubmenuOpenChange.mock.calls.filter(([open]) => open === true)
+			).toHaveLength(1);
 		});
 
 		it('closes only the submenu on ArrowLeft', async () => {

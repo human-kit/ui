@@ -64,6 +64,29 @@ describe('DatePicker.Segment', () => {
 		await expect.poll(() => monthSegment.element()?.getAttribute('data-focused')).toBe('true');
 	});
 
+	it('inverts segment arrow navigation in RTL layouts', async () => {
+		const previousDir = document.documentElement.dir;
+		document.documentElement.dir = 'rtl';
+
+		try {
+			render(DatePickerTest);
+			const order = getEditableSegmentOrder();
+			const first = getSegment(order[0]);
+			const second = getSegment(order[1]);
+
+			first.element()?.focus();
+			// Visually left in RTL is the next logical segment.
+			await userEvent.keyboard('{ArrowLeft}');
+			await expect.poll(() => document.activeElement).toBe(second.element());
+
+			// Visually right in RTL is the previous logical segment.
+			await userEvent.keyboard('{ArrowRight}');
+			await expect.poll(() => document.activeElement).toBe(first.element());
+		} finally {
+			document.documentElement.dir = previousDir;
+		}
+	});
+
 	it('sets data-focus-visible on keyboard interaction', async () => {
 		render(DatePickerTest);
 		const monthSegment = getSegment('month');
@@ -463,5 +486,87 @@ describe('DatePicker.Segment', () => {
 		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
 
 		expect(wasNotCanceled).toBe(false);
+	});
+
+	it('does not prevent default for browser shortcuts like Ctrl+C', async () => {
+		render(DatePickerTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		const event = new KeyboardEvent('keydown', {
+			key: 'c',
+			ctrlKey: true,
+			bubbles: true,
+			cancelable: true
+		});
+		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
+
+		expect(wasNotCanceled).toBe(true);
+	});
+
+	it('does not prevent default for Escape so an enclosing popover can close', async () => {
+		render(DatePickerTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		const event = new KeyboardEvent('keydown', {
+			key: 'Escape',
+			bubbles: true,
+			cancelable: true
+		});
+		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
+
+		expect(wasNotCanceled).toBe(true);
+	});
+
+	it('ignores digits typed while a modifier key is held', async () => {
+		render(DatePickerEmptyTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		const event = new KeyboardEvent('keydown', {
+			key: '5',
+			ctrlKey: true,
+			bubbles: true,
+			cancelable: true
+		});
+		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
+
+		expect(wasNotCanceled).toBe(true);
+		expect(daySegment.element()?.getAttribute('data-placeholder')).toBe('true');
+	});
+
+	it('routes beforeinput insertText digits to segment typing', async () => {
+		render(DatePickerEmptyTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		const event = new InputEvent('beforeinput', {
+			inputType: 'insertText',
+			data: '5',
+			bubbles: true,
+			cancelable: true
+		});
+		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
+
+		expect(wasNotCanceled).toBe(false);
+		await expect.poll(() => daySegment.element()?.textContent).toBe('5');
+	});
+
+	it('blocks non-insertText beforeinput without mutating the segment', async () => {
+		render(DatePickerEmptyTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		const event = new InputEvent('beforeinput', {
+			inputType: 'insertFromPaste',
+			data: '12',
+			bubbles: true,
+			cancelable: true
+		});
+		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
+
+		expect(wasNotCanceled).toBe(false);
+		expect(daySegment.element()?.getAttribute('data-placeholder')).toBe('true');
 	});
 });

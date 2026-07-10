@@ -2,6 +2,7 @@
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { composeEventHandlers } from '../utils/compose-event-handlers';
 
 	export type DropzoneRenderState = {
 		/** A drag is currently hovering the zone with droppable file content. */
@@ -24,20 +25,12 @@
 		multiple?: boolean;
 		/** Emitted with the accepted files picked via click or drop. */
 		onFilesPicked?: (files: File[]) => void;
+		/** Emitted with the files filtered out by `accept` (click or drop), so rejections aren't silent. */
+		onFilesRejected?: (files: File[]) => void;
 		/** Visually-hidden polite live-region message (announce results or errors after a pick). */
 		announcement?: string;
 		element?: HTMLButtonElement | null;
 	};
-
-	function composeEventHandlers<TEvent extends Event>(
-		internalHandler: ((event: TEvent) => void) | undefined,
-		externalHandler: ((event: TEvent) => void) | undefined
-	): (event: TEvent) => void {
-		return (event: TEvent) => {
-			internalHandler?.(event);
-			externalHandler?.(event);
-		};
-	}
 
 	function parseAccept(accept: string | undefined): string[] {
 		if (!accept) return [];
@@ -68,6 +61,7 @@
 		accept,
 		multiple = false,
 		onFilesPicked,
+		onFilesRejected,
 		announcement = '',
 		element = $bindable<HTMLButtonElement | null>(null),
 		onclick: onClickExternal,
@@ -81,6 +75,7 @@
 		ondragover: onDragOverExternal,
 		ondragenter: onDragEnterExternal,
 		ondragleave: onDragLeaveExternal,
+		ondragend: onDragEndExternal,
 		ondrop: onDropExternal,
 		'aria-label': ariaLabel,
 		...restProps
@@ -91,6 +86,9 @@
 	let buttonRef: HTMLButtonElement | null = $state(null);
 	let inputRef: HTMLInputElement | null = $state(null);
 	let dragging = $state(false);
+	// dragenter/dragleave pairs fired while crossing children; `relatedTarget` is
+	// null in WebKit drag events, so a counter is the reliable anti-flicker.
+	let dragCounter = 0;
 	let hovered = $state(false);
 	let focused = $state(false);
 	let focusVisible = $state(false);
@@ -105,11 +103,15 @@
 
 	$effect(() => {
 		element = buttonRef;
+		return () => {
+			element = null;
+		};
 	});
 
 	$effect(() => {
 		if (!disabled) return;
 		dragging = false;
+		dragCounter = 0;
 		hovered = false;
 		focused = false;
 		focusVisible = false;
@@ -117,6 +119,8 @@
 
 	function emitFiles(fileList: FileList | null) {
 		if (!fileList) return;
+		const rejected = Array.from(fileList).filter((file) => !fileMatchesAccept(file, acceptTokens));
+		if (rejected.length > 0) onFilesRejected?.(rejected);
 		let files = Array.from(fileList).filter((file) => fileMatchesAccept(file, acceptTokens));
 		if (!multiple) files = files.slice(0, 1);
 		if (files.length === 0) return;
@@ -133,7 +137,11 @@
 		inputRef?.click();
 	}
 
-	function handleClick() {
+	function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+		// The external handler runs first so the consumer can cancel the picker
+		// opening with `event.preventDefault()`.
+		onClickExternal?.(event);
+		if (event.defaultPrevented) return;
 		if (disabled) return;
 		openPicker();
 	}
@@ -155,20 +163,24 @@
 	function handleDragEnter(event: DragEvent) {
 		if (disabled || !dragHasFiles(event)) return;
 		event.preventDefault();
+		dragCounter += 1;
 		dragging = true;
 	}
 
-	function handleDragLeave(event: DragEvent) {
-		// Ignore leaves into a child element so the highlight doesn't flicker.
-		if (event.currentTarget instanceof Node && event.relatedTarget instanceof Node) {
-			if (event.currentTarget.contains(event.relatedTarget)) return;
-		}
+	function handleDragLeave() {
+		dragCounter = Math.max(0, dragCounter - 1);
+		dragging = dragCounter > 0;
+	}
+
+	function handleDragEnd() {
+		dragCounter = 0;
 		dragging = false;
 	}
 
 	function handleDrop(event: DragEvent) {
 		if (disabled) return;
 		event.preventDefault();
+		dragCounter = 0;
 		dragging = false;
 		emitFiles(event.dataTransfer?.files ?? null);
 	}
@@ -226,7 +238,7 @@
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
 	class={className}
-	onclick={composeEventHandlers(handleClick, onClickExternal ?? undefined)}
+	onclick={handleClick}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
@@ -237,6 +249,7 @@
 	ondragover={composeEventHandlers(handleDragOver, onDragOverExternal ?? undefined)}
 	ondragenter={composeEventHandlers(handleDragEnter, onDragEnterExternal ?? undefined)}
 	ondragleave={composeEventHandlers(handleDragLeave, onDragLeaveExternal ?? undefined)}
+	ondragend={composeEventHandlers(handleDragEnd, onDragEndExternal ?? undefined)}
 	ondrop={composeEventHandlers(handleDrop, onDropExternal ?? undefined)}
 >
 	{#if children}

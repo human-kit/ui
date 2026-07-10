@@ -37,3 +37,6 @@
 		</ListBox.Item>
 	{/each}
 </ListBox.Root>
+
+<!-- Input outside the listbox for testing focus behavior on hover -->
+<input type="text" data-testid="outside-input" aria-label="Outside input" />

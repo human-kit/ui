@@ -347,11 +347,7 @@
 		return getDatePickerSegmentLabel(resolvedLocale, type);
 	}
 
-	function formatSegment(
-		type: Exclude<DatePickerSegmentType, 'literal'>,
-		valueToFormat: number
-	): string {
-		if (type === 'year') return `${valueToFormat}`;
+	function formatSegment(valueToFormat: number): string {
 		return `${valueToFormat}`;
 	}
 
@@ -390,7 +386,7 @@
 		if (disabled || readonly) return;
 		const current = getSegmentNumericValue(type, segmentDraft, valueInternal);
 		const next = clampSegment(type, current + step);
-		setSegmentValue(type, formatSegment(type, next));
+		setSegmentValue(type, formatSegment(next));
 	}
 
 	function getSegments() {

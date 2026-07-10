@@ -202,6 +202,38 @@ describe('ListBox.Item', () => {
 
 			expect(options[0].hasAttribute('data-hovered')).toBe(false);
 		});
+
+		it('does not steal DOM focus on hover while focus is outside the listbox', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+			const outside = screen.getByTestId('outside-input');
+
+			await outside.click();
+			const outsideEl = outside.element() as HTMLElement;
+			expect(document.activeElement).toBe(outsideEl);
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await userEvent.hover(options[1] as HTMLElement);
+
+			// Hover highlight still applies, but DOM focus stays on the outside input.
+			await expect.poll(() => options[1].getAttribute('data-hovered')).toBe('true');
+			// Wait a frame for the deferred hover focus re-apply before asserting.
+			await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+			expect(document.activeElement).toBe(outsideEl);
+		});
+
+		it('moves DOM focus on hover when focus is already inside the listbox', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await userEvent.click(options[0] as HTMLElement);
+			await expect.poll(() => document.activeElement === options[0]).toBe(true);
+
+			await userEvent.hover(options[1] as HTMLElement);
+
+			await expect.poll(() => document.activeElement === options[1]).toBe(true);
+		});
 	});
 
 	describe('Pressed State', () => {

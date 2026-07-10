@@ -24,6 +24,15 @@ function dropFiles(target: HTMLElement, ...dropped: File[]) {
 	target.dispatchEvent(event);
 }
 
+function dispatchDrag(target: HTMLElement, type: 'dragenter' | 'dragleave') {
+	const transfer = new DataTransfer();
+	transfer.items.add(new File(['x'], 'x.txt', { type: 'text/plain' }));
+	// `relatedTarget` is left null on purpose: WebKit never sets it on drag events.
+	const event = new DragEvent(type, { bubbles: true });
+	Object.defineProperty(event, 'dataTransfer', { value: transfer });
+	target.dispatchEvent(event);
+}
+
 describe('Dropzone', () => {
 	it('renders a button surface with the hidden file input', () => {
 		const screen = render(DropzoneTest);
@@ -88,6 +97,48 @@ describe('Dropzone', () => {
 		expect(click).toHaveBeenCalled();
 	});
 
+	it('lets the consumer cancel opening the picker via preventDefault', async () => {
+		const onClick = vi.fn((event: MouseEvent) => event.preventDefault());
+		const screen = render(DropzoneTest, { onClick });
+		const click = vi.spyOn(fileInput(), 'click');
+
+		await screen.getByRole('button', { name: 'Attachments' }).click();
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+		expect(click).not.toHaveBeenCalled();
+	});
+
+	it('emits rejected files when accept filters everything out', () => {
+		const onFilesPicked = vi.fn();
+		const onFilesRejected = vi.fn();
+		const screen = render(DropzoneTest, { accept: 'image/*', onFilesPicked, onFilesRejected });
+		const button = screen.getByRole('button', { name: 'Attachments' }).element() as HTMLElement;
+
+		dropFiles(button, new File(['x'], 'note.txt', { type: 'text/plain' }));
+
+		expect(onFilesPicked).not.toHaveBeenCalled();
+		expect(onFilesRejected).toHaveBeenCalledTimes(1);
+		const rejected = onFilesRejected.mock.calls[0]?.[0] as File[];
+		expect(rejected.map((file) => file.name)).toEqual(['note.txt']);
+	});
+
+	it('emits rejected files from the hidden input alongside accepted ones', () => {
+		const onFilesPicked = vi.fn();
+		const onFilesRejected = vi.fn();
+		render(DropzoneTest, { accept: 'image/*', multiple: true, onFilesPicked, onFilesRejected });
+
+		pickFiles(
+			fileInput(),
+			new File(['a'], 'pic.png', { type: 'image/png' }),
+			new File(['b'], 'note.txt', { type: 'text/plain' })
+		);
+
+		const picked = onFilesPicked.mock.calls[0]?.[0] as File[];
+		expect(picked.map((file) => file.name)).toEqual(['pic.png']);
+		const rejected = onFilesRejected.mock.calls[0]?.[0] as File[];
+		expect(rejected.map((file) => file.name)).toEqual(['note.txt']);
+	});
+
 	it('emits dropped files and clears the drop-target state', async () => {
 		const onFilesPicked = vi.fn();
 		const screen = render(DropzoneTest, { onFilesPicked });
@@ -98,6 +149,24 @@ describe('Dropzone', () => {
 		const files = onFilesPicked.mock.calls[0]?.[0] as File[];
 		expect(files.map((file) => file.name)).toEqual(['dropped.txt']);
 		expect(button.getAttribute('data-drop-target')).toBeNull();
+	});
+
+	it('keeps the drop-target highlight while crossing children (null relatedTarget)', async () => {
+		const screen = render(DropzoneTest);
+		const button = screen.getByRole('button', { name: 'Attachments' }).element() as HTMLElement;
+		const child = button.querySelector('[data-state-dragging]') as HTMLElement;
+
+		dispatchDrag(button, 'dragenter');
+		await expect.poll(() => button.getAttribute('data-drop-target')).toBe('true');
+
+		// Entering a child fires dragenter (bubbles) then dragleave on the zone.
+		dispatchDrag(child, 'dragenter');
+		dispatchDrag(button, 'dragleave');
+		await expect.poll(() => button.getAttribute('data-drop-target')).toBe('true');
+
+		// Leaving the zone entirely balances the counter and clears the highlight.
+		dispatchDrag(button, 'dragleave');
+		await expect.poll(() => button.getAttribute('data-drop-target')).toBeNull();
 	});
 
 	it('does not pick or open when disabled', async () => {

@@ -171,6 +171,7 @@ export type TreeContext = {
 	) => void;
 	registerNode: (node: Omit<TreeNodeRegistration, 'order'>) => void;
 	unregisterNode: (id: TreeNodeId) => void;
+	beginTeardown: () => void;
 	registerSection: (section: Omit<TreeSectionRegistration, 'order'>) => void;
 	unregisterSection: (id: TreeNodeId | null) => void;
 	getSections: () => TreeSectionRegistration[];
@@ -270,6 +271,10 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	let visibleNodesCache: TreeVisibleNode[] | null = null;
 	let effectiveSelectedKeysCache: Set<TreeNodeId> | null = null;
 	let structureNotificationQueued = false;
+	let isTearingDown = false;
+	let unregisterEmitsQueued = false;
+	let pendingUnregisterSelectionEmit = false;
+	let pendingUnregisterExpansionEmit = false;
 	const childIdsByParent = new Map<TreeNodeId | null, TreeNodeId[]>();
 	const sectionRootIds = new Map<TreeNodeId | null, TreeNodeId[]>();
 
@@ -311,6 +316,30 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	function emitExpansionChange() {
 		onExpandedKeysChange?.(new Set(expandedKeys));
 		bump(expansionVersionStore);
+	}
+
+	// Unregister emits are deferred to a microtask so that a full-tree teardown
+	// (every item unregistering synchronously while the root unmounts) can be
+	// suppressed by `beginTeardown()` regardless of onDestroy ordering, without
+	// firing spurious selection/expansion callbacks on unmount.
+	function queueUnregisterEmits() {
+		if (unregisterEmitsQueued) return;
+
+		unregisterEmitsQueued = true;
+		queueMicrotask(() => {
+			unregisterEmitsQueued = false;
+			const shouldEmitSelection = pendingUnregisterSelectionEmit;
+			const shouldEmitExpansion = pendingUnregisterExpansionEmit;
+			pendingUnregisterSelectionEmit = false;
+			pendingUnregisterExpansionEmit = false;
+			if (isTearingDown) return;
+			if (shouldEmitSelection) emitSelectionChange();
+			if (shouldEmitExpansion) emitExpansionChange();
+		});
+	}
+
+	function beginTeardown() {
+		isTearingDown = true;
 	}
 
 	function setDisabledKeys(keys?: Iterable<TreeNodeId>) {
@@ -479,6 +508,10 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 			);
 		}
 
+		// Top-level items declared outside any section live in the `null` bucket;
+		// walk it too so they are not dropped when sections exist.
+		collectVisibleNodesFromChildren(getSectionRoots(null), visibleNodes, effectiveSelectedKeys);
+
 		visibleNodesCache = visibleNodes;
 		return visibleNodes;
 	}
@@ -556,10 +589,22 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 				removeIdFromBucket(sectionRootIds, existingNode.sectionId ?? null, id);
 			}
 		}
-		selectedKeys.delete(id);
+		const wasSelected = selectedKeys.delete(id);
 		invalidateSelectedKeysCache();
-		expandedKeys.delete(id);
+		const wasExpanded = expandedKeys.delete(id);
 		if (idsEqual(focusedId, id)) focusedId = null;
+		if (wasSelected) {
+			if (idsEqual(selectionAnchorId, id)) {
+				selectionAnchorId = Array.from(selectedKeys)[0] ?? null;
+			}
+			pendingUnregisterSelectionEmit = true;
+		}
+		if (wasExpanded) {
+			pendingUnregisterExpansionEmit = true;
+		}
+		if (wasSelected || wasExpanded) {
+			queueUnregisterEmits();
+		}
 		bumpStructure();
 	}
 
@@ -1173,6 +1218,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		setConfig,
 		registerNode,
 		unregisterNode,
+		beginTeardown,
 		registerSection,
 		unregisterSection,
 		getSections,

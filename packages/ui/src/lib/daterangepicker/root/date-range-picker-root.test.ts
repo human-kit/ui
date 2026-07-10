@@ -142,13 +142,94 @@ describe('DateRangePicker.Root', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="date-range-picker-value"]')?.textContent)
 			.toBe('');
+		// The invalid signal is per part: only the start group and its segments
+		// are flagged; the still-valid end input stays untouched.
 		await expect
 			.poll(() =>
 				document
 					.querySelector('[role="group"][aria-label="Start date"]')
-					?.getAttribute('aria-invalid')
+					?.getAttribute('data-invalid')
 			)
 			.toBe('true');
+		expect(
+			document.querySelector('[role="group"][aria-label="End date"]')?.getAttribute('data-invalid')
+		).toBeNull();
+		expect(getSegment('start', 'day').element()?.getAttribute('aria-invalid')).toBe('true');
+		expect(getSegment('end', 'day').element()?.getAttribute('aria-invalid')).toBeNull();
+	});
+
+	it('exposes aria-invalid on segments instead of the group element', async () => {
+		render(DateRangePickerTest);
+		const daySegment = getSegment('start', 'day');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}{Backspace}');
+
+		await expect
+			.poll(() => getSegment('start', 'month').element()?.getAttribute('aria-invalid'))
+			.toBe('true');
+		expect(
+			document.querySelector('[role="group"][aria-label="Start date"]')?.getAttribute('aria-invalid')
+		).toBeNull();
+	});
+
+	it('does not mark either input invalid while a valid start awaits an empty end', async () => {
+		render(DateRangePickerTest, { defaultValue: null });
+
+		await typeSegment('start', 'day', '20');
+		await typeSegment('start', 'month', '1');
+		await typeSegment('start', 'year', '2000');
+
+		await expect
+			.poll(() =>
+				document
+					.querySelector('[role="group"][aria-label="Start date"]')
+					?.getAttribute('data-invalid')
+			)
+			.toBeNull();
+		expect(
+			document.querySelector('[role="group"][aria-label="End date"]')?.getAttribute('data-invalid')
+		).toBeNull();
+		expect(getSegment('start', 'day').element()?.getAttribute('aria-invalid')).toBeNull();
+		expect(getSegment('end', 'day').element()?.getAttribute('aria-invalid')).toBeNull();
+	});
+
+	it('does not prevent default for Ctrl+C or Escape on a focused segment', async () => {
+		render(DateRangePickerTest);
+		const daySegment = getSegment('start', 'day');
+
+		daySegment.element()?.focus();
+		const copyEvent = new KeyboardEvent('keydown', {
+			key: 'c',
+			ctrlKey: true,
+			bubbles: true,
+			cancelable: true
+		});
+		expect(daySegment.element()?.dispatchEvent(copyEvent)).toBe(true);
+
+		const escapeEvent = new KeyboardEvent('keydown', {
+			key: 'Escape',
+			bubbles: true,
+			cancelable: true
+		});
+		expect(daySegment.element()?.dispatchEvent(escapeEvent)).toBe(true);
+	});
+
+	it('routes beforeinput insertText digits to segment typing', async () => {
+		render(DateRangePickerTest, { defaultValue: null });
+		const daySegment = getSegment('start', 'day');
+
+		daySegment.element()?.focus();
+		const event = new InputEvent('beforeinput', {
+			inputType: 'insertText',
+			data: '5',
+			bubbles: true,
+			cancelable: true
+		});
+		const wasNotCanceled = daySegment.element()?.dispatchEvent(event);
+
+		expect(wasNotCanceled).toBe(false);
+		await expect.poll(() => segmentText('start', 'day')).toBe('5');
 	});
 
 	describe('typing a range never corrupts segments by sorting mid-input', () => {

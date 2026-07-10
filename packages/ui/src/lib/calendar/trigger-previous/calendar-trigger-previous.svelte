@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
 	import { useCalendarContext } from '../root/context';
 
 	type CalendarTriggerPreviousProps = Omit<
@@ -20,6 +21,10 @@
 		void $layoutVersion;
 		return calendar.isDisabled;
 	});
+	const defaultAriaLabel = $derived.by(() => {
+		void $layoutVersion;
+		return resolveLocalizedString(calendar.locale, 'calendar.previousPage');
+	});
 
 	function handleClick() {
 		if (isDisabled) return;
@@ -30,7 +35,7 @@
 <ButtonRoot
 	type="button"
 	class={className}
-	aria-label="Previous page"
+	aria-label={defaultAriaLabel}
 	disabled={isDisabled}
 	onclick={handleClick}
 	{...restProps}

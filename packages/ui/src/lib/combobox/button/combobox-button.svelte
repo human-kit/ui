@@ -1,7 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { readable } from 'svelte/store';
 	import { ButtonRoot } from '../../button/index.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import { useComboBoxContext } from '../root/context';
 
 	type ComboBoxButtonProps = HTMLButtonAttributes & {
@@ -11,8 +14,15 @@
 
 	let { class: className, children, tabindex = -1, ...restProps }: ComboBoxButtonProps = $props();
 
+	const localeContext = useLocaleContextOptional();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
+
 	const ctx = useComboBoxContext();
 	const isButtonDisabled = $derived(ctx.isDisabled || ctx.isReadOnly || ctx.isPending);
+	const defaultAriaLabel = $derived(
+		resolveLocalizedString($localeStore, ctx.isOpen ? 'combobox.hideOptions' : 'combobox.showOptions')
+	);
 
 	function handleMouseDown(event: MouseEvent) {
 		event.preventDefault();
@@ -25,12 +35,12 @@
 <ButtonRoot
 	type="button"
 	{tabindex}
-	aria-label={ctx.isOpen ? 'Close menu' : 'Open menu'}
+	aria-label={defaultAriaLabel}
 	aria-expanded={ctx.isOpen}
 	aria-controls={`combobox-listbox-${ctx.instanceId}`}
 	disabled={ctx.isDisabled || ctx.isReadOnly}
 	pending={ctx.isPending}
-	pressed={ctx.isOpen}
+	pressed={ctx.isOpen || undefined}
 	onmousedown={handleMouseDown}
 	class={className}
 	{...restProps}

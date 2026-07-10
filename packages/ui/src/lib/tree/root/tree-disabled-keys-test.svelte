@@ -9,6 +9,7 @@
 </script>
 
 <button type="button" onclick={disableReports}>Disable reports</button>
+<input type="text" aria-label="Outside input" />
 
 <Tree.Root
 	aria-label="Files"

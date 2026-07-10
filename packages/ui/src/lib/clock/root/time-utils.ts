@@ -59,21 +59,43 @@ function formatDraftTwoDigits(value: string): string {
 	return pad2(Math.trunc(numeric));
 }
 
-function getDayPeriodPlaceholder(locale: string): string {
+// Cached per-locale formatters used to translate the internal 'AM'/'PM'
+// tokens into the locale's dayPeriod strings for display purposes only.
+const dayPeriodFormatterCache = new Map<string, Intl.DateTimeFormat | null>();
+
+function getDayPeriodFormatter(locale: string): Intl.DateTimeFormat | null {
+	const cached = dayPeriodFormatterCache.get(locale);
+	if (cached !== undefined) return cached;
+
+	let formatter: Intl.DateTimeFormat | null = null;
 	try {
-		const formatter = new Intl.DateTimeFormat(locale, {
+		formatter = new Intl.DateTimeFormat(locale, {
 			hour: 'numeric',
-			hourCycle: 'h12',
+			hour12: true,
 			timeZone: 'UTC'
 		});
-		const dayPeriod = formatter
-			.formatToParts(new Date(Date.UTC(2024, 0, 1, 9, 0, 0)))
-			.find((part) => part.type === 'dayPeriod')
-			?.value?.trim();
-		return dayPeriod && dayPeriod.length > 0 ? dayPeriod : 'AM';
 	} catch {
-		return 'AM';
+		formatter = null;
 	}
+
+	dayPeriodFormatterCache.set(locale, formatter);
+	return formatter;
+}
+
+export function getLocalizedDayPeriod(locale: string, period: 'AM' | 'PM'): string {
+	const formatter = getDayPeriodFormatter(locale);
+	if (!formatter) return period;
+
+	const sampleDate = new Date(Date.UTC(2024, 0, 1, period === 'PM' ? 15 : 9, 0, 0));
+	const dayPeriod = formatter
+		.formatToParts(sampleDate)
+		.find((part) => part.type === 'dayPeriod')
+		?.value?.trim();
+	return dayPeriod && dayPeriod.length > 0 ? dayPeriod : period;
+}
+
+function getDayPeriodPlaceholder(locale: string): string {
+	return getLocalizedDayPeriod(locale, 'AM');
 }
 
 export function formatTimePickerValue(
@@ -243,7 +265,9 @@ export function clampToStep(value: number, step: number, min: number, max: numbe
 	if (!Number.isFinite(value)) return min;
 	const safeStep = Number.isFinite(step) && step > 0 ? step : 1;
 	const clamped = clamp(value, min, max);
-	const stepped = Math.round(clamped / safeStep) * safeStep;
+	// Anchor the step grid at `min` so results stay aligned with the wheel
+	// options generated in wheel-options.ts (e.g. 1, 4, 7, 10 for step 3 in 12h).
+	const stepped = min + Math.round((clamped - min) / safeStep) * safeStep;
 	return clamp(stepped, min, max);
 }
 
@@ -357,9 +381,14 @@ export function buildTimePickerSegments(params: {
 
 			if (part.type === 'dayPeriod' && hourCycle === 12) {
 				const isPlaceholder = isSegmentValueEmpty(draft.dayPeriod);
+				const normalizedDayPeriod = draft.dayPeriod.trim().toUpperCase();
+				const displayDayPeriod =
+					normalizedDayPeriod === 'AM' || normalizedDayPeriod === 'PM'
+						? getLocalizedDayPeriod(locale, normalizedDayPeriod)
+						: draft.dayPeriod;
 				return {
 					type: 'dayPeriod',
-					text: isPlaceholder ? getDayPeriodPlaceholder(locale) : draft.dayPeriod,
+					text: isPlaceholder ? getDayPeriodPlaceholder(locale) : displayDayPeriod,
 					isPlaceholder
 				};
 			}

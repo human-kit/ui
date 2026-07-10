@@ -58,6 +58,22 @@ describe('Collapsible', () => {
 		await expect.element(trigger).toHaveAttribute('aria-expanded', 'false');
 	});
 
+	it('keeps the UI unchanged in controlled mode when the parent ignores onOpenChange', async () => {
+		const screen = render(CollapsibleTest, {
+			controlled: true,
+			open: false,
+			applyChanges: false
+		});
+		const trigger = screen.getByRole('button', { name: 'Details' });
+
+		await userEvent.click(trigger);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="change-log"]')?.textContent)
+			.toBe('[true]');
+		await expect.element(trigger).toHaveAttribute('aria-expanded', 'false');
+	});
+
 	it('keeps the panel mounted (hidden) at rest when forceMount is set', async () => {
 		render(CollapsibleTest, { defaultOpen: false, forceMount: true });
 		const panel = document.querySelector<HTMLElement>('[data-testid="panel"]');

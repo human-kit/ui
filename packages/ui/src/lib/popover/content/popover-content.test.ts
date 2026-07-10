@@ -78,7 +78,9 @@ describe('Popover.Content', () => {
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 				await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
 				expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
-				await expect.poll(() => document.activeElement).toBe(trigger.element());
+				// An outside press must not steal focus back to the trigger — the
+				// pressed element keeps its native focus/caret behavior.
+				expect(document.activeElement).not.toBe(trigger.element());
 			} finally {
 				outside.remove();
 			}
@@ -103,8 +105,34 @@ describe('Popover.Content', () => {
 			render(PopoverContentStandaloneTest);
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
+			// Focus a descendant first: a canceled close must not blur it — focus is
+			// only released once the close is allowed to proceed.
+			const innerButton = document.querySelector('.inner-btn') as HTMLElement;
+			innerButton.focus();
+			await expect.poll(() => document.activeElement).toBe(innerButton);
+
 			await userEvent.keyboard('{Escape}');
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			expect(document.activeElement).toBe(innerButton);
+		});
+
+		it('closes on outside scroll reporting the dedicated "scroll" reason', async () => {
+			const { vi } = await import('vitest');
+			const onOpenChange = vi.fn();
+			const screen = render(PopoverContentTest, { nonModal: true, onOpenChange });
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			document.body.dispatchEvent(new Event('scroll', { bubbles: true }));
+
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+			// Consumers can distinguish a scroll-away dismissal from a real outside press.
+			expect(onOpenChange).toHaveBeenLastCalledWith(
+				false,
+				expect.objectContaining({ reason: 'scroll' })
+			);
 		});
 
 		it('restores standalone trigger focus attrs by close reason and clears on blur', async () => {
@@ -292,7 +320,10 @@ describe('Popover.Content', () => {
 
 				// Non-modal with shouldCloseOnBlur should close
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-				await expect.poll(() => document.activeElement).toBe(trigger.element());
+				// INVERTED (previously asserted focus returned to the trigger): a
+				// 'focus-out' close must not yank focus back — the element the user
+				// just focused keeps it (APG/React Aria/Radix behavior).
+				await expect.poll(() => document.activeElement).toBe(externalButton);
 			} finally {
 				externalButton.remove();
 			}

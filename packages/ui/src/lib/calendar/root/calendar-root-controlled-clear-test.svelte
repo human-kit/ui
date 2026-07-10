@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Calendar from '../index';
 
-	let value = $state('2026-02-10');
+	let value = $state<string | null>('2026-02-10');
 </script>
 
 <Calendar.Root
@@ -17,4 +17,7 @@
 </Calendar.Root>
 
 <button type="button" data-testid="clear-value" onclick={() => (value = '')}>Clear value</button>
-<div data-testid="calendar-value">{value}</div>
+<button type="button" data-testid="clear-value-null" onclick={() => (value = null)}>
+	Clear value with null
+</button>
+<div data-testid="calendar-value">{value ?? ''}</div>

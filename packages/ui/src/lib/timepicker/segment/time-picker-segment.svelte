@@ -6,6 +6,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
 
 	type TimePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,
@@ -74,12 +75,17 @@
 			if (!value) return undefined;
 			return value === 'PM' ? 1 : 0;
 		}
-		const value = Number(timePicker.getSegmentValue(segment.type));
+		const segmentValue = timePicker.getSegmentValue(segment.type);
+		if (segmentValue.length === 0) return undefined;
+		const value = Number(segmentValue);
 		return Number.isFinite(value) ? value : undefined;
 	});
 
 	const valueText = $derived.by(() => {
 		if (segment.type === 'literal') return segment.text;
+		// The dayPeriod segment text already reflects the locale's AM/PM display
+		// strings, while the internal segment value keeps the 'AM'/'PM' tokens.
+		if (segment.type === 'dayPeriod') return segment.text;
 		return timePicker.getSegmentValue(segment.type) || segment.text;
 	});
 
@@ -158,14 +164,24 @@
 
 	function handleBeforeInput(event: InputEvent) {
 		if (segment.type === 'literal') return;
-		if (timePicker.isDisabled || timePicker.isReadOnly) {
-			event.preventDefault();
+		// The segment DOM stays authoritative: direct mutations from paste,
+		// drop, or IME composition are blocked. Android/virtual keyboards
+		// deliver characters through `beforeinput` instead of trusted keydown
+		// events, so single-character insertions are routed to the typing path.
+		event.preventDefault();
+		if (timePicker.isDisabled || timePicker.isReadOnly) return;
+		if (event.inputType !== 'insertText' || !event.data) return;
+		if (segment.type === 'dayPeriod') {
+			const character = event.data.toLowerCase();
+			if (character === 'a') timePicker.setSegmentValue('dayPeriod', 'AM');
+			if (character === 'p') timePicker.setSegmentValue('dayPeriod', 'PM');
 			return;
 		}
-
-		// Segment edits are keyboard-driven through `onkeydown` and root state.
-		// Block direct DOM mutations from paste/drop/IME/beforeinput paths.
-		event.preventDefault();
+		if (!/^\d$/.test(event.data)) return;
+		const didComplete = timePicker.typeSegmentDigit(segment.type, event.data);
+		if (didComplete) {
+			timePicker.focusNextSegment(segment.type);
+		}
 	}
 
 	function handleInput(event: Event) {
@@ -188,6 +204,8 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (segment.type === 'literal') return;
 		if (timePicker.isDisabled) return;
+		// Never intercept browser/OS shortcuts (copy, select all, reload, ...).
+		if (event.ctrlKey || event.metaKey || event.altKey) return;
 		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		timePicker.setFocusVisible(true);
 
@@ -204,16 +222,19 @@
 			}
 		}
 
-		if (event.key === 'ArrowRight') {
+		if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
 			event.preventDefault();
-			if (!timePicker.focusNextSegment(segment.type)) {
-				timePicker.triggerRef?.focus();
+			// Segments follow the locale's logical order in the DOM: under RTL
+			// the visually next segment is the previous logical one, so the
+			// physical arrows are inverted.
+			const rtl = isRtl(event.currentTarget as HTMLElement);
+			const isNext = rtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight';
+			if (isNext) {
+				if (!timePicker.focusNextSegment(segment.type)) {
+					timePicker.triggerRef?.focus();
+				}
+				return;
 			}
-			return;
-		}
-
-		if (event.key === 'ArrowLeft') {
-			event.preventDefault();
 			timePicker.focusPreviousSegment(segment.type);
 			return;
 		}
@@ -302,7 +323,10 @@
 			return;
 		}
 
-		if (event.key === 'Tab') {
+		// Only swallow unhandled printable characters. Function keys (Tab,
+		// Escape, Enter, F5, ...) keep their default behavior so the browser,
+		// forms, and enclosing popovers still receive them.
+		if (event.key.length > 1) {
 			return;
 		}
 

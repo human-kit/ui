@@ -54,14 +54,14 @@
 
 	type CalendarRootSingleProps = CalendarRootProps & {
 		selectionMode?: 'single';
-		value?: CalendarDateValue;
+		value?: CalendarDateValue | null;
 		defaultValue?: CalendarDateValue;
 		onChange?: (value: CalendarDateValue) => void;
 	};
 
 	type CalendarRootRangeProps = CalendarRootProps & {
 		selectionMode: 'range';
-		value?: CalendarRangeValue;
+		value?: CalendarRangeValue | null;
 		defaultValue?: CalendarRangeValue;
 		onChange?: (value: CalendarRangeValue) => void;
 	};

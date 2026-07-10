@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import { untrack } from 'svelte';
 	import { ButtonRoot } from '../../button/index.js';
 	import { useMenuContext } from '../root/context';
 
@@ -52,11 +53,22 @@
 		onKeydownExternal?.(event);
 	}
 
+	// `untrack` keeps the shared trigger ref out of this effect's dependencies — the
+	// cleanup writes it to null and the body back to the node, which would otherwise loop.
 	$effect(() => {
-		element = buttonRef;
-		if (buttonRef) {
-			menuCtx.setTriggerRef(buttonRef);
+		const node = buttonRef;
+		element = node;
+		if (node) {
+			untrack(() => menuCtx.setTriggerRef(node));
 		}
+		return () => {
+			// Drop the stale ref on unmount so no close path tries to refocus a removed node.
+			untrack(() => {
+				if (node && menuCtx.triggerRef === node) {
+					menuCtx.setTriggerRef(null);
+				}
+			});
+		};
 	});
 </script>
 
@@ -65,7 +77,7 @@
 	bind:element={buttonRef}
 	class={className}
 	type="button"
-	pressed={menuCtx.isOpen}
+	pressed={menuCtx.isOpen || undefined}
 	aria-haspopup="menu"
 	aria-expanded={menuCtx.isOpen}
 	data-menu-trigger="true"

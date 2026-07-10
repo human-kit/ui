@@ -33,6 +33,7 @@ export type DateRangePickerContext = {
 	focusVisible: boolean;
 	focusWithin: boolean;
 	isInvalidDraft: boolean;
+	isPartInvalid: (part: DateRangePickerRangePart) => boolean;
 	activeSegment: DateRangePickerActiveSegment | null;
 	value: DateRangePickerRangeValue | null;
 	locale: string;

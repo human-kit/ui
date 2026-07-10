@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { readable } from 'svelte/store';
 	import { Checkbox } from '../../checkbox';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -18,6 +21,10 @@
 		'aria-labelledby': ariaLabelledby,
 		...restProps
 	}: TreeCheckboxProps = $props();
+
+	const localeContext = useLocaleContextOptional();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
 
 	const renderMode = getTreeRenderMode();
 	const tree = renderMode === 'display' ? useTreeContext() : undefined;
@@ -61,7 +68,7 @@
 		if (!item) return ariaLabel;
 		if (ariaLabel) return ariaLabel;
 		if (labelledBy) return undefined;
-		return `Select ${item.getLabel()}`;
+		return resolveLocalizedString($localeStore, 'tree.selectItem', { label: item.getLabel() });
 	});
 
 	function applySelection(nextChecked: boolean) {

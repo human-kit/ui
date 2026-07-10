@@ -10,11 +10,11 @@
 	<LocaleProvider locale="es-AR">
 		<TimePicker.Root bind:value class="group space-y-2">
 			<div
-				class="corner-squircle flex h-8 items-center gap-1 rounded-xl border border-gray-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-gray-600 dark:bg-gray-700"
+				class="corner-squircle flex h-8 items-center gap-1 rounded-xl border border-neutral-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
 			>
 				<TimePicker.Input
 					aria-label="Time input"
-					class="flex min-w-0 flex-1 items-center gap-0.5 text-sm text-gray-900 dark:text-white"
+					class="flex min-w-0 flex-1 items-center gap-0.5 text-sm text-neutral-900 dark:text-white"
 				>
 					{#snippet children(segment)}
 						<TimePicker.Segment
@@ -24,14 +24,14 @@
 					{/snippet}
 				</TimePicker.Input>
 				<TimePicker.Trigger
-					class="corner-squircle inline-flex size-5 items-center justify-center rounded-md text-gray-500 outline-none hover:bg-gray-100 data-[focus-visible=true]:ring-1 data-[focus-visible=true]:ring-blue-500 dark:text-gray-300 dark:hover:bg-gray-600"
+					class="corner-squircle inline-flex size-5 items-center justify-center rounded-md text-neutral-500 outline-none hover:bg-neutral-100 data-[focus-visible=true]:ring-1 data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300 dark:hover:bg-neutral-600"
 				>
 					<ClockIcon class="size-3.5" />
 				</TimePicker.Trigger>
 			</div>
 			<TimePicker.Popover
 				placement="bottom"
-				class="rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+				class="rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
 			>
 				<TimePicker.Clock class="flex gap-2">
 					{#snippet column(col)}
@@ -50,5 +50,5 @@
 		</TimePicker.Root>
 	</LocaleProvider>
 
-	<p class="mt-4 text-sm text-gray-600 dark:text-gray-400">Value: {value ?? 'null'}</p>
+	<p class="mt-4 text-sm text-neutral-600 dark:text-neutral-400">Value: {value ?? 'null'}</p>
 </div>

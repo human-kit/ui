@@ -125,13 +125,73 @@ describe('Clock.Root', () => {
 		render(ClockRootTest, { defaultValue: '14:30', disabled: true });
 
 		await expect.poll(() => getSpinbuttons().item(0)).toBeTruthy();
-		const spinbutton = getSpinbuttons().item(0);
-		spinbutton?.focus();
-		spinbutton?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+		const spinbutton = getSpinbuttons().item(0) as HTMLElement;
+
+		// Wait until the wheel has aligned to the selected value.
+		await expect.poll(() => spinbutton.getAttribute('aria-valuetext')).toBe('14');
+		const initialScrollTop = spinbutton.scrollTop;
+
+		// Keyboard must not move the wheel (neither value nor visual position).
+		spinbutton.focus();
+		spinbutton.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+		// Clicking another item must not move the wheel either.
+		const otherItem = spinbutton.querySelector<HTMLElement>('[data-wheel-item][data-value="16"]');
+		expect(otherItem).toBeTruthy();
+		otherItem?.click();
+
+		// Simulate a user scroll attempt: the snap logic must re-center the
+		// selected item instead of adopting the new position.
+		spinbutton.scrollTop = initialScrollTop + 80;
+		spinbutton.dispatchEvent(new Event('scroll'));
+
+		// Give the deferred snap handling time to settle.
+		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		await expect
 			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
 			.toBe('14:30');
+		expect(spinbutton.getAttribute('aria-valuetext')).toBe('14');
+		// The wheel must visually stay (or come back) on the selected item.
+		await expect.poll(() => Math.abs(spinbutton.scrollTop - initialScrollTop) < 2).toBe(true);
+	});
+
+	it('rebuilds the draft when hourCycle changes with a committed value', async () => {
+		render(ClockRootTest, { defaultValue: '14:30', hourCycle: 12 });
+
+		await expect.poll(() => getSpinbuttons().length).toBe(3);
+
+		document.querySelector<HTMLElement>('[data-testid="toggle-cycle"]')?.click();
+		await expect.poll(() => getSpinbuttons().length).toBe(2);
+
+		// Adjusting the hour after the cycle switch must start from 14, not from the stale 12h draft.
+		const hourEl = getSpinbuttons().item(0);
+		hourEl?.focus();
+		hourEl?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('15:30');
+	});
+
+	it('commits the exact offered hour with 12h cycle and hourStep greater than 1', async () => {
+		render(ClockRootTest, { defaultValue: '14:30', hourCycle: 12, hourStep: 3 });
+
+		await expect.poll(() => getSpinbuttons().item(0)).toBeTruthy();
+		const hourColumn = getSpinbuttons().item(0);
+
+		const offeredValues = Array.from(
+			hourColumn?.querySelectorAll<HTMLElement>('[data-wheel-item]') ?? []
+		).map((item) => item.getAttribute('data-value'));
+		expect(offeredValues).toEqual(['1', '4', '7', '10']);
+
+		const option = hourColumn?.querySelector<HTMLElement>('[data-wheel-item][data-value="4"]');
+		expect(option).toBeTruthy();
+		option?.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('16:30');
 	});
 
 	it('marks out-of-range options as disabled with min/max', async () => {

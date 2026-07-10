@@ -4,6 +4,7 @@
 	import { Popover } from '../../popover';
 	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
 	import { composeEventHandlers, sanitizeDatePickerProps } from '../internal/strict-props';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
 	import { trackInteractionModality } from '../../primitives/input-modality';
 
 	type ForbiddenPopoverProp = 'open' | 'triggerRef' | 'onOpenChange' | 'id';
@@ -20,7 +21,7 @@
 	let {
 		class: className = '',
 		children,
-		'aria-label': ariaLabel = 'Calendar',
+		'aria-label': ariaLabel,
 		initialFocus,
 		onmousedown: onMouseDownExternal,
 		onkeydowncapture: onKeydownCaptureExternal,
@@ -29,6 +30,9 @@
 
 	const datePicker = useDatePickerContext();
 	const dialogId = `${datePicker.id}-popover`;
+	const resolvedAriaLabel = $derived(
+		ariaLabel ?? resolveLocalizedString(datePicker.locale, 'datePicker.calendar')
+	);
 	const restProps = $derived.by(
 		() =>
 			sanitizeDatePickerProps(
@@ -76,7 +80,7 @@
 	<Popover.Content
 		id={dialogId}
 		class={className}
-		aria-label={ariaLabel}
+		aria-label={resolvedAriaLabel}
 		onmousedown={composeEventHandlers(handlePointerDown, onMouseDownExternal ?? undefined)}
 		onkeydowncapture={composeEventHandlers(handleKeydown, onKeydownCaptureExternal ?? undefined)}
 		initialFocus={resolvedInitialFocus}

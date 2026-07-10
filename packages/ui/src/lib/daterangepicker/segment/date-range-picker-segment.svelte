@@ -22,6 +22,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
 
 	type DateRangePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,
@@ -39,12 +40,14 @@
 		| 'aria-valuetext'
 		| 'aria-readonly'
 		| 'aria-disabled'
+		| 'aria-invalid'
 		| 'onfocus'
 		| 'onblur'
 		| 'onmousedown'
 		| 'onclick'
 		| 'onselectstart'
 		| 'onkeydown'
+		| 'onbeforeinput'
 	> & {
 		part: DateRangePickerRangePart;
 		segment: DatePickerSegmentPart;
@@ -110,6 +113,8 @@
 		return dateRangePicker.getSegmentLabel(segment.type);
 	});
 
+	const isPartInvalid = $derived(isEditableSegment && dateRangePicker.isPartInvalid(part));
+
 	$effect(() => {
 		if (segment.type === 'literal') return;
 		const segmentType = segment.type;
@@ -172,22 +177,43 @@
 		event.preventDefault();
 	}
 
+	function handleBeforeInput(event: InputEvent) {
+		if (segment.type === 'literal') return;
+		// The segment DOM stays authoritative: direct mutations from paste,
+		// drop, or IME composition are blocked. Android/virtual keyboards
+		// deliver digits through `beforeinput` instead of trusted keydown
+		// events, so single-digit insertions are routed to the typing path.
+		event.preventDefault();
+		if (dateRangePicker.isDisabled || dateRangePicker.isReadOnly) return;
+		if (event.inputType !== 'insertText') return;
+		if (!event.data || !/^\d$/.test(event.data)) return;
+		const didComplete = dateRangePicker.typeSegmentDigit(part, segment.type, event.data);
+		if (didComplete) {
+			dateRangePicker.focusNextSegment(part, segment.type);
+		}
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (segment.type === 'literal') return;
 		if (dateRangePicker.isDisabled) return;
+		// Never intercept browser/OS shortcuts (copy, select all, reload, ...).
+		if (event.ctrlKey || event.metaKey || event.altKey) return;
 		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		dateRangePicker.setFocusVisible(true);
 
-		if (event.key === 'ArrowRight') {
+		if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
 			event.preventDefault();
-			if (!dateRangePicker.focusNextSegment(part, segment.type)) {
-				dateRangePicker.triggerRef?.focus();
+			// Segments follow the locale's logical order in the DOM: under RTL
+			// the visually next segment is the previous logical one, so the
+			// physical arrows are inverted.
+			const rtl = isRtl(event.currentTarget as HTMLElement);
+			const isNext = rtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight';
+			if (isNext) {
+				if (!dateRangePicker.focusNextSegment(part, segment.type)) {
+					dateRangePicker.triggerRef?.focus();
+				}
+				return;
 			}
-			return;
-		}
-
-		if (event.key === 'ArrowLeft') {
-			event.preventDefault();
 			dateRangePicker.focusPreviousSegment(part, segment.type);
 			return;
 		}
@@ -274,7 +300,10 @@
 			return;
 		}
 
-		if (event.key === 'Tab') {
+		// Only swallow unhandled printable characters. Function keys (Tab,
+		// Escape, Enter, F5, ...) keep their default behavior so the browser,
+		// forms, and enclosing popovers still receive them.
+		if (event.key.length > 1) {
 			return;
 		}
 
@@ -312,6 +341,7 @@
 		aria-label={segmentLabel}
 		aria-readonly={dateRangePicker.isReadOnly || undefined}
 		aria-disabled={dateRangePicker.isDisabled || undefined}
+		aria-invalid={isPartInvalid || undefined}
 		contenteditable={!dateRangePicker.isDisabled && !dateRangePicker.isReadOnly}
 		spellcheck="false"
 		enterkeyhint="next"
@@ -326,6 +356,7 @@
 		onclick={handleClick}
 		onselectstart={handleSelectStart}
 		onkeydown={handleKeydown}
+		onbeforeinput={handleBeforeInput}
 	>
 		{segment.text}
 	</span>

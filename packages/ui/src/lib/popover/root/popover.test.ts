@@ -63,7 +63,9 @@ describe('Popover', () => {
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 				await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
 				expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
-				await expect.poll(() => document.activeElement).toBe(trigger.element());
+				// An outside press must not steal focus back to the trigger — the
+				// pressed element keeps its native focus/caret behavior.
+				expect(document.activeElement).not.toBe(trigger.element());
 			} finally {
 				outside.remove();
 			}
@@ -86,7 +88,7 @@ describe('Popover', () => {
 			expect(dialog).toBeTruthy();
 		});
 
-		it('closes on blur in non-modal mode and restores focus to trigger', async () => {
+		it('closes on blur in non-modal mode and leaves focus where the user moved it', async () => {
 			const externalButton = document.createElement('button');
 			externalButton.textContent = 'External Button';
 			document.body.appendChild(externalButton);
@@ -101,7 +103,10 @@ describe('Popover', () => {
 				externalButton.focus();
 
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-				await expect.poll(() => document.activeElement).toBe(trigger.element());
+				// INVERTED (previously asserted focus returned to the trigger): a
+				// 'focus-out' close must not yank focus back — the element the user
+				// just focused keeps it (APG/React Aria/Radix behavior).
+				await expect.poll(() => document.activeElement).toBe(externalButton);
 			} finally {
 				externalButton.remove();
 			}
@@ -219,6 +224,18 @@ describe('Popover', () => {
 				false,
 				expect.objectContaining({ reason: 'escape-key' })
 			);
+		});
+
+		it('stays open after Escape when a controlled parent ignores onOpenChange', async () => {
+			// A controlled parent owns the state: if it does not flow `false` back
+			// down, the popover must remain open (the child must not overwrite the prop).
+			render(PopoverTest, { open: true, onOpenChange: () => {} });
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			await userEvent.keyboard('{Escape}');
+
+			await new Promise((r) => setTimeout(r, 100));
+			expect(document.querySelector('[role="dialog"]')).toBeTruthy();
 		});
 
 		it('allows cancel() to prevent opening while uncontrolled', async () => {

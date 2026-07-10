@@ -131,6 +131,21 @@ describe('TextArea', () => {
 		expect(document.activeElement).toBe(textArea.element());
 	});
 
+	it('focuses the textarea on mount when autofocus is set', async () => {
+		const screen = render(TextAreaTest, { autofocus: true });
+		const textArea = screen.getByRole('textbox', { name: 'Message' });
+
+		// The textarea renders after a button, so this proves explicit focus rather than default order.
+		await expect.poll(() => document.activeElement).toBe(textArea.element());
+	});
+
+	it('does not steal focus on mount when autofocus is unset', async () => {
+		const screen = render(TextAreaTest);
+		const textArea = screen.getByRole('textbox', { name: 'Message' });
+
+		expect(document.activeElement).not.toBe(textArea.element());
+	});
+
 	it('maps invalid and required state to data and aria attributes', () => {
 		const screen = render(TextAreaTest, { invalid: true, required: true });
 		const textArea = screen.getByRole('textbox', { name: 'Message' });

@@ -6,6 +6,21 @@
 
 ---
 
+## Estado de resolución (actualizado 2026-07-10)
+
+Ejecutado en 4 olas (Fase 1 manual + 3 olas de agentes), validado con la suite completa: **1344 tests browser + 21 SSR en verde, svelte-check 0 errores (833 archivos)**. ~90 tests nuevos de regresión.
+
+- **Críticos C1–C6: resueltos.** Layer-stack unificado (`primitives/layer-stack.ts`) para dialog/popover/menu; focus-trap consciente de capas; trampas Shift+Tab eliminadas (grupos no tabulables con foco adentro + guards de `relatedTarget`).
+- **Altos: resueltos.** Incluye: corrupción de datos en numberfield/timepicker/clock; "hoy" local y sync controlado de calendar; robo de foco (calendar, tree, listbox-hover, popover focus-out, menu sibling-open); `bind:value`/modo controlado en listbox/toggle-group/checkbox/switch/accordion/collapsible/dialog/popover; callbacks de table (`onHiddenColumnsChange`, `onSortChange`) y perf O(células²); combobox (filtro al abrir tecleando, reopen, blur flag); segmentos con `preventDefault` selectivo + `beforeinput` (Android/IME); overflow-row (scroll fantasma, IDs duplicados); `aria-rowindex` en virtualización.
+- **Patrones sistémicos: resueltos** los nº 1–9 y 11–13 (controlado, trampas de foco, ButtonRoot id reactivo, orden DOM, IME, composición de handlers en los casos reportados, i18n vía `internal/localized-strings.ts`, `role="group"`, cleanups de refs, consolidación de `strict-props`/`composeEventHandlers`/stepper, weekInfo Firefox). RTL agregado (`internal/rtl.ts` + flechas/pinning lógicos).
+- **Tests tested-wrong: invertidos** (calendar readonly/hover-preview, popover focus-steal, datepicker outside-press, numberfield PageDown, table suppress-click, clock disabled, timepicker padding consagrado se mantuvo por decisión).
+
+**Pendiente (seguimiento recomendado, no bloqueante):**
+1. Refactors de alto riesgo omitidos deliberadamente: unificar la máquina presence/motion (×4), extraer el motor de segmentos (datepicker↔daterangepicker, ~800 líneas) y el estado compartido clock↔timepicker, migrar los contextos de stores-de-versión (`void $version`) a runas (patrón sistémico nº 10), unificar dialog-trigger/popover-trigger (evaluado y descartado por ganancia marginal).
+2. Cola larga de bajos: ver secciones por componente (p. ej. landmark `region` por panel de accordion, semántica radiogroup opcional de toggle-group single, scroll-lock táctil iOS, tab-stops de resizers de table, live region del button dentro del nombre accesible, `aria-label` de tags del combobox para AT).
+
+---
+
 ## 1. Hallazgos CRÍTICOS
 
 | # | Dónde | Hallazgo |

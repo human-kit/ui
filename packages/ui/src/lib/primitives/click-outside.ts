@@ -13,7 +13,16 @@ export type ClickOutsideOptions = {
 };
 
 /**
- * Check if a click landed on a "top layer" (dialog, popover, etc.) stacked
+ * Selector matching every portalled dismissable surface the library renders
+ * (dialog, popover, menu). Custom surfaces can opt in with `data-top-layer`.
+ * Keeping this list in one place prevents the drift where menus were missing
+ * from the check and a menu opened inside a popover dismissed the popover.
+ */
+const TOP_LAYER_SELECTOR =
+	'[data-top-layer], [data-dialog-content], [role="dialog"], [data-menu-content], [role="menu"]';
+
+/**
+ * Check if a click landed on a "top layer" (dialog, popover, menu, etc.) stacked
  * *above* the reference node — i.e. a portal spawned from within it.
  *
  * Portaled overlays append to the document in mount order, so a layer that
@@ -24,10 +33,10 @@ export type ClickOutsideOptions = {
  * resolves to that ancestor. Treating it as "inside" would wrongly keep `node`
  * open, so those clicks must still dismiss, exactly like clicking the page.
  */
-function isInTopLayer(node: Node, target: Node): boolean {
+export function isTargetInTopLayerAbove(node: Node, target: Node): boolean {
 	if (!(target instanceof Element)) return false;
 
-	const topLayerElement = target.closest('[data-dialog-content], [role="dialog"]');
+	const topLayerElement = target.closest(TOP_LAYER_SELECTOR);
 	if (topLayerElement === null) return false;
 
 	return (node.compareDocumentPosition(topLayerElement) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
@@ -58,8 +67,8 @@ export function clickOutside(node: HTMLElement, options: ClickOutsideOptions) {
 		}
 
 		// Don't trigger if clicking on a top-layer element stacked above this node
-		// (a nested popover/dialog). An enclosing ancestor overlay still dismisses.
-		if (isInTopLayer(node, target)) return;
+		// (a nested popover/dialog/menu). An enclosing ancestor overlay still dismisses.
+		if (isTargetInTopLayerAbove(node, target)) return;
 
 		handler(event);
 	}

@@ -61,6 +61,52 @@ describe('Tabs', () => {
 		expect(document.querySelector('[role="tabpanel"][data-selected]')).toBeNull();
 	});
 
+	it('syncs bind:value after initial auto-selection without firing onChange', async () => {
+		render(TabsTest, { controlled: true });
+
+		await expect.poll(() => selectedTabValue()).toBe('overview');
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-value"]')?.textContent)
+			.toBe('overview');
+		expect(document.querySelector('[data-testid="change-log"]')?.textContent).toBe('[]');
+	});
+
+	it('does not fire onChange when defaultValue points to a disabled tab on mount', async () => {
+		render(TabsTest, {
+			defaultValue: 'billing',
+			billingDisabled: true
+		});
+
+		await expect.poll(() => selectedTabValue()).toBe('overview');
+		expect(document.querySelector('[data-testid="change-log"]')?.textContent).toBe('[]');
+	});
+
+	it('inverts horizontal arrow keys in RTL layouts', async () => {
+		const previousDir = document.documentElement.dir;
+		document.documentElement.dir = 'rtl';
+
+		try {
+			const screen = render(TabsTest, { defaultValue: 'billing' });
+			screen.getByRole('tab', { name: 'Billing' }).element()?.focus();
+
+			// Visually right in RTL is the previous logical tab.
+			await userEvent.keyboard('{ArrowRight}');
+			await expect
+				.poll(() => document.activeElement)
+				.toBe(screen.getByRole('tab', { name: 'Overview' }).element());
+			await expect.poll(() => selectedTabValue()).toBe('overview');
+
+			// Visually left in RTL is the next logical tab.
+			await userEvent.keyboard('{ArrowLeft}');
+			await expect
+				.poll(() => document.activeElement)
+				.toBe(screen.getByRole('tab', { name: 'Billing' }).element());
+			await expect.poll(() => selectedTabValue()).toBe('billing');
+		} finally {
+			document.documentElement.dir = previousDir;
+		}
+	});
+
 	it('activates tabs automatically while roving focus with horizontal keys', async () => {
 		const screen = render(TabsTest, { defaultValue: 'overview' });
 		const overviewTab = screen.getByRole('tab', { name: 'Overview' });
@@ -78,6 +124,20 @@ describe('Tabs', () => {
 
 		await userEvent.keyboard('{ArrowRight}');
 		await expect.poll(() => selectedTabValue()).toBe('overview');
+	});
+
+	it('lets external keydown handlers cancel roving focus', async () => {
+		const screen = render(TabsTest, {
+			defaultValue: 'overview',
+			cancelKeyDown: true
+		});
+		const overviewTab = screen.getByRole('tab', { name: 'Overview' });
+
+		overviewTab.element()?.focus();
+		await userEvent.keyboard('{ArrowRight}');
+
+		expect(document.activeElement).toBe(overviewTab.element());
+		expect(selectedTabValue()).toBe('overview');
 	});
 
 	it('keeps selection unchanged during roving focus in manual activation mode', async () => {

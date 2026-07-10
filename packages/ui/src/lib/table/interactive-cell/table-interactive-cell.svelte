@@ -72,7 +72,6 @@
 
 	const column = $derived.by(() => {
 		void $layoutVersion;
-		void $focusVersion;
 		return cellIndex >= 0 ? table.getColumnLayoutAt(cellIndex) : undefined;
 	});
 	const resolvedColumn = $derived(column?.column);
@@ -241,8 +240,8 @@
 	data-pin-edge={pinState?.isEdge ? 'true' : undefined}
 	style:box-sizing="border-box"
 	style:position={pinState ? 'sticky' : undefined}
-	style:left={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
-	style:right={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
+	style:inset-inline-start={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
+	style:inset-inline-end={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
 	style:z-index={pinState ? 1 : undefined}
 	style:display={isColumnHidden ? 'none' : 'table-cell'}
 	onfocus={row.section === 'body' ? handleFocus : undefined}

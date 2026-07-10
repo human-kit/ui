@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
 	import { useClockContext, type ClockEditableSegmentType } from '../root/context';
 	import TimePickerWheelItem from '../wheel-item/clock-wheel-item.svelte';
 	import { useWheelScroll, type WheelScrollBehavior } from '../hooks/use-wheel-scroll.svelte';
@@ -50,12 +51,7 @@
 	const label = $derived(
 		ariaLabel ?? (type === 'dayPeriod' ? 'Day period' : clock.getSegmentLabel(type))
 	);
-	const wheelRoleDescription = $derived.by(() => {
-		const normalizedLocale = clock.locale.toLowerCase();
-		if (normalizedLocale.startsWith('es')) return 'selector en rueda';
-		if (normalizedLocale.startsWith('pt')) return 'seletor em roda';
-		return 'wheel picker';
-	});
+	const wheelRoleDescription = $derived(resolveLocalizedString(clock.locale, 'clock.wheelPicker'));
 
 	let wheelRef: HTMLElement | null = null;
 	let wheelApi: ReturnType<typeof useWheelScroll> | null = null;
@@ -179,6 +175,14 @@
 	}
 
 	function handleSnapToIndex(nextIndex: number): number | null {
+		if (clock.isDisabled) {
+			// While disabled the wheel must not adopt a new position: re-snap to
+			// the currently selected item so a scroll attempt can't leave the UI
+			// visually desynced from the (guarded) value.
+			if (selectedIndex >= 0) return selectedIndex;
+			if (lastCenteredIndex >= 0) return lastCenteredIndex;
+			return -1;
+		}
 		if (nextIndex < 0 || nextIndex >= options.length) return null;
 		const option = options[nextIndex];
 		if (!option) return null;
@@ -298,6 +302,7 @@
 	}
 
 	function handleClick(event: MouseEvent) {
+		if (clock.isDisabled) return;
 		const target = event.target as Node | null;
 		if (!target) return;
 		const items = getWheelItemElements();
@@ -308,6 +313,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		if (clock.isDisabled) return;
 		trackInteractionModality(event, event.target as HTMLElement | null);
 		if (focusWithin) {
 			focusVisible = true;
@@ -366,6 +372,7 @@
 	}
 
 	function handleCenterRequest(index: number) {
+		if (clock.isDisabled) return;
 		if (index < 0 || index >= options.length) return;
 		const option = options[index];
 		if (!option || option.disabled) return;

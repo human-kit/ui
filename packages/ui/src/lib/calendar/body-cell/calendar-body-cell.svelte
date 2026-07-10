@@ -74,28 +74,26 @@
 
 	const parsedDate = $derived(parseCalendarDate(date));
 	const dayLabel = $derived(parsedDate ? String(parsedDate.getUTCDate()) : '');
+	// A disabled/readonly calendar must still SHOW its selection; only mutation
+	// is blocked (the context re-checks disabled/readonly in selectDate).
 	const isSelected = $derived.by(() => {
 		void $layoutVersion;
 		void $selectionVersion;
-		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isSelected(date);
 	});
 	const isRangeStart = $derived.by(() => {
 		void $layoutVersion;
 		void $selectionVersion;
-		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isRangeStart(date);
 	});
 	const isRangeEnd = $derived.by(() => {
 		void $layoutVersion;
 		void $selectionVersion;
-		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isRangeEnd(date);
 	});
 	const isInRange = $derived.by(() => {
 		void $layoutVersion;
 		void $selectionVersion;
-		if (calendar.isDisabled || calendar.isReadOnly) return false;
 		return calendar.isInRange(date);
 	});
 	const isRovingFocusTarget = $derived.by(() => {
@@ -146,7 +144,6 @@
 	let isHovered = $state(false);
 	let isPressed = $state(false);
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
-	let handledFocusRequestVersion = $state(0);
 
 	function clearPressState() {
 		isPressed = false;
@@ -155,10 +152,12 @@
 
 	$effect(() => {
 		const requestVersion = $focusRequestVersion;
-		if (handledFocusRequestVersion === requestVersion) return;
 		if (!isRovingFocusTarget || isFocusDisabled) return;
 		if (!buttonElement) return;
-		handledFocusRequestVersion = requestVersion;
+		// The context hands out each focus request at most once, so cells mounted
+		// after the request was already handled (e.g. month navigation with the
+		// mouse) do not steal focus on mount.
+		if (!calendar.consumeFocusRequest(requestVersion)) return;
 		if (document.activeElement === buttonElement) return;
 		buttonElement.focus();
 	});

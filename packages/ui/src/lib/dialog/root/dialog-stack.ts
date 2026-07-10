@@ -1,15 +1,10 @@
 /**
- * Global dialog stack for managing nested dialogs.
- * Only the topmost dialog should respond to Escape and click-outside events.
+ * Dialog stack helpers, backed by the unified layer stack so a dialog is only
+ * "topmost" when NO other dismissable layer (popover/menu, of any component)
+ * is stacked above it. `level` counts open dialogs only, for z-index math.
  */
 
-type DialogEntry = {
-	id: symbol;
-	close: () => void;
-	level: number;
-};
-
-const dialogStack: DialogEntry[] = [];
+import { pushLayer, removeLayer, isTopmostLayer, getLayerCount } from '../../primitives/layer-stack';
 
 /**
  * Base z-index for dialogs. Each nested dialog increments by 10.
@@ -21,10 +16,9 @@ const Z_INDEX_INCREMENT = 10;
  * Register a dialog when it opens.
  * Returns the dialog ID and level for z-index calculation.
  */
-export function pushDialog(close: () => void): { id: symbol; level: number } {
-	const id = Symbol('dialog');
-	const level = dialogStack.length;
-	dialogStack.push({ id, close, level });
+export function pushDialog(_close?: () => void): { id: symbol; level: number } {
+	const level = getLayerCount('dialog');
+	const id = pushLayer('dialog');
 	return { id, level };
 }
 
@@ -32,18 +26,16 @@ export function pushDialog(close: () => void): { id: symbol; level: number } {
  * Unregister a dialog when it closes.
  */
 export function popDialog(id: symbol): void {
-	const index = dialogStack.findIndex((entry) => entry.id === id);
-	if (index !== -1) {
-		dialogStack.splice(index, 1);
-	}
+	removeLayer(id);
 }
 
 /**
- * Check if this dialog is the topmost (should handle events).
+ * Check if this dialog is the topmost dismissable layer (should handle events).
+ * A popover or menu opened inside the dialog sits above it in the unified stack,
+ * so Escape/outside-press dismiss that layer first, not the dialog.
  */
 export function isTopmostDialog(id: symbol): boolean {
-	if (dialogStack.length === 0) return false;
-	return dialogStack[dialogStack.length - 1].id === id;
+	return isTopmostLayer(id);
 }
 
 /**
@@ -64,7 +56,7 @@ export function getContentZIndex(level: number): number {
  * Get the number of open dialogs.
  */
 export function getDialogCount(): number {
-	return dialogStack.length;
+	return getLayerCount('dialog');
 }
 
 /**
@@ -76,7 +68,7 @@ export function getDialogCount(): number {
  * fixed value), and climbs past the dialog stack as dialogs nest.
  */
 export function getFloatingLayerZIndex(): number {
-	return BASE_Z_INDEX + dialogStack.length * Z_INDEX_INCREMENT + 9;
+	return BASE_Z_INDEX + getLayerCount('dialog') * Z_INDEX_INCREMENT + 9;
 }
 
 /**

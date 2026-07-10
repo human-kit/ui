@@ -18,7 +18,13 @@
 		items: T[];
 		/** Stable key for each item (used for keyed `{#each}` and re-measure). */
 		getKey: (item: T, index: number) => string | number;
-		/** Renders a single item. Receives the item and its index. */
+		/**
+		 * Renders a single item. Receives the item and its index.
+		 *
+		 * In overflow mode the snippet renders twice (visible row + hidden measurement
+		 * mirror), so it must be render-pure: any effects it owns run twice, and `id`
+		 * attributes inside the mirror copy are stripped to avoid duplicate ids.
+		 */
 		children: Snippet<[{ item: T; index: number }]>;
 		/**
 		 * Optional overflow indicator. When provided, the row is constrained to a
@@ -79,17 +85,29 @@
 	});
 
 	$effect(() => {
-		if (!overflowEnabled || !mirrorEl) return;
+		const mirror = mirrorEl;
+		if (!overflowEnabled || !mirror) return;
 		// Re-measure whenever the items change.
 		void items;
-		const nodes = Array.from(mirrorEl.children) as HTMLElement[];
-		// Every child but the last is an item; the last is the indicator sample.
-		const itemNodes = nodes.slice(0, items.length);
-		itemWidths = itemNodes.map((node) => node.getBoundingClientRect().width);
-		const indicator = nodes[nodes.length - 1];
-		indicatorWidth = items.length > 0 && indicator ? indicator.getBoundingClientRect().width : 0;
-		const styles = getComputedStyle(mirrorEl);
-		gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+		const measure = () => {
+			// The mirror duplicates the consumer snippet: strip any `id` so label/aria
+			// associations keep resolving to the visible copy (ids don't affect layout).
+			for (const node of mirror.querySelectorAll('[id]')) node.removeAttribute('id');
+			const nodes = Array.from(mirror.children) as HTMLElement[];
+			// Every child but the last is an item; the last is the indicator sample.
+			const itemNodes = nodes.slice(0, items.length);
+			itemWidths = itemNodes.map((node) => node.getBoundingClientRect().width);
+			const indicator = nodes[nodes.length - 1];
+			indicatorWidth = items.length > 0 && indicator ? indicator.getBoundingClientRect().width : 0;
+			const styles = getComputedStyle(mirror);
+			gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+		};
+		// Items can resize after mount (webfonts, async content): the mirror hugs its
+		// content, so observing it re-measures whenever any item changes size.
+		const observer = new ResizeObserver(measure);
+		observer.observe(mirror);
+		measure();
+		return () => observer.disconnect();
 	});
 
 	const visibleCount = $derived.by(() => {
@@ -143,18 +161,24 @@
 		<!--
 			Measurement mirror: renders every item (and an indicator sample) at natural
 			width, off the layout/a11y/tab flow, purely to size the visible row above.
+			The zero-size overflow:hidden wrapper keeps the max-content mirror from
+			growing the page's scrollable area.
 		-->
 		<div
-			bind:this={mirrorEl}
-			class={className}
-			style="width: max-content; max-width: none; position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; flex-wrap: nowrap;"
+			style="position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none;"
 			aria-hidden="true"
 			inert
 		>
-			{#each items as item, index (getKey(item, index))}
-				{@render children({ item, index })}
-			{/each}
-			{@render overflow?.({ count: items.length, visible: items.length, total: items.length })}
+			<div
+				bind:this={mirrorEl}
+				class={className}
+				style="width: max-content; max-width: none; flex-wrap: nowrap;"
+			>
+				{#each items as item, index (getKey(item, index))}
+					{@render children({ item, index })}
+				{/each}
+				{@render overflow?.({ count: items.length, visible: items.length, total: items.length })}
+			</div>
 		</div>
 	{/if}
 {/if}

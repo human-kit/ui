@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
-	import { onMount, untrack } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { trackInteractionModality } from '../../primitives/input-modality';
 	import TreeItemRenderer from '../item/tree-item-renderer.svelte';
 	import {
@@ -201,6 +201,10 @@
 		hasMounted = true;
 	});
 
+	onDestroy(() => {
+		ctx.beginTeardown();
+	});
+
 	$effect(() => {
 		void $configVersion;
 		void $structureVersion;
@@ -214,7 +218,14 @@
 				ctx.getNextFocusableVisibleId(focusedId) ??
 				ctx.getPreviousFocusableVisibleId(focusedId) ??
 				ctx.getFirstFocusableVisibleId();
-			ctx.focusById(nextId);
+			// Only move DOM focus when it already lives inside the tree; otherwise just
+			// relocate the roving target so config/structure changes never steal focus
+			// from unrelated elements on the page (e.g. an input the user is typing in).
+			if (treeElement && document.activeElement && treeElement.contains(document.activeElement)) {
+				ctx.focusById(nextId);
+			} else {
+				ctx.setFocusedId(nextId);
+			}
 		});
 	});
 
@@ -239,7 +250,13 @@
 	function focusFirstVisibleIfNeeded() {
 		queueMicrotask(() => {
 			if (!treeElement || document.activeElement !== treeElement) return;
-			if (ctx.getFocusedId() !== null) return;
+			const focusedId = ctx.getFocusedId();
+			if (focusedId !== null) {
+				// Re-entering the tree: hand focus to the roving row instead of
+				// parking it on the container (the tree is a single tab stop).
+				ctx.focusById(focusedId);
+				return;
+			}
 			const initialId = ctx.getFirstSelectedVisibleId() ?? ctx.getFirstFocusableVisibleId();
 			if (initialId !== null) {
 				ctx.focusById(initialId);
@@ -451,7 +468,7 @@
 	data-focused={focusWithin || undefined}
 	data-empty={hasMounted && isTreeEmpty() ? '' : undefined}
 	data-selection-mode={selectionMode !== 'none' ? selectionMode : undefined}
-	tabindex="0"
+	tabindex={focusWithin ? -1 : 0}
 	onfocus={focusFirstVisibleIfNeeded}
 	onfocusin={handleFocusIn}
 	onfocusout={handleFocusOut}
@@ -488,6 +505,10 @@
 					<TreeItemRenderer {node} {itemTransition} treeMounted={hasMounted} />
 				{/each}
 			</div>
+		{/each}
+
+		{#each getVisibleNodesForSection(null) as node (node.id)}
+			<TreeItemRenderer {node} {itemTransition} treeMounted={hasMounted} />
 		{/each}
 	{:else}
 		{#each getRenderedVisibleNodes() as node (node.id)}

@@ -14,6 +14,7 @@
 		billingDisabled?: boolean;
 		securityForceMount?: boolean;
 		showControls?: boolean;
+		applyChanges?: boolean;
 	};
 
 	let {
@@ -27,14 +28,17 @@
 		loop = true,
 		billingDisabled = false,
 		securityForceMount = false,
-		showControls = false
+		showControls = false,
+		applyChanges = true
 	}: AccordionTestProps = $props();
 
 	let currentValue = $state<AccordionValue[]>((() => [...value])());
 	let changeLog = $state<Array<AccordionValue[]>>([]);
 
 	function handleChange(nextValue: AccordionValue[]) {
-		currentValue = nextValue;
+		if (applyChanges) {
+			currentValue = nextValue;
+		}
 		changeLog = [...changeLog, nextValue];
 	}
 </script>

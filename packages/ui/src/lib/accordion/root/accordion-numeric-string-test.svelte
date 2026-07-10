@@ -4,7 +4,7 @@
 	let value = $state<Array<string | number>>([1]);
 </script>
 
-<Accordion.Root bind:value selectionMode="multiple">
+<Accordion.Root {value} selectionMode="multiple" onChange={(next) => (value = next)}>
 	<Accordion.Item value={1} data-testid="item-number">
 		<Accordion.Header>
 			<Accordion.Trigger data-testid="trigger-number">Number</Accordion.Trigger>

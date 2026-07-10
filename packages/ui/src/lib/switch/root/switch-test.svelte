@@ -12,6 +12,8 @@
 		readonly?: boolean;
 		required?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
+		onkeyup?: (event: KeyboardEvent) => void;
+		onblur?: (event: FocusEvent) => void;
 	};
 
 	let {
@@ -24,7 +26,9 @@
 		disabled = false,
 		readonly = false,
 		required = false,
-		onCheckedChange
+		onCheckedChange,
+		onkeyup,
+		onblur
 	}: Props = $props();
 </script>
 
@@ -39,6 +43,8 @@
 	{readonly}
 	{required}
 	{onCheckedChange}
+	{onkeyup}
+	{onblur}
 	class="inline-flex h-6 w-10 items-center"
 	aria-label="Enable notifications"
 >

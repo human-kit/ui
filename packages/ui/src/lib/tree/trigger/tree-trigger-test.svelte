@@ -10,9 +10,16 @@
 	} = $props();
 
 	let selectedKeys = $state<Set<string | number>>(new Set());
+	let disabledKeys = $state<Iterable<string | number>>([]);
+
+	function disableDocuments() {
+		disabledKeys = ['documents'];
+	}
 </script>
 
-<Tree.Root aria-label="Files" {selectionMode} {defaultExpandedKeys} bind:selectedKeys>
+<button type="button" onclick={disableDocuments}>Disable branch</button>
+
+<Tree.Root aria-label="Files" {selectionMode} {defaultExpandedKeys} {disabledKeys} bind:selectedKeys>
 	<Tree.Item id="documents" title="Documents">
 		<Tree.Trigger aria-label="Toggle Documents">Toggle</Tree.Trigger>
 		<Tree.Label>Documents</Tree.Label>

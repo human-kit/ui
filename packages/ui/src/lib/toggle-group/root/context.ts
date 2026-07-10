@@ -126,8 +126,30 @@ export function createToggleGroupContext(
 		stateVersion.update((value) => value + 1);
 	}
 
+	function getOrderedValues() {
+		const connected: { value: ToggleGroupValue; element: HTMLButtonElement }[] = [];
+		const detachedValues: ToggleGroupValue[] = [];
+
+		for (const value of toggleOrder) {
+			const element = toggles.get(value)?.element;
+			if (element?.isConnected) {
+				connected.push({ value, element });
+			} else {
+				detachedValues.push(value);
+			}
+		}
+
+		connected.sort((left, right) =>
+			left.element.compareDocumentPosition(right.element) & Node.DOCUMENT_POSITION_FOLLOWING
+				? -1
+				: 1
+		);
+
+		return [...connected.map((entry) => entry.value), ...detachedValues];
+	}
+
 	function getEnabledValues() {
-		return toggleOrder.filter((value) => toggles.has(value) && !isToggleDisabled(value));
+		return getOrderedValues().filter((value) => toggles.has(value) && !isToggleDisabled(value));
 	}
 
 	function getFirstEnabledValue() {
@@ -162,11 +184,12 @@ export function createToggleGroupContext(
 		const enabledValues = getEnabledValues();
 		if (enabledValues.length === 0) return null;
 
-		const currentIndex = toggleOrder.findIndex((toggleValue) => valuesMatch(toggleValue, value));
+		const orderedValues = getOrderedValues();
+		const currentIndex = orderedValues.findIndex((toggleValue) => valuesMatch(toggleValue, value));
 		if (currentIndex < 0) return enabledValues[0] ?? null;
 
-		for (let offset = 1; offset <= toggleOrder.length; offset += 1) {
-			const candidate = toggleOrder[(currentIndex + offset) % toggleOrder.length];
+		for (let offset = 1; offset <= orderedValues.length; offset += 1) {
+			const candidate = orderedValues[(currentIndex + offset) % orderedValues.length];
 			if (candidate !== undefined && toggles.has(candidate) && !isToggleDisabled(candidate)) {
 				return candidate;
 			}
@@ -209,6 +232,8 @@ export function createToggleGroupContext(
 		changedValue?: ToggleGroupValue,
 		changeOptions?: { notify?: boolean }
 	) {
+		if (isControlled) return;
+
 		const nextValues = new Set(selectedValues);
 		let removedSelectedValue: ToggleGroupValue | undefined;
 
@@ -223,7 +248,7 @@ export function createToggleGroupContext(
 			}
 		}
 
-		if (!isControlled && disallowEmptySelection && nextValues.size === 0) {
+		if (disallowEmptySelection && nextValues.size === 0) {
 			const fallbackValue =
 				removedSelectedValue === undefined
 					? getFirstEnabledValue()
@@ -291,7 +316,7 @@ export function createToggleGroupContext(
 	function setSelectionMode(mode: ToggleGroupSelectionMode) {
 		if (selectionMode === mode) return;
 		selectionMode = mode;
-		setSelection(selectedValues);
+		setSelection(selectedValues, { notify: !isControlled });
 		reconcileSelection();
 		bumpState();
 	}

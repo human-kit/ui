@@ -76,13 +76,15 @@
 		const label = effectiveTextValue || String(id);
 		const itemId = id;
 
-		if (visible && !disabled && !isRegistered) {
-			ctx.registerItem(itemId, label);
-			isRegistered = true;
-		} else if ((!visible || disabled) && isRegistered) {
-			ctx.unregisterItem(itemId);
-			isRegistered = false;
-		}
+		untrack(() => {
+			if (visible && !disabled && !isRegistered) {
+				ctx.registerItem(itemId, label);
+				isRegistered = true;
+			} else if ((!visible || disabled) && isRegistered) {
+				ctx.unregisterItem(itemId);
+				isRegistered = false;
+			}
+		});
 	});
 
 	function handleResolvedTextValue(label: string) {
@@ -96,6 +98,7 @@
 	});
 
 	function handleSelect(itemId: string | number) {
+		if (ctx.isReadOnly) return;
 		// Selection here is pointer-driven (click); clear the keyboard focus ring.
 		ctx.setFocusVisible(false);
 		ctx.setFocusedItemId(itemId);

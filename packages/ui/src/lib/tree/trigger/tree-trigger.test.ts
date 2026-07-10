@@ -58,6 +58,18 @@ describe('Tree.Trigger', () => {
 		await expect.element(documents).toHaveAttribute('aria-expanded', 'true');
 	});
 
+	it('disables the trigger when disabledKeys changes after mount', async () => {
+		const screen = render(TreeTriggerTest, { defaultExpandedKeys: ['documents'] });
+		const trigger = document.querySelector<HTMLElement>('[data-tree-trigger]');
+
+		if (!trigger) throw new Error('Tree trigger not found');
+		expect(trigger.getAttribute('data-disabled')).toBeNull();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Disable branch' }));
+
+		await expect.element(trigger).toHaveAttribute('data-disabled', 'true');
+	});
+
 	it('does not render a trigger for leaf items', async () => {
 		const screen = render(TreeTriggerLeafTest);
 		const budget = screen.getByText('Budget').element()?.closest('[role="treeitem"]');

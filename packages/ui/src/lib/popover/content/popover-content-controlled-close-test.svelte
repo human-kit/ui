@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { Popover } from '../index';
 
+	// Controlled parent: owns the state, syncs it in onOpenChange, and flows it
+	// back down. In controlled mode Popover.Root never writes the prop itself.
 	let open = $state(false);
 </script>
 
-<Popover.Root bind:open>
+<Popover.Root {open} onOpenChange={(next) => (open = next)}>
 	<Popover.Trigger>Open Popover</Popover.Trigger>
 
 	<Popover.Content class="popover-content presence-animation">

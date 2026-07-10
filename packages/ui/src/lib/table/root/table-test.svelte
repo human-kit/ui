@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Table } from '../index';
 	import type {
+		TableContext,
 		TableDisabledBehavior,
 		TableSelectionBehavior,
 		TableSelectionKey,
@@ -35,10 +36,13 @@
 		initialSortDescriptor?: TableSortDescriptor;
 		onRowAction?: (id: TableSelectionKey) => void;
 		onSelectionChange?: (keys: Set<TableSelectionKey>) => void;
+		onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
+		onHiddenColumnsChange?: (columnIds: string[]) => void;
 		showSelectionModeToggle?: boolean;
 		showSingleSelectionModeToggle?: boolean;
 		showSortClearButton?: boolean;
 		showHiddenColumnsToggle?: boolean;
+		showContextHiddenColumnsButton?: boolean;
 	};
 
 	let {
@@ -56,10 +60,13 @@
 		initialSortDescriptor,
 		onRowAction,
 		onSelectionChange,
+		onSortChange,
+		onHiddenColumnsChange,
 		showSelectionModeToggle = false,
 		showSingleSelectionModeToggle = false,
 		showSortClearButton = false,
-		showHiddenColumnsToggle = false
+		showHiddenColumnsToggle = false,
+		showContextHiddenColumnsButton = false
 	}: TableTestProps = $props();
 
 	let currentSelectedKeys = $state<Set<TableSelectionKey>>(
@@ -70,6 +77,7 @@
 	);
 	let rowActionLog = $state<string[]>([]);
 	let eventLog = $state<string[]>([]);
+	let tableContext = $state<TableContext | undefined>(undefined);
 
 	const renderedRows = $derived.by(() => {
 		const nextRows = [...rows];
@@ -94,6 +102,19 @@
 		eventLog = [...eventLog, `action:${String(id)}`];
 		onRowAction?.(id);
 	}
+
+	function handleSortChange(descriptor: TableSortDescriptor | undefined) {
+		eventLog = [
+			...eventLog,
+			`sort:${descriptor ? `${descriptor.column}:${descriptor.direction}` : 'none'}`
+		];
+		onSortChange?.(descriptor);
+	}
+
+	function handleHiddenColumnsChange(columnIds: string[]) {
+		eventLog = [...eventLog, `hidden:${JSON.stringify(columnIds)}`];
+		onHiddenColumnsChange?.(columnIds);
+	}
 </script>
 
 <Table.Root
@@ -110,6 +131,9 @@
 	{disabledKeys}
 	onRowAction={handleRowAction}
 	onSelectionChange={handleSelectionChange}
+	onSortChange={handleSortChange}
+	onHiddenColumnsChange={handleHiddenColumnsChange}
+	bind:context={tableContext}
 	class="table-root"
 >
 	<Table.Header>
@@ -181,6 +205,16 @@
 		onclick={() => (currentSortDescriptor = undefined)}
 	>
 		Clear sort
+	</button>
+{/if}
+
+{#if showContextHiddenColumnsButton}
+	<button
+		type="button"
+		data-testid="context-hide-group-column"
+		onclick={() => tableContext?.setHiddenColumns(['group'])}
+	>
+		Hide group via context
 	</button>
 {/if}
 

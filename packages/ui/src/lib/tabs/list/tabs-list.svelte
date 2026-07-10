@@ -2,6 +2,7 @@
 	import type { TabsListProps, TabsValue } from '../types.js';
 	import { useTabsContext } from '../root/context';
 	import { trackInteractionModality } from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
 
 	type TabsListKeyboardEvent = KeyboardEvent & {
 		currentTarget: EventTarget & HTMLDivElement;
@@ -54,21 +55,21 @@
 	}
 
 	function handleKeyDown(event: TabsListKeyboardEvent) {
+		onKeyDownExternal?.(event);
+		if (event.defaultPrevented) return;
+
 		trackInteractionModality(event, event.target as HTMLElement | null);
 
-		if (event.defaultPrevented) {
-			onKeyDownExternal?.(event);
-			return;
-		}
-
-		if (tabs.isDisabled) {
-			onKeyDownExternal?.(event);
-			return;
-		}
+		if (tabs.isDisabled) return;
 
 		const currentValue = getCurrentValue();
-		const nextKeys = orientation === 'horizontal' ? ['ArrowRight'] : ['ArrowDown'];
-		const previousKeys = orientation === 'horizontal' ? ['ArrowLeft'] : ['ArrowUp'];
+		// In horizontal orientation the arrows are physical: under RTL the
+		// visual "next" tab is the previous one in DOM order (APG).
+		const rtl = orientation === 'horizontal' && isRtl(event.currentTarget);
+		const nextKeys =
+			orientation === 'horizontal' ? [rtl ? 'ArrowLeft' : 'ArrowRight'] : ['ArrowDown'];
+		const previousKeys =
+			orientation === 'horizontal' ? [rtl ? 'ArrowRight' : 'ArrowLeft'] : ['ArrowUp'];
 
 		if (nextKeys.includes(event.key)) {
 			event.preventDefault();
@@ -108,10 +109,7 @@
 					tabs.activateTab(value);
 				}
 			}
-			return;
 		}
-
-		onKeyDownExternal?.(event);
 	}
 
 	function handleMouseDown(event: TabsListMouseEvent) {

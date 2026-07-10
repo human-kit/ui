@@ -111,6 +111,38 @@ describe('buildTimePickerSegments', () => {
 		expect(segments.find((segment) => segment.type === 'hour')?.text).toBe('1');
 		expect(segments.find((segment) => segment.type === 'minute')?.text).toBe('00');
 	});
+
+	it('keeps AM/PM display text in English for en-US', () => {
+		const segments = buildTimePickerSegments({
+			locale: 'en-US',
+			hourCycle: 12,
+			granularity: 'minute',
+			draft: { hour: '2', minute: '30', second: '', dayPeriod: 'PM' }
+		});
+
+		expect(segments.find((segment) => segment.type === 'dayPeriod')?.text).toBe('PM');
+	});
+
+	it('maps the internal PM token to the Spanish dayPeriod display text', () => {
+		const expected = new Intl.DateTimeFormat('es', {
+			hour: 'numeric',
+			hour12: true,
+			timeZone: 'UTC'
+		})
+			.formatToParts(new Date(Date.UTC(2024, 0, 1, 15, 0, 0)))
+			.find((part) => part.type === 'dayPeriod')
+			?.value?.trim();
+
+		const segments = buildTimePickerSegments({
+			locale: 'es',
+			hourCycle: 12,
+			granularity: 'minute',
+			draft: { hour: '2', minute: '30', second: '', dayPeriod: 'PM' }
+		});
+
+		expect(expected).toBeTruthy();
+		expect(segments.find((segment) => segment.type === 'dayPeriod')?.text).toBe(expected);
+	});
 });
 
 describe('buildTimePartsFromDraft', () => {
@@ -218,6 +250,23 @@ describe('clampToStep', () => {
 	it('handles step=0 or negative (treats as 1)', () => {
 		expect(clampToStep(30, 0, 0, 59)).toBe(30);
 		expect(clampToStep(30, -5, 0, 59)).toBe(30);
+	});
+
+	it('anchors the step grid at min (12h wheel options: 1, 4, 7, 10)', () => {
+		expect(clampToStep(1, 3, 1, 12)).toBe(1);
+		expect(clampToStep(2, 3, 1, 12)).toBe(1);
+		expect(clampToStep(3, 3, 1, 12)).toBe(4);
+		expect(clampToStep(4, 3, 1, 12)).toBe(4);
+		expect(clampToStep(7, 3, 1, 12)).toBe(7);
+		expect(clampToStep(10, 3, 1, 12)).toBe(10);
+		expect(clampToStep(11, 3, 1, 12)).toBe(10);
+	});
+
+	it('keeps every min-anchored option on its own grid slot', () => {
+		expect(clampToStep(1, 2, 1, 12)).toBe(1);
+		expect(clampToStep(3, 2, 1, 12)).toBe(3);
+		expect(clampToStep(5, 2, 1, 12)).toBe(5);
+		expect(clampToStep(11, 2, 1, 12)).toBe(11);
 	});
 });
 

@@ -73,6 +73,8 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 	const itemLabels = new SvelteMap<string | number, string>();
 	let pendingFocusDirection: 'first' | 'last' | null = $state(null);
 	let cachedItemOrder: (string | number)[] | null = $state(null);
+	// Tracks the scheduled consumption of a pending 'last' direction (see register).
+	let pendingLastConsumptionScheduled = false;
 
 	/**
 	 * Smart page size calculation based on number of registered items.
@@ -200,6 +202,19 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 				pendingFocusDirection = null;
 			} else if (pendingFocusDirection === 'last') {
 				focusedId = id;
+				// 'last' can't be consumed synchronously (later registrations in
+				// this batch may still arrive), so consume it once the current
+				// registration batch has flushed. Otherwise it would keep stealing
+				// focus on every future registration (e.g. while filtering).
+				if (!pendingLastConsumptionScheduled) {
+					pendingLastConsumptionScheduled = true;
+					queueMicrotask(() => {
+						pendingLastConsumptionScheduled = false;
+						if (pendingFocusDirection === 'last') {
+							pendingFocusDirection = null;
+						}
+					});
+				}
 			}
 		}
 	}
@@ -216,9 +231,23 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 	// Control functions
 	function setFocused(id: string | number | null) {
 		focusedId = id;
+		// External focus control supersedes any pending direction, so consume it
+		// to prevent it from stealing focus back on a later registration.
+		pendingFocusDirection = null;
 	}
 
 	function setPendingDirection(direction: 'first' | 'last' | null) {
+		// If items are already registered (e.g. reopening while they are still
+		// mounted during the exit animation), no new registration will consume
+		// the direction, so apply it immediately.
+		if (direction !== null && itemIds.length > 0) {
+			if (direction === 'first') {
+				first();
+			} else {
+				last();
+			}
+			return;
+		}
 		pendingFocusDirection = direction;
 	}
 

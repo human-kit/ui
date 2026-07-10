@@ -3,6 +3,7 @@
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn } from '../../utils/cn';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
 	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import {
 		clampNumber,
@@ -55,18 +56,14 @@
 		type: 'increment' | 'decrement',
 		locale: string | undefined
 	): string {
-		const language = locale?.split('-')[0]?.toLowerCase();
-
-		if (language === 'es') return type === 'increment' ? 'Incrementar' : 'Disminuir';
-		if (language === 'pt') return type === 'increment' ? 'Incrementar' : 'Diminuir';
-		if (language === 'fr') return type === 'increment' ? 'Augmenter' : 'Diminuer';
-		if (language === 'de') return type === 'increment' ? 'Erhoehen' : 'Verringern';
-		if (language === 'it') return type === 'increment' ? 'Aumentare' : 'Diminuire';
-
-		return type === 'increment' ? 'Increment' : 'Decrement';
+		return resolveLocalizedString(
+			locale,
+			type === 'increment' ? 'numberField.increment' : 'numberField.decrement'
+		);
 	}
 
 	function resolveValidationMessage(options: {
+		locale: string | undefined;
 		inputState: NumberFieldInputState;
 		isInvalid: boolean;
 		inputInvalid: boolean;
@@ -78,19 +75,29 @@
 			options.inputState !== 'out-of-range' &&
 			(options.inputState === 'partial' || options.inputState === 'invalid' || options.inputInvalid)
 		) {
-			return 'Enter a valid number.';
+			return resolveLocalizedString(options.locale, 'numberField.enterValidNumber');
 		}
 
 		if (options.inputState === 'out-of-range' || options.outOfRange) {
 			if (options.min !== undefined && options.max !== undefined) {
-				return `Value must be between ${options.min} and ${options.max}.`;
+				return resolveLocalizedString(options.locale, 'numberField.valueBetween', {
+					min: options.min,
+					max: options.max
+				});
 			}
-			if (options.min !== undefined)
-				return `Value must be greater than or equal to ${options.min}.`;
-			if (options.max !== undefined) return `Value must be less than or equal to ${options.max}.`;
+			if (options.min !== undefined) {
+				return resolveLocalizedString(options.locale, 'numberField.valueGreaterOrEqual', {
+					min: options.min
+				});
+			}
+			if (options.max !== undefined) {
+				return resolveLocalizedString(options.locale, 'numberField.valueLessOrEqual', {
+					max: options.max
+				});
+			}
 		}
 
-		if (options.isInvalid) return 'Invalid value.';
+		if (options.isInvalid) return resolveLocalizedString(options.locale, 'numberField.invalidValue');
 
 		return '';
 	}
@@ -167,6 +174,7 @@
 	);
 	const validationMessage = $derived(
 		resolveValidationMessage({
+			locale: resolvedLocale,
 			inputState,
 			isInvalid: invalid,
 			inputInvalid,
@@ -314,10 +322,13 @@
 			return;
 		}
 
-		if (parsed.kind === 'valid') {
-			const parsedOutOfRange = isValueOutOfRange(parsed.value, min, max);
+		const committableValue =
+			parsed.kind === 'valid' || parsed.kind === 'partial' ? parsed.value : null;
+
+		if (committableValue !== null) {
+			const parsedOutOfRange = isValueOutOfRange(committableValue, min, max);
 			if (parsedOutOfRange && !allowOutOfRange) {
-				const clampedValue = clampNumber(parsed.value, min, max);
+				const clampedValue = clampNumber(committableValue, min, max);
 				publishValue(clampedValue, true);
 				inputInvalid = false;
 				inputState = 'synced';
@@ -325,13 +336,20 @@
 				return;
 			}
 
-			commitParsedValue(parsed.value, true);
+			commitParsedValue(committableValue, true);
 			return;
 		}
 
 		inputInvalid = false;
 		inputState = currentValue === null ? 'empty' : 'synced';
 		inputValue = formattedValue;
+	}
+
+	function commitValue(nextValue: number) {
+		if (disabled || readonly) return;
+
+		const clampedValue = clampNumber(nextValue, min, max);
+		commitParsedValue(roundNumberValueToFormat(clampedValue, resolvedLocale, formatOptions), true);
 	}
 
 	function stepBy(
@@ -456,6 +474,7 @@
 		syncFocusWithin,
 		setInputValue,
 		commitInputValue,
+		commitValue,
 		stepBy,
 		setScrubbing
 	};

@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { readable } from 'svelte/store';
 	import { Checkbox } from '../../checkbox';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import {
 		useTableCellContext,
 		useTableContext,
@@ -21,6 +24,10 @@
 		'aria-labelledby': ariaLabelledby,
 		...restProps
 	}: TableCheckboxProps = $props();
+
+	const localeContext = useLocaleContextOptional();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
 
 	const table = useTableContext();
 	const section = useTableSectionContext();
@@ -75,8 +82,12 @@
 	const accessibleLabel = $derived.by(() => {
 		if (ariaLabel) return ariaLabel;
 		if (ariaLabelledby) return undefined;
-		if (section.section === 'header') return 'Select all rows';
-		return row.rowId !== undefined ? `Select row ${String(row.rowId)}` : 'Select row';
+		if (section.section === 'header') {
+			return resolveLocalizedString($localeStore, 'table.selectAllRows');
+		}
+		return row.rowId !== undefined
+			? resolveLocalizedString($localeStore, 'table.selectRow', { id: String(row.rowId) })
+			: resolveLocalizedString($localeStore, 'table.selectRowUnknown');
 	});
 
 	function getCheckboxRootElement() {

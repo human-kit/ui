@@ -140,22 +140,44 @@ function getTransformOrigin(placement: FloatingPlacement): string {
  * - `--transform-origin`: Coordinates for animations (e.g., "center top")
  */
 export function createFloating(anchorElement: HTMLElement | null, options: FloatingOptions = {}) {
-	const {
-		offset = 8,
-		placement = 'bottom',
-		shouldFlip = true,
-		boundaryElement = null,
-		onPositionUpdate
-	} = options;
+	// Thin wrapper over `floating` — the previous standalone implementation had
+	// drifted (it was missing `strategy: 'fixed'`, mispositioning portalled content).
+	return function action(floatingElement: HTMLElement) {
+		return floating(floatingElement, { anchor: anchorElement, ...options });
+	};
+}
 
+/**
+ * Simple Svelte action for floating positioning.
+ * Use when you just need positioning without complex state management.
+ *
+ * Exposes CSS custom properties on the floating element:
+ * - `--trigger-width`: The trigger element's width
+ * - `--trigger-height`: The trigger element's height
+ * - `--available-width`: Available width between trigger and viewport edge
+ * - `--available-height`: Available height between trigger and viewport edge
+ * - `--transform-origin`: Coordinates for animations (e.g., "center top")
+ */
+export function floating(
+	floatingElement: HTMLElement,
+	options: { anchor: HTMLElement | null } & FloatingOptions
+) {
+	// Kept mutable so `updatePosition` always reads the CURRENT anchor/options.
+	// The previous version closed over the initial values: reactive changes to
+	// placement/offset/boundary were silently ignored, and after an anchor swap
+	// autoUpdate observed the new element while positioning kept measuring the
+	// old one. It also returned `undefined` when the anchor was null at mount,
+	// so Svelte never called `update` and a late-arriving anchor (trigger ref
+	// bound a tick later) left the panel unpositioned forever.
+	let currentOptions = options;
 	let cleanup: (() => void) | null = null;
 
-	function action(floatingElement: HTMLElement) {
-		if (!anchorElement) return;
+	function buildMiddleware() {
+		const offset = currentOptions.offset ?? 8;
+		const shouldFlip = currentOptions.shouldFlip ?? true;
+		const boundaryElement = currentOptions.boundaryElement || null;
 
-		const normalizedPlacement = normalizeExtendedPlacement(placement);
-
-		const middleware = [
+		return [
 			offsetMiddleware(offset),
 			...(shouldFlip ? [flip({ boundary: boundaryElement || undefined })] : []),
 			shift({ boundary: boundaryElement || undefined }),
@@ -174,87 +196,10 @@ export function createFloating(anchorElement: HTMLElement | null, options: Float
 				}
 			})
 		];
-
-		async function updatePosition() {
-			if (!anchorElement || !floatingElement) return;
-
-			const {
-				x,
-				y,
-				placement: finalPlacement
-			} = await computePosition(anchorElement, floatingElement, {
-				placement: normalizedPlacement,
-				middleware
-			});
-
-			Object.assign(floatingElement.style, {
-				left: `${x}px`,
-				top: `${y}px`
-			});
-
-			onPositionUpdate?.(x, y, finalPlacement);
-		}
-
-		cleanup = autoUpdate(anchorElement, floatingElement, updatePosition);
-
-		return {
-			destroy() {
-				cleanup?.();
-				cleanup = null;
-			}
-		};
 	}
 
-	return action;
-}
-
-/**
- * Simple Svelte action for floating positioning.
- * Use when you just need positioning without complex state management.
- *
- * Exposes CSS custom properties on the floating element:
- * - `--trigger-width`: The trigger element's width
- * - `--trigger-height`: The trigger element's height
- * - `--available-width`: Available width between trigger and viewport edge
- * - `--available-height`: Available height between trigger and viewport edge
- * - `--transform-origin`: Coordinates for animations (e.g., "center top")
- */
-export function floating(
-	floatingElement: HTMLElement,
-	options: { anchor: HTMLElement | null } & FloatingOptions
-) {
-	const { anchor, ...floatingOptions } = options;
-
-	if (!anchor) return;
-
-	const normalizedPlacement = normalizeExtendedPlacement(floatingOptions.placement || 'bottom');
-	const offset = floatingOptions.offset ?? 8;
-	const shouldFlip = floatingOptions.shouldFlip ?? true;
-	const boundaryElement = floatingOptions.boundaryElement || null;
-
-	const middleware = [
-		offsetMiddleware(offset),
-		...(shouldFlip ? [flip({ boundary: boundaryElement || undefined })] : []),
-		shift({ boundary: boundaryElement || undefined }),
-		size({
-			apply({ rects, availableWidth, availableHeight, elements, placement }) {
-				const floatingEl = elements.floating;
-				const clampedAvailableWidth = Math.max(0, availableWidth);
-				const clampedAvailableHeight = Math.max(0, availableHeight);
-				floatingEl.style.setProperty('--trigger-width', `${rects.reference.width}px`);
-				floatingEl.style.setProperty('--trigger-height', `${rects.reference.height}px`);
-				floatingEl.style.setProperty('--available-width', `${clampedAvailableWidth}px`);
-				floatingEl.style.setProperty('--available-height', `${clampedAvailableHeight}px`);
-				floatingEl.style.setProperty('--transform-origin', getTransformOrigin(placement));
-				floatingEl.style.maxWidth = `${clampedAvailableWidth}px`;
-				floatingEl.style.maxHeight = `${clampedAvailableHeight}px`;
-			}
-		})
-	];
-
-	let cleanup: (() => void) | null = null;
-
 	async function updatePosition() {
+		const anchor = currentOptions.anchor;
 		if (!anchor || !floatingElement) return;
 
 		const {
@@ -262,8 +207,8 @@ export function floating(
 			y,
 			placement: finalPlacement
 		} = await computePosition(anchor, floatingElement, {
-			placement: normalizedPlacement,
-			middleware,
+			placement: normalizeExtendedPlacement(currentOptions.placement || 'bottom'),
+			middleware: buildMiddleware(),
 			strategy: 'fixed' // Use fixed strategy for portal-rendered elements
 		});
 
@@ -272,20 +217,38 @@ export function floating(
 			top: `${y}px`
 		});
 
-		floatingOptions.onPositionUpdate?.(x, y, finalPlacement);
+		currentOptions.onPositionUpdate?.(x, y, finalPlacement);
 	}
 
-	cleanup = autoUpdate(anchor, floatingElement, updatePosition);
+	function stop() {
+		cleanup?.();
+		cleanup = null;
+	}
+
+	function start() {
+		stop();
+		const anchor = currentOptions.anchor;
+		if (!anchor) return;
+		cleanup = autoUpdate(anchor, floatingElement, updatePosition);
+	}
+
+	start();
 
 	return {
 		update(newOptions: { anchor: HTMLElement | null } & FloatingOptions) {
-			cleanup?.();
-			if (newOptions.anchor) {
-				cleanup = autoUpdate(newOptions.anchor, floatingElement, updatePosition);
+			const anchorChanged = newOptions.anchor !== currentOptions.anchor;
+			currentOptions = newOptions;
+
+			if (anchorChanged) {
+				// Re-subscribe autoUpdate to the new anchor (or stop when it's gone).
+				start();
+			} else if (cleanup) {
+				// Same anchor, new placement/offset/boundary: reposition immediately.
+				void updatePosition();
 			}
 		},
 		destroy() {
-			cleanup?.();
+			stop();
 		}
 	};
 }

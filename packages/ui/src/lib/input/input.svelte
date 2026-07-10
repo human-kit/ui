@@ -2,7 +2,9 @@
 	import { untrack } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { isAriaInvalidValue } from '../utils/aria-invalid';
 	import type { ClassValue } from '../utils/cn';
+	import { composeEventHandlers } from '../utils/compose-event-handlers';
 
 	type AriaInvalidValue = HTMLInputAttributes['aria-invalid'];
 
@@ -21,20 +23,6 @@
 		/** Bindable reference to the rendered input element. */
 		element?: HTMLInputElement | null;
 	};
-
-	function composeEventHandlers<TEvent extends Event>(
-		internalHandler: ((event: TEvent) => void) | undefined,
-		externalHandler: ((event: TEvent) => void) | undefined
-	): (event: TEvent) => void {
-		return (event: TEvent) => {
-			internalHandler?.(event);
-			externalHandler?.(event);
-		};
-	}
-
-	function isAriaInvalidValue(value: AriaInvalidValue | undefined): boolean {
-		return value === true || value === 'true' || value === 'grammar' || value === 'spelling';
-	}
 
 	const generatedId = $props.id();
 
@@ -78,6 +66,9 @@
 
 	$effect(() => {
 		element = inputRef;
+		return () => {
+			element = null;
+		};
 	});
 
 	// Native `autofocus` only focuses the first autofocus element inserted per document, so it

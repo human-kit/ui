@@ -6,6 +6,7 @@
 		readonly?: boolean;
 		invalid?: boolean;
 		required?: boolean;
+		autofocus?: boolean;
 		autoResize?: boolean;
 		minRows?: number;
 		maxRows?: number;
@@ -19,6 +20,7 @@
 		readonly = false,
 		invalid = false,
 		required = false,
+		autofocus = false,
 		autoResize = false,
 		minRows,
 		maxRows,
@@ -39,6 +41,7 @@
 		{readonly}
 		{invalid}
 		{required}
+		{autofocus}
 		{autoResize}
 		{minRows}
 		{maxRows}

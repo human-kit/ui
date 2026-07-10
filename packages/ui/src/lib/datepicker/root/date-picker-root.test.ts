@@ -121,7 +121,7 @@ describe('DatePicker.Root', () => {
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
 	});
 
-	it('keeps trigger focused without focus-visible when closed by outside pointer press', async () => {
+	it('marks trigger focused without stealing focus back on outside pointer press', async () => {
 		const screen = render(DatePickerTest);
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
 		const outside = screen.getByTestId('outside-button');
@@ -137,9 +137,12 @@ describe('DatePicker.Root', () => {
 		);
 
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-		await expect.poll(() => document.activeElement).toBe(trigger.element());
 		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
+		// INVERTED (previously asserted focus returned to the trigger): an
+		// outside press must not steal focus back — the pressed element keeps
+		// its native focus/caret behavior (APG/React Aria/Radix).
+		expect(document.activeElement).not.toBe(trigger.element());
 	});
 
 	it('clears active segment focused state when focus moves outside date picker', async () => {

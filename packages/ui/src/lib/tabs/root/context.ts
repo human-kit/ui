@@ -30,6 +30,7 @@ export type CreateTabsContextOptions = {
 	isDisabled?: boolean;
 	disabledKeys?: Iterable<TabsValue>;
 	onValueChange?: (value: TabsValue | null) => void;
+	onValueSync?: (value: TabsValue | null) => void;
 };
 
 export type TabsContext = {
@@ -127,8 +128,30 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		return Boolean(tab?.isDisabled || disabledKeys.has(value));
 	}
 
+	function getOrderedValues() {
+		const connected: { value: TabsValue; element: HTMLButtonElement }[] = [];
+		const detachedValues: TabsValue[] = [];
+
+		for (const value of tabOrder) {
+			const element = tabs.get(value)?.element;
+			if (element?.isConnected) {
+				connected.push({ value, element });
+			} else {
+				detachedValues.push(value);
+			}
+		}
+
+		connected.sort((left, right) =>
+			left.element.compareDocumentPosition(right.element) & Node.DOCUMENT_POSITION_FOLLOWING
+				? -1
+				: 1
+		);
+
+		return [...connected.map((entry) => entry.value), ...detachedValues];
+	}
+
 	function getEnabledValues() {
-		return tabOrder.filter((value) => tabs.has(value) && !isValueDisabled(value));
+		return getOrderedValues().filter((value) => tabs.has(value) && !isValueDisabled(value));
 	}
 
 	function getFirstEnabledValue() {
@@ -157,12 +180,13 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 	}
 
 	function getFallbackValueAfter(value: TabsValue) {
-		if (tabOrder.length === 0) return null;
-		const currentIndex = tabOrder.findIndex((tabValue) => valuesMatch(tabValue, value));
+		const orderedValues = getOrderedValues();
+		if (orderedValues.length === 0) return null;
+		const currentIndex = orderedValues.findIndex((tabValue) => valuesMatch(tabValue, value));
 		if (currentIndex < 0) return getFirstEnabledValue();
 
-		for (let offset = 1; offset <= tabOrder.length; offset += 1) {
-			const candidate = tabOrder[(currentIndex + offset) % tabOrder.length];
+		for (let offset = 1; offset <= orderedValues.length; offset += 1) {
+			const candidate = orderedValues[(currentIndex + offset) % orderedValues.length];
 			if (candidate !== undefined && tabs.has(candidate) && !isValueDisabled(candidate)) {
 				return candidate;
 			}
@@ -179,8 +203,9 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 
 	function getActivationDirection(previous: TabsValue | null, next: TabsValue | null) {
 		if (previous === null || next === null || valuesMatch(previous, next)) return null;
-		const previousIndex = tabOrder.findIndex((value) => valuesMatch(value, previous));
-		const nextIndex = tabOrder.findIndex((value) => valuesMatch(value, next));
+		const orderedValues = getOrderedValues();
+		const previousIndex = orderedValues.findIndex((value) => valuesMatch(value, previous));
+		const nextIndex = orderedValues.findIndex((value) => valuesMatch(value, next));
 		if (previousIndex < 0 || nextIndex < 0 || previousIndex === nextIndex) return null;
 		const forward = nextIndex > previousIndex;
 		if (orientation === 'vertical') return forward ? 'down' : 'up';
@@ -203,7 +228,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		}
 	}
 
-	function reconcileSelection() {
+	function reconcileSelection(changeOptions?: { notify?: boolean }) {
 		if (isDisabled) return;
 
 		if (
@@ -212,7 +237,13 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 			tabs.has(selectedValue) &&
 			isValueDisabled(selectedValue)
 		) {
-			publishSelectedValue(getFallbackValueAfter(selectedValue));
+			if (changeOptions?.notify === false) {
+				const fallbackValue = getFallbackValueAfter(selectedValue);
+				setSelectedValue(fallbackValue);
+				options.onValueSync?.(fallbackValue);
+			} else {
+				publishSelectedValue(getFallbackValueAfter(selectedValue));
+			}
 			return;
 		}
 
@@ -221,6 +252,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 			if (firstEnabled !== null) {
 				shouldSelectFirstOnRegister = false;
 				setSelectedValue(firstEnabled);
+				options.onValueSync?.(firstEnabled);
 			}
 		}
 	}
@@ -242,7 +274,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 			element: tabOptions.element
 		});
 
-		reconcileSelection();
+		reconcileSelection({ notify: hadTab });
 		bumpState();
 		bumpLayout();
 	}

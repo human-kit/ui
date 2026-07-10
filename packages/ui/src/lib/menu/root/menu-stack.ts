@@ -1,26 +1,19 @@
 /**
- * Global stack of open menu layers (root menu + submenus). Ensures only the
- * topmost open menu reacts to Escape and outside-press, so closing a submenu
- * doesn't also close its ancestors.
+ * Menu layer helpers, backed by the unified layer stack. A menu (root or
+ * submenu) is only "topmost" when no other dismissable layer — a deeper
+ * submenu, a popover, or a dialog opened after it — sits above it.
  */
-type MenuLayer = { id: symbol };
 
-const stack: MenuLayer[] = [];
+import { pushLayer, removeLayer, isTopmostLayer } from '../../primitives/layer-stack';
 
 export function pushMenuLayer(): symbol {
-	const id = Symbol('menu-layer');
-	stack.push({ id });
-	return id;
+	return pushLayer('menu');
 }
 
 export function removeMenuLayer(id: symbol): void {
-	const index = stack.findIndex((layer) => layer.id === id);
-	if (index !== -1) {
-		stack.splice(index, 1);
-	}
+	removeLayer(id);
 }
 
 export function isTopmostMenu(id: symbol): boolean {
-	if (stack.length === 0) return false;
-	return stack[stack.length - 1].id === id;
+	return isTopmostLayer(id);
 }

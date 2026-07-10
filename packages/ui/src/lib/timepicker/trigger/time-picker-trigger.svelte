@@ -40,6 +40,12 @@
 		if (buttonRef) {
 			timePicker.setTriggerRef(buttonRef);
 		}
+		const registeredRef = buttonRef;
+		return () => {
+			if (registeredRef && timePicker.triggerRef === registeredRef) {
+				timePicker.setTriggerRef(null);
+			}
+		};
 	});
 
 	function handleFocus() {

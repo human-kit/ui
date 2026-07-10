@@ -33,18 +33,18 @@
 	.hd-prose {
 		font-size: 0.9375rem;
 		line-height: 1.7;
-		color: var(--color-gray-700);
+		color: var(--color-neutral-700);
 	}
 
 	.dark .hd-prose {
-		color: var(--color-gray-300);
+		color: var(--color-neutral-300);
 	}
 
 	.hd-prose h1 {
 		font-size: 1.875rem;
 		font-weight: 700;
 		letter-spacing: -0.025em;
-		color: var(--color-gray-900);
+		color: var(--color-neutral-900);
 		scroll-margin-top: 5rem;
 	}
 
@@ -54,7 +54,7 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		letter-spacing: -0.015em;
-		color: var(--color-gray-900);
+		color: var(--color-neutral-900);
 		scroll-margin-top: 5rem;
 	}
 
@@ -63,7 +63,7 @@
 		margin-bottom: 0.5rem;
 		font-size: 1.0625rem;
 		font-weight: 600;
-		color: var(--color-gray-900);
+		color: var(--color-neutral-900);
 		scroll-margin-top: 5rem;
 	}
 
@@ -71,10 +71,6 @@
 	.dark .hd-prose h2,
 	.dark .hd-prose h3 {
 		color: var(--color-white);
-	}
-
-	.hd-prose p {
-		margin-top: 1rem;
 	}
 
 	.hd-prose ul,
@@ -105,20 +101,20 @@
 		color: var(--color-blue-400);
 	}
 
-	.hd-prose :not(pre) > code {
+	.hd-prose :not(pre)>code {
 		font-size: 0.875em;
-		background-color: var(--color-gray-100);
+		background-color: var(--color-neutral-100);
 		padding: 0.125rem 0.375rem;
 		border-radius: 0.375rem;
 	}
 
-	.dark .hd-prose :not(pre) > code {
-		background-color: var(--color-gray-800);
+	.dark .hd-prose :not(pre)>code {
+		background-color: var(--color-neutral-800);
 	}
 
 	.hd-prose pre.shiki {
 		margin-top: 1rem;
-		border: 1px solid var(--color-gray-200);
+		border: 1px solid var(--color-neutral-200);
 		border-radius: 0.75rem;
 		padding: 1rem;
 		overflow-x: auto;
@@ -127,20 +123,19 @@
 	}
 
 	.dark .hd-prose pre.shiki {
-		border-color: var(--color-gray-800);
+		border-color: var(--color-neutral-800);
 	}
 
 	.hd-prose hr {
 		margin-top: 2.5rem;
-		border-color: var(--color-gray-200);
+		border-color: var(--color-neutral-200);
 	}
 
 	.dark .hd-prose hr {
-		border-color: var(--color-gray-800);
+		border-color: var(--color-neutral-800);
 	}
 
 	.hd-prose table {
-		margin-top: 1rem;
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 0.875rem;
@@ -149,22 +144,22 @@
 	.hd-prose th {
 		text-align: left;
 		font-weight: 600;
-		color: var(--color-gray-900);
+		color: var(--color-neutral-900);
 		padding: 0.5rem 0.75rem;
-		border-bottom: 1px solid var(--color-gray-200);
+		border-bottom: 1px solid var(--color-neutral-200);
 	}
 
 	.hd-prose td {
 		padding: 0.5rem 0.75rem;
-		border-bottom: 1px solid var(--color-gray-100);
+		border-bottom: 1px solid var(--color-neutral-100);
 	}
 
 	.dark .hd-prose th {
 		color: var(--color-white);
-		border-bottom-color: var(--color-gray-700);
+		border-bottom-color: var(--color-neutral-700);
 	}
 
 	.dark .hd-prose td {
-		border-bottom-color: var(--color-gray-800);
+		border-bottom-color: var(--color-neutral-800);
 	}
 }

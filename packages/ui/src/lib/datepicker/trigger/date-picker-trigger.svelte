@@ -30,6 +30,12 @@
 		if (buttonRef) {
 			datePicker.setTriggerRef(buttonRef);
 		}
+		const registeredRef = buttonRef;
+		return () => {
+			if (registeredRef && datePicker.triggerRef === registeredRef) {
+				datePicker.setTriggerRef(null);
+			}
+		};
 	});
 
 	function handleFocus() {
@@ -91,7 +97,7 @@
 		bind:element={buttonRef}
 		type="button"
 		disabled={datePicker.isDisabled}
-		pressed={datePicker.open}
+		pressed={datePicker.open || undefined}
 		class={className}
 		aria-haspopup="dialog"
 		aria-expanded={datePicker.open}

@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import DialogTest from '../root/dialog-test.svelte';
+import DialogOverlayOnlyTest from './dialog-overlay-only-test.svelte';
 
 describe('Dialog.Portal', () => {
 	// Clean up any portaled content after each test
@@ -86,6 +87,23 @@ describe('Dialog.Portal', () => {
 				depth++;
 			}
 			expect(parent).toBe(document.body);
+		});
+	});
+
+	describe('Presence without a motion target', () => {
+		it('unmounts an overlay-only portal after close', async () => {
+			const screen = render(DialogOverlayOnlyTest);
+
+			await screen.getByRole('button', { name: 'Open Dialog' }).click();
+			await expect.poll(() => document.querySelector('[data-testid="overlay-only"]')).toBeTruthy();
+
+			// Direct DOM click: the fixed inset-0 overlay covers the page, so a real
+			// pointer click would be intercepted by the overlay itself.
+			(document.querySelector('.close-overlay-btn') as HTMLElement).click();
+
+			// Without a Dialog.Content there is nothing to measure an exit animation
+			// on — the portal must resolve immediately instead of staying mounted.
+			await expect.poll(() => document.querySelector('[data-testid="overlay-only"]')).toBeNull();
 		});
 	});
 

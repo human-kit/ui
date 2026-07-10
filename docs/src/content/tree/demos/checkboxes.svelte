@@ -7,9 +7,9 @@
 	let selectedKeys = $state<Set<string | number>>(new Set(['weekly']));
 
 	const itemClass =
-		'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-sm font-medium text-gray-700 outline-none transition-colors hover:bg-gray-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 data-selected:text-blue-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:data-selected:text-blue-200';
+		'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-neutral-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 data-selected:text-blue-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:data-selected:text-blue-200';
 	const checkboxClass =
-		'group inline-flex size-5 shrink-0 items-center justify-center rounded border border-gray-300 bg-white text-white transition-colors data-checked:border-blue-600 data-checked:bg-blue-600 data-indeterminate:border-blue-600 data-indeterminate:bg-blue-600 dark:border-gray-600 dark:bg-gray-900';
+		'group inline-flex size-5 shrink-0 items-center justify-center rounded border border-neutral-300 bg-white text-white transition-colors data-checked:border-blue-600 data-checked:bg-blue-600 data-indeterminate:border-blue-600 data-indeterminate:bg-blue-600 dark:border-neutral-600 dark:bg-neutral-900';
 </script>
 
 {#snippet checkbox(title: string)}
@@ -33,7 +33,7 @@
 		<Tree.Item id="reports" title="Reports" class={itemClass}>
 			<Tree.Trigger
 				aria-label="Toggle Reports"
-				class="group inline-flex size-6 shrink-0 items-center justify-center rounded text-gray-500 hover:text-blue-600 dark:hover:text-blue-400"
+				class="group inline-flex size-6 shrink-0 items-center justify-center rounded text-neutral-500 hover:text-blue-600 dark:hover:text-blue-400"
 			>
 				<ChevronRight class="size-4 transition-transform group-data-expanded:rotate-90" />
 			</Tree.Trigger>
@@ -52,7 +52,7 @@
 		</Tree.Item>
 	</Tree.Root>
 
-	<p class="text-xs text-gray-500 dark:text-gray-400">
+	<p class="text-xs text-neutral-500 dark:text-neutral-400">
 		selected: {[...selectedKeys].join(', ') || 'none'}
 	</p>
 </div>

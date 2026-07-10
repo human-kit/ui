@@ -95,6 +95,9 @@
 	});
 
 	function handleKeydown(event: KeyboardEvent) {
+		// Ignore keystrokes that are part of an IME composition (e.g. CJK input)
+		// so Enter/arrows don't select items or navigate mid-composition.
+		if (event.isComposing || event.keyCode === 229) return;
 		switch (event.key) {
 			case 'ArrowDown':
 				event.preventDefault();
@@ -117,6 +120,7 @@
 				nav.pageUp();
 				break;
 			case 'Enter': {
+				if (readonly) break;
 				const focusedId = nav.focusedId;
 				if (focusedId !== null && listboxCtxRef && !listboxCtxRef.isDisabled(focusedId)) {
 					event.preventDefault();
@@ -127,6 +131,9 @@
 			case 'Escape':
 				if (currentValue) {
 					event.preventDefault();
+					// Escape is consumed to clear the query: stop propagation so an
+					// enclosing Dialog doesn't also close (mirrors ComboBox).
+					event.stopPropagation();
 					setInputValue('');
 				}
 				break;
@@ -201,6 +208,7 @@
 
 <div
 	bind:this={rootElement}
+	role={ariaLabel || ariaLabelledby ? 'group' : undefined}
 	class={className}
 	data-disabled={disabled || undefined}
 	aria-label={ariaLabel}

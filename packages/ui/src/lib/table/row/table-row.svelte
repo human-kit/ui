@@ -243,6 +243,11 @@
 
 	const selectionVersion = table.selectionVersion;
 	const focusVersion = table.focusVersion;
+	const layoutVersion = table.layoutVersion;
+	const ariaRowIndex = $derived.by(() => {
+		void $layoutVersion;
+		return table.getRowAriaIndex(rowToken);
+	});
 	const isSelected = $derived.by(() => {
 		void $selectionVersion;
 		return section.section === 'body' ? table.isRowSelected(id) : false;
@@ -322,6 +327,7 @@
 		? isSelected
 		: undefined}
 	aria-disabled={section.section === 'body' && isAriaDisabled ? true : undefined}
+	aria-rowindex={ariaRowIndex}
 	onfocus={handleFocus}
 	onmousedown={handleMouseDown}
 	onkeydown={handleKeyDown}

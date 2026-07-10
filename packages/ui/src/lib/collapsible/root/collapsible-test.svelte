@@ -8,6 +8,7 @@
 		disabled?: boolean;
 		forceMount?: boolean;
 		showControls?: boolean;
+		applyChanges?: boolean;
 	};
 
 	let {
@@ -16,14 +17,17 @@
 		defaultOpen = false,
 		disabled = false,
 		forceMount = false,
-		showControls = false
+		showControls = false,
+		applyChanges = true
 	}: CollapsibleTestProps = $props();
 
 	let currentOpen = $state((() => open)());
 	let changeLog = $state<boolean[]>([]);
 
 	function handleOpenChange(next: boolean) {
-		currentOpen = next;
+		if (applyChanges) {
+			currentOpen = next;
+		}
 		changeLog = [...changeLog, next];
 	}
 </script>

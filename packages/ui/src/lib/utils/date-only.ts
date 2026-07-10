@@ -53,10 +53,22 @@ export function formatDateOnlyValue(date: Date): DateOnlyValue {
 	return `${year}-${month}-${day}`;
 }
 
+/**
+ * Compares two date-only values with a deterministic, transitive ordering:
+ * - Two valid values compare chronologically.
+ * - Invalid values sort AFTER valid ones.
+ * - Two invalid values compare by plain string comparison, so equal invalid
+ *   inputs (and only those) compare as equal.
+ */
 export function compareDateOnlyValues(left: DateOnlyValue, right: DateOnlyValue): number {
 	const leftDate = parseDateOnlyValue(left);
 	const rightDate = parseDateOnlyValue(right);
-	if (!leftDate || !rightDate) return 0;
+	if (!leftDate || !rightDate) {
+		if (leftDate) return -1;
+		if (rightDate) return 1;
+		if (left === right) return 0;
+		return left < right ? -1 : 1;
+	}
 	if (leftDate.getTime() === rightDate.getTime()) return 0;
 	return leftDate.getTime() < rightDate.getTime() ? -1 : 1;
 }

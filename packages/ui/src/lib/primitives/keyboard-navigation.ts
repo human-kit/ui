@@ -298,7 +298,9 @@ export function createKeyboardNavigation(
 
 		items = getItems();
 		const match = items.find((el) => {
-			const text = el.textContent?.trim().toLowerCase() || '';
+			// Prefer an explicit text value (e.g. Menu.Item's `textValue` exposed as
+			// `data-text-value`) over the rendered text content.
+			const text = (el.dataset.textValue ?? el.textContent)?.trim().toLowerCase() || '';
 			return text.startsWith(typeaheadBuffer);
 		});
 
@@ -406,6 +408,11 @@ export function createKeyboardNavigation(
 		function handleContainerFocus(event: FocusEvent) {
 			// If focusing container directly (not an item), focus first item
 			if (event.target === node) {
+				// Focus moving backwards out of an item (Shift+Tab) lands on the
+				// container; re-capturing it trapped keyboard users inside the
+				// widget — let the browser continue past it instead.
+				const related = event.relatedTarget as Node | null;
+				if (related && node.contains(related)) return;
 				items = getItems();
 				if (items.length > 0) {
 					// Focus the item with tabIndex 0 or first item

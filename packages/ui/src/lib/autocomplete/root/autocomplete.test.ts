@@ -27,6 +27,15 @@ describe('Autocomplete', () => {
 			const listbox = screen.getByRole('listbox');
 			await expect.element(listbox).toBeInTheDocument();
 		});
+
+		it('exposes the labelled root as a group so the aria-label is valid', async () => {
+			render(AutocompleteTest);
+
+			// The test harness passes aria-label="Fruits" to the root.
+			const root = document.querySelector('[aria-label="Fruits"]');
+			expect(root).not.toBeNull();
+			expect(root?.getAttribute('role')).toBe('group');
+		});
 	});
 
 	describe('Filtering', () => {
@@ -317,6 +326,37 @@ describe('Autocomplete', () => {
 		});
 	});
 
+	describe('Readonly', () => {
+		it('does not change selection on Enter when readonly', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(AutocompleteTest, {
+				readonly: true,
+				autoHighlight: false,
+				onValueChange
+			});
+			const input = screen.getByRole('searchbox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await userEvent.keyboard('{Enter}');
+
+			expect(onValueChange).not.toHaveBeenCalled();
+			expect(document.querySelector('[data-selected-value]')?.textContent).toBe('');
+		});
+
+		it('does not change selection on click when readonly', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(AutocompleteTest, { readonly: true, onValueChange });
+			const input = screen.getByRole('searchbox');
+
+			await input.click();
+			await screen.getByText('Cherry').click();
+
+			expect(onValueChange).not.toHaveBeenCalled();
+			expect(document.querySelector('[data-selected-value]')?.textContent).toBe('');
+		});
+	});
+
 	describe('Keyboard', () => {
 		it('clears the query on Escape', async () => {
 			const screen = render(AutocompleteTest);
@@ -327,6 +367,65 @@ describe('Autocomplete', () => {
 
 			await userEvent.keyboard('{Escape}');
 			await expect.element(input).toHaveValue('');
+		});
+
+		it('stops Escape propagation when it clears the query, but not when there is nothing to clear', async () => {
+			const screen = render(AutocompleteTest);
+			const input = screen.getByRole('searchbox');
+			const inputEl = input.element() as HTMLElement;
+
+			let escapesReachedDocument = 0;
+			const onDocumentKeydown = (event: KeyboardEvent) => {
+				if (event.key === 'Escape') escapesReachedDocument += 1;
+			};
+			document.addEventListener('keydown', onDocumentKeydown);
+
+			try {
+				await input.fill('ban');
+				await expect.element(input).toHaveValue('ban');
+
+				// Consumed: clears the query and must not bubble to the document
+				// (an enclosing Dialog would otherwise also close).
+				inputEl.dispatchEvent(
+					new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+				);
+				await expect.element(input).toHaveValue('');
+				expect(escapesReachedDocument).toBe(0);
+
+				// Nothing to clear: Escape must propagate normally.
+				inputEl.dispatchEvent(
+					new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+				);
+				expect(escapesReachedDocument).toBe(1);
+			} finally {
+				document.removeEventListener('keydown', onDocumentKeydown);
+			}
+		});
+
+		it('ignores Enter while composing (IME) so no item is selected', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(AutocompleteTest, { onValueChange });
+			const input = screen.getByRole('searchbox');
+
+			// autoHighlight focuses the first match, so a real Enter would select.
+			await input.fill('ap');
+			await expect
+				.poll(() => getActiveDescendantText(input.element() as HTMLElement))
+				.toBe('Apple');
+
+			input.element().dispatchEvent(
+				new KeyboardEvent('keydown', {
+					key: 'Enter',
+					isComposing: true,
+					bubbles: true,
+					cancelable: true
+				})
+			);
+
+			// Let any (incorrect) state update settle before asserting
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			expect(onValueChange).not.toHaveBeenCalled();
+			expect(document.querySelector('[data-selected-value]')?.textContent).toBe('');
 		});
 	});
 

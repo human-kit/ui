@@ -1,9 +1,10 @@
-import type {
-	TimePickerDraft,
-	TimePickerEditableSegmentType,
-	TimePickerGranularity,
-	TimePickerHourCycle,
-	TimePickerTimeValue
+import {
+	getLocalizedDayPeriod,
+	type TimePickerDraft,
+	type TimePickerEditableSegmentType,
+	type TimePickerGranularity,
+	type TimePickerHourCycle,
+	type TimePickerTimeValue
 } from './time-utils';
 
 export type WheelOption = {
@@ -22,6 +23,7 @@ export function buildWheelOptions(params: {
 	hasRangeBounds: boolean;
 	getCandidateFromPartial: (partial: Partial<TimePickerDraft>) => TimePickerTimeValue | null;
 	isOutOfRange: (value: TimePickerTimeValue) => boolean;
+	locale?: string;
 }): WheelOption[] {
 	const {
 		type,
@@ -31,13 +33,14 @@ export function buildWheelOptions(params: {
 		secondStep,
 		hasRangeBounds,
 		getCandidateFromPartial,
-		isOutOfRange
+		isOutOfRange,
+		locale
 	} = params;
 
 	const options: WheelOption[] = [];
 
 	if (type === 'dayPeriod') {
-		for (const option of ['AM', 'PM']) {
+		for (const option of ['AM', 'PM'] as const) {
 			const disabled = hasRangeBounds
 				? (() => {
 						const candidate = getCandidateFromPartial({ dayPeriod: option });
@@ -46,7 +49,7 @@ export function buildWheelOptions(params: {
 				: false;
 			options.push({
 				value: option,
-				label: option,
+				label: locale ? getLocalizedDayPeriod(locale, option) : option,
 				disabled
 			});
 		}

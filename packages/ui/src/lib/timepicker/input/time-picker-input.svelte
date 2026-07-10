@@ -52,8 +52,11 @@
 		if (timePicker.isDisabled) return;
 		timePicker.syncFocusWithin();
 		timePicker.setFocusVisible(shouldShowFocusVisible(event.target as HTMLElement | null));
-		const target = event.target as HTMLElement | null;
-		if (target?.closest('[data-time-picker-segment="true"]')) {
+		// Focus arriving FROM a segment (Shift+Tab moving backwards) must not be
+		// recaptured — redirecting here trapped keyboard users inside the group.
+		const related = event.relatedTarget as Node | null;
+		const group = event.currentTarget as HTMLElement | null;
+		if (related && group && group.contains(related)) {
 			return;
 		}
 		timePicker.focusNextPlaceholderOrLastSegment();
@@ -68,6 +71,11 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (timePicker.isDisabled) return;
 		if (event.key !== 'Enter' && event.key !== ' ') return;
+		// Keys bubbling up from a segment already got handled (or deliberately
+		// ignored) there — re-focusing another segment on Space/Enter inside a
+		// spinbutton was surprising and non-standard.
+		if (event.defaultPrevented) return;
+		if ((event.target as HTMLElement | null)?.closest('[data-time-picker-segment="true"]')) return;
 		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		timePicker.setFocusVisible(true);
 		event.preventDefault();
@@ -85,7 +93,7 @@
 	aria-label={ariaLabel}
 	aria-invalid={timePicker.isInvalidDraft || undefined}
 	aria-required={timePicker.isRequired || undefined}
-	tabindex={timePicker.isDisabled ? -1 : 0}
+	tabindex={timePicker.isDisabled || timePicker.focusWithin ? -1 : 0}
 	data-disabled={timePicker.isDisabled || undefined}
 	data-readonly={timePicker.isReadOnly || undefined}
 	data-open={timePicker.open || undefined}

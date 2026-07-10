@@ -71,7 +71,7 @@ describe('Calendar', () => {
 	});
 
 	it('hides outside days by default and removes fully outside rows', async () => {
-		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		render(CalendarRootTest, { defaultValue: '2026-02-10', firstDayOfWeek: 'sun' });
 		const rows = document.querySelectorAll('tbody tr');
 		expect(rows.length).toBe(4);
 	});
@@ -187,6 +187,21 @@ describe('Calendar', () => {
 		expect(document.querySelector('[data-testid="calendar-value"]')?.textContent).toBe('');
 	});
 
+	it('clears selected state when controlled value becomes null', async () => {
+		const screen = render(CalendarRootControlledClearTest);
+
+		await expect
+			.poll(() => document.querySelector('[role="button"][data-selected][data-date="2026-02-10"]'))
+			.toBeTruthy();
+
+		const clearButton = screen.getByTestId('clear-value-null');
+		await clearButton.click();
+
+		await expect.poll(() => document.querySelector('[data-selected]')).toBeFalsy();
+		await expect.poll(() => document.querySelector('[aria-selected="true"]')).toBeFalsy();
+		expect(document.querySelector('[data-testid="calendar-value"]')?.textContent).toBe('');
+	});
+
 	it('does not recompute unavailable predicate for cached visible dates on selection', async () => {
 		const isDateUnavailable = vi.fn((date: string) => date === '2026-02-15');
 		render(CalendarRootTest, {
@@ -210,6 +225,26 @@ describe('Calendar', () => {
 		pressKey(dayElement, 'ArrowRight');
 
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
+	});
+
+	it('keeps focus on the next trigger after month navigation with the mouse', async () => {
+		const screen = render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const day = getGridCellByDate('2026-02-10');
+		const dayElement = day.element()!;
+
+		dayElement.focus();
+		pressKey(dayElement, 'ArrowRight');
+		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-11');
+
+		const next = screen.getByRole('button', { name: 'Next' });
+		const nextElement = next.element() as HTMLButtonElement;
+		nextElement.focus();
+		nextElement.click();
+
+		await expect
+			.poll(() => document.querySelector('[role="button"][data-date="2026-03-11"]'))
+			.toBeTruthy();
+		expect(document.activeElement).toBe(nextElement);
 	});
 
 	it('never serializes false focus attributes during keyboard navigation', async () => {
@@ -414,6 +449,37 @@ describe('Calendar', () => {
 		await expect
 			.poll(() => document.querySelector('[role="button"][data-range-end][data-date="2026-02-12"]'))
 			.toBeTruthy();
+	});
+
+	it('consumes Escape only while a pending range selection exists', async () => {
+		render(CalendarRootTest, {
+			selectionMode: 'range',
+			defaultValue: { start: '2026-02-10', end: '2026-02-12' }
+		});
+
+		const newStart = getGridCellByDate('2026-02-15');
+		await newStart.click();
+
+		const focused = newStart.element()!;
+		const firstEscape = new KeyboardEvent('keydown', {
+			key: 'Escape',
+			bubbles: true,
+			cancelable: true
+		});
+		focused.dispatchEvent(firstEscape);
+		expect(firstEscape.defaultPrevented).toBe(true);
+
+		await expect
+			.poll(() => document.querySelector('[role="button"][data-range-end][data-date="2026-02-12"]'))
+			.toBeTruthy();
+
+		const secondEscape = new KeyboardEvent('keydown', {
+			key: 'Escape',
+			bubbles: true,
+			cancelable: true
+		});
+		focused.dispatchEvent(secondEscape);
+		expect(secondEscape.defaultPrevented).toBe(false);
 	});
 
 	it('shows range trace while moving with keyboard after selecting a range start', async () => {

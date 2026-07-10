@@ -176,6 +176,18 @@ describe('Dialog', () => {
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 		});
 
+		it('stays open after Escape when a controlled parent ignores onOpenChange', async () => {
+			// A controlled parent owns the state: if it does not flow `false` back
+			// down, the dialog must remain open (the child must not overwrite the prop).
+			render(DialogTest, { open: true, onOpenChange: () => {} });
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			await userEvent.keyboard('{Escape}');
+
+			await new Promise((r) => setTimeout(r, 100));
+			expect(document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
+
 		it('calls onOpenChange callback when opening', async () => {
 			const { vi } = await import('vitest');
 			const onOpenChangeMock = vi.fn();

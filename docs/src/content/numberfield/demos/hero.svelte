@@ -4,11 +4,11 @@
 	let value = $state<number | null>(42);
 
 	const groupClass =
-		'inline-flex h-10 items-stretch overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm transition-colors data-[focus-within=true]:border-blue-500 dark:border-gray-700 dark:bg-gray-900';
+		'inline-flex h-10 items-stretch overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm transition-colors data-[focus-within=true]:border-blue-500 dark:border-neutral-700 dark:bg-neutral-900';
 	const inputClass =
-		'w-32 border-0 bg-transparent px-3 text-center text-sm tabular-nums text-gray-900 outline-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 dark:text-white';
+		'w-32 border-0 bg-transparent px-3 text-center text-sm tabular-nums text-neutral-900 outline-none data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 dark:text-white';
 	const buttonClass =
-		'flex w-10 items-center justify-center border-gray-200 text-gray-600 outline-none transition-colors hover:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-40 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800';
+		'flex w-10 items-center justify-center border-neutral-200 text-neutral-600 outline-none transition-colors hover:bg-neutral-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-40 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800';
 </script>
 
 <div class="flex flex-col items-center gap-3">
@@ -20,5 +20,7 @@
 		</NumberField.Group>
 	</NumberField.Root>
 
-	<p class="text-xs text-gray-500 dark:text-gray-400">value: {value === null ? 'null' : value}</p>
+	<p class="text-xs text-neutral-500 dark:text-neutral-400">
+		value: {value === null ? 'null' : value}
+	</p>
 </div>

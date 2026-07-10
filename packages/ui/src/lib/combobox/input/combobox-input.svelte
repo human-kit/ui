@@ -56,9 +56,11 @@
 		ctx.setInputValue(target.value);
 		// Open on input for all trigger modes when user types
 		if (!ctx.isOpen && target.value.length > 0) {
-			ctx.open();
+			ctx.open({ reason: 'input' });
 		}
 	}
+
+	let focusOpenRafId: number | null = null;
 
 	function handleFocus() {
 		ctx.setFocusVisible(shouldShowFocusVisible(inputRef));
@@ -67,13 +69,28 @@
 		// Use a small delay to avoid opening immediately on programmatic focus
 		// (e.g., from a focus trap). This gives time for refs to be set up.
 		if (ctx.trigger === 'focus' && !ctx.isOpen) {
-			requestAnimationFrame(() => {
-				if (ctx.trigger === 'focus' && !ctx.isOpen) {
+			if (focusOpenRafId !== null) {
+				cancelAnimationFrame(focusOpenRafId);
+			}
+			focusOpenRafId = requestAnimationFrame(() => {
+				focusOpenRafId = null;
+				// Only open if focus is still on the input (it may have moved on
+				// in the meantime, e.g. a focus trap passing through).
+				if (ctx.trigger === 'focus' && !ctx.isOpen && document.activeElement === inputRef) {
 					ctx.open();
 				}
 			});
 		}
 	}
+
+	$effect(() => {
+		return () => {
+			if (focusOpenRafId !== null) {
+				cancelAnimationFrame(focusOpenRafId);
+				focusOpenRafId = null;
+			}
+		};
+	});
 
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, inputRef);

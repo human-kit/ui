@@ -126,6 +126,7 @@
 			? toDraftFromTimeValue(initialPropValue, initialHourCycle)
 			: createEmptyTimePickerDraft()
 	);
+	let lastDraftHourCycle = initialHourCycle;
 
 	if (initialValueProp === undefined) {
 		value = initialPropValue;
@@ -135,10 +136,18 @@
 
 	$effect(() => {
 		const nextValue = value === undefined ? null : isValidTimePickerValue(value) ? value : null;
-		if (nextValue === lastPublishedValue) return;
+		const nextHourCycle = resolvedHourCycle;
+		const didHourCycleChange = nextHourCycle !== lastDraftHourCycle;
+		lastDraftHourCycle = nextHourCycle;
+		if (nextValue === lastPublishedValue) {
+			if (didHourCycleChange && lastPublishedValue) {
+				segmentDraft = toDraftFromTimeValue(lastPublishedValue, nextHourCycle);
+			}
+			return;
+		}
 		publishCommittedValue(nextValue, false);
 		segmentDraft = nextValue
-			? toDraftFromTimeValue(nextValue, resolvedHourCycle)
+			? toDraftFromTimeValue(nextValue, nextHourCycle)
 			: createEmptyTimePickerDraft();
 	});
 
@@ -272,7 +281,8 @@
 			hasRangeBounds,
 			getCandidateFromPartial,
 			isOutOfRange: (candidate) =>
-				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity)
+				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity),
+			locale: resolvedLocale
 		});
 	}
 

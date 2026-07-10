@@ -165,16 +165,14 @@
 			isDateUnavailable: isDateUnavailableInternal
 		})
 	);
-	const isInvalidDraft = $derived.by(() => {
-		const startEmpty = isDraftEmpty(startSegmentDraft);
-		const endEmpty = isDraftEmpty(endSegmentDraft);
-		if (startEmpty && endEmpty) return false;
-		if (!startDraftEvaluation.isCommitable || !endDraftEvaluation.isCommitable) return true;
-		return false;
-	});
+	// Validity is tracked per range part: an empty draft is never invalid, and
+	// a completed start must not flag the still-empty end (and vice versa).
+	const isStartPartInvalid = $derived(startDraftEvaluation.isInvalid);
+	const isEndPartInvalid = $derived(endDraftEvaluation.isInvalid);
+	const isInvalidDraft = $derived(isStartPartInvalid || isEndPartInvalid);
 
-	function isDraftEmpty(draft: DatePickerSegmentDraft): boolean {
-		return draft.day.length === 0 && draft.month.length === 0 && draft.year.length === 0;
+	function isPartInvalid(part: DateRangePickerRangePart): boolean {
+		return part === 'start' ? isStartPartInvalid : isEndPartInvalid;
 	}
 
 	function areRangesEqual(
@@ -510,11 +508,7 @@
 		return getDatePickerSegmentLabel(resolvedLocale, type);
 	}
 
-	function formatSegment(
-		type: Exclude<DatePickerSegmentType, 'literal'>,
-		valueToFormat: number
-	): string {
-		if (type === 'year') return `${valueToFormat}`;
+	function formatSegment(valueToFormat: number): string {
 		return `${valueToFormat}`;
 	}
 
@@ -562,7 +556,7 @@
 			part === 'start' ? (valueInternal?.start ?? null) : (valueInternal?.end ?? null)
 		);
 		const next = clampSegment(type, current + step);
-		setSegmentValue(part, type, formatSegment(type, next));
+		setSegmentValue(part, type, formatSegment(next));
 	}
 
 	function getSegments(part: DateRangePickerRangePart) {
@@ -611,6 +605,7 @@
 		get isInvalidDraft() {
 			return isInvalidDraft;
 		},
+		isPartInvalid,
 		get activeSegment() {
 			return activeSegment;
 		},

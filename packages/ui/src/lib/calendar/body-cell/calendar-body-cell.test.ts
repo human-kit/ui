@@ -71,26 +71,49 @@ describe('Calendar.BodyCell', () => {
 		expect(todayCell?.getAttribute('aria-current')).toBe('date');
 	});
 
-	it('does not expose selected state when calendar is disabled', async () => {
+	// INVERTED: disabled/readonly calendars must still SHOW their selection
+	// (aria-selected/data-selected); only mutation is blocked.
+	it('keeps exposing selected state when calendar is disabled', async () => {
 		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
 			disabled: true
 		});
 
 		const selectedCell = getGridCellByDate('2026-02-10');
-		expect(selectedCell.element()?.getAttribute('aria-selected')).toBe('false');
-		expect(document.querySelector('[data-selected]')).toBeFalsy();
+		expect(selectedCell.element()?.getAttribute('aria-selected')).toBe('true');
+		expect(
+			document.querySelector('[role="button"][data-date="2026-02-10"][data-selected]')
+		).toBeTruthy();
 	});
 
-	it('does not expose selected state when calendar is read-only', async () => {
+	it('keeps exposing selected state when calendar is read-only', async () => {
 		render(CalendarRootTest, {
 			defaultValue: '2026-02-10',
 			readonly: true
 		});
 
 		const selectedCell = getGridCellByDate('2026-02-10');
-		expect(selectedCell.element()?.getAttribute('aria-selected')).toBe('false');
-		expect(document.querySelector('[data-selected]')).toBeFalsy();
+		expect(selectedCell.element()?.getAttribute('aria-selected')).toBe('true');
+		expect(
+			document.querySelector('[role="button"][data-date="2026-02-10"][data-selected]')
+		).toBeTruthy();
+	});
+
+	it('does not change the selection on click when calendar is read-only', async () => {
+		render(CalendarRootTest, {
+			defaultValue: '2026-02-10',
+			readonly: true
+		});
+
+		const otherDay = getDayButton('2026-02-12');
+		await otherDay.click();
+
+		expect(
+			document.querySelector('[role="button"][data-date="2026-02-10"][data-selected]')
+		).toBeTruthy();
+		expect(
+			document.querySelector('[role="button"][data-date="2026-02-12"][data-selected]')
+		).toBeFalsy();
 	});
 
 	it('does not focus a day cell on click when calendar is disabled', async () => {
@@ -129,7 +152,9 @@ describe('Calendar.BodyCell', () => {
 			.toBeTruthy();
 	});
 
-	it('keeps the last valid preview when hovering an unreachable date', async () => {
+	// INVERTED: mouseleave must clear the hover preview (it used to freeze the
+	// last valid preview, letting Enter commit against a stale hover).
+	it('clears the hover preview on mouseleave and ignores unreachable hover targets', async () => {
 		render(CalendarRootTest, {
 			selectionMode: 'range',
 			defaultValue: { start: '2026-02-02' },
@@ -145,14 +170,16 @@ describe('Calendar.BodyCell', () => {
 
 		validPreviewCell.element()?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
 
+		await expect
+			.poll(() => document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]'))
+			.toBeFalsy();
+
 		const unreachableCell = getDayButton('2026-02-08');
 		unreachableCell.element()?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
-		await expect
-			.poll(() => document.querySelector('[role="button"][data-date="2026-02-05"][data-range-end]'))
-			.toBeTruthy();
 		expect(
 			document.querySelector('[role="button"][data-date="2026-02-08"][data-range-end]')
 		).toBeFalsy();
+		expect(document.querySelector('[data-range-end]')).toBeFalsy();
 	});
 });

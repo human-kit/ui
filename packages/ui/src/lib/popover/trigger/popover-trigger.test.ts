@@ -128,6 +128,29 @@ describe('Popover.Trigger', () => {
 				'Nested popover content'
 			);
 		});
+
+		it('Escape dismisses only the topmost layer: first the nested popover, then the dialog', async () => {
+			const screen = render(PopoverTriggerInDialogTest);
+			const openDialog = screen.getByRole('button', { name: 'Open Dialog' });
+
+			await openDialog.click();
+			await expect.poll(() => document.querySelector('[data-dialog-content]')).toBeTruthy();
+
+			const nestedTrigger = Array.from(document.querySelectorAll('button')).find(
+				(button) => button.textContent?.trim() === 'Open Nested Popover'
+			) as HTMLButtonElement | undefined;
+			nestedTrigger?.click();
+			await expect.poll(() => document.querySelector('.nested-popover-content')).toBeTruthy();
+
+			// First Escape: closes the popover, the dialog must survive.
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('.nested-popover-content')).toBeNull();
+			expect(document.querySelector('[data-dialog-content]')).toBeTruthy();
+
+			// Second Escape: now the dialog is the topmost layer and closes.
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => document.querySelector('[data-dialog-content]')).toBeNull();
+		});
 	});
 
 	describe('Controlled Mode', () => {

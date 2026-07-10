@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import {
 		shouldShowFocusVisible,
@@ -90,7 +90,9 @@
 		...restProps
 	}: ButtonRootProps = $props();
 
-	const resolvedId = untrack(() => id) ?? generatedId;
+	// Reactive: consumers like Tabs.Tab / Accordion.Trigger derive this id from a
+	// dynamic `value`; freezing it broke their aria-controls/aria-labelledby links.
+	const resolvedId = $derived(id ?? generatedId);
 
 	const disabled = $derived(Boolean(disabledProp));
 	const pending = $derived(Boolean(pendingProp));
@@ -104,8 +106,11 @@
 	let expandedPressed = $state(false);
 
 	const renderedType = $derived(type === 'submit' && pending ? 'button' : type);
+	// `pressed` prop is an override: when provided it replaces the internally
+	// tracked pressed state entirely (still forced false while pending).
 	const renderedPressed = $derived(
-		(Boolean(pressedOverride) || pressed || expandedPressed) && !pending
+		(pressedOverride !== undefined ? Boolean(pressedOverride) : pressed || expandedPressed) &&
+			!pending
 	);
 	const renderState = $derived.by<ButtonRenderState>(() => ({
 		hovered,
@@ -351,6 +356,7 @@
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-disabled={pending ? 'true' : undefined}
+	aria-busy={pending ? 'true' : undefined}
 	data-button-root="true"
 	data-disabled={disabled || undefined}
 	data-pending={pending || undefined}

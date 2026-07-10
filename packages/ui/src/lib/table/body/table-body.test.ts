@@ -24,4 +24,34 @@ describe('Table.Body', () => {
 			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-027"]')))
 			.toBe(false);
 	});
+
+	it('keeps aria-rowindex aligned with the logical row index while virtualizing', async () => {
+		render(TableBodyItemsTest);
+
+		// Header rows are numbered first (1-based), body rows continue after them.
+		await expect
+			.poll(() => document.querySelector('thead tr')?.getAttribute('aria-rowindex'))
+			.toBe('1');
+		await expect
+			.poll(() =>
+				document.querySelector('tbody [data-item-id="row-001"]')?.getAttribute('aria-rowindex')
+			)
+			.toBe('2');
+
+		const scroller = document.querySelector('table')?.parentElement;
+		expect(scroller).toBeTruthy();
+		scroller!.scrollTop = 40 * 32;
+		scroller!.dispatchEvent(new Event('scroll'));
+
+		// rowHeight 32, scrollTop 1280 → start index 40, default overscan 18 → first
+		// rendered logical index 22 (row-023) → aria-rowindex 1 (header) + 22 + 1 = 24.
+		await expect
+			.poll(() =>
+				document.querySelector('tbody tr[data-item-id]')?.getAttribute('data-item-id')
+			)
+			.toBe('row-023');
+		expect(
+			document.querySelector('tbody tr[data-item-id]')?.getAttribute('aria-rowindex')
+		).toBe('24');
+	});
 });

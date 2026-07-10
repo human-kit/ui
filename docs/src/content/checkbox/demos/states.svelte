@@ -27,7 +27,7 @@
 				disabled={example.disabled}
 				readonly={example.readonly}
 				aria-label={example.label}
-				class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[checked=true]:text-white data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[indeterminate=true]:border-amber-500 data-[indeterminate=true]:bg-amber-500 data-[indeterminate=true]:text-white data-[readonly=true]:border-teal-500 data-[readonly=true]:bg-teal-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:data-[readonly=true]:bg-teal-950/40"
+				class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 shadow-sm data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[checked=true]:text-white data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[indeterminate=true]:border-amber-500 data-[indeterminate=true]:bg-amber-500 data-[indeterminate=true]:text-white data-[readonly=true]:border-teal-500 data-[readonly=true]:bg-teal-50 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:data-[readonly=true]:bg-teal-950/40"
 			>
 				<Checkbox.Indicator class="contents">
 					{#if example.indeterminate}
@@ -37,7 +37,7 @@
 					{/if}
 				</Checkbox.Indicator>
 			</Checkbox.Root>
-			<span class="text-xs text-gray-500 dark:text-gray-400">{example.label}</span>
+			<span class="text-xs text-neutral-500 dark:text-neutral-400">{example.label}</span>
 		</div>
 	{/each}
 </div>

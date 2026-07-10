@@ -71,8 +71,12 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		// Another layer (or a widget like a range-selection calendar) already consumed
+		// this Escape — a single keypress must dismiss at most one thing.
+		if (event.defaultPrevented) return;
 		if (event.key === 'Escape' && isOpen && shouldCloseOnEscape) {
-			// Only handle if this is the topmost dialog
+			// Only handle if this is the topmost dismissable layer (a popover or menu
+			// opened inside the dialog sits above it in the unified layer stack).
 			if (dialogId && isTopmostDialog(dialogId)) {
 				event.preventDefault();
 				close('escape-key', event);

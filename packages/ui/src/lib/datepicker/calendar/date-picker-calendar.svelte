@@ -51,7 +51,7 @@
 <Calendar.Root
 	selectionMode="single"
 	showOutsideDays={false}
-	value={datePicker.value ?? undefined}
+	value={datePicker.value ?? null}
 	onChange={handleChange}
 	disabled={datePicker.isDisabled}
 	readonly={datePicker.isReadOnly}

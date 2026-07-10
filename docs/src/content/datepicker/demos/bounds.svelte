@@ -12,11 +12,11 @@
 	<LocaleProvider locale="es-AR">
 		<DatePicker.Root bind:value {minValue} {maxValue} class="group space-y-2">
 			<div
-				class="corner-squircle flex h-8 items-center gap-1 rounded-xl border border-gray-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-gray-600 dark:bg-gray-700"
+				class="corner-squircle flex h-8 items-center gap-1 rounded-xl border border-neutral-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
 			>
 				<DatePicker.Input
 					aria-label="Date input"
-					class="flex min-w-0 flex-1 items-center gap-0.5 text-sm text-gray-900 dark:text-white"
+					class="flex min-w-0 flex-1 items-center gap-0.5 text-sm text-neutral-900 dark:text-white"
 				>
 					{#snippet children(segment)}
 						<DatePicker.Segment
@@ -26,30 +26,30 @@
 					{/snippet}
 				</DatePicker.Input>
 				<DatePicker.Trigger
-					class="corner-squircle inline-flex size-5 items-center justify-center rounded-md text-gray-500 outline-none hover:bg-gray-100 data-[focus-visible=true]:ring-1 data-[focus-visible=true]:ring-blue-500 dark:text-gray-300 dark:hover:bg-gray-600"
+					class="corner-squircle inline-flex size-5 items-center justify-center rounded-md text-neutral-500 outline-none hover:bg-neutral-100 data-[focus-visible=true]:ring-1 data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300 dark:hover:bg-neutral-600"
 				>
 					<CalendarIcon class="size-3.5" />
 				</DatePicker.Trigger>
 			</div>
 			<DatePicker.Popover
 				placement="bottom"
-				class="mt-1 rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+				class="mt-1 rounded-xl border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
 			>
 				<DatePicker.Calendar>
 					<div class="flex items-center justify-between gap-2 p-2">
 						<DatePicker.TriggerPrevious
-							class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+							class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
 						/>
 						<DatePicker.Heading class="text-sm font-medium" />
 						<DatePicker.TriggerNext
-							class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+							class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
 						/>
 					</div>
 					<DatePicker.Grid class="w-full border-separate border-spacing-1 px-2 pb-2">
 						<DatePicker.GridHeader>
 							{#snippet children(dayLabel: string)}
 								<DatePicker.HeaderCell
-									class="h-8 text-xs font-medium text-gray-500 dark:text-gray-400"
+									class="h-8 text-xs font-medium text-neutral-500 dark:text-neutral-400"
 								>
 									{dayLabel}
 								</DatePicker.HeaderCell>
@@ -59,7 +59,7 @@
 							{#snippet children(date: string)}
 								<DatePicker.BodyCell
 									{date}
-									class="h-8 w-8 rounded-md text-sm text-gray-900 hover:bg-gray-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white data-[unavailable=true]:opacity-50 dark:text-white dark:hover:bg-gray-700"
+									class="h-8 w-8 rounded-md text-sm text-neutral-900 hover:bg-neutral-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white data-[unavailable=true]:opacity-50 dark:text-white dark:hover:bg-neutral-700"
 								/>
 							{/snippet}
 						</DatePicker.GridBody>
@@ -69,7 +69,7 @@
 		</DatePicker.Root>
 	</LocaleProvider>
 
-	<p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+	<p class="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
 		Selectable range: {minValue} → {maxValue}
 	</p>
 </div>

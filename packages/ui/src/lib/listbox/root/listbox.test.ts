@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ListBoxTest from './listbox-test.svelte';
+import ListBoxBindValueTest from './listbox-bind-value-test.svelte';
+import ListBoxControlledTest from './listbox-controlled-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('ListBox', () => {
@@ -222,6 +224,82 @@ describe('ListBox', () => {
 		});
 	});
 
+	describe('Value binding (uncontrolled + bound)', () => {
+		it('updates bind:value when an item is selected on click', async () => {
+			const screen = render(ListBoxBindValueTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await (options[2] as HTMLElement).click(); // Cherry
+
+			await expect
+				.poll(() => screen.getByTestId('bound-value').element().textContent)
+				.toBe('cherry');
+		});
+
+		it('updates bind:value when the selection is toggled off', async () => {
+			const screen = render(ListBoxBindValueTest);
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await (options[1] as HTMLElement).click(); // Select Banana
+			await expect
+				.poll(() => screen.getByTestId('bound-value').element().textContent)
+				.toBe('banana');
+
+			await (options[1] as HTMLElement).click(); // Deselect Banana
+			await expect.poll(() => screen.getByTestId('bound-value').element().textContent).toBe('');
+		});
+	});
+
+	describe('Controlled mode', () => {
+		it('keeps the UI selection unchanged when the parent ignores onChange', async () => {
+			const onChange = vi.fn();
+			const screen = render(ListBoxControlledTest, { onChange });
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			expect(options[0].getAttribute('aria-selected')).toBe('true'); // Apple
+
+			await (options[1] as HTMLElement).click(); // Click Banana
+
+			// The change is emitted, but the parent did not apply it.
+			expect(onChange).toHaveBeenCalledWith(new Set(['banana']));
+			expect(options[1].getAttribute('aria-selected')).toBe('false');
+			expect(options[0].getAttribute('aria-selected')).toBe('true');
+		});
+
+		it('applies the selection when the parent passes the new value back down', async () => {
+			const screen = render(ListBoxControlledTest, { applyChanges: true });
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await (options[1] as HTMLElement).click(); // Click Banana
+
+			await expect.poll(() => options[1].getAttribute('aria-selected')).toBe('true');
+			expect(options[0].getAttribute('aria-selected')).toBe('false');
+			await expect
+				.poll(() => screen.getByTestId('controlled-value').element().textContent)
+				.toBe('banana');
+		});
+	});
+
+	describe('Reactive options', () => {
+		it('applies selectionMode changes at runtime', async () => {
+			const screen = render(ListBoxTest, { selectionMode: 'single' });
+			const listbox = screen.getByRole('listbox');
+
+			await screen.rerender({ selectionMode: 'multiple' });
+			await expect.element(listbox).toHaveAttribute('aria-multiselectable', 'true');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			await (options[0] as HTMLElement).click();
+			await (options[1] as HTMLElement).click();
+
+			expect(listbox.element().querySelectorAll('[data-selected]').length).toBe(2);
+		});
+	});
+
 	describe('Disabled Items', () => {
 		it('skips disabled items during navigation', async () => {
 			const screen = render(ListBoxTest, { disabledKeys: ['banana'] });
@@ -252,6 +330,20 @@ describe('ListBox', () => {
 
 			const options = listbox.element().querySelectorAll('[role="option"]');
 			expect(options[1].getAttribute('aria-disabled')).toBe('true');
+		});
+
+		it('updates aria-disabled when disabledKeys changes at runtime', async () => {
+			const screen = render(ListBoxTest, { disabledKeys: [] });
+			const listbox = screen.getByRole('listbox');
+
+			const options = listbox.element().querySelectorAll('[role="option"]');
+			expect(options[1].getAttribute('aria-disabled')).toBeNull();
+
+			await screen.rerender({ disabledKeys: ['banana'] });
+			await expect.poll(() => options[1].getAttribute('aria-disabled')).toBe('true');
+
+			await screen.rerender({ disabledKeys: [] });
+			await expect.poll(() => options[1].getAttribute('aria-disabled')).toBeNull();
 		});
 	});
 });

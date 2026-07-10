@@ -165,8 +165,8 @@
 		if (toggleGroup) {
 			if (value !== undefined && toggleGroup.isFocused(value)) {
 				toggleGroup.setFocusedValue(null);
+				toggleGroup.setFocusVisible(false);
 			}
-			toggleGroup.setFocusVisible(false);
 		} else {
 			focusVisible = false;
 		}

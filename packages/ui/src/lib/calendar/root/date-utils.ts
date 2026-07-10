@@ -61,14 +61,21 @@ export function compareDates(a: Date, b: Date): number {
 }
 
 export function getTodayUtcDate(): Date {
+	// Build from LOCAL components so "today" matches the user's civil date;
+	// storage stays UTC-normalized like every other calendar value.
 	const now = new Date();
-	return createUtcDate(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+	return createUtcDate(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
 export function getFirstDayOfWeek(locale: string): number {
 	try {
-		const intlLocale = new Intl.Locale(locale);
-		const weekInfo = (intlLocale as Intl.Locale & { weekInfo?: { firstDay?: number } }).weekInfo;
+		const intlLocale = new Intl.Locale(locale) as Intl.Locale & {
+			weekInfo?: { firstDay?: number };
+			getWeekInfo?: () => { firstDay?: number };
+		};
+		// V8 exposes a `weekInfo` getter; Firefox implements the `getWeekInfo()` method.
+		const weekInfo =
+			typeof intlLocale.getWeekInfo === 'function' ? intlLocale.getWeekInfo() : intlLocale.weekInfo;
 		if (weekInfo?.firstDay) {
 			return weekInfo.firstDay % 7;
 		}

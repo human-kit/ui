@@ -21,4 +21,11 @@ describe('Calendar.TriggerPrevious', () => {
 
 		await expect.element(previousButton).toBeDisabled();
 	});
+
+	it('localizes the default aria-label in Spanish through LocaleProvider', async () => {
+		const screen = render(CalendarRootTest, { locale: 'es' });
+		const previousButton = screen.getByRole('button', { name: 'Página anterior' });
+
+		await expect.element(previousButton).toHaveAttribute('aria-label', 'Página anterior');
+	});
 });

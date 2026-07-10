@@ -7,10 +7,10 @@ describe('ComboBox.Trigger', () => {
 	describe('Accessibility', () => {
 		it('has correct aria-label when closed', async () => {
 			const screen = render(ComboBoxTest);
-			const trigger = screen.getByRole('button', { name: 'Open menu' });
+			const trigger = screen.getByRole('button', { name: 'Show options' });
 
 			await expect.element(trigger).toBeInTheDocument();
-			await expect.element(trigger).toHaveAttribute('aria-label', 'Open menu');
+			await expect.element(trigger).toHaveAttribute('aria-label', 'Show options');
 		});
 
 		it('has correct aria-label when open', async () => {
@@ -20,13 +20,13 @@ describe('ComboBox.Trigger', () => {
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');
 
-			const trigger = screen.getByRole('button', { name: 'Close menu' });
-			await expect.element(trigger).toHaveAttribute('aria-label', 'Close menu');
+			const trigger = screen.getByRole('button', { name: 'Hide options' });
+			await expect.element(trigger).toHaveAttribute('aria-label', 'Hide options');
 		});
 
 		it('reflects pending state from the combobox root', async () => {
 			const screen = render(ComboBoxTest, { pending: true });
-			const trigger = screen.getByRole('button', { name: 'Open menu' });
+			const trigger = screen.getByRole('button', { name: 'Show options' });
 
 			await expect.element(trigger).toHaveAttribute('data-pending', 'true');
 			await expect.element(trigger).toBeDisabled();
@@ -40,18 +40,18 @@ describe('ComboBox.Trigger', () => {
 
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 
-			const openTrigger = screen.getByRole('button', { name: 'Open menu' });
+			const openTrigger = screen.getByRole('button', { name: 'Show options' });
 			await openTrigger.click();
 			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
 
-			const closeTrigger = screen.getByRole('button', { name: 'Close menu' });
+			const closeTrigger = screen.getByRole('button', { name: 'Hide options' });
 			await closeTrigger.click();
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
 		it('has tabindex -1 by default', async () => {
 			const screen = render(ComboBoxTest);
-			const trigger = screen.getByRole('button', { name: 'Open menu' });
+			const trigger = screen.getByRole('button', { name: 'Show options' });
 
 			await expect.element(trigger).toHaveAttribute('tabindex', '-1');
 		});
@@ -65,7 +65,7 @@ describe('ComboBox.Trigger', () => {
 			await input.click();
 			await userEvent.keyboard('{ArrowDown}');
 
-			const trigger = screen.getByRole('button', { name: 'Close menu' });
+			const trigger = screen.getByRole('button', { name: 'Hide options' });
 			await expect.element(trigger).toHaveAttribute('data-pressed', 'true');
 		});
 	});

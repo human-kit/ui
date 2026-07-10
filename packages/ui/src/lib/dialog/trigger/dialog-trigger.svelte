@@ -54,7 +54,7 @@
 	bind:element={buttonRef}
 	class={className}
 	type="button"
-	pressed={dialogCtx.isOpen}
+	pressed={dialogCtx.isOpen || undefined}
 	aria-haspopup="dialog"
 	aria-expanded={dialogCtx.isOpen}
 	data-dialog-trigger="true"

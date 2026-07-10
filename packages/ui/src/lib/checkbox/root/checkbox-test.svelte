@@ -15,6 +15,8 @@
 		forceMount?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
 		onIndeterminateChange?: (indeterminate: boolean) => void;
+		onkeyup?: (event: KeyboardEvent) => void;
+		onblur?: (event: FocusEvent) => void;
 	};
 
 	let {
@@ -30,7 +32,9 @@
 		required = false,
 		forceMount = false,
 		onCheckedChange,
-		onIndeterminateChange
+		onIndeterminateChange,
+		onkeyup,
+		onblur
 	}: Props = $props();
 </script>
 
@@ -47,6 +51,8 @@
 	{required}
 	{onCheckedChange}
 	{onIndeterminateChange}
+	{onkeyup}
+	{onblur}
 	class="inline-flex h-5 w-5 items-center justify-center"
 	aria-label="Accept terms"
 >

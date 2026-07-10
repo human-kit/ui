@@ -53,7 +53,7 @@
 	const groupId = $derived(id ? `${id}-group` : `${dateRangePicker.id}-${part}-input`);
 	const proxyValue = $derived(dateRangePicker.value?.[part] ?? '');
 	const isInvalid = $derived(
-		ariaInvalid === true || ariaInvalid === 'true' || dateRangePicker.isInvalidDraft
+		ariaInvalid === true || ariaInvalid === 'true' || dateRangePicker.isPartInvalid(part)
 	);
 	const shouldRenderProxyInput = $derived(Boolean(id || name));
 	const proxyInputStyle =
@@ -85,8 +85,11 @@
 		}
 		dateRangePicker.syncFocusWithin();
 		dateRangePicker.setFocusVisible(shouldShowFocusVisible(event.target as HTMLElement | null));
-		const target = event.target as HTMLElement | null;
-		if (target?.closest('[data-date-range-picker-segment="true"]')) {
+		// Focus arriving FROM a segment (Shift+Tab moving backwards) must not be
+		// recaptured — redirecting here trapped keyboard users inside the group.
+		const related = event.relatedTarget as Node | null;
+		const group = event.currentTarget as HTMLElement | null;
+		if (related && group && group.contains(related)) {
 			return;
 		}
 		dateRangePicker.focusNextPlaceholderOrLastSegment(part);
@@ -122,6 +125,13 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (dateRangePicker.isDisabled) return;
 		if (event.key !== 'Enter' && event.key !== ' ') return;
+		// Keys bubbling up from a segment already got handled (or deliberately
+		// ignored) there — re-focusing another segment on Space/Enter inside a
+		// spinbutton was surprising and non-standard.
+		if (event.defaultPrevented) return;
+		if ((event.target as HTMLElement | null)?.closest('[data-date-range-picker-segment="true"]')) {
+			return;
+		}
 		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		dateRangePicker.setFocusVisible(true);
 		event.preventDefault();
@@ -145,15 +155,13 @@
 {/if}
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<!-- svelte-ignore a11y_role_supports_aria_props -->
 <div
 	id={groupId}
 	class={className}
 	{...restProps}
 	role="group"
 	aria-label={ariaLabel}
-	aria-invalid={isInvalid || undefined}
-	tabindex={dateRangePicker.isDisabled ? -1 : 0}
+	tabindex={dateRangePicker.isDisabled || dateRangePicker.focusWithin ? -1 : 0}
 	data-date-range-picker-input={part}
 	data-disabled={dateRangePicker.isDisabled || undefined}
 	data-readonly={dateRangePicker.isReadOnly || undefined}

@@ -419,6 +419,39 @@ describe('Tree.Root', () => {
 		await expect.element(reports).toHaveAttribute('data-disabled', 'true');
 	});
 
+	it('does not steal focus from outside the tree when disabledKeys changes', async () => {
+		const screen = render(TreeDisabledKeysTest);
+		const tree = screen.getByRole('tree');
+		const outsideInput = screen
+			.getByRole('textbox', { name: 'Outside input' })
+			.element() as HTMLInputElement;
+		const disableButton = screen
+			.getByRole('button', { name: 'Disable reports' })
+			.element() as HTMLElement;
+
+		tree.element().focus();
+		await expect
+			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
+			.toContain('Documents');
+		await userEvent.keyboard('{ArrowDown}');
+		await expect
+			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
+			.toContain('Reports');
+
+		outsideInput.focus();
+		await expect.poll(() => document.activeElement).toBe(outsideInput);
+
+		// Programmatic click keeps focus on the input while disabledKeys changes.
+		disableButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+		// The roving target relocates off the now-disabled row...
+		await expect
+			.poll(() => tree.element().querySelector('[data-focused]')?.textContent)
+			.toContain('Budget');
+		// ...but the document focus is left untouched.
+		expect(document.activeElement).toBe(outsideInput);
+	});
+
 	it('uses Tree.Label text for typeahead when title is omitted', async () => {
 		let treeContext: import('../index').TreeContext | undefined;
 		const screen = render(TreeLabelFallbackTest, {

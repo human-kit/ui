@@ -77,8 +77,11 @@
 		}
 		datePicker.syncFocusWithin();
 		datePicker.setFocusVisible(shouldShowFocusVisible(event.target as HTMLElement | null));
-		const target = event.target as HTMLElement | null;
-		if (target?.closest('[data-date-picker-segment="true"]')) {
+		// Focus arriving FROM a segment (Shift+Tab moving backwards) must not be
+		// recaptured — redirecting here trapped keyboard users inside the group.
+		const related = event.relatedTarget as Node | null;
+		const group = event.currentTarget as HTMLElement | null;
+		if (related && group && group.contains(related)) {
 			return;
 		}
 		datePicker.focusNextPlaceholderOrLastSegment();
@@ -114,6 +117,11 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (datePicker.isDisabled) return;
 		if (event.key !== 'Enter' && event.key !== ' ') return;
+		// Keys bubbling up from a segment already got handled (or deliberately
+		// ignored) there — re-focusing another segment on Space/Enter inside a
+		// spinbutton was surprising and non-standard.
+		if (event.defaultPrevented) return;
+		if ((event.target as HTMLElement | null)?.closest('[data-date-picker-segment="true"]')) return;
 		trackInteractionModality(event, event.currentTarget as HTMLElement);
 		datePicker.setFocusVisible(true);
 		event.preventDefault();
@@ -143,7 +151,7 @@
 	{...restProps}
 	role="group"
 	aria-label={ariaLabel}
-	tabindex={datePicker.isDisabled ? -1 : 0}
+	tabindex={datePicker.isDisabled || datePicker.focusWithin ? -1 : 0}
 	data-disabled={datePicker.isDisabled || undefined}
 	data-readonly={datePicker.isReadOnly || undefined}
 	data-open={datePicker.open || undefined}

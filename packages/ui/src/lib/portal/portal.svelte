@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { browser } from '../internal/environment';
 
 	type PortalProps = {
 		/** Target element or selector to render into. Defaults to document.body */
-		target?: string;
+		target?: string | HTMLElement;
 		/** Content to render in the portal */
 		children?: Snippet;
 	};
@@ -14,20 +14,21 @@
 
 	let wrapper: HTMLDivElement | undefined = $state();
 
-	onMount(async () => {
+	// Resolve and (re-)portal reactively so changing `target` after mount moves
+	// the content to the new container. `appendChild` moves the node, so no
+	// explicit detach is needed between targets.
+	$effect(() => {
 		if (!browser || !wrapper) return;
 
-		await tick();
-		const wrapperNode = wrapper;
-		if (!wrapperNode) return;
-
-		const targetEl = document.querySelector(target);
+		const targetEl = typeof target === 'string' ? document.querySelector(target) : target;
 		if (!targetEl) {
+			// Keep the content where it currently lives (initial inline position
+			// or the previous target) and report the unresolved target.
 			console.error(`Portal: target "${target}" not found`);
 			return;
 		}
 
-		targetEl.appendChild(wrapperNode);
+		targetEl.appendChild(wrapper);
 	});
 
 	onDestroy(() => {

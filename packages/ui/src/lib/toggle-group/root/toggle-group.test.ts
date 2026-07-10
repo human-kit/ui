@@ -3,6 +3,7 @@ import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import ToggleGroupDuplicateTest from './toggle-group-duplicate-test.svelte';
 import ToggleGroupNumericStringTest from './toggle-group-numeric-string-test.svelte';
+import ToggleGroupOrderTest from './toggle-group-order-test.svelte';
 import ToggleGroupTest from './toggle-group-test.svelte';
 
 function getToggle(testId: string) {
@@ -185,6 +186,23 @@ describe('ToggleGroup.Root', () => {
 		expect(italic.getAttribute('aria-pressed')).toBe('true');
 	});
 
+	it('keeps a controlled selection when the selected toggle becomes disabled', async () => {
+		const changes: unknown[] = [];
+		render(ToggleGroupTest, {
+			value: ['bold'],
+			onChange: (value) => changes.push(value)
+		});
+		const bold = getToggle('toggle-bold');
+		const disableBold = document.querySelector<HTMLButtonElement>('[data-disable-bold]');
+
+		await userEvent.click(disableBold as HTMLButtonElement);
+
+		expect(bold.hasAttribute('disabled')).toBe(true);
+		expect(bold.getAttribute('aria-pressed')).toBe('true');
+		expect(document.querySelector('[data-current-value]')?.textContent).toBe('["bold"]');
+		expect(changes).toEqual([]);
+	});
+
 	it('falls back when a selected toggle is removed with disallowEmptySelection', async () => {
 		render(ToggleGroupTest, {
 			defaultValue: ['bold'],
@@ -217,6 +235,28 @@ describe('ToggleGroup.Root', () => {
 
 		await userEvent.keyboard('{Home}');
 		expect(document.activeElement).toBe(bold);
+	});
+
+	it('inverts horizontal arrow keys in RTL layouts', async () => {
+		const previousDir = document.documentElement.dir;
+		document.documentElement.dir = 'rtl';
+
+		try {
+			render(ToggleGroupTest);
+			const bold = getToggle('toggle-bold');
+			const italic = getToggle('toggle-italic');
+
+			italic.focus();
+			// Visually right in RTL is the previous logical toggle.
+			await userEvent.keyboard('{ArrowRight}');
+			expect(document.activeElement).toBe(bold);
+
+			// Visually left in RTL is the next logical toggle.
+			await userEvent.keyboard('{ArrowLeft}');
+			expect(document.activeElement).toBe(italic);
+		} finally {
+			document.documentElement.dir = previousDir;
+		}
 	});
 
 	it('moves focus vertically and skips disabled toggles', async () => {
@@ -283,6 +323,45 @@ describe('ToggleGroup.Root', () => {
 
 		expect(document.activeElement).toBe(input.element());
 		expect(bold.getAttribute('tabindex')).toBe('0');
+	});
+
+	it('follows DOM order for keyboard navigation after toggles are reordered', async () => {
+		render(ToggleGroupOrderTest);
+		const reverse = document.querySelector<HTMLButtonElement>('[data-reverse]');
+
+		await userEvent.click(reverse as HTMLButtonElement);
+
+		const one = getToggle('toggle-one');
+		const two = getToggle('toggle-two');
+		const three = getToggle('toggle-three');
+
+		three.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		expect(document.activeElement).toBe(two);
+
+		await userEvent.keyboard('{End}');
+		expect(document.activeElement).toBe(one);
+
+		await userEvent.keyboard('{Home}');
+		expect(document.activeElement).toBe(three);
+	});
+
+	it('keeps focus-visible on the focused toggle when another toggle becomes disabled', async () => {
+		render(ToggleGroupTest, {
+			selectionMode: 'multiple',
+			disableBoldOnItalicChange: true
+		});
+		const bold = getToggle('toggle-bold');
+		const italic = getToggle('toggle-italic');
+
+		bold.focus();
+		await userEvent.keyboard('{ArrowRight}');
+		await expect.poll(() => italic.getAttribute('data-focus-visible')).toBe('true');
+
+		await userEvent.keyboard('{Enter}');
+
+		await expect.poll(() => bold.hasAttribute('disabled')).toBe(true);
+		expect(italic.getAttribute('data-focus-visible')).toBe('true');
 	});
 
 	it('clears grouped focus state when the focused toggle becomes disabled', async () => {

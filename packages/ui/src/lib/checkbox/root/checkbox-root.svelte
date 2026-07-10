@@ -41,7 +41,9 @@
 		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
+		onkeyup?: HTMLAttributes<HTMLSpanElement>['onkeyup'];
 		onfocus?: HTMLAttributes<HTMLSpanElement>['onfocus'];
+		onblur?: HTMLAttributes<HTMLSpanElement>['onblur'];
 		onpointerdown?: HTMLAttributes<HTMLSpanElement>['onpointerdown'];
 		onpointerup?: HTMLAttributes<HTMLSpanElement>['onpointerup'];
 		onpointercancel?: HTMLAttributes<HTMLSpanElement>['onpointercancel'];
@@ -97,7 +99,9 @@
 		tabindex,
 		onclick: onClickExternal,
 		onkeydown: onKeyDownExternal,
+		onkeyup: onKeyUpExternal,
 		onfocus: onFocusExternal,
+		onblur: onBlurExternal,
 		onpointerdown: onPointerDownExternal,
 		onpointerup: onPointerUpExternal,
 		onpointercancel: onPointerCancelExternal,
@@ -139,16 +143,18 @@
 		}
 	});
 
-	if (untrack(() => checked) === undefined) {
+	// Controlled-ness is decided once, from whether the prop was provided at init.
+	const isCheckedControlled = untrack(() => checked) !== undefined;
+	const isIndeterminateControlled = untrack(() => indeterminate) !== undefined;
+
+	// In uncontrolled mode, write the initial state back so `bind:` parents see the default.
+	if (!isCheckedControlled) {
 		checked = initialState === 'checked';
 	}
 
-	if (untrack(() => indeterminate) === undefined) {
+	if (!isIndeterminateControlled) {
 		indeterminate = initialState === 'indeterminate';
 	}
-
-	const isCheckedControlled = $derived(checked !== undefined);
-	const isIndeterminateControlled = $derived(indeterminate !== undefined);
 
 	const currentState = $derived.by(() =>
 		resolveState(
@@ -174,14 +180,13 @@
 
 		if (!isCheckedControlled) {
 			checkedInternal = nextChecked;
+			checked = nextChecked;
 		}
 
 		if (!isIndeterminateControlled) {
 			indeterminateInternal = nextIndeterminate;
+			indeterminate = nextIndeterminate;
 		}
-
-		checked = nextChecked;
-		indeterminate = nextIndeterminate;
 
 		if (nextChecked !== previousChecked) {
 			onCheckedChange?.(nextChecked);
@@ -356,8 +361,18 @@
 		const target = event.currentTarget;
 		if (!(target instanceof HTMLInputElement)) return;
 
+		if (disabled || readonly) {
+			target.checked = currentChecked;
+			target.indeterminate = currentIndeterminate;
+			return;
+		}
+
 		const nextState = resolveState(target.checked, target.indeterminate);
 		publishState(nextState, event);
+
+		// Keep the native input in sync when a controlled parent rejects the change.
+		target.checked = currentChecked;
+		target.indeterminate = currentIndeterminate;
 	}
 
 	function handleInputFocus() {
@@ -372,6 +387,25 @@
 		if (!inputRef) return;
 		inputRef.checked = currentChecked;
 		inputRef.indeterminate = currentIndeterminate;
+	});
+
+	$effect(() => {
+		const form = inputRef?.form;
+		if (!form) return;
+
+		const handleFormReset = () => {
+			// The browser resets the native input after the `reset` event; re-sync afterwards.
+			queueMicrotask(() => {
+				publishState(initialState);
+				if (inputRef) {
+					inputRef.checked = currentChecked;
+					inputRef.indeterminate = currentIndeterminate;
+				}
+			});
+		};
+
+		form.addEventListener('reset', handleFormReset);
+		return () => form.removeEventListener('reset', handleFormReset);
 	});
 
 	setCheckboxContext({
@@ -443,7 +477,7 @@
 	data-focus-visible={focusVisible || undefined}
 	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
 	onkeydown={composeEventHandlers(handleKeyDown, onKeyDownExternal ?? undefined)}
-	onkeyup={handleKeyUp}
+	onkeyup={composeEventHandlers(handleKeyUp, onKeyUpExternal ?? undefined)}
 	onpointerdown={composeEventHandlers(handlePointerDown, onPointerDownExternal ?? undefined)}
 	onpointerup={composeEventHandlers(handlePointerUp, onPointerUpExternal ?? undefined)}
 	onpointercancel={composeEventHandlers(handlePointerCancel, onPointerCancelExternal ?? undefined)}
@@ -454,7 +488,7 @@
 	onmouseenter={onMouseEnterExternal}
 	onmouseleave={composeEventHandlers(handleMouseLeave, onMouseLeaveExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
-	onblur={handleBlur}
+	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
 	class={className}
 	style:position="relative"
 >

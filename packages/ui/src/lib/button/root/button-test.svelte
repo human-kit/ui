@@ -4,6 +4,7 @@
 	type Props = {
 		disabled?: boolean;
 		pending?: boolean;
+		pressed?: boolean;
 		type?: 'button' | 'submit' | 'reset';
 		ariaLabel?: string;
 		onMouseEnter?: (event: MouseEvent) => void;
@@ -13,6 +14,7 @@
 	let {
 		disabled = false,
 		pending: pendingProp = false,
+		pressed,
 		type = 'button',
 		ariaLabel = 'Save',
 		onMouseEnter,
@@ -42,6 +44,7 @@
 		{type}
 		{disabled}
 		{pending}
+		{pressed}
 		onclick={handleClick}
 		onmouseenter={onMouseEnter}
 		onfocus={onFocus}

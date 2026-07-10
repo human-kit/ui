@@ -52,6 +52,7 @@ export type NumberFieldContext = {
 	syncFocusWithin: () => void;
 	setInputValue: (nextInputValue: string, reason: NumberFieldChangeReason, event?: Event) => void;
 	commitInputValue: (reason: NumberFieldChangeReason, event?: Event) => void;
+	commitValue: (nextValue: number, reason: NumberFieldChangeReason, event?: Event) => void;
 	stepBy: (
 		direction: -1 | 1,
 		options: { reason: NumberFieldChangeReason; event?: Event; multiplier?: number }

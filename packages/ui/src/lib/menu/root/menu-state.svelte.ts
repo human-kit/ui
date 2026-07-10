@@ -11,6 +11,7 @@ import type {
 	MenuChangeReason,
 	MenuCloseReason,
 	MenuContext,
+	MenuInternalCloseReason,
 	MenuItemData,
 	MenuOpenChangeDetails,
 	MenuOpenFocusIntent,
@@ -91,6 +92,10 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		value: boolean,
 		incomingDetails: { reason: MenuChangeReason; event?: Event }
 	) {
+		// No-op transitions (e.g. pointer re-entering an already-open submenu trigger) must
+		// not re-notify the consumer; cancel semantics only apply to real state changes.
+		if (value === isOpen) return;
+
 		let canceled = false;
 		const details: MenuOpenChangeDetails = {
 			reason: incomingDetails.reason,
@@ -142,24 +147,30 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 	}
 
 	// Focus returns to the trigger only on deliberate keyboard/selection closes — not when
-	// the user tabbed away ('focus-out') or clicked elsewhere ('outside-press').
-	const TRIGGER_REFOCUS_REASONS: readonly MenuCloseReason[] = [
+	// the user tabbed away ('focus-out'), clicked elsewhere ('outside-press') or hovered a
+	// sibling that displaced the submenu ('sibling-open', where focus belongs to the sibling).
+	const TRIGGER_REFOCUS_REASONS: readonly MenuInternalCloseReason[] = [
 		'escape-key',
 		'item-select',
 		'imperative-action'
 	];
 
-	function closeMenu(reason: MenuCloseReason = 'imperative-action', event?: Event) {
-		closeReason = reason;
+	function closeMenu(reason: MenuInternalCloseReason = 'imperative-action', event?: Event) {
+		// 'sibling-open' is internal-only; consumers observe the canonical reason.
+		const canonicalReason: MenuCanonicalCloseReason =
+			reason === 'sibling-open' ? 'imperative-action' : reason;
+		closeReason = canonicalReason;
 		const wasOpen = isOpen;
-		setOpenWithDetails(false, { reason, event });
+		setOpenWithDetails(false, { reason: canonicalReason, event });
+		if (!wasOpen || isOpen) return;
+		// Clear the highlight/pending intents only once the close actually happened — a close
+		// cancelled by the consumer must leave the menu's interaction state untouched.
 		keyboardNav.setCurrentId(null);
 		submenuIntent.cancel();
-		if (!wasOpen || isOpen) return;
 		const triggerRef = options.getTriggerRef();
 		if (!triggerRef) return;
 		if (!TRIGGER_REFOCUS_REASONS.includes(reason)) return;
-		scheduleTriggerCloseFocus(triggerRef, reason, event);
+		scheduleTriggerCloseFocus(triggerRef, canonicalReason, event);
 	}
 
 	/** Closes this menu and, for selections, any ancestor menus too. */
@@ -216,7 +227,7 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 
 	function notifyChildOpen(child: MenuContext) {
 		if (activeChild && activeChild !== child) {
-			activeChild.close('imperative-action');
+			activeChild.close('sibling-open');
 		}
 		activeChild = child;
 	}
@@ -233,7 +244,7 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		if (!activeChild) return;
 		const child = activeChild;
 		activeChild = null;
-		child.close('imperative-action');
+		child.close('sibling-open');
 	}
 
 	function trackPointer(x: number, y: number) {

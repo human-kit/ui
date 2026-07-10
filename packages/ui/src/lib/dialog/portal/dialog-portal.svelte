@@ -65,6 +65,13 @@
 	$effect(() => {
 		if (!isMounted || !motionTarget) {
 			clearTracker();
+			// Without a registered Content there is no motion to measure (e.g. the
+			// Portal only wraps a Dialog.Overlay) — resolve the exit immediately so
+			// the portal doesn't stay mounted forever.
+			if (isExiting && !motionTarget) {
+				isExiting = false;
+				isMounted = false;
+			}
 			return;
 		}
 

@@ -14,6 +14,7 @@
 		initialValue?: string | number | null;
 		defaultValue?: string | number | null | (string | number)[];
 		onValueChange?: (value: string | number | null | (string | number)[]) => void;
+		onOpenChange?: (open: boolean) => void;
 	};
 
 	let {
@@ -26,7 +27,8 @@
 		disabledKeys = [],
 		initialValue,
 		defaultValue,
-		onValueChange
+		onValueChange,
+		onOpenChange
 	}: Props = $props();
 
 	let selectedValue = $state<string | number | null | undefined>((() => initialValue)());
@@ -56,6 +58,7 @@
 	{defaultValue}
 	bind:value={selectedValue}
 	onChange={onValueChange}
+	{onOpenChange}
 >
 	<ComboBox.Input placeholder="Search countries..." />
 	<ComboBox.Trigger />

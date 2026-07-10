@@ -78,6 +78,57 @@ describe('OverflowRow', () => {
 			});
 		});
 
+		it('does not grow the page scrollable area with the measurement mirror', async () => {
+			const items = Array.from({ length: 30 }, (_, index) => ({
+				id: `item-${index}`,
+				label: `A very long chip label number ${index} that keeps going`
+			}));
+			const screen = render(OverflowRowTest, { items, width: 90 });
+			const list = screen.getByRole('list', { name: 'Selected values' }).element();
+
+			await vi.waitFor(() => {
+				expect(list.querySelector('[data-testid="overflow"]')).not.toBeNull();
+			});
+			const root = document.documentElement;
+			expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth);
+		});
+
+		it('strips duplicate ids from the measurement mirror', async () => {
+			const screen = render(OverflowRowTest, { width: 90 });
+			const list = screen.getByRole('list', { name: 'Selected values' }).element();
+
+			await vi.waitFor(() => {
+				expect(list.querySelector('[data-testid="overflow"]')).not.toBeNull();
+			});
+			// The visible copy keeps its id; the mirror copy loses it.
+			await vi.waitFor(() => {
+				expect(document.querySelectorAll('#tag-apple').length).toBe(1);
+			});
+		});
+
+		it('re-measures when the items resize after mount', async () => {
+			const screen = render(OverflowRowTest, { width: 1000 });
+			const list = screen.getByRole('list', { name: 'Selected values' }).element();
+
+			await vi.waitFor(() => {
+				expect(list.querySelectorAll('[data-tag-id]').length).toBe(ALL.length);
+			});
+			expect(list.querySelector('[data-testid="overflow"]')).toBeNull();
+
+			// Simulate late-arriving styles (webfonts, async content) widening every item.
+			const style = document.createElement('style');
+			style.textContent = '.tag { padding: 0 200px !important; }';
+			document.head.appendChild(style);
+			try {
+				await vi.waitFor(() => {
+					expect(list.querySelector('[data-testid="overflow"]')).not.toBeNull();
+					expect(list.querySelectorAll('[data-tag-id]').length).toBeLessThan(ALL.length);
+				});
+			} finally {
+				style.remove();
+			}
+		});
+
 		it('keeps free space for a sibling via `reserve`', async () => {
 			// At width 1000 everything fits; reserving almost the whole width forces overflow.
 			const screen = render(OverflowRowTest, { width: 1000, reserve: 960 });

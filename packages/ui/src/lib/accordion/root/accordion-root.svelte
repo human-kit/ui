@@ -38,7 +38,9 @@
 			disallowEmptySelection: (() => disallowEmptySelection)(),
 			loop: (() => loop)(),
 			onValueChange: (nextValue) => {
-				value = nextValue;
+				if (!isControlled) {
+					value = nextValue;
+				}
 				onChange?.(nextValue);
 			}
 		})

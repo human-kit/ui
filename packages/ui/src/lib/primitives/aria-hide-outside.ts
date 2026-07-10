@@ -144,16 +144,31 @@ export function hideOutside(targets: HTMLElement[]): HideOutsideResult {
  */
 export function ariaHideOutside(node: HTMLElement, enabled: boolean = true) {
 	let result: HideOutsideResult | null = null;
+	let pendingFrame: number | undefined;
+
+	function cancelPendingFrame(): void {
+		if (pendingFrame !== undefined) {
+			cancelAnimationFrame(pendingFrame);
+			pendingFrame = undefined;
+		}
+	}
 
 	function activate(): void {
-		requestAnimationFrame(() => {
-			if (node.isConnected) {
-				result = hideOutside([node]);
-			}
+		// Cancel any frame still in flight: a rapid enable → disable → enable
+		// sequence used to let a stale frame run after deactivation (leaving the
+		// whole page inert) or overwrite `result` without restoring the previous
+		// one (leaking ref-counted inert/aria-hidden attributes forever).
+		cancelPendingFrame();
+		pendingFrame = requestAnimationFrame(() => {
+			pendingFrame = undefined;
+			if (!node.isConnected) return;
+			result?.restore();
+			result = hideOutside([node]);
 		});
 	}
 
 	function deactivate(): void {
+		cancelPendingFrame();
 		if (result) {
 			result.restore();
 			result = null;

@@ -1,4 +1,5 @@
 import { setContext, getContext } from 'svelte';
+import { SvelteSet } from 'svelte/reactivity';
 import {
 	createKeyboardNavigation,
 	type KeyboardNavigationReturn
@@ -62,10 +63,6 @@ export type ListBoxContext = {
 	subscribeToFocus: (id: string | number, callback: (focused: boolean) => void) => () => void;
 	/** Subscribes to focus-visible state changes. Returns unsubscribe function. */
 	subscribeToFocusVisible: (callback: (visible: boolean) => void) => () => void;
-	/** Returns the next item ID respecting loop setting, or null if at end. */
-	getNextItemId: (currentId: string | number | null) => string | number | null;
-	/** Returns the previous item ID respecting loop setting, or null if at start. */
-	getPreviousItemId: (currentId: string | number | null) => string | number | null;
 };
 
 const KEY = Symbol('listbox');
@@ -84,21 +81,25 @@ export type CreateListBoxContextOptions = {
 	initialSelection?: Set<string | number>;
 	/** Callback fired when selection changes. */
 	onSelectionChange?: (selection: Set<string | number>) => void;
+	/**
+	 * Whether selection is controlled by the parent. When true, `select`/`selectAll`
+	 * only emit `onSelectionChange` and the parent applies the new selection back
+	 * down via `setSelection`.
+	 */
+	isControlled?: boolean;
 };
 
 export function createListBoxContext(options: CreateListBoxContextOptions = {}): ListBoxContext {
-	const {
-		selectionMode = 'single',
-		selectionBehavior = 'toggle',
-		disabledKeys: initialDisabledKeys,
-		initialSelection = new Set(),
-		onSelectionChange
-	} = options;
+	// Read mode/behavior through the options object at each use site so that
+	// getter-based options stay reactive after creation.
+	const getSelectionMode = () => options.selectionMode ?? 'single';
+	const getSelectionBehavior = () => options.selectionBehavior ?? 'toggle';
 
-	const disabledKeys = new Set(initialDisabledKeys ?? []);
+	// SvelteSet so runtime mutations are tracked by item-level $derived reads.
+	const disabledKeys = new SvelteSet(options.disabledKeys ?? []);
 	const items = new Map<string | number, { textValue?: string; element?: HTMLElement }>();
 
-	let selectedKeys = new Set<string | number>(initialSelection);
+	let selectedKeys = new Set<string | number>(options.initialSelection ?? []);
 	const itemCallbacks = new Map<string | number, Set<(selected: boolean) => void>>();
 
 	// Item count tracking with subscription
@@ -236,64 +237,8 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		};
 	}
 
-	function select(id: string | number) {
-		if (isDisabled(id)) return;
-
-		const wasSelected = selectedKeys.has(id);
-		const previouslySelected = new Set(selectedKeys);
-
-		if (selectionMode === 'single') {
-			if (selectionBehavior === 'toggle') {
-				selectedKeys = wasSelected ? new Set() : new Set([id]);
-			} else {
-				selectedKeys = new Set([id]);
-			}
-		} else {
-			selectedKeys = new Set(selectedKeys);
-			if (selectionBehavior === 'toggle') {
-				if (wasSelected) {
-					selectedKeys.delete(id);
-				} else {
-					selectedKeys.add(id);
-				}
-			} else {
-				selectedKeys.add(id);
-			}
-		}
-
-		previouslySelected.forEach((prevId) => {
-			if (!selectedKeys.has(prevId)) {
-				notifyItem(prevId, false);
-			}
-		});
-
-		selectedKeys.forEach((newId) => {
-			if (!previouslySelected.has(newId)) {
-				notifyItem(newId, true);
-			}
-		});
-
-		onSelectionChange?.(new Set(selectedKeys));
-	}
-
-	function selectAll() {
-		if (selectionMode !== 'multiple') return;
-
-		const enabledIds = getItemIds().filter((id) => !isDisabled(id));
-		const previouslySelected = new Set(selectedKeys);
-		selectedKeys = new Set(enabledIds);
-
-		enabledIds.forEach((id) => {
-			if (!previouslySelected.has(id)) {
-				notifyItem(id, true);
-			}
-		});
-
-		onSelectionChange?.(new Set(selectedKeys));
-	}
-
-	function setSelection(newSelection: Set<string | number>) {
-		const previouslySelected = new Set(selectedKeys);
+	function applySelection(newSelection: Set<string | number>) {
+		const previouslySelected = selectedKeys;
 		selectedKeys = new Set(newSelection);
 
 		previouslySelected.forEach((prevId) => {
@@ -309,36 +254,59 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		});
 	}
 
-	// Navigation helper functions for virtual focus (used by ComboBox)
-	const loop = false; // Same as keyboardNav loop setting
-
-	function getNextItemId(currentId: string | number | null): string | number | null {
-		const itemIdsList = getItemIds();
-		if (itemIdsList.length === 0) return null;
-
-		const currentIndex = currentId !== null ? itemIdsList.indexOf(currentId) : -1;
-
-		if (currentIndex < itemIdsList.length - 1) {
-			return itemIdsList[currentIndex + 1];
+	function commitSelection(newSelection: Set<string | number>) {
+		if (options.isControlled) {
+			// Controlled mode: emit the change and let the parent push the new
+			// selection back down through `setSelection`.
+			options.onSelectionChange?.(new Set(newSelection));
+			return;
 		}
 
-		// At end - loop or stay
-		return loop ? itemIdsList[0] : null;
+		applySelection(newSelection);
+		options.onSelectionChange?.(new Set(selectedKeys));
 	}
 
-	function getPreviousItemId(currentId: string | number | null): string | number | null {
-		const itemIdsList = getItemIds();
-		if (itemIdsList.length === 0) return null;
+	function computeNextSelection(id: string | number): Set<string | number> {
+		const wasSelected = selectedKeys.has(id);
 
-		const currentIndex = currentId !== null ? itemIdsList.indexOf(currentId) : itemIdsList.length;
-
-		if (currentIndex > 0) {
-			return itemIdsList[currentIndex - 1];
+		if (getSelectionMode() === 'single') {
+			if (getSelectionBehavior() === 'toggle') {
+				return wasSelected ? new Set() : new Set([id]);
+			}
+			return new Set([id]);
 		}
 
-		// At start - loop or stay
-		return loop ? itemIdsList[itemIdsList.length - 1] : null;
+		const nextSelection = new Set(selectedKeys);
+		if (getSelectionBehavior() === 'toggle') {
+			if (wasSelected) {
+				nextSelection.delete(id);
+			} else {
+				nextSelection.add(id);
+			}
+		} else {
+			nextSelection.add(id);
+		}
+		return nextSelection;
 	}
+
+	function select(id: string | number) {
+		if (isDisabled(id)) return;
+
+		commitSelection(computeNextSelection(id));
+	}
+
+	function selectAll() {
+		if (getSelectionMode() !== 'multiple') return;
+
+		const enabledIds = getItemIds().filter((id) => !isDisabled(id));
+		commitSelection(new Set(enabledIds));
+	}
+
+	function setSelection(newSelection: Set<string | number>) {
+		applySelection(newSelection);
+	}
+
+	const loop = false;
 
 	const keyboardNav = createKeyboardNavigation({
 		orientation: 'vertical',
@@ -350,13 +318,19 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		onFocusChange: (id) => {
 			setFocusedId(id);
 		},
-		onSelectAll: selectionMode === 'multiple' ? selectAll : undefined,
+		// `selectAll` checks the selection mode at call time so runtime mode
+		// changes are respected.
+		onSelectAll: selectAll,
 		homeEndKeys: true
 	});
 
 	const ctx: ListBoxContext = {
-		selectionMode,
-		selectionBehavior,
+		get selectionMode() {
+			return getSelectionMode();
+		},
+		get selectionBehavior() {
+			return getSelectionBehavior();
+		},
 		disabledKeys,
 		getSelectedKeys,
 		getFocusedId,
@@ -378,9 +352,7 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		setFocusVisible,
 		subscribeToItem,
 		subscribeToFocus,
-		subscribeToFocusVisible,
-		getNextItemId,
-		getPreviousItemId
+		subscribeToFocusVisible
 	};
 
 	setContext(KEY, ctx);

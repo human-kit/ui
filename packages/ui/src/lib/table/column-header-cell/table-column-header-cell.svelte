@@ -11,6 +11,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
 
 	let { children, class: className = '', ...restProps }: TableColumnHeaderCellProps = $props();
 
@@ -185,8 +186,10 @@
 	}
 
 	function handleClick() {
+		// A drag-resize that just ended emits a residual click on the header;
+		// consume the one-shot suppression flag BEFORE focusing the cell.
+		if (table.consumeHeaderClickSuppression()) return;
 		table.focusCellByKey(key);
-		table.consumeHeaderClickSuppression();
 	}
 
 	function handleMouseDown(event: MouseEvent) {
@@ -222,12 +225,16 @@
 				return;
 			case 'ArrowLeft':
 				event.preventDefault();
-				if (moveFocusIntoResizeHandle('left')) return;
+				// Resize handles live in logical column order; in RTL layouts the
+				// physical arrows are inverted so the hop follows the visual
+				// direction. `table.moveFocus` receives the physical direction and
+				// applies the same inversion internally.
+				if (moveFocusIntoResizeHandle(isRtl(element) ? 'right' : 'left')) return;
 				table.moveFocus('left');
 				return;
 			case 'ArrowRight':
 				event.preventDefault();
-				if (moveFocusIntoResizeHandle('right')) return;
+				if (moveFocusIntoResizeHandle(isRtl(element) ? 'left' : 'right')) return;
 				table.moveFocus('right');
 				return;
 			case 'Home':
@@ -261,8 +268,8 @@
 	data-pin-edge={pinState?.isEdge ? 'true' : undefined}
 	style:box-sizing="border-box"
 	style:position={pinState ? 'sticky' : 'relative'}
-	style:left={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
-	style:right={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
+	style:inset-inline-start={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
+	style:inset-inline-end={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
 	style:z-index={pinState ? 3 : undefined}
 	style:overflow="visible"
 	style:width={columnWidthStyle}

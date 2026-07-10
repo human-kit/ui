@@ -38,7 +38,8 @@
 			aria-label="Selected values"
 		>
 			{#snippet children({ item })}
-				<span data-tag-id={item.id} class="tag">{item.label}</span>
+				<!-- The id exercises the mirror's duplicate-id stripping. -->
+				<span id={`tag-${item.id}`} data-tag-id={item.id} class="tag">{item.label}</span>
 			{/snippet}
 			{#snippet overflow({ count, visible, total })}
 				{#if visible === 0}

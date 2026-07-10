@@ -16,19 +16,19 @@
 	];
 
 	const cellClass =
-		'px-4 py-3 text-sm text-gray-600 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-gray-300';
+		'px-4 py-3 text-sm text-neutral-600 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300';
 </script>
 
 <div
-	class="w-full overflow-x-auto rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900"
+	class="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900"
 >
 	<Table.Root aria-label="Deployments table" class="min-w-full border-collapse text-left">
 		<Table.Header>
-			<Table.Row class="border-b border-gray-200 dark:border-gray-700">
+			<Table.Row class="border-b border-neutral-200 dark:border-neutral-700">
 				{#each columns as column (column.id)}
 					<Table.Column id={column.id} rowHeader={column.rowHeader} textValue={column.label}>
 						<Table.ColumnHeaderCell
-							class="px-4 py-3 text-xs font-semibold tracking-widest text-gray-500 uppercase outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-gray-300"
+							class="px-4 py-3 text-xs font-semibold tracking-widest text-neutral-500 uppercase outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300"
 						>
 							{column.label}
 						</Table.ColumnHeaderCell>
@@ -38,9 +38,9 @@
 		</Table.Header>
 		<Table.Body>
 			{#each deployments as deployment (deployment.id)}
-				<Table.Row id={deployment.id} class="border-b border-gray-100 dark:border-gray-800">
+				<Table.Row id={deployment.id} class="border-b border-neutral-100 dark:border-neutral-800">
 					<Table.Cell
-						class="px-4 py-3 text-sm font-medium text-gray-900 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
+						class="px-4 py-3 text-sm font-medium text-neutral-900 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
 					>
 						{deployment.service}
 					</Table.Cell>
@@ -49,14 +49,14 @@
 				</Table.Row>
 			{/each}
 			<Table.EmptyState>
-				<span class="block px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+				<span class="block px-4 py-4 text-sm text-neutral-500 dark:text-neutral-400">
 					No deployments found.
 				</span>
 			</Table.EmptyState>
 		</Table.Body>
 		<Table.Footer>
 			<Table.Row>
-				<Table.Cell class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+				<Table.Cell class="px-4 py-3 text-sm font-medium text-neutral-900 dark:text-white">
 					Total
 				</Table.Cell>
 				<Table.Cell class={cellClass}>{deployments.length} services</Table.Cell>

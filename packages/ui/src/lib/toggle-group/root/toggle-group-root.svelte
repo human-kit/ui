@@ -3,6 +3,7 @@
 	import type { ToggleGroupRootProps } from '../types.js';
 	import { createToggleGroupContext, setToggleGroupContext } from './context';
 	import { trackInteractionModality } from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
 
 	type ToggleGroupKeyboardEvent = KeyboardEvent & {
 		currentTarget: EventTarget & HTMLDivElement;
@@ -120,8 +121,12 @@
 		if (toggleGroup.isDisabled) return;
 
 		const currentValue = getCurrentValue();
-		const nextKeys = toggleGroup.orientation === 'horizontal' ? ['ArrowRight'] : ['ArrowDown'];
-		const previousKeys = toggleGroup.orientation === 'horizontal' ? ['ArrowLeft'] : ['ArrowUp'];
+		// In horizontal orientation the arrows are physical: under RTL the
+		// visual "next" toggle is the previous one in DOM order (APG).
+		const horizontal = toggleGroup.orientation === 'horizontal';
+		const rtl = horizontal && isRtl(event.currentTarget);
+		const nextKeys = horizontal ? [rtl ? 'ArrowLeft' : 'ArrowRight'] : ['ArrowDown'];
+		const previousKeys = horizontal ? [rtl ? 'ArrowRight' : 'ArrowLeft'] : ['ArrowUp'];
 
 		if (nextKeys.includes(event.key)) {
 			event.preventDefault();

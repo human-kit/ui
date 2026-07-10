@@ -7,13 +7,31 @@ import { focusWithModality, getInteractionModality } from './input-modality';
 
 const FOCUSABLE_SELECTOR = [
 	'a[href]',
+	'area[href]',
 	'button:not([disabled])',
 	'input:not([disabled])',
 	'select:not([disabled])',
 	'textarea:not([disabled])',
+	'audio[controls]',
+	'video[controls]',
+	'iframe',
+	'summary',
 	'[tabindex]:not([tabindex="-1"])',
-	'[contenteditable="true"]'
+	'[contenteditable]:not([contenteditable="false"])'
 ].join(', ');
+
+/**
+ * Active traps in activation order. Only the topmost trap handles Tab: with
+ * stacked overlays (dialog → nested dialog / modal popover) every trap used to
+ * process the same document-level keydown, and an ancestor trap — whose content
+ * the nested layer had marked `inert` — would preventDefault and try to focus
+ * its own unfocusable content, leaving Tab dead inside the nested overlay.
+ */
+const activeTraps: HTMLElement[] = [];
+
+function isTopmostTrap(node: HTMLElement): boolean {
+	return activeTraps.length > 0 && activeTraps[activeTraps.length - 1] === node;
+}
 
 export type FocusTrapOptions = {
 	enabled?: boolean;
@@ -47,7 +65,12 @@ function resolveInitialFocus(
 
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-		(element) => element.offsetParent !== null
+		(element) =>
+			// getClientRects covers display:none and detached nodes while still
+			// accepting position:fixed descendants (whose offsetParent is null).
+			element.getClientRects().length > 0 &&
+			element.closest('[inert]') === null &&
+			getComputedStyle(element).visibility !== 'hidden'
 	);
 }
 
@@ -67,9 +90,13 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 	let enabled = resolveEnabled(options);
 	let restoreFocus = resolveRestoreFocus(options);
 	let initialFocus = typeof options === 'boolean' ? undefined : options.initialFocus;
+	let pendingInitialFocusFrame: number | undefined;
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key !== 'Tab') return;
+		// Only the topmost active trap arbitrates Tab; ancestor traps under a
+		// nested overlay must not intercept it.
+		if (!isTopmostTrap(node)) return;
 
 		const focusableElements = getFocusableElements(node);
 		if (focusableElements.length === 0) {
@@ -104,12 +131,18 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 
 	function activate() {
 		previousActiveElement = document.activeElement as HTMLElement;
+		activeTraps.push(node);
 
 		if (!node.hasAttribute('tabindex')) {
 			node.setAttribute('tabindex', '-1');
 		}
 
-		requestAnimationFrame(() => {
+		pendingInitialFocusFrame = requestAnimationFrame(() => {
+			pendingInitialFocusFrame = undefined;
+			// A trap stacked above us activated (or we deactivated) before this
+			// frame — applying initial focus now would steal it from that layer.
+			if (!isTopmostTrap(node)) return;
+
 			const initialFocusTarget = resolveInitialFocus(node, initialFocus);
 			const modality = getInteractionModality();
 			if (initialFocusTarget && initialFocusTarget.isConnected) {
@@ -130,9 +163,30 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 	}
 
 	function deactivate() {
+		const index = activeTraps.lastIndexOf(node);
+		if (index !== -1) {
+			activeTraps.splice(index, 1);
+		}
+
+		if (pendingInitialFocusFrame !== undefined) {
+			cancelAnimationFrame(pendingInitialFocusFrame);
+			pendingInitialFocusFrame = undefined;
+		}
+
 		document.removeEventListener('keydown', handleKeydown, true);
 
-		if (restoreFocus && previousActiveElement && previousActiveElement.focus) {
+		// Restore only as a fallback: if something else (e.g. the overlay's own
+		// close handler focusing its trigger) already moved focus outside the
+		// trapped subtree, restoring here would stomp that deliberate move.
+		const active = document.activeElement;
+		const focusStillInside = active === null || active === document.body || node.contains(active);
+		if (
+			restoreFocus &&
+			focusStillInside &&
+			previousActiveElement &&
+			previousActiveElement.isConnected &&
+			previousActiveElement.focus
+		) {
 			previousActiveElement.focus();
 		}
 	}
@@ -144,7 +198,13 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 	return {
 		update(newOptions: boolean | FocusTrapOptions) {
 			const nextEnabled = resolveEnabled(newOptions);
-			const nextRestoreFocus = resolveRestoreFocus(newOptions);
+
+			// Apply the new option values BEFORE toggling activation, so a
+			// deactivation triggered by this update honors the options it was
+			// called with (e.g. `enabled: false, restoreFocus: false`).
+			options = newOptions;
+			restoreFocus = resolveRestoreFocus(newOptions);
+			initialFocus = typeof newOptions === 'boolean' ? undefined : newOptions.initialFocus;
 
 			if (nextEnabled && !enabled) {
 				activate();
@@ -152,10 +212,7 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 				deactivate();
 			}
 
-			options = newOptions;
 			enabled = nextEnabled;
-			restoreFocus = nextRestoreFocus;
-			initialFocus = typeof newOptions === 'boolean' ? undefined : newOptions.initialFocus;
 		},
 		destroy() {
 			if (enabled) {

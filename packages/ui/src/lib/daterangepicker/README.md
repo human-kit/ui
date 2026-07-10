@@ -65,7 +65,7 @@
 
 - Give each input its own accessible name (for example `aria-label="Start date"` and `aria-label="End date"`).
 - Segment accessible names are resolved automatically from the active locale.
-- Each input exposes `aria-invalid` and `data-invalid` when its segment draft is not committable; invalid input is shown, never auto-corrected (see UX decisions in the DatePicker README — the same contract applies).
+- Validity is per part: when an input's own segment draft is invalid (empty drafts are never invalid), its segments expose `aria-invalid` (so assistive technology announces it on the spinbuttons) and the input group exposes `data-invalid` for styling; invalid input is shown, never auto-corrected (see UX decisions in the DatePicker README — the same contract applies).
 - Disabled calendar dates remain focusable via keyboard navigation so screen readers can discover and announce them as disabled.
 - In the range calendar, the first selection starts the range, arrow keys extend the preview, and `Enter` or `Space` confirms it.
 

@@ -16,17 +16,17 @@
 		bind:value
 		disallowEmptySelection
 		aria-label="Text alignment"
-		class="grid w-full grid-cols-3 rounded-lg border border-gray-300 bg-white p-1 shadow-sm dark:border-gray-700 dark:bg-gray-900"
+		class="grid w-full grid-cols-3 rounded-lg border border-neutral-300 bg-white p-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900"
 	>
 		{#each alignmentToggles as toggle (toggle.value)}
 			<Toggle.Root
 				value={toggle.value}
-				class="inline-flex min-h-10 items-center justify-center rounded-md px-3 text-sm font-medium text-gray-700 transition-colors data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[pressed=true]:scale-[0.98] data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-gray-200 dark:data-[selected=true]:bg-blue-500 dark:data-[selected=true]:text-gray-950"
+				class="inline-flex min-h-10 items-center justify-center rounded-md px-3 text-sm font-medium text-neutral-700 transition-colors data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[pressed=true]:scale-[0.98] data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-neutral-200 dark:data-[selected=true]:bg-blue-500 dark:data-[selected=true]:text-neutral-950"
 			>
 				{toggle.label}
 			</Toggle.Root>
 		{/each}
 	</ToggleGroup.Root>
 
-	<p class="text-xs text-gray-500 dark:text-gray-400">value: {JSON.stringify(value)}</p>
+	<p class="text-xs text-neutral-500 dark:text-neutral-400">value: {JSON.stringify(value)}</p>
 </div>

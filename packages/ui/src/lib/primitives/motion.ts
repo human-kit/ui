@@ -79,8 +79,15 @@ export function trackMotionEnd(element: HTMLElement, onComplete: () => void): Mo
 			return;
 		}
 
+		const startTime = performance.now();
 		const handleMotionEnd = (event: Event) => {
 			if (event.target !== element) return;
+			// A multi-property transition (e.g. `opacity 150ms, transform 300ms`)
+			// fires one end event per property; finishing on the first one cut the
+			// motion short (overlays unmounted mid-exit). Only finish once the
+			// longest tracked duration has actually elapsed — the timeout below
+			// still covers the case where the final event never fires.
+			if (performance.now() - startTime < total - 5) return;
 			finish();
 		};
 

@@ -1,5 +1,4 @@
 import { setContext, getContext } from 'svelte';
-import type { Snippet } from 'svelte';
 import type { ListBoxContext } from '../../listbox/root/context';
 
 export type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
@@ -73,8 +72,6 @@ export type ComboBoxContext<T extends object = object> = {
 	listboxRef: HTMLElement | null;
 	/** Optional: Array of items for dynamic rendering */
 	items?: T[];
-	/** Optional: Snippet to render each item */
-	renderItem?: Snippet<[T]>;
 
 	// Methods
 	/** Set the input ref */
@@ -87,8 +84,8 @@ export type ComboBoxContext<T extends object = object> = {
 	setListboxRef: (el: HTMLElement | null) => void;
 	/** Update input value */
 	setInputValue: (value: string) => void;
-	/** Open the popover */
-	open: () => void;
+	/** Open the popover. Pass reason 'input' when the open is caused by typing. */
+	open: (options?: { reason?: 'input' | 'manual' }) => void;
 	/** Close the popover. Pass refocusInput=true to keep focus on input. */
 	close: (refocusInput?: boolean) => void;
 	/** Toggle the popover */

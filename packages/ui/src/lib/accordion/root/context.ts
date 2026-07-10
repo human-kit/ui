@@ -144,8 +144,30 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		return isDisabled || Boolean(items.get(value)?.isDisabled);
 	}
 
+	function getOrderedValues() {
+		const connected: { value: AccordionValue; element: HTMLButtonElement }[] = [];
+		const detachedValues: AccordionValue[] = [];
+
+		for (const value of itemOrder) {
+			const element = items.get(value)?.element;
+			if (element?.isConnected) {
+				connected.push({ value, element });
+			} else {
+				detachedValues.push(value);
+			}
+		}
+
+		connected.sort((left, right) =>
+			left.element.compareDocumentPosition(right.element) & Node.DOCUMENT_POSITION_FOLLOWING
+				? -1
+				: 1
+		);
+
+		return [...connected.map((entry) => entry.value), ...detachedValues];
+	}
+
 	function getEnabledValues() {
-		return itemOrder.filter((value) => items.has(value) && !isItemDisabled(value));
+		return getOrderedValues().filter((value) => items.has(value) && !isItemDisabled(value));
 	}
 
 	function getFirstEnabledValue() {
@@ -183,11 +205,12 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		const enabledValues = getEnabledValues();
 		if (enabledValues.length === 0) return null;
 
-		const currentIndex = itemOrder.findIndex((itemValue) => valuesMatch(itemValue, value));
+		const orderedValues = getOrderedValues();
+		const currentIndex = orderedValues.findIndex((itemValue) => valuesMatch(itemValue, value));
 		if (currentIndex < 0) return enabledValues[0] ?? null;
 
-		for (let offset = 1; offset <= itemOrder.length; offset += 1) {
-			const candidate = itemOrder[(currentIndex + offset) % itemOrder.length];
+		for (let offset = 1; offset <= orderedValues.length; offset += 1) {
+			const candidate = orderedValues[(currentIndex + offset) % orderedValues.length];
 			if (candidate !== undefined && items.has(candidate) && !isItemDisabled(candidate)) {
 				return candidate;
 			}
@@ -206,6 +229,12 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 
 		if (!didChange) return false;
 
+		if (isControlled && changeOptions?.notify !== false) {
+			// Controlled mode: request the change and let the parent apply it via props.
+			options.onValueChange?.(nextValue);
+			return true;
+		}
+
 		openValues = normalizedValues;
 		bumpState();
 
@@ -217,6 +246,8 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 	}
 
 	function reconcileOpen(changedValue?: AccordionValue, changeOptions?: { notify?: boolean }) {
+		if (isControlled) return;
+
 		const nextValues = new Set(openValues);
 		let removedValue: AccordionValue | undefined;
 
@@ -231,7 +262,7 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 			}
 		}
 
-		if (!isControlled && disallowEmptySelection && nextValues.size === 0) {
+		if (disallowEmptySelection && nextValues.size === 0) {
 			const fallbackValue =
 				removedValue === undefined ? getFirstEnabledValue() : getFallbackValueAfter(removedValue);
 			if (fallbackValue !== null) {
@@ -266,7 +297,7 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 			focusVisible = false;
 		}
 
-		reconcileOpen(value, { notify: false });
+		reconcileOpen(value, { notify: isExisting });
 		bumpState();
 	}
 
@@ -283,15 +314,15 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 			focusedValue = null;
 		}
 
-		reconcileOpen(value, { notify: false });
+		reconcileOpen(value);
 		bumpState();
 	}
 
 	function setSelectionMode(mode: AccordionSelectionMode) {
 		if (selectionMode === mode) return;
 		selectionMode = mode;
-		setOpen(openValues, { notify: false });
-		reconcileOpen(undefined, { notify: false });
+		setOpen(openValues, { notify: !isControlled });
+		reconcileOpen();
 		bumpState();
 	}
 
@@ -314,7 +345,7 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 	function setDisallowEmptySelection(disallow: boolean) {
 		if (disallowEmptySelection === disallow) return;
 		disallowEmptySelection = disallow;
-		reconcileOpen(undefined, { notify: false });
+		reconcileOpen();
 		bumpState();
 	}
 

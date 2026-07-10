@@ -83,6 +83,27 @@ describe('Table.Root', () => {
 			.toBe('2');
 	});
 
+	it('applies hidden columns through the public context API and reports the change', async () => {
+		const onHiddenColumnsChange = vi.fn();
+		render(TableTest, {
+			showContextHiddenColumnsButton: true,
+			onHiddenColumnsChange
+		});
+
+		await userEvent.click(
+			document.querySelector<HTMLElement>('[data-testid="context-hide-group-column"]')!
+		);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="hidden-columns"]')?.textContent)
+			.toBe('["group"]');
+		await expect
+			.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-colcount'))
+			.toBe('1');
+		expect(onHiddenColumnsChange).toHaveBeenCalledTimes(1);
+		expect(onHiddenColumnsChange).toHaveBeenCalledWith(['group']);
+	});
+
 	it('skips hidden columns during horizontal keyboard navigation', async () => {
 		render(TableTest, {
 			defaultHiddenColumns: ['group']
@@ -181,6 +202,28 @@ describe('Table.Root', () => {
 
 		await expect.poll(() => document.activeElement).toBe(groupHeader);
 		expect(groupHeader.getAttribute('data-focused')).toBe('true');
+	});
+
+	it('inverts horizontal arrow keys in RTL layouts', async () => {
+		const previousDir = document.documentElement.dir;
+		document.documentElement.dir = 'rtl';
+
+		try {
+			const screen = render(TableTest);
+			const grid = screen.getByRole('grid').element() as HTMLElement;
+			const [emailHeader, groupHeader] = getHeaderCells(grid);
+
+			groupHeader.focus();
+			// Visually right in RTL is the previous logical column.
+			await userEvent.keyboard('{ArrowRight}');
+			await expect.poll(() => document.activeElement).toBe(emailHeader);
+
+			// Visually left in RTL is the next logical column.
+			await userEvent.keyboard('{ArrowLeft}');
+			await expect.poll(() => document.activeElement).toBe(groupHeader);
+		} finally {
+			document.documentElement.dir = previousDir;
+		}
 	});
 
 	it('moves focus vertically from header to body cells', async () => {
@@ -775,6 +818,44 @@ describe('Table.Root', () => {
 			.toBe('');
 	});
 
+	it('does not fire onSortChange on mount for a controlled sort descriptor', async () => {
+		const onSortChange = vi.fn();
+		render(TableTest, {
+			initialSortDescriptor: { column: 'group', direction: 'ascending' },
+			onSortChange
+		});
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:ascending');
+
+		const [, groupHeader] = getHeaderCells(document.body);
+		await expect.element(groupHeader).toHaveAttribute('aria-sort', 'ascending');
+		expect(onSortChange).not.toHaveBeenCalled();
+	});
+
+	it('fires onSortChange exactly once per sort trigger activation', async () => {
+		const onSortChange = vi.fn();
+		render(TableTest, { onSortChange });
+		const groupSortTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="group-sort-trigger"]'
+		)!;
+
+		await groupSortTrigger.click();
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:ascending');
+		expect(onSortChange).toHaveBeenCalledTimes(1);
+		expect(onSortChange).toHaveBeenLastCalledWith({ column: 'group', direction: 'ascending' });
+
+		await groupSortTrigger.click();
+		await expect
+			.poll(() => document.querySelector('[data-testid="sort-descriptor"]')?.textContent)
+			.toBe('group:descending');
+		expect(onSortChange).toHaveBeenCalledTimes(2);
+		expect(onSortChange).toHaveBeenLastCalledWith({ column: 'group', direction: 'descending' });
+	});
+
 	it('renders visually hidden accessibility nodes with fixed positioning', async () => {
 		render(TableTest, {
 			selectionMode: 'multiple',
@@ -1156,6 +1237,27 @@ describe('Table.Root', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
 			.toContain('jasper');
+	});
+
+	it('does not emit a selection change when Ctrl+A repeats with all rows already selected', async () => {
+		const onSelectionChange = vi.fn();
+		render(TableTest, { selectionMode: 'multiple', onSelectionChange });
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]');
+		firstBodyCell?.focus();
+
+		await userEvent.keyboard('{Control>}a{/Control}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toContain('jasper');
+		expect(onSelectionChange).toHaveBeenCalledTimes(1);
+
+		await userEvent.keyboard('{Control>}a{/Control}');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toContain('jasper');
+		expect(onSelectionChange).toHaveBeenCalledTimes(1);
 	});
 
 	it('renders body value cells as gridcells', async () => {

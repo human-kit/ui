@@ -45,8 +45,6 @@
 		onChange?: (value: string | number | null | (string | number)[]) => void;
 		/** Optional: Array of items. Used internally to resolve selected labels before options mount. */
 		items?: T[];
-		/** Optional: Snippet to render each item (used with items prop) */
-		renderItem?: Snippet<[T]>;
 		children?: Snippet;
 		class?: string;
 		/** Accessible label for the combobox group */
@@ -77,7 +75,6 @@
 		onOpenChange,
 		onChange,
 		items,
-		renderItem,
 		children,
 		class: className = '',
 		'aria-label': ariaLabel,
@@ -115,7 +112,7 @@
 	let selectedLabel: string = $state('');
 
 	// Persistent labels for selected items in multiple mode (not cleared on unregister)
-	let selectedLabels = $state(new Map<string | number, string>());
+	const selectedLabels = new SvelteMap<string | number, string>();
 
 	// Virtual focus for tag navigation in multiple mode
 	let focusedTagId: string | number | null = $state(null);
@@ -246,6 +243,9 @@
 	const filterValue = $derived(shouldFilter ? currentInputValue : '');
 
 	function setIsOpen(open: boolean) {
+		// No-op guard: prevents duplicate onOpenChange notifications when close
+		// is requested twice (e.g. Escape closing and then blur handling).
+		if (open === currentIsOpen) return;
 		isOpenInternal = open;
 		openProp = open; // Update bindable prop
 		onOpenChange?.(open);
@@ -432,22 +432,28 @@
 		onInputChange?.('');
 	}
 
-	function openPopover() {
+	function openPopover(options?: { reason?: 'input' | 'manual' }) {
 		if (!disabled && !readonly) {
 			// Don't open if triggerRef is not set yet (prevents race condition with focus trap)
 			if (!triggerRef) {
 				return;
 			}
+			// When the open is caused by typing, the user is actively filtering:
+			// keep the filter they just started and don't move focus to the
+			// previous selection.
+			const openedByTyping = options?.reason === 'input';
 			// If opening with a selection, disable filtering to show all options
-			if (currentSelection.size > 0 && selectionMode === 'single') {
-				shouldFilter = false;
-			} else {
-				shouldFilter = true;
+			if (!openedByTyping) {
+				if (currentSelection.size > 0 && selectionMode === 'single') {
+					shouldFilter = false;
+				} else {
+					shouldFilter = true;
+				}
 			}
 			setIsOpen(true);
 			// Auto-focus the selected item when opening with a selection
 			// This way the first arrow key press will navigate from the selection
-			if (currentSelection.size > 0 && selectionMode === 'single') {
+			if (!openedByTyping && currentSelection.size > 0 && selectionMode === 'single') {
 				const selectedId = Array.from(currentSelection)[0];
 				navigation.setFocused(selectedId);
 			}
@@ -455,9 +461,12 @@
 	}
 
 	function closePopover(refocusInput = false) {
+		// setIsOpen(false) already clears the virtual focus and any pending
+		// direction. Item registration follows the item mount cycle (items stay
+		// mounted through the exit animation and unregister on destroy), so we
+		// must not wipe itemIds here or a quick reopen would leave navigation
+		// without registered items.
 		setIsOpen(false);
-		// Reset navigation state
-		navigation.reset();
 		// Only refocus input when explicitly requested (e.g., after selection)
 		// Never refocus in focus mode to prevent re-opening
 		if (refocusInput && trigger !== 'focus') {
@@ -604,6 +613,9 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (disabled) return;
+		// Ignore keystrokes that are part of an IME composition (e.g. CJK input)
+		// so Enter/arrows don't select items or navigate mid-composition.
+		if (event.isComposing || event.keyCode === 229) return;
 		trackInteractionModality(event, event.target as HTMLElement | null);
 
 		// Handle tag virtual focus navigation in multiple mode
@@ -887,9 +899,6 @@
 		get items() {
 			return items;
 		},
-		get renderItem() {
-			return renderItem;
-		},
 		setInputRef: (el) => {
 			inputRef = el;
 		},
@@ -930,6 +939,17 @@
 		},
 		markPopoverPointerDown: () => {
 			popoverPointerDownPending = true;
+			// The marker only needs to survive the mousedown -> blur window.
+			// Clear it on the next pointerup so item clicks that prevent the blur
+			// (preventDefault) don't leave a stale flag that would swallow a
+			// later, unrelated blur (e.g. Tab-out after the click).
+			window.addEventListener(
+				'pointerup',
+				() => {
+					popoverPointerDownPending = false;
+				},
+				{ once: true, capture: true }
+			);
 		},
 		consumePopoverPointerDown,
 		setShouldCloseOnEscape: (value: boolean) => {

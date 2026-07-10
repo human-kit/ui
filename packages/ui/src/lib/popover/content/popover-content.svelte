@@ -165,9 +165,6 @@
 	}
 
 	function close(reason: PopoverCloseReason = 'imperative-action', event?: Event) {
-		closeHandledInternally = true;
-		releaseFocusedDescendant(popoverRef, triggerRef);
-
 		if (isStandalone) {
 			let canceled = false;
 			const details: PopoverOpenChangeDetails = {
@@ -181,17 +178,29 @@
 				}
 			};
 
+			// Notify (and allow cancel) BEFORE blurring the focused descendant —
+			// a canceled close must leave the user's focus untouched.
 			onOpenChangeProp?.(false, details);
 			if (details.isCanceled) return;
+			closeHandledInternally = true;
+			releaseFocusedDescendant(popoverRef, triggerRef);
 			if (triggerRefProp) {
 				applyStandaloneTriggerCloseState(triggerRefProp, reason, event);
 			}
 		} else {
 			ctx!.close(reason, event);
+			// The Root's onOpenChange may have canceled the close (or a controlled
+			// parent may have kept it open) — only release focus once it actually closed.
+			if (ctx!.isOpen) return;
+			closeHandledInternally = true;
+			releaseFocusedDescendant(popoverRef, triggerRef);
 		}
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		// Another layer (or a widget like a range-selection calendar) already consumed
+		// this Escape — a single keypress must dismiss at most one thing.
+		if (event.defaultPrevented) return;
 		if (event.key === 'Escape' && isOpen && shouldCloseOnEscape) {
 			// Only the topmost layer dismisses, so a nested popover (e.g. a
 			// calendar inside a filter popover) closes without its ancestors.
@@ -224,7 +233,7 @@
 
 		// Only close on external scroll
 		if (!isInsidePopover && !isInsideTrigger) {
-			close('outside-press', event);
+			close('scroll', event);
 		}
 	}
 
@@ -369,7 +378,10 @@
 			use:clickOutside={{
 				handler: (event) => {
 					if (!isTopmost()) return;
-					event.preventDefault();
+					// No preventDefault: the outside press must keep its native behavior
+					// (focusing the clicked element, placing the caret, starting a text
+					// selection) — suppressing it left the first click on an outside
+					// input closing the popover without ever focusing the input.
 					close('outside-press', event);
 				},
 				enabled: isOpen && shouldCloseOnInteractOutside,

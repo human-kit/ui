@@ -139,13 +139,6 @@
 					"description": "Optional: Array of items. Used internally to resolve selected labels before options mount."
 				},
 				{
-					"name": "renderItem",
-					"type": "Snippet<[T]>",
-					"required": false,
-					"default": null,
-					"description": "Optional: Snippet to render each item (used with items prop)"
-				},
-				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
