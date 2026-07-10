@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { useTabsContext } from '../root/context';
+	import { useTabsContext } from '../root/context.svelte';
 	import type { TabsPanelProps } from '../types.js';
 
 	let {
@@ -14,7 +14,6 @@
 	}: TabsPanelProps = $props();
 
 	const tabs = useTabsContext();
-	const stateVersion = tabs.stateVersion;
 	const panelId = $derived(tabs.getPanelId(value));
 	const tabId = $derived(tabs.getTabId(value));
 
@@ -25,10 +24,7 @@
 		tabs.registerPanel(registeredValue);
 	});
 
-	const active = $derived.by(() => {
-		void $stateVersion;
-		return tabs.isSelected(value);
-	});
+	const active = $derived(tabs.isSelected(value));
 	const shouldRender = $derived(active || forceMount);
 
 	$effect(() => {

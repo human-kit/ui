@@ -1,5 +1,6 @@
 import { getContext, setContext } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+import { asCommand } from '../../internal/as-command.js';
 
 export type TabsValue = string | number;
 export type TabsKeyboardActivation = 'automatic' | 'manual';
@@ -34,8 +35,6 @@ export type CreateTabsContextOptions = {
 };
 
 export type TabsContext = {
-	stateVersion: Readable<number>;
-	layoutVersion: Readable<number>;
 	instanceId: string;
 	keyboardActivation: TabsKeyboardActivation;
 	orientation: TabsOrientation;
@@ -45,6 +44,12 @@ export type TabsContext = {
 	activationDirection: TabsActivationDirection;
 	listElement: HTMLElement | null;
 	disabledKeys: Set<TabsValue>;
+	/**
+	 * Counter bumped by `notifyLayoutChange`. Consumers that measure DOM
+	 * geometry (e.g. the indicator) read it so an explicit external bump can
+	 * force a re-measure; everything else is tracked fine-grained.
+	 */
+	layoutEpoch: number;
 	getTabId: (value: TabsValue) => string;
 	getPanelId: (value: TabsValue) => string;
 	registerTab: (
@@ -89,31 +94,25 @@ function valuesMatch(left: TabsValue | null, right: TabsValue | null) {
 
 export function createTabsContext(options: CreateTabsContextOptions): TabsContext {
 	const isControlled = options.isControlled ?? false;
-	let keyboardActivation = options.keyboardActivation ?? 'automatic';
-	let orientation = options.orientation ?? 'horizontal';
-	let isDisabled = options.isDisabled ?? false;
-	let selectedValue: TabsValue | null =
-		options.initialValue === undefined ? null : options.initialValue;
-	let focusedValue: TabsValue | null = null;
-	let focusVisible = false;
-	let activationDirection: TabsActivationDirection = null;
-	let listElement: HTMLElement | null = null;
+	let keyboardActivation = $state(options.keyboardActivation ?? 'automatic');
+	let orientation = $state(options.orientation ?? 'horizontal');
+	let isDisabled = $state(options.isDisabled ?? false);
+	let selectedValue = $state<TabsValue | null>(
+		options.initialValue === undefined ? null : options.initialValue
+	);
+	let focusedValue = $state<TabsValue | null>(null);
+	let focusVisible = $state(false);
+	let activationDirection = $state<TabsActivationDirection>(null);
+	let listElement = $state<HTMLElement | null>(null);
+	// Only bumped by `notifyLayoutChange` (public escape hatch); geometry
+	// consumers otherwise track the state they actually read.
+	let layoutEpoch = $state(0);
 	let shouldSelectFirstOnRegister = options.initialValue === undefined;
 
-	const disabledKeys = new Set<TabsValue>(options.disabledKeys ?? []);
-	const tabs = new Map<TabsValue, TabsTabRegistration>();
-	const panels = new Map<TabsValue, TabsPanelRegistration>();
-	const tabOrder: TabsValue[] = [];
-	const stateVersion = writable(0);
-	const layoutVersion = writable(0);
-
-	function bumpState() {
-		stateVersion.update((value) => value + 1);
-	}
-
-	function bumpLayout() {
-		layoutVersion.update((value) => value + 1);
-	}
+	const disabledKeys = new SvelteSet<TabsValue>(options.disabledKeys ?? []);
+	const tabs = new SvelteMap<TabsValue, TabsTabRegistration>();
+	const panels = new SvelteMap<TabsValue, TabsPanelRegistration>();
+	const tabOrder = $state<TabsValue[]>([]);
 
 	function getTabId(value: TabsValue) {
 		return `${options.instanceId}-tab-${normalizeIdSegment(value)}`;
@@ -216,8 +215,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		if (valuesMatch(selectedValue, nextValue)) return;
 		activationDirection = getActivationDirection(selectedValue, nextValue);
 		selectedValue = nextValue;
-		bumpState();
-		bumpLayout();
 	}
 
 	function publishSelectedValue(nextValue: TabsValue | null) {
@@ -275,8 +272,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		});
 
 		reconcileSelection({ notify: hadTab });
-		bumpState();
-		bumpLayout();
 	}
 
 	function unregisterTab(value: TabsValue) {
@@ -297,8 +292,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		} else {
 			reconcileSelection();
 		}
-		bumpState();
-		bumpLayout();
 	}
 
 	function registerPanel(value: TabsValue, element?: HTMLDivElement | null) {
@@ -308,30 +301,24 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 			tabId: getTabId(value),
 			element
 		});
-		bumpState();
 	}
 
 	function unregisterPanel(value: TabsValue) {
 		panels.delete(value);
-		bumpState();
 	}
 
 	function setListElement(element: HTMLElement | null) {
 		listElement = element;
-		bumpLayout();
 	}
 
 	function setKeyboardActivation(activation: TabsKeyboardActivation) {
 		if (keyboardActivation === activation) return;
 		keyboardActivation = activation;
-		bumpState();
 	}
 
 	function setOrientation(nextOrientation: TabsOrientation) {
 		if (orientation === nextOrientation) return;
 		orientation = nextOrientation;
-		bumpState();
-		bumpLayout();
 	}
 
 	function setDisabled(disabled: boolean) {
@@ -341,7 +328,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 			focusVisible = false;
 		}
 		reconcileSelection();
-		bumpState();
 	}
 
 	function setDisabledKeys(values?: Iterable<TabsValue>) {
@@ -350,8 +336,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 			disabledKeys.add(value);
 		}
 		reconcileSelection();
-		bumpState();
-		bumpLayout();
 	}
 
 	function activateTab(value: TabsValue) {
@@ -363,7 +347,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 	function setFocusedValue(value: TabsValue | null) {
 		if (valuesMatch(focusedValue, value)) return;
 		focusedValue = value;
-		bumpState();
 	}
 
 	function focusValue(value: TabsValue, focusOptions: { activate?: boolean } = {}) {
@@ -378,7 +361,6 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
-		bumpState();
 	}
 
 	function isSelected(value: TabsValue) {
@@ -403,9 +385,11 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		return selectedValue === null ? undefined : tabs.get(selectedValue);
 	}
 
+	function notifyLayoutChange() {
+		layoutEpoch += 1;
+	}
+
 	return {
-		stateVersion,
-		layoutVersion,
 		instanceId: options.instanceId,
 		get keyboardActivation() {
 			return keyboardActivation;
@@ -428,23 +412,26 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		get listElement() {
 			return listElement;
 		},
+		get layoutEpoch() {
+			return layoutEpoch;
+		},
 		disabledKeys,
 		getTabId,
 		getPanelId,
-		registerTab,
-		unregisterTab,
-		registerPanel,
-		unregisterPanel,
-		setListElement,
-		setKeyboardActivation,
-		setOrientation,
-		setDisabled,
-		setDisabledKeys,
-		setSelectedValue,
-		activateTab,
-		setFocusedValue,
-		focusValue,
-		setFocusVisible,
+		registerTab: asCommand(registerTab),
+		unregisterTab: asCommand(unregisterTab),
+		registerPanel: asCommand(registerPanel),
+		unregisterPanel: asCommand(unregisterPanel),
+		setListElement: asCommand(setListElement),
+		setKeyboardActivation: asCommand(setKeyboardActivation),
+		setOrientation: asCommand(setOrientation),
+		setDisabled: asCommand(setDisabled),
+		setDisabledKeys: asCommand(setDisabledKeys),
+		setSelectedValue: asCommand(setSelectedValue),
+		activateTab: asCommand(activateTab),
+		setFocusedValue: asCommand(setFocusedValue),
+		focusValue: asCommand(focusValue),
+		setFocusVisible: asCommand(setFocusVisible),
 		isSelected,
 		isFocused,
 		isFocusVisible,
@@ -457,7 +444,7 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		getNextEnabledValue,
 		getFirstEnabledValue,
 		getLastEnabledValue,
-		notifyLayoutChange: bumpLayout
+		notifyLayoutChange: asCommand(notifyLayoutChange)
 	};
 }
 

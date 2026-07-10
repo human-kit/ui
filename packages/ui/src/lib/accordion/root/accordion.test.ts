@@ -30,6 +30,27 @@ describe('Accordion', () => {
 		expect(billingPanel?.hasAttribute('inert')).toBe(true);
 	});
 
+	it('drops the region landmark when region={false} while keeping the panel wired to its trigger', async () => {
+		render(AccordionTest, { defaultValue: ['overview'], panelRegion: false });
+
+		const overviewPanel = document.querySelector<HTMLElement>('[data-testid="panel-overview"]');
+		const overviewTrigger = document.querySelector<HTMLElement>(
+			'[data-testid="trigger-overview"]'
+		);
+
+		expect(overviewPanel).toBeTruthy();
+		// Opt-out for large accordions: no role="region" landmark on the panel.
+		expect(overviewPanel?.hasAttribute('role')).toBe(false);
+		// The aria-controls / aria-labelledby wiring is unaffected.
+		expect(overviewPanel?.getAttribute('aria-labelledby')).toBe(overviewTrigger?.id);
+		expect(overviewTrigger?.getAttribute('aria-controls')).toBe(overviewPanel?.id);
+		expect(overviewPanel?.hidden).toBe(false);
+
+		// Other panels keep the default role="region".
+		const billingPanel = document.querySelector<HTMLElement>('[data-testid="panel-billing"]');
+		expect(billingPanel?.getAttribute('role')).toBe('region');
+	});
+
 	it('keeps a closed panel mounted (hidden) at rest when forceMount is set', async () => {
 		render(AccordionTest, { defaultValue: ['overview'], securityForceMount: true });
 		const securityPanel = document.querySelector<HTMLElement>('[data-testid="panel-security"]');

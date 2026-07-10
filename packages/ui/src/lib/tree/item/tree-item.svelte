@@ -5,7 +5,7 @@
 		useTreeContext,
 		useTreeLevelContext,
 		type TreeNodeId
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import { getTreeRenderMode } from '../root/render-mode';
 	import { getTreeItemBuildContext, setTreeItemBuildContext } from './build-context';
 	import type { TreeItemProps } from '../types';

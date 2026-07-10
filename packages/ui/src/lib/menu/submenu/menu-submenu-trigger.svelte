@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { untrack } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import { useMenuContext } from '../root/context';
 
 	/**
@@ -32,6 +32,7 @@
 		onclick: onClickExternal,
 		onkeydown: onKeydownExternal,
 		onpointerenter: onPointerEnterExternal,
+		onpointerleave: onPointerLeaveExternal,
 		...restProps
 	}: MenuSubmenuTriggerProps = $props();
 
@@ -52,7 +53,23 @@
 
 	let triggerRef: HTMLElement | null = $state(null);
 
+	/** Hover-intent delay before a pointer hover opens the submenu, so a pointer merely
+	 *  crossing the trigger doesn't flicker it open (or instantly displace an open sibling). */
+	const HOVER_OPEN_DELAY_MS = 100;
+	let hoverOpenTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function clearHoverOpenTimer() {
+		if (hoverOpenTimer !== null) {
+			clearTimeout(hoverOpenTimer);
+			hoverOpenTimer = null;
+		}
+	}
+
+	onDestroy(clearHoverOpenTimer);
+
 	function openSubmenu(intent: 'first' | 'pointer') {
+		// Any deliberate open (keyboard/click) supersedes a pending hover-intent open.
+		clearHoverOpenTimer();
 		if (disabled) return;
 		if (intent === 'first') {
 			submenuCtx.requestOpenFocus('first');
@@ -118,9 +135,24 @@
 			// Landing on the trigger resolves any deferred sibling highlight.
 			parentCtx.cancelPendingHighlight();
 			parentCtx.keyboardNav.focusById(itemId);
-			openSubmenu('pointer');
+			// Hover-intent: highlight immediately but delay the open, so a pointer that only
+			// crosses the trigger never opens (and never closes a sibling submenu).
+			if (!submenuCtx.isOpen) {
+				clearHoverOpenTimer();
+				hoverOpenTimer = setTimeout(() => {
+					hoverOpenTimer = null;
+					openSubmenu('pointer');
+				}, HOVER_OPEN_DELAY_MS);
+			}
 		}
 		onPointerEnterExternal?.(event);
+	}
+
+	function handlePointerLeave(
+		event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }
+	) {
+		clearHoverOpenTimer();
+		onPointerLeaveExternal?.(event);
 	}
 </script>
 
@@ -143,6 +175,7 @@
 	onclick={handleClick}
 	onkeydown={handleKeydown}
 	onpointerenter={handlePointerEnter}
+	onpointerleave={handlePointerLeave}
 	{...restProps}
 >
 	{@render children?.()}

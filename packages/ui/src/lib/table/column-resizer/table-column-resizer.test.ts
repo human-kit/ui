@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import { distributeRoundedWidths, type TableColumnWidth } from '../root/context';
+import { distributeRoundedWidths, type TableColumnWidth } from '../root/context.svelte';
 import ColumnResizerTest from './table-column-resizer-test.svelte';
 import ColumnResizerFixedWidthTest from './table-column-resizer-fixed-width-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';
@@ -74,7 +74,7 @@ function readResizeAnnouncement(testId: string) {
 }
 
 describe('Table.ColumnResizer', () => {
-	it('renders a focusable separator and applies controlled widths on header cells', async () => {
+	it('renders a separator outside the tab order and applies controlled widths on header cells', async () => {
 		render(ColumnResizerTest);
 
 		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]');
@@ -84,7 +84,9 @@ describe('Table.ColumnResizer', () => {
 		);
 
 		await expect.element(emailResizer).toHaveAttribute('role', 'separator');
-		await expect.element(emailResizer).toHaveAttribute('tabindex', '0');
+		// tabindex="-1": the grid keeps a single Tab stop; the handle is reached with
+		// ArrowRight from its header cell (roving focus), not with Tab.
+		await expect.element(emailResizer).toHaveAttribute('tabindex', '-1');
 		expect(emailTh?.style.width).toBe('200px');
 		expect(resizeStatus?.style.position).toBe('fixed');
 		expect(resizeStatus?.style.top).toBe('0px');
@@ -131,7 +133,7 @@ describe('Table.ColumnResizer', () => {
 
 		await expect.poll(() => fixedHeader.style.width).toBe('220px');
 		await expect.element(fixedResizer).toHaveAttribute('role', 'separator');
-		await expect.element(fixedResizer).toHaveAttribute('tabindex', '0');
+		await expect.element(fixedResizer).toHaveAttribute('tabindex', '-1');
 		expect(fixedResizer.style.pointerEvents).toBe('auto');
 
 		fixedResizer.dispatchEvent(
@@ -179,7 +181,7 @@ describe('Table.ColumnResizer', () => {
 
 		await expect.poll(() => roleHeader.style.width).toBe('180px');
 		await expect.element(roleResizer).toHaveAttribute('role', 'separator');
-		await expect.element(roleResizer).toHaveAttribute('tabindex', '0');
+		await expect.element(roleResizer).toHaveAttribute('tabindex', '-1');
 
 		roleResizer.focus();
 		await userEvent.keyboard('{Enter}');

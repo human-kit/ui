@@ -5,7 +5,7 @@
 		useTableContext,
 		useTableRowContext,
 		type TableSelectionKey
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import type { TableInteractiveCellProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
@@ -18,18 +18,12 @@
 	const table = useTableContext();
 	const row = useTableRowContext();
 	const key = table.createInstanceToken('cell');
-	const layoutVersion = table.layoutVersion;
-	const focusVersion = table.focusVersion;
-	const selectionVersion = table.selectionVersion;
-	const widthVersion = table.widthVersion;
-	const cellOrderVersion = row.cellOrderVersion;
-	const rowState = row.rowState;
 
 	let element = $state<HTMLElement | undefined>(undefined);
 	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
 	row.registerCellToken(key, () => element);
 	const cellIndex = $derived.by(() => {
-		void $cellOrderVersion;
+		void row.cellOrderEpoch;
 		return row.getCellIndex(key);
 	});
 
@@ -70,16 +64,19 @@
 		}
 	});
 
+	// Layout-cache-mediated read: depends on the layout epoch only. It must
+	// NOT gain a focus dependency (focus moves would needlessly rebuild the
+	// column layout for every cell).
 	const column = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return cellIndex >= 0 ? table.getColumnLayoutAt(cellIndex) : undefined;
 	});
 	const resolvedColumn = $derived(column?.column);
 	const isColumnHidden = $derived(column?.isHidden ?? false);
 	const visibleColumnIndex = $derived(column?.visibleColumnIndex ?? -1);
 	const pinState = $derived.by(() => {
-		void $layoutVersion;
-		void $widthVersion;
+		void table.layoutEpoch;
+		void table.widthEpoch;
 		const columnId = resolvedColumn?.id;
 		return columnId ? table.getColumnPinState(columnId) : null;
 	});
@@ -89,25 +86,22 @@
 		if (row.section !== 'body') return undefined;
 		return resolvedColumn?.isRowHeader ? 'rowheader' : 'gridcell';
 	});
-	const isFocused = $derived.by(() => {
-		void $focusVersion;
-		return row.section === 'body' ? table.isCellFocused(key) : false;
-	});
-	const isFocusVisible = $derived.by(() => {
-		void $focusVersion;
-		return row.section === 'body' ? isFocused && table.focusVisible : false;
-	});
-	const isRowSelected = $derived(row.section === 'body' ? $rowState.isSelected : false);
-	const isRowDisabled = $derived.by(() => {
-		void $selectionVersion;
-		return row.section === 'body'
-			? table.isRowDisabled(row.rowId as TableSelectionKey | undefined, row.isDisabled)
-			: row.isDisabled;
-	});
-	const isRowSelectionDisabled = $derived(
-		row.section === 'body' ? $rowState.isSelectionDisabled : row.isDisabled
+	// Focus/selection/disabled state is fine-grained `$state` in the context —
+	// the reads below track it directly, no version counters needed.
+	const isFocused = $derived(row.section === 'body' ? table.isCellFocused(key) : false);
+	const isFocusVisible = $derived(
+		row.section === 'body' ? isFocused && table.focusVisible : false
 	);
-	const isRowActionable = $derived(row.section === 'body' ? $rowState.isActionable : false);
+	const isRowSelected = $derived(row.section === 'body' ? row.rowState.isSelected : false);
+	const isRowDisabled = $derived(
+		row.section === 'body'
+			? table.isRowDisabled(row.rowId as TableSelectionKey | undefined, row.isDisabled)
+			: row.isDisabled
+	);
+	const isRowSelectionDisabled = $derived(
+		row.section === 'body' ? row.rowState.isSelectionDisabled : row.isDisabled
+	);
+	const isRowActionable = $derived(row.section === 'body' ? row.rowState.isActionable : false);
 	const selectionUnavailableDescriptionId = $derived.by(() =>
 		row.section === 'body' &&
 		table.selectionMode !== 'none' &&
@@ -122,7 +116,6 @@
 		if (isColumnHidden) return undefined;
 		if (!isCellFocusable) return undefined;
 		if (focusDelegate) return undefined;
-		void $focusVersion;
 		if (table.focusedCellKey === null && table.getHeaderRowCount() > 0) return -1;
 		return table.isCellTabStop(key) ? 0 : -1;
 	});

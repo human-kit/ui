@@ -35,6 +35,10 @@
 		onChange?: (value: Set<string | number>) => void;
 		/** Disable DOM focus handling on the root container for virtual-focus compositions. */
 		disableFocusHandling?: boolean;
+		/** Whether arrow-key navigation wraps from the last item to the first (and back). */
+		loop?: boolean;
+		/** Whether typing characters moves focus to the option whose text matches. */
+		typeahead?: boolean;
 	};
 
 	let {
@@ -51,6 +55,8 @@
 		'aria-label': ariaLabel,
 		onChange,
 		disableFocusHandling = false,
+		loop = false,
+		typeahead = false,
 		context = $bindable(),
 		element = $bindable()
 	}: ListBoxProps & { context?: ListBoxContext; element?: HTMLElement } = $props();
@@ -81,6 +87,12 @@
 		},
 		get disabledKeys() {
 			return disabledKeys;
+		},
+		get loop() {
+			return loop;
+		},
+		get typeahead() {
+			return typeahead;
 		},
 		// Use function to capture initial value only (not reactive)
 		initialSelection: (() => parseSelection(value ?? defaultValue))(),

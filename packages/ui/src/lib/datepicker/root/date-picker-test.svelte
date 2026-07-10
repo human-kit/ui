@@ -14,6 +14,7 @@
 		inputLabel?: string;
 		inputAriaInvalid?: boolean;
 		popoverAriaLabel?: string;
+		rootAriaLabel?: string;
 	};
 
 	let {
@@ -28,7 +29,8 @@
 		inputName,
 		inputLabel,
 		inputAriaInvalid,
-		popoverAriaLabel = 'Calendar'
+		popoverAriaLabel = 'Calendar',
+		rootAriaLabel
 	}: Props = $props();
 
 	let selectedValue = $state<string | null>('');
@@ -45,6 +47,7 @@
 	{minValue}
 	{maxValue}
 	{isDateUnavailable}
+	aria-label={rootAriaLabel}
 	onChange={(nextValue) => {
 		selectedValue = nextValue;
 	}}

@@ -29,7 +29,7 @@
 		type TableColumnWidth,
 		type TableSelectionKey,
 		type TableSortDescriptor
-	} from './context';
+	} from './context.svelte';
 
 	let {
 		selectionMode = 'none',
@@ -172,27 +172,24 @@
 		return true;
 	}
 
-	const layoutVersion = ctx.layoutVersion;
-	const sortVersion = ctx.sortVersion;
-	const widthVersion = ctx.widthVersion;
 	const ariaColCount = $derived.by(() => {
-		void $layoutVersion;
+		void ctx.layoutEpoch;
 		const columnCount = ctx.getVisibleColumnCount();
 		return columnCount > 0 ? columnCount : undefined;
 	});
 	const ariaRowCount = $derived.by(() => {
-		void $layoutVersion;
+		void ctx.layoutEpoch;
 		const rowCount = ctx.getHeaderRowCount() + ctx.getLogicalBodyRowCount();
 		return rowCount > 0 ? rowCount : undefined;
 	});
 
 	const hasResizable = $derived.by(() => {
-		void $layoutVersion;
+		void ctx.layoutEpoch;
 		return ctx.hasResizableColumns();
 	});
 
 	const hasDefinedColumnWidths = $derived.by(() => {
-		void $layoutVersion;
+		void ctx.layoutEpoch;
 		for (let index = 0; index < ctx.getColumnCount(); index += 1) {
 			const column = ctx.getColumnAt(index);
 			if (!column || ctx.isColumnHidden(column.id)) continue;
@@ -204,8 +201,8 @@
 	});
 
 	const layoutColumns = $derived.by(() => {
-		void $layoutVersion;
-		void $widthVersion;
+		void ctx.layoutEpoch;
+		void ctx.widthEpoch;
 
 		const columns: Array<{
 			id: string;
@@ -248,7 +245,7 @@
 	});
 
 	const explicitManagedTableWidth = $derived.by(() => {
-		void $layoutVersion;
+		void ctx.layoutEpoch;
 		if (ctx.hasRelativeVisibleColumnWidths()) return undefined;
 
 		const widths = columnWidths ?? defaultColumnWidths;
@@ -269,8 +266,8 @@
 	});
 
 	const managedTableWidth = $derived.by(() => {
-		void $widthVersion;
-		void $layoutVersion;
+		void ctx.widthEpoch;
+		void ctx.layoutEpoch;
 		const widths = ctx.getResolvedVisibleColumnWidths();
 		const columnCount = ctx.getVisibleColumnCount();
 		if (widths.size === 0 || widths.size < columnCount) return undefined;
@@ -281,8 +278,8 @@
 	});
 
 	const relativeResolvedTableWidth = $derived.by(() => {
-		void $widthVersion;
-		void $layoutVersion;
+		void ctx.widthEpoch;
+		void ctx.layoutEpoch;
 		if (!ctx.hasRelativeVisibleColumnWidths()) return undefined;
 
 		const widths = ctx.getResolvedVisibleColumnWidths();
@@ -295,7 +292,7 @@
 	});
 
 	const fallbackRelativeTableWidth = $derived.by(() => {
-		void $layoutVersion;
+		void ctx.layoutEpoch;
 		return ctx.hasRelativeVisibleColumnWidths() ? '100%' : undefined;
 	});
 
@@ -475,7 +472,7 @@
 	});
 
 	$effect(() => {
-		void $sortVersion;
+		// `ctx.sortDescriptor` is fine-grained `$state`; reading it tracks it.
 		const descriptor = ctx.sortDescriptor;
 		if (!hasObservedSortState) {
 			hasObservedSortState = true;

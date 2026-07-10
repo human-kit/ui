@@ -134,6 +134,16 @@ export type ComboBoxContext<T extends object = object> = {
 	setShouldCloseOnBlur: (value: boolean) => void;
 };
 
+/**
+ * Deterministic DOM id for a selected-value tag, shared between the tag element and
+ * the input's `aria-activedescendant` so tag virtual focus is exposed to AT.
+ * The value is sanitized because arbitrary selection values may contain characters
+ * that are not safe inside id references.
+ */
+export function getComboBoxTagDomId(instanceId: string, tagId: string | number): string {
+	return `combobox-tag-${instanceId}-${String(tagId).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+}
+
 const COMBOBOX_KEY = Symbol('combobox');
 
 export function setComboBoxContext<T extends object = object>(ctx: ComboBoxContext<T>) {

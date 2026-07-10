@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { AccordionItemProps } from '../types.js';
-	import { useAccordionContext } from '../root/context';
+	import { useAccordionContext } from '../root/context.svelte';
 	import { setAccordionItemContext } from './context';
 
 	let {
@@ -13,22 +13,12 @@
 	}: AccordionItemProps = $props();
 
 	const accordion = useAccordionContext();
-	const stateVersion = accordion.stateVersion;
 
 	let itemRef: HTMLDivElement | null = $state(null);
 
-	const open = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isOpen(value);
-	});
-	const disabled = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isItemDisabled(value);
-	});
-	const orientation = $derived.by(() => {
-		void $stateVersion;
-		return accordion.orientation;
-	});
+	const open = $derived(accordion.isOpen(value));
+	const disabled = $derived(accordion.isItemDisabled(value));
+	const orientation = $derived(accordion.orientation);
 
 	setAccordionItemContext({
 		get value() {

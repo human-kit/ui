@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Tabs } from '../index';
-	import type { TabsKeyboardActivation, TabsOrientation, TabsValue } from './context';
+	import type { TabsKeyboardActivation, TabsOrientation, TabsValue } from './context.svelte';
 
 	type TabsTestProps = {
 		controlled?: boolean;

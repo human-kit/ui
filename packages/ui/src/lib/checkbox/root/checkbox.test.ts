@@ -296,6 +296,13 @@ describe('Checkbox.Root', () => {
 		expect(input?.checked).toBe(true);
 	});
 
+	it('forwards the form prop to the hidden input', async () => {
+		render(CheckboxFormTest, { form: 'settings' });
+		const input = document.querySelector<HTMLInputElement>('[data-checkbox-input="true"]');
+
+		expect(input?.getAttribute('form')).toBe('settings');
+	});
+
 	it('invokes consumer onkeyup and onblur handlers', async () => {
 		let keyups = 0;
 		let blurs = 0;

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { onDestroy } from 'svelte';
 	import { Portal } from '../../portal';
-	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
+	import { createPresence } from '../../primitives/presence.svelte';
 	import { useMenuContext } from '../root/context';
 	import { getFloatingLayerOverlayZIndex } from '../../dialog/root/dialog-stack';
 
@@ -30,72 +29,20 @@
 	// Resolved on open so the backdrop sits just below the menu panel and above the dialog
 	// it was opened within (mirrors Popover.Overlay).
 	let zIndex = $state(getFloatingLayerOverlayZIndex());
-	let isMounted = $state(false);
-	let isEntering = $state(false);
-	let isExiting = $state(false);
-	let tracker: MotionTracker | undefined;
 
-	function clearTracker() {
-		tracker?.cancel();
-		tracker = undefined;
-	}
-
-	// Mount on open; flip to the exit phase on close while staying mounted for the animation.
-	$effect(() => {
-		if (isOpen) {
-			zIndex = getFloatingLayerOverlayZIndex();
-			const shouldAnimateIn = !isMounted || isExiting;
-			isMounted = true;
-			isExiting = false;
-			if (shouldAnimateIn) {
-				isEntering = true;
+	// Mounted through the exit animation; each phase ends when the backdrop's own motion finishes.
+	const presence = createPresence(
+		() => isOpen,
+		() => overlayRef,
+		{
+			onOpen: () => {
+				zIndex = getFloatingLayerOverlayZIndex();
 			}
-			return;
 		}
-
-		if (!isMounted) {
-			isEntering = false;
-			isExiting = false;
-			return;
-		}
-
-		isEntering = false;
-		isExiting = true;
-	});
-
-	// End each phase once the backdrop's own motion finishes — unmounting after exit.
-	$effect(() => {
-		if (!isMounted || !overlayRef) {
-			clearTracker();
-			return;
-		}
-
-		if (isEntering) {
-			clearTracker();
-			tracker = trackMotionEnd(overlayRef, () => {
-				isEntering = false;
-			});
-			return;
-		}
-
-		if (isExiting) {
-			clearTracker();
-			tracker = trackMotionEnd(overlayRef, () => {
-				isExiting = false;
-				isMounted = false;
-			});
-			return;
-		}
-
-		clearTracker();
-	});
-
-	onDestroy(() => {
-		clearTracker();
-	});
+	);
 </script>
 
-{#if isMounted}
+{#if presence.isMounted}
 	<Portal>
 		<div
 			bind:this={overlayRef}
@@ -103,8 +50,8 @@
 			data-menu-overlay
 			aria-hidden="true"
 			data-state={isOpen ? 'open' : 'closed'}
-			data-entering={isEntering || undefined}
-			data-exiting={isExiting || undefined}
+			data-entering={presence.isEntering || undefined}
+			data-exiting={presence.isExiting || undefined}
 			style="position: fixed; inset: 0; z-index: {zIndex};"
 			{...restProps}
 		></div>

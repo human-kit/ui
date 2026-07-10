@@ -46,7 +46,7 @@ export {
 	type TreeSectionRegistration,
 	type TreeVisibleNode,
 	type TreeActionHandler
-} from './root/context.js';
+} from './root/context.svelte.js';
 
 import * as TreeParts from './index.parts.js';
 export default TreeParts;

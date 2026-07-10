@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Accordion } from '../index';
-	import type { AccordionOrientation, AccordionSelectionMode, AccordionValue } from './context';
+	import type { AccordionOrientation, AccordionSelectionMode, AccordionValue } from './context.svelte';
 
 	type AccordionTestProps = {
 		controlled?: boolean;
@@ -13,6 +13,7 @@
 		loop?: boolean;
 		billingDisabled?: boolean;
 		securityForceMount?: boolean;
+		panelRegion?: boolean;
 		showControls?: boolean;
 		applyChanges?: boolean;
 	};
@@ -28,6 +29,7 @@
 		loop = true,
 		billingDisabled = false,
 		securityForceMount = false,
+		panelRegion = true,
 		showControls = false,
 		applyChanges = true
 	}: AccordionTestProps = $props();
@@ -48,7 +50,7 @@
 		<Accordion.Header data-testid="header-overview">
 			<Accordion.Trigger data-testid="trigger-overview">Overview</Accordion.Trigger>
 		</Accordion.Header>
-		<Accordion.Panel data-testid="panel-overview">Overview panel</Accordion.Panel>
+		<Accordion.Panel region={panelRegion} data-testid="panel-overview">Overview panel</Accordion.Panel>
 	</Accordion.Item>
 
 	<Accordion.Item value="billing" disabled={billingDisabled} data-testid="item-billing">

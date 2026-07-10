@@ -1,5 +1,6 @@
 import { getContext, setContext } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { SvelteMap } from 'svelte/reactivity';
+import { asCommand } from '../../internal/as-command.js';
 
 export type ToggleGroupValue = string | number;
 export type ToggleGroupSelectionMode = 'single' | 'multiple';
@@ -23,7 +24,6 @@ export type CreateToggleGroupContextOptions = {
 };
 
 export type ToggleGroupContext = {
-	stateVersion: Readable<number>;
 	selectionMode: ToggleGroupSelectionMode;
 	isDisabled: boolean;
 	orientation: ToggleGroupOrientation;
@@ -110,21 +110,20 @@ export function createToggleGroupContext(
 	options: CreateToggleGroupContextOptions
 ): ToggleGroupContext {
 	const isControlled = options.isControlled ?? false;
-	let selectionMode = options.selectionMode ?? 'single';
-	let isDisabled = options.isDisabled ?? false;
-	let orientation = options.orientation ?? 'horizontal';
-	let disallowEmptySelection = options.disallowEmptySelection ?? false;
-	let selectedValues = normalizeValues(options.initialValue, selectionMode);
-	let focusedValue: ToggleGroupValue | null = null;
-	let focusVisible = false;
+	let selectionMode = $state(options.selectionMode ?? 'single');
+	let isDisabled = $state(options.isDisabled ?? false);
+	let orientation = $state(options.orientation ?? 'horizontal');
+	let disallowEmptySelection = $state(options.disallowEmptySelection ?? false);
+	// Always replaced wholesale (never mutated in place), so a plain Set inside
+	// a $state container gives fine-grained invalidation on reassignment.
+	let selectedValues = $state(
+		normalizeValues(options.initialValue, options.selectionMode ?? 'single')
+	);
+	let focusedValue = $state<ToggleGroupValue | null>(null);
+	let focusVisible = $state(false);
 
-	const toggles = new Map<ToggleGroupValue, ToggleRegistration>();
-	const toggleOrder: ToggleGroupValue[] = [];
-	const stateVersion = writable(0);
-
-	function bumpState() {
-		stateVersion.update((value) => value + 1);
-	}
+	const toggles = new SvelteMap<ToggleGroupValue, ToggleRegistration>();
+	const toggleOrder = $state<ToggleGroupValue[]>([]);
 
 	function getOrderedValues() {
 		const connected: { value: ToggleGroupValue; element: HTMLButtonElement }[] = [];
@@ -219,7 +218,6 @@ export function createToggleGroupContext(
 		if (!didChange) return false;
 
 		selectedValues = normalizedValues;
-		bumpState();
 
 		if (changeOptions?.notify !== false) {
 			options.onValueChange?.(nextValue);
@@ -293,7 +291,6 @@ export function createToggleGroupContext(
 		}
 
 		reconcileSelection(value, { notify: isExisting });
-		bumpState();
 	}
 
 	function unregisterToggle(value: ToggleGroupValue) {
@@ -310,7 +307,6 @@ export function createToggleGroupContext(
 		}
 
 		reconcileSelection(value);
-		bumpState();
 	}
 
 	function setSelectionMode(mode: ToggleGroupSelectionMode) {
@@ -318,7 +314,6 @@ export function createToggleGroupContext(
 		selectionMode = mode;
 		setSelection(selectedValues, { notify: !isControlled });
 		reconcileSelection();
-		bumpState();
 	}
 
 	function setDisabled(disabled: boolean) {
@@ -328,20 +323,17 @@ export function createToggleGroupContext(
 			focusedValue = null;
 			focusVisible = false;
 		}
-		bumpState();
 	}
 
 	function setOrientation(nextOrientation: ToggleGroupOrientation) {
 		if (orientation === nextOrientation) return;
 		orientation = nextOrientation;
-		bumpState();
 	}
 
 	function setDisallowEmptySelection(disallow: boolean) {
 		if (disallowEmptySelection === disallow) return;
 		disallowEmptySelection = disallow;
 		reconcileSelection();
-		bumpState();
 	}
 
 	function setSelectedValues(value?: ToggleGroupValue[]) {
@@ -382,7 +374,6 @@ export function createToggleGroupContext(
 			return;
 		}
 		focusedValue = value;
-		bumpState();
 	}
 
 	function focusValue(value: ToggleGroupValue) {
@@ -395,7 +386,6 @@ export function createToggleGroupContext(
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
-		bumpState();
 	}
 
 	function isSelected(value: ToggleGroupValue) {
@@ -425,9 +415,6 @@ export function createToggleGroupContext(
 	}
 
 	return {
-		get stateVersion() {
-			return stateVersion;
-		},
 		get selectionMode() {
 			return selectionMode;
 		},
@@ -446,17 +433,17 @@ export function createToggleGroupContext(
 		get focusedValue() {
 			return focusedValue;
 		},
-		registerToggle,
-		unregisterToggle,
-		setSelectionMode,
-		setDisabled,
-		setOrientation,
-		setDisallowEmptySelection,
-		setSelectedValues,
-		toggleValue,
-		setFocusedValue,
-		focusValue,
-		setFocusVisible,
+		registerToggle: asCommand(registerToggle),
+		unregisterToggle: asCommand(unregisterToggle),
+		setSelectionMode: asCommand(setSelectionMode),
+		setDisabled: asCommand(setDisabled),
+		setOrientation: asCommand(setOrientation),
+		setDisallowEmptySelection: asCommand(setDisallowEmptySelection),
+		setSelectedValues: asCommand(setSelectedValues),
+		toggleValue: asCommand(toggleValue),
+		setFocusedValue: asCommand(setFocusedValue),
+		focusValue: asCommand(focusValue),
+		setFocusVisible: asCommand(setFocusVisible),
 		isSelected,
 		isFocused,
 		isFocusVisible,

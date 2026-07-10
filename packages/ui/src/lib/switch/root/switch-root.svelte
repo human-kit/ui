@@ -128,6 +128,9 @@
 
 	$effect(() => {
 		element = rootRef;
+		return () => {
+			element = null;
+		};
 	});
 
 	$effect(() => {

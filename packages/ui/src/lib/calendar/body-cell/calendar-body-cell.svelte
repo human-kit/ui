@@ -51,7 +51,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useCalendarContext } from '../root/context';
+	import { useCalendarContext } from '../root/context.svelte';
 	import { getCalendarMonthIndex } from '../grid/month-scope';
 	import { formatCalendarDate, getTodayUtcDate, parseCalendarDate } from '../root/date-utils';
 	import {
@@ -67,72 +67,31 @@
 	let { date, children, class: className = '', ...restProps }: CalendarBodyCellProps = $props();
 
 	const calendar = useCalendarContext();
-	const layoutVersion = calendar.layoutVersion;
-	const selectionVersion = calendar.selectionVersion;
-	const focusRequestVersion = calendar.focusRequestVersion;
 	const monthIndex = getCalendarMonthIndex();
 
 	const parsedDate = $derived(parseCalendarDate(date));
 	const dayLabel = $derived(parsedDate ? String(parsedDate.getUTCDate()) : '');
 	// A disabled/readonly calendar must still SHOW its selection; only mutation
 	// is blocked (the context re-checks disabled/readonly in selectDate).
-	const isSelected = $derived.by(() => {
-		void $layoutVersion;
-		void $selectionVersion;
-		return calendar.isSelected(date);
-	});
-	const isRangeStart = $derived.by(() => {
-		void $layoutVersion;
-		void $selectionVersion;
-		return calendar.isRangeStart(date);
-	});
-	const isRangeEnd = $derived.by(() => {
-		void $layoutVersion;
-		void $selectionVersion;
-		return calendar.isRangeEnd(date);
-	});
-	const isInRange = $derived.by(() => {
-		void $layoutVersion;
-		void $selectionVersion;
-		return calendar.isInRange(date);
-	});
-	const isRovingFocusTarget = $derived.by(() => {
-		void $selectionVersion;
-		return calendar.focusedValue === date;
-	});
-	const isFocusVisible = $derived.by(() => {
-		void $selectionVersion;
-		return calendar.focusVisible;
-	});
+	const isSelected = $derived(calendar.isSelected(date));
+	const isRangeStart = $derived(calendar.isRangeStart(date));
+	const isRangeEnd = $derived(calendar.isRangeEnd(date));
+	const isInRange = $derived(calendar.isInRange(date));
+	const isRovingFocusTarget = $derived(calendar.focusedValue === date);
+	const isFocusVisible = $derived(calendar.focusVisible);
 	let hasDomFocus = $state(false);
 	const isVisuallyFocused = $derived(hasDomFocus && isFocusVisible);
-	const isDisabled = $derived.by(() => {
-		void $layoutVersion;
-		void $selectionVersion;
-		return calendar.isDateDisabled(date);
-	});
-	const isUnavailable = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.isDateUnavailable(date);
-	});
+	const isDisabled = $derived(calendar.isDateDisabled(date));
+	const isUnavailable = $derived(calendar.isDateUnavailable(date));
 	const isAriaDisabled = $derived(isDisabled || isUnavailable);
-	const isOutsideMonth = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.isOutsideVisibleRange(date, monthIndex);
-	});
-	const showOutsideDays = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.showOutsideDays;
-	});
+	const isOutsideMonth = $derived(calendar.isOutsideVisibleRange(date, monthIndex));
+	const showOutsideDays = $derived(calendar.showOutsideDays);
 	const hidesOutsideDay = $derived(isOutsideMonth && !showOutsideDays);
 	const isSelectionDisabled = $derived(isDisabled || hidesOutsideDay);
 	const isFocusDisabled = $derived(calendar.isDisabled || hidesOutsideDay);
 	const todayDate = formatCalendarDate(getTodayUtcDate());
 	const isToday = $derived(date === todayDate);
-	const ariaDateLabel = $derived.by(() => {
-		void $layoutVersion;
-		return formatAriaDateLabel(calendar.locale, date);
-	});
+	const ariaDateLabel = $derived(formatAriaDateLabel(calendar.locale, date));
 	const buttonAriaLabel = $derived(
 		isToday ? formatTodayDateLabel(calendar.locale, ariaDateLabel) : ariaDateLabel
 	);
@@ -151,7 +110,9 @@
 	}
 
 	$effect(() => {
-		const requestVersion = $focusRequestVersion;
+		// `focusRequestVersion` is a one-shot event counter ($state number), not
+		// derivable state: reading it here re-runs this effect on every request.
+		const requestVersion = calendar.focusRequestVersion;
 		if (!isRovingFocusTarget || isFocusDisabled) return;
 		if (!buttonElement) return;
 		// The context hands out each focus request at most once, so cells mounted

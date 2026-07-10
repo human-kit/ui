@@ -3,13 +3,14 @@
 
 	type Props = {
 		defaultChecked?: boolean;
+		form?: string;
 	};
 
-	let { defaultChecked = false }: Props = $props();
+	let { defaultChecked = false, form }: Props = $props();
 </script>
 
 <form>
-	<Checkbox.Root name="terms" {defaultChecked} aria-label="Accept terms">
+	<Checkbox.Root name="terms" {defaultChecked} {form} aria-label="Accept terms">
 		<Checkbox.Indicator>
 			<span data-checkbox-icon="true">icon</span>
 		</Checkbox.Indicator>

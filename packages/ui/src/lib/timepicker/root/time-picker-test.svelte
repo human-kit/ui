@@ -12,6 +12,7 @@
 		minValue?: string;
 		maxValue?: string;
 		popoverAriaLabel?: string;
+		rootAriaLabel?: string;
 	};
 
 	let {
@@ -24,7 +25,8 @@
 		required = false,
 		minValue,
 		maxValue,
-		popoverAriaLabel = 'Time picker'
+		popoverAriaLabel = 'Time picker',
+		rootAriaLabel
 	}: Props = $props();
 
 	let selectedValue = $state<string | null>('');
@@ -42,6 +44,7 @@
 	{required}
 	{minValue}
 	{maxValue}
+	aria-label={rootAriaLabel}
 	onChange={(nextValue) => {
 		selectedValue = nextValue;
 	}}

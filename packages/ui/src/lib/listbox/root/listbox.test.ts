@@ -284,6 +284,70 @@ describe('ListBox', () => {
 		});
 	});
 
+	describe('Loop', () => {
+		it('does not wrap past the last item by default', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{End}'); // Orange (last)
+			await userEvent.keyboard('{ArrowDown}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.textContent).toContain('Orange');
+		});
+
+		it('wraps from the last item to the first when loop is true', async () => {
+			const screen = render(ListBoxTest, { loop: true });
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{End}'); // Orange (last)
+			await userEvent.keyboard('{ArrowDown}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.textContent).toContain('Apple');
+		});
+
+		it('wraps from the first item to the last when loop is true', async () => {
+			const screen = render(ListBoxTest, { loop: true });
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}'); // Apple (first)
+			await userEvent.keyboard('{ArrowUp}');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.textContent).toContain('Orange');
+		});
+	});
+
+	describe('Typeahead', () => {
+		it('focuses the option matching the typed characters when typeahead is true', async () => {
+			const screen = render(ListBoxTest, { typeahead: true });
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}'); // Apple
+			await userEvent.keyboard('g');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.textContent).toContain('Grape');
+		});
+
+		it('ignores typed characters by default', async () => {
+			const screen = render(ListBoxTest);
+			const listbox = screen.getByRole('listbox');
+
+			await listbox.click();
+			await userEvent.keyboard('{Home}'); // Apple
+			await userEvent.keyboard('g');
+
+			const focusedOption = listbox.element().querySelector('[data-focused]');
+			expect(focusedOption?.textContent).toContain('Apple');
+		});
+	});
+
 	describe('Reactive options', () => {
 		it('applies selectionMode changes at runtime', async () => {
 			const screen = render(ListBoxTest, { selectionMode: 'single' });

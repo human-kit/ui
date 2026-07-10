@@ -7,7 +7,7 @@
 	} from '../../primitives/input-modality';
 	import { setTreeItemContext } from './context';
 	import { setTreeRenderMode } from '../root/render-mode';
-	import { useTreeContext, type TreeVisibleNode } from '../root/context';
+	import { useTreeContext, type TreeVisibleNode } from '../root/context.svelte';
 	import type { TreeItemTransition } from '../types';
 	import type { TransitionConfig } from 'svelte/transition';
 
@@ -22,10 +22,6 @@
 	} = $props();
 
 	const tree = useTreeContext();
-	const selectionVersion = tree.selectionVersion;
-	const focusVersion = tree.focusVersion;
-	const expansionVersion = tree.expansionVersion;
-	const configVersion = tree.configVersion;
 
 	setTreeRenderMode('display');
 
@@ -42,36 +38,15 @@
 	const nodeDisabled = $derived(node.disabled);
 	const labelId = untrack(() => tree.createGeneratedId('tree-item-label'));
 
-	const isExpanded = $derived.by(() => {
-		void $expansionVersion;
-		return tree.isExpanded(nodeId);
-	});
-	const isSelected = $derived.by(() => {
-		void $selectionVersion;
-		void $configVersion;
-		return tree.isSelected(nodeId);
-	});
-	const isFocused = $derived.by(() => {
-		void $focusVersion;
-		return tree.getFocusedId() === nodeId;
-	});
-	const isDisabled = $derived.by(() => {
-		void $configVersion;
-		return tree.isDisabled(nodeId, nodeDisabled);
-	});
-	const selectionState = $derived.by(() => {
-		void $selectionVersion;
-		void $configVersion;
-		return tree.getSelectionState(nodeId);
-	});
-	const selectionMode = $derived.by(() => {
-		void $configVersion;
-		return tree.selectionMode;
-	});
-	const focusVisible = $derived.by(() => {
-		void $focusVersion;
-		return tree.getFocusVisible() && tree.getFocusedId() === nodeId;
-	});
+	// The tree context is fine-grained reactive: these calls read `$state`
+	// internally, so the deriveds subscribe to exactly what they use.
+	const isExpanded = $derived(tree.isExpanded(nodeId));
+	const isSelected = $derived(tree.isSelected(nodeId));
+	const isFocused = $derived(tree.getFocusedId() === nodeId);
+	const isDisabled = $derived(tree.isDisabled(nodeId, nodeDisabled));
+	const selectionState = $derived(tree.getSelectionState(nodeId));
+	const selectionMode = $derived(tree.selectionMode);
+	const focusVisible = $derived(tree.getFocusVisible() && tree.getFocusedId() === nodeId);
 	const ariaChecked = $derived.by<'mixed' | 'true' | 'false' | undefined>(() => {
 		if (selectionMode !== 'multiple') return undefined;
 		if (selectionState === 'some') return 'mixed';

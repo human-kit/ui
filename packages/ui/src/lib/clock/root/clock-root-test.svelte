@@ -14,6 +14,7 @@
 		useSnippet?: boolean;
 		showAxis?: boolean;
 		axisHeight?: number;
+		externalValue?: string;
 	};
 
 	let {
@@ -26,7 +27,8 @@
 		disabled = false,
 		useSnippet = false,
 		showAxis = false,
-		axisHeight
+		axisHeight,
+		externalValue = '23:00'
 	}: Props = $props();
 
 	let value = $state<string | null>(untrack(() => defaultValue ?? null));
@@ -67,4 +69,7 @@
 <p data-testid="clock-value">{value}</p>
 <button type="button" data-testid="toggle-cycle" onclick={() => (cycle = cycle === 12 ? 24 : 12)}>
 	Toggle cycle
+</button>
+<button type="button" data-testid="set-external" onclick={() => (value = externalValue)}>
+	Set external value
 </button>

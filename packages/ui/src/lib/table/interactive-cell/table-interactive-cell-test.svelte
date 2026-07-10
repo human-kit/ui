@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Table } from '../index';
-	import type { TableSelectionKey } from '../root/context';
+	import type { TableSelectionKey } from '../root/context.svelte';
 
 	type DemoRow = {
 		id: string;

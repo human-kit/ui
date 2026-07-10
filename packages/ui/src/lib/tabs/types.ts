@@ -5,14 +5,14 @@ import type {
 	TabsKeyboardActivation,
 	TabsOrientation,
 	TabsValue
-} from './root/context.js';
+} from './root/context.svelte';
 
 export type {
 	TabsActivationDirection,
 	TabsKeyboardActivation,
 	TabsOrientation,
 	TabsValue
-} from './root/context.js';
+} from './root/context.svelte';
 
 export type TabsRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	keyboardActivation?: TabsKeyboardActivation;

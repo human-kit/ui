@@ -1,24 +1,14 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import type { TimePickerOpenChangeDetails, TimePickerOpenChangeReason } from './context';
 	import { setTimePickerContext, type TimePickerContext } from './context';
-	import { buildWheelOptions } from '../../clock/root/wheel-options';
+	import { createTimeSelectionState } from '../../clock/root/create-time-selection-state.svelte';
 	import {
 		adjustSegmentWithStep,
-		buildTimePartsFromDraft,
 		buildTimePickerSegments,
-		clampToStep,
 		createEmptyTimePickerDraft,
-		formatTimePickerValue,
 		getEditableSegmentOrder,
-		getRequiredSegments,
-		getSegmentLabel,
 		isSegmentValueEmpty,
-		isTimeOutOfRange,
-		isValidTimePickerValue,
-		normalizeSegmentNumberInput,
-		toDraftFromTimeValue,
 		type TimePickerDraft,
 		type TimePickerEditableSegmentType,
 		type TimePickerGranularity,
@@ -84,55 +74,13 @@
 	});
 
 	const instanceId = untrack(() => id) ?? generatedInstanceId;
-	const localeContext = useLocaleContextOptional();
-	const localeStore = localeContext?.locale;
-	const localeFromContext = $derived.by(() => {
-		if (!localeStore) return undefined;
-		return $localeStore;
-	});
-	const systemLocale = untrack(() => Intl.DateTimeFormat().resolvedOptions().locale);
-	const resolvedLocale = $derived(localeFromContext ?? systemLocale);
-	const resolvedHourCycle = $derived.by<TimePickerHourCycle>(() => {
-		if (hourCycle) return hourCycle;
-		const localeCycle = new Intl.DateTimeFormat(resolvedLocale, {
-			hour: 'numeric'
-		}).resolvedOptions().hourCycle;
-		return localeCycle === 'h11' || localeCycle === 'h12' ? 12 : 24;
-	});
 
 	let openInternal = $state((() => defaultOpen)());
 	let focusVisible = $state(false);
 	let focusWithin = $state(false);
 	let activeSegment = $state<Exclude<TimePickerSegmentType, 'literal'> | null>(null);
 	let triggerRef: HTMLElement | null = $state(null);
-
-	const initialValueProp = untrack(() => value);
-	const initialDefaultValue = untrack(() =>
-		isValidTimePickerValue(defaultValue) ? defaultValue : null
-	);
-	const initialPropValue =
-		initialValueProp === undefined
-			? initialDefaultValue
-			: isValidTimePickerValue(initialValueProp)
-				? initialValueProp
-				: null;
-	const initialHourCycle = untrack<TimePickerHourCycle>(() => {
-		if (hourCycle) return hourCycle;
-		const localeCycle = new Intl.DateTimeFormat(resolvedLocale, {
-			hour: 'numeric'
-		}).resolvedOptions().hourCycle;
-		return localeCycle === 'h11' || localeCycle === 'h12' ? 12 : 24;
-	});
-
-	let valueInternal = $state<TimePickerTimeValue | null>(initialPropValue);
-	let lastPublishedValue = $state<TimePickerTimeValue | null>(initialPropValue);
-	let segmentDraft = $state<TimePickerDraft>(
-		initialPropValue
-			? toDraftFromTimeValue(initialPropValue, initialHourCycle)
-			: createEmptyTimePickerDraft()
-	);
 	let segmentTypeBuffer = $state<TimePickerDraft>(createEmptyTimePickerDraft());
-	let lastDraftHourCycle = initialHourCycle;
 
 	const segmentRefs: Record<TimePickerEditableSegmentType, HTMLElement | null> = {
 		hour: null,
@@ -141,11 +89,30 @@
 		dayPeriod: null
 	};
 
-	if (initialValueProp === undefined) {
-		value = initialPropValue;
-	} else if (initialValueProp !== initialPropValue) {
-		value = initialPropValue;
-	}
+	const timeSelection = createTimeSelectionState({
+		value: () => value,
+		defaultValue: () => defaultValue,
+		writeValue: (next) => {
+			value = next;
+		},
+		onChange: (next) => onChange?.(next),
+		minValue: () => minValue,
+		maxValue: () => maxValue,
+		hourCycle: () => hourCycle,
+		granularity: () => granularity,
+		hourStep: () => hourStep,
+		minuteStep: () => minuteStep,
+		secondStep: () => secondStep,
+		isEditable: () => !disabled && !readonly,
+		// Any non-typing mutation invalidates the pending multi-digit buffer.
+		// `typeSegmentDigit` re-seeds it explicitly after calling setSegmentValue.
+		onBeforeSegmentMutation: (type) => {
+			segmentTypeBuffer[type] = '';
+		},
+		onDraftReplaced: () => {
+			segmentTypeBuffer = createEmptyTimePickerDraft();
+		}
+	});
 
 	$effect(() => {
 		if (open !== undefined && open !== openInternal) {
@@ -153,81 +120,27 @@
 		}
 	});
 
-	$effect(() => {
-		const nextValue = value === undefined ? null : isValidTimePickerValue(value) ? value : null;
-		const nextHourCycle = resolvedHourCycle;
-		const didHourCycleChange = nextHourCycle !== lastDraftHourCycle;
-		lastDraftHourCycle = nextHourCycle;
-		if (nextValue === lastPublishedValue) {
-			if (didHourCycleChange && lastPublishedValue) {
-				segmentDraft = toDraftFromTimeValue(lastPublishedValue, nextHourCycle);
-				segmentTypeBuffer = createEmptyTimePickerDraft();
-			}
-			return;
-		}
-		publishCommittedValue(nextValue, false);
-		segmentDraft = nextValue
-			? toDraftFromTimeValue(nextValue, nextHourCycle)
-			: createEmptyTimePickerDraft();
-		segmentTypeBuffer = createEmptyTimePickerDraft();
-	});
-
 	const segmentFormatter = $derived.by(
 		() =>
-			new Intl.DateTimeFormat(resolvedLocale, {
+			new Intl.DateTimeFormat(timeSelection.locale, {
 				hour: 'numeric',
 				minute: granularity !== 'hour' ? '2-digit' : undefined,
 				second: granularity === 'second' ? '2-digit' : undefined,
-				hourCycle: resolvedHourCycle === 12 ? 'h12' : 'h23',
+				hourCycle: timeSelection.hourCycle === 12 ? 'h12' : 'h23',
 				timeZone: 'UTC'
 			})
 	);
 
 	const segments = $derived.by(() =>
 		buildTimePickerSegments({
-			locale: resolvedLocale,
-			hourCycle: resolvedHourCycle,
+			locale: timeSelection.locale,
+			hourCycle: timeSelection.hourCycle,
 			granularity,
-			draft: segmentDraft,
+			draft: timeSelection.draft,
 			formatter: segmentFormatter
 		})
 	);
 	const segmentOrder = $derived(getEditableSegmentOrder(segments));
-	const requiredSegments = $derived(getRequiredSegments(granularity, resolvedHourCycle));
-
-	const normalizedMinValue = $derived(isValidTimePickerValue(minValue) ? minValue : undefined);
-	const normalizedMaxValue = $derived(isValidTimePickerValue(maxValue) ? maxValue : undefined);
-
-	const isInvalidDraft = $derived.by(() => {
-		const required = requiredSegments;
-		const hasAnyValue = required.some((type) => !isSegmentValueEmpty(getSegmentValue(type)));
-		if (!hasAnyValue) return false;
-		const parts = buildTimePartsFromDraft(segmentDraft, granularity, resolvedHourCycle);
-		if (!parts) return true;
-		const candidate = formatTimePickerValue(parts, granularity);
-		return isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity);
-	});
-
-	function publishCommittedValue(
-		nextValue: TimePickerTimeValue | null,
-		emitChange: boolean
-	): boolean {
-		const bindableValue = value === undefined ? valueInternal : value;
-		const normalizedBindableValue = isValidTimePickerValue(bindableValue) ? bindableValue : null;
-		const didInternalChange = valueInternal !== nextValue;
-		const didBindableChange = normalizedBindableValue !== nextValue;
-		if (!didInternalChange && !didBindableChange) return false;
-
-		valueInternal = nextValue;
-		lastPublishedValue = nextValue;
-		if (didBindableChange) {
-			value = nextValue;
-		}
-		if (emitChange && didInternalChange) {
-			onChange?.(nextValue);
-		}
-		return true;
-	}
 
 	function setOpen(
 		nextOpen: boolean,
@@ -284,73 +197,6 @@
 		segmentTypeBuffer = createEmptyTimePickerDraft();
 	}
 
-	function getSegmentValue(type: Exclude<TimePickerSegmentType, 'literal'>): string {
-		if (type === 'hour') return segmentDraft.hour;
-		if (type === 'minute') return segmentDraft.minute;
-		if (type === 'second') return segmentDraft.second;
-		return segmentDraft.dayPeriod;
-	}
-
-	function setSegmentValue(type: Exclude<TimePickerSegmentType, 'literal'>, nextValue: string) {
-		if (disabled || readonly) return;
-		// Any non-typing mutation invalidates the pending multi-digit buffer.
-		// `typeSegmentDigit` re-seeds it explicitly after calling this function.
-		segmentTypeBuffer[type] = '';
-		if (type === 'dayPeriod') {
-			const normalized = nextValue.trim().toUpperCase();
-			if (normalized === '' || normalized === 'AM' || normalized === 'PM') {
-				segmentDraft.dayPeriod = normalized;
-			} else {
-				segmentDraft.dayPeriod = '';
-			}
-		} else {
-			const maxDigits = 2;
-			let normalized = normalizeSegmentNumberInput(nextValue, maxDigits);
-			if (normalized.length > 0) {
-				const numeric = Number(normalized);
-				if (type === 'hour') {
-					if (resolvedHourCycle === 12) {
-						normalized = String(clampToStep(numeric, Math.max(1, hourStep), 1, 12));
-					} else {
-						normalized = String(clampToStep(numeric, Math.max(1, hourStep), 0, 23));
-					}
-				}
-				if (type === 'minute') {
-					normalized = String(clampToStep(numeric, Math.max(1, minuteStep), 0, 59));
-				}
-				if (type === 'second') {
-					normalized = String(clampToStep(numeric, Math.max(1, secondStep), 0, 59));
-				}
-			}
-
-			if (type === 'hour') segmentDraft.hour = normalized;
-			if (type === 'minute') segmentDraft.minute = normalized;
-			if (type === 'second') segmentDraft.second = normalized;
-
-			if (resolvedHourCycle === 12 && isSegmentValueEmpty(segmentDraft.dayPeriod)) {
-				segmentDraft.dayPeriod = 'AM';
-			}
-		}
-
-		commitFromDraft();
-	}
-
-	function commitFromDraft() {
-		const nextParts = buildTimePartsFromDraft(segmentDraft, granularity, resolvedHourCycle);
-		if (!nextParts) {
-			publishCommittedValue(null, true);
-			return;
-		}
-
-		const candidateValue = formatTimePickerValue(nextParts, granularity);
-		if (isTimeOutOfRange(candidateValue, normalizedMinValue, normalizedMaxValue, granularity)) {
-			publishCommittedValue(null, true);
-			return;
-		}
-
-		publishCommittedValue(candidateValue, true);
-	}
-
 	function openPopover(reason: TimePickerOpenChangeReason = 'imperative-action', event?: Event) {
 		if (disabled || readonly) return;
 		setOpen(true, { reason, event });
@@ -369,7 +215,7 @@
 		type: Exclude<TimePickerSegmentType, 'literal' | 'dayPeriod'>
 	): number {
 		if (type === 'hour') {
-			return resolvedHourCycle === 12 ? 2 : 3;
+			return timeSelection.hourCycle === 12 ? 2 : 3;
 		}
 		return 6;
 	}
@@ -389,7 +235,7 @@
 
 		const threshold = getTypingThreshold(type);
 		if (candidate.length === 1) {
-			setSegmentValue(type, candidate);
+			timeSelection.setSegmentValue(type, candidate);
 			segmentTypeBuffer[type] = candidate;
 			const numeric = Number(candidate);
 			if (Number.isFinite(numeric) && numeric >= threshold) {
@@ -408,13 +254,13 @@
 		let min = 0;
 		let max = 59;
 		if (type === 'hour') {
-			min = resolvedHourCycle === 12 ? 1 : 0;
-			max = resolvedHourCycle === 12 ? 12 : 23;
+			min = timeSelection.hourCycle === 12 ? 1 : 0;
+			max = timeSelection.hourCycle === 12 ? 12 : 23;
 		}
 
 		if (numericCandidate < min || numericCandidate > max) {
 			candidate = digit;
-			setSegmentValue(type, candidate);
+			timeSelection.setSegmentValue(type, candidate);
 			segmentTypeBuffer[type] = candidate;
 			const fallbackNumeric = Number(candidate);
 			if (fallbackNumeric >= threshold) {
@@ -424,7 +270,7 @@
 			return false;
 		}
 
-		setSegmentValue(type, candidate);
+		timeSelection.setSegmentValue(type, candidate);
 		segmentTypeBuffer[type] = '';
 		return true;
 	}
@@ -432,20 +278,20 @@
 	function adjustSegmentValue(type: Exclude<TimePickerSegmentType, 'literal'>, step: number) {
 		if (disabled || readonly) return;
 		if (type === 'dayPeriod') {
-			segmentDraft.dayPeriod = segmentDraft.dayPeriod === 'PM' ? 'AM' : 'PM';
-			commitFromDraft();
+			timeSelection.draft.dayPeriod = timeSelection.draft.dayPeriod === 'PM' ? 'AM' : 'PM';
+			timeSelection.commitDraft();
 			return;
 		}
 
-		const current = getSegmentValue(type);
+		const current = timeSelection.getSegmentValue(type);
 		const next = adjustSegmentWithStep(current, type, step, {
-			hourCycle: resolvedHourCycle,
+			hourCycle: timeSelection.hourCycle,
 			hourStep,
 			minuteStep,
 			secondStep
 		});
 
-		setSegmentValue(type, next);
+		timeSelection.setSegmentValue(type, next);
 	}
 
 	function registerSegmentRef(type: TimePickerEditableSegmentType, node: HTMLElement | null) {
@@ -493,80 +339,13 @@
 		for (const segmentType of segmentOrder) {
 			const ref = segmentRefs[segmentType];
 			if (!ref || !ref.isConnected) continue;
-			const currentValue = getSegmentValue(segmentType);
+			const currentValue = timeSelection.getSegmentValue(segmentType);
 			if (isSegmentValueEmpty(currentValue)) {
 				ref.focus();
 				return true;
 			}
 		}
 		return focusLastSegment();
-	}
-
-	function setValue(nextValue: TimePickerTimeValue | null) {
-		if (disabled || readonly) return;
-		if (nextValue !== null && !isValidTimePickerValue(nextValue)) return;
-		if (
-			nextValue &&
-			isTimeOutOfRange(nextValue, normalizedMinValue, normalizedMaxValue, granularity)
-		)
-			return;
-
-		publishCommittedValue(nextValue, true);
-		segmentDraft = nextValue
-			? toDraftFromTimeValue(nextValue, resolvedHourCycle)
-			: createEmptyTimePickerDraft();
-		segmentTypeBuffer = createEmptyTimePickerDraft();
-	}
-
-	function getSegmentLabelByType(type: TimePickerEditableSegmentType): string {
-		return getSegmentLabel(type, resolvedLocale);
-	}
-
-	function selectWheelValue(type: TimePickerEditableSegmentType, optionValue: string) {
-		if (disabled || readonly) return;
-
-		if (type === 'dayPeriod') {
-			setSegmentValue(type, optionValue.toUpperCase());
-		} else {
-			setSegmentValue(type, optionValue);
-		}
-	}
-
-	function getSelectedWheelValue(type: TimePickerEditableSegmentType): string | null {
-		const selected = getSegmentValue(type);
-		return selected.trim().length > 0 ? selected : null;
-	}
-
-	function getWheelOptions(type: TimePickerEditableSegmentType) {
-		const hasRangeBounds = normalizedMinValue !== undefined || normalizedMaxValue !== undefined;
-
-		const getCandidateFromPartial = (
-			partial: Partial<TimePickerDraft>
-		): TimePickerTimeValue | null => {
-			const candidateDraft: TimePickerDraft = {
-				hour: partial.hour ?? segmentDraft.hour,
-				minute: partial.minute ?? segmentDraft.minute,
-				second: partial.second ?? segmentDraft.second,
-				dayPeriod: partial.dayPeriod ?? segmentDraft.dayPeriod
-			};
-			const parts = buildTimePartsFromDraft(candidateDraft, granularity, resolvedHourCycle);
-			if (!parts) return null;
-			return formatTimePickerValue(parts, granularity);
-		};
-
-		return buildWheelOptions({
-			type,
-			granularity,
-			hourCycle: resolvedHourCycle,
-			hourStep,
-			minuteStep,
-			secondStep,
-			hasRangeBounds,
-			getCandidateFromPartial,
-			isOutOfRange: (candidate) =>
-				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity),
-			locale: resolvedLocale
-		});
 	}
 
 	const context: TimePickerContext = {
@@ -586,7 +365,7 @@
 			return granularity;
 		},
 		get hourCycle() {
-			return resolvedHourCycle;
+			return timeSelection.hourCycle;
 		},
 		get open() {
 			return openInternal;
@@ -598,13 +377,13 @@
 			return focusWithin;
 		},
 		get isInvalidDraft() {
-			return isInvalidDraft;
+			return timeSelection.isInvalidDraft;
 		},
 		get value() {
-			return valueInternal;
+			return timeSelection.value;
 		},
 		get locale() {
-			return resolvedLocale;
+			return timeSelection.locale;
 		},
 		get triggerRef() {
 			return triggerRef;
@@ -620,27 +399,33 @@
 		closePopover,
 		togglePopover,
 		onOpenChange: setOpen,
-		setValue,
+		setValue: timeSelection.setValue,
 		getSegments: () => segments,
-		getSegmentValue,
-		setSegmentValue,
+		getSegmentValue: timeSelection.getSegmentValue,
+		setSegmentValue: timeSelection.setSegmentValue,
 		typeSegmentDigit,
 		adjustSegmentValue,
-		getSegmentLabel: getSegmentLabelByType,
+		getSegmentLabel: timeSelection.getSegmentLabel,
 		registerSegmentRef,
 		focusNextPlaceholderOrLastSegment,
 		focusNextSegment,
 		focusPreviousSegment,
 		focusLastSegment,
-		selectWheelValue,
-		getSelectedWheelValue,
-		getWheelOptions
+		selectWheelValue: timeSelection.selectWheelValue,
+		getSelectedWheelValue: timeSelection.getSelectedWheelValue,
+		getWheelOptions: timeSelection.getWheelOptions
 	};
 
 	setTimePickerContext(context);
 </script>
 
-<div bind:this={rootRef} id={instanceId} class={className} aria-label={ariaLabel}>
+<div
+	bind:this={rootRef}
+	id={instanceId}
+	class={className}
+	role={ariaLabel ? 'group' : undefined}
+	aria-label={ariaLabel}
+>
 	{#if children}
 		{@render children()}
 	{/if}

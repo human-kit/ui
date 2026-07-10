@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useTableCellContext, useTableColumnContext, useTableContext } from '../root/context';
+	import { useTableCellContext, useTableColumnContext, useTableContext } from '../root/context.svelte';
 	import type { TableSortTriggerProps, TableSortTriggerRenderState } from '../types.js';
 	import {
 		shouldShowFocusVisible,
@@ -32,14 +32,11 @@
 	const table = useTableContext();
 	const column = useTableColumnContext();
 	const cell = useTableCellContext();
-	const sortVersion = table.sortVersion;
 
 	let buttonRef = $state<HTMLButtonElement | null>(null);
 
-	const sortDirection = $derived.by(() => {
-		void $sortVersion;
-		return table.getSortDirection(column.id);
-	});
+	// Fine-grained: `getSortDirection` reads the reactive sort descriptor.
+	const sortDirection = $derived(table.getSortDirection(column.id));
 	const renderState = $derived.by<TableSortTriggerRenderState>(() => ({
 		sortDirection
 	}));

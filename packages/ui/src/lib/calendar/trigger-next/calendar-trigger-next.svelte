@@ -3,7 +3,7 @@
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
 	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useCalendarContext } from '../root/context';
+	import { useCalendarContext } from '../root/context.svelte';
 
 	type CalendarTriggerNextProps = Omit<
 		HTMLButtonAttributes,
@@ -16,15 +16,8 @@
 	let { children, class: className = '', ...restProps }: CalendarTriggerNextProps = $props();
 
 	const calendar = useCalendarContext();
-	const layoutVersion = calendar.layoutVersion;
-	const isDisabled = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.isDisabled;
-	});
-	const defaultAriaLabel = $derived.by(() => {
-		void $layoutVersion;
-		return resolveLocalizedString(calendar.locale, 'calendar.nextPage');
-	});
+	const isDisabled = $derived(calendar.isDisabled);
+	const defaultAriaLabel = $derived(resolveLocalizedString(calendar.locale, 'calendar.nextPage'));
 
 	function handleClick() {
 		if (isDisabled) return;

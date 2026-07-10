@@ -72,6 +72,10 @@ export type DateRangePickerContext = {
 		type: Exclude<DatePickerSegmentType, 'literal'>,
 		nextValue: string
 	) => void;
+	getSegmentValueMax: (
+		part: DateRangePickerRangePart,
+		type: Exclude<DatePickerSegmentType, 'literal'>
+	) => number;
 	getSegmentLabel: (type: DatePickerEditableSegmentType) => string;
 	registerSegmentRef: (
 		part: DateRangePickerRangePart,

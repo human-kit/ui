@@ -6,7 +6,7 @@
 		type CalendarRangeValue,
 		type CalendarSelectionMode,
 		type CalendarValue
-	} from './context';
+	} from './context.svelte';
 	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import {
 		isValidCalendarDateValue,
@@ -152,6 +152,7 @@
 	bind:this={rootRef}
 	{id}
 	class={className}
+	role={ariaLabel ? 'group' : undefined}
 	data-disabled={disabled || undefined}
 	data-readonly={readonly || undefined}
 	inert={disabled || undefined}

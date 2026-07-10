@@ -76,8 +76,15 @@ export function createSubmenuIntent(getActiveChild: () => MenuContext | null): S
 	return {
 		track(x, y) {
 			const point = { x, y };
-			if (pending && !isAimingAtSubmenu(point)) {
-				commit();
+			if (pending) {
+				if (isAimingAtSubmenu(point)) {
+					// Still aiming at the submenu: re-arm the grace timer so a long diagonal
+					// travel doesn't expire (and commit the highlight/close) mid-flight.
+					clearTimer();
+					timer = setTimeout(commit, GRACE_MS);
+				} else {
+					commit();
+				}
 			}
 			previous = point;
 		},

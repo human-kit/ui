@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useTableContext, useTableSectionContext } from '../root/context';
+	import { useTableContext, useTableSectionContext } from '../root/context.svelte';
 	import type { TableEmptyStateProps } from '../types.js';
 
 	let { children, class: className = '' }: TableEmptyStateProps = $props();
@@ -10,13 +10,12 @@
 		throw new Error('`Table.EmptyState` must be used inside `Table.Body`.');
 	}
 
-	const layoutVersion = table.layoutVersion;
 	const isVisible = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return table.getLogicalBodyRowCount() === 0;
 	});
 	const columnCount = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return Math.max(table.getVisibleColumnCount(), 1);
 	});
 </script>

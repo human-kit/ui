@@ -8,7 +8,7 @@
 		setTreeContext,
 		setTreeLevelContext,
 		type TreeNodeId
-	} from './context';
+	} from './context.svelte';
 	import { setTreeRenderMode } from './render-mode';
 	import type { TreeEmptyStateRenderProps, TreeRootProps } from '../types';
 
@@ -138,17 +138,9 @@
 	setTreeLevelContext({ parentId: null, sectionId: null, level: 1 });
 	setTreeRenderMode('collect');
 	context = ctx;
-	const structureVersion = ctx.structureVersion;
-	const selectionVersion = ctx.selectionVersion;
-	const focusVersion = ctx.focusVersion;
-	const expansionVersion = ctx.expansionVersion;
-	const configVersion = ctx.configVersion;
 
 	const itemsArray = $derived(items ? Array.from(items) : []);
-	const treeFocusVisible = $derived.by(() => {
-		void $focusVersion;
-		return ctx.getFocusVisible();
-	});
+	const treeFocusVisible = $derived(ctx.getFocusVisible());
 
 	function getCollectionKey(item: T, index: number): TreeNodeId {
 		if ('id' in item) {
@@ -179,10 +171,13 @@
 		ctx.setDisabledKeys(disabledKeys);
 	});
 
+	// These prop-sync effects must react to prop changes only: the context state
+	// they compare against is read untracked so user-driven state changes don't
+	// re-run them and clobber fresh state with a stale prop value.
 	$effect(() => {
 		if (isExpandedControlled && expandedKeys !== undefined) {
 			const nextExpandedKeys = getSetFromKeys(expandedKeys);
-			if (!setsEqual(ctx.getExpandedKeys(), nextExpandedKeys)) {
+			if (!setsEqual(untrack(() => ctx.getExpandedKeys()), nextExpandedKeys)) {
 				ctx.setExpandedKeys(nextExpandedKeys);
 			}
 		}
@@ -191,7 +186,7 @@
 	$effect(() => {
 		if (isSelectionControlled && selectedKeys !== undefined) {
 			const nextSelectedKeys = getSetFromKeys(selectedKeys);
-			if (!setsEqual(ctx.getSelectedKeys(), nextSelectedKeys)) {
+			if (!setsEqual(untrack(() => ctx.getSelectedKeys()), nextSelectedKeys)) {
 				ctx.setSelectedKeys(nextSelectedKeys);
 			}
 		}
@@ -203,15 +198,25 @@
 
 	onDestroy(() => {
 		ctx.beginTeardown();
+		if (typeaheadTimeout) {
+			clearTimeout(typeaheadTimeout);
+			typeaheadTimeout = null;
+		}
 	});
 
 	$effect(() => {
-		void $configVersion;
-		void $structureVersion;
-		const focusedId = ctx.getFocusedId();
+		// Re-run on structure changes (the visible-nodes cache is plain, so the
+		// epoch is its reactive stand-in) and on the disabled config that decides
+		// focusability. Focus/expansion/selection reads stay untracked to match the
+		// old version-store triggers: this effect never re-ran on those.
+		void ctx.structureEpoch;
+		void ctx.disabledBehavior;
+		void ctx.disabledKeys;
+		const focusedId = untrack(() => ctx.getFocusedId());
 		if (focusedId === null) return;
-		const focusedNode = ctx.getVisibleNodeById(focusedId);
-		if (focusedNode && !ctx.isActionDisabled(focusedNode.id, focusedNode.disabled)) return;
+		const focusedNode = untrack(() => ctx.getVisibleNodeById(focusedId));
+		if (focusedNode && untrack(() => !ctx.isActionDisabled(focusedNode.id, focusedNode.disabled)))
+			return;
 
 		queueMicrotask(() => {
 			const nextId =
@@ -352,7 +357,6 @@
 
 		trackInteractionModality(event, event.target as HTMLElement | null);
 		ctx.setFocusVisible(true);
-		void $configVersion;
 		const focusedId = ctx.getFocusedId();
 
 		if (event.key === 'Tab') return;
@@ -437,15 +441,15 @@
 	}
 
 	function getRenderedVisibleNodes() {
-		void $structureVersion;
-		void $selectionVersion;
-		void $focusVersion;
-		void $expansionVersion;
+		// Consumes the plain visible-nodes cache: subscribe to structure via the
+		// epoch. Selection/expansion/focus flags embedded in the rows are tracked
+		// fine-grained inside `getVisibleNodes` itself.
+		void ctx.structureEpoch;
 		return ctx.getVisibleNodes();
 	}
 
 	function getRenderedSections() {
-		void $structureVersion;
+		void ctx.structureEpoch;
 		return ctx.getSections();
 	}
 

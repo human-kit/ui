@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { useTreeContext, useTreeSectionContext } from '../root/context';
+	import { useTreeContext, useTreeSectionContext } from '../root/context.svelte';
 	import { getTreeRenderMode } from '../root/render-mode';
 	import type { TreeHeaderProps } from '../types';
 

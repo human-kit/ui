@@ -5,7 +5,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { useAccordionContext } from '../root/context';
+	import { useAccordionContext } from '../root/context.svelte';
 	import { useAccordionItemContext } from '../item/context';
 	import { isRtl } from '../../internal/rtl';
 	import type { AccordionTriggerProps } from '../types.js';
@@ -34,7 +34,6 @@
 
 	const accordion = useAccordionContext();
 	const item = useAccordionItemContext();
-	const stateVersion = accordion.stateVersion;
 
 	const triggerId = $derived(accordion.getTriggerId(item.value));
 	const panelId = $derived(accordion.getPanelId(item.value));
@@ -46,26 +45,11 @@
 		accordion.registerItem(registeredValue, { isDisabled: item.isDisabled });
 	});
 
-	const open = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isOpen(item.value);
-	});
-	const disabled = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isItemDisabled(item.value);
-	});
-	const focused = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isFocused(item.value);
-	});
-	const focusVisible = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isFocusVisible(item.value);
-	});
-	const orientation = $derived.by(() => {
-		void $stateVersion;
-		return accordion.orientation;
-	});
+	const open = $derived(accordion.isOpen(item.value));
+	const disabled = $derived(accordion.isItemDisabled(item.value));
+	const focused = $derived(accordion.isFocused(item.value));
+	const focusVisible = $derived(accordion.isFocusVisible(item.value));
+	const orientation = $derived(accordion.orientation);
 
 	$effect(() => {
 		if (!Object.is(registeredValue, item.value)) {

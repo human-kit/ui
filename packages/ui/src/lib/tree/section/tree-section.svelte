@@ -7,7 +7,7 @@
 		setTreeSectionContext,
 		useTreeContext,
 		type TreeNodeId
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import { getTreeRenderMode } from '../root/render-mode';
 	import type { TreeSectionProps } from '../types';
 

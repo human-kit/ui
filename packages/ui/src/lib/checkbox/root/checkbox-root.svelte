@@ -25,6 +25,8 @@
 		element?: HTMLSpanElement | null;
 		name?: string;
 		value?: string;
+		/** Associates the hidden input with a form by id. */
+		form?: string;
 		checked?: boolean;
 		defaultChecked?: boolean;
 		indeterminate?: boolean;
@@ -83,6 +85,7 @@
 		element = $bindable(),
 		name,
 		value = 'on',
+		form,
 		checked = $bindable(),
 		defaultChecked = false,
 		indeterminate = $bindable(),
@@ -133,6 +136,9 @@
 
 	$effect(() => {
 		element = rootRef;
+		return () => {
+			element = null;
+		};
 	});
 
 	$effect(() => {
@@ -499,6 +505,7 @@
 		type="checkbox"
 		{name}
 		{value}
+		{form}
 		checked={currentChecked}
 		{disabled}
 		{required}

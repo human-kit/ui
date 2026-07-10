@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useCalendarContext } from '../root/context';
+	import { useCalendarContext } from '../root/context.svelte';
 	import type { CalendarWeekdayStyle } from '../root/date-utils';
 	import { setCalendarGridContext } from './context';
 	import CalendarGridMonthScope from './calendar-grid-month-scope.svelte';
@@ -18,19 +18,9 @@
 			return weekdayStyle;
 		}
 	});
-	const layoutVersion = calendar.layoutVersion;
-	const months = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.months;
-	});
-	const selectionMode = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.selectionMode;
-	});
-	const isReadOnly = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.isReadOnly;
-	});
+	const months = $derived(calendar.months);
+	const selectionMode = $derived(calendar.selectionMode);
+	const isReadOnly = $derived(calendar.isReadOnly);
 </script>
 
 <div class={className} data-calendar-grid>

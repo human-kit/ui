@@ -29,7 +29,7 @@ export {
 	type AccordionSelectionMode,
 	type AccordionValue,
 	type CreateAccordionContextOptions
-} from './root/context.js';
+} from './root/context.svelte';
 
 export {
 	getAccordionItemContext,

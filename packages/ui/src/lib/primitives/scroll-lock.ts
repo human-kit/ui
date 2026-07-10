@@ -6,6 +6,12 @@
 let lockCount = 0;
 let originalOverflow = '';
 let originalPaddingRight = '';
+let originalPosition = '';
+let originalTop = '';
+let originalLeft = '';
+let originalRight = '';
+let savedScrollX = 0;
+let savedScrollY = 0;
 
 function getScrollbarWidth(): number {
 	return window.innerWidth - document.documentElement.clientWidth;
@@ -24,16 +30,32 @@ function reservesStableGutter(): boolean {
 
 function lock() {
 	if (lockCount === 0) {
-		originalOverflow = document.body.style.overflow;
-		originalPaddingRight = document.body.style.paddingRight;
+		const body = document.body;
+
+		originalOverflow = body.style.overflow;
+		originalPaddingRight = body.style.paddingRight;
+		originalPosition = body.style.position;
+		originalTop = body.style.top;
+		originalLeft = body.style.left;
+		originalRight = body.style.right;
+		savedScrollX = window.scrollX;
+		savedScrollY = window.scrollY;
 
 		const scrollbarWidth = getScrollbarWidth();
 		const skipCompensation = reservesStableGutter();
 
-		document.body.style.overflow = 'hidden';
+		body.style.overflow = 'hidden';
 		if (!skipCompensation && scrollbarWidth > 0) {
-			document.body.style.paddingRight = `${scrollbarWidth}px`;
+			body.style.paddingRight = `${scrollbarWidth}px`;
 		}
+
+		// `overflow: hidden` alone does not stop touch scrolling on iOS Safari; pinning the body
+		// with `position: fixed` does (applied universally rather than UA-sniffed). The negative
+		// `top` keeps the page visually at its scroll position; it is restored on unlock.
+		body.style.position = 'fixed';
+		body.style.top = `${-savedScrollY}px`;
+		body.style.left = '0';
+		body.style.right = '0';
 	}
 	lockCount++;
 }
@@ -41,8 +63,17 @@ function lock() {
 function unlock() {
 	lockCount--;
 	if (lockCount === 0) {
-		document.body.style.overflow = originalOverflow;
-		document.body.style.paddingRight = originalPaddingRight;
+		const body = document.body;
+
+		body.style.overflow = originalOverflow;
+		body.style.paddingRight = originalPaddingRight;
+		body.style.position = originalPosition;
+		body.style.top = originalTop;
+		body.style.left = originalLeft;
+		body.style.right = originalRight;
+
+		// Pinning the body reset the document scroll offset; put the page back where it was.
+		window.scrollTo(savedScrollX, savedScrollY);
 	}
 	lockCount = Math.max(0, lockCount);
 }

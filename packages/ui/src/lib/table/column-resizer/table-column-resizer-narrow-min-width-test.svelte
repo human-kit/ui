@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Table } from '../index';
-	import type { TableColumnWidth } from '../root/context';
+	import type { TableColumnWidth } from '../root/context.svelte';
 
 	let currentColumnWidths = $state<Map<string, TableColumnWidth> | undefined>(undefined);
 </script>

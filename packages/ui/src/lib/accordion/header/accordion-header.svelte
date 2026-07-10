@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { AccordionHeaderProps } from '../types.js';
-	import { useAccordionContext } from '../root/context';
+	import { useAccordionContext } from '../root/context.svelte';
 	import { useAccordionItemContext } from '../item/context';
 
 	let {
@@ -13,19 +13,12 @@
 
 	const accordion = useAccordionContext();
 	const item = useAccordionItemContext();
-	const stateVersion = accordion.stateVersion;
 
 	let headingRef: HTMLHeadingElement | null = $state(null);
 	const tag = $derived(`h${level}` as const);
 
-	const open = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isOpen(item.value);
-	});
-	const disabled = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isItemDisabled(item.value);
-	});
+	const open = $derived(accordion.isOpen(item.value));
+	const disabled = $derived(accordion.isItemDisabled(item.value));
 
 	$effect(() => {
 		element = headingRef;

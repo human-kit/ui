@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { ToggleGroupRootProps } from '../types.js';
-	import { createToggleGroupContext, setToggleGroupContext } from './context';
+	import { createToggleGroupContext, setToggleGroupContext } from './context.svelte';
 	import { trackInteractionModality } from '../../primitives/input-modality';
 	import { isRtl } from '../../internal/rtl';
 
@@ -54,19 +54,9 @@
 
 	context = toggleGroup;
 
-	const stateVersion = toggleGroup.stateVersion;
-	const disabled = $derived.by(() => {
-		void $stateVersion;
-		return toggleGroup.isDisabled;
-	});
-	const multiple = $derived.by(() => {
-		void $stateVersion;
-		return toggleGroup.selectionMode === 'multiple';
-	});
-	const currentOrientation = $derived.by(() => {
-		void $stateVersion;
-		return toggleGroup.orientation;
-	});
+	const disabled = $derived(toggleGroup.isDisabled);
+	const multiple = $derived(toggleGroup.selectionMode === 'multiple');
+	const currentOrientation = $derived(toggleGroup.orientation);
 
 	$effect(() => {
 		element = rootRef;

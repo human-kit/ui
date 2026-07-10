@@ -1,5 +1,6 @@
 import { flushSync, getContext, setContext } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+import { asCommand } from '../../internal/as-command.js';
 import { isRtl } from '../../internal/rtl';
 
 const TABLE_KEY = Symbol('table');
@@ -183,12 +184,29 @@ export type CreateTableContextOptions = {
 };
 
 export type TableContext = {
-	layoutVersion: Readable<number>;
-	selectionVersion: Readable<number>;
-	focusVersion: Readable<number>;
-	sortVersion: Readable<number>;
-	widthVersion: Readable<number>;
-	resizeVersion: Readable<number>;
+	/**
+	 * Counter bumped when the column/row layout is (re)built or its plain
+	 * caches are invalidated (registration order, hidden columns, DOM
+	 * mutations reported via `notifyLayoutChange`). Deliberately kept
+	 * counter-based: the ordered-token/navigable-cell caches are plain
+	 * (non-reactive, performance-critical), so cache-mediated reads must do
+	 * `void ctx.layoutEpoch` to re-run.
+	 */
+	layoutEpoch: number;
+	/**
+	 * Structural selection epoch. Selection values (`selectedKeys`, anchor,
+	 * mode…) are fine-grained `$state`, but select-all/checkbox state also
+	 * depends on the plain row registries (row order, logical rows,
+	 * selectable-row count). Those structural changes bump this counter with
+	 * the same dedupe guards the old `selectionVersion` store used.
+	 */
+	selectionEpoch: number;
+	/**
+	 * Counter for DOM-measurement-driven width invalidation (container
+	 * resizes, header measurements, resize sessions). Resolved widths live in
+	 * plain caches, so width consumers read `void ctx.widthEpoch`.
+	 */
+	widthEpoch: number;
 	createInstanceToken: (prefix: string) => string;
 	selectionMode: TableSelectionMode;
 	selectionBehavior: TableSelectionBehavior;
@@ -306,13 +324,18 @@ export type TableRowContext = {
 	section: TableSectionKind;
 	rowId?: TableSelectionKey;
 	isDisabled: boolean;
-	rowState: Readable<{
-		isSelected: boolean;
-		isAriaDisabled: boolean;
-		isSelectionDisabled: boolean;
-		isActionable: boolean;
-	}>;
-	cellOrderVersion: Readable<number>;
+	rowState: {
+		readonly isSelected: boolean;
+		readonly isAriaDisabled: boolean;
+		readonly isSelectionDisabled: boolean;
+		readonly isActionable: boolean;
+	};
+	/**
+	 * Counter bumped when the row's cell order changes (cells register /
+	 * unregister or the row's DOM children are reordered). Cell indexes are
+	 * resolved against the live DOM, so index reads stay epoch-mediated.
+	 */
+	cellOrderEpoch: number;
 	registerCellToken: (token: string, getElement?: () => HTMLElement | undefined) => void;
 	unregisterCellToken: (token: string) => void;
 	getCellIndex: (token: string) => number;
@@ -340,20 +363,26 @@ export type TableCellContext = {
 };
 
 export function createTableContext(options: CreateTableContextOptions = {}): TableContext {
-	let selectionMode = options.selectionMode ?? 'none';
-	let selectionBehavior = options.selectionBehavior ?? 'toggle';
-	let disabledBehavior = options.disabledBehavior ?? 'all';
-	let disallowEmptySelection = options.disallowEmptySelection ?? false;
-	let onRowAction = options.onRowAction;
-	let sortDescriptor = options.initialSortDescriptor;
-	let focusedCellKey: string | null = null;
-	let focusedRowTarget: { rowToken: string; edge: TableRowFocusEdge } | null = null;
-	let focusVisible = false;
-	let selectedKeys = new Set<TableSelectionKey>(options.initialSelectedKeys ?? []);
-	let selectionAnchorKey = selectedKeys.values().next().value ?? null;
-	const disabledKeys = new Set<TableSelectionKey>(options.disabledKeys ?? []);
-	const hiddenColumnIds = new Set<string>(options.initialHiddenColumns ?? []);
-	let resizingColumnId: string | null = null;
+	// Fine-grained reactive state. `selectedKeys` is always replaced (never
+	// mutated in place), so a plain `Set` inside `$state` is enough; the
+	// in-place-mutated collections use SvelteSet/SvelteMap instead.
+	let selectionMode = $state(options.selectionMode ?? 'none');
+	let selectionBehavior = $state(options.selectionBehavior ?? 'toggle');
+	let disabledBehavior = $state(options.disabledBehavior ?? 'all');
+	let disallowEmptySelection = $state(options.disallowEmptySelection ?? false);
+	let onRowAction = $state(options.onRowAction);
+	let sortDescriptor = $state(options.initialSortDescriptor);
+	let focusedCellKey = $state<string | null>(null);
+	let focusedRowTarget = $state<{ rowToken: string; edge: TableRowFocusEdge } | null>(null);
+	let focusVisible = $state(false);
+	const initialSelectedKeys = new Set<TableSelectionKey>(options.initialSelectedKeys ?? []);
+	let selectedKeys = $state(initialSelectedKeys);
+	let selectionAnchorKey = $state<TableSelectionKey | null>(
+		initialSelectedKeys.values().next().value ?? null
+	);
+	const disabledKeys = new SvelteSet<TableSelectionKey>(options.disabledKeys ?? []);
+	const hiddenColumnIds = new SvelteSet<string>(options.initialHiddenColumns ?? []);
+	let resizingColumnId = $state<string | null>(null);
 	let resizeSession: {
 		activeColumnId: string;
 		flexibleTailColumnId?: string;
@@ -370,7 +399,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	const columnsWithSortTriggers = new Set<string>();
 	const columnsWithResizers = new Set<string>();
 	let resizerLayoutReady = false;
-	const columnWidths = new Map<string, TableColumnWidth>(options.initialColumnWidths ?? []);
+	const columnWidths = new SvelteMap<string, TableColumnWidth>(options.initialColumnWidths ?? []);
 	const rows = new Map<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
 	const headerRowOrderSet = new Set<string>();
@@ -401,15 +430,22 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		null;
 	let defaultFocusKeyCache: string | undefined;
 
-	const layoutVersion = writable(0);
-	const selectionVersion = writable(0);
-	const focusVersion = writable(0);
-	const sortVersion = writable(0);
-	const widthVersion = writable(0);
-	const resizeVersion = writable(0);
+	// Counter-based epochs (deliberately NOT fine-grained): they broadcast that
+	// the plain, performance-critical caches above were invalidated. Layout and
+	// width are driven by event-like sources (registration/DOM order,
+	// MutationObserver, container-resize measurements); selection keeps a
+	// structural epoch because select-all state depends on the plain row
+	// registries. Focus, sort and resize state are fine-grained `$state` and
+	// need no counters.
+	let layoutEpoch = $state(0);
+	let selectionEpoch = $state(0);
+	let widthEpoch = $state(0);
 	const instanceCounters = new Map<string, number>();
 	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
-	setSelectedKeys(new Set(selectedKeys), selectionAnchorKey);
+	setSelectedKeys(
+		new Set(initialSelectedKeys),
+		initialSelectedKeys.values().next().value ?? null
+	);
 
 	function createInstanceToken(prefix: string) {
 		const nextCount = (instanceCounters.get(prefix) ?? 0) + 1;
@@ -479,7 +515,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (resizerLayoutReady === nextReady) return;
 		resizerLayoutReady = nextReady;
 		invalidateLayoutCaches();
-		layoutVersion.update((value) => value + 1);
+		layoutEpoch += 1;
 		notifyWidth();
 	}
 
@@ -489,7 +525,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			layoutNotifyScheduled = true;
 			queueMicrotask(() => {
 				layoutNotifyScheduled = false;
-				layoutVersion.update((value) => value + 1);
+				layoutEpoch += 1;
 			});
 		}
 	}
@@ -499,18 +535,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			selectionNotifyScheduled = true;
 			queueMicrotask(() => {
 				selectionNotifyScheduled = false;
-				selectionVersion.update((value) => value + 1);
+				selectionEpoch += 1;
 			});
 		}
-	}
-
-	function notifyFocus() {
-		focusVersion.update((value) => value + 1);
-	}
-
-	function notifySort() {
-		invalidateLayoutCaches();
-		sortVersion.update((value) => value + 1);
 	}
 
 	function notifyWidth() {
@@ -523,7 +550,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			widthNotifyScheduled = true;
 			queueMicrotask(() => {
 				widthNotifyScheduled = false;
-				widthVersion.update((value) => value + 1);
+				widthEpoch += 1;
 			});
 		}
 	}
@@ -535,7 +562,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		measuredTableWidthCache = undefined;
 		hasMeasuredTableWidthCache = false;
 		flushSync(() => {
-			widthVersion.update((value) => value + 1);
+			widthEpoch += 1;
 		});
 	}
 
@@ -545,10 +572,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function notifyLayoutChange() {
 		notifyLayout();
-	}
-
-	function notifyResize() {
-		resizeVersion.update((value) => value + 1);
 	}
 
 	function parseColumnWidth(
@@ -782,7 +805,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 		resizerLayoutReady = false;
 		invalidateLayoutCaches();
-		layoutVersion.update((value) => value + 1);
+		layoutEpoch += 1;
 		notifyWidth();
 	}
 
@@ -794,7 +817,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 		resizerLayoutReady = false;
 		invalidateLayoutCaches();
-		layoutVersion.update((value) => value + 1);
+		layoutEpoch += 1;
 		notifyWidth();
 	}
 
@@ -1453,7 +1476,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 		focusedCellKey = null;
 		focusedRowTarget = null;
-		notifyFocus();
 	}
 
 	function reconcileFocusAfterDisabledStateChange() {
@@ -1587,7 +1609,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		resizeSession = null;
 		resizingColumnId = columnId;
 		options.onColumnResizeStart?.(columnId);
-		notifyResize();
 	}
 
 	function endColumnResize() {
@@ -1612,7 +1633,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		resizeSession = null;
 		options.onColumnResizeEnd?.(getColumnWidths());
 		notifyWidthImmediately();
-		notifyResize();
 	}
 
 	function suppressHeaderClickOnce() {
@@ -1709,7 +1729,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 		if (focusedRowTarget?.rowToken === token) {
 			focusedRowTarget = null;
-			notifyFocus();
 		}
 		for (const order of [headerRowOrder, bodyRowOrder]) {
 			const index = order.indexOf(token);
@@ -1729,7 +1748,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			const focusedCell = resolveCellTargetByKey(focusedCellKey);
 			if (!focusedCell || focusedCell.rowToken === token) {
 				focusedCellKey = null;
-				notifyFocus();
 			}
 		}
 		if (
@@ -1958,7 +1976,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		cellOrderSet.delete(key);
 		if (focusedCellKey === key) {
 			focusedCellKey = null;
-			notifyFocus();
 		}
 		if (cell?.section === 'header') {
 			notifyLayout();
@@ -2109,7 +2126,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 		focusedRowTarget = null;
 		focusedCellKey = key;
-		notifyFocus();
 		const focusTarget = cell.focusDelegate?.() ?? cell.element;
 		focusTarget.focus();
 		focusTarget.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
@@ -2121,7 +2137,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (isRowDisabled(row.id, row.disabled)) return;
 		focusedCellKey = null;
 		focusedRowTarget = { rowToken: token, edge };
-		notifyFocus();
 		row.element.focus();
 		row.element.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
 	}
@@ -2130,7 +2145,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (focusedCellKey === key && focusedRowTarget === null) return;
 		focusedCellKey = key;
 		focusedRowTarget = null;
-		notifyFocus();
 	}
 
 	function setFocusedRow(token: string | null, edge: TableRowFocusEdge = 'start') {
@@ -2138,7 +2152,6 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			if (focusedCellKey === null && focusedRowTarget === null) return;
 			focusedCellKey = null;
 			focusedRowTarget = null;
-			notifyFocus();
 			return;
 		}
 
@@ -2152,13 +2165,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 		focusedCellKey = null;
 		focusedRowTarget = { rowToken: token, edge };
-		notifyFocus();
 	}
 
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
-		notifyFocus();
 	}
 
 	function getFocusedCoord() {
@@ -2721,7 +2732,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (hasSameSortDescriptor(sortDescriptor, descriptor)) return;
 		sortDescriptor = descriptor;
 		options.onSortChange?.(descriptor);
-		notifySort();
+		invalidateLayoutCaches();
 	}
 
 	function isColumnSortable(columnId: string) {
@@ -2746,13 +2757,20 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return sortDescriptor.direction;
 	}
 
+	// State-mutating commands are wrapped in `asCommand` (untrack) so callers
+	// inside $effect / $derived contexts do not register the mutated state as a
+	// dependency of their own reactive scope (prop-sync + registration effects
+	// would otherwise loop or clobber fresh state with stale props).
 	return {
-		layoutVersion,
-		selectionVersion,
-		focusVersion,
-		sortVersion,
-		widthVersion,
-		resizeVersion,
+		get layoutEpoch() {
+			return layoutEpoch;
+		},
+		get selectionEpoch() {
+			return selectionEpoch;
+		},
+		get widthEpoch() {
+			return widthEpoch;
+		},
 		createInstanceToken,
 		get selectionMode() {
 			return selectionMode;
@@ -2782,12 +2800,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		get resizingColumnId() {
 			return resizingColumnId;
 		},
-		registerColumn,
-		unregisterColumn,
-		registerColumnSortTrigger,
-		unregisterColumnSortTrigger,
-		registerColumnResizer,
-		unregisterColumnResizer,
+		registerColumn: asCommand(registerColumn),
+		unregisterColumn: asCommand(unregisterColumn),
+		registerColumnSortTrigger: asCommand(registerColumnSortTrigger),
+		unregisterColumnSortTrigger: asCommand(unregisterColumnSortTrigger),
+		registerColumnResizer: asCommand(registerColumnResizer),
+		unregisterColumnResizer: asCommand(unregisterColumnResizer),
 		getColumnCount,
 		getVisibleColumnCount,
 		getColumnAt,
@@ -2808,21 +2826,21 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		getVisibleColumnWidths,
 		getResolvedVisibleColumnWidths,
 		hasRelativeVisibleColumnWidths,
-		refreshMeasuredLayout,
-		notifyLayoutChange,
-		setColumnWidths,
-		setColumnWidth,
-		setHiddenColumns,
+		refreshMeasuredLayout: asCommand(refreshMeasuredLayout),
+		notifyLayoutChange: asCommand(notifyLayoutChange),
+		setColumnWidths: asCommand(setColumnWidths),
+		setColumnWidth: asCommand(setColumnWidth),
+		setHiddenColumns: asCommand(setHiddenColumns),
 		measureColumnContentWidth,
-		startColumnResize,
-		endColumnResize,
+		startColumnResize: asCommand(startColumnResize),
+		endColumnResize: asCommand(endColumnResize),
 		suppressHeaderClickOnce,
 		consumeHeaderClickSuppression,
 		hasResizableColumns,
-		registerRow,
-		unregisterRow,
-		setLogicalBodyRows,
-		markBodyRowsInitialized,
+		registerRow: asCommand(registerRow),
+		unregisterRow: asCommand(unregisterRow),
+		setLogicalBodyRows: asCommand(setLogicalBodyRows),
+		markBodyRowsInitialized: asCommand(markBodyRowsInitialized),
 		getHeaderRowCount,
 		getBodyRowCount,
 		getLogicalBodyRowCount,
@@ -2837,36 +2855,36 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		isRowActionable,
 		hasSelectableRows,
 		getSelectionCheckboxState,
-		registerCell,
-		unregisterCell,
+		registerCell: asCommand(registerCell),
+		unregisterCell: asCommand(unregisterCell),
 		isCellFocused,
 		isCellTabStop,
 		isRowTabStop,
-		focusCellByKey,
-		focusRowByToken,
-		pressRow,
-		setFocusedCell,
-		setFocusedRow,
-		setFocusVisible,
-		moveFocus,
-		moveToRowStart,
-		moveToRowEnd,
-		moveToBodyRowStart,
-		moveToBodyRowEnd,
-		moveToGridStart,
-		moveToGridEnd,
-		toggleRowSelection,
-		selectAllRows,
-		deselectAllRows,
-		setSelection,
-		setSelectionMode,
-		setSelectionBehavior,
-		setDisabledBehavior,
-		setDisallowEmptySelection,
-		setDisabledKeys,
-		setRowActionHandler,
-		setSortDescriptor,
-		toggleSort,
+		focusCellByKey: asCommand(focusCellByKey),
+		focusRowByToken: asCommand(focusRowByToken),
+		pressRow: asCommand(pressRow),
+		setFocusedCell: asCommand(setFocusedCell),
+		setFocusedRow: asCommand(setFocusedRow),
+		setFocusVisible: asCommand(setFocusVisible),
+		moveFocus: asCommand(moveFocus),
+		moveToRowStart: asCommand(moveToRowStart),
+		moveToRowEnd: asCommand(moveToRowEnd),
+		moveToBodyRowStart: asCommand(moveToBodyRowStart),
+		moveToBodyRowEnd: asCommand(moveToBodyRowEnd),
+		moveToGridStart: asCommand(moveToGridStart),
+		moveToGridEnd: asCommand(moveToGridEnd),
+		toggleRowSelection: asCommand(toggleRowSelection),
+		selectAllRows: asCommand(selectAllRows),
+		deselectAllRows: asCommand(deselectAllRows),
+		setSelection: asCommand(setSelection),
+		setSelectionMode: asCommand(setSelectionMode),
+		setSelectionBehavior: asCommand(setSelectionBehavior),
+		setDisabledBehavior: asCommand(setDisabledBehavior),
+		setDisallowEmptySelection: asCommand(setDisallowEmptySelection),
+		setDisabledKeys: asCommand(setDisabledKeys),
+		setRowActionHandler: asCommand(setRowActionHandler),
+		setSortDescriptor: asCommand(setSortDescriptor),
+		toggleSort: asCommand(toggleSort),
 		isColumnSortable,
 		getSortDirection
 	};

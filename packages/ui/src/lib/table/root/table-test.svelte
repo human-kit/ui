@@ -7,7 +7,7 @@
 		TableSelectionKey,
 		TableSelectionMode,
 		TableSortDescriptor
-	} from './context';
+	} from './context.svelte';
 
 	type DemoRow = {
 		id: string;

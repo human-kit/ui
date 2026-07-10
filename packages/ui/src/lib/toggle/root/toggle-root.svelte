@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { onDestroy, untrack, type Snippet } from 'svelte';
-	import { readable } from 'svelte/store';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { getToggleGroupContext, type ToggleGroupValue } from '../../toggle-group/root/context.js';
+	import {
+		getToggleGroupContext,
+		type ToggleGroupValue
+	} from '../../toggle-group/root/context.svelte';
 
 	export type ToggleRenderState = {
 		selected: boolean;
@@ -73,7 +75,6 @@
 	}: ToggleRootProps = $props();
 
 	const toggleGroup = getToggleGroupContext();
-	const toggleGroupStateVersion = toggleGroup?.stateVersion ?? readable(0);
 	const isInitiallyControlled = untrack(() => selected !== undefined);
 	const resolvedId = untrack(() => id) ?? generatedId;
 	const registrationOwner = Symbol('toggle-root');
@@ -107,27 +108,22 @@
 
 	const grouped = Boolean(toggleGroup);
 	const renderedSelected = $derived.by(() => {
-		void $toggleGroupStateVersion;
 		if (toggleGroup && value !== undefined) return toggleGroup.isSelected(value);
 		return currentSelected;
 	});
 	const renderedDisabled = $derived.by(() => {
-		void $toggleGroupStateVersion;
 		if (toggleGroup && value !== undefined) return toggleGroup.isToggleDisabled(value);
 		return disabled;
 	});
 	const renderedFocused = $derived.by(() => {
-		void $toggleGroupStateVersion;
 		if (toggleGroup && value !== undefined) return toggleGroup.isFocused(value);
 		return focused;
 	});
 	const renderedFocusVisible = $derived.by(() => {
-		void $toggleGroupStateVersion;
 		if (toggleGroup && value !== undefined) return toggleGroup.isFocusVisible(value);
 		return focusVisible;
 	});
 	const renderedTabIndex = $derived.by(() => {
-		void $toggleGroupStateVersion;
 		if (toggleGroup && value !== undefined) return toggleGroup.getTabIndex(value);
 		return tabIndexExternal;
 	});

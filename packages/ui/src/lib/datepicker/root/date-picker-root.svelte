@@ -14,15 +14,11 @@
 	} from './date-utils';
 	import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context';
 	import {
-		clampSegment,
-		clampSegmentDraft,
 		createEmptySegmentDraft,
-		getSegmentNumericValue,
-		normalizeSegmentInput,
 		toDraftFromValue,
-		type DatePickerSegmentDraft,
-		type EditableSegmentType
+		type DatePickerSegmentDraft
 	} from './segment-state';
+	import { applyDraftToSegments, createDateSegmentEngine } from './segment-engine';
 	import { evaluateDatePickerDraft } from './draft-evaluation';
 	import {
 		applyTriggerSelectionCloseState,
@@ -273,47 +269,31 @@
 		segmentTypeBuffer = createEmptySegmentDraft();
 	}
 
-	function getSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>): string {
-		if (type === 'day') return segmentDraft.day;
-		if (type === 'month') return segmentDraft.month;
-		return segmentDraft.year;
-	}
+	const segmentEngine = createDateSegmentEngine({
+		isEditable: () => !disabled && !readonly,
+		getDraft: () => segmentDraft,
+		setDraft: (nextDraft) => {
+			segmentDraft = nextDraft;
+		},
+		getTypeBuffer: () => segmentTypeBuffer,
+		setTypeBuffer: (nextBuffer) => {
+			segmentTypeBuffer = nextBuffer;
+		},
+		getCommittedValue: () => valueInternal,
+		commitDraft: () => {
+			const evaluation = evaluateDatePickerDraft(segmentDraft, {
+				isDateOutOfRange,
+				isDateUnavailable: isDateUnavailableInternal
+			});
 
-	function setSegmentValueInternal(
-		type: EditableSegmentType,
-		nextValue: string,
-		fromTyping: boolean
-	) {
-		if (disabled || readonly) return;
+			if (evaluation.isCommitable && evaluation.value) {
+				setValue(evaluation.value, 'input');
+				return;
+			}
 
-		const rawNumericLength = nextValue.replace(/\D/g, '').length;
-		const normalized = normalizeSegmentInput(type, nextValue);
-		const unconstrainedDraft = {
-			...segmentDraft,
-			[type]: normalized
-		};
-		const nextDraft = clampSegmentDraft(unconstrainedDraft, type, fromTyping, rawNumericLength);
-		segmentDraft = nextDraft;
-		if (!fromTyping) {
-			segmentTypeBuffer = { ...segmentTypeBuffer, [type]: '' };
+			publishCommittedValue(null, true);
 		}
-
-		const evaluation = evaluateDatePickerDraft(nextDraft, {
-			isDateOutOfRange,
-			isDateUnavailable: isDateUnavailableInternal
-		});
-
-		if (evaluation.isCommitable && evaluation.value) {
-			setValue(evaluation.value, 'input');
-			return;
-		}
-
-		publishCommittedValue(null, true);
-	}
-
-	function setSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>, nextValue: string) {
-		setSegmentValueInternal(type, nextValue, false);
-	}
+	});
 
 	function registerSegmentRef(type: DatePickerEditableSegmentType, element: HTMLElement | null) {
 		registerDatePickerSegmentRef(segmentRefs, type, element);
@@ -347,68 +327,9 @@
 		return getDatePickerSegmentLabel(resolvedLocale, type);
 	}
 
-	function formatSegment(valueToFormat: number): string {
-		return `${valueToFormat}`;
-	}
-
-	function typeSegmentDigit(
-		type: Exclude<DatePickerSegmentType, 'literal'>,
-		digit: string
-	): boolean {
-		if (!/^\d$/.test(digit)) return false;
-		const maxLength = type === 'year' ? 4 : 2;
-		const previous = segmentTypeBuffer[type];
-		const next = `${previous}${digit}`.slice(-maxLength);
-		segmentTypeBuffer = { ...segmentTypeBuffer, [type]: next };
-		setSegmentValueInternal(type, next, true);
-
-		let didComplete = next.length >= maxLength;
-		if (!didComplete && next.length === 1) {
-			const firstDigit = Number(next);
-			if (type === 'day' && firstDigit >= 4) {
-				didComplete = true;
-			}
-			if (type === 'month' && firstDigit >= 2) {
-				didComplete = true;
-			}
-		}
-
-		if (next.length >= maxLength) {
-			segmentTypeBuffer = { ...segmentTypeBuffer, [type]: '' };
-		}
-		if (didComplete) {
-			segmentTypeBuffer = { ...segmentTypeBuffer, [type]: '' };
-		}
-		return didComplete;
-	}
-
-	function adjustSegmentValue(type: Exclude<DatePickerSegmentType, 'literal'>, step: number) {
-		if (disabled || readonly) return;
-		const current = getSegmentNumericValue(type, segmentDraft, valueInternal);
-		const next = clampSegment(type, current + step);
-		setSegmentValue(type, formatSegment(next));
-	}
-
 	function getSegments() {
 		const baseSegments = buildDatePickerSegments(resolvedLocale, valueInternal ?? undefined);
-		return baseSegments.map((segment) => {
-			if (segment.type === 'literal') return segment;
-			const draftValue = segmentDraft[segment.type];
-			if (draftValue.length === 0) {
-				return {
-					...segment,
-					value: '',
-					text: segment.placeholder,
-					isPlaceholder: true
-				};
-			}
-			return {
-				...segment,
-				value: draftValue,
-				text: draftValue,
-				isPlaceholder: false
-			};
-		});
+		return applyDraftToSegments(baseSegments, segmentDraft);
 	}
 
 	const context: DatePickerContext = {
@@ -456,13 +377,14 @@
 			setOpen(nextOpen, details);
 		},
 		setValue,
-		typeSegmentDigit,
-		adjustSegmentValue,
+		typeSegmentDigit: segmentEngine.typeSegmentDigit,
+		adjustSegmentValue: segmentEngine.adjustSegmentValue,
 		isDateOutOfRange,
 		isDateUnavailable: isDateUnavailableInternal,
 		getSegments,
-		getSegmentValue,
-		setSegmentValue,
+		getSegmentValue: segmentEngine.getSegmentValue,
+		setSegmentValue: segmentEngine.setSegmentValue,
+		getSegmentValueMax: segmentEngine.getSegmentValueMax,
 		getSegmentLabel,
 		registerSegmentRef,
 		focusNextPlaceholderOrLastSegment,
@@ -477,6 +399,7 @@
 <div
 	id={instanceId}
 	class={className}
+	role={ariaLabel ? 'group' : undefined}
 	data-disabled={disabled || undefined}
 	data-readonly={readonly || undefined}
 	data-open={openInternal || undefined}

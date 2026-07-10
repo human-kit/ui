@@ -8,7 +8,7 @@ import type {
 	TreeNodeId,
 	TreeSelectionBehavior,
 	TreeSelectionMode
-} from './root/context.js';
+} from './root/context.svelte.js';
 
 export type TreeSelectionPropagation = 'none' | 'descendants';
 

@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { AccordionPanelProps } from '../types.js';
 	import { createCollapseTransition } from '../../primitives/collapse-transition.svelte';
-	import { useAccordionContext } from '../root/context';
+	import { useAccordionContext } from '../root/context.svelte';
 	import { useAccordionItemContext } from '../item/context';
 
 	let {
 		forceMount = false,
+		region = true,
 		children,
 		class: className = '',
 		element = $bindable<HTMLDivElement | null>(null),
@@ -14,7 +15,6 @@
 
 	const accordion = useAccordionContext();
 	const item = useAccordionItemContext();
-	const stateVersion = accordion.stateVersion;
 
 	const panelId = $derived(accordion.getPanelId(item.value));
 	const triggerId = $derived(accordion.getTriggerId(item.value));
@@ -25,14 +25,8 @@
 	// measured size to track content that grows or shrinks while the panel stays open.
 	let contentRef: HTMLDivElement | null = $state(null);
 
-	const open = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isOpen(item.value);
-	});
-	const orientation = $derived.by(() => {
-		void $stateVersion;
-		return accordion.orientation;
-	});
+	const open = $derived(accordion.isOpen(item.value));
+	const orientation = $derived(accordion.orientation);
 
 	const collapse = createCollapseTransition(
 		() => open,
@@ -56,7 +50,7 @@
 	{...restProps}
 	bind:this={panelRef}
 	id={panelId}
-	role="region"
+	role={region ? 'region' : undefined}
 	aria-labelledby={triggerId}
 	hidden={(!open && collapse.status !== 'ending') || undefined}
 	inert={!open}

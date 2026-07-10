@@ -45,6 +45,19 @@ describe('DatePicker.Root', () => {
 		dialogs.forEach((dialog) => dialog.remove());
 	});
 
+	it('exposes role="group" on the root only when it is labeled', async () => {
+		render(DatePickerTest, { rootAriaLabel: 'Appointment date' });
+		const labeledRoot = document.querySelector('[aria-label="Appointment date"]');
+		expect(labeledRoot?.getAttribute('role')).toBe('group');
+	});
+
+	it('renders the root without a role when it has no label', async () => {
+		render(DatePickerTest);
+		const root = document.querySelector('.date-picker-input')?.parentElement;
+		expect(root?.getAttribute('role')).toBeNull();
+		expect(root?.getAttribute('aria-label')).toBeNull();
+	});
+
 	it('opens calendar when trigger is clicked', async () => {
 		const screen = render(DatePickerTest);
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });

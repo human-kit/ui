@@ -5,14 +5,14 @@ import type {
 	ToggleGroupOrientation,
 	ToggleGroupSelectionMode,
 	ToggleGroupValue
-} from './root/context.js';
+} from './root/context.svelte';
 
 export type {
 	ToggleGroupContext,
 	ToggleGroupOrientation,
 	ToggleGroupSelectionMode,
 	ToggleGroupValue
-} from './root/context.js';
+} from './root/context.svelte';
 
 export type ToggleGroupRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	value?: ToggleGroupValue[];

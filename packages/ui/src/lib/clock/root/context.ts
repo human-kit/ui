@@ -15,6 +15,12 @@ export type ClockContext = {
 	hourCycle: TimePickerHourCycle;
 	/** Whether the clock is visible and should align scroll positions. */
 	open: boolean;
+	/**
+	 * `true` when the current draft has at least one filled segment but cannot
+	 * be committed (incomplete or out of the min/max range). Mirrors
+	 * `TimePickerContext.isInvalidDraft`.
+	 */
+	isInvalidDraft: boolean;
 	selectWheelValue: (type: TimePickerEditableSegmentType, value: string) => void;
 	getSelectedWheelValue: (type: TimePickerEditableSegmentType) => string | null;
 	getWheelOptions: (

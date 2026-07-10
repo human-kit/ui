@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createCalendarContext } from './context';
+import { createCalendarContext } from './context.svelte';
 import { formatCalendarDate } from './date-utils';
 
 describe('calendar context', () => {

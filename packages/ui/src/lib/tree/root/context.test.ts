@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { get } from 'svelte/store';
-import { createTreeContext, type TreeNodeId } from './context';
+import { createTreeContext, type TreeNodeId } from './context.svelte';
 
 function flushMicrotasks() {
 	return new Promise<void>((resolve) => {
@@ -124,17 +123,13 @@ describe('createTreeContext', () => {
 			hasChildren: false
 		});
 
-		const selectionVersionBefore = get(ctx.selectionVersion);
-		const expansionVersionBefore = get(ctx.expansionVersion);
-
 		ctx.unregisterNode('reports');
 		await flushMicrotasks();
 
 		expect(selectionChanges).toEqual([new Set()]);
 		expect(expansionChanges).toEqual([new Set()]);
 		expect([...ctx.getSelectedKeys()]).toEqual([]);
-		expect(get(ctx.selectionVersion)).toBeGreaterThan(selectionVersionBefore);
-		expect(get(ctx.expansionVersion)).toBeGreaterThan(expansionVersionBefore);
+		expect([...ctx.getExpandedKeys()]).toEqual([]);
 	});
 
 	it('does not emit unregister changes once teardown has begun', async () => {

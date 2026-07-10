@@ -27,6 +27,70 @@ describe('ComboBox.Tag', () => {
 		});
 	});
 
+	describe('Assistive Technology Exposure', () => {
+		it('gives each tag a deterministic id derived from its value', async () => {
+			const screen = render(ComboBoxMultiselectTest, { value: ['apple', 'banana'] });
+
+			const tags = screen.container.querySelectorAll<HTMLElement>('[data-tag-id]');
+			expect(tags[0].id).toMatch(/^combobox-tag-.+-apple$/);
+			expect(tags[1].id).toMatch(/^combobox-tag-.+-banana$/);
+			// Same instance prefix on every tag of the combobox.
+			expect(tags[0].id.replace(/-apple$/, '')).toBe(tags[1].id.replace(/-banana$/, ''));
+		});
+
+		it('points aria-activedescendant at the last tag on ArrowLeft and removes it with Delete', async () => {
+			const onValueChange = vi.fn();
+			const screen = render(ComboBoxMultiselectTest, {
+				value: ['apple', 'banana'],
+				onValueChange
+			});
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			expect(input.element().getAttribute('aria-activedescendant')).toBeNull();
+
+			// ArrowLeft with the caret at the input start moves virtual focus to the last tag...
+			await userEvent.keyboard('{ArrowLeft}');
+
+			const tags = screen.container.querySelectorAll<HTMLElement>('[data-tag-id]');
+			const lastTag = tags[tags.length - 1];
+			expect(lastTag).toHaveAttribute('data-focused', 'true');
+			// ...and the input exposes it to AT through aria-activedescendant.
+			expect(lastTag.id).not.toBe('');
+			await expect
+				.poll(() => input.element().getAttribute('aria-activedescendant'))
+				.toBe(lastTag.id);
+
+			// Delete removes the virtually focused tag.
+			await userEvent.keyboard('{Delete}');
+			expect(onValueChange).toHaveBeenCalledWith(['apple']);
+			await expect
+				.poll(() => screen.container.querySelectorAll('[data-tag-id]').length)
+				.toBe(1);
+
+			// Virtual focus moves to the remaining tag and activedescendant follows it.
+			const remainingTag = screen.container.querySelector<HTMLElement>('[data-tag-id]')!;
+			await expect
+				.poll(() => input.element().getAttribute('aria-activedescendant'))
+				.toBe(remainingTag.id);
+		});
+
+		it('clears the tag reference from aria-activedescendant when virtual focus returns to the input', async () => {
+			const screen = render(ComboBoxMultiselectTest, { value: ['apple'] });
+			const input = screen.getByRole('combobox');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowLeft}');
+			await expect
+				.poll(() => input.element().getAttribute('aria-activedescendant'))
+				.toMatch(/^combobox-tag-/);
+
+			// ArrowRight past the last tag returns virtual focus to the input.
+			await userEvent.keyboard('{ArrowRight}');
+			await expect.poll(() => input.element().getAttribute('aria-activedescendant')).toBeNull();
+		});
+	});
+
 	describe('Virtual Focus Navigation', () => {
 		it('navigates to previous tag on ArrowLeft', async () => {
 			const screen = render(ComboBoxMultiselectTest, { value: ['apple', 'banana'] });

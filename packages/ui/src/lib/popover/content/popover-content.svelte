@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { focusTrap, type FocusTrapOptions } from '../../primitives/focus-trap';
@@ -9,7 +9,7 @@
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
 	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
-	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
+	import { createPresence } from '../../primitives/presence.svelte';
 	import { Portal } from '../../portal';
 	import {
 		getPopoverContext,
@@ -92,11 +92,7 @@
 	let cleanupStandaloneTriggerBlurListener: (() => void) | undefined;
 	let pendingStandaloneTriggerCloseFocusFrame: number | undefined;
 	let trackedStandaloneTrigger: HTMLElement | null = null;
-	let isMounted = $state(false);
-	let isEntering = $state(false);
-	let isExiting = $state(false);
 	let resolvedPlacement = $state<'top' | 'right' | 'bottom' | 'left'>('bottom');
-	let tracker: MotionTracker | undefined;
 	let previousOpen = $state(false);
 	let closeHandledInternally = false;
 	let layerId: symbol | null = null;
@@ -112,11 +108,6 @@
 
 	function isTopmost() {
 		return layerId !== null && isTopmostPopover(layerId);
-	}
-
-	function clearTracker() {
-		tracker?.cancel();
-		tracker = undefined;
 	}
 
 	function resolvePlacementSide(value: string) {
@@ -255,11 +246,19 @@
 		trackedStandaloneTrigger = triggerRefProp;
 	});
 
-	onMount(() => {
-		if (!browser) return;
+	// Document listeners are only useful while the popover is open — register them per open
+	// cycle instead of for the component's whole life. Order relative to other layers doesn't
+	// matter: every handler arbitrates via the layer stack (`isTopmost`).
+	$effect(() => {
+		if (!isOpen) return;
 		document.addEventListener('keydown', handleKeydown);
 		document.addEventListener('focusin', handleDocumentFocusIn);
 		document.addEventListener('scroll', handleScroll, true);
+		return () => {
+			document.removeEventListener('keydown', handleKeydown);
+			document.removeEventListener('focusin', handleDocumentFocusIn);
+			document.removeEventListener('scroll', handleScroll, true);
+		};
 	});
 
 	onDestroy(() => {
@@ -267,12 +266,8 @@
 		if (trackedStandaloneTrigger) {
 			clearTriggerFocusState(trackedStandaloneTrigger);
 		}
-		clearTracker();
 		removeLayer();
 		clearStandaloneTriggerTracking();
-		document.removeEventListener('keydown', handleKeydown);
-		document.removeEventListener('focusin', handleDocumentFocusIn);
-		document.removeEventListener('scroll', handleScroll, true);
 	});
 
 	$effect(() => {
@@ -297,62 +292,28 @@
 		releaseFocusedDescendant(popoverRef, triggerRef);
 	});
 
-	$effect(() => {
-		if (isOpen) {
-			if (layerId === null) {
-				layerId = pushPopoverLayer();
-				// Capture the dialog depth at open time so the panel clears the topmost dialog.
-				zIndex = getFloatingLayerZIndex();
+	// Presence: mounted through the exit animation, phases timed from the panel's own CSS motion.
+	// The layer is pushed (and the z-index resolved above the topmost dialog) as soon as the
+	// popover opens, and popped as soon as it starts closing — while the exit still plays.
+	const presence = createPresence(
+		() => isOpen,
+		() => popoverRef,
+		{
+			onOpen: () => {
+				if (layerId === null) {
+					layerId = pushPopoverLayer();
+					// Capture the dialog depth at open time so the panel clears the topmost dialog.
+					zIndex = getFloatingLayerZIndex();
+				}
+			},
+			onClose: () => {
+				removeLayer();
 			}
-			const shouldAnimateIn = !isMounted || isExiting;
-			isMounted = true;
-			isExiting = false;
-			if (shouldAnimateIn) {
-				isEntering = true;
-			}
-			return;
 		}
-
-		removeLayer();
-
-		if (!isMounted) {
-			isEntering = false;
-			isExiting = false;
-			return;
-		}
-
-		isEntering = false;
-		isExiting = true;
-	});
-
-	$effect(() => {
-		if (!isMounted || !popoverRef) {
-			clearTracker();
-			return;
-		}
-
-		if (isEntering) {
-			clearTracker();
-			tracker = trackMotionEnd(popoverRef, () => {
-				isEntering = false;
-			});
-			return;
-		}
-
-		if (isExiting) {
-			clearTracker();
-			tracker = trackMotionEnd(popoverRef, () => {
-				isExiting = false;
-				isMounted = false;
-			});
-			return;
-		}
-
-		clearTracker();
-	});
+	);
 </script>
 
-{#if isMounted}
+{#if presence.isMounted}
 	<Portal>
 		<div
 			bind:this={popoverRef}
@@ -362,8 +323,8 @@
 			aria-hidden={isOpen ? undefined : 'true'}
 			inert={!isOpen}
 			data-state={isOpen ? 'open' : 'closed'}
-			data-entering={isEntering || undefined}
-			data-exiting={isExiting || undefined}
+			data-entering={presence.isEntering || undefined}
+			data-exiting={presence.isExiting || undefined}
 			data-placement={resolvedPlacement}
 			use:floating={{
 				anchor: triggerRef,

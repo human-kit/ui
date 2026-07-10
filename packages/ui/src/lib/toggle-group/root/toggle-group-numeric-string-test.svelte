@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Toggle } from '../../toggle/index.js';
 	import { ToggleGroup } from '../index';
-	import type { ToggleGroupValue } from '../root/context';
+	import type { ToggleGroupValue } from '../root/context.svelte';
 
 	let value = $state<ToggleGroupValue[]>([]);
 </script>

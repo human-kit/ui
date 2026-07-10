@@ -21,6 +21,8 @@ Description: Main listbox state container that manages registration, selection, 
 | `id`                | `string`                                 | `undefined`           | DOM id for the listbox element.                              |
 | `aria-label`        | `string`                                 | `undefined`           | Accessible label for the listbox.                            |
 | `onChange`          | `(value: Set<string \| number>) => void` | `undefined`           | Called when selection changes.                               |
+| `loop`              | `boolean`                                | `false`               | Wraps arrow-key navigation from last to first (and back).    |
+| `typeahead`         | `boolean`                                | `false`               | Moves focus to the option matching typed characters.         |
 | `context`           | `ListBoxContext`                         | `bindable`            | Exposes context via `bind:context` for advanced composition. |
 | `element`           | `HTMLElement`                            | `bindable`            | Exposes root element via `bind:element`.                     |
 

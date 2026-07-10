@@ -7,7 +7,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { useTreeContext } from '../root/context';
+	import { useTreeContext } from '../root/context.svelte';
 	import { getTreeRenderMode } from '../root/render-mode';
 	import { useTreeItemContext } from '../item/context';
 	import type { TreeCheckboxProps } from '../types';
@@ -29,34 +29,19 @@
 	const renderMode = getTreeRenderMode();
 	const tree = renderMode === 'display' ? useTreeContext() : undefined;
 	const item = renderMode === 'display' ? useTreeItemContext() : undefined;
-	const structureVersion = tree?.structureVersion;
-	const selectionVersion = tree?.selectionVersion;
-	const configVersion = tree?.configVersion;
 
 	let checkboxElement = $state<HTMLSpanElement | null>(null);
 
-	const isVisible = $derived.by(() => {
-		if (!tree || !configVersion) return false;
-		void $configVersion;
-		return tree.selectionMode !== 'none';
-	});
+	const isVisible = $derived(tree ? tree.selectionMode !== 'none' : false);
 
-	const selectionState = $derived.by(() => {
-		if (!item || !structureVersion || !selectionVersion || !configVersion) return 'none';
-		void $structureVersion;
-		void $selectionVersion;
-		void $configVersion;
-		return item.getSelectionState();
-	});
+	// `getSelectionState` walks descendants over plain structure, but the context
+	// reads the structure epoch (via the effective-selection cache) plus the
+	// selection/config `$state` internally, so this tracks fine-grained.
+	const selectionState = $derived(item ? item.getSelectionState() : 'none');
 
 	const isChecked = $derived(selectionState === 'all');
 	const isIndeterminate = $derived(selectionState === 'some');
-	const isDisabled = $derived.by(() => {
-		if (!item || !selectionVersion || !configVersion) return true;
-		void $selectionVersion;
-		void $configVersion;
-		return !isVisible || item.isSelectionDisabled();
-	});
+	const isDisabled = $derived(item ? !isVisible || item.isSelectionDisabled() : true);
 
 	const labelledBy = $derived.by(() => {
 		if (ariaLabelledby) return ariaLabelledby;

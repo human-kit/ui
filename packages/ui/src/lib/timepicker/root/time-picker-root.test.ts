@@ -24,6 +24,19 @@ describe('TimePicker.Root', () => {
 		dialogs.forEach((dialog) => dialog.remove());
 	});
 
+	it('exposes role="group" on the root only when it is labeled', async () => {
+		render(TimePickerTest, { rootAriaLabel: 'Meeting time' });
+		const labeledRoot = document.querySelector('[aria-label="Meeting time"]');
+		expect(labeledRoot?.getAttribute('role')).toBe('group');
+	});
+
+	it('renders the root without a role when it has no label', async () => {
+		render(TimePickerTest);
+		const root = document.querySelector('.time-picker-input')?.parentElement;
+		expect(root?.getAttribute('role')).toBeNull();
+		expect(root?.getAttribute('aria-label')).toBeNull();
+	});
+
 	it('opens popover when trigger is clicked', async () => {
 		const screen = render(TimePickerTest);
 		const trigger = screen.getByRole('button', { name: 'Open time picker' });
@@ -120,6 +133,41 @@ describe('TimePicker.Root', () => {
 		await expect
 			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
 			.toBe('');
+	});
+
+	it('normalizes an out-of-range bound value to null', async () => {
+		const screen = render(TimePickerBindableTest, {
+			minValue: '09:00',
+			maxValue: '17:00',
+			externalValue: '23:45'
+		});
+
+		expect(document.querySelector('[data-testid="bind-value"]')?.textContent).toBe('14:30');
+
+		const setExternal = screen.getByTestId('set-external');
+		await setExternal.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="bind-value"]')?.textContent)
+			.toBe('');
+		await expect
+			.poll(() => getSegment('hour').element()?.getAttribute('data-placeholder'))
+			.toBe('true');
+	});
+
+	it('flags the input as invalid when a typed hour falls out of min/max', async () => {
+		render(TimePickerTest, { minValue: '09:00', maxValue: '17:00' });
+		const input = () => document.querySelector<HTMLElement>('.time-picker-input');
+		expect(input()?.getAttribute('data-invalid')).toBeNull();
+
+		const hourSegment = getSegment('hour');
+		hourSegment.element()?.focus();
+		await userEvent.keyboard('22');
+
+		// The draft (22:30) is complete but out of range: no value is committed
+		// and the input is flagged invalid.
+		await expect.poll(() => input()?.getAttribute('data-invalid')).toBe('true');
+		expect(document.querySelector('[data-testid="time-picker-value"]')?.textContent).toBe('');
 	});
 
 	it('rebuilds segment draft when hourCycle changes with a committed value', async () => {

@@ -47,6 +47,19 @@ describe('DateRangePicker.Root', () => {
 		dialogs.forEach((dialog) => dialog.remove());
 	});
 
+	it('exposes role="group" on the root only when it is labeled', async () => {
+		render(DateRangePickerTest, { rootAriaLabel: 'Stay dates' });
+		const labeledRoot = document.querySelector('[aria-label="Stay dates"]');
+		expect(labeledRoot?.getAttribute('role')).toBe('group');
+	});
+
+	it('renders the root without a role when it has no label', async () => {
+		render(DateRangePickerTest);
+		const root = document.querySelector('[aria-label="Start date"]')?.parentElement;
+		expect(root?.getAttribute('role')).toBeNull();
+		expect(root?.getAttribute('aria-label')).toBeNull();
+	});
+
 	it('opens calendar when trigger is clicked', async () => {
 		const screen = render(DateRangePickerTest);
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
@@ -156,6 +169,40 @@ describe('DateRangePicker.Root', () => {
 		).toBeNull();
 		expect(getSegment('start', 'day').element()?.getAttribute('aria-invalid')).toBe('true');
 		expect(getSegment('end', 'day').element()?.getAttribute('aria-invalid')).toBeNull();
+	});
+
+	it('announces a localized "Empty" for placeholder segments instead of the raw placeholder', async () => {
+		render(DateRangePickerTest, { defaultValue: null });
+
+		expect(getSegment('start', 'day').element()?.getAttribute('data-placeholder')).toBe('true');
+		expect(getSegment('start', 'day').element()?.getAttribute('aria-valuetext')).toBe('Empty');
+		expect(getSegment('end', 'year').element()?.getAttribute('aria-valuetext')).toBe('Empty');
+	});
+
+	it('derives day aria-valuemax from the draft month and year', async () => {
+		render(DateRangePickerTest);
+
+		// February 2026 has 28 days.
+		expect(getSegment('start', 'day').element()?.getAttribute('aria-valuemax')).toBe('28');
+		expect(getSegment('end', 'day').element()?.getAttribute('aria-valuemax')).toBe('28');
+
+		// Clearing the start month falls back to the static maximum for that part only.
+		getSegment('start', 'month').element()?.focus();
+		await userEvent.keyboard('{Delete}');
+		await expect
+			.poll(() => getSegment('start', 'day').element()?.getAttribute('aria-valuemax'))
+			.toBe('31');
+		expect(getSegment('end', 'day').element()?.getAttribute('aria-valuemax')).toBe('28');
+	});
+
+	it('starts a new day entry when the appended digit would overflow the maximum', async () => {
+		render(DateRangePickerTest, { defaultValue: null });
+
+		// 35 overflows the day maximum, so 5 starts a new entry instead of
+		// silently clamping to 31 (React Aria behavior).
+		await typeSegment('start', 'day', '35');
+
+		await expect.poll(() => segmentText('start', 'day')).toBe('5');
 	});
 
 	it('exposes aria-invalid on segments instead of the group element', async () => {

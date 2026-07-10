@@ -150,6 +150,26 @@ describe('Button.Root', () => {
 		);
 	});
 
+	it('keeps the pending announcement out of the button accessible name', async () => {
+		// ariaLabel: '' removes aria-label so the accessible name comes from the contents,
+		// which is where the inline live region used to leak into the computed name.
+		const screen = render(ButtonTest, { pending: true, ariaLabel: '' });
+
+		// The name must be exactly the visible contents ("Saving pending" from the label +
+		// render-state spans), without the live region announcement appended.
+		const button = screen.getByRole('button', { name: 'Saving pending', exact: true });
+		await expect.element(button).toBeInTheDocument();
+
+		const buttonElement = button.element() as HTMLButtonElement;
+		const status = document.querySelector('[role="status"][aria-live="polite"]');
+
+		// The status element still exists, carries the announcement, and lives outside the button.
+		expect(status).not.toBeNull();
+		expect(status?.textContent).toBe('Saving pending, pending');
+		expect(buttonElement.contains(status)).toBe(false);
+		expect(buttonElement.textContent).not.toContain(', pending');
+	});
+
 	it('updates to pending dynamically and suppresses later activation', async () => {
 		render(ButtonTest, { type: 'submit' });
 		const button = document.querySelector<HTMLButtonElement>('[data-button-root="true"]');

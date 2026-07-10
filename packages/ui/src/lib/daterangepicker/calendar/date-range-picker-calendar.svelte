@@ -3,7 +3,7 @@
 	import { Calendar } from '../../calendar';
 	import { sanitizeDateRangePickerProps } from '../internal/strict-props';
 	import { useDateRangePickerContext } from '../root/context';
-	import type { CalendarRangeValue } from '../../calendar/root/context';
+	import type { CalendarRangeValue } from '../../calendar/root/context.svelte';
 
 	type ForbiddenCalendarProp =
 		| 'selectionMode'

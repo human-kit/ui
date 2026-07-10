@@ -208,4 +208,90 @@ describe('Clock.Root', () => {
 			firstColumn?.querySelectorAll('[data-wheel-item][data-disabled="true"]') ?? [];
 		expect(disabledItems.length).toBeGreaterThan(0);
 	});
+
+	it('exposes data-invalid while the draft is partial and clears it once committeable', async () => {
+		render(ClockRootTest, { defaultValue: null, hourCycle: 24, granularity: 'minute' });
+
+		await expect.poll(() => getSpinbuttons().length).toBe(2);
+		expect(getClockRoot()?.getAttribute('data-invalid')).toBeNull();
+
+		// Selecting only the hour leaves the draft incomplete -> invalid.
+		const hourColumn = getSpinbuttons().item(0);
+		const hourOption = hourColumn?.querySelector<HTMLElement>('[data-wheel-item][data-value="10"]');
+		expect(hourOption).toBeTruthy();
+		hourOption?.click();
+
+		await expect.poll(() => getClockRoot()?.getAttribute('data-invalid')).toBe('true');
+		expect(document.querySelector('[data-testid="clock-value"]')?.textContent).toBe('');
+
+		// Completing the minute makes the draft committeable -> invalid state clears.
+		const minuteColumn = getSpinbuttons().item(1);
+		const minuteOption = minuteColumn?.querySelector<HTMLElement>(
+			'[data-wheel-item][data-value="30"]'
+		);
+		expect(minuteOption).toBeTruthy();
+		minuteOption?.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('10:30');
+		expect(getClockRoot()?.getAttribute('data-invalid')).toBeNull();
+	});
+
+	it('ignores clicks on out-of-range wheel options and keeps the draft valid', async () => {
+		render(ClockRootTest, {
+			defaultValue: '16:30',
+			hourCycle: 24,
+			minValue: '09:00',
+			maxValue: '17:00'
+		});
+
+		await expect.poll(() => getSpinbuttons().length).toBe(2);
+
+		// With minute 30 in the draft, hour 17 (17:30 > max) is disabled: the
+		// click must be ignored, keeping both the value and validity intact.
+		const hourColumn = getSpinbuttons().item(0);
+		const outOfRangeHour = hourColumn?.querySelector<HTMLElement>(
+			'[data-wheel-item][data-value="17"]'
+		);
+		expect(outOfRangeHour?.getAttribute('data-disabled')).toBe('true');
+		outOfRangeHour?.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('16:30');
+		expect(getClockRoot()?.getAttribute('data-invalid')).toBeNull();
+	});
+
+	it('normalizes an out-of-range external value to null', async () => {
+		render(ClockRootTest, {
+			defaultValue: '10:00',
+			minValue: '09:00',
+			maxValue: '17:00',
+			externalValue: '23:00'
+		});
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('10:00');
+
+		document.querySelector<HTMLElement>('[data-testid="set-external"]')?.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('');
+		// The draft is cleared, so the root is not flagged invalid.
+		expect(getClockRoot()?.getAttribute('data-invalid')).toBeNull();
+	});
+
+	it('normalizes an out-of-range initial default value to null', async () => {
+		render(ClockRootTest, {
+			defaultValue: '08:00',
+			minValue: '09:00',
+			maxValue: '17:00'
+		});
+
+		await expect.poll(() => getClockRoot()).toBeTruthy();
+		expect(document.querySelector('[data-testid="clock-value"]')?.textContent).toBe('');
+	});
 });

@@ -48,7 +48,7 @@
 		onclick={handleClick}
 		onmouseenter={onMouseEnter}
 		onfocus={onFocus}
-		aria-label={ariaLabel}
+		aria-label={ariaLabel || undefined}
 		class="inline-flex items-center"
 	>
 		{#snippet children(state)}

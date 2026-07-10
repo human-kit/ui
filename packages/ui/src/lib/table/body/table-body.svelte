@@ -3,7 +3,7 @@
 	generics="T extends Record<string, unknown> & { id: string | number } = Record<string, unknown> & { id: string | number }"
 >
 	import { flushSync, type Snippet } from 'svelte';
-	import { setTableSectionContext, useTableContext } from '../root/context';
+	import { setTableSectionContext, useTableContext } from '../root/context.svelte';
 	import type { TableBodyProps } from '../types.js';
 
 	let {
@@ -16,7 +16,6 @@
 	}: TableBodyProps<T> = $props();
 	setTableSectionContext({ section: 'body' });
 	const table = useTableContext();
-	const layoutVersion = table.layoutVersion;
 	let bodyElement = $state<HTMLTableSectionElement | undefined>(undefined);
 	let scrollTop = $state(0);
 	let viewportHeight = $state(0);
@@ -36,7 +35,7 @@
 	const isItemsMode = $derived(items !== undefined);
 	const virtualizerEnabled = $derived(Boolean(virtualizer && itemList.length > 0));
 	const bodyColumnCount = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return Math.max(table.getVisibleColumnCount(), 1);
 	});
 	const effectiveViewportHeight = $derived.by(() => {
@@ -83,7 +82,7 @@
 	});
 
 	const isEmpty = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return table.getLogicalBodyRowCount() === 0;
 	});
 

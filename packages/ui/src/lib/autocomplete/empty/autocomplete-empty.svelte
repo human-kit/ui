@@ -19,7 +19,16 @@
 </script>
 
 {#if isEmpty}
-	<div data-empty {...restProps}>
+	<!-- Rendered inside the List's role="listbox", where a bare div is invalid content:
+	     mirror the listbox's own empty placeholder (a disabled, unselected option). A
+	     consumer-provided role (via restProps) overrides these defaults. -->
+	<div
+		data-empty
+		role="option"
+		aria-selected={restProps.role === undefined ? 'false' : undefined}
+		aria-disabled={restProps.role === undefined ? 'true' : undefined}
+		{...restProps}
+	>
 		{#if children}
 			{@render children()}
 		{:else}

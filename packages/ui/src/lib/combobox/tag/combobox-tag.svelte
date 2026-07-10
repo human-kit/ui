@@ -13,7 +13,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getContext } from 'svelte';
-	import { useComboBoxContext } from '../root/context';
+	import { getComboBoxTagDomId, useComboBoxContext } from '../root/context';
 
 	/**
 	 * ComboBox.Tag - Individual tag representing a selected value.
@@ -34,6 +34,10 @@
 	/** Whether this tag has virtual focus (navigated via arrow keys) */
 	const isFocused = $derived(comboboxCtx.focusedTagId === tagCtx.id);
 
+	// Deterministic id so the input's aria-activedescendant can reference this tag
+	// while it holds virtual focus. Placed after {...restProps} so it always wins.
+	const tagDomId = $derived(getComboBoxTagDomId(comboboxCtx.instanceId, tagCtx.id));
+
 	function handleMouseDown(event: MouseEvent) {
 		// Prevent focus theft - tags use virtual focus only via arrow keys
 		event.preventDefault();
@@ -48,6 +52,7 @@
 	onmousedown={handleMouseDown}
 	class={className}
 	{...restProps}
+	id={tagDomId}
 >
 	{@render children()}
 </span>

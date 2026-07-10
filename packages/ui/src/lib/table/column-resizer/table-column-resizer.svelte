@@ -8,7 +8,7 @@
 		getTableCellContext,
 		useTableColumnContext,
 		useTableContext
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import type { TableColumnResizerProps } from '../types.js';
 	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
 	import {
@@ -32,9 +32,6 @@
 	const table = useTableContext();
 	const column = useTableColumnContext();
 	const cellContext = getTableCellContext();
-	const layoutVersion = table.layoutVersion;
-	const resizeVersion = table.resizeVersion;
-	const widthVersion = table.widthVersion;
 	table.registerColumnResizer(column.token);
 	cellContext?.notifyResizerPresent?.();
 
@@ -68,24 +65,23 @@
 	const DOUBLE_PRESS_MAX_DELAY_MS = 500;
 	const DOUBLE_PRESS_MAX_DISTANCE_PX = 6;
 
-	const isResizing = $derived.by(() => {
-		void $resizeVersion;
-		return table.resizingColumnId === column.id;
-	});
+	// `resizingColumnId` is fine-grained `$state`; resizability and widths stay
+	// epoch-mediated (resizer registry and measured widths live in plain caches).
+	const isResizing = $derived(table.resizingColumnId === column.id);
 	const isResizable = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return !column.isHidden && table.isColumnResizable(column.id);
 	});
 	const currentWidth = $derived.by(() => {
-		void $widthVersion;
+		void table.widthEpoch;
 		return table.getColumnWidth(column.id) ?? getHeaderWidth();
 	});
 	const minWidth = $derived.by(() => {
-		void $widthVersion;
+		void table.widthEpoch;
 		return table.getColumnMinWidth(column.id) ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
 	});
 	const maxWidth = $derived.by(() => {
-		void $widthVersion;
+		void table.widthEpoch;
 		return table.getColumnMaxWidth(column.id);
 	});
 	const accessibleLabel = $derived.by(() => {
@@ -581,11 +577,16 @@
 </script>
 
 {#if !column.isHidden}
+	<!--
+		tabindex="-1": the grid keeps a single Tab stop, so the handle must not add a Tab stop per
+		resizable column. It stays keyboard-reachable through the roving-focus model (ArrowRight
+		from its header cell) and programmatically focusable after pointer interaction.
+	-->
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<div
 		bind:this={element}
 		role={isResizable ? 'separator' : undefined}
-		tabindex={isResizable ? 0 : undefined}
+		tabindex={isResizable ? -1 : undefined}
 		class={className}
 		aria-label={isResizable ? accessibleLabel : undefined}
 		aria-orientation={isResizable ? 'vertical' : undefined}

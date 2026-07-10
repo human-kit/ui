@@ -46,6 +46,6 @@
 
 - `Accordion.Header` renders a real heading element (`<h3>` by default) that wraps the trigger button, following the WAI-ARIA accordion pattern.
 - `Accordion.Trigger` renders button semantics with `aria-expanded` and `aria-controls`.
-- `Accordion.Panel` renders `role="region"` and `aria-labelledby` pointing at its trigger, and is `hidden` + `inert` while collapsed.
+- `Accordion.Panel` renders `role="region"` and `aria-labelledby` pointing at its trigger, and is `hidden` + `inert` while collapsed. Set `region={false}` on panels of large accordions (the APG recommends avoiding `region` landmarks beyond roughly six panels) so assistive-technology landmark lists are not flooded.
 - Arrow keys move focus between triggers, Home/End jump to the first or last enabled trigger, and focus wraps at the ends unless `loop={false}`.
 - Enter/Space toggle the focused panel via native button activation.

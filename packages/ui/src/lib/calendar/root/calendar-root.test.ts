@@ -39,6 +39,12 @@ describe('Calendar', () => {
 		await expect.element(grid).toBeInTheDocument();
 	});
 
+	it('exposes role="group" on the labeled root', async () => {
+		render(CalendarRootTest);
+		const root = document.querySelector('[aria-label="Test calendar"]');
+		expect(root?.getAttribute('role')).toBe('group');
+	});
+
 	it('renders narrow weekday labels for the current locale', () => {
 		render(CalendarRootTest, {
 			defaultValue: '2026-05-10',

@@ -455,6 +455,62 @@ describe('Menu', () => {
 			).toHaveLength(1);
 		});
 
+		it('does not open the submenu when the pointer only crosses the trigger', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const submenuTrigger = screen
+				.getByRole('menuitem', { name: 'More actions' })
+				.element() as HTMLElement;
+
+			// Pointer enters and leaves before the hover-intent delay elapses.
+			submenuTrigger.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
+			submenuTrigger.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true }));
+
+			await new Promise((resolve) => setTimeout(resolve, 250));
+			expect(openMenuCount()).toBe(1);
+		});
+
+		it('opens the submenu on hover only after the hover-intent delay', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			await screen.getByRole('button', { name: 'Open Menu' }).click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			const submenuTrigger = screen
+				.getByRole('menuitem', { name: 'More actions' })
+				.element() as HTMLElement;
+			submenuTrigger.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
+
+			// Not opened synchronously on pointerenter (hover intent pending)…
+			expect(openMenuCount()).toBe(1);
+			// …but it does open once the delay elapses with the pointer still on the trigger.
+			await expect.poll(() => openMenuCount(), { timeout: 2000 }).toBe(2);
+		});
+
+		it('keeps the submenu open while the pointer keeps aiming at it past the grace period', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			const { root, geo } = await openWithSubmenu(screen);
+			const towardSubmenu = Math.sign(geo.aimEnter.x - geo.aimApex.x);
+
+			move(root, geo.aimApex);
+			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.aimEnter);
+
+			// The diagonal takes longer than the 300ms grace period, but every move keeps
+			// aiming at the submenu: each one must re-arm the grace timer.
+			for (let step = 1; step <= 10; step += 1) {
+				await new Promise((resolve) => setTimeout(resolve, 50));
+				move(root, {
+					x: geo.aimEnter.x + towardSubmenu * step * 0.5,
+					y: geo.aimEnter.y
+				});
+			}
+			expect(openMenuCount()).toBe(2);
+
+			// Once the pointer stops, the grace timer finally expires and the submenu closes.
+			await expect.poll(() => openMenuCount(), { timeout: 2000 }).toBe(1);
+		});
+
 		it('closes only the submenu on ArrowLeft', async () => {
 			const screen = render(MenuTest, { withSubmenu: true });
 			await screen.getByRole('button', { name: 'Open Menu' }).click();

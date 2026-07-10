@@ -5,7 +5,7 @@
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import type { TableBodyVirtualizer } from '../types.js';
 
 	type DemoRow = {

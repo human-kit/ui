@@ -41,6 +41,9 @@
 		get open() {
 			return timePicker.open;
 		},
+		get isInvalidDraft() {
+			return timePicker.isInvalidDraft;
+		},
 		selectWheelValue: timePicker.selectWheelValue,
 		getSelectedWheelValue: timePicker.getSelectedWheelValue,
 		getWheelOptions: timePicker.getWheelOptions,

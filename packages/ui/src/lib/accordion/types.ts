@@ -5,14 +5,14 @@ import type {
 	AccordionOrientation,
 	AccordionSelectionMode,
 	AccordionValue
-} from './root/context.js';
+} from './root/context.svelte';
 
 export type {
 	AccordionContext,
 	AccordionOrientation,
 	AccordionSelectionMode,
 	AccordionValue
-} from './root/context.js';
+} from './root/context.svelte';
 
 export type AccordionRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	/** Controlled list of open item values. */
@@ -79,6 +79,12 @@ export type AccordionPanelProps = Omit<
 > & {
 	/** Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation. */
 	forceMount?: boolean;
+	/**
+	 * Whether the panel is exposed as a `role="region"` landmark (default `true`).
+	 * Set to `false` on accordions with many items: the APG recommends avoiding
+	 * `region` beyond roughly six panels so landmark lists are not flooded.
+	 */
+	region?: boolean;
 	children?: Snippet;
 	class?: string;
 	/** Bindable reference to the rendered panel element. */

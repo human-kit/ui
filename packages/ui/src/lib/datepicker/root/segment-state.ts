@@ -36,7 +36,7 @@ export function normalizeSegmentInput(type: EditableSegmentType, rawValue: strin
 	return numeric.replace(/^0+(?=\d)/, '');
 }
 
-function getMaxValidDayInMonth(year: number, month: number): number {
+export function getMaxValidDayInMonth(year: number, month: number): number {
 	const yearText = `${year}`.padStart(4, '0');
 	const monthText = `${month}`.padStart(2, '0');
 
@@ -142,6 +142,32 @@ export function getSegmentBounds(type: EditableSegmentType): { min: number; max:
 	if (type === 'month') return { min: 1, max: 12 };
 	if (type === 'day') return { min: 1, max: 31 };
 	return { min: 1, max: 9999 };
+}
+
+/**
+ * Draft-aware segment maximum: the day maximum follows the draft's month and
+ * year when both are complete (e.g. 28 for February 2026), falling back to
+ * the static bound (31) otherwise.
+ */
+export function getSegmentMaxValue(
+	type: EditableSegmentType,
+	draft: DatePickerSegmentDraft
+): number {
+	if (type === 'day' && draft.month.length > 0 && draft.year.length > 0) {
+		const month = Number(draft.month);
+		const year = Number(draft.year);
+		if (
+			Number.isInteger(month) &&
+			Number.isInteger(year) &&
+			month >= 1 &&
+			month <= 12 &&
+			year >= 1 &&
+			year <= 9999
+		) {
+			return getMaxValidDayInMonth(year, month);
+		}
+	}
+	return getSegmentBounds(type).max;
 }
 
 export function getSegmentNumericValue(

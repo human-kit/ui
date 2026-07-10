@@ -209,6 +209,14 @@ const LOCALIZED_STRINGS = {
 		fr: 'Masquer les options',
 		de: 'Optionen ausblenden',
 		it: 'Nascondi opzioni'
+	},
+	'segment.empty': {
+		en: 'Empty',
+		es: 'Vacío',
+		pt: 'Vazio',
+		fr: 'Vide',
+		de: 'Leer',
+		it: 'Vuoto'
 	}
 } as const satisfies Record<string, LocalizedTable>;
 

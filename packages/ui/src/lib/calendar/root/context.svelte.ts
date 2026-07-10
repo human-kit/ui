@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { asCommand } from '../../internal/as-command.js';
 import {
 	addDays,
 	addMonths,
@@ -56,9 +56,14 @@ export type CreateCalendarContextOptions<
 };
 
 export type CalendarContext = {
-	layoutVersion: Readable<number>;
-	selectionVersion: Readable<number>;
-	focusRequestVersion: Readable<number>;
+	/**
+	 * One-shot focus request counter. This is an event signal, not derivable
+	 * state: keyboard navigation bumps it to ask the roving focus target to
+	 * call `.focus()` exactly once. Consumers read it from an `$effect` and
+	 * must hand it to `consumeFocusRequest` before focusing, so cells mounted
+	 * after a request was already handled do not steal focus on mount.
+	 */
+	focusRequestVersion: number;
 	locale: string;
 	selectionMode: CalendarSelectionMode;
 	firstDayOfWeek: number;
@@ -100,20 +105,24 @@ export function createCalendarContext(
 ): CalendarContext;
 export function createCalendarContext(options: CreateCalendarContextOptions): CalendarContext;
 export function createCalendarContext(options: CreateCalendarContextOptions): CalendarContext {
-	let {
-		selectionMode = 'single',
-		visibleMonths = 1,
-		showOutsideDays = false,
-		locale = Intl.DateTimeFormat().resolvedOptions().locale,
-		firstDayOfWeek,
-		monthHeadingStyle = 'composed',
-		isDisabled = false,
-		isReadOnly = false,
-		isDateUnavailable,
-		onChange
-	} = options;
+	const initialSelectionMode = options.selectionMode ?? 'single';
+	const initialVisibleMonths = Math.max(1, options.visibleMonths ?? 1);
+	const initialShowOutsideDays = options.showOutsideDays ?? false;
+	const initialLocale = options.locale ?? Intl.DateTimeFormat().resolvedOptions().locale;
+	const initialFirstDayOfWeek = options.firstDayOfWeek;
+	const initialMonthHeadingStyle = options.monthHeadingStyle ?? 'composed';
+	const initialUnavailableFn = options.isDateUnavailable;
 
-	visibleMonths = Math.max(1, visibleMonths);
+	let selectionMode = $state(initialSelectionMode);
+	let visibleMonths = $state(initialVisibleMonths);
+	let showOutsideDays = $state(initialShowOutsideDays);
+	let locale = $state(initialLocale);
+	let firstDayOfWeek = $state(initialFirstDayOfWeek);
+	let monthHeadingStyle = $state(initialMonthHeadingStyle);
+	let isDisabled = $state(options.isDisabled ?? false);
+	let isReadOnly = $state(options.isReadOnly ?? false);
+	let isDateUnavailable = $state(initialUnavailableFn);
+	let onChange = options.onChange;
 
 	const { value, defaultValue } = options;
 
@@ -207,9 +216,11 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	const fallbackToday = formatCalendarDate(getTodayUtcDate());
 	// `null` means "controlled and empty", so it must not fall back to defaultValue.
 	const initialSingleSelected =
-		selectionMode === 'single' && typeof value === 'string' && isValidCalendarDateValue(value)
+		initialSelectionMode === 'single' &&
+		typeof value === 'string' &&
+		isValidCalendarDateValue(value)
 			? value
-			: selectionMode === 'single' &&
+			: initialSelectionMode === 'single' &&
 				  value !== null &&
 				  typeof defaultValue === 'string' &&
 				  isValidCalendarDateValue(defaultValue)
@@ -217,45 +228,76 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				: undefined;
 
 	const initialRangeSelected =
-		selectionMode === 'range' && isRangeValue(value)
+		initialSelectionMode === 'range' && isRangeValue(value)
 			? value
-			: selectionMode === 'range' && value !== null && isRangeValue(defaultValue)
+			: initialSelectionMode === 'range' && value !== null && isRangeValue(defaultValue)
 				? defaultValue
 				: undefined;
 
-	let currentSelected = initialSingleSelected;
-	let currentRangeStart = initialRangeSelected?.start;
-	let currentRangeEnd = initialRangeSelected?.end;
+	let currentSelected = $state(initialSingleSelected);
+	let currentRangeStart = $state(initialRangeSelected?.start);
+	let currentRangeEnd = $state(initialRangeSelected?.end);
+	let currentPreviewEnd = $state<CalendarDateValue | undefined>(undefined);
+	// Only read from inside commands (never from a reactive scope), so these
+	// stay plain, non-reactive bookkeeping.
 	let currentRangeAnchor: CalendarDateValue | undefined;
-	let currentPreviewEnd: CalendarDateValue | undefined;
 	let currentHoveredDate: CalendarDateValue | undefined;
 	let previousCommittedRange: CalendarRangeValue | undefined;
 	let previousFocusedBeforeDraft: CalendarDateValue | undefined;
-	let currentFocused =
+	const initialFocused =
 		initialSingleSelected ??
 		initialRangeSelected?.end ??
 		initialRangeSelected?.start ??
 		fallbackToday;
-	let currentFocusVisible = false;
-	let currentVisibleMonth = startOfMonth(parseCalendarDate(currentFocused) ?? getTodayUtcDate());
-	let cachedMonths: CalendarMonth[] = [];
-	let hasCachedMonths = false;
+	let currentFocused = $state(initialFocused);
+	let currentFocusVisible = $state(false);
+	let currentVisibleMonth = $state(
+		startOfMonth(parseCalendarDate(initialFocused) ?? getTodayUtcDate())
+	);
+	// PURE caches: intentionally non-reactive. They memoize pure computations
+	// (unavailability lookups, pending-range path checks) and are invalidated
+	// explicitly in the same code paths that invalidated them before the runes
+	// migration. Making them reactive would trip `state_unsafe_mutation`,
+	// because they are filled lazily from inside `$derived` reads.
 	let unavailableCache = new Map<CalendarDateValue, boolean>();
 	let pendingRangePathCache = new Map<CalendarDateValue, boolean>();
 	let pendingRangePathCacheStart: CalendarDateValue | undefined;
-	let previousUnavailableFn = isDateUnavailable;
+	// Prop-sync guards: previous external inputs, compared inside `sync` so
+	// parent rerenders with unchanged values do not reset internal state.
+	let previousUnavailableFn = initialUnavailableFn;
 	let previousValue = snapshotExternalValue(value);
 	let previousDefaultValue = snapshotExternalValue(defaultValue);
-	let previousVisibleMonths = visibleMonths;
-	let previousShowOutsideDays = showOutsideDays;
-	let previousLocale = locale;
-	let previousFirstDayOfWeek = firstDayOfWeek;
-	let previousMonthHeadingStyle = monthHeadingStyle;
-	let cachedFirstDayOfWeek = resolveFirstDayOfWeek(locale, firstDayOfWeek);
-	const layoutVersion = writable(0);
-	const selectionVersion = writable(0);
-	const focusRequestVersion = writable(0);
+	let previousVisibleMonths = initialVisibleMonths;
+	let previousShowOutsideDays = initialShowOutsideDays;
+	let previousLocale = initialLocale;
+	let previousFirstDayOfWeek = initialFirstDayOfWeek;
+	let previousMonthHeadingStyle = initialMonthHeadingStyle;
+	const resolvedFirstDayOfWeek = $derived(resolveFirstDayOfWeek(locale, firstDayOfWeek));
+	// One-shot focus request signal (see `CalendarContext.focusRequestVersion`).
+	// Kept counter-based on purpose: "please focus the roving target now" is an
+	// event, not state that can be derived from other state.
+	let focusRequestVersion = $state(0);
 	let lastConsumedFocusRequestVersion = 0;
+
+	// Month grid, memoized by Svelte itself: it recomputes only when one of its
+	// reactive inputs changes (replaces the manual months cache + layoutVersion).
+	const months = $derived.by<CalendarMonth[]>(() => {
+		const firstDay = resolvedFirstDayOfWeek;
+		return Array.from({ length: visibleMonths }, (_, monthIndex) => {
+			const monthStart = addMonths(startOfMonth(currentVisibleMonth), monthIndex);
+			return {
+				monthIndex,
+				monthStart,
+				heading: formatMonthHeading(monthStart, locale, monthHeadingStyle),
+				weeks: buildMonthGrid(monthStart, firstDay, showOutsideDays)
+			};
+		});
+	});
+
+	const headingLabel = $derived.by(() => {
+		if (months.length === 1) return months[0].heading;
+		return `${months[0].heading} - ${months[months.length - 1].heading}`;
+	});
 
 	function clearUnavailableCache() {
 		unavailableCache = new Map();
@@ -287,17 +329,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		return result;
 	}
 
-	function notifyLayout() {
-		hasCachedMonths = false;
-		layoutVersion.update((value) => value + 1);
-	}
-
-	function notifySelection() {
-		selectionVersion.update((value) => value + 1);
-	}
-
 	function requestFocusedCellFocus() {
-		focusRequestVersion.update((value) => value + 1);
+		focusRequestVersion += 1;
 	}
 
 	// Each focus request may be consumed at most once (by the roving focus
@@ -310,9 +343,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	function syncExternal(next: CreateCalendarContextOptions) {
-		let shouldNotifyLayout = false;
-		let shouldNotifySelection = false;
-
 		const nextSelectionMode = next.selectionMode ?? 'single';
 		const nextVisibleMonths = Math.max(1, next.visibleMonths ?? 1);
 		const nextShowOutsideDays = next.showOutsideDays ?? false;
@@ -330,7 +360,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			nextMonthHeadingStyle !== previousMonthHeadingStyle
 		) {
 			clearUnavailableCache();
-			shouldNotifyLayout = true;
 		}
 
 		previousUnavailableFn = nextUnavailableFn;
@@ -350,8 +379,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			currentPreviewEnd = undefined;
 			currentHoveredDate = undefined;
 			clearPendingRangePathCache();
-			shouldNotifySelection = true;
-			shouldNotifyLayout = true;
 		}
 
 		visibleMonths = nextVisibleMonths;
@@ -359,11 +386,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		locale = nextLocale;
 		firstDayOfWeek = nextFirstDayOfWeek;
 		monthHeadingStyle = nextMonthHeadingStyle;
-		cachedFirstDayOfWeek = resolveFirstDayOfWeek(locale, firstDayOfWeek);
-
-		if (isDisabled !== (next.isDisabled ?? false) || isReadOnly !== (next.isReadOnly ?? false)) {
-			shouldNotifyLayout = true;
-		}
 
 		isDisabled = next.isDisabled ?? false;
 		isReadOnly = next.isReadOnly ?? false;
@@ -385,17 +407,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (selectionMode === 'single') {
 			if (shouldApplyValue && nextValue !== undefined) {
 				if (typeof nextValue === 'string' && isValidCalendarDateValue(nextValue)) {
-					if (currentSelected !== nextValue || currentFocused !== nextValue) {
-						shouldNotifySelection = true;
-					}
 					currentSelected = nextValue;
 					currentFocused = nextValue;
 					currentVisibleMonth = startOfMonth(parseCalendarDate(nextValue) ?? currentVisibleMonth);
-					shouldNotifyLayout = true;
 				} else if (currentSelected !== undefined) {
 					// `null` (controlled and empty) or an invalid string clears the selection.
 					currentSelected = undefined;
-					shouldNotifySelection = true;
 				}
 			} else if (
 				shouldApplyDefaultValue &&
@@ -409,8 +426,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				currentVisibleMonth = startOfMonth(
 					parseCalendarDate(nextDefaultValue) ?? currentVisibleMonth
 				);
-				shouldNotifySelection = true;
-				shouldNotifyLayout = true;
 			}
 			currentRangeStart = undefined;
 			currentRangeEnd = undefined;
@@ -435,13 +450,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 					const nextFocus = shouldKeepFocused
 						? currentFocused
 						: (nextRange?.end ?? nextRange?.start ?? nextEnd ?? nextStart);
-					if (
-						currentRangeStart !== nextStart ||
-						currentRangeEnd !== nextEnd ||
-						currentFocused !== (nextFocus ?? currentFocused)
-					) {
-						shouldNotifySelection = true;
-					}
 					currentRangeStart = nextStart;
 					currentRangeEnd = nextEnd;
 					currentRangeAnchor = undefined;
@@ -451,7 +459,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 					if (nextFocus) {
 						currentFocused = nextFocus;
 						currentVisibleMonth = startOfMonth(parseCalendarDate(nextFocus) ?? currentVisibleMonth);
-						shouldNotifyLayout = true;
 					}
 				} else if (currentRangeStart || currentRangeEnd) {
 					// `null` (controlled and empty) clears both ends of the range.
@@ -461,7 +468,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 					currentPreviewEnd = undefined;
 					currentHoveredDate = undefined;
 					clearPendingRangePathCache();
-					shouldNotifySelection = true;
 				}
 			} else if (
 				shouldApplyDefaultValue &&
@@ -497,16 +503,11 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				if (nextFocus) {
 					currentFocused = nextFocus;
 					currentVisibleMonth = startOfMonth(parseCalendarDate(nextFocus) ?? currentVisibleMonth);
-					shouldNotifyLayout = true;
 				}
-				shouldNotifySelection = true;
 			}
 
 			currentSelected = undefined;
 		}
-
-		if (shouldNotifyLayout) notifyLayout();
-		if (shouldNotifySelection) notifySelection();
 	}
 
 	function getFirstOfVisibleRange(): Date {
@@ -518,9 +519,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		return addMonths(lastVisibleMonthStart, 1);
 	}
 
-	function ensureVisible(dateValue: CalendarDateValue): boolean {
+	function ensureVisible(dateValue: CalendarDateValue) {
 		const date = parseCalendarDate(dateValue);
-		if (!date) return false;
+		if (!date) return;
 
 		const previousVisibleMonth = currentVisibleMonth.getTime();
 		const first = getFirstOfVisibleRange();
@@ -532,38 +533,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			currentVisibleMonth = startOfMonth(addMonths(date, -(visibleMonths - 1)));
 		}
 
-		const didChange = currentVisibleMonth.getTime() !== previousVisibleMonth;
-		if (didChange) {
+		if (currentVisibleMonth.getTime() !== previousVisibleMonth) {
 			clearUnavailableCache();
 		}
-
-		return didChange;
-	}
-
-	function getMonths(): CalendarMonth[] {
-		if (hasCachedMonths) {
-			return cachedMonths;
-		}
-
-		const firstDayOfWeek = cachedFirstDayOfWeek;
-		cachedMonths = Array.from({ length: visibleMonths }, (_, monthIndex) => {
-			const monthStart = addMonths(startOfMonth(currentVisibleMonth), monthIndex);
-			return {
-				monthIndex,
-				monthStart,
-				heading: formatMonthHeading(monthStart, locale, monthHeadingStyle),
-				weeks: buildMonthGrid(monthStart, firstDayOfWeek, showOutsideDays)
-			};
-		});
-
-		hasCachedMonths = true;
-		return cachedMonths;
-	}
-
-	function getHeadingLabel(): string {
-		const months = getMonths();
-		if (months.length === 1) return months[0].heading;
-		return `${months[0].heading} - ${months[months.length - 1].heading}`;
 	}
 
 	function isSelected(date: CalendarDateValue): boolean {
@@ -628,17 +600,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		if (currentFocused === date) return;
 
 		currentFocused = date;
-		const didChangeMonth = ensureVisible(date);
-		if (didChangeMonth) {
-			notifyLayout();
-		}
-		notifySelection();
+		ensureVisible(date);
 	}
 
 	function setFocusVisible(visible: boolean) {
 		if (currentFocusVisible === visible) return;
 		currentFocusVisible = visible;
-		notifySelection();
 	}
 
 	function setHoveredValue(date: CalendarDateValue | undefined) {
@@ -653,7 +620,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			// Mouseleave: clear the hover preview so Enter cannot commit a stale end.
 			currentHoveredDate = undefined;
 			currentPreviewEnd = undefined;
-			notifySelection();
 			return;
 		}
 
@@ -663,7 +629,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		currentHoveredDate = nextHovered;
 		currentPreviewEnd = nextHovered;
-		notifySelection();
 	}
 
 	function beginRangeSelection(date: CalendarDateValue) {
@@ -712,15 +677,11 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			previousFocusedBeforeDraft ?? previousCommittedRange?.end ?? previousCommittedRange?.start;
 		if (restoredFocus && isValidCalendarDateValue(restoredFocus)) {
 			currentFocused = restoredFocus;
-			const didChangeMonth = ensureVisible(restoredFocus);
-			if (didChangeMonth) {
-				notifyLayout();
-			}
+			ensureVisible(restoredFocus);
 		}
 
 		previousCommittedRange = undefined;
 		previousFocusedBeforeDraft = undefined;
-		notifySelection();
 	}
 
 	function selectDate(date: CalendarDateValue) {
@@ -729,18 +690,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		if (selectionMode === 'range') {
 			currentFocused = date;
-			const didChangeMonth = ensureVisible(date);
+			ensureVisible(date);
 
 			if (!currentRangeStart || currentRangeEnd) {
 				beginRangeSelection(date);
 			} else {
 				commitRangeSelection(currentRangeStart, date);
 			}
-
-			if (didChangeMonth) {
-				notifyLayout();
-			}
-			notifySelection();
 			return;
 		}
 
@@ -748,11 +704,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 
 		currentSelected = date;
 		currentFocused = date;
-		const didChangeMonth = ensureVisible(date);
-		if (didChangeMonth) {
-			notifyLayout();
-		}
-		notifySelection();
+		ensureVisible(date);
 		onChange?.(date);
 	}
 
@@ -763,8 +715,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			currentFocused = formatCalendarDate(addMonths(focused, visibleMonths));
 		}
 		clearUnavailableCache();
-		notifyLayout();
-		notifySelection();
 	}
 
 	function goToPreviousPage() {
@@ -774,8 +724,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			currentFocused = formatCalendarDate(addMonths(focused, -visibleMonths));
 		}
 		clearUnavailableCache();
-		notifyLayout();
-		notifySelection();
 	}
 
 	function moveFocusByDays(
@@ -850,7 +798,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			}
 			currentPreviewEnd = nextDate;
 			currentHoveredDate = nextDate;
-			notifySelection();
 		}
 
 		switch (event.key) {
@@ -921,7 +868,6 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 					currentPreviewEnd
 				) {
 					commitRangeSelection(currentRangeStart, currentPreviewEnd);
-					notifySelection();
 					break;
 				}
 				selectDate(keyDate);
@@ -941,9 +887,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	const context: CalendarContext = {
-		layoutVersion,
-		selectionVersion,
-		focusRequestVersion,
+		get focusRequestVersion() {
+			return focusRequestVersion;
+		},
 		get locale() {
 			return locale;
 		},
@@ -951,7 +897,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			return selectionMode;
 		},
 		get firstDayOfWeek() {
-			return cachedFirstDayOfWeek;
+			return resolvedFirstDayOfWeek;
 		},
 		get visibleMonths() {
 			return visibleMonths;
@@ -966,7 +912,7 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			return isReadOnly;
 		},
 		get months() {
-			return getMonths();
+			return months;
 		},
 		get selectedValue() {
 			return currentSelected;
@@ -981,13 +927,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 			return currentFocusVisible;
 		},
 		get weekdayLabels() {
-			return getWeekdayLabels(locale, cachedFirstDayOfWeek);
+			return getWeekdayLabels(locale, resolvedFirstDayOfWeek);
 		},
 		get headingLabel() {
-			return getHeadingLabel();
+			return headingLabel;
 		},
 		getWeekdayLabels(weekdayStyle: CalendarWeekdayStyle = 'short') {
-			return getWeekdayLabels(locale, cachedFirstDayOfWeek, weekdayStyle);
+			return getWeekdayLabels(locale, resolvedFirstDayOfWeek, weekdayStyle);
 		},
 		isSelected,
 		isRangeStart,
@@ -996,15 +942,15 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		isDateUnavailable: isUnavailable,
 		isDateDisabled,
 		isOutsideVisibleRange,
-		setFocusedValue,
-		setFocusVisible,
-		consumeFocusRequest,
-		setHoveredValue,
-		selectDate,
-		goToNextPage,
-		goToPreviousPage,
-		handleCellKeydown,
-		sync: syncExternal
+		setFocusedValue: asCommand(setFocusedValue),
+		setFocusVisible: asCommand(setFocusVisible),
+		consumeFocusRequest: asCommand(consumeFocusRequest),
+		setHoveredValue: asCommand(setHoveredValue),
+		selectDate: asCommand(selectDate),
+		goToNextPage: asCommand(goToNextPage),
+		goToPreviousPage: asCommand(goToPreviousPage),
+		handleCellKeydown: asCommand(handleCellKeydown),
+		sync: asCommand(syncExternal)
 	};
 
 	return context;

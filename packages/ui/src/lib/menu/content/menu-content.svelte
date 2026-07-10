@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { clickOutside, isTargetInTopLayerAbove } from '../../primitives/click-outside';
 	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
-	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
+	import { createPresence } from '../../primitives/presence.svelte';
 	import { Portal } from '../../portal';
 	import { useMenuContext } from '../root/context';
 	import { pushMenuLayer, removeMenuLayer, isTopmostMenu } from '../root/menu-stack';
@@ -57,12 +57,8 @@
 	);
 
 	let menuRef: HTMLElement | undefined = $state();
-	let isMounted = $state(false);
-	let isEntering = $state(false);
-	let isExiting = $state(false);
 	let previousOpen = $state(false);
 	let resolvedPlacement = $state<'top' | 'right' | 'bottom' | 'left'>('bottom');
-	let tracker: MotionTracker | undefined;
 	let hasAppliedOpenFocus = false;
 	let layerId: symbol | null = null;
 	// Resolved when the menu opens so it stacks above whatever dialog (if any) it was
@@ -73,11 +69,6 @@
 		if (layerId === null) return;
 		removeMenuLayer(layerId);
 		layerId = null;
-	}
-
-	function clearTracker() {
-		tracker?.cancel();
-		tracker = undefined;
 	}
 
 	function resolvePlacementSide(value: string) {
@@ -176,19 +167,23 @@
 		}
 	}
 
-	onMount(() => {
-		if (!browser) return;
+	// Document listeners are only useful while the menu is open — register them per open
+	// cycle instead of for the component's whole life. Order relative to other layers doesn't
+	// matter: every handler arbitrates via the layer stack (`isTopmost`).
+	$effect(() => {
+		if (!isOpen) return;
 		document.addEventListener('keydown', handleKeydown);
 		document.addEventListener('focusin', handleDocumentFocusIn);
+		return () => {
+			document.removeEventListener('keydown', handleKeydown);
+			document.removeEventListener('focusin', handleDocumentFocusIn);
+		};
 	});
 
 	onDestroy(() => {
 		if (!browser) return;
-		clearTracker();
 		removeLayer();
 		ctx.setContentRef(null);
-		document.removeEventListener('keydown', handleKeydown);
-		document.removeEventListener('focusin', handleDocumentFocusIn);
 	});
 
 	// Release a focused descendant before the menu marks itself hidden on close, so the
@@ -203,62 +198,30 @@
 		}
 	});
 
-	$effect(() => {
-		if (isOpen) {
-			if (layerId === null) {
-				layerId = pushMenuLayer();
-				zIndex = getFloatingLayerZIndex();
+	// Presence: mounted through the exit animation, phases timed from the panel's own CSS motion.
+	// The layer is pushed (and the z-index resolved above the topmost dialog) as soon as the menu
+	// opens, and popped as soon as it starts closing — while the exit still plays. Closing also
+	// re-arms the open-focus routine for the next open cycle.
+	const presence = createPresence(
+		() => isOpen,
+		() => menuRef,
+		{
+			onOpen: () => {
+				if (layerId === null) {
+					layerId = pushMenuLayer();
+					zIndex = getFloatingLayerZIndex();
+				}
+			},
+			onClose: () => {
+				removeLayer();
+				hasAppliedOpenFocus = false;
 			}
-			const shouldAnimateIn = !isMounted || isExiting;
-			isMounted = true;
-			isExiting = false;
-			if (shouldAnimateIn) {
-				isEntering = true;
-			}
-			return;
 		}
-
-		removeLayer();
-		hasAppliedOpenFocus = false;
-		if (!isMounted) {
-			isEntering = false;
-			isExiting = false;
-			return;
-		}
-
-		isEntering = false;
-		isExiting = true;
-	});
-
-	$effect(() => {
-		if (!isMounted || !menuRef) {
-			clearTracker();
-			return;
-		}
-
-		if (isEntering) {
-			clearTracker();
-			tracker = trackMotionEnd(menuRef, () => {
-				isEntering = false;
-			});
-			return;
-		}
-
-		if (isExiting) {
-			clearTracker();
-			tracker = trackMotionEnd(menuRef, () => {
-				isExiting = false;
-				isMounted = false;
-			});
-			return;
-		}
-
-		clearTracker();
-	});
+	);
 
 	// Register the content element and drive open focus once mounted and open.
 	$effect(() => {
-		if (isMounted && menuRef) {
+		if (presence.isMounted && menuRef) {
 			ctx.setContentRef(menuRef);
 			if (isOpen) {
 				applyOpenFocus();
@@ -279,7 +242,7 @@
 	});
 </script>
 
-{#if isMounted}
+{#if presence.isMounted}
 	<Portal>
 		<div
 			bind:this={menuRef}
@@ -291,8 +254,8 @@
 			inert={!isOpen}
 			data-menu-content="true"
 			data-state={isOpen ? 'open' : 'closed'}
-			data-entering={isEntering || undefined}
-			data-exiting={isExiting || undefined}
+			data-entering={presence.isEntering || undefined}
+			data-exiting={presence.isExiting || undefined}
 			data-placement={resolvedPlacement}
 			use:floating={{
 				anchor: triggerRef,

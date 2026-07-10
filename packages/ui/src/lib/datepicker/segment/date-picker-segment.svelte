@@ -23,6 +23,7 @@
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 	import { isRtl } from '../../internal/rtl';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
 
 	type DatePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,
@@ -82,13 +83,18 @@
 
 	const valueMax = $derived.by(() => {
 		if (segment.type === 'literal') return undefined;
-		if (segment.type === 'month') return 12;
-		if (segment.type === 'day') return 31;
-		return 9999;
+		// The day maximum follows the draft's month/year (e.g. 28 for February
+		// 2026) instead of a static 31.
+		return datePicker.getSegmentValueMax(segment.type);
 	});
 
 	const valueText = $derived.by(() => {
 		if (segment.type === 'literal') return segment.text;
+		// An empty segment announces a localized "Empty" rather than the raw
+		// visual placeholder ("dd"/"mm"/"yyyy").
+		if (segment.isPlaceholder) {
+			return resolveLocalizedString(datePicker.locale, 'segment.empty');
+		}
 		if (segment.type === 'month' && currentNumericValue) {
 			const monthLabel = getMonthFormatter(datePicker.locale).format(
 				new Date(Date.UTC(2030, currentNumericValue - 1, 1))

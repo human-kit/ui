@@ -5,7 +5,7 @@
 		ToggleGroupOrientation,
 		ToggleGroupSelectionMode,
 		ToggleGroupValue
-	} from '../root/context';
+	} from '../root/context.svelte';
 
 	type Props = {
 		value?: ToggleGroupValue[];

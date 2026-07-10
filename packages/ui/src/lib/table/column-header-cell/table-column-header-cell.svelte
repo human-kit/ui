@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import {
 		setTableCellContext,
 		useTableColumnContext,
 		useTableContext,
 		useTableRowContext
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import type { TableColumnHeaderCellProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
@@ -19,10 +19,6 @@
 	const column = useTableColumnContext();
 	const row = useTableRowContext();
 	const key = table.createInstanceToken('header-cell');
-	const focusVersion = table.focusVersion;
-	const layoutVersion = table.layoutVersion;
-	const sortVersion = table.sortVersion;
-	const widthVersion = table.widthVersion;
 
 	let element = $state<HTMLElement | undefined>(undefined);
 	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
@@ -78,53 +74,46 @@
 		table.unregisterCell(key);
 	});
 
-	const isFocused = $derived.by(() => {
-		void $focusVersion;
-		return table.isCellFocused(key) && isElementFocused;
-	});
-	const isFocusVisible = $derived.by(() => {
-		void $focusVersion;
-		return isFocused && isElementFocusVisible;
-	});
-	const sortDirection = $derived.by(() => {
-		void $sortVersion;
-		return table.getSortDirection(column.id);
-	});
-	const isHidden = $derived.by(() => {
-		void $layoutVersion;
-		return column.isHidden;
-	});
+	// Focus and sort state are fine-grained `$state` in the context; width and
+	// layout reads stay epoch-mediated because they resolve through plain
+	// caches (measured widths, ordered column tokens, trigger registries).
+	const isFocused = $derived(table.isCellFocused(key) && isElementFocused);
+	const isFocusVisible = $derived(isFocused && isElementFocusVisible);
+	const sortDirection = $derived(table.getSortDirection(column.id));
+	const isHidden = $derived(column.isHidden);
 	const columnWidthStyle = $derived.by(() => {
-		void $widthVersion;
+		void table.widthEpoch;
 		return table.getColumnWidthStyle(column.id);
 	});
 	const columnMinWidth = $derived.by(() => {
-		void $widthVersion;
+		void table.widthEpoch;
 		return table.getColumnMinWidth(column.id);
 	});
 	const columnMaxWidth = $derived.by(() => {
-		void $widthVersion;
+		void table.widthEpoch;
 		return table.getColumnMaxWidth(column.id);
 	});
 	const visibleColumnIndex = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return table.getVisibleColumnIndexByToken(column.token);
 	});
 	const isSortable = $derived.by(() => {
-		void $layoutVersion;
-		void $sortVersion;
+		void table.layoutEpoch;
 		return table.isColumnSortable(column.id);
 	});
 	const headerTabIndex = $derived.by(() => {
 		if (isHidden || focusDelegate) return undefined;
-		return table.isCellTabStop(key) ? 0 : -1;
+		// `untrack` keeps the pre-runes contract: the header roving tab stop is
+		// intentionally NOT focus-reactive (focusing a non-default header must
+		// not steal the grid's Tab stop) — see the sort-trigger tab-stop test.
+		return untrack(() => table.isCellTabStop(key)) ? 0 : -1;
 	});
 	// A pinned header cell stays put while the rest scroll under it. Its z-index (3)
 	// sits above the column resizers (z-index 2) so their handles slide underneath
 	// instead of floating over the frozen column.
 	const pinState = $derived.by(() => {
-		void $layoutVersion;
-		void $widthVersion;
+		void table.layoutEpoch;
+		void table.widthEpoch;
 		return table.getColumnPinState(column.id);
 	});
 

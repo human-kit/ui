@@ -1,6 +1,6 @@
 import { getContext, setContext } from 'svelte';
 import type { Snippet } from 'svelte';
-import { writable, type Readable, type Writable } from 'svelte/store';
+import { asCommand } from '../../internal/as-command.js';
 
 const TREE_KEY = Symbol('tree');
 const TREE_LEVEL_KEY = Symbol('tree-level');
@@ -148,11 +148,14 @@ function compareTreeNodes(left: TreeNodeRegistration, right: TreeNodeRegistratio
 }
 
 export type TreeContext = {
-	structureVersion: Readable<number>;
-	selectionVersion: Readable<number>;
-	focusVersion: Readable<number>;
-	expansionVersion: Readable<number>;
-	configVersion: Readable<number>;
+	/**
+	 * Microtask-coalesced counter bumped on any structural change (node/section
+	 * registration and unregistration, text-value updates). Structure is the one
+	 * part of the tree that is NOT fine-grained reactive state: the flattened
+	 * visible-nodes list is expensive to rebuild, so it lives in a plain cache
+	 * and reactive consumers of that cache subscribe via `void context.structureEpoch`.
+	 */
+	structureEpoch: number;
 	selectionMode: TreeSelectionMode;
 	selectionBehavior: TreeSelectionBehavior;
 	disabledBehavior: TreeDisabledBehavior;
@@ -244,30 +247,19 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		onAction
 	} = options;
 
-	const structureVersionStore = writable(0);
-	const selectionVersionStore = writable(0);
-	const focusVersionStore = writable(0);
-	const expansionVersionStore = writable(0);
-	const configVersionStore = writable(0);
-
+	// STRUCTURE — deliberately non-reactive. Node/section registries, ordering
+	// buckets and the flattened visible-nodes list are plain data: recomputing the
+	// visible list is expensive, so it stays a plain cache invalidated
+	// synchronously and consumers are notified through the single
+	// microtask-coalesced `structureEpoch` counter below (same batching semantics
+	// as the previous `structureVersion` store).
 	const nodes = new Map<TreeNodeId, TreeNodeRegistration>();
 	const sections = new Map<TreeNodeId | null, TreeSectionRegistration>();
-	let currentSelectionMode = selectionMode;
-	let currentSelectionBehavior = selectionBehavior;
-	let currentDisabledBehavior = disabledBehavior;
-	let currentSelectionPropagation = selectionPropagation;
-	let currentDisallowEmptySelection = disallowEmptySelection;
-	let currentOnAction = onAction;
-	const disabledKeySet = new Set(disabledKeys ?? []);
-	let selectedKeys = new Set(initialSelectedKeys ?? []);
-	let expandedKeys = new Set(initialExpandedKeys ?? []);
-	let focusedId: TreeNodeId | null = null;
-	let focusedElement: HTMLElement | null = null;
-	let focusVisible = false;
+	const childIdsByParent = new Map<TreeNodeId | null, TreeNodeId[]>();
+	const sectionRootIds = new Map<TreeNodeId | null, TreeNodeId[]>();
 	let nodeOrder = 0;
 	let sectionOrder = 0;
 	let generatedIdCount = 0;
-	let selectionAnchorId: TreeNodeId | null = selectedKeys.values().next().value ?? null;
 	let visibleNodesCache: TreeVisibleNode[] | null = null;
 	let effectiveSelectedKeysCache: Set<TreeNodeId> | null = null;
 	let structureNotificationQueued = false;
@@ -275,8 +267,31 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	let unregisterEmitsQueued = false;
 	let pendingUnregisterSelectionEmit = false;
 	let pendingUnregisterExpansionEmit = false;
-	const childIdsByParent = new Map<TreeNodeId | null, TreeNodeId[]>();
-	const sectionRootIds = new Map<TreeNodeId | null, TreeNodeId[]>();
+
+	let structureEpoch = $state(0);
+
+	// Fine-grained reactive state: config, selection, expansion and focus.
+	let currentSelectionMode = $state(selectionMode);
+	let currentSelectionBehavior = $state(selectionBehavior);
+	let currentDisabledBehavior = $state(disabledBehavior);
+	let currentSelectionPropagation = $state(selectionPropagation);
+	let currentDisallowEmptySelection = $state(disallowEmptySelection);
+	// Callbacks are never rendered from; kept plain.
+	let currentOnAction = onAction;
+	// The key sets are always replaced wholesale, so `$state.raw` + reassignment
+	// gives whole-set reactivity without proxying every entry.
+	const initialSelection = new Set<TreeNodeId>(initialSelectedKeys ?? []);
+	let disabledKeySet = $state.raw(new Set<TreeNodeId>(disabledKeys ?? []));
+	let selectedKeys = $state.raw(initialSelection);
+	let expandedKeys = $state.raw(new Set<TreeNodeId>(initialExpandedKeys ?? []));
+	let focusedId = $state<TreeNodeId | null>(null);
+	let focusedElement = $state<HTMLElement | null>(null);
+	let focusVisible = $state(false);
+	// Only read by range-selection commands, never rendered from — stays plain.
+	// (The old store implementation bumped `selectionVersion` on anchor-only
+	// changes; consumers re-derived to identical values, so nothing observable
+	// is lost by not notifying here.)
+	let selectionAnchorId: TreeNodeId | null = initialSelection.values().next().value ?? null;
 
 	function invalidateStructureCaches() {
 		visibleNodesCache = null;
@@ -288,20 +303,13 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		if (structureNotificationQueued) return;
 
 		structureNotificationQueued = true;
+		// Coalesces a synchronous burst of (un)registrations into a single epoch
+		// bump. This also keeps the `$state` write out of deriveds/template
+		// expressions that invoke registration commands (no `state_unsafe_mutation`).
 		queueMicrotask(() => {
 			structureNotificationQueued = false;
-			structureVersionStore.update((value) => value + 1);
+			structureEpoch += 1;
 		});
-	}
-
-	function bump(store: Writable<number>) {
-		invalidateStructureCaches();
-		store.update((value) => value + 1);
-	}
-
-	function bumpConfig() {
-		effectiveSelectedKeysCache = null;
-		configVersionStore.update((value) => value + 1);
 	}
 
 	function invalidateSelectedKeysCache() {
@@ -309,13 +317,15 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function emitSelectionChange() {
+		// The version-store implementation invalidated the row caches on every
+		// selection notification (visible nodes embed `isSelected`); keep that.
+		invalidateStructureCaches();
 		onSelectionChange?.(new Set(getEffectiveSelectedKeys()));
-		bump(selectionVersionStore);
 	}
 
 	function emitExpansionChange() {
+		invalidateStructureCaches();
 		onExpandedKeysChange?.(new Set(expandedKeys));
-		bump(expansionVersionStore);
 	}
 
 	// Unregister emits are deferred to a microtask so that a full-tree teardown
@@ -345,11 +355,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	function setDisabledKeys(keys?: Iterable<TreeNodeId>) {
 		const nextDisabledKeys = new Set(keys ?? []);
 		if (setsEqual(disabledKeySet, nextDisabledKeys)) return;
-		disabledKeySet.clear();
-		for (const key of nextDisabledKeys) {
-			disabledKeySet.add(key);
-		}
-		bumpConfig();
+		disabledKeySet = nextDisabledKeys;
+		invalidateSelectedKeysCache();
 	}
 
 	function setConfig(
@@ -407,7 +414,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		}
 
 		if (changed) {
-			bumpConfig();
+			invalidateSelectedKeysCache();
 		}
 	}
 
@@ -436,21 +443,31 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function getSections() {
+		// Sections live in plain structure; subscribe via the structure epoch.
+		void structureEpoch;
 		return [...sections.values()].sort((left, right) => left.order - right.order);
 	}
 
 	function getEffectiveSelectedKeys() {
+		// Read every reactive input BEFORE the cache check so reactive consumers
+		// stay subscribed even when the value is served from the plain cache
+		// (a cache hit would otherwise register no dependencies).
+		void structureEpoch;
+		const selection = selectedKeys;
+		const propagation = currentSelectionPropagation;
+		void disabledKeySet;
+
 		if (effectiveSelectedKeysCache) {
 			return effectiveSelectedKeysCache;
 		}
 
-		if (currentSelectionPropagation !== 'descendants') {
-			effectiveSelectedKeysCache = new Set(selectedKeys);
+		if (propagation !== 'descendants') {
+			effectiveSelectedKeysCache = new Set(selection);
 			return effectiveSelectedKeysCache;
 		}
 
-		const effectiveSelectedKeys = new Set(selectedKeys);
-		const queue = [...selectedKeys];
+		const effectiveSelectedKeys = new Set(selection);
+		const queue = [...selection];
 		while (queue.length > 0) {
 			const currentId = queue.shift();
 			if (currentId === undefined) break;
@@ -489,10 +506,17 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function getVisibleNodes() {
+		// The cached rows embed expansion/selection/focus flags: read all of those
+		// reactive inputs up front (plus the structure epoch, since the list itself
+		// is plain-cached) so consumers stay subscribed across cache hits.
+		void structureEpoch;
+		void expandedKeys;
+		void focusedId;
+		const effectiveSelectedKeys = getEffectiveSelectedKeys();
+
 		if (visibleNodesCache) return visibleNodesCache;
 
 		const visibleNodes: TreeVisibleNode[] = [];
-		const effectiveSelectedKeys = getEffectiveSelectedKeys();
 		const topLevelSections = getSections();
 		if (topLevelSections.length === 0) {
 			collectVisibleNodesFromChildren(getChildrenOf(null), visibleNodes, effectiveSelectedKeys);
@@ -589,9 +613,19 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 				removeIdFromBucket(sectionRootIds, existingNode.sectionId ?? null, id);
 			}
 		}
-		const wasSelected = selectedKeys.delete(id);
+		const wasSelected = selectedKeys.has(id);
+		if (wasSelected) {
+			const nextSelectedKeys = new Set(selectedKeys);
+			nextSelectedKeys.delete(id);
+			selectedKeys = nextSelectedKeys;
+		}
 		invalidateSelectedKeysCache();
-		const wasExpanded = expandedKeys.delete(id);
+		const wasExpanded = expandedKeys.has(id);
+		if (wasExpanded) {
+			const nextExpandedKeys = new Set(expandedKeys);
+			nextExpandedKeys.delete(id);
+			expandedKeys = nextExpandedKeys;
+		}
 		if (idsEqual(focusedId, id)) focusedId = null;
 		if (wasSelected) {
 			if (idsEqual(selectionAnchorId, id)) {
@@ -653,6 +687,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function hasChildren(id: TreeNodeId) {
+		// Walks plain structure; subscribe via the structure epoch.
+		void structureEpoch;
 		return (childIdsByParent.get(id)?.length ?? 0) > 0 || nodes.get(id)?.hasChildren === true;
 	}
 
@@ -675,8 +711,9 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 
 	function collapseNode(id: TreeNodeId) {
 		if (!expandedKeys.has(id)) return;
-		expandedKeys = new Set(expandedKeys);
-		expandedKeys.delete(id);
+		const nextExpandedKeys = new Set(expandedKeys);
+		nextExpandedKeys.delete(id);
+		expandedKeys = nextExpandedKeys;
 		emitExpansionChange();
 	}
 
@@ -902,17 +939,13 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		}
 
 		const previousSelection = new Set(getEffectiveSelectedKeys());
-		const previousAnchorId = selectionAnchorId;
 		applyRangeSelection(id, anchorOverride);
 
 		if (!setsEqual(previousSelection, getEffectiveSelectedKeys())) {
 			emitSelectionChange();
-			return;
 		}
-
-		if (!idsEqual(previousAnchorId, selectionAnchorId)) {
-			bump(selectionVersionStore);
-		}
+		// Anchor-only changes need no notification: the anchor is not rendered
+		// from, and `applyRangeSelection` already reassigned `selectedKeys`.
 	}
 
 	function pressSelection(id: TreeNodeId, interaction: TreeSelectionInteraction = {}) {
@@ -964,7 +997,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 
 	function clearSelection() {
 		if (currentDisallowEmptySelection || selectedKeys.size === 0) return;
-		selectedKeys.clear();
+		selectedKeys = new Set();
 		invalidateSelectedKeysCache();
 		selectionAnchorId = null;
 		emitSelectionChange();
@@ -1066,7 +1099,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		if (id === null) {
 			focusedElement = null;
 		}
-		bump(focusVersionStore);
+		// Cached visible rows embed `isFocused`; drop them like the old focus bump did.
+		invalidateStructureCaches();
 	}
 
 	function getFocusedId() {
@@ -1080,7 +1114,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	function setFocusedElement(element: HTMLElement | null) {
 		if (focusedElement === element) return;
 		focusedElement = element;
-		bump(focusVersionStore);
+		invalidateStructureCaches();
 	}
 
 	function getFocusedElement() {
@@ -1090,7 +1124,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
-		bump(focusVersionStore);
+		invalidateStructureCaches();
 	}
 
 	function getFocusVisible() {
@@ -1194,11 +1228,9 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	return {
-		structureVersion: structureVersionStore,
-		selectionVersion: selectionVersionStore,
-		focusVersion: focusVersionStore,
-		expansionVersion: expansionVersionStore,
-		configVersion: configVersionStore,
+		get structureEpoch() {
+			return structureEpoch;
+		},
 		get selectionMode() {
 			return currentSelectionMode;
 		},
@@ -1214,32 +1246,34 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		get disallowEmptySelection() {
 			return currentDisallowEmptySelection;
 		},
-		disabledKeys: disabledKeySet,
-		setConfig,
-		registerNode,
-		unregisterNode,
-		beginTeardown,
-		registerSection,
-		unregisterSection,
+		get disabledKeys() {
+			return disabledKeySet;
+		},
+		setConfig: asCommand(setConfig),
+		registerNode: asCommand(registerNode),
+		unregisterNode: asCommand(unregisterNode),
+		beginTeardown: asCommand(beginTeardown),
+		registerSection: asCommand(registerSection),
+		unregisterSection: asCommand(unregisterSection),
 		getSections,
-		setNodeElement,
-		setNodeTextValue,
+		setNodeElement: asCommand(setNodeElement),
+		setNodeTextValue: asCommand(setNodeTextValue),
 		hasChildren,
 		isExpanded,
-		setExpandedKeys,
-		expandNode,
-		collapseNode,
-		toggleNodeExpansion,
+		setExpandedKeys: asCommand(setExpandedKeys),
+		expandNode: asCommand(expandNode),
+		collapseNode: asCommand(collapseNode),
+		toggleNodeExpansion: asCommand(toggleNodeExpansion),
 		getExpandedKeys,
-		setSelectedKeys,
+		setSelectedKeys: asCommand(setSelectedKeys),
 		getSelectedKeys,
 		isSelected,
-		setItemSelection,
+		setItemSelection: asCommand(setItemSelection),
 		getSelectionState,
-		pressSelection,
-		extendSelectionToNode,
-		pressNode,
-		clearSelection,
+		pressSelection: asCommand(pressSelection),
+		extendSelectionToNode: asCommand(extendSelectionToNode),
+		pressNode: asCommand(pressNode),
+		clearSelection: asCommand(clearSelection),
 		isDisabled,
 		isSelectionDisabled,
 		isActionDisabled,
@@ -1257,19 +1291,19 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		getParentId,
 		getFirstChildId,
 		getFirstFocusableChildId,
-		setFocusedId,
+		setFocusedId: asCommand(setFocusedId),
 		getFocusedId,
 		isFocused,
-		setFocusedElement,
+		setFocusedElement: asCommand(setFocusedElement),
 		getFocusedElement,
-		setFocusVisible,
+		setFocusVisible: asCommand(setFocusVisible),
 		getFocusVisible,
-		focusById,
-		activateFocusedNode,
+		focusById: asCommand(focusById),
+		activateFocusedNode: asCommand(activateFocusedNode),
 		getNodeTextValue,
 		findTypeaheadMatch,
 		createGeneratedId,
-		setDisabledKeys
+		setDisabledKeys: asCommand(setDisabledKeys)
 	};
 }
 

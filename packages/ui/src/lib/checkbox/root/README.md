@@ -12,6 +12,7 @@ Description: Interactive tri-state checkbox root that owns checked, indeterminat
 | `id`                    | `string`                           | `$props.id()` | Stable id used for the hidden input and derived root id.        |
 | `name`                  | `string`                           | `undefined`   | Form field name forwarded to the hidden native input.           |
 | `value`                 | `string`                           | `'on'`        | Submitted value when the checkbox is checked.                   |
+| `form`                  | `string`                           | `undefined`   | Form owner id forwarded to the hidden native input.             |
 | `checked`               | `boolean`                          | `undefined`   | Controlled checked state. Supports `bind:checked`.              |
 | `defaultChecked`        | `boolean`                          | `false`       | Initial checked state in uncontrolled mode.                     |
 | `indeterminate`         | `boolean`                          | `undefined`   | Controlled indeterminate state. Supports `bind:indeterminate`.  |

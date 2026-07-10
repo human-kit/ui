@@ -1,5 +1,6 @@
 import { getContext, setContext } from 'svelte';
-import { writable, type Readable } from 'svelte/store';
+import { SvelteMap } from 'svelte/reactivity';
+import { asCommand } from '../../internal/as-command.js';
 
 export type AccordionValue = string | number;
 export type AccordionSelectionMode = 'single' | 'multiple';
@@ -26,7 +27,6 @@ export type CreateAccordionContextOptions = {
 };
 
 export type AccordionContext = {
-	stateVersion: Readable<number>;
 	instanceId: string;
 	selectionMode: AccordionSelectionMode;
 	isDisabled: boolean;
@@ -115,22 +115,19 @@ export function valuesToArray(
 
 export function createAccordionContext(options: CreateAccordionContextOptions): AccordionContext {
 	const isControlled = options.isControlled ?? false;
-	let selectionMode = options.selectionMode ?? 'single';
-	let isDisabled = options.isDisabled ?? false;
-	let orientation = options.orientation ?? 'vertical';
-	let disallowEmptySelection = options.disallowEmptySelection ?? false;
-	let loop = options.loop ?? true;
-	let openValues = normalizeValues(options.initialValue, selectionMode);
-	let focusedValue: AccordionValue | null = null;
-	let focusVisible = false;
+	let selectionMode = $state(options.selectionMode ?? 'single');
+	let isDisabled = $state(options.isDisabled ?? false);
+	let orientation = $state(options.orientation ?? 'vertical');
+	let disallowEmptySelection = $state(options.disallowEmptySelection ?? false);
+	let loop = $state(options.loop ?? true);
+	// Always replaced wholesale (never mutated in place), so a plain Set inside
+	// a $state container gives fine-grained invalidation on reassignment.
+	let openValues = $state(normalizeValues(options.initialValue, options.selectionMode ?? 'single'));
+	let focusedValue = $state<AccordionValue | null>(null);
+	let focusVisible = $state(false);
 
-	const items = new Map<AccordionValue, AccordionItemRegistration>();
-	const itemOrder: AccordionValue[] = [];
-	const stateVersion = writable(0);
-
-	function bumpState() {
-		stateVersion.update((value) => value + 1);
-	}
+	const items = new SvelteMap<AccordionValue, AccordionItemRegistration>();
+	const itemOrder = $state<AccordionValue[]>([]);
 
 	function getTriggerId(value: AccordionValue) {
 		return `${options.instanceId}-trigger-${normalizeIdSegment(value)}`;
@@ -236,7 +233,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		}
 
 		openValues = normalizedValues;
-		bumpState();
 
 		if (changeOptions?.notify !== false) {
 			options.onValueChange?.(nextValue);
@@ -298,7 +294,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		}
 
 		reconcileOpen(value, { notify: isExisting });
-		bumpState();
 	}
 
 	function unregisterItem(value: AccordionValue) {
@@ -315,7 +310,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		}
 
 		reconcileOpen(value);
-		bumpState();
 	}
 
 	function setSelectionMode(mode: AccordionSelectionMode) {
@@ -323,7 +317,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		selectionMode = mode;
 		setOpen(openValues, { notify: !isControlled });
 		reconcileOpen();
-		bumpState();
 	}
 
 	function setDisabled(disabled: boolean) {
@@ -333,26 +326,22 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 			focusedValue = null;
 			focusVisible = false;
 		}
-		bumpState();
 	}
 
 	function setOrientation(nextOrientation: AccordionOrientation) {
 		if (orientation === nextOrientation) return;
 		orientation = nextOrientation;
-		bumpState();
 	}
 
 	function setDisallowEmptySelection(disallow: boolean) {
 		if (disallowEmptySelection === disallow) return;
 		disallowEmptySelection = disallow;
 		reconcileOpen();
-		bumpState();
 	}
 
 	function setLoop(nextLoop: boolean) {
 		if (loop === nextLoop) return;
 		loop = nextLoop;
-		bumpState();
 	}
 
 	function setOpenValues(values?: AccordionValue[]) {
@@ -393,7 +382,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 			return;
 		}
 		focusedValue = value;
-		bumpState();
 	}
 
 	function focusValue(value: AccordionValue) {
@@ -406,7 +394,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 	function setFocusVisible(visible: boolean) {
 		if (focusVisible === visible) return;
 		focusVisible = visible;
-		bumpState();
 	}
 
 	function isOpen(value: AccordionValue) {
@@ -422,9 +409,6 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 	}
 
 	return {
-		get stateVersion() {
-			return stateVersion;
-		},
 		instanceId: options.instanceId,
 		get selectionMode() {
 			return selectionMode;
@@ -449,18 +433,18 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		},
 		getTriggerId,
 		getPanelId,
-		registerItem,
-		unregisterItem,
-		setSelectionMode,
-		setDisabled,
-		setOrientation,
-		setDisallowEmptySelection,
-		setLoop,
-		setOpenValues,
-		toggleValue,
-		setFocusedValue,
-		focusValue,
-		setFocusVisible,
+		registerItem: asCommand(registerItem),
+		unregisterItem: asCommand(unregisterItem),
+		setSelectionMode: asCommand(setSelectionMode),
+		setDisabled: asCommand(setDisabled),
+		setOrientation: asCommand(setOrientation),
+		setDisallowEmptySelection: asCommand(setDisallowEmptySelection),
+		setLoop: asCommand(setLoop),
+		setOpenValues: asCommand(setOpenValues),
+		toggleValue: asCommand(toggleValue),
+		setFocusedValue: asCommand(setFocusedValue),
+		focusValue: asCommand(focusValue),
+		setFocusVisible: asCommand(setFocusVisible),
 		isOpen,
 		isFocused,
 		isFocusVisible,

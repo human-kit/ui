@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setTableSectionContext } from '../root/context';
+	import { setTableSectionContext } from '../root/context.svelte';
 	import type { TableFooterProps } from '../types.js';
 
 	let { children, class: className = '', ...restProps }: TableFooterProps = $props();

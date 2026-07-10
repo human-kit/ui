@@ -8,7 +8,7 @@
 		useTableContext,
 		useTableRowContext,
 		useTableSectionContext
-	} from '../root/context';
+	} from '../root/context.svelte';
 	import type { TableCheckboxProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
@@ -33,8 +33,6 @@
 	const section = useTableSectionContext();
 	const row = useTableRowContext();
 	const cell = useTableCellContext();
-	const selectionVersion = table.selectionVersion;
-	const layoutVersion = table.layoutVersion;
 
 	let checkboxElement = $state<HTMLSpanElement | null>(null);
 
@@ -45,14 +43,15 @@
 		return section.section === 'body';
 	});
 
+	// Select-all state also depends on the plain row registries, so it keeps
+	// the structural selection/layout epochs on top of the fine-grained reads.
 	const checkboxState = $derived.by(() => {
-		void $selectionVersion;
-		void $layoutVersion;
+		void table.selectionEpoch;
+		void table.layoutEpoch;
 		return section.section === 'header' ? table.getSelectionCheckboxState() : 'none';
 	});
 
 	const isChecked = $derived.by(() => {
-		void $selectionVersion;
 		if (section.section === 'header') {
 			return checkboxState === 'all';
 		}
@@ -62,8 +61,8 @@
 	const isIndeterminate = $derived(section.section === 'header' && checkboxState === 'some');
 
 	const isDisabled = $derived.by(() => {
-		void $selectionVersion;
-		void $layoutVersion;
+		void table.selectionEpoch;
+		void table.layoutEpoch;
 		if (!isVisible) return true;
 		if (section.section === 'header') {
 			return !table.hasSelectableRows();

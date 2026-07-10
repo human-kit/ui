@@ -6,13 +6,17 @@
 		selectionBehavior?: 'toggle' | 'replace';
 		disabledKeys?: Iterable<string | number>;
 		pressedIds?: Iterable<string | number>;
+		loop?: boolean;
+		typeahead?: boolean;
 	};
 
 	let {
 		selectionMode = 'single',
 		selectionBehavior = 'toggle',
 		disabledKeys,
-		pressedIds
+		pressedIds,
+		loop = false,
+		typeahead = false
 	}: Props = $props();
 
 	const pressedIdSet = $derived(new Set(pressedIds ?? []));
@@ -26,7 +30,14 @@
 	];
 </script>
 
-<ListBox.Root {selectionMode} {selectionBehavior} {disabledKeys} aria-label="Fruits list">
+<ListBox.Root
+	{selectionMode}
+	{selectionBehavior}
+	{disabledKeys}
+	{loop}
+	{typeahead}
+	aria-label="Fruits list"
+>
 	{#each fruits as fruit (fruit.id)}
 		<ListBox.Item
 			id={fruit.id}

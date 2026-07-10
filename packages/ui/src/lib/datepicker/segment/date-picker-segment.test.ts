@@ -56,6 +56,32 @@ describe('DatePicker.Segment', () => {
 		expect(monthSegment.element()?.getAttribute('aria-label')).toMatch(/month/i);
 	});
 
+	it('announces a localized "Empty" for placeholder segments instead of the raw placeholder', async () => {
+		render(DatePickerEmptyTest);
+		const daySegment = getSegment('day');
+		const monthSegment = getSegment('month');
+		const yearSegment = getSegment('year');
+
+		expect(daySegment.element()?.getAttribute('data-placeholder')).toBe('true');
+		expect(daySegment.element()?.getAttribute('aria-valuetext')).toBe('Empty');
+		expect(monthSegment.element()?.getAttribute('aria-valuetext')).toBe('Empty');
+		expect(yearSegment.element()?.getAttribute('aria-valuetext')).toBe('Empty');
+	});
+
+	it('derives day aria-valuemax from the draft month and year', async () => {
+		render(DatePickerTest);
+		const daySegment = getSegment('day');
+		const monthSegment = getSegment('month');
+
+		// February 2026 has 28 days.
+		expect(daySegment.element()?.getAttribute('aria-valuemax')).toBe('28');
+
+		// Clearing the month falls back to the static maximum.
+		monthSegment.element()?.focus();
+		await userEvent.keyboard('{Delete}');
+		await expect.poll(() => daySegment.element()?.getAttribute('aria-valuemax')).toBe('31');
+	});
+
 	it('sets focused state when a segment receives focus', async () => {
 		render(DatePickerTest);
 		const monthSegment = getSegment('month');
@@ -320,6 +346,46 @@ describe('DatePicker.Segment', () => {
 		daySegment.element()?.focus();
 		await userEvent.keyboard('9');
 		await userEvent.keyboard('9');
+		expect(daySegment.element()?.textContent).toBe('9');
+	});
+
+	it('starts a new day entry when the appended digit would overflow the maximum', async () => {
+		render(DatePickerEmptyTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('3');
+		await userEvent.keyboard('5');
+
+		// 35 overflows the day maximum, so 5 starts a new entry instead of
+		// silently clamping to 31 (React Aria behavior).
+		expect(daySegment.element()?.textContent).toBe('5');
+		expect(document.activeElement?.getAttribute('data-type')).toBe('month');
+	});
+
+	it('starts a new month entry when the appended digit would overflow the maximum', async () => {
+		render(DatePickerEmptyTest);
+		const monthSegment = getSegment('month');
+
+		monthSegment.element()?.focus();
+		await userEvent.keyboard('1');
+		await userEvent.keyboard('3');
+
+		// 13 overflows the month maximum, so 3 starts a new entry instead of
+		// silently clamping to 12.
+		expect(monthSegment.element()?.textContent).toBe('3');
+		expect(document.activeElement?.getAttribute('data-type')).toBe('year');
+	});
+
+	it('uses the month-aware day maximum when deciding typing overflow', async () => {
+		render(DatePickerTest);
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('2');
+		await userEvent.keyboard('9');
+
+		// February 2026 has 28 days, so 29 overflows and 9 starts a new entry.
 		expect(daySegment.element()?.textContent).toBe('9');
 	});
 

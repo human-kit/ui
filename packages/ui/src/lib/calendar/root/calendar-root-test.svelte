@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Calendar from '../index';
 	import { LocaleProvider } from '../../locale-provider';
-	import type { CalendarRangeValue, CalendarSelectionMode, CalendarValue } from './context';
+	import type { CalendarRangeValue, CalendarSelectionMode, CalendarValue } from './context.svelte';
 	import type {
 		CalendarFirstDayOfWeek,
 		CalendarMonthHeadingStyle,

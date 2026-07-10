@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 import type { HTMLButtonAttributes } from 'svelte/elements';
-import type { ToggleGroupValue } from '../toggle-group/root/context.js';
+import type { ToggleGroupValue } from '../toggle-group/root/context.svelte';
 import type { ToggleRenderState } from './root/toggle-root.svelte';
 
 export type { ToggleRenderState } from './root/toggle-root.svelte';

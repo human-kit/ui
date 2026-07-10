@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TabsListProps, TabsValue } from '../types.js';
-	import { useTabsContext } from '../root/context';
+	import { useTabsContext } from '../root/context.svelte';
 	import { trackInteractionModality } from '../../primitives/input-modality';
 	import { isRtl } from '../../internal/rtl';
 
@@ -21,18 +21,11 @@
 	}: TabsListProps = $props();
 
 	const tabs = useTabsContext();
-	const stateVersion = tabs.stateVersion;
 
 	let listRef: HTMLDivElement | null = $state(null);
 
-	const orientation = $derived.by(() => {
-		void $stateVersion;
-		return tabs.orientation;
-	});
-	const isDisabled = $derived.by(() => {
-		void $stateVersion;
-		return tabs.isDisabled;
-	});
+	const orientation = $derived(tabs.orientation);
+	const isDisabled = $derived(tabs.isDisabled);
 
 	$effect(() => {
 		element = listRef;

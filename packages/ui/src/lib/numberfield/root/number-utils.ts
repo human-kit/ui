@@ -182,6 +182,13 @@ function normalizeLocalizedNumber(input: string, locale: string | undefined): st
 	const symbols = getNumberSymbols(locale);
 	const digits = getLocalizedDigits(locale);
 	let normalized = input.replace(bidiControlPattern, '').trim();
+
+	// Full-width digits (U+FF10–U+FF19), common with Japanese IME input, are valid decimal
+	// digits (Unicode Nd) that never appear in the locale digit map — map them to ASCII early.
+	normalized = normalized.replace(/[０-９]/g, (digit) =>
+		String.fromCharCode(digit.charCodeAt(0) - 0xfee0)
+	);
+
 	let isAccountingNegative = false;
 
 	if (normalized.includes('(') && normalized.includes(')')) {

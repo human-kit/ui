@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TabsIndicatorProps } from '../types.js';
-	import { useTabsContext } from '../root/context';
+	import { useTabsContext } from '../root/context.svelte';
 
 	type IndicatorMeasurement = {
 		left: number;
@@ -17,32 +17,26 @@
 	}: TabsIndicatorProps = $props();
 
 	const tabs = useTabsContext();
-	const stateVersion = tabs.stateVersion;
-	const layoutVersion = tabs.layoutVersion;
 
 	let indicatorRef: HTMLSpanElement | null = $state(null);
 	let measurement: IndicatorMeasurement | null = $state(null);
 
-	const orientation = $derived.by(() => {
-		void $stateVersion;
-		return tabs.orientation;
-	});
-	const activationDirection = $derived.by(() => {
-		void $stateVersion;
-		return tabs.activationDirection;
-	});
-	const hasActiveTab = $derived.by(() => {
-		void $stateVersion;
-		return tabs.selectedValue !== null;
-	});
+	const orientation = $derived(tabs.orientation);
+	const activationDirection = $derived(tabs.activationDirection);
+	const hasActiveTab = $derived(tabs.selectedValue !== null);
 
 	$effect(() => {
 		element = indicatorRef;
 	});
 
+	// Scoped to what the measurement actually depends on: the list and selected
+	// tab elements (fine-grained context state), the orientation (geometry
+	// flips without necessarily resizing either element), and `layoutEpoch`
+	// (explicit re-measure requests via `notifyLayoutChange`). Observers are no
+	// longer torn down on unrelated state changes (focus, keyboard mode, ...).
 	$effect(() => {
-		void $stateVersion;
-		void $layoutVersion;
+		void tabs.layoutEpoch;
+		void tabs.orientation;
 
 		const listElement = tabs.listElement;
 		const tabElement = tabs.getSelectedTab()?.element ?? null;

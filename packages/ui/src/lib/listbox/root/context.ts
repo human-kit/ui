@@ -77,6 +77,10 @@ export type CreateListBoxContextOptions = {
 	selectionBehavior?: 'toggle' | 'replace';
 	/** Initial set of disabled item keys. */
 	disabledKeys?: Iterable<string | number>;
+	/** Whether arrow-key navigation wraps at the ends. Default false. */
+	loop?: boolean;
+	/** Whether typing characters moves focus to a matching item. Default false. */
+	typeahead?: boolean;
 	/** Initial selection for uncontrolled mode. */
 	initialSelection?: Set<string | number>;
 	/** Callback fired when selection changes. */
@@ -306,11 +310,11 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		applySelection(newSelection);
 	}
 
-	const loop = false;
-
 	const keyboardNav = createKeyboardNavigation({
 		orientation: 'vertical',
-		loop: loop,
+		// Getter-based so reactive prop changes are honoured after creation.
+		loop: () => options.loop ?? false,
+		typeahead: () => options.typeahead ?? false,
 		itemSelector: '[data-navigation-item]:not([data-disabled])',
 		onSelect: (id) => {
 			select(id);

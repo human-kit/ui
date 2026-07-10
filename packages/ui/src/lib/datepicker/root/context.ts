@@ -41,6 +41,7 @@ export type DatePickerContext = {
 	getSegments: () => DatePickerSegmentPart[];
 	getSegmentValue: (type: Exclude<DatePickerSegmentType, 'literal'>) => string;
 	setSegmentValue: (type: Exclude<DatePickerSegmentType, 'literal'>, nextValue: string) => void;
+	getSegmentValueMax: (type: Exclude<DatePickerSegmentType, 'literal'>) => number;
 	getSegmentLabel: (type: DatePickerEditableSegmentType) => string;
 	registerSegmentRef: (type: DatePickerEditableSegmentType, element: HTMLElement | null) => void;
 	focusNextPlaceholderOrLastSegment: () => boolean;

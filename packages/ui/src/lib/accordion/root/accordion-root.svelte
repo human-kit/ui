@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { AccordionRootProps } from '../types.js';
-	import { createAccordionContext, setAccordionContext } from './context';
+	import { createAccordionContext, setAccordionContext } from './context.svelte';
 
 	const generatedId = $props.id();
 
@@ -48,15 +48,8 @@
 
 	context = accordion;
 
-	const stateVersion = accordion.stateVersion;
-	const disabled = $derived.by(() => {
-		void $stateVersion;
-		return accordion.isDisabled;
-	});
-	const currentOrientation = $derived.by(() => {
-		void $stateVersion;
-		return accordion.orientation;
-	});
+	const disabled = $derived(accordion.isDisabled);
+	const currentOrientation = $derived(accordion.orientation);
 
 	$effect(() => {
 		element = rootRef;

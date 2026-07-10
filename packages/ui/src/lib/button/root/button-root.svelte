@@ -144,9 +144,7 @@
 
 		if (!buttonRef) return '';
 
-		const liveRegion = buttonRef.querySelector('[data-button-live-region="true"]');
 		return Array.from(buttonRef.childNodes)
-			.filter((node) => node !== liveRegion)
 			.map((node) => node.textContent?.trim() ?? '')
 			.filter(Boolean)
 			.join(' ')
@@ -161,6 +159,9 @@
 
 	$effect(() => {
 		element = buttonRef;
+		return () => {
+			element = null;
+		};
 	});
 
 	function syncExpandedPressed() {
@@ -393,13 +394,18 @@
 	{#if children}
 		{@render (children as Snippet<[ButtonRenderState]>)(renderState)}
 	{/if}
-
-	<span
-		data-button-live-region="true"
-		role="status"
-		aria-live="polite"
-		aria-atomic="true"
-		style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
-		>{pendingAnnouncement}</span
-	>
 </button>
+
+<!--
+	The polite live region is a sibling of the button, not a child: inside the button its text
+	would be concatenated into the button's computed accessible name ("Saving Saving, pending").
+	Visually hidden via inline styles because the library is headless.
+-->
+<span
+	data-button-live-region="true"
+	role="status"
+	aria-live="polite"
+	aria-atomic="true"
+	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+	>{pendingAnnouncement}</span
+>

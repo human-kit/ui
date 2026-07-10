@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { Input } from '../../input';
-	import { useComboBoxContext } from '../root/context';
+	import { getComboBoxTagDomId, useComboBoxContext } from '../root/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -123,9 +123,11 @@
 	aria-expanded={ctx.isOpen}
 	aria-haspopup="listbox"
 	aria-controls={`combobox-listbox-${ctx.instanceId}`}
-	aria-activedescendant={ctx.focusedItemId !== null
-		? `combobox-item-${ctx.instanceId}-${ctx.focusedItemId}`
-		: undefined}
+	aria-activedescendant={ctx.focusedTagId !== null
+		? getComboBoxTagDomId(ctx.instanceId, ctx.focusedTagId)
+		: ctx.focusedItemId !== null
+			? `combobox-item-${ctx.instanceId}-${ctx.focusedItemId}`
+			: undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-describedby={ariaDescribedby}

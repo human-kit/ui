@@ -4,7 +4,7 @@
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useTreeContext } from '../root/context';
+	import { useTreeContext } from '../root/context.svelte';
 	import { getTreeRenderMode } from '../root/render-mode';
 	import { useTreeItemContext } from '../item/context';
 	import type { TreeTriggerProps } from '../types';
@@ -24,22 +24,14 @@
 	const renderMode = getTreeRenderMode();
 	const tree = renderMode === 'display' ? useTreeContext() : undefined;
 	const item = renderMode === 'display' ? useTreeItemContext() : undefined;
-	const expansionVersion = tree?.expansionVersion;
-	const configVersion = tree?.configVersion;
 
 	let buttonRef = $state<HTMLButtonElement | null>(null);
 
-	const isExpanded = $derived.by(() => {
-		if (!expansionVersion || !item) return false;
-		void $expansionVersion;
-		return item.isExpanded();
-	});
+	// Item callbacks read the tree context's `$state` internally, so these
+	// deriveds track expansion/config changes fine-grained.
+	const isExpanded = $derived(item ? item.isExpanded() : false);
 	const hasChildren = $derived(item?.hasChildren() ?? false);
-	const isDisabled = $derived.by(() => {
-		if (!item || !configVersion) return false;
-		void $configVersion;
-		return item.isDisabled();
-	});
+	const isDisabled = $derived(item ? item.isDisabled() : false);
 
 	function callClickExternal(event: MouseEvent) {
 		(onClickExternal as ((event: MouseEvent) => void) | undefined)?.(event);

@@ -1,11 +1,19 @@
 <script lang="ts">
 	import TimePicker from '../index';
 
+	type Props = {
+		minValue?: string;
+		maxValue?: string;
+		externalValue?: string;
+	};
+
+	let { minValue, maxValue, externalValue = '23:45' }: Props = $props();
+
 	let value = $state<string | null | undefined>('14:30');
 	let open = $state(false);
 </script>
 
-<TimePicker.Root bind:value bind:open hourCycle={24}>
+<TimePicker.Root bind:value bind:open hourCycle={24} {minValue} {maxValue}>
 	<TimePicker.Input aria-label="Time input">
 		{#snippet children(segment)}
 			<TimePicker.Segment {segment} />
@@ -23,3 +31,6 @@
 	>Clear undefined</button
 >
 <button type="button" data-testid="clear-null" onclick={() => (value = null)}>Clear null</button>
+<button type="button" data-testid="set-external" onclick={() => (value = externalValue)}
+	>Set external</button
+>

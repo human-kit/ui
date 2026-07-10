@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useCalendarContext } from '../root/context';
+	import { useCalendarContext } from '../root/context.svelte';
 	import { getCalendarGridContext } from '../grid/context';
 	import CalendarHeaderCell from '../header-cell/calendar-header-cell.svelte';
 
@@ -13,11 +13,7 @@
 
 	const calendar = useCalendarContext();
 	const gridContext = getCalendarGridContext();
-	const layoutVersion = calendar.layoutVersion;
-	const weekdays = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.getWeekdayLabels(gridContext?.weekdayStyle);
-	});
+	const weekdays = $derived(calendar.getWeekdayLabels(gridContext?.weekdayStyle));
 </script>
 
 <thead class={className}>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useCalendarContext } from '../root/context';
+	import { useCalendarContext } from '../root/context.svelte';
 	import { getCalendarMonthIndex } from '../grid/month-scope';
 	import CalendarBodyCell from '../body-cell/calendar-body-cell.svelte';
 
@@ -12,12 +12,8 @@
 	let { children, class: className = '' }: CalendarGridBodyProps = $props();
 
 	const calendar = useCalendarContext();
-	const layoutVersion = calendar.layoutVersion;
 	const monthIndex = getCalendarMonthIndex();
-	const month = $derived.by(() => {
-		void $layoutVersion;
-		return calendar.months[monthIndex];
-	});
+	const month = $derived(calendar.months[monthIndex]);
 	const weeks = $derived(month?.weeks ?? []);
 </script>
 

@@ -14,6 +14,7 @@
 		startInputName?: string;
 		endInputId?: string;
 		endInputName?: string;
+		rootAriaLabel?: string;
 	};
 
 	let {
@@ -27,7 +28,8 @@
 		startInputId,
 		startInputName,
 		endInputId,
-		endInputName
+		endInputName,
+		rootAriaLabel
 	}: Props = $props();
 
 	function formatRange(value: DateRangePickerRangeValue | null): string {
@@ -48,6 +50,7 @@
 	{minValue}
 	{maxValue}
 	{isDateUnavailable}
+	aria-label={rootAriaLabel}
 	onChange={(nextValue) => {
 		selectedValue = formatRange(nextValue);
 	}}

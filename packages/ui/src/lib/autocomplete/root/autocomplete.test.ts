@@ -60,6 +60,19 @@ describe('Autocomplete', () => {
 			await expect.poll(() => screen.getByText('No fruits found').query()).not.toBeNull();
 		});
 
+		it('renders the Empty part as a disabled option so the listbox stays valid', async () => {
+			const screen = render(AutocompleteTest);
+			const input = screen.getByRole('searchbox');
+
+			await input.fill('zzz');
+
+			await expect.poll(() => document.querySelector('[data-empty]')).not.toBeNull();
+			const empty = document.querySelector('[data-empty]');
+			expect(empty?.getAttribute('role')).toBe('option');
+			expect(empty?.getAttribute('aria-selected')).toBe('false');
+			expect(empty?.getAttribute('aria-disabled')).toBe('true');
+		});
+
 		it('shows all items when filter is disabled (filter={null})', async () => {
 			const screen = render(AutocompleteTest, { filter: null });
 			const input = screen.getByRole('searchbox');

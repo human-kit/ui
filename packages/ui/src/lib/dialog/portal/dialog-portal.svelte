@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { Portal } from '../../portal';
-	import { trackMotionEnd, type MotionTracker } from '../../primitives/motion';
+	import { createPresence } from '../../primitives/presence.svelte';
 	import { getDialogContext } from '../root/context';
 	import { setDialogPresenceContext } from '../root/presence-context';
 
@@ -27,85 +27,26 @@
 
 	// Presence: `isMounted` outlives `isOpen` by one exit animation. The exit duration is measured
 	// from the Content element (registered via setMotionTarget), so timing follows the consumer's
-	// CSS and collapses to a single frame under prefers-reduced-motion.
-	let isMounted = $state(dialogCtx.isOpen);
-	let isEntering = $state(false);
-	let isExiting = $state(false);
+	// CSS and collapses to a single frame under prefers-reduced-motion. When no Content ever
+	// registers (e.g. the Portal only wraps a Dialog.Overlay) the exit resolves immediately so
+	// the portal doesn't stay mounted forever. Starts mounted when created while already open.
 	let motionTarget = $state<HTMLElement | null>(null);
-	let tracker: MotionTracker | undefined;
 
-	function clearTracker() {
-		tracker?.cancel();
-		tracker = undefined;
-	}
-
-	// Mount on open; flip to the exit phase on close (keeping the node mounted for now).
-	$effect(() => {
-		if (dialogCtx.isOpen) {
-			const shouldAnimateIn = !isMounted || isExiting;
-			isMounted = true;
-			isExiting = false;
-			if (shouldAnimateIn) {
-				isEntering = true;
-			}
-			return;
-		}
-
-		if (!isMounted) {
-			isEntering = false;
-			isExiting = false;
-			return;
-		}
-
-		isEntering = false;
-		isExiting = true;
-	});
-
-	// End the active phase once the Content element's motion finishes — unmounting after exit.
-	$effect(() => {
-		if (!isMounted || !motionTarget) {
-			clearTracker();
-			// Without a registered Content there is no motion to measure (e.g. the
-			// Portal only wraps a Dialog.Overlay) — resolve the exit immediately so
-			// the portal doesn't stay mounted forever.
-			if (isExiting && !motionTarget) {
-				isExiting = false;
-				isMounted = false;
-			}
-			return;
-		}
-
-		if (isEntering) {
-			clearTracker();
-			tracker = trackMotionEnd(motionTarget, () => {
-				isEntering = false;
-			});
-			return;
-		}
-
-		if (isExiting) {
-			clearTracker();
-			tracker = trackMotionEnd(motionTarget, () => {
-				isExiting = false;
-				isMounted = false;
-			});
-			return;
-		}
-
-		clearTracker();
-	});
-
-	$effect(() => () => clearTracker());
+	const presence = createPresence(
+		() => dialogCtx.isOpen,
+		() => motionTarget,
+		{ initiallyMounted: dialogCtx.isOpen }
+	);
 
 	setDialogPresenceContext({
 		get state() {
 			return dialogCtx.isOpen ? 'open' : 'closed';
 		},
 		get isEntering() {
-			return isEntering;
+			return presence.isEntering;
 		},
 		get isExiting() {
-			return isExiting;
+			return presence.isExiting;
 		},
 		setMotionTarget: (el) => {
 			motionTarget = el;
@@ -113,7 +54,7 @@
 	});
 </script>
 
-{#if isMounted}
+{#if presence.isMounted}
 	<Portal>
 		{#if children}
 			{@render children()}

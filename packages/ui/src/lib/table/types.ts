@@ -12,9 +12,9 @@ import type {
 	TableSelectionMode,
 	TableSortDirection,
 	TableSortDescriptor
-} from './root/context.js';
+} from './root/context.svelte';
 
-export type { TableColumnPin } from './root/context.js';
+export type { TableColumnPin } from './root/context.svelte';
 
 export type TableColumnProps = {
 	id: string;

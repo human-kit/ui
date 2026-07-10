@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-	import { writable } from 'svelte/store';
-	import { setTableRowContext, useTableContext, useTableSectionContext } from '../root/context';
+	import { setTableRowContext, useTableContext, useTableSectionContext } from '../root/context.svelte';
 	import type { TableRowProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
@@ -25,15 +24,12 @@
 	const cellOrderSet = new SvelteSet<string>();
 	const cellIndexByToken = new SvelteMap<string, number>();
 	const cellElements: Record<string, () => HTMLElement | undefined> = {};
-	const cellOrderVersion = writable(0);
+	// Counter-based on purpose: cell indexes are resolved against the live DOM
+	// (`rowElement.children`), so order changes are event-like (registration /
+	// MutationObserver) and cannot be tracked fine-grained.
+	let cellOrderEpoch = $state(0);
 	const isBodyRow = section.section === 'body';
 	const shouldSeedInitialRegistration = true;
-	const rowState = writable({
-		isSelected: false,
-		isAriaDisabled: false,
-		isSelectionDisabled: false,
-		isActionable: false
-	});
 	let bodyCellOrderSealed = !isBodyRow;
 
 	function handleFocus() {
@@ -90,7 +86,7 @@
 	let rowElement = $state<HTMLTableRowElement | undefined>(undefined);
 
 	function notifyCellOrderChange() {
-		cellOrderVersion.update((value) => value + 1);
+		cellOrderEpoch += 1;
 	}
 
 	function promoteBodyCellOrderTracking() {
@@ -161,8 +157,23 @@
 		get isDisabled() {
 			return disabled;
 		},
-		rowState,
-		cellOrderVersion,
+		rowState: {
+			get isSelected() {
+				return isSelected;
+			},
+			get isAriaDisabled() {
+				return isAriaDisabled;
+			},
+			get isSelectionDisabled() {
+				return isSelectionDisabled;
+			},
+			get isActionable() {
+				return isActionable;
+			}
+		},
+		get cellOrderEpoch() {
+			return cellOrderEpoch;
+		},
 		registerCellToken,
 		unregisterCellToken,
 		getCellIndex
@@ -241,63 +252,35 @@
 		table.unregisterRow(rowToken);
 	});
 
-	const selectionVersion = table.selectionVersion;
-	const focusVersion = table.focusVersion;
-	const layoutVersion = table.layoutVersion;
+	// `getRowAriaIndex` is layout-cache-mediated (row order + logical body row
+	// index cache), so it stays epoch-driven. The rest reads fine-grained
+	// `$state` (selection keys, focus target, disabled keys/behavior) directly.
 	const ariaRowIndex = $derived.by(() => {
-		void $layoutVersion;
+		void table.layoutEpoch;
 		return table.getRowAriaIndex(rowToken);
 	});
-	const isSelected = $derived.by(() => {
-		void $selectionVersion;
-		return section.section === 'body' ? table.isRowSelected(id) : false;
-	});
-	const isFocusWithin = $derived.by(() => {
-		void $focusVersion;
-		return section.section === 'body' ? table.isRowFocused(rowToken) : false;
-	});
-	const isFocused = $derived.by(() => {
-		void $focusVersion;
-		return section.section === 'body' ? table.isRowFocusTarget(rowToken) : false;
-	});
-	const isFocusVisible = $derived.by(() => {
-		void $focusVersion;
-		return section.section === 'body' ? isFocused && table.focusVisible : false;
-	});
-	const isFocusVisibleWithin = $derived.by(() => {
-		void $focusVersion;
-		return section.section === 'body' ? isFocusWithin && table.focusVisible : false;
-	});
-	const isAriaDisabled = $derived.by(() => {
-		void $selectionVersion;
-		return section.section === 'body' ? table.isRowDisabled(id, disabled) : disabled;
-	});
-	const isSelectionDisabled = $derived.by(() => {
-		void $selectionVersion;
-		return section.section === 'body' ? table.isRowSelectionDisabled(id, disabled) : disabled;
-	});
-	const isActionable = $derived.by(() => {
-		void $selectionVersion;
-		return section.section === 'body' ? table.isRowActionable(id, disabled) : false;
-	});
-
-	$effect(() => {
-		const next = {
-			isSelected,
-			isAriaDisabled,
-			isSelectionDisabled,
-			isActionable
-		};
-
-		rowState.update((current) =>
-			current.isSelected === next.isSelected &&
-			current.isAriaDisabled === next.isAriaDisabled &&
-			current.isSelectionDisabled === next.isSelectionDisabled &&
-			current.isActionable === next.isActionable
-				? current
-				: next
-		);
-	});
+	const isSelected = $derived(section.section === 'body' ? table.isRowSelected(id) : false);
+	const isFocusWithin = $derived(
+		section.section === 'body' ? table.isRowFocused(rowToken) : false
+	);
+	const isFocused = $derived(
+		section.section === 'body' ? table.isRowFocusTarget(rowToken) : false
+	);
+	const isFocusVisible = $derived(
+		section.section === 'body' ? isFocused && table.focusVisible : false
+	);
+	const isFocusVisibleWithin = $derived(
+		section.section === 'body' ? isFocusWithin && table.focusVisible : false
+	);
+	const isAriaDisabled = $derived(
+		section.section === 'body' ? table.isRowDisabled(id, disabled) : disabled
+	);
+	const isSelectionDisabled = $derived(
+		section.section === 'body' ? table.isRowSelectionDisabled(id, disabled) : disabled
+	);
+	const isActionable = $derived(
+		section.section === 'body' ? table.isRowActionable(id, disabled) : false
+	);
 </script>
 
 <tr

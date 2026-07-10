@@ -5,7 +5,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
-	import { useTabsContext } from '../root/context';
+	import { useTabsContext } from '../root/context.svelte';
 	import type { TabsTabProps } from '../types.js';
 
 	type TabsTabMouseEvent = MouseEvent & {
@@ -33,7 +33,6 @@
 	}: TabsTabProps = $props();
 
 	const tabs = useTabsContext();
-	const stateVersion = tabs.stateVersion;
 	const tabId = $derived(tabs.getTabId(value));
 	const panelId = $derived(tabs.getPanelId(value));
 
@@ -44,34 +43,13 @@
 		tabs.registerTab(registeredValue, { isDisabled: disabledProp });
 	});
 
-	const selected = $derived.by(() => {
-		void $stateVersion;
-		return tabs.isSelected(value);
-	});
-	const disabled = $derived.by(() => {
-		void $stateVersion;
-		return tabs.isTabDisabled(value);
-	});
-	const focused = $derived.by(() => {
-		void $stateVersion;
-		return tabs.isFocused(value);
-	});
-	const focusVisible = $derived.by(() => {
-		void $stateVersion;
-		return tabs.isFocusVisible(value);
-	});
-	const tabIndex = $derived.by(() => {
-		void $stateVersion;
-		return tabs.getTabIndex(value);
-	});
-	const orientation = $derived.by(() => {
-		void $stateVersion;
-		return tabs.orientation;
-	});
-	const activationDirection = $derived.by(() => {
-		void $stateVersion;
-		return tabs.activationDirection;
-	});
+	const selected = $derived(tabs.isSelected(value));
+	const disabled = $derived(tabs.isTabDisabled(value));
+	const focused = $derived(tabs.isFocused(value));
+	const focusVisible = $derived(tabs.isFocusVisible(value));
+	const tabIndex = $derived(tabs.getTabIndex(value));
+	const orientation = $derived(tabs.orientation);
+	const activationDirection = $derived(tabs.activationDirection);
 
 	$effect(() => {
 		if (!Object.is(registeredValue, value)) {

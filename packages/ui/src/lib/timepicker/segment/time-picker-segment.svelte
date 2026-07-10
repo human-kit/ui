@@ -7,6 +7,7 @@
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 	import { isRtl } from '../../internal/rtl';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
 
 	type TimePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,
@@ -83,6 +84,11 @@
 
 	const valueText = $derived.by(() => {
 		if (segment.type === 'literal') return segment.text;
+		// An empty segment announces a localized "Empty" rather than the raw
+		// visual placeholder ("hh"/"mm"/"ss").
+		if (segment.isPlaceholder) {
+			return resolveLocalizedString(timePicker.locale, 'segment.empty');
+		}
 		// The dayPeriod segment text already reflects the locale's AM/PM display
 		// strings, while the internal segment value keeps the 'AM'/'PM' tokens.
 		if (segment.type === 'dayPeriod') return segment.text;

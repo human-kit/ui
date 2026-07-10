@@ -1,4 +1,4 @@
-import { DEFAULT_TABLE_COLUMN_MIN_WIDTH, type TableColumnWidth } from '../root/context';
+import { DEFAULT_TABLE_COLUMN_MIN_WIDTH, type TableColumnWidth } from '../root/context.svelte';
 
 /**
  * The width-bearing fields of a column that contribute to the reserved table

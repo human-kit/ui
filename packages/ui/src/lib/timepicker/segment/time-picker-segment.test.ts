@@ -40,6 +40,16 @@ describe('TimePicker.Segment', () => {
 		expect(literal?.tagName.toLowerCase()).toBe('span');
 	});
 
+	it('announces a localized "Empty" for placeholder segments instead of the raw placeholder', async () => {
+		render(TimePickerEmptyTest);
+		const hourSegment = getSegment('hour');
+		const minuteSegment = getSegment('minute');
+
+		expect(hourSegment.element()?.getAttribute('data-placeholder')).toBe('true');
+		expect(hourSegment.element()?.getAttribute('aria-valuetext')).toBe('Empty');
+		expect(minuteSegment.element()?.getAttribute('aria-valuetext')).toBe('Empty');
+	});
+
 	it('sets focused state when segment receives focus', async () => {
 		render(TimePickerTest);
 		const hourSegment = getSegment('hour');

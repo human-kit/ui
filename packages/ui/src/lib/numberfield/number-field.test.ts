@@ -406,6 +406,29 @@ describe('NumberField', () => {
 		expect(inputElement.getAttribute('aria-valuenow')).toBe('9876.5');
 	});
 
+	it('parses full-width digits typed through a Japanese IME', async () => {
+		const screen = render(NumberFieldTest, { locale: 'ja-JP' });
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		setInputText(inputElement, '１２３');
+
+		await expect.poll(getValueOutput).toBe('123');
+		expect(inputElement.getAttribute('aria-valuenow')).toBe('123');
+	});
+
+	it('parses pasted full-width digits regardless of locale', async () => {
+		const screen = render(NumberFieldTest, { locale: 'en-US' });
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		setInputText(inputElement, '１２３.５');
+
+		await expect.poll(getValueOutput).toBe('123.5');
+	});
+
 	it('increments and decrements with buttons', async () => {
 		const screen = render(NumberFieldTest, { defaultValue: 1, step: 2 });
 
