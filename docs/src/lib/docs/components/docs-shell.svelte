@@ -68,7 +68,7 @@
 
 	<div class="mx-auto flex w-full max-w-screen-2xl">
 		<aside
-			class="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border md:block"
+			class="sticky top-10 hidden h-[calc(100vh-2.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border md:block"
 		>
 			{#if sidebar}
 				{@render sidebar()}

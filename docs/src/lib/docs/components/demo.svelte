@@ -34,7 +34,7 @@
 
 	<Collapsible.Root open={expanded} onOpenChange={(next) => (expanded = next)}>
 		<!-- Toolbar -->
-		<div class="flex items-center justify-end gap-1 border-t border-border bg-muted p-1">
+		<div class="flex items-center justify-end gap-1 border-t bg-muted p-1">
 			<Button variant="ghost" size="sm" onclick={copy} aria-label="Copy source code">
 				{#if copied}
 					<Check /> Copied

@@ -32,12 +32,9 @@
 	--subtle-foreground: var(--color-neutral-700);
 	--link: var(--color-blue-600);
 
-	/* Button system (ported from celagem-svelte, dark values designed here). */
 	--primary: oklch(0.59 0.2 277);
 	--primary-foreground: oklch(0.985 0 0);
-	/* Elevation scale: depth-0 is the base surface; higher steps read as more
-	   inset/recessed in light. Dark inverts (higher = lighter) below. */
-	--depth-0: oklch(0.985 0 0);
+	--depth-0: oklch(0.990 0 0);
 	--depth-1: oklch(0.975 0 0);
 	--depth-2: oklch(0.965 0 0);
 	--depth-3: oklch(0.955 0 0);
@@ -69,9 +66,24 @@
 	--depth-2: oklch(0.245 0 0);
 	--depth-3: oklch(0.265 0 0);
 	--depth-4: oklch(0.285 0 0);
-	/* Faint top highlight + deeper inset so the effect survives on dark surfaces. */
 	--raised-highlight: oklch(1 0 0 / 0.06);
 	--sunken-shadow: oklch(0 0 0 / 0.35);
+}
+
+/*
+ * Tailwind v4 defaults the `border` utility's color to currentColor. Restore a
+ * sensible default so a bare `border` (or any border-* without an explicit color)
+ * uses the `--border` token — you should never have to write `border-border`.
+ * Explicit colors (border-transparent, border-primary/10, …) still win.
+ */
+@layer base {
+
+	*,
+	::before,
+	::after,
+	::backdrop {
+		border-color: var(--border);
+	}
 }
 
 @theme inline {
@@ -94,18 +106,16 @@
 }
 
 /*
- * Neumorphic surface utilities used by the button recipe. celagem derived these
- * from its (light-only) background/foreground; here they use dedicated tokens so
- * the raised highlight and sunken inset both read correctly in dark mode.
+ * Neumorphic inner edges (celagem's raised/sunken). Re-expressed with dedicated
+ * tokens instead of celagem's background/foreground so they read correctly in
+ * dark mode too.
  */
 @utility raised {
 	box-shadow: inset 0 1px 1px var(--raised-highlight);
 }
 
 @utility sunken {
-	box-shadow:
-		inset 0 1px 2px var(--sunken-shadow),
-		inset 0 0 0 1px var(--sunken-shadow);
+	box-shadow: inset 0 1px 2px var(--sunken-shadow);
 }
 
 /* Shiki dual-theme: light vars by default, dark vars under .dark */

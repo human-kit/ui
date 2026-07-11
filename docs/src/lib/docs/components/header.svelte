@@ -20,7 +20,7 @@
 </script>
 
 <header
-	class="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-surface/80 px-4 backdrop-blur"
+	class="sticky top-0 z-40 flex h-10 items-center justify-between border-b bg-accent/80 px-2 backdrop-blur"
 >
 	<a
 		href={homeHref ?? `${base}/`}
