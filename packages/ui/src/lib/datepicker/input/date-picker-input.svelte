@@ -23,6 +23,12 @@
 		| 'aria-invalid'
 	> & {
 		id?: string;
+		/**
+		 * Name of the hidden proxy input used for form submission. The proxy only
+		 * mirrors the committed value: autofill is NOT supported (it renders with
+		 * `autocomplete="off"` so browsers and password managers do not write
+		 * into it) — dates are entered through the editable segments.
+		 */
 		name?: string;
 		children?: Snippet<[DatePickerSegmentPart]>;
 		class?: string;
@@ -136,6 +142,7 @@
 		value={proxyValue}
 		readonly
 		tabindex="-1"
+		autocomplete="off"
 		disabled={datePicker.isDisabled || undefined}
 		aria-hidden="true"
 		aria-invalid={ariaInvalid}

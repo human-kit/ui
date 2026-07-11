@@ -2,11 +2,43 @@
 	type PointerPressOwner = {
 		key: symbol;
 		pointerId: number | null;
+		/** Clears the owning item's pressed state (bound to that item's instance). */
+		release: () => void;
 	};
 
 	// Tracks which item currently "owns" a pointer press so that dragging the held pointer
 	// onto a sibling doesn't light it up as pressed — the press belongs to the item it began on.
 	let pointerPressOwner: PointerPressOwner | null = null;
+
+	// The press can end anywhere on the page, so pointerup/pointercancel are observed on
+	// `window` — but as a single module-level pair shared by ALL items (refcounted by mounted
+	// instances), instead of two listeners per item.
+	let pointerEndListenerRefCount = 0;
+
+	function handleGlobalPointerEnd(event: PointerEvent) {
+		const owner = pointerPressOwner;
+		if (!owner) return;
+		if (owner.pointerId !== null && owner.pointerId !== event.pointerId) return;
+		owner.release();
+	}
+
+	function acquireGlobalPointerEndListeners() {
+		if (typeof window === 'undefined') return;
+		if (pointerEndListenerRefCount === 0) {
+			window.addEventListener('pointerup', handleGlobalPointerEnd);
+			window.addEventListener('pointercancel', handleGlobalPointerEnd);
+		}
+		pointerEndListenerRefCount += 1;
+	}
+
+	function releaseGlobalPointerEndListeners() {
+		if (typeof window === 'undefined') return;
+		pointerEndListenerRefCount = Math.max(0, pointerEndListenerRefCount - 1);
+		if (pointerEndListenerRefCount === 0) {
+			window.removeEventListener('pointerup', handleGlobalPointerEnd);
+			window.removeEventListener('pointercancel', handleGlobalPointerEnd);
+		}
+	}
 </script>
 
 <script lang="ts">
@@ -92,15 +124,11 @@
 	});
 
 	onMount(() => {
-		window.addEventListener('pointerup', handleGlobalPointerEnd);
-		window.addEventListener('pointercancel', handleGlobalPointerEnd);
+		acquireGlobalPointerEndListeners();
 	});
 
 	onDestroy(() => {
-		if (typeof window !== 'undefined') {
-			window.removeEventListener('pointerup', handleGlobalPointerEnd);
-			window.removeEventListener('pointercancel', handleGlobalPointerEnd);
-		}
+		releaseGlobalPointerEndListeners();
 		clearOwnedPointerPress();
 	});
 
@@ -129,11 +157,6 @@
 		clearOwnedPointerPress();
 	}
 
-	function handleGlobalPointerEnd(event: PointerEvent) {
-		if (!ownsPointerPress(event)) return;
-		clearPressedState();
-	}
-
 	function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		if (disabled) return;
 		ctx.selectItem(itemId, event);
@@ -142,7 +165,11 @@
 
 	function handlePointerDown(event: PointerEvent) {
 		if (disabled || event.button !== 0) return;
-		pointerPressOwner = { key: pointerPressOwnerKey, pointerId: event.pointerId };
+		pointerPressOwner = {
+			key: pointerPressOwnerKey,
+			pointerId: event.pointerId,
+			release: clearPressedState
+		};
 		isPressed = true;
 	}
 

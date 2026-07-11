@@ -13,6 +13,7 @@
 - Use `ComboBox.Clear` when you want a built-in clear affordance that resets both the input and selected value.
 - Provide a stable `id` in SSR environments to keep ARIA ids deterministic.
 - Render `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove` in multiple mode to expose selected values.
+- Render `ComboBox.Status` to announce the number of visible results to screen readers as the filter changes. It is a visually-hidden `aria-live="polite"` region; the default message is localized (via `LocaleProvider`) and can be replaced with the `formatMessage` prop. It only announces while the popover is open.
 - Choose `trigger="focus"`, `trigger="input"`, or `trigger="press"` based on your opening behavior requirements.
 
 ## Anatomy
@@ -24,6 +25,7 @@ Import the component and compose its parts:
 	<ComboBox.Input />
 	<ComboBox.Clear />
 	<ComboBox.Trigger />
+	<ComboBox.Status />
 	<ComboBox.Popover>
 		<ComboBox.List>
 			<ComboBox.Item id="1">Option 1</ComboBox.Item>
@@ -41,6 +43,7 @@ Import the component and compose its parts:
 - `ComboBox.List`
 - `ComboBox.Item`
 - `ComboBox.ItemIndicator`
+- `ComboBox.Status`
 - `ComboBox.Tags`
 - `ComboBox.Tag`
 - `ComboBox.TagRemove`

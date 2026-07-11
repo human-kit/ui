@@ -364,6 +364,39 @@ describe('NumberField', () => {
 		await expect.poll(() => inputElement.value).toBe('5%');
 	});
 
+	it('rounds percent decimals with an integer part instead of concatenating digits', async () => {
+		const screen = render(NumberFieldTest, {
+			formatOptions: { style: 'percent', maximumFractionDigits: 0 }
+		});
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		setInputText(inputElement, '12.5');
+		await expect.poll(getValueOutput).toBe('13');
+
+		inputElement.blur();
+		await expect.poll(() => inputElement.value).toBe('13%');
+	});
+
+	it('rounds negative decimals symmetrically to positive ones', async () => {
+		const screen = render(NumberFieldTest, {
+			formatOptions: { maximumFractionDigits: 2 }
+		});
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		setInputText(inputElement, '0.025');
+		await expect.poll(getValueOutput).toBe('0.03');
+
+		setInputText(inputElement, '-0.025');
+		await expect.poll(getValueOutput).toBe('-0.03');
+
+		setInputText(inputElement, '-0.024');
+		await expect.poll(getValueOutput).toBe('-0.02');
+	});
+
 	it('uses percent default fraction digits when maximumFractionDigits is omitted', async () => {
 		const screen = render(NumberFieldTest, {
 			defaultValue: 25,
@@ -705,6 +738,60 @@ describe('NumberField', () => {
 		scrubArea?.dispatchEvent(pointerEvent('pointerup', 6));
 
 		await expect.poll(getValueOutput).toBe('4');
+	});
+
+	it('applies touch-action none inline on the scrub area', () => {
+		render(NumberFieldTest, { defaultValue: 1 });
+		const scrubArea = document.querySelector<HTMLElement>('[data-testid="scrub-area"]');
+
+		expect(scrubArea?.style.touchAction).toBe('none');
+	});
+
+	it('ignores right-click releases on the scrub area without committing the draft', async () => {
+		const screen = render(NumberFieldTest, { defaultValue: 1 });
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+		const scrubArea = document.querySelector('[data-testid="scrub-area"]');
+
+		setInputText(inputElement, '5.');
+		await expect.poll(() => inputElement.getAttribute('data-input-state')).toBe('partial');
+
+		const rightClickEvent = (type: string) =>
+			new PointerEvent(type, {
+				bubbles: true,
+				cancelable: true,
+				pointerId: 2,
+				button: 2,
+				clientX: 0
+			});
+		scrubArea?.dispatchEvent(rightClickEvent('pointerdown'));
+		scrubArea?.dispatchEvent(rightClickEvent('pointerup'));
+
+		await wait(80);
+		expect(inputElement).toHaveValue('5.');
+		expect(inputElement.getAttribute('data-input-state')).toBe('partial');
+		expect(getValueOutput()).toBe('1');
+	});
+
+	it('re-evaluates a stale out-of-range draft when max is raised', async () => {
+		const screen = render(NumberFieldTest, { defaultValue: null, min: 0, max: 10 });
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		inputElement.focus();
+		setInputText(inputElement, '99');
+
+		await expect.poll(() => inputElement.getAttribute('data-input-state')).toBe('out-of-range');
+		expect(getValueOutput()).toBe('null');
+
+		await screen.rerender({ max: 100 });
+
+		await expect.poll(() => inputElement.getAttribute('data-input-state')).toBe('synced');
+		await expect.poll(getValueOutput).toBe('99');
+		expect(inputElement).toHaveValue('99');
+		expect(inputElement.getAttribute('data-invalid')).toBeNull();
 	});
 
 	it('submits the raw number value when name is provided', async () => {

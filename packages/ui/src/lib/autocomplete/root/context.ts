@@ -36,9 +36,13 @@ export type AutocompleteContext = {
 	filter: AutocompleteFilter | null;
 	/** Currently virtually-focused item id (aria-activedescendant target). */
 	focusedItemId: string | number | null;
-	/** Registered (visible) item ids, used by Empty/Status. */
+	/** Registered navigable (enabled) item ids. */
 	itemIds: (string | number)[];
-	/** Number of currently visible items after filtering. */
+	/**
+	 * Number of currently visible items after filtering, including
+	 * disabled-but-visible items. Used by Empty/Status so they reflect what is
+	 * actually on screen (navigation registration only tracks enabled items).
+	 */
 	visibleCount: number;
 	/** Reference to the input element. */
 	inputRef: HTMLElement | null;
@@ -54,10 +58,14 @@ export type AutocompleteContext = {
 	setFocusVisible: (visible: boolean) => void;
 	/** Set the virtually-focused item id. */
 	setFocusedItemId: (id: string | number | null) => void;
-	/** Register a visible item for navigation. */
+	/** Register an enabled, visible item for navigation. */
 	registerItem: (id: string | number, label: string) => void;
 	/** Unregister an item (e.g. when filtered out or destroyed). */
 	unregisterItem: (id: string | number) => void;
+	/** Register a visible item (independent of disabled state) for counting. */
+	registerVisibleItem: (id: string | number) => void;
+	/** Unregister a visible item. */
+	unregisterVisibleItem: (id: string | number) => void;
 	/** Set the input element ref. */
 	setInputRef: (el: HTMLElement | null) => void;
 	/** Return DOM focus to the input. Guarantees the virtual-focus invariant. */

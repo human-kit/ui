@@ -1,4 +1,8 @@
 <script module lang="ts">
+	import type { Snippet } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import type { ClassValue } from '../utils/cn';
+
 	export type OverflowRowState = {
 		/** Number of items that don't fit and are hidden. */
 		count: number;
@@ -7,13 +11,8 @@
 		/** Total number of items. */
 		total: number;
 	};
-</script>
 
-<script lang="ts" generics="T">
-	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
-
-	type Props = {
+	export type OverflowRowProps<T> = {
 		/** The full list to render on a single line. */
 		items: T[];
 		/** Stable key for each item (used for keyed `{#each}` and re-measure). */
@@ -40,9 +39,11 @@
 		 * Only used in overflow mode.
 		 */
 		reserve?: number;
-		class?: string;
-	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
+		class?: ClassValue;
+	} & Omit<HTMLAttributes<HTMLDivElement>, 'children'>;
+</script>
 
+<script lang="ts" generics="T">
 	let {
 		items,
 		getKey,
@@ -50,8 +51,9 @@
 		overflow,
 		reserve = 0,
 		class: className = '',
+		style,
 		...rest
-	}: Props = $props();
+	}: OverflowRowProps<T> = $props();
 
 	const overflowEnabled = $derived(!!overflow);
 
@@ -76,7 +78,10 @@
 			const paddingX =
 				(parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
 			const parentGap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
-			availableWidth = parent.clientWidth - paddingX - parentGap - reserve;
+			// The parent gap sits between the row and the reserved sibling, so it
+			// only eats space when something is actually reserved; subtracting it
+			// unconditionally would hide an item that fits.
+			availableWidth = parent.clientWidth - paddingX - (reserve > 0 ? parentGap + reserve : 0);
 		};
 		const observer = new ResizeObserver(measure);
 		observer.observe(parent);
@@ -134,12 +139,19 @@
 
 	const visibleItems = $derived(overflowEnabled ? items.slice(0, visibleCount) : items);
 	const hiddenCount = $derived(items.length - visibleItems.length);
+
+	// The consumer's inline `style` must also apply to the mirror: gaps, fonts or
+	// paddings set inline change the measured widths just like classes do.
+	const mirrorStyle = $derived(
+		`${style ? `${style}; ` : ''}width: max-content; max-width: none; flex-wrap: nowrap;`
+	);
 </script>
 
 {#if items.length > 0}
 	<div
 		bind:this={containerEl}
 		class={className}
+		{style}
 		style:flex-wrap={overflowEnabled ? 'nowrap' : null}
 		style:overflow-x={overflowEnabled ? 'clip' : null}
 		{...rest}
@@ -169,11 +181,7 @@
 			aria-hidden="true"
 			inert
 		>
-			<div
-				bind:this={mirrorEl}
-				class={className}
-				style="width: max-content; max-width: none; flex-wrap: nowrap;"
-			>
+			<div bind:this={mirrorEl} class={className} style={mirrorStyle}>
 				{#each items as item, index (getKey(item, index))}
 					{@render children({ item, index })}
 				{/each}

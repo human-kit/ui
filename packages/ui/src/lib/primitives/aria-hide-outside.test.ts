@@ -86,4 +86,158 @@ describe('hideOutside', () => {
 		expect(outside.hasAttribute('inert')).toBe(false);
 		expect(outside.hasAttribute('aria-hidden')).toBe(false);
 	});
+
+	describe('live regions', () => {
+		it('never hides live regions (aria-live / role=status / role=alert)', () => {
+			const target = document.createElement('div');
+			const liveRegion = document.createElement('div');
+			liveRegion.setAttribute('aria-live', 'polite');
+			const status = document.createElement('div');
+			status.setAttribute('role', 'status');
+			const alert = document.createElement('div');
+			alert.setAttribute('role', 'alert');
+			document.body.append(target, liveRegion, status, alert);
+
+			const { restore } = hideOutside([target]);
+
+			for (const region of [liveRegion, status, alert]) {
+				expect(region.hasAttribute('aria-hidden')).toBe(false);
+				expect(region.hasAttribute('inert')).toBe(false);
+			}
+
+			restore();
+		});
+
+		it('hides the siblings of a nested live region but not the region itself', () => {
+			const target = document.createElement('div');
+			const wrapper = document.createElement('div');
+			const sibling = document.createElement('div');
+			const liveRegion = document.createElement('div');
+			liveRegion.setAttribute('aria-live', 'assertive');
+			wrapper.append(sibling, liveRegion);
+			document.body.append(target, wrapper);
+
+			const { restore } = hideOutside([target]);
+
+			// The wrapper is walked into (hiding it wholesale would silence the live region).
+			expect(wrapper.hasAttribute('aria-hidden')).toBe(false);
+			expect(sibling.getAttribute('aria-hidden')).toBe('true');
+			expect(liveRegion.hasAttribute('aria-hidden')).toBe(false);
+
+			restore();
+			expect(sibling.hasAttribute('aria-hidden')).toBe(false);
+		});
+	});
+
+	describe('content added while active (MutationObserver)', () => {
+		async function flushMutations() {
+			// MutationObserver callbacks run as microtasks; one macrotask hop is plenty.
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		}
+
+		it('hides elements appended to the body while active', async () => {
+			const target = document.createElement('div');
+			document.body.appendChild(target);
+			const { restore } = hideOutside([target]);
+
+			const lateSibling = document.createElement('div');
+			document.body.appendChild(lateSibling);
+			await flushMutations();
+
+			expect(lateSibling.getAttribute('aria-hidden')).toBe('true');
+			expect(lateSibling.hasAttribute('inert')).toBe(true);
+
+			restore();
+			expect(lateSibling.hasAttribute('aria-hidden')).toBe(false);
+			expect(lateSibling.hasAttribute('inert')).toBe(false);
+		});
+
+		it('does not hide top-layer surfaces portalled while active', async () => {
+			const target = document.createElement('div');
+			document.body.appendChild(target);
+			const { restore } = hideOutside([target]);
+
+			const menu = document.createElement('div');
+			menu.setAttribute('data-menu-content', 'true');
+			const dialog = document.createElement('div');
+			dialog.setAttribute('role', 'dialog');
+			const optIn = document.createElement('div');
+			optIn.setAttribute('data-top-layer', '');
+			document.body.append(menu, dialog, optIn);
+			await flushMutations();
+
+			for (const surface of [menu, dialog, optIn]) {
+				expect(surface.hasAttribute('aria-hidden')).toBe(false);
+				expect(surface.hasAttribute('inert')).toBe(false);
+			}
+
+			restore();
+		});
+
+		it('recurses into an added wrapper so only its non-exempt children are hidden', async () => {
+			const target = document.createElement('div');
+			document.body.appendChild(target);
+			const { restore } = hideOutside([target]);
+
+			const wrapper = document.createElement('div');
+			const plain = document.createElement('div');
+			const popover = document.createElement('div');
+			popover.setAttribute('role', 'dialog');
+			wrapper.append(plain, popover);
+			document.body.appendChild(wrapper);
+			await flushMutations();
+
+			expect(wrapper.hasAttribute('aria-hidden')).toBe(false);
+			expect(plain.getAttribute('aria-hidden')).toBe('true');
+			expect(popover.hasAttribute('aria-hidden')).toBe(false);
+
+			restore();
+			expect(plain.hasAttribute('aria-hidden')).toBe(false);
+		});
+
+		it('does not hide live regions added while active', async () => {
+			const target = document.createElement('div');
+			document.body.appendChild(target);
+			const { restore } = hideOutside([target]);
+
+			const toast = document.createElement('div');
+			toast.setAttribute('role', 'alert');
+			document.body.appendChild(toast);
+			await flushMutations();
+
+			expect(toast.hasAttribute('aria-hidden')).toBe(false);
+			expect(toast.hasAttribute('inert')).toBe(false);
+
+			restore();
+		});
+
+		it('leaves content added inside the target alone', async () => {
+			const target = document.createElement('div');
+			document.body.appendChild(target);
+			const { restore } = hideOutside([target]);
+
+			const inner = document.createElement('div');
+			target.appendChild(inner);
+			await flushMutations();
+
+			expect(inner.hasAttribute('aria-hidden')).toBe(false);
+			expect(inner.hasAttribute('inert')).toBe(false);
+
+			restore();
+		});
+
+		it('stops observing after restore', async () => {
+			const target = document.createElement('div');
+			document.body.appendChild(target);
+			const { restore } = hideOutside([target]);
+			restore();
+
+			const late = document.createElement('div');
+			document.body.appendChild(late);
+			await flushMutations();
+
+			expect(late.hasAttribute('aria-hidden')).toBe(false);
+			expect(late.hasAttribute('inert')).toBe(false);
+		});
+	});
 });

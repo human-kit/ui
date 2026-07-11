@@ -300,11 +300,15 @@
 	// library stays animation-agnostic: no transition is attached unless `itemTransition` is passed.
 	const rowAttributes = $derived({
 		role: 'treeitem',
-		id: `tree-item-${nodeId}`,
+		// The per-instance uid keeps row ids unique when several trees coexist.
+		id: `${tree.instanceId ? `${tree.instanceId}-` : ''}tree-item-${nodeId}`,
 		'data-tree-item': 'true',
 		class: node.className,
 		'aria-expanded': node.hasChildren ? isExpanded : undefined,
-		'aria-selected': selectionMode === 'single' ? isSelected : undefined,
+		// In multiple mode the container declares aria-multiselectable, so rows
+		// must expose aria-selected too; aria-checked stays alongside as the
+		// tri-state (mixed) signal.
+		'aria-selected': selectionMode !== 'none' ? isSelected : undefined,
 		'aria-checked': ariaChecked,
 		'aria-disabled': isDisabled || undefined,
 		'aria-level': nodeLevel,

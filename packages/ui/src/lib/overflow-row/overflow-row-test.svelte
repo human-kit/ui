@@ -8,6 +8,10 @@
 		/** Width of the measured parent, in px, so tests can force overflow deterministically. */
 		width?: number;
 		reserve?: number;
+		/** Column gap (px) on the measured parent, to exercise the reserve+gap calc. */
+		parentGap?: number;
+		/** Inline style forwarded to the row, to exercise mirror style replication. */
+		rowStyle?: string;
 		/** Omit the overflow snippet to exercise the "render everything" mode. */
 		withOverflow?: boolean;
 	}
@@ -22,18 +26,25 @@
 		],
 		width = 160,
 		reserve = 0,
+		parentGap = 0,
+		rowStyle,
 		withOverflow = true
 	}: Props = $props();
+
+	const boxStyle = $derived(
+		`width: ${width}px;${parentGap > 0 ? ` display: flex; column-gap: ${parentGap}px;` : ''}`
+	);
 </script>
 
 <!-- Fixed-width parent: the overflow calc measures this, not the row itself. -->
-<div class="measure-box" style={`width: ${width}px`}>
+<div class="measure-box" style={boxStyle}>
 	{#if withOverflow}
 		<OverflowRow
 			{items}
 			{reserve}
 			getKey={(item) => item.id}
 			class="row"
+			style={rowStyle}
 			role="list"
 			aria-label="Selected values"
 		>

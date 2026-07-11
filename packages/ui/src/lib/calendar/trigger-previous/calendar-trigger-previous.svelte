@@ -16,7 +16,9 @@
 	let { children, class: className = '', ...restProps }: CalendarTriggerPreviousProps = $props();
 
 	const calendar = useCalendarContext();
-	const isDisabled = $derived(calendar.isDisabled);
+	// Also disabled when the previous page is entirely before `minValue`, so
+	// users cannot navigate forever into fully-disabled months.
+	const isDisabled = $derived(calendar.isDisabled || calendar.isPreviousPageDisabled);
 	const defaultAriaLabel = $derived(
 		resolveLocalizedString(calendar.locale, 'calendar.previousPage')
 	);

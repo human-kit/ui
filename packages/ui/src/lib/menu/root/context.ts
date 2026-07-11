@@ -7,12 +7,15 @@ export type MenuCanonicalCloseReason =
 export type MenuCloseReason = MenuCanonicalCloseReason;
 
 /**
- * Close reasons accepted internally by `MenuContext.close`. `'sibling-open'` marks a submenu
- * being displaced by hovering a sibling item/trigger: consumers observe it as the canonical
- * `'imperative-action'`, and it never refocuses the closed submenu's trigger (focus belongs
- * to the hovered sibling).
+ * Close reasons accepted internally by `MenuContext.close`. These never reach consumers —
+ * both are observed as the canonical `'imperative-action'` (the public union is unchanged):
+ * - `'sibling-open'`: a submenu displaced by hovering a sibling item/trigger. Never refocuses
+ *   the closed submenu's trigger (focus belongs to the hovered sibling).
+ * - `'submenu-back'`: a submenu dismissed with ArrowLeft (back to the parent menu). DOES
+ *   refocus the submenu trigger, exactly like an Escape — but without lying to consumers by
+ *   reporting `'escape-key'` for a key that wasn't Escape.
  */
-export type MenuInternalCloseReason = MenuCloseReason | 'sibling-open';
+export type MenuInternalCloseReason = MenuCloseReason | 'sibling-open' | 'submenu-back';
 
 export type MenuOpenReason = 'trigger-press' | 'imperative-action' | 'none';
 
@@ -94,7 +97,14 @@ export type MenuContext = {
 	registerItem: (id: string | number, data: MenuItemData) => void;
 	/** Unregisters an item. */
 	unregisterItem: (id: string | number) => void;
-	/** Whether the given item is currently highlighted (virtually focused). */
+	/**
+	 * Whether the given item is currently highlighted (virtually focused).
+	 *
+	 * NOTE: this is a one-off, NON-reactive snapshot of `keyboardNav.state.focusedId` at call
+	 * time — calling it inside a `$derived`/`$effect` will not re-run when the highlight moves.
+	 * For reactive highlighting, subscribe to the `keyboardNav.state.focusedId` store instead
+	 * (as `Menu.Item` does).
+	 */
 	isHighlighted: (id: string | number) => boolean;
 	/** Activates an item: runs its `onSelect` and closes unless overridden. */
 	selectItem: (id: string | number, event?: Event) => void;

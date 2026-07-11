@@ -69,6 +69,7 @@ Visible columns are resolved automatically in stable order: `hour → minute? �
 
 ## Notes
 
+- `Clock.WheelColumn` needs an explicit height (it is an `overflow-y: auto` scroll container). Without a height class it falls back to the Tailwind utility `h-55` (`13.75rem`), which only takes effect in Tailwind projects — non-Tailwind consumers must set the height themselves (see the WheelColumn README).
 - Locale is read from `LocaleProvider` when available.
 - Internally, values are normalized to 24-hour representation; 12-hour rendering only affects UI segments.
 - `granularity='hour'` emits `HH:00` values.

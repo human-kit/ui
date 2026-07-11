@@ -77,7 +77,6 @@
 	const isRangeStart = $derived(calendar.isRangeStart(date));
 	const isRangeEnd = $derived(calendar.isRangeEnd(date));
 	const isInRange = $derived(calendar.isInRange(date));
-	const isRovingFocusTarget = $derived(calendar.focusedValue === date);
 	const isFocusVisible = $derived(calendar.focusVisible);
 	let hasDomFocus = $state(false);
 	const isVisuallyFocused = $derived(hasDomFocus && isFocusVisible);
@@ -85,6 +84,11 @@
 	const isUnavailable = $derived(calendar.isDateUnavailable(date));
 	const isAriaDisabled = $derived(isDisabled || isUnavailable);
 	const isOutsideMonth = $derived(calendar.isOutsideVisibleRange(date, monthIndex));
+	// Outside days are excluded from roving focus: with showOutsideDays and
+	// visibleMonths > 1 the same date renders in two grids, and both would
+	// otherwise claim tabindex=0 / the focus request. The focused date's own
+	// month is always visible (ensureVisible), so the inside-month cell exists.
+	const isRovingFocusTarget = $derived(calendar.focusedValue === date && !isOutsideMonth);
 	const showOutsideDays = $derived(calendar.showOutsideDays);
 	const hidesOutsideDay = $derived(isOutsideMonth && !showOutsideDays);
 	const isSelectionDisabled = $derived(isDisabled || hidesOutsideDay);

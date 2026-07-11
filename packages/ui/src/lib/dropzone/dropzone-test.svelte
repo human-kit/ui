@@ -35,8 +35,9 @@
 		{onFilesRejected}
 		onclick={onClick}
 	>
-		{#snippet children({ dragging, focusVisible })}
+		{#snippet children({ dragging, hovered, focusVisible })}
 			<span data-state-dragging={dragging}>{dragging ? 'dragging' : 'idle'}</span>
+			<span data-state-hovered={hovered}></span>
 			<span data-state-focus-visible={focusVisible}></span>
 		{/snippet}
 	</Dropzone>

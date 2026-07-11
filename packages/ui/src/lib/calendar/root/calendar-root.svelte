@@ -42,6 +42,10 @@
 		showOutsideDays?: boolean;
 		firstDayOfWeek?: CalendarFirstDayOfWeek;
 		monthHeadingStyle?: CalendarMonthHeadingStyle;
+		/** Earliest selectable date (`YYYY-MM-DD`). Earlier dates report unavailable and page/focus navigation clamps at this bound. */
+		minValue?: CalendarDateValue;
+		/** Latest selectable date (`YYYY-MM-DD`). Later dates report unavailable and page/focus navigation clamps at this bound. */
+		maxValue?: CalendarDateValue;
 		isDateUnavailable?: (date: string) => boolean;
 		disabled?: boolean;
 		readonly?: boolean;
@@ -74,6 +78,8 @@
 		showOutsideDays = false,
 		firstDayOfWeek,
 		monthHeadingStyle = 'composed',
+		minValue,
+		maxValue,
 		isDateUnavailable,
 		disabled = false,
 		readonly = false,
@@ -123,6 +129,10 @@
 			locale: resolvedLocale,
 			firstDayOfWeek,
 			monthHeadingStyle,
+			minValue:
+				typeof minValue === 'string' && isValidCalendarDateValue(minValue) ? minValue : undefined,
+			maxValue:
+				typeof maxValue === 'string' && isValidCalendarDateValue(maxValue) ? maxValue : undefined,
 			isDateUnavailable,
 			isDisabled: disabled,
 			isReadOnly: readonly,

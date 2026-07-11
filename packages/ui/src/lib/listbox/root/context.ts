@@ -173,8 +173,13 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		return focusedId;
 	}
 
+	// Strict comparison, matching how selection/disabled Sets compare keys.
+	// A String() coercion here made the string id "1" and the number id 1
+	// indistinguishable for focus, while the Sets kept treating them as two
+	// different items. Item ids are re-typed from `data-item-id-type` before
+	// they reach the context, so no coercion is needed.
 	function isFocused(id: string | number): boolean {
-		return focusedId === id || String(focusedId) === String(id);
+		return focusedId === id;
 	}
 
 	function getFocusVisible(): boolean {
@@ -185,7 +190,8 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		focusedId = newId;
 
 		for (const [id, callbacks] of focusCallbacks) {
-			const focused = newId !== null && (id === newId || String(id) === String(newId));
+			// Strict comparison (see isFocused): "1" and 1 are different items.
+			const focused = newId !== null && id === newId;
 			callbacks.forEach((callback) => callback(focused));
 		}
 	}

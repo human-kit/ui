@@ -36,6 +36,12 @@
 	import { resolveDatePickerOpenChangeDetails } from '../../datepicker/root/open-controller';
 	import { normalizeDateRangePickerValue } from './value-commit';
 	import {
+		addDays,
+		compareDates,
+		formatCalendarDate,
+		parseCalendarDate
+	} from '../../calendar/root/date-utils';
+	import {
 		createDatePickerSegmentRefs,
 		focusLastDatePickerSegment,
 		focusNextDatePickerSegment,
@@ -152,6 +158,21 @@
 	const normalizedMinValue = $derived(isValidDatePickerValue(minValue) ? minValue : undefined);
 	const normalizedMaxValue = $derived(isValidDatePickerValue(maxValue) ? maxValue : undefined);
 	const segmentOrder = $derived(getDatePickerSegmentOrder(resolvedLocale));
+	// The embedded calendar memoizes availability results keyed by the identity
+	// of its `isDateUnavailable` prop. Mint a NEW closure whenever the bounds or
+	// the user predicate change, so that cache invalidates naturally (e.g.
+	// changing `minValue` while the popover is open).
+	const isDateUnavailableInternal = $derived.by(() => {
+		const min = normalizedMinValue;
+		const max = normalizedMaxValue;
+		const userIsDateUnavailable = isDateUnavailable;
+		return (valueToCheck: DatePickerDateValue): boolean => {
+			if (!isValidDatePickerValue(valueToCheck)) return true;
+			if (min && compareDatePickerValues(valueToCheck, min) < 0) return true;
+			if (max && compareDatePickerValues(valueToCheck, max) > 0) return true;
+			return userIsDateUnavailable?.(valueToCheck) ?? false;
+		};
+	});
 	const startDraftEvaluation = $derived.by(() =>
 		evaluateDatePickerDraft(startSegmentDraft, {
 			isDateOutOfRange,
@@ -164,10 +185,23 @@
 			isDateUnavailable: isDateUnavailableInternal
 		})
 	);
+	// A fully-typed range whose path crosses an unavailable day cannot be
+	// committed (the calendar rejects the same range via isRangePathSelectable).
+	const isDraftRangePathUnavailable = $derived.by(() => {
+		if (!startDraftEvaluation.isCommitable || !startDraftEvaluation.value) return false;
+		if (!endDraftEvaluation.isCommitable || !endDraftEvaluation.value) return false;
+		return hasUnavailableInteriorDay({
+			start: startDraftEvaluation.value,
+			end: endDraftEvaluation.value
+		});
+	});
 	// Validity is tracked per range part: an empty draft is never invalid, and
 	// a completed start must not flag the still-empty end (and vice versa).
-	const isStartPartInvalid = $derived(startDraftEvaluation.isInvalid);
-	const isEndPartInvalid = $derived(endDraftEvaluation.isInvalid);
+	// An unavailable interior day flags BOTH parts: the blocked path is a
+	// property of the (start, end) pair, not of a single endpoint, so both
+	// inputs surface data-invalid/aria-invalid through the per-part mechanism.
+	const isStartPartInvalid = $derived(startDraftEvaluation.isInvalid || isDraftRangePathUnavailable);
+	const isEndPartInvalid = $derived(endDraftEvaluation.isInvalid || isDraftRangePathUnavailable);
 	const isInvalidDraft = $derived(isStartPartInvalid || isEndPartInvalid);
 
 	function isPartInvalid(part: DateRangePickerRangePart): boolean {
@@ -259,9 +293,42 @@
 		return false;
 	}
 
-	function isDateUnavailableInternal(valueToCheck: DatePickerDateValue): boolean {
-		if (isDateOutOfRange(valueToCheck)) return true;
-		return isDateUnavailable?.(valueToCheck) ?? false;
+	// Mid-typing partial years (e.g. a committed "0002" while typing "2026"
+	// digit by digit) momentarily produce multi-century spans; walking those
+	// day-by-day on every keystroke would freeze the input. Spans beyond this
+	// cap (~20 years) skip interior validation — endpoints are still validated,
+	// matching the pre-validation behavior for such extreme, transient ranges.
+	const MAX_INTERIOR_VALIDATION_DAYS = 7400;
+	const DAY_IN_MS = 86_400_000;
+
+	// Same day-by-day walk the calendar uses (isRangePathSelectable), restricted
+	// to the interior days: the endpoints are already validated individually by
+	// the per-part draft evaluation / setValue endpoint checks.
+	function hasUnavailableInteriorDay(range: DateRangePickerRangeValue): boolean {
+		// Bounds alone cannot make an interior day unavailable when both
+		// endpoints are in range (the interval is contiguous), so skip the walk
+		// when there is no user predicate.
+		if (!isDateUnavailable) return false;
+
+		const normalized = normalizeDateRangePickerValue(range);
+		if (!normalized) return false;
+
+		const parsedStart = parseCalendarDate(normalized.start);
+		const parsedEnd = parseCalendarDate(normalized.end);
+		if (!parsedStart || !parsedEnd) return false;
+
+		const spanInDays = (parsedEnd.getTime() - parsedStart.getTime()) / DAY_IN_MS;
+		if (spanInDays > MAX_INTERIOR_VALIDATION_DAYS) return false;
+
+		for (
+			let current = addDays(parsedStart, 1);
+			compareDates(current, parsedEnd) < 0;
+			current = addDays(current, 1)
+		) {
+			if (isDateUnavailableInternal(formatCalendarDate(current))) return true;
+		}
+
+		return false;
 	}
 
 	function setOpen(
@@ -289,6 +356,11 @@
 			isDateUnavailableInternal(normalizedNextValue.start) ||
 			isDateUnavailableInternal(normalizedNextValue.end)
 		) {
+			return;
+		}
+		// A range crossing an unavailable interior day is not committable, no
+		// matter whether it was typed or (defensively) selected in the calendar.
+		if (hasUnavailableInteriorDay(normalizedNextValue)) {
 			return;
 		}
 		if (disabled || readonly) return;
@@ -393,7 +465,11 @@
 				start: startEvaluation.value,
 				end: endEvaluation.value
 			});
-			if (nextRange) {
+			// A typed range must validate the whole path, not just the endpoints:
+			// when an interior day is unavailable the draft is treated as invalid
+			// (both parts flag it, see `isDraftRangePathUnavailable`) and the
+			// public value clears below instead of committing.
+			if (nextRange && !hasUnavailableInteriorDay(nextRange)) {
 				// Publish the normalized (sorted) value, but keep the segment drafts
 				// exactly as the user typed them. Rewriting the drafts from the sorted
 				// range here would swap start/end mid-typing (e.g. while typing a year
@@ -560,6 +636,12 @@
 		get locale() {
 			return resolvedLocale;
 		},
+		get minValue() {
+			return normalizedMinValue;
+		},
+		get maxValue() {
+			return normalizedMaxValue;
+		},
 		get triggerRef() {
 			return triggerRef;
 		},
@@ -577,7 +659,11 @@
 		typeSegmentDigit,
 		adjustSegmentValue,
 		isDateOutOfRange,
-		isDateUnavailable: isDateUnavailableInternal,
+		// Getter: the predicate identity changes with the bounds (see the
+		// `isDateUnavailableInternal` derived above).
+		get isDateUnavailable() {
+			return isDateUnavailableInternal;
+		},
 		getSegments,
 		getSegmentValue,
 		setSegmentValue,

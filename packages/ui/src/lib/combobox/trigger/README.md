@@ -18,4 +18,6 @@ Description: Optional trigger button that toggles the combobox popover without s
 
 - `ComboBox.Trigger` reflects the root pending state through `data-pending`.
 - While the combobox is disabled, read-only, or pending, the trigger becomes non-interactive.
+- The trigger toggles on `click`, so keyboard activation (Enter/Space) works when the trigger is focusable (e.g. `tabindex={0}`). The pointer press itself is prevented so it never steals DOM focus from the input.
+- `aria-controls` is only exposed while the popover is open, because the listbox does not exist in the DOM while closed.
 - `ComboBox.Button` remains available as a compatibility alias.

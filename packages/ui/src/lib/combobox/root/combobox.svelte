@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import { untrack, type Snippet } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { dev } from '../../internal/environment';
 	import {
 		setComboBoxContext,
@@ -122,6 +122,11 @@
 	let shouldCloseOnEscapeState = $state(true);
 	let shouldCloseOnBlurState = $state(true);
 	const itemActions = new SvelteMap<string | number, ComboBoxItemActionRegistration>();
+
+	// Visible items (including disabled-but-visible ones). Kept separately from
+	// the navigation registration, which only tracks enabled items, so that
+	// ComboBox.Status reflects what is actually on screen.
+	const visibleItemIds = new SvelteSet<string | number>();
 
 	// Flag to control whether inputValue should be used for filtering
 	// When false, all items are shown regardless of inputValue
@@ -881,6 +886,9 @@
 		get itemIds() {
 			return navigation.itemIds;
 		},
+		get visibleCount() {
+			return visibleItemIds.size;
+		},
 		get itemLabels() {
 			return navigation.itemLabels;
 		},
@@ -924,6 +932,12 @@
 		unregisterItem: (id) => {
 			navigation.unregister(id);
 			unregisterItemAction(id);
+		},
+		registerVisibleItem: (id) => {
+			visibleItemIds.add(id);
+		},
+		unregisterVisibleItem: (id) => {
+			visibleItemIds.delete(id);
 		},
 		registerItemAction,
 		unregisterItemAction,

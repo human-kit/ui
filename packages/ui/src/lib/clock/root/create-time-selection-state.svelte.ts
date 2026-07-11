@@ -13,6 +13,7 @@ import {
 	isTimeOutOfRange,
 	isValidTimePickerValue,
 	normalizeSegmentNumberInput,
+	normalizeTimePickerValue,
 	toDraftFromTimeValue,
 	type TimePickerDraft,
 	type TimePickerEditableSegmentType,
@@ -137,24 +138,28 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 
 	const normalizedMinValue = $derived.by(() => {
 		const minValue = options.minValue();
-		return isValidTimePickerValue(minValue) ? minValue : undefined;
+		return isValidTimePickerValue(minValue) ? normalizeTimePickerValue(minValue) : undefined;
 	});
 	const normalizedMaxValue = $derived.by(() => {
 		const maxValue = options.maxValue();
-		return isValidTimePickerValue(maxValue) ? maxValue : undefined;
+		return isValidTimePickerValue(maxValue) ? normalizeTimePickerValue(maxValue) : undefined;
 	});
 
 	/**
 	 * Normalizes an externally provided value (controlled prop / defaultValue):
 	 * malformed or out-of-range values become `null` so they are never adopted
-	 * as the committed value.
+	 * as the committed value. Accepted values are canonicalized to the padded
+	 * `HH:mm(:ss)` form (`9:30` → `09:30`).
 	 */
 	function normalizeExternalValue(raw: unknown): TimePickerTimeValue | null {
 		if (!isValidTimePickerValue(raw)) return null;
-		if (isTimeOutOfRange(raw, normalizedMinValue, normalizedMaxValue, options.granularity())) {
+		const normalized = normalizeTimePickerValue(raw);
+		if (
+			isTimeOutOfRange(normalized, normalizedMinValue, normalizedMaxValue, options.granularity())
+		) {
 			return null;
 		}
-		return raw;
+		return normalized;
 	}
 
 	const initialValueProp = untrack(() => options.value());
@@ -179,11 +184,23 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 	}
 
 	$effect(() => {
-		const nextValue = normalizeExternalValue(options.value());
+		const rawValue = options.value();
+		const nextValue = normalizeExternalValue(rawValue);
 		const nextHourCycle = resolvedHourCycle;
 		const didHourCycleChange = nextHourCycle !== lastDraftHourCycle;
 		lastDraftHourCycle = nextHourCycle;
 		if (nextValue === lastPublishedValue) {
+			// Keep the binding canonical (same policy as mount): when the prop is
+			// set to a valid but unpadded value whose normalized form is already
+			// committed (`9:30` while `09:30` is current), rewrite it padded.
+			if (
+				typeof rawValue === 'string' &&
+				nextValue !== null &&
+				rawValue !== nextValue &&
+				isValidTimePickerValue(rawValue)
+			) {
+				options.writeValue(nextValue);
+			}
 			if (didHourCycleChange && lastPublishedValue) {
 				segmentDraft = toDraftFromTimeValue(lastPublishedValue, nextHourCycle);
 				options.onDraftReplaced?.();
@@ -299,16 +316,17 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 	function setValue(nextValue: TimePickerTimeValue | null) {
 		if (!options.isEditable()) return;
 		if (nextValue !== null && !isValidTimePickerValue(nextValue)) return;
+		const normalized = nextValue === null ? null : normalizeTimePickerValue(nextValue);
 		if (
-			nextValue &&
-			isTimeOutOfRange(nextValue, normalizedMinValue, normalizedMaxValue, options.granularity())
+			normalized &&
+			isTimeOutOfRange(normalized, normalizedMinValue, normalizedMaxValue, options.granularity())
 		) {
 			return;
 		}
 
-		publishCommittedValue(nextValue, true);
-		segmentDraft = nextValue
-			? toDraftFromTimeValue(nextValue, resolvedHourCycle)
+		publishCommittedValue(normalized, true);
+		segmentDraft = normalized
+			? toDraftFromTimeValue(normalized, resolvedHourCycle)
 			: createEmptyTimePickerDraft();
 		options.onDraftReplaced?.();
 	}

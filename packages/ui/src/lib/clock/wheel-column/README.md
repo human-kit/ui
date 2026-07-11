@@ -15,6 +15,15 @@ Description: Scrollable spinbutton column for a single editable segment (`hour`,
 | `aria-label`   | `string`                                                         | `segment label` | Overrides the computed accessible column label.             |
 | `...restProps` | `HTMLAttributes<HTMLDivElement>`                                 | `-`             | Additional attributes forwarded to the column root element. |
 
+### Height requirement
+
+The column is a scroll container (`overflow-y: auto`), so it needs an explicit height to work. When `class` contains no height utility (`h-*`, `min-h-*`, `max-h-*`, `size-*`), the component appends the Tailwind class `h-55` (`13.75rem`) as a default. **This default only takes effect in projects that use Tailwind CSS.** If your project does not use Tailwind, always give the column an explicit height:
+
+```svelte
+<Clock.WheelColumn type="hour" class="my-wheel-column" />
+<!-- .my-wheel-column { height: 13.75rem; } -->
+```
+
 ### Context utilities
 
 Name: `useClockContext`  

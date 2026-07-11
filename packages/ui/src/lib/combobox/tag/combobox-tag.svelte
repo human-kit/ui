@@ -28,8 +28,12 @@
 
 	let { children, class: className, ...restProps }: ComboBoxTagProps = $props();
 
-	const tagCtx = getContext<TagContext>(TAG_CONTEXT_KEY);
+	const tagCtx = getContext<TagContext | undefined>(TAG_CONTEXT_KEY);
 	const comboboxCtx = useComboBoxContext();
+
+	if (!tagCtx) {
+		throw new Error('ComboBox.Tag must be used within ComboBox.Tags');
+	}
 
 	/** Whether this tag has virtual focus (navigated via arrow keys) */
 	const isFocused = $derived(comboboxCtx.focusedTagId === tagCtx.id);

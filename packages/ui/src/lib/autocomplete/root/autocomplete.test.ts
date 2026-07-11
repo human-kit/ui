@@ -454,6 +454,57 @@ describe('Autocomplete', () => {
 			// Banana, Mango, Orange.
 			await expect.poll(() => status?.textContent?.trim()).toBe('3 results available');
 		});
+
+		it('counts disabled-but-visible items so Status matches the screen', async () => {
+			const screen = render(AutocompleteTest, { disabledKeys: ['banana'] });
+			const status = document.querySelector('[role="status"][aria-live="polite"]');
+			const input = screen.getByRole('searchbox');
+
+			// "ban" matches only the disabled Banana item, which is still rendered.
+			await input.fill('ban');
+
+			await expect.poll(() => screen.getByText('Banana').query()).not.toBeNull();
+			await expect.poll(() => status?.textContent?.trim()).toBe('1 result available');
+			// Empty must not show while a (disabled) item is visible.
+			expect(screen.getByText('No fruits found').query()).toBeNull();
+		});
+	});
+
+	describe('Blur (stale virtual focus)', () => {
+		it('clears the virtual focus when focus leaves the autocomplete', async () => {
+			const screen = render(AutocompleteTest, { autoHighlight: false });
+			const input = screen.getByRole('searchbox');
+			const inputEl = input.element() as HTMLElement;
+			const outside = screen.getByTestId('outside-button');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await expect.poll(() => inputEl.getAttribute('aria-activedescendant')).toBeTruthy();
+
+			// Tab-out equivalent: move focus completely away from the autocomplete.
+			await outside.click();
+
+			await expect.poll(() => inputEl.getAttribute('aria-activedescendant')).toBeNull();
+			// No option may keep a stale focus ring.
+			expect(document.querySelector('[role="option"][data-focused]')).toBeNull();
+			expect(document.querySelector('[role="option"][data-focus-visible]')).toBeNull();
+		});
+
+		it('shows the input focus markers again on refocus after blur', async () => {
+			const screen = render(AutocompleteTest, { autoHighlight: false });
+			const input = screen.getByRole('searchbox');
+			const inputEl = input.element() as HTMLElement;
+			const outside = screen.getByTestId('outside-button');
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await outside.click();
+
+			// Without clearing the virtual focus, the input would keep suppressing
+			// its own data-focused because an option still looked "active".
+			await input.click();
+			await expect.poll(() => inputEl.getAttribute('data-focused')).toBe('true');
+		});
 	});
 
 	describe('Focus contract', () => {

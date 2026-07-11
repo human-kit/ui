@@ -24,11 +24,39 @@
 		resolveLocalizedString($localeStore, ctx.isOpen ? 'combobox.hideOptions' : 'combobox.showOptions')
 	);
 
+	// Whether the popover was open when the current pointer press started. The
+	// popover's own outside-press handling closes it on mousedown (the trigger is
+	// not the popover's anchor, so it counts as "outside"); without this marker
+	// the click that follows would toggle the popover right back open. The
+	// snapshot is taken on pointerdown because it fires before every mousedown
+	// listener (including the popover's document-level one).
+	let wasOpenOnPress = false;
+
+	function handlePointerDown() {
+		wasOpenOnPress = ctx.isOpen;
+	}
+
 	function handleMouseDown(event: MouseEvent) {
+		// Only prevent default so the press never steals DOM focus from the input.
+		// Activation happens on click, which also works for keyboard (Enter/Space).
 		event.preventDefault();
-		if (!isTriggerDisabled) {
-			ctx.toggle();
+		// Fallback snapshot for environments without pointer events.
+		wasOpenOnPress = wasOpenOnPress || ctx.isOpen;
+	}
+
+	function handleClick(event: MouseEvent) {
+		if (isTriggerDisabled) return;
+
+		// `detail > 0` distinguishes pointer clicks from keyboard-synthesized
+		// clicks (detail === 0), which never have a matching press.
+		const closedByThisPress = event.detail > 0 && wasOpenOnPress && !ctx.isOpen;
+		wasOpenOnPress = false;
+		if (closedByThisPress) {
+			// The outside-press close already handled this interaction.
+			return;
 		}
+
+		ctx.toggle();
 	}
 </script>
 
@@ -37,11 +65,13 @@
 	{tabindex}
 	aria-label={defaultAriaLabel}
 	aria-expanded={ctx.isOpen}
-	aria-controls={`combobox-listbox-${ctx.instanceId}`}
+	aria-controls={ctx.isOpen ? `combobox-listbox-${ctx.instanceId}` : undefined}
 	disabled={ctx.isDisabled || ctx.isReadOnly}
 	pending={ctx.isPending}
 	pressed={ctx.isOpen || undefined}
+	onpointerdown={handlePointerDown}
 	onmousedown={handleMouseDown}
+	onclick={handleClick}
 	class={className}
 	{...restProps}
 >

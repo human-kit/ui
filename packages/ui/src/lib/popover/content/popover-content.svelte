@@ -349,7 +349,7 @@
 				ignore: [triggerRef]
 			}}
 			use:focusTrap={{ enabled: isOpen && isModal, restoreFocus: false, initialFocus }}
-			use:scrollLock={isOpen && isModal}
+			use:scrollLock={(isOpen || presence.isExiting) && isModal}
 			use:ariaHideOutside={isOpen && isModal}
 			style="position: fixed; z-index: {zIndex};"
 			{...restProps}

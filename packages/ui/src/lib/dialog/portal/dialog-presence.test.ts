@@ -43,6 +43,27 @@ describe('Dialog presence (exit animation)', () => {
 		await expect.poll(() => node.isConnected).toBe(false);
 	});
 
+	it('keeps the body scroll locked through the exit animation', async () => {
+		addExitAnimation();
+		const screen = render(DialogTest);
+		await screen.getByRole('button', { name: 'Open Dialog' }).click();
+		await expect.poll(() => document.querySelector('[data-dialog-content]')).toBeTruthy();
+		await expect.poll(() => document.body.style.overflow).toBe('hidden');
+
+		const node = document.querySelector('[data-dialog-content]') as HTMLElement;
+		(document.querySelector('.close-btn') as HTMLElement).click();
+
+		// While the panel animates out it is still visible: releasing the scroll lock here
+		// would bring the page scrollbar back mid-exit and shift the layout behind it.
+		await expect.poll(() => node.hasAttribute('data-exiting')).toBe(true);
+		expect(node.isConnected).toBe(true);
+		expect(document.body.style.overflow).toBe('hidden');
+
+		// Once the exit finishes and the node unmounts, the lock releases.
+		await expect.poll(() => node.isConnected).toBe(false);
+		await expect.poll(() => document.body.style.overflow).toBe('');
+	});
+
 	it('marks the exiting content inert so focus leaves with the close', async () => {
 		addExitAnimation();
 		const screen = render(DialogTest);

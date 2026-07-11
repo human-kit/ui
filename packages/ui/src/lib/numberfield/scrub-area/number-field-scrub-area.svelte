@@ -11,7 +11,6 @@
 		class?: string;
 		direction?: NumberFieldScrubDirection;
 		pixelSensitivity?: number;
-		teleportDistance?: number;
 	};
 
 	type ScrubPointerEvent = PointerEvent & { currentTarget: EventTarget & HTMLSpanElement };
@@ -21,7 +20,7 @@
 		class: className,
 		direction = 'horizontal',
 		pixelSensitivity = 2,
-		teleportDistance,
+		style,
 		onpointerdown,
 		onpointermove,
 		onpointerup,
@@ -37,6 +36,11 @@
 	const resolvedPixelSensitivity = $derived(
 		Number.isFinite(pixelSensitivity) && pixelSensitivity > 0 ? pixelSensitivity : 2
 	);
+
+	// touch-action: none keeps touch drags scrubbing instead of panning the
+	// page (which would fire pointercancel and abort the gesture). A consumer
+	// style can still override it since it is appended last.
+	const resolvedStyle = $derived(style ? `touch-action: none; ${style}` : 'touch-action: none');
 
 	function getCoordinate(event: PointerEvent): number {
 		return direction === 'vertical' ? -event.clientY : event.clientX;
@@ -84,23 +88,24 @@
 			accumulatedDelta = nextDelta;
 		}
 
-		if (teleportDistance && Math.abs(accumulatedDelta) > teleportDistance) {
-			accumulatedDelta = 0;
-		}
-
 		onpointermove?.(event);
 	}
 
 	function stopScrub(event: ScrubPointerEvent) {
-		if (isPointerScrubbing) {
-			const target = event.currentTarget as HTMLSpanElement;
-			try {
-				if (target.hasPointerCapture(event.pointerId)) {
-					target.releasePointerCapture(event.pointerId);
-				}
-			} catch {
-				// Ignore pointer capture cleanup failures from synthetic events.
+		if (!isPointerScrubbing) {
+			// Pointer releases that never started a scrub (e.g. right-click:
+			// startScrub ignores button !== 0) must not commit the input draft.
+			onpointerup?.(event);
+			return;
+		}
+
+		const target = event.currentTarget as HTMLSpanElement;
+		try {
+			if (target.hasPointerCapture(event.pointerId)) {
+				target.releasePointerCapture(event.pointerId);
 			}
+		} catch {
+			// Ignore pointer capture cleanup failures from synthetic events.
 		}
 
 		isPointerScrubbing = false;
@@ -121,6 +126,7 @@
 <span
 	{...restProps}
 	class={cn(className)}
+	style={resolvedStyle}
 	data-number-field-scrub-area="true"
 	data-disabled={numberField.isDisabled || undefined}
 	data-readonly={numberField.isReadOnly || undefined}

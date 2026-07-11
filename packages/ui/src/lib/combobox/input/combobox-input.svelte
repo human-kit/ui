@@ -122,7 +122,7 @@
 	aria-autocomplete="list"
 	aria-expanded={ctx.isOpen}
 	aria-haspopup="listbox"
-	aria-controls={`combobox-listbox-${ctx.instanceId}`}
+	aria-controls={ctx.isOpen ? `combobox-listbox-${ctx.instanceId}` : undefined}
 	aria-activedescendant={ctx.focusedTagId !== null
 		? getComboBoxTagDomId(ctx.instanceId, ctx.focusedTagId)
 		: ctx.focusedItemId !== null

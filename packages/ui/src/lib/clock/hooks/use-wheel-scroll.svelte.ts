@@ -9,6 +9,58 @@ export type WheelScrollApi = {
 	destroy: () => void;
 };
 
+export type WheelScrollSample = {
+	time: number;
+	scrollTop: number;
+};
+
+/** Window (ms) used to measure the scroll velocity right before pointer release. */
+export const RELEASE_VELOCITY_WINDOW_MS = 100;
+
+/** Minimum |velocity| (px/ms) considered a flick that will produce native momentum. */
+export const RELEASE_VELOCITY_THRESHOLD = 0.05;
+
+/**
+ * Computes the scroll velocity (px/ms, signed) over the trailing
+ * `windowMs` before `now` from a chronological list of scroll samples.
+ *
+ * Returns `0` when there is no recent movement (no samples, or the newest
+ * sample is older than the window). When the samples inside the window share
+ * the same timestamp but the position moved, the velocity is `±Infinity` —
+ * treated as a flick by callers.
+ */
+export function getPointerReleaseVelocity(
+	samples: readonly WheelScrollSample[],
+	now: number,
+	windowMs: number = RELEASE_VELOCITY_WINDOW_MS
+): number {
+	if (samples.length === 0) return 0;
+
+	const newest = samples[samples.length - 1];
+	if (now - newest.time > windowMs) return 0;
+
+	// Find the oldest sample inside the window, then include the sample just
+	// before it (when available) so short windows still get a usable baseline.
+	let referenceIndex = samples.length - 1;
+	while (referenceIndex > 0 && now - samples[referenceIndex - 1].time <= windowMs) {
+		referenceIndex -= 1;
+	}
+	if (referenceIndex > 0) {
+		referenceIndex -= 1;
+	}
+
+	const reference = samples[referenceIndex];
+	const distance = newest.scrollTop - reference.scrollTop;
+	const elapsed = newest.time - reference.time;
+
+	if (elapsed <= 0) {
+		if (distance === 0) return 0;
+		return distance > 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
+	}
+
+	return distance / elapsed;
+}
+
 /**
  * Manages scroll-based item selection for a wheel column.
  *
@@ -28,8 +80,10 @@ export function useWheelScroll(
 	let instantReleaseRafId: number | null = null;
 	let isSnapping = false;
 	let isSilentScroll = false;
+	let silentScrollTarget: number | null = null;
 	let isPointerInteracting = false;
 	let hasPendingPointerReleaseSnap = false;
+	const velocitySamples: WheelScrollSample[] = [];
 	const supportsScrollEnd = 'onscrollend' in window;
 	const supportsPointerEvents = 'onpointerdown' in window;
 	const wheelDebugWindow = window as Window & { __HK_CLOCK_WHEEL_DEBUG__?: boolean };
@@ -59,20 +113,34 @@ export function useWheelScroll(
 
 	function clearSilentScroll() {
 		isSilentScroll = false;
+		silentScrollTarget = null;
 		if (silentScrollTimer) {
 			clearTimeout(silentScrollTimer);
 			silentScrollTimer = null;
 		}
 	}
 
-	function startSilentScrollWindow() {
+	function startSilentScrollWindow(target: number) {
 		isSilentScroll = true;
+		silentScrollTarget = target;
 		if (silentScrollTimer) {
 			clearTimeout(silentScrollTimer);
 		}
 		silentScrollTimer = setTimeout(() => {
 			clearSilentScroll();
 		}, 600);
+	}
+
+	function recordVelocitySample(now: number) {
+		velocitySamples.push({ time: now, scrollTop: container.scrollTop });
+		// Keep the buffer small: drop samples that can no longer act as a
+		// baseline for the release-velocity window.
+		while (
+			velocitySamples.length > 2 &&
+			now - velocitySamples[1].time > RELEASE_VELOCITY_WINDOW_MS
+		) {
+			velocitySamples.shift();
+		}
 	}
 
 	function getItemElements(): HTMLElement[] {
@@ -247,6 +315,10 @@ export function useWheelScroll(
 		scrollEventsInGesture += 1;
 		lastScrollAt = now;
 
+		if (isPointerInteracting) {
+			recordVelocitySample(now);
+		}
+
 		if (isSnapping) {
 			debugLog('scroll-ignored-while-snapping');
 			return;
@@ -281,8 +353,21 @@ export function useWheelScroll(
 		}
 
 		if (isSilentScroll) {
-			debugLog('scrollend-ignored-while-silent-scroll');
-			clearSilentScroll();
+			// A `scrollend` can arrive mid smooth-scroll (e.g. an interrupted or
+			// re-targeted animation). Only lift the silent window once the scroll
+			// actually reached the silent target; otherwise keep suppressing until
+			// the real settle (or the silent-window timeout) happens.
+			const reachedSilentTarget =
+				silentScrollTarget === null || Math.abs(container.scrollTop - silentScrollTarget) < 2;
+			if (reachedSilentTarget) {
+				debugLog('scrollend-clears-silent-scroll');
+				clearSilentScroll();
+			} else {
+				debugLog('scrollend-ignored-while-silent-scroll', {
+					scrollTop: Number(container.scrollTop.toFixed(2)),
+					silentScrollTarget: Number((silentScrollTarget ?? 0).toFixed(2))
+				});
+			}
 			return;
 		}
 
@@ -305,17 +390,39 @@ export function useWheelScroll(
 		}
 		isPointerInteracting = true;
 		hasPendingPointerReleaseSnap = false;
+		velocitySamples.length = 0;
+		// Baseline sample so a single scroll event before release still yields
+		// a measurable displacement.
+		recordVelocitySample(performance.now());
 	}
 
 	function handlePointerRelease() {
 		if (!isPointerInteracting) return;
 		isPointerInteracting = false;
 
-		if (hasPendingPointerReleaseSnap) {
-			hasPendingPointerReleaseSnap = false;
-			clearScrollEndTimer();
-			snapToCenter('pointer-release');
+		if (!hasPendingPointerReleaseSnap) return;
+		hasPendingPointerReleaseSnap = false;
+		clearScrollEndTimer();
+
+		const releaseVelocity = getPointerReleaseVelocity(velocitySamples, performance.now());
+		if (Math.abs(releaseVelocity) >= RELEASE_VELOCITY_THRESHOLD) {
+			// The finger was still moving on release: snapping now would kill the
+			// native momentum. Let the normal settle path (scroll inactivity /
+			// scrollend) handle it; arm the inactivity fallback in case the
+			// expected momentum never materializes.
+			debugLog('pointer-release-deferred-to-momentum', {
+				velocityPxPerMs: Number.isFinite(releaseVelocity)
+					? Number(releaseVelocity.toFixed(3))
+					: releaseVelocity
+			});
+			scrollEndTimer = setTimeout(
+				() => snapToCenter(supportsScrollEnd ? 'inactivity-timeout' : 'fallback-timeout'),
+				120
+			);
+			return;
 		}
+
+		snapToCenter('pointer-release');
 	}
 
 	container.addEventListener('scroll', handleScroll, { passive: true });
@@ -344,9 +451,7 @@ export function useWheelScroll(
 		clearScrollEndTimer();
 
 		const shouldUseSilentScroll = options?.silent === true && behavior === 'smooth';
-		if (shouldUseSilentScroll) {
-			startSilentScrollWindow();
-		} else {
+		if (!shouldUseSilentScroll) {
 			clearSilentScroll();
 		}
 
@@ -355,6 +460,10 @@ export function useWheelScroll(
 
 		const target = items[index];
 		const idealScrollTop = target.offsetTop - (container.clientHeight - target.offsetHeight) / 2;
+
+		if (shouldUseSilentScroll) {
+			startSilentScrollWindow(Math.max(0, idealScrollTop));
+		}
 
 		if (behavior === 'instant') {
 			// Direct assignment – no animation.  Suppress the ensuing scrollend

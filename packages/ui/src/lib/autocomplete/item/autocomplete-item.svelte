@@ -68,8 +68,11 @@
 	const uniqueId = $derived(`autocomplete-item-${ctx.instanceId}-${id}`);
 
 	let isRegistered = $state(false);
+	let isVisibleRegistered = $state(false);
 
-	// Register for navigation only while visible and enabled.
+	// Register for navigation only while visible and enabled. Visible-item
+	// tracking additionally includes disabled items so Empty/Status match what
+	// is actually rendered on screen.
 	$effect(() => {
 		const visible = isVisible;
 		const disabled = isDisabled;
@@ -77,7 +80,18 @@
 		const itemId = id;
 
 		untrack(() => {
-			if (visible && !disabled && !isRegistered) {
+			if (visible && !isVisibleRegistered) {
+				ctx.registerVisibleItem(itemId);
+				isVisibleRegistered = true;
+			} else if (!visible && isVisibleRegistered) {
+				ctx.unregisterVisibleItem(itemId);
+				isVisibleRegistered = false;
+			}
+
+			if (visible && !disabled) {
+				// register() is idempotent for the id and refreshes the label map,
+				// so re-running it keeps the navigation label in sync when a
+				// dynamic `textValue` changes while the item stays registered.
 				ctx.registerItem(itemId, label);
 				isRegistered = true;
 			} else if ((!visible || disabled) && isRegistered) {
@@ -95,6 +109,7 @@
 
 	onDestroy(() => {
 		if (isRegistered) ctx.unregisterItem(id);
+		if (isVisibleRegistered) ctx.unregisterVisibleItem(id);
 	});
 
 	function handleSelect(itemId: string | number) {

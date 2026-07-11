@@ -210,6 +210,30 @@ const LOCALIZED_STRINGS = {
 		de: 'Optionen ausblenden',
 		it: 'Nascondi opzioni'
 	},
+	'combobox.noResults': {
+		en: 'No results available',
+		es: 'No hay resultados disponibles',
+		pt: 'Nenhum resultado disponível',
+		fr: 'Aucun résultat disponible',
+		de: 'Keine Ergebnisse verfügbar',
+		it: 'Nessun risultato disponibile'
+	},
+	'combobox.oneResult': {
+		en: '1 result available',
+		es: '1 resultado disponible',
+		pt: '1 resultado disponível',
+		fr: '1 résultat disponible',
+		de: '1 Ergebnis verfügbar',
+		it: '1 risultato disponibile'
+	},
+	'combobox.multipleResults': {
+		en: '{count} results available',
+		es: '{count} resultados disponibles',
+		pt: '{count} resultados disponíveis',
+		fr: '{count} résultats disponibles',
+		de: '{count} Ergebnisse verfügbar',
+		it: '{count} risultati disponibili'
+	},
 	'segment.empty': {
 		en: 'Empty',
 		es: 'Vacío',

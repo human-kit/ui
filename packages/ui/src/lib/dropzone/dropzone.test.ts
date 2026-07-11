@@ -176,8 +176,92 @@ describe('Dropzone', () => {
 
 		expect(button.element()?.hasAttribute('disabled')).toBe(true);
 		expect(button.element()?.getAttribute('data-disabled')).toBe('true');
+		// Defense in depth: the hidden input is disabled too, so a programmatic
+		// `.click()` on it cannot open the picker either.
+		expect(fileInput().disabled).toBe(true);
 
 		dropFiles(button.element() as HTMLElement, new File(['x'], 'x.txt', { type: 'text/plain' }));
+		expect(onFilesPicked).not.toHaveBeenCalled();
+	});
+
+	it('exposes hovered through the render state and data attribute', async () => {
+		const screen = render(DropzoneTest);
+		const button = screen.getByRole('button', { name: 'Attachments' }).element() as HTMLElement;
+		const probe = button.querySelector('[data-state-hovered]') as HTMLElement;
+
+		expect(probe.getAttribute('data-state-hovered')).toBe('false');
+
+		button.dispatchEvent(new MouseEvent('mouseenter', { bubbles: false }));
+		await expect.poll(() => probe.getAttribute('data-state-hovered')).toBe('true');
+		await expect.poll(() => button.getAttribute('data-hovered')).toBe('true');
+
+		button.dispatchEvent(new MouseEvent('mouseleave', { bubbles: false }));
+		await expect.poll(() => probe.getAttribute('data-state-hovered')).toBe('false');
+		await expect.poll(() => button.getAttribute('data-hovered')).toBeNull();
+	});
+
+	it('filters out directory entries when the drop exposes webkitGetAsEntry', () => {
+		const onFilesPicked = vi.fn();
+		const screen = render(DropzoneTest, { multiple: true, onFilesPicked });
+		const button = screen.getByRole('button', { name: 'Attachments' }).element() as HTMLElement;
+
+		const folderFile = new File([''], 'folder', { type: '' });
+		const realFile = new File(['x'], 'real.txt', { type: 'text/plain' });
+		const items = [
+			{ kind: 'file', webkitGetAsEntry: () => ({ isFile: false }), getAsFile: () => folderFile },
+			{ kind: 'file', webkitGetAsEntry: () => ({ isFile: true }), getAsFile: () => realFile }
+		];
+		const transfer = new DataTransfer();
+		transfer.items.add(folderFile);
+		transfer.items.add(realFile);
+		const event = new DragEvent('drop', { bubbles: true });
+		Object.defineProperty(event, 'dataTransfer', {
+			value: { items, files: transfer.files, types: ['Files'] }
+		});
+		button.dispatchEvent(event);
+
+		expect(onFilesPicked).toHaveBeenCalledTimes(1);
+		const files = onFilesPicked.mock.calls[0]?.[0] as File[];
+		expect(files.map((file) => file.name)).toEqual(['real.txt']);
+	});
+
+	it('emits pasted files from clipboardData through the accept filter', () => {
+		const onFilesPicked = vi.fn();
+		const onFilesRejected = vi.fn();
+		const screen = render(DropzoneTest, {
+			accept: 'image/*',
+			multiple: true,
+			onFilesPicked,
+			onFilesRejected
+		});
+		const button = screen.getByRole('button', { name: 'Attachments' }).element() as HTMLElement;
+
+		const transfer = new DataTransfer();
+		transfer.items.add(new File(['a'], 'pasted.png', { type: 'image/png' }));
+		transfer.items.add(new File(['b'], 'note.txt', { type: 'text/plain' }));
+		const event = new ClipboardEvent('paste', { bubbles: true, cancelable: true });
+		Object.defineProperty(event, 'clipboardData', { value: transfer });
+		button.dispatchEvent(event);
+
+		expect(event.defaultPrevented).toBe(true);
+		const files = onFilesPicked.mock.calls[0]?.[0] as File[];
+		expect(files.map((file) => file.name)).toEqual(['pasted.png']);
+		const rejected = onFilesRejected.mock.calls[0]?.[0] as File[];
+		expect(rejected.map((file) => file.name)).toEqual(['note.txt']);
+	});
+
+	it('ignores paste when disabled or without files', () => {
+		const onFilesPicked = vi.fn();
+		const screen = render(DropzoneTest, { disabled: true, onFilesPicked });
+		const button = screen.getByRole('button', { name: 'Attachments' }).element() as HTMLElement;
+
+		const transfer = new DataTransfer();
+		transfer.items.add(new File(['a'], 'pasted.png', { type: 'image/png' }));
+		const event = new ClipboardEvent('paste', { bubbles: true, cancelable: true });
+		Object.defineProperty(event, 'clipboardData', { value: transfer });
+		button.dispatchEvent(event);
+
+		expect(event.defaultPrevented).toBe(false);
 		expect(onFilesPicked).not.toHaveBeenCalled();
 	});
 

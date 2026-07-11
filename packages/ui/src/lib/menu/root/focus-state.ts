@@ -1,4 +1,4 @@
-import type { MenuCloseReason } from './context';
+import type { MenuInternalCloseReason } from './context';
 import {
 	focusWithModality,
 	resolveCloseInteractionModality
@@ -11,12 +11,13 @@ export function clearTriggerFocusState(trigger: HTMLElement) {
 
 export function applyTriggerCloseFocusState(
 	trigger: HTMLElement,
-	reason: MenuCloseReason,
+	reason: MenuInternalCloseReason,
 	event?: Event
 ) {
 	const closeModality = resolveCloseInteractionModality(reason, event);
 	focusWithModality(trigger, closeModality);
-	if (reason === 'outside-press' || reason === 'escape-key') {
+	// 'submenu-back' (ArrowLeft) styles the submenu trigger exactly like an Escape.
+	if (reason === 'outside-press' || reason === 'escape-key' || reason === 'submenu-back') {
 		trigger.dataset.focused = 'true';
 	} else {
 		delete trigger.dataset.focused;

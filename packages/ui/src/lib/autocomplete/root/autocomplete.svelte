@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import {
 		setAutocompleteContext,
 		defaultAutocompleteFilter,
@@ -78,6 +79,11 @@
 		itemPrefix: 'autocomplete-item',
 		containerRef: () => listboxRef
 	});
+
+	// Visible items (including disabled-but-visible ones). Kept separately from
+	// the navigation registration, which only tracks enabled items, so Empty and
+	// Status reflect what is actually rendered on screen.
+	const visibleItemIds = new SvelteSet<string | number>();
 
 	// Auto-highlight the first match (and keep the highlight valid) as items filter.
 	$effect(() => {
@@ -164,7 +170,7 @@
 			return nav.itemIds;
 		},
 		get visibleCount() {
-			return nav.itemIds.length;
+			return visibleItemIds.size;
 		},
 		get inputRef() {
 			return inputRef;
@@ -188,6 +194,12 @@
 		unregisterItem: (id: string | number) => {
 			nav.unregister(id);
 		},
+		registerVisibleItem: (id: string | number) => {
+			visibleItemIds.add(id);
+		},
+		unregisterVisibleItem: (id: string | number) => {
+			visibleItemIds.delete(id);
+		},
 		setInputRef: (el: HTMLElement | null) => {
 			inputRef = el;
 		},
@@ -204,6 +216,25 @@
 	};
 
 	setAutocompleteContext(ctx);
+
+	// Clear the virtual focus when DOM focus leaves the autocomplete entirely,
+	// so no option keeps a stale focus ring and the input drops its stale
+	// aria-activedescendant. The check is deferred to a microtask because
+	// focusout fires before the next element receives focus. Clicking an option
+	// never reaches this path: the option's mousedown is prevented, so the input
+	// keeps DOM focus and no focusout is emitted.
+	function handleFocusOut() {
+		queueMicrotask(() => {
+			const active = document.activeElement;
+			const stillInside =
+				(!!active && (rootElement?.contains(active) ?? false)) ||
+				(!!active && (listboxRef?.contains(active) ?? false));
+			if (!stillInside) {
+				if (nav.focusedId !== null) nav.setFocused(null);
+				focusVisible = false;
+			}
+		});
+	}
 </script>
 
 <div
@@ -213,6 +244,7 @@
 	data-disabled={disabled || undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
+	onfocusout={handleFocusOut}
 >
 	{#if children}
 		{@render children()}

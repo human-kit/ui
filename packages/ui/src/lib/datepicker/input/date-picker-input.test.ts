@@ -122,6 +122,9 @@ describe('DatePicker.Input', () => {
 		expect(proxyInput).toBeInstanceOf(HTMLInputElement);
 		expect(proxyInput?.getAttribute('name')).toBe('request_date');
 		expect(proxyInput?.getAttribute('aria-invalid')).toBe('true');
+		// Autofill is not supported on the proxy: password managers/browsers
+		// must not write into it.
+		expect(proxyInput?.getAttribute('autocomplete')).toBe('off');
 		expect(inputGroup.element()?.getAttribute('data-invalid')).toBe('true');
 
 		await userEvent.click(screen.getByText('Request date'));

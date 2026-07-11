@@ -15,6 +15,8 @@
 		disabled?: boolean;
 		readonly?: boolean;
 		defaultValue?: CalendarValue;
+		minValue?: string;
+		maxValue?: string;
 		isDateUnavailable?: (date: string) => boolean;
 		locale?: string;
 		firstDayOfWeek?: CalendarFirstDayOfWeek;
@@ -29,6 +31,8 @@
 		disabled = false,
 		readonly = false,
 		defaultValue,
+		minValue,
+		maxValue,
 		isDateUnavailable,
 		locale,
 		firstDayOfWeek,
@@ -54,6 +58,8 @@
 			{monthHeadingStyle}
 			{disabled}
 			{readonly}
+			{minValue}
+			{maxValue}
 			defaultValue={rangeDefaultValue}
 			{isDateUnavailable}
 			aria-label="Test calendar"
@@ -75,6 +81,8 @@
 			{monthHeadingStyle}
 			{disabled}
 			{readonly}
+			{minValue}
+			{maxValue}
 			defaultValue={singleDefaultValue}
 			{isDateUnavailable}
 			aria-label="Test calendar"

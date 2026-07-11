@@ -2,6 +2,15 @@ export type InputModality = 'keyboard' | 'pointer' | 'virtual';
 
 let currentModality: InputModality = 'virtual';
 
+/**
+ * Timestamp of the last real user input (keydown/pointerdown/mousedown). A focus move with no
+ * recent input event was not produced by the keyboard or a pointer — it came from a script or
+ * an assistive technology (screen-reader virtual cursor), so it re-classifies as 'virtual'.
+ * `Date.now()` (not `performance.now()`) so fake-timer test environments can advance it.
+ */
+const RECENT_INPUT_WINDOW_MS = 50;
+let lastInputEventTime = Number.NEGATIVE_INFINITY;
+
 const listenedWindows = new WeakSet<Window>();
 
 let forcedFocusTarget: HTMLElement | null = null;
@@ -24,16 +33,24 @@ function ensureWindowListeners(win: Window | null | undefined) {
 	if (listenedWindows.has(win)) return;
 
 	const onKeyDown = (event: KeyboardEvent) => {
+		lastInputEventTime = Date.now();
 		if (!isKeyboardModalityKey(event)) return;
 		currentModality = 'keyboard';
 	};
 
 	const onPointerDown = () => {
+		lastInputEventTime = Date.now();
 		currentModality = 'pointer';
 	};
 
-	const onFocusIn = () => {
-		if (currentModality === 'pointer' || currentModality === 'keyboard') return;
+	const onFocusIn = (event: FocusEvent) => {
+		// A programmatic focus with an explicit modality (`focusWithModality`) must keep it —
+		// its focusin fires synchronously, before the forced pair is consumed/cleared.
+		if (forcedFocusTarget !== null && event.target === forcedFocusTarget) return;
+		// Focus that follows real input keeps the modality that input established.
+		if (Date.now() - lastInputEventTime <= RECENT_INPUT_WINDOW_MS) return;
+		// No recent keyboard/pointer input: this focus move came from an assistive technology
+		// (or a script), so focus rings must show again.
 		currentModality = 'virtual';
 	};
 

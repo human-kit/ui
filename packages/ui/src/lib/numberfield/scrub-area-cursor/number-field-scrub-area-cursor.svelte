@@ -1,4 +1,12 @@
 <script lang="ts">
+	/**
+	 * NumberField.ScrubAreaCursor — purely decorative.
+	 *
+	 * Renders consumer-provided cursor content with `aria-hidden="true"` and
+	 * NumberField state mirrored as `data-*` attributes. It does NOT implement
+	 * pointer lock or a virtual cursor: the native pointer moves normally
+	 * while scrubbing and this element never repositions it.
+	 */
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn } from '../../utils/cn';

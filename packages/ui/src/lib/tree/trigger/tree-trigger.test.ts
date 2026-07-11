@@ -35,7 +35,7 @@ describe('Tree.Trigger', () => {
 		render(TreeTriggerTest, { defaultExpandedKeys: ['documents'] });
 
 		const documents = document.querySelector<HTMLElement>(
-			'[role="treeitem"][id="tree-item-documents"]'
+			'[role="treeitem"][id$="tree-item-documents"]'
 		);
 		const trigger = documents?.querySelector<HTMLElement>('[data-tree-trigger="true"]');
 

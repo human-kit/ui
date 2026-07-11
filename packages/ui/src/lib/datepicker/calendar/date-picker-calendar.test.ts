@@ -4,6 +4,7 @@ import { userEvent } from 'vitest/browser';
 import DatePickerTest from '../root/date-picker-test.svelte';
 import DatePickerEmptyTest from '../root/date-picker-empty-test.svelte';
 import DatePickerLocaleTypingTest from '../root/date-picker-locale-typing-test.svelte';
+import DatePickerMinChangeTest from '../root/date-picker-min-change-test.svelte';
 import DatePickerCalendarUnsafePropsTest from './date-picker-calendar-unsafe-props-test.svelte';
 import { addDays, formatCalendarDate, getTodayUtcDate } from '../../calendar/root/date-utils';
 
@@ -54,6 +55,39 @@ describe('DatePicker.Calendar', () => {
 
 		expect(beforeMin.element()?.getAttribute('aria-disabled')).toBe('true');
 		expect(withinRange.element()?.getAttribute('aria-disabled')).toBeNull();
+	});
+
+	it('disables the page triggers when the picker bounds confine the visible month', async () => {
+		const screen = render(DatePickerTest, {
+			defaultOpen: true,
+			minValue: '2026-02-05',
+			maxValue: '2026-02-20'
+		});
+
+		const previous = screen.getByRole('button', { name: 'Previous page' });
+		const next = screen.getByRole('button', { name: 'Next page' });
+
+		await expect.element(previous).toBeDisabled();
+		await expect.element(next).toBeDisabled();
+	});
+
+	it('refreshes calendar availability when minValue changes while the popover is open', async () => {
+		const screen = render(DatePickerMinChangeTest, {
+			defaultValue: '2026-02-10',
+			nextMinValue: '2026-02-15'
+		});
+
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		expect(getGridCellByDate('2026-02-12').element()?.getAttribute('aria-disabled')).toBeNull();
+
+		await screen.getByTestId('set-min-value').click();
+
+		// Without invalidating the availability cache the cell would stay
+		// enabled until the visible month changed.
+		await expect
+			.poll(() => getGridCellByDate('2026-02-12').element()?.getAttribute('aria-disabled'))
+			.toBe('true');
+		expect(getGridCellByDate('2026-02-16').element()?.getAttribute('aria-disabled')).toBeNull();
 	});
 
 	it('updates root value when selecting a valid calendar date', async () => {

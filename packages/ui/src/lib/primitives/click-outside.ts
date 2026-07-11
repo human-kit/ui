@@ -17,8 +17,10 @@ export type ClickOutsideOptions = {
  * (dialog, popover, menu). Custom surfaces can opt in with `data-top-layer`.
  * Keeping this list in one place prevents the drift where menus were missing
  * from the check and a menu opened inside a popover dismissed the popover.
+ * Shared with `aria-hide-outside`, which must not inert surfaces portalled
+ * above an active modal.
  */
-const TOP_LAYER_SELECTOR =
+export const TOP_LAYER_SELECTOR =
 	'[data-top-layer], [data-dialog-content], [role="dialog"], [data-menu-content], [role="menu"]';
 
 /**

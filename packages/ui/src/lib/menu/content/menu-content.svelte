@@ -100,10 +100,12 @@
 			return;
 		}
 		// ArrowLeft closes a submenu (single level) and returns focus to its trigger.
+		// 'submenu-back' is internal: consumers observe 'imperative-action', not a fake
+		// 'escape-key', while the trigger refocus/styling still matches an Escape.
 		if (event.key === 'ArrowLeft' && ctx.parent) {
 			event.preventDefault();
 			event.stopPropagation();
-			ctx.close('escape-key', event);
+			ctx.close('submenu-back', event);
 			return;
 		}
 		// Tab moves focus out of the menu, which closes the whole chain. Hand focus to the

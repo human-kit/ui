@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
 	focusWithModality,
 	getInteractionModality,
+	initInputModality,
 	shouldShowFocusVisible,
 	trackInteractionModality
 } from './input-modality';
@@ -109,6 +110,63 @@ describe('input-modality primitive', () => {
 		expect(getInteractionModality()).toBe('virtual');
 
 		button.remove();
+	});
+
+	it("classifies a focus move with no recent input as 'virtual' (screen-reader focus)", () => {
+		vi.useFakeTimers();
+		try {
+			const button = document.createElement('button');
+			document.body.appendChild(button);
+			initInputModality(button);
+
+			// Real keydown on the window: keyboard modality + fresh input timestamp.
+			window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+			expect(getInteractionModality()).toBe('keyboard');
+
+			// A screen reader moving its virtual cursor produces a focus event with no
+			// preceding keydown/pointerdown — simulate by letting the input go stale.
+			vi.advanceTimersByTime(100);
+			button.focus();
+
+			expect(getInteractionModality()).toBe('virtual');
+
+			button.remove();
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+
+	it('keeps the established modality when focus follows recent input', () => {
+		const button = document.createElement('button');
+		document.body.appendChild(button);
+		initInputModality(button);
+
+		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
+		button.focus();
+
+		expect(getInteractionModality()).toBe('keyboard');
+
+		button.remove();
+	});
+
+	it('does not reclassify a programmatic focus that carries an explicit modality', () => {
+		vi.useFakeTimers();
+		try {
+			const button = document.createElement('button');
+			document.body.appendChild(button);
+			initInputModality(button);
+
+			// No recent input, but focusWithModality forces the modality for its target —
+			// the synchronous focusin must not override it with 'virtual'.
+			vi.advanceTimersByTime(100);
+			focusWithModality(button, 'pointer');
+
+			expect(getInteractionModality()).toBe('pointer');
+
+			button.remove();
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 
 	it('passes focusVisible=false to native focus for pointer modality', () => {

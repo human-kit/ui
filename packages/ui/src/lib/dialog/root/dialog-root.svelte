@@ -112,5 +112,16 @@
 </script>
 
 {#if children}
-	{@render children({ close: closeDialog, open: openDialog, toggle, isOpen })}
+	<!--
+		Zero-arg wrappers, NOT the internal functions: snippet helpers are typed `() => void`,
+		so consumers write `onclick={close}` and the DOM handler passes the MouseEvent as the
+		first argument — which `closeDialog` would misread as its `reason` (degrading the
+		close-focus modality resolution).
+	-->
+	{@render children({
+		close: () => closeDialog('imperative-action'),
+		open: () => openDialog(),
+		toggle: () => toggle(),
+		isOpen
+	})}
 {/if}

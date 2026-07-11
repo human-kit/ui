@@ -2,7 +2,7 @@
 	import { readable } from 'svelte/store';
 	import { Checkbox } from '../../checkbox';
 	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { getLocaleContext } from '../../locale-provider/context';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -22,7 +22,7 @@
 		...restProps
 	}: TreeCheckboxProps = $props();
 
-	const localeContext = useLocaleContextOptional();
+	const localeContext = getLocaleContext();
 	const emptyLocaleStore = readable<string | undefined>(undefined);
 	const localeStore = localeContext?.locale ?? emptyLocaleStore;
 

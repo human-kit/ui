@@ -16,7 +16,9 @@
 	let { children, class: className = '', ...restProps }: CalendarTriggerNextProps = $props();
 
 	const calendar = useCalendarContext();
-	const isDisabled = $derived(calendar.isDisabled);
+	// Also disabled when the next page is entirely after `maxValue`, so users
+	// cannot navigate forever into fully-disabled months.
+	const isDisabled = $derived(calendar.isDisabled || calendar.isNextPageDisabled);
 	const defaultAriaLabel = $derived(resolveLocalizedString(calendar.locale, 'calendar.nextPage'));
 
 	function handleClick() {

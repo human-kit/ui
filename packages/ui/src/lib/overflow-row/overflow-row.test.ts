@@ -139,5 +139,39 @@ describe('OverflowRow', () => {
 				expect(list.querySelectorAll('[data-tag-id]').length).toBeLessThan(ALL.length);
 			});
 		});
+
+		it('does not subtract the parent gap when nothing is reserved', async () => {
+			// Wide first render: measure the row's natural total width with a gapped parent.
+			const { container, rerender } = render(OverflowRowTest, { width: 2000, parentGap: 40 });
+			const list = () =>
+				container.querySelector('[role="list"][aria-label="Selected values"]') as HTMLElement;
+
+			await vi.waitFor(() => {
+				expect(list().querySelectorAll('[data-tag-id]').length).toBe(ALL.length);
+			});
+			const totalWidth = Math.ceil(list().getBoundingClientRect().width);
+
+			// Shrink the parent to a just-fits width. Without `reserve` the parent's
+			// 40px gap has no sibling to sit next to, so everything must still fit;
+			// subtracting the gap unconditionally would wrongly hide the last item.
+			await rerender({ width: totalWidth + 2, parentGap: 40 });
+			await new Promise((resolve) => setTimeout(resolve, 150));
+
+			expect(list().querySelectorAll('[data-tag-id]').length).toBe(ALL.length);
+			expect(list().querySelector('[data-testid="overflow"]')).toBeNull();
+		});
+
+		it('replicates the inline `style` onto the mirror so it affects measurement', async () => {
+			// A huge inline gap makes the real row overflow at width 1000. The mirror
+			// only sees that gap if the consumer's inline style is copied onto it —
+			// with class-only replication everything would appear to fit.
+			const screen = render(OverflowRowTest, { width: 1000, rowStyle: 'gap: 400px' });
+			const list = screen.getByRole('list', { name: 'Selected values' }).element();
+
+			await vi.waitFor(() => {
+				expect(list.querySelector('[data-testid="overflow"]')).not.toBeNull();
+				expect(list.querySelectorAll('[data-tag-id]').length).toBeLessThan(ALL.length);
+			});
+		});
 	});
 });

@@ -83,6 +83,7 @@
 	// Track registration state to avoid re-registering
 	let isRegistered = $state(false);
 	let isActionRegistered = $state(false);
+	let isVisibleRegistered = $state(false);
 
 	// Reactive registration: register when visible, unregister when hidden
 	$effect(() => {
@@ -94,7 +95,20 @@
 		const shouldClose = closeOnAction;
 
 		untrack(() => {
-			if (visible && !disabled && !isRegistered) {
+			// Visible-item tracking includes disabled items so Status/Empty match
+			// what is actually rendered on screen.
+			if (visible && !isVisibleRegistered) {
+				ctx.registerVisibleItem(itemId);
+				isVisibleRegistered = true;
+			} else if (!visible && isVisibleRegistered) {
+				ctx.unregisterVisibleItem(itemId);
+				isVisibleRegistered = false;
+			}
+
+			if (visible && !disabled) {
+				// register() is idempotent for the id and refreshes the label map,
+				// so re-running it keeps the navigation label in sync when a
+				// dynamic `textValue` changes while the item stays registered.
 				ctx.registerItem(itemId, label);
 				isRegistered = true;
 			} else if ((!visible || disabled) && isRegistered) {
@@ -139,6 +153,9 @@
 		}
 		if (isActionRegistered) {
 			ctx.unregisterItemAction(id);
+		}
+		if (isVisibleRegistered) {
+			ctx.unregisterVisibleItem(id);
 		}
 	});
 

@@ -28,8 +28,13 @@
 		...restProps
 	}: TimePickerWheelItemProps = $props();
 
-	function handleClick() {
-		onRequestCenter?.();
+	function handleClick(event: MouseEvent) {
+		if (!onRequestCenter) return;
+		// Mark the click as handled so the wheel-column container (which also
+		// listens for clicks to support custom snippet items) doesn't issue a
+		// duplicate center request for the same click.
+		event.preventDefault();
+		onRequestCenter();
 	}
 </script>
 

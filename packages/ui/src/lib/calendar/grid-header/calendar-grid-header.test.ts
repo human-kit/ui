@@ -18,4 +18,32 @@ describe('Calendar.GridHeader', () => {
 
 		expect(customCell).toBeTruthy();
 	});
+
+	it('exposes the long weekday name as aria-label and abbr on each header cell', async () => {
+		render(CalendarRootTest, {
+			defaultValue: '2026-05-10',
+			locale: 'en-US',
+			firstDayOfWeek: 'sun',
+			weekdayStyle: 'narrow'
+		});
+
+		const headerCells = Array.from(
+			document.querySelectorAll<HTMLTableCellElement>('th[role="columnheader"]')
+		);
+		const longNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+		expect(headerCells.map((cell) => cell.getAttribute('aria-label'))).toEqual(longNames);
+		expect(headerCells.map((cell) => cell.getAttribute('abbr'))).toEqual(longNames);
+		// The visible (narrow) labels stay ambiguous on purpose; assistive tech
+		// reads the aria-label instead.
+		expect(headerCells.map((cell) => cell.textContent?.trim())).toEqual([
+			'S',
+			'M',
+			'T',
+			'W',
+			'T',
+			'F',
+			'S'
+		]);
+	});
 });

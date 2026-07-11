@@ -4,7 +4,14 @@
  * is stacked above it. `level` counts open dialogs only, for z-index math.
  */
 
-import { pushLayer, removeLayer, isTopmostLayer, getLayerCount } from '../../primitives/layer-stack';
+import {
+	pushLayer,
+	removeLayer,
+	isTopmostLayer,
+	getLayerCount,
+	getLayerKindIndex,
+	subscribeLayerStack
+} from '../../primitives/layer-stack';
 
 /**
  * Base z-index for dialogs. Each nested dialog increments by 10.
@@ -14,12 +21,32 @@ const Z_INDEX_INCREMENT = 10;
 
 /**
  * Register a dialog when it opens.
- * Returns the dialog ID and level for z-index calculation.
+ * Returns the dialog ID and level for z-index calculation. The level is the dialog's
+ * CURRENT position — re-read it via `getDialogLevel` (see `subscribeDialogStack`) as
+ * siblings open/close, since a level frozen at push time can end up duplicated once
+ * an earlier sibling closes and reopens.
  */
 export function pushDialog(_close?: () => void): { id: symbol; level: number } {
-	const level = getLayerCount('dialog');
 	const id = pushLayer('dialog');
-	return { id, level };
+	return { id, level: getDialogLevel(id) };
+}
+
+/**
+ * CURRENT index of this dialog among the open dialogs (0-based, in stack order).
+ * Returns 0 when the dialog is not in the stack.
+ */
+export function getDialogLevel(id: symbol): number {
+	const index = getLayerKindIndex(id);
+	return index === -1 ? 0 : index;
+}
+
+/**
+ * Notifies whenever the layer stack changes, so an open dialog can re-derive its
+ * level (and z-index) instead of keeping the value frozen at push time.
+ * Returns an unsubscribe function.
+ */
+export function subscribeDialogStack(listener: () => void): () => void {
+	return subscribeLayerStack(listener);
 }
 
 /**

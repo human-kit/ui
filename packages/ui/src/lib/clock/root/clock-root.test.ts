@@ -294,4 +294,29 @@ describe('Clock.Root', () => {
 		await expect.poll(() => getClockRoot()).toBeTruthy();
 		expect(document.querySelector('[data-testid="clock-value"]')?.textContent).toBe('');
 	});
+
+	it('accepts an H:mm initial value and normalizes the binding to HH:mm', async () => {
+		render(ClockRootTest, { defaultValue: '9:30' });
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('09:30');
+
+		const hourColumn = getSpinbuttons().item(0);
+		await expect.poll(() => hourColumn?.getAttribute('aria-valuetext')).toBe('09');
+	});
+
+	it('normalizes an H:mm external value update to HH:mm', async () => {
+		render(ClockRootTest, { defaultValue: '10:00', externalValue: '9:45' });
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('10:00');
+
+		document.querySelector<HTMLElement>('[data-testid="set-external"]')?.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('09:45');
+	});
 });

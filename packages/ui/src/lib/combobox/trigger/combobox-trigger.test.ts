@@ -49,6 +49,45 @@ describe('ComboBox.Trigger', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 
+		it('toggles the popover with Enter when focused (keyboard activation)', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+			const trigger = screen.getByRole('button', { name: 'Show options' });
+
+			(trigger.element() as HTMLElement).focus();
+			await userEvent.keyboard('{Enter}');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		it('toggles the popover with Space when focused (keyboard activation)', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+			const trigger = screen.getByRole('button', { name: 'Show options' });
+
+			(trigger.element() as HTMLElement).focus();
+			await userEvent.keyboard(' ');
+
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		it('exposes aria-controls only while expanded', async () => {
+			const screen = render(ComboBoxTest);
+			const input = screen.getByRole('combobox');
+			const trigger = screen.getByRole('button', { name: 'Show options' });
+
+			// Closed: the listbox does not exist yet, so aria-controls must be absent.
+			expect(trigger.element().hasAttribute('aria-controls')).toBe(false);
+
+			await trigger.click();
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
+
+			const openTrigger = screen.getByRole('button', { name: 'Hide options' });
+			await expect
+				.poll(() => openTrigger.element().getAttribute('aria-controls'))
+				.toMatch(/^combobox-listbox-/);
+		});
+
 		it('has tabindex -1 by default', async () => {
 			const screen = render(ComboBoxTest);
 			const trigger = screen.getByRole('button', { name: 'Show options' });

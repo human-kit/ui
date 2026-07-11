@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	isValidTimePickerValue,
+	normalizeTimePickerValue,
 	parseTimePickerValue,
 	formatTimePickerValue,
 	buildTimePickerSegments,
@@ -26,11 +27,18 @@ describe('isValidTimePickerValue', () => {
 		expect(isValidTimePickerValue('23:59:59')).toBe(true);
 	});
 
+	it('accepts single-digit hours (H:mm and H:mm:ss)', () => {
+		expect(isValidTimePickerValue('9:30')).toBe(true);
+		expect(isValidTimePickerValue('1:30')).toBe(true);
+		expect(isValidTimePickerValue('0:00')).toBe(true);
+		expect(isValidTimePickerValue('9:30:15')).toBe(true);
+	});
+
 	it('rejects invalid formats', () => {
 		expect(isValidTimePickerValue('')).toBe(false);
 		expect(isValidTimePickerValue('24:00')).toBe(false);
 		expect(isValidTimePickerValue('12:60')).toBe(false);
-		expect(isValidTimePickerValue('1:30')).toBe(false);
+		expect(isValidTimePickerValue('9:5')).toBe(false);
 		expect(isValidTimePickerValue('14')).toBe(false);
 		expect(isValidTimePickerValue('14:30:60')).toBe(false);
 		expect(isValidTimePickerValue(':30')).toBe(false);
@@ -56,13 +64,36 @@ describe('parseTimePickerValue', () => {
 		expect(parseTimePickerValue('14:30:45')).toEqual({ hour: 14, minute: 30, second: 45 });
 	});
 
+	it('parses single-digit hours', () => {
+		expect(parseTimePickerValue('9:30')).toEqual({ hour: 9, minute: 30, second: 0 });
+		expect(parseTimePickerValue('1:30:05')).toEqual({ hour: 1, minute: 30, second: 5 });
+	});
+
 	it('returns null for invalid input', () => {
 		expect(parseTimePickerValue('')).toBeNull();
 		expect(parseTimePickerValue('invalid')).toBeNull();
 		expect(parseTimePickerValue('24:00')).toBeNull();
-		expect(parseTimePickerValue('1:30')).toBeNull();
+		expect(parseTimePickerValue('9:5')).toBeNull();
 		expect(parseTimePickerValue(':30')).toBeNull();
 		expect(parseTimePickerValue('1.5:30')).toBeNull();
+	});
+});
+
+describe('normalizeTimePickerValue', () => {
+	it('pads single-digit hours to the canonical form', () => {
+		expect(normalizeTimePickerValue('9:30')).toBe('09:30');
+		expect(normalizeTimePickerValue('1:05:07')).toBe('01:05:07');
+		expect(normalizeTimePickerValue('0:00')).toBe('00:00');
+	});
+
+	it('keeps already-canonical values unchanged', () => {
+		expect(normalizeTimePickerValue('09:30')).toBe('09:30');
+		expect(normalizeTimePickerValue('23:59:59')).toBe('23:59:59');
+	});
+
+	it('returns invalid values unchanged', () => {
+		expect(normalizeTimePickerValue('invalid')).toBe('invalid');
+		expect(normalizeTimePickerValue('24:00')).toBe('24:00');
 	});
 });
 

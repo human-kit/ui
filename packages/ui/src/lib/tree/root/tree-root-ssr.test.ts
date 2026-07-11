@@ -7,9 +7,11 @@ import TreeStaticSsrTest from './tree-static-ssr-test.svelte';
 import TreeLabelFallbackTest from './tree-label-fallback-test.svelte';
 import TreeSectionTest from '../section/tree-section-test.svelte';
 
-function getOpeningTag(source: string, id: string) {
-	const start = source.indexOf(`id="${id}"`);
-	if (start === -1) return '';
+// Ids are prefixed with a per-instance uid, so match by id suffix.
+function getOpeningTag(source: string, idSuffix: string) {
+	const match = source.match(new RegExp(`id="[^"]*${idSuffix}"`));
+	if (!match || match.index === undefined) return '';
+	const start = match.index;
 	const tagStart = source.lastIndexOf('<', start);
 	const tagEnd = source.indexOf('>', start);
 	if (tagStart === -1 || tagEnd === -1) return '';
@@ -54,7 +56,7 @@ describe('Tree.Root SSR', () => {
 
 	it('renders section headers on the server render pass before hydration', () => {
 		const { body } = render(TreeSectionTest);
-		const headerId = body.match(/id="(tree-header-\d+)"/)?.[1];
+		const headerId = body.match(/id="([^"]*tree-header-\d+)"/)?.[1];
 
 		expect(body).toContain('Files');
 		expect(headerId).toBeDefined();
@@ -67,8 +69,8 @@ describe('Tree.Root SSR', () => {
 
 		expect(body).toContain('data-tree-label="true"');
 		expect(body).toContain('Documents');
-		expect(body).toMatch(/id="tree-item-label-\d+"/);
-		expect(body).toMatch(/aria-labelledby="tree-item-label-\d+"/);
+		expect(body).toMatch(/id="[^"]*tree-item-label-\d+"/);
+		expect(body).toMatch(/aria-labelledby="[^"]*tree-item-label-\d+"/);
 	});
 
 	it('renders composed Tree.Label content on the server render pass', () => {

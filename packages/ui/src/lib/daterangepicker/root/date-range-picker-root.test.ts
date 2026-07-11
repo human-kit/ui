@@ -384,4 +384,94 @@ describe('DateRangePicker.Root', () => {
 
 		expectNoFalseFocusAttributes(document);
 	});
+
+	it('renders hidden proxy inputs with autocomplete="off" so autofill cannot write into them', () => {
+		render(DateRangePickerTest, {
+			startInputName: 'tripStart',
+			endInputName: 'tripEnd'
+		});
+
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="tripStart"]')?.getAttribute(
+				'autocomplete'
+			)
+		).toBe('off');
+		expect(
+			document
+				.querySelector<HTMLInputElement>('input[name="tripEnd"]')
+				?.getAttribute('autocomplete')
+		).toBe('off');
+	});
+
+	describe('typed ranges validate interior unavailable days', () => {
+		it('does not commit a typed range that crosses an unavailable day and flags both parts', async () => {
+			render(DateRangePickerTest, {
+				defaultValue: null,
+				isDateUnavailable: (date: string) => date === '2026-02-15'
+			});
+
+			await typeSegment('start', 'day', '10');
+			await typeSegment('start', 'month', '2');
+			await typeSegment('start', 'year', '2026');
+			await typeSegment('end', 'day', '20');
+			await typeSegment('end', 'month', '2');
+			await typeSegment('end', 'year', '2026');
+
+			// The endpoints are valid but 2026-02-15 sits inside the path: the
+			// range must not be published.
+			await expect
+				.poll(() => document.querySelector('[data-testid="date-range-picker-value"]')?.textContent)
+				.toBe('');
+
+			// The blocked path belongs to the (start, end) pair, so both inputs
+			// flag invalid through the per-part mechanism.
+			await expect
+				.poll(() =>
+					document
+						.querySelector('[role="group"][aria-label="Start date"]')
+						?.getAttribute('data-invalid')
+				)
+				.toBe('true');
+			expect(
+				document.querySelector('[role="group"][aria-label="End date"]')?.getAttribute('data-invalid')
+			).toBe('true');
+		});
+
+		it('clears a previously committed value when typing turns the range path unavailable', async () => {
+			render(DateRangePickerTest, {
+				defaultValue: { start: '2026-02-10', end: '2026-02-12' },
+				isDateUnavailable: (date: string) => date === '2026-02-15'
+			});
+
+			// Extend the end past the unavailable day: 2026-02-12 -> 2026-02-20.
+			await typeSegment('end', 'day', '20');
+
+			await expect
+				.poll(() => document.querySelector('[data-testid="date-range-picker-value"]')?.textContent)
+				.toBe('');
+		});
+
+		it('commits a typed range that does not cross unavailable days', async () => {
+			render(DateRangePickerTest, {
+				defaultValue: null,
+				isDateUnavailable: (date: string) => date === '2026-02-15'
+			});
+
+			await typeSegment('start', 'day', '10');
+			await typeSegment('start', 'month', '2');
+			await typeSegment('start', 'year', '2026');
+			await typeSegment('end', 'day', '14');
+			await typeSegment('end', 'month', '2');
+			await typeSegment('end', 'year', '2026');
+
+			await expect
+				.poll(() => document.querySelector('[data-testid="date-range-picker-value"]')?.textContent)
+				.toBe('2026-02-10/2026-02-14');
+			expect(
+				document
+					.querySelector('[role="group"][aria-label="Start date"]')
+					?.getAttribute('data-invalid')
+			).toBeNull();
+		});
+	});
 });

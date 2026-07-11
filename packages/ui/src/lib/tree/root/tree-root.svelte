@@ -12,6 +12,10 @@
 	import { setTreeRenderMode } from './render-mode';
 	import type { TreeEmptyStateRenderProps, TreeRootProps } from '../types';
 
+	// Per-instance uid threaded into the context so generated DOM ids
+	// (`tree-item-*`, labels, headers) never collide across tree instances.
+	const uid = $props.id();
+
 	let {
 		expandedKeys = $bindable(),
 		defaultExpandedKeys,
@@ -71,7 +75,11 @@
 	}
 
 	function getSetFromKeys(keys: Iterable<TreeNodeId> | undefined) {
-		return new Set(keys ?? []);
+		// Mirror the context's key normalization (numbers -> strings) so prop/state
+		// set comparisons agree with the keys the context stores and emits.
+		const set = new Set<TreeNodeId>();
+		for (const key of keys ?? []) set.add(typeof key === 'number' ? String(key) : key);
+		return set;
 	}
 
 	function syncExpandedStateFromControlledProp(expectedKeys: Set<TreeNodeId>) {
@@ -95,6 +103,7 @@
 	}
 
 	const ctx = createTreeContext({
+		instanceId: uid,
 		selectionMode: initialSelectionMode,
 		selectionBehavior: initialSelectionBehavior,
 		disabledBehavior: initialDisabledBehavior,

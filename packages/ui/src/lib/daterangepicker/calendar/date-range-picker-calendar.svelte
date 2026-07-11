@@ -68,6 +68,8 @@
 	onChange={handleChange}
 	disabled={dateRangePicker.isDisabled}
 	readonly={dateRangePicker.isReadOnly}
+	minValue={dateRangePicker.minValue}
+	maxValue={dateRangePicker.maxValue}
 	isDateUnavailable={dateRangePicker.isDateUnavailable}
 	class={className}
 	{...restProps}

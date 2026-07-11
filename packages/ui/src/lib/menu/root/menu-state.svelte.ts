@@ -111,6 +111,12 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		options.getOnOpenChange?.()?.(value, details);
 		if (details.isCanceled) return;
 
+		// Every (non-canceled) transition to open resets the stale close reason — including
+		// `toggle()`, which used to leave e.g. 'escape-key' behind from the previous cycle.
+		if (value) {
+			closeReason = 'none';
+		}
+
 		if (!isControlled) {
 			isOpenInternal = value;
 		}
@@ -123,7 +129,6 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 	}
 
 	function openMenu(reason: MenuOpenReason = 'imperative-action', event?: Event) {
-		closeReason = 'none';
 		setOpenWithDetails(true, { reason, event });
 	}
 
@@ -135,7 +140,7 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 
 	function scheduleTriggerCloseFocus(
 		trigger: HTMLElement,
-		reason: MenuCanonicalCloseReason,
+		reason: MenuInternalCloseReason,
 		event?: Event
 	) {
 		clearPendingTriggerCloseFocus();
@@ -149,16 +154,19 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 	// Focus returns to the trigger only on deliberate keyboard/selection closes — not when
 	// the user tabbed away ('focus-out'), clicked elsewhere ('outside-press') or hovered a
 	// sibling that displaced the submenu ('sibling-open', where focus belongs to the sibling).
+	// 'submenu-back' (ArrowLeft on a submenu) is deliberate too: focus returns to the
+	// submenu's trigger in the parent menu.
 	const TRIGGER_REFOCUS_REASONS: readonly MenuInternalCloseReason[] = [
 		'escape-key',
 		'item-select',
-		'imperative-action'
+		'imperative-action',
+		'submenu-back'
 	];
 
 	function closeMenu(reason: MenuInternalCloseReason = 'imperative-action', event?: Event) {
-		// 'sibling-open' is internal-only; consumers observe the canonical reason.
+		// 'sibling-open' / 'submenu-back' are internal-only; consumers observe the canonical reason.
 		const canonicalReason: MenuCanonicalCloseReason =
-			reason === 'sibling-open' ? 'imperative-action' : reason;
+			reason === 'sibling-open' || reason === 'submenu-back' ? 'imperative-action' : reason;
 		closeReason = canonicalReason;
 		const wasOpen = isOpen;
 		setOpenWithDetails(false, { reason: canonicalReason, event });
@@ -170,7 +178,9 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		const triggerRef = options.getTriggerRef();
 		if (!triggerRef) return;
 		if (!TRIGGER_REFOCUS_REASONS.includes(reason)) return;
-		scheduleTriggerCloseFocus(triggerRef, canonicalReason, event);
+		// The INTERNAL reason drives the trigger focus visuals ('submenu-back' styles like an
+		// Escape); only the reason reported to consumers is canonicalized.
+		scheduleTriggerCloseFocus(triggerRef, reason, event);
 	}
 
 	/** Closes this menu and, for selections, any ancestor menus too. */

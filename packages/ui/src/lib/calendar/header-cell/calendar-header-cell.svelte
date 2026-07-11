@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { HTMLThAttributes } from 'svelte/elements';
 
-	type CalendarHeaderCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
+	// `HTMLThAttributes` so callers (e.g. Calendar.GridHeader) can expose the
+	// long weekday name through `abbr`/`aria-label` on the `th` element.
+	type CalendarHeaderCellProps = Omit<HTMLThAttributes, 'children'> & {
 		children?: Snippet;
 	};
 

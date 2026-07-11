@@ -220,6 +220,22 @@
 		scrubbing = false;
 	});
 
+	$effect(() => {
+		// Re-evaluate an uncommitted draft when the constraints change so
+		// `inputState` doesn't go stale — e.g. an out-of-range "99" draft with
+		// max=10 must become valid (and commit) when max is raised to 100
+		// without requiring the user to retype it.
+		void min;
+		void max;
+		void formatOptions;
+		void resolvedLocale;
+
+		untrack(() => {
+			if (inputState === 'synced' || inputState === 'empty') return;
+			setInputValue(inputValue, 'input');
+		});
+	});
+
 	function publishValue(nextValue: number | null, emitChange: boolean) {
 		const normalizedValue = normalizeValue(nextValue);
 		const didInternalChange = valueInternal !== normalizedValue;

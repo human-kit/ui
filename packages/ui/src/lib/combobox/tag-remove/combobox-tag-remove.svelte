@@ -17,7 +17,14 @@
 
 	let { children, class: className, ...restProps }: ComboBoxTagRemoveProps = $props();
 
-	const tagCtx = getContext<TagContext>(TAG_CONTEXT_KEY);
+	const maybeTagCtx = getContext<TagContext | undefined>(TAG_CONTEXT_KEY);
+
+	if (!maybeTagCtx) {
+		throw new Error('ComboBox.TagRemove must be used within a ComboBox.Tag');
+	}
+
+	// Re-assign after the guard so the narrowed type reaches the template.
+	const tagCtx = maybeTagCtx;
 
 	function handleClick(e: MouseEvent) {
 		e.preventDefault();

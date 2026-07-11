@@ -24,7 +24,10 @@ export type TimeParts = {
 	second: number;
 };
 
-const timeValuePattern = /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
+// Hour accepts one or two digits (`9:30` and `09:30`); minutes/seconds stay
+// two-digit. Single-digit hours are normalized to the padded canonical form
+// via `normalizeTimePickerValue` before being adopted.
+const timeValuePattern = /^(?:[01]?\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
 
 export function createEmptyTimePickerDraft(): TimePickerDraft {
 	return {
@@ -47,6 +50,19 @@ export function parseTimePickerValue(value: TimePickerTimeValue): TimeParts | nu
 		minute: Number(minutePart),
 		second: Number(secondPart ?? '0')
 	};
+}
+
+/**
+ * Normalizes an accepted time value to its canonical zero-padded form
+ * (`9:30` → `09:30`) while preserving the presence/absence of seconds.
+ * Returns the input unchanged when it is not a valid time value.
+ */
+export function normalizeTimePickerValue(value: TimePickerTimeValue): TimePickerTimeValue {
+	if (!isValidTimePickerValue(value)) return value;
+	return value
+		.split(':')
+		.map((part) => part.padStart(2, '0'))
+		.join(':');
 }
 
 function pad2(value: number): string {

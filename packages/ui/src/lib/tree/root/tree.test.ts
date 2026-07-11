@@ -6,6 +6,7 @@ import type { TreeItemTransition } from '../types';
 import TreeTest from './tree-test.svelte';
 import TreeDisabledKeysTest from './tree-disabled-keys-test.svelte';
 import TreeLabelFallbackTest from './tree-label-fallback-test.svelte';
+import TreeTwoInstancesTest from './tree-two-instances-test.svelte';
 
 function getSelectedLabels() {
 	return Array.from(
@@ -189,7 +190,10 @@ describe('Tree.Root', () => {
 		expect(selectedItems).toHaveLength(1);
 		expect(selectedItems[0]?.querySelector('[data-tree-label]')?.textContent).toBe('Documents');
 		expect(selectedItems[0]?.getAttribute('aria-checked')).toBe('true');
-		expect(selectedItems[0]?.getAttribute('aria-selected')).toBeNull();
+		// Inverted: the container is aria-multiselectable in multiple mode, so rows
+		// must emit aria-selected too (aria-checked stays alongside carrying the
+		// tri-state/mixed signal).
+		expect(selectedItems[0]?.getAttribute('aria-selected')).toBe('true');
 	});
 
 	it('selects with Enter when selection is enabled and no action is provided', async () => {
@@ -407,8 +411,9 @@ describe('Tree.Root', () => {
 
 	it('reacts when disabledKeys changes after mount', async () => {
 		const screen = render(TreeDisabledKeysTest);
+		// Row ids are prefixed with a per-instance uid; match by suffix.
 		const reports = document.querySelector<HTMLElement>(
-			'[role="treeitem"][id="tree-item-reports"]'
+			'[role="treeitem"][id$="tree-item-reports"]'
 		);
 
 		if (!reports) throw new Error('Reports treeitem not found');
@@ -629,6 +634,22 @@ describe('Tree.Root', () => {
 
 		expect(onAction).not.toHaveBeenCalled();
 		await expect.poll(getSelectedLabels).toEqual(['Documents', 'Reports', 'Budget']);
+	});
+
+	it('keeps DOM ids unique across two tree instances with the same item ids', async () => {
+		render(TreeTwoInstancesTest);
+
+		const trees = document.querySelectorAll('[role="tree"]');
+		expect(trees).toHaveLength(2);
+
+		// Same logical item id in both trees, but distinct DOM ids (uid prefix).
+		const documentRows = document.querySelectorAll('[id$="tree-item-documents"]');
+		expect(documentRows).toHaveLength(2);
+		expect(documentRows[0]?.id).not.toBe(documentRows[1]?.id);
+
+		// No duplicate ids anywhere (rows and generated label ids included).
+		const allIds = Array.from(document.querySelectorAll('[id]')).map((node) => node.id);
+		expect(new Set(allIds).size).toBe(allIds.length);
 	});
 
 	it('uses row selection instead of action once a toggle-mode selection is active', async () => {

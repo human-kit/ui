@@ -233,7 +233,11 @@ function decimalPlaces(value: number): number {
 
 function roundToPrecision(value: number, precision: number): number {
 	const factor = 10 ** Math.min(precision, 12);
-	return Math.round((value + Number.EPSILON) * factor) / factor;
+	// Round on the absolute value and reapply the sign so ties resolve
+	// away from zero symmetrically: 0.025 → 0.03 and -0.025 → -0.03
+	// (Math.round alone rounds -0.025 toward +Infinity, giving -0.02).
+	const rounded = Math.round((Math.abs(value) + Number.EPSILON) * factor) / factor;
+	return value < 0 ? -rounded : rounded;
 }
 
 export function roundNumberValueToFormat(
@@ -290,10 +294,15 @@ export function parseNumberInput(
 		};
 	}
 
+	// With percent style and no fraction digits allowed, sub-1 decimals like
+	// "0.5" are read as the fractional percent form and become "5" (%). This
+	// must not apply to inputs with an integer part ("12.5"): those fall
+	// through and get rounded to the formatter's fraction digits instead of
+	// being digit-concatenated into "125".
 	if (
 		formatOptions?.style === 'percent' &&
 		!acceptsPercentFractions(locale, formatOptions) &&
-		/^[+-]?(?:\d+\.\d+|\.\d+)$/.test(numericText)
+		/^[+-]?0?\.\d+$/.test(numericText)
 	) {
 		numericText = numericText.replace('.', '');
 	}

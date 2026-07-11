@@ -512,7 +512,8 @@ describe('Menu', () => {
 		});
 
 		it('closes only the submenu on ArrowLeft', async () => {
-			const screen = render(MenuTest, { withSubmenu: true });
+			const onSubmenuOpenChange = vi.fn();
+			const screen = render(MenuTest, { withSubmenu: true, onSubmenuOpenChange });
 			await screen.getByRole('button', { name: 'Open Menu' }).click();
 			await expect.poll(() => queryMenu()).toBeTruthy();
 
@@ -523,6 +524,14 @@ describe('Menu', () => {
 
 			await userEvent.keyboard('{ArrowLeft}');
 			await expect.poll(() => queryMenus().length).toBe(1);
+
+			// Consumers must not be told Escape was pressed: the internal 'submenu-back'
+			// reason canonicalizes to 'imperative-action'.
+			const closeCall = onSubmenuOpenChange.mock.calls.find(([open]) => open === false);
+			expect(closeCall?.[1]?.reason).toBe('imperative-action');
+
+			// Focus still returns to the submenu trigger, exactly like an Escape.
+			await expect.poll(() => document.activeElement).toBe(submenuTrigger.element());
 		});
 	});
 

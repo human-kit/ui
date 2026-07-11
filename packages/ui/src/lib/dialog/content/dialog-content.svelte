@@ -9,7 +9,14 @@
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
 	import { getDialogContext } from '../root/context';
 	import { getDialogPresenceContext } from '../root/presence-context';
-	import { pushDialog, popDialog, isTopmostDialog, getContentZIndex } from '../root/dialog-stack';
+	import {
+		pushDialog,
+		popDialog,
+		isTopmostDialog,
+		getContentZIndex,
+		getDialogLevel,
+		subscribeDialogStack
+	} from '../root/dialog-stack';
 
 	/**
 	 * Dialog.Content - The centered modal dialog panel.
@@ -46,6 +53,11 @@
 	// lets the Portal time the exit from this element. Falls back to "always open" when absent.
 	const presence = getDialogPresenceContext();
 	const isOpen = $derived(presence ? presence.state === 'open' : true);
+
+	// The scroll lock must survive the exit animation: releasing it the moment `isOpen`
+	// flips false brings the page scrollbar back mid-exit and shifts the layout behind
+	// the still-visible panel. It releases only once the exit has finished (unmount).
+	const shouldLockScroll = $derived(presence ? isOpen || presence.isExiting : true);
 
 	let dialogRef: HTMLElement | undefined = $state();
 	let dialogId: symbol | null = null;
@@ -84,6 +96,8 @@
 		}
 	}
 
+	let unsubscribeStack: (() => void) | null = null;
+
 	onMount(() => {
 		if (!browser) return;
 		// Register this dialog in the stack
@@ -92,11 +106,24 @@
 		dialogLevel = level;
 		// Share level with overlay via context
 		dialogCtx.setStackLevel(level);
+		// The level is the dialog's CURRENT index in the stack, not a value frozen at push
+		// time: with two sibling dialogs, closing and reopening the first used to mint it the
+		// same level as the still-open second one (duplicate z-index). Re-derive on every
+		// stack change so reopened siblings never share a level.
+		unsubscribeStack = subscribeDialogStack(() => {
+			if (dialogId === null) return;
+			const currentLevel = getDialogLevel(dialogId);
+			if (currentLevel === dialogLevel) return;
+			dialogLevel = currentLevel;
+			dialogCtx.setStackLevel(currentLevel);
+		});
 		document.addEventListener('keydown', handleKeydown);
 	});
 
 	onDestroy(() => {
 		if (!browser) return;
+		unsubscribeStack?.();
+		unsubscribeStack = null;
 		// Unregister this dialog from the stack
 		if (dialogId) {
 			popDialog(dialogId);
@@ -145,7 +172,7 @@
 			ignore: [dialogCtx.triggerRef]
 		}}
 		use:focusTrap={isOpen}
-		use:scrollLock={isOpen}
+		use:scrollLock={shouldLockScroll}
 		use:ariaHideOutside={isOpen}
 		{...restProps}
 	>

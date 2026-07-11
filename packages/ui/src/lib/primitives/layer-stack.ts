@@ -17,10 +17,32 @@ type LayerEntry = { id: symbol; kind: LayerKind };
 
 const layerStack: LayerEntry[] = [];
 
+/**
+ * Listeners notified after every push/remove. Lets an open layer re-derive
+ * stack-dependent values (e.g. a dialog's z-index level) as siblings open/close,
+ * instead of freezing them at push time.
+ */
+const stackListeners = new Set<() => void>();
+
+function notifyStackChanged(): void {
+	for (const listener of [...stackListeners]) {
+		listener();
+	}
+}
+
+/** Subscribe to stack changes (any push/remove). Returns an unsubscribe function. */
+export function subscribeLayerStack(listener: () => void): () => void {
+	stackListeners.add(listener);
+	return () => {
+		stackListeners.delete(listener);
+	};
+}
+
 /** Register a layer when it opens. Returns its identity for later checks. */
 export function pushLayer(kind: LayerKind): symbol {
 	const id = Symbol(`${kind}-layer`);
 	layerStack.push({ id, kind });
+	notifyStackChanged();
 	return id;
 }
 
@@ -29,7 +51,24 @@ export function removeLayer(id: symbol): void {
 	const index = layerStack.findIndex((entry) => entry.id === id);
 	if (index !== -1) {
 		layerStack.splice(index, 1);
+		notifyStackChanged();
 	}
+}
+
+/**
+ * CURRENT index of a layer among the open layers of its own kind (0-based, in
+ * stack order), or -1 when it isn't in the stack. Unlike a level captured at
+ * push time, this stays correct when earlier siblings close and reopen.
+ */
+export function getLayerKindIndex(id: symbol): number {
+	const entry = layerStack.find((candidate) => candidate.id === id);
+	if (!entry) return -1;
+	let index = 0;
+	for (const candidate of layerStack) {
+		if (candidate.id === id) return index;
+		if (candidate.kind === entry.kind) index += 1;
+	}
+	return -1;
 }
 
 /** Whether this layer is the topmost of the whole stack (any kind). */

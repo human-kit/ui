@@ -23,6 +23,12 @@ export function useLocaleContext(): LocaleContext {
 	return context;
 }
 
+/**
+ * @deprecated Use {@link getLocaleContext} instead — it is the primary API and
+ * behaves identically (returns the context or `undefined` when no
+ * `LocaleProvider` is present). This alias is kept only for backwards
+ * compatibility and will be removed in a future major version.
+ */
 export function useLocaleContextOptional(): LocaleContext | undefined {
 	return getLocaleContext();
 }

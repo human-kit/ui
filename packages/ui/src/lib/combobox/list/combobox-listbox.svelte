@@ -54,11 +54,29 @@
 		}
 	});
 
+	// Defensive path: ComboBox items intercept selection through `onItemSelect`
+	// and call `ctx.select` directly, so the inner ListBox rarely emits changes
+	// on its own (e.g. only a future select-all could). The previous
+	// implementation took `[0]` of the emitted set, which in multiple mode
+	// re-toggled an already-selected id instead of applying the new one. Diff
+	// against the current selection so only the actually-changed ids are applied.
 	function handleSelectionChange(selection: Set<string | number>) {
-		const selectedId = Array.from(selection)[0];
-		if (selectedId !== undefined) {
-			const label = ctx.itemLabels.get(selectedId) ?? String(selectedId);
-			ctx.select(selectedId, label);
+		const current = new Set(ctx.selectedValue);
+
+		for (const id of selection) {
+			if (!current.has(id)) {
+				const label = ctx.itemLabels.get(id) ?? String(id);
+				ctx.select(id, label);
+			}
+		}
+
+		for (const id of current) {
+			// Re-read the live selection: in single mode, `ctx.select` above
+			// already replaced the previous id, so removing it again would emit
+			// a duplicate onChange.
+			if (!selection.has(id) && ctx.selectedValue.has(id)) {
+				ctx.removeItem(id);
+			}
 		}
 	}
 </script>

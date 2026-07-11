@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import type { Snippet } from 'svelte';
 import { asCommand } from '../../internal/as-command.js';
+import { dev } from '../../internal/environment.js';
 
 const TREE_KEY = Symbol('tree');
 const TREE_LEVEL_KEY = Symbol('tree-level');
@@ -71,6 +72,11 @@ export type TreeSectionContext = {
 };
 
 export type CreateTreeContextOptions = {
+	/**
+	 * Per-instance uid (Tree.Root passes `$props.id()`) used to prefix every
+	 * generated DOM id so two trees on the same page never collide.
+	 */
+	instanceId?: string;
 	selectionMode?: TreeSelectionMode;
 	selectionBehavior?: TreeSelectionBehavior;
 	disabledBehavior?: TreeDisabledBehavior;
@@ -93,6 +99,27 @@ type TreeSelectionInteraction = {
 
 function idsEqual(left: TreeNodeId | null, right: TreeNodeId | null) {
 	return String(left) === String(right);
+}
+
+// Key identity: `idsEqual` compares loosely (1 == '1') while `Set`/`Map`
+// lookups compare strictly, so numeric item ids combined with string keys
+// (e.g. `defaultExpandedKeys={['1']}` with `id={1}`) used to silently never
+// match. Every key is therefore normalized to its string form at the context
+// boundary — sets, buckets and comparisons all operate on normalized keys, and
+// keys handed back to consumers (callbacks, `getSelectedKeys`, visible nodes)
+// are the normalized string form.
+function toKey(id: TreeNodeId): TreeNodeId {
+	return typeof id === 'number' ? String(id) : id;
+}
+
+function toNullableKey(id: TreeNodeId | null): TreeNodeId | null {
+	return id === null ? null : toKey(id);
+}
+
+function toKeySet(keys?: Iterable<TreeNodeId>): Set<TreeNodeId> {
+	const set = new Set<TreeNodeId>();
+	for (const key of keys ?? []) set.add(toKey(key));
+	return set;
 }
 
 function setsEqual(left: Set<TreeNodeId>, right: Set<TreeNodeId>) {
@@ -156,6 +183,8 @@ export type TreeContext = {
 	 * and reactive consumers of that cache subscribe via `void context.structureEpoch`.
 	 */
 	structureEpoch: number;
+	/** Per-instance uid prefixed onto every generated DOM id (may be empty). */
+	instanceId: string;
 	selectionMode: TreeSelectionMode;
 	selectionBehavior: TreeSelectionBehavior;
 	disabledBehavior: TreeDisabledBehavior;
@@ -234,6 +263,7 @@ export type TreeContext = {
 
 export function createTreeContext(options: CreateTreeContextOptions = {}): TreeContext {
 	const {
+		instanceId = '',
 		selectionMode = 'none',
 		selectionBehavior = 'toggle',
 		disabledBehavior = 'all',
@@ -280,10 +310,10 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	let currentOnAction = onAction;
 	// The key sets are always replaced wholesale, so `$state.raw` + reassignment
 	// gives whole-set reactivity without proxying every entry.
-	const initialSelection = new Set<TreeNodeId>(initialSelectedKeys ?? []);
-	let disabledKeySet = $state.raw(new Set<TreeNodeId>(disabledKeys ?? []));
+	const initialSelection = toKeySet(initialSelectedKeys);
+	let disabledKeySet = $state.raw(toKeySet(disabledKeys));
 	let selectedKeys = $state.raw(initialSelection);
-	let expandedKeys = $state.raw(new Set<TreeNodeId>(initialExpandedKeys ?? []));
+	let expandedKeys = $state.raw(toKeySet(initialExpandedKeys));
 	let focusedId = $state<TreeNodeId | null>(null);
 	let focusedElement = $state<HTMLElement | null>(null);
 	let focusVisible = $state(false);
@@ -353,7 +383,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function setDisabledKeys(keys?: Iterable<TreeNodeId>) {
-		const nextDisabledKeys = new Set(keys ?? []);
+		const nextDisabledKeys = toKeySet(keys);
 		if (setsEqual(disabledKeySet, nextDisabledKeys)) return;
 		disabledKeySet = nextDisabledKeys;
 		invalidateSelectedKeysCache();
@@ -552,8 +582,27 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		return getVisibleNodes().filter(isNodeFocusable);
 	}
 
-	function registerNode(node: Omit<TreeNodeRegistration, 'order'>) {
+	function registerNode(rawNode: Omit<TreeNodeRegistration, 'order'>) {
+		const node: Omit<TreeNodeRegistration, 'order'> = {
+			...rawNode,
+			id: toKey(rawNode.id),
+			parentId: toNullableKey(rawNode.parentId),
+			sectionId: toNullableKey(rawNode.sectionId)
+		};
 		const existingNode = nodes.get(node.id);
+
+		if (
+			dev &&
+			existingNode?.element &&
+			node.element &&
+			existingNode.element !== node.element &&
+			existingNode.element.isConnected
+		) {
+			console.warn(
+				`[Tree] Duplicate item id "${node.id}": a different mounted element is already registered under this id. Item ids must be unique within a tree — the previous registration will be overwritten.`
+			);
+		}
+
 		if (
 			existingNode &&
 			idsEqual(existingNode.parentId, node.parentId) &&
@@ -604,7 +653,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		bumpStructure();
 	}
 
-	function unregisterNode(id: TreeNodeId) {
+	function unregisterNode(rawId: TreeNodeId) {
+		const id = toKey(rawId);
 		const existingNode = nodes.get(id);
 		nodes.delete(id);
 		if (existingNode) {
@@ -642,7 +692,11 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		bumpStructure();
 	}
 
-	function registerSection(section: Omit<TreeSectionRegistration, 'order'>) {
+	function registerSection(rawSection: Omit<TreeSectionRegistration, 'order'>) {
+		const section: Omit<TreeSectionRegistration, 'order'> = {
+			...rawSection,
+			id: toNullableKey(rawSection.id)
+		};
 		const existingSection = sections.get(section.id);
 		if (
 			existingSection &&
@@ -667,49 +721,52 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function unregisterSection(id: TreeNodeId | null) {
-		sections.delete(id);
+		sections.delete(toNullableKey(id));
 		bumpStructure();
 	}
 
 	function setNodeElement(id: TreeNodeId, element?: HTMLElement) {
-		const node = nodes.get(id);
+		const node = nodes.get(toKey(id));
 		if (!node) return;
 		if (node.element === element) return;
 		node.element = element;
 	}
 
 	function setNodeTextValue(id: TreeNodeId, textValue: string) {
-		const node = nodes.get(id);
+		const node = nodes.get(toKey(id));
 		if (!node) return;
 		if (node.textValue === textValue) return;
 		node.textValue = textValue;
 		bumpStructure();
 	}
 
-	function hasChildren(id: TreeNodeId) {
+	function hasChildren(rawId: TreeNodeId) {
 		// Walks plain structure; subscribe via the structure epoch.
 		void structureEpoch;
+		const id = toKey(rawId);
 		return (childIdsByParent.get(id)?.length ?? 0) > 0 || nodes.get(id)?.hasChildren === true;
 	}
 
 	function isExpanded(id: TreeNodeId) {
-		return expandedKeys.has(id);
+		return expandedKeys.has(toKey(id));
 	}
 
 	function setExpandedKeys(keys?: Iterable<TreeNodeId>) {
-		const nextExpandedKeys = new Set(keys ?? []);
+		const nextExpandedKeys = toKeySet(keys);
 		if (setsEqual(expandedKeys, nextExpandedKeys)) return;
 		expandedKeys = nextExpandedKeys;
 		emitExpansionChange();
 	}
 
-	function expandNode(id: TreeNodeId) {
+	function expandNode(rawId: TreeNodeId) {
+		const id = toKey(rawId);
 		if (!hasChildren(id) || expandedKeys.has(id)) return;
 		expandedKeys = new Set(expandedKeys).add(id);
 		emitExpansionChange();
 	}
 
-	function collapseNode(id: TreeNodeId) {
+	function collapseNode(rawId: TreeNodeId) {
+		const id = toKey(rawId);
 		if (!expandedKeys.has(id)) return;
 		const nextExpandedKeys = new Set(expandedKeys);
 		nextExpandedKeys.delete(id);
@@ -717,7 +774,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		emitExpansionChange();
 	}
 
-	function toggleNodeExpansion(id: TreeNodeId) {
+	function toggleNodeExpansion(rawId: TreeNodeId) {
+		const id = toKey(rawId);
 		if (expandedKeys.has(id)) {
 			collapseNode(id);
 			return;
@@ -731,7 +789,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 
 	function setSelectedKeys(keys?: Iterable<TreeNodeId>) {
 		const previousSelection = new Set(getEffectiveSelectedKeys());
-		const nextSelectedKeys = new Set(keys ?? []);
+		const nextSelectedKeys = toKeySet(keys);
 		if (setsEqual(selectedKeys, nextSelectedKeys)) return;
 		selectedKeys = nextSelectedKeys;
 		invalidateSelectedKeysCache();
@@ -746,10 +804,11 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function isSelected(id: TreeNodeId) {
-		return getEffectiveSelectedKeys().has(id);
+		return getEffectiveSelectedKeys().has(toKey(id));
 	}
 
-	function setItemSelection(id: TreeNodeId, selected: boolean) {
+	function setItemSelection(rawId: TreeNodeId, selected: boolean) {
+		const id = toKey(rawId);
 		if (currentSelectionMode === 'none' || isSelectionDisabled(id, nodes.get(id)?.disabled)) {
 			return;
 		}
@@ -791,7 +850,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		}
 	}
 
-	function getSelectionState(id: TreeNodeId): TreeSelectionState {
+	function getSelectionState(rawId: TreeNodeId): TreeSelectionState {
+		const id = toKey(rawId);
 		if (currentSelectionMode === 'none') {
 			return 'none';
 		}
@@ -928,7 +988,9 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		selectionAnchorId = anchorId;
 	}
 
-	function extendSelectionToNode(id: TreeNodeId, anchorOverride?: TreeNodeId | null) {
+	function extendSelectionToNode(rawId: TreeNodeId, anchorOverride?: TreeNodeId | null) {
+		const id = toKey(rawId);
+		anchorOverride = anchorOverride === undefined ? undefined : toNullableKey(anchorOverride);
 		if (currentSelectionMode === 'none' || isSelectionDisabled(id, nodes.get(id)?.disabled)) {
 			return;
 		}
@@ -948,7 +1010,8 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		// from, and `applyRangeSelection` already reassigned `selectedKeys`.
 	}
 
-	function pressSelection(id: TreeNodeId, interaction: TreeSelectionInteraction = {}) {
+	function pressSelection(rawId: TreeNodeId, interaction: TreeSelectionInteraction = {}) {
+		const id = toKey(rawId);
 		if (currentSelectionMode === 'none' || isSelectionDisabled(id, nodes.get(id)?.disabled)) {
 			return;
 		}
@@ -1004,11 +1067,11 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function isDisabled(id: TreeNodeId, localDisabled = false) {
-		return currentDisabledBehavior === 'all' && (localDisabled || disabledKeySet.has(id));
+		return currentDisabledBehavior === 'all' && (localDisabled || disabledKeySet.has(toKey(id)));
 	}
 
 	function isSelectionDisabled(id: TreeNodeId, localDisabled = false) {
-		return localDisabled || disabledKeySet.has(id);
+		return localDisabled || disabledKeySet.has(toKey(id));
 	}
 
 	function isActionDisabled(id: TreeNodeId, localDisabled = false) {
@@ -1082,18 +1145,19 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function getParentId(id: TreeNodeId) {
-		return nodes.get(id)?.parentId ?? null;
+		return nodes.get(toKey(id))?.parentId ?? null;
 	}
 
 	function getFirstChildId(id: TreeNodeId) {
-		return getChildrenOf(id)[0]?.id ?? null;
+		return getChildrenOf(toKey(id))[0]?.id ?? null;
 	}
 
 	function getFirstFocusableChildId(id: TreeNodeId) {
-		return getChildrenOf(id).find(isNodeFocusable)?.id ?? null;
+		return getChildrenOf(toKey(id)).find(isNodeFocusable)?.id ?? null;
 	}
 
-	function setFocusedId(id: TreeNodeId | null) {
+	function setFocusedId(rawId: TreeNodeId | null) {
+		const id = toNullableKey(rawId);
 		if (idsEqual(focusedId, id)) return;
 		focusedId = id;
 		if (id === null) {
@@ -1131,11 +1195,12 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 		return focusVisible;
 	}
 
-	function focusById(id: TreeNodeId | null) {
-		if (id === null) {
+	function focusById(rawId: TreeNodeId | null) {
+		if (rawId === null) {
 			setFocusedId(null);
 			return;
 		}
+		const id = toKey(rawId);
 		const node = nodes.get(id);
 		if (!node || isActionDisabled(id, node.disabled)) return;
 		setFocusedId(id);
@@ -1156,10 +1221,11 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function pressNode(
-		id: TreeNodeId,
+		rawId: TreeNodeId,
 		source: TreeNodePressSource,
 		interaction: TreeSelectionInteraction = {}
 	) {
+		const id = toKey(rawId);
 		const node = nodes.get(id);
 		if (!node || isActionDisabled(id, node.disabled)) return;
 
@@ -1202,7 +1268,7 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 	}
 
 	function getNodeTextValue(id: TreeNodeId) {
-		return nodes.get(id)?.textValue;
+		return nodes.get(toKey(id))?.textValue;
 	}
 
 	function findTypeaheadMatch(query: string, fromId: TreeNodeId | null = focusedId) {
@@ -1224,12 +1290,16 @@ export function createTreeContext(options: CreateTreeContextOptions = {}): TreeC
 
 	function createGeneratedId(prefix: string) {
 		generatedIdCount += 1;
-		return `${prefix}-${generatedIdCount}`;
+		// The per-instance uid keeps generated ids from colliding across trees.
+		return `${instanceId ? `${instanceId}-` : ''}${prefix}-${generatedIdCount}`;
 	}
 
 	return {
 		get structureEpoch() {
 			return structureEpoch;
+		},
+		get instanceId() {
+			return instanceId;
 		},
 		get selectionMode() {
 			return currentSelectionMode;

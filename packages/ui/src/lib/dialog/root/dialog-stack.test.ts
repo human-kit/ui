@@ -5,7 +5,9 @@ import {
 	isTopmostDialog,
 	getOverlayZIndex,
 	getContentZIndex,
-	getDialogCount
+	getDialogCount,
+	getDialogLevel,
+	subscribeDialogStack
 } from './dialog-stack';
 
 describe('Dialog Stack', () => {
@@ -183,6 +185,53 @@ describe('Dialog Stack', () => {
 			expect(getContentZIndex(1)).toBeGreaterThan(getOverlayZIndex(0));
 			// Level 2 content should be above level 1 overlay
 			expect(getContentZIndex(2)).toBeGreaterThan(getOverlayZIndex(1));
+		});
+	});
+
+	describe('getDialogLevel (current index)', () => {
+		it('re-derives distinct levels when a sibling closes and reopens', () => {
+			const a = pushDialog(() => {});
+			const b = pushDialog(() => {});
+			const levelA = a.level;
+			expect(b.level).toBe(levelA + 1);
+
+			// Close the FIRST sibling, then reopen it while the second stays open.
+			popDialog(a.id);
+			const a2 = pushDialog(() => {});
+
+			// The still-open sibling slid down into the freed slot...
+			expect(getDialogLevel(b.id)).toBe(levelA);
+			// ...and the reopened one gets the next level — they never share one
+			// (with frozen levels both ended up at levelA + 1, duplicating z-index).
+			expect(getDialogLevel(a2.id)).toBe(levelA + 1);
+			expect(a2.level).toBe(levelA + 1);
+			expect(getContentZIndex(getDialogLevel(a2.id))).not.toBe(
+				getContentZIndex(getDialogLevel(b.id))
+			);
+
+			popDialog(a2.id);
+			popDialog(b.id);
+		});
+
+		it('notifies subscribers on every push/pop so open dialogs can re-derive their level', () => {
+			const seen: number[] = [];
+			let bId: symbol | null = null;
+			const unsubscribe = subscribeDialogStack(() => {
+				if (bId) seen.push(getDialogLevel(bId));
+			});
+
+			const a = pushDialog(() => {});
+			const b = pushDialog(() => {});
+			bId = b.id;
+
+			popDialog(a.id); // b must observe its slide from level 1 to level 0
+			expect(seen).toContain(0);
+			expect(getDialogLevel(b.id)).toBe(getDialogCount() - 1);
+
+			unsubscribe();
+			const before = seen.length;
+			popDialog(b.id);
+			expect(seen.length).toBe(before);
 		});
 	});
 

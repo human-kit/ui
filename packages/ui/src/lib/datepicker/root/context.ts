@@ -24,6 +24,10 @@ export type DatePickerContext = {
 	activeSegment: Exclude<DatePickerSegmentType, 'literal'> | null;
 	value: DatePickerDateValue | null;
 	locale: string;
+	/** Normalized (valid) `minValue`, propagated to the embedded calendar. */
+	minValue: DatePickerDateValue | undefined;
+	/** Normalized (valid) `maxValue`, propagated to the embedded calendar. */
+	maxValue: DatePickerDateValue | undefined;
 	triggerRef: HTMLElement | null;
 	setTriggerRef: (element: HTMLElement | null) => void;
 	setFocusVisible: (visible: boolean) => void;

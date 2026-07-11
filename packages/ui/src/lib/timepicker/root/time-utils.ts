@@ -11,6 +11,7 @@ export {
 	type TimeParts,
 	createEmptyTimePickerDraft,
 	isValidTimePickerValue,
+	normalizeTimePickerValue,
 	parseTimePickerValue,
 	formatTimePickerValue,
 	toDraftFromTimeValue,

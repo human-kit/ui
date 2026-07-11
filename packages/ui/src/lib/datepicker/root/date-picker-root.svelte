@@ -135,6 +135,21 @@
 	const normalizedMinValue = $derived(isValidDatePickerValue(minValue) ? minValue : undefined);
 	const normalizedMaxValue = $derived(isValidDatePickerValue(maxValue) ? maxValue : undefined);
 	const segmentOrder = $derived(getDatePickerSegmentOrder(resolvedLocale));
+	// The embedded calendar memoizes availability results keyed by the identity
+	// of its `isDateUnavailable` prop. Mint a NEW closure whenever the bounds or
+	// the user predicate change, so that cache invalidates naturally (e.g.
+	// changing `minValue` while the popover is open).
+	const isDateUnavailableInternal = $derived.by(() => {
+		const min = normalizedMinValue;
+		const max = normalizedMaxValue;
+		const userIsDateUnavailable = isDateUnavailable;
+		return (valueToCheck: DatePickerDateValue): boolean => {
+			if (!isValidDatePickerValue(valueToCheck)) return true;
+			if (min && compareDatePickerValues(valueToCheck, min) < 0) return true;
+			if (max && compareDatePickerValues(valueToCheck, max) > 0) return true;
+			return userIsDateUnavailable?.(valueToCheck) ?? false;
+		};
+	});
 	const draftEvaluation = $derived.by(() =>
 		evaluateDatePickerDraft(segmentDraft, {
 			isDateOutOfRange,
@@ -181,11 +196,6 @@
 			return true;
 		}
 		return false;
-	}
-
-	function isDateUnavailableInternal(valueToCheck: DatePickerDateValue): boolean {
-		if (isDateOutOfRange(valueToCheck)) return true;
-		return isDateUnavailable?.(valueToCheck) ?? false;
 	}
 
 	function setOpen(
@@ -363,6 +373,12 @@
 		get locale() {
 			return resolvedLocale;
 		},
+		get minValue() {
+			return normalizedMinValue;
+		},
+		get maxValue() {
+			return normalizedMaxValue;
+		},
 		get triggerRef() {
 			return triggerRef;
 		},
@@ -380,7 +396,11 @@
 		typeSegmentDigit: segmentEngine.typeSegmentDigit,
 		adjustSegmentValue: segmentEngine.adjustSegmentValue,
 		isDateOutOfRange,
-		isDateUnavailable: isDateUnavailableInternal,
+		// Getter: the predicate identity changes with the bounds (see the
+		// `isDateUnavailableInternal` derived above).
+		get isDateUnavailable() {
+			return isDateUnavailableInternal;
+		},
 		getSegments,
 		getSegmentValue: segmentEngine.getSegmentValue,
 		setSegmentValue: segmentEngine.setSegmentValue,

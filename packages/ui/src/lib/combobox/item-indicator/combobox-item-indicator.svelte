@@ -24,7 +24,11 @@
 	let { children, forceMount = false, ...restProps }: ComboBoxItemIndicatorProps = $props();
 
 	const comboboxCtx = useComboBoxContext();
-	const itemCtx = getContext<ComboBoxItemContext>(COMBOBOX_ITEM_CONTEXT_KEY);
+	const itemCtx = getContext<ComboBoxItemContext | undefined>(COMBOBOX_ITEM_CONTEXT_KEY);
+
+	if (!itemCtx) {
+		throw new Error('ComboBox.ItemIndicator must be used within a ComboBox.Item');
+	}
 
 	const isSelected = $derived(comboboxCtx.selectedValue.has(itemCtx.id));
 	const shouldRender = $derived(forceMount || isSelected);

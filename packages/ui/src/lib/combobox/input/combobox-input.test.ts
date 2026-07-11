@@ -54,9 +54,16 @@ describe('ComboBox.Input', () => {
 			await expect.element(input).toHaveAttribute('aria-haspopup', 'listbox');
 		});
 
-		it('has aria-controls pointing to listbox', async () => {
+		it('has aria-controls pointing to listbox only while expanded', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
+
+			// Closed: the listbox is not in the DOM, so aria-controls must be absent.
+			expect(input.element().hasAttribute('aria-controls')).toBe(false);
+
+			await input.click();
+			await userEvent.keyboard('{ArrowDown}');
+			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
 
 			const ariaControls = input.element().getAttribute('aria-controls');
 			expect(ariaControls).toMatch(/^combobox-listbox-/);

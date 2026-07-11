@@ -113,7 +113,7 @@ describe('Tree.Item', () => {
 	it('updates disabled semantics when the disabled prop changes after mount', async () => {
 		const screen = render(TreeItemDisabledTest);
 		const reports = document.querySelector<HTMLElement>(
-			'[role="treeitem"][id="tree-item-reports"]'
+			'[role="treeitem"][id$="tree-item-reports"]'
 		);
 
 		if (!reports) throw new Error('Reports treeitem not found');

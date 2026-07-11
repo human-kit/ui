@@ -3,9 +3,9 @@
 ## Description
 
 `Dropzone` is a headless file-drop surface. It renders a focusable `<button>` plus a
-visually-hidden `<input type="file">`, so files can be selected by click/keyboard or by
-drag-and-drop, and emits the accepted native `File`s. It is encoding-agnostic — consumers
-own how files are stored or rendered.
+visually-hidden `<input type="file">`, so files can be selected by click/keyboard, by
+drag-and-drop, or by pasting from the clipboard, and emits the accepted native `File`s.
+It is encoding-agnostic — consumers own how files are stored or rendered.
 
 ## Anatomy
 
@@ -26,14 +26,17 @@ own how files are stored or rendered.
 
 ## Usage guidelines
 
-- Read picked files from `onFilesPicked: (files: File[]) => void`. It fires for both the file
-  picker and a drop, after filtering by `accept`.
-- `accept` is forwarded to the native input and also filters dropped files (the native picker
-  cannot enforce `accept` on drop).
+- Read picked files from `onFilesPicked: (files: File[]) => void`. It fires for the file
+  picker, a drop, and a clipboard paste while the zone is focused, after filtering by `accept`.
+- `accept` is forwarded to the native input and also filters dropped/pasted files (the native
+  picker cannot enforce `accept` on drop). Files with an empty MIME type only match extension
+  tokens (`.ext`), so include the extensions you care about alongside MIME types.
+- Directory drops are excluded when the browser exposes `webkitGetAsEntry`; otherwise the
+  drop falls back to `dataTransfer.files` as before.
 - `multiple` allows selecting/dropping more than one file; when false only the first is emitted.
 - Style interaction state with `data-drop-target`, `data-focus-visible`, `data-hovered`, and
-  `data-disabled`. The `children` snippet also receives `{ dragging, focused, focusVisible,
-disabled }`.
+  `data-disabled`. The `children` snippet also receives `{ dragging, hovered, focused,
+focusVisible, disabled }`.
 - Feed `announcement` with a short result message (e.g. `"2 archivos agregados"`) so screen
   reader users hear the outcome of a drop, which does not move focus on its own.
 

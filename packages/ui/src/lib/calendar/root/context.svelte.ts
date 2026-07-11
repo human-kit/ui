@@ -49,6 +49,8 @@ export type CreateCalendarContextOptions<
 	monthHeadingStyle?: CalendarMonthHeadingStyle;
 	isDisabled?: boolean;
 	isReadOnly?: boolean;
+	minValue?: CalendarDateValue;
+	maxValue?: CalendarDateValue;
 	value?: CalendarValueBySelectionMode<TSelectionMode> | null;
 	defaultValue?: CalendarValueBySelectionMode<TSelectionMode>;
 	isDateUnavailable?: (date: CalendarDateValue) => boolean;
@@ -86,6 +88,10 @@ export type CalendarContext = {
 	isDateUnavailable: (date: CalendarDateValue) => boolean;
 	isDateDisabled: (date: CalendarDateValue) => boolean;
 	isOutsideVisibleRange: (date: CalendarDateValue, monthIndex: number) => boolean;
+	/** True when the previous page (all `visibleMonths` before the current one) is entirely before `minValue`. */
+	isPreviousPageDisabled: boolean;
+	/** True when the next page (all `visibleMonths` after the current one) is entirely after `maxValue`. */
+	isNextPageDisabled: boolean;
 	setFocusedValue: (date: CalendarDateValue) => void;
 	setFocusVisible: (visible: boolean) => void;
 	consumeFocusRequest: (version: number) => boolean;
@@ -113,6 +119,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	const initialMonthHeadingStyle = options.monthHeadingStyle ?? 'composed';
 	const initialUnavailableFn = options.isDateUnavailable;
 
+	function normalizeBoundValue(bound: CalendarDateValue | undefined): CalendarDateValue | undefined {
+		return bound && isValidCalendarDateValue(bound) ? bound : undefined;
+	}
+
+	const initialMinValue = normalizeBoundValue(options.minValue);
+	const initialMaxValue = normalizeBoundValue(options.maxValue);
+
 	let selectionMode = $state(initialSelectionMode);
 	let visibleMonths = $state(initialVisibleMonths);
 	let showOutsideDays = $state(initialShowOutsideDays);
@@ -122,7 +135,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	let isDisabled = $state(options.isDisabled ?? false);
 	let isReadOnly = $state(options.isReadOnly ?? false);
 	let isDateUnavailable = $state(initialUnavailableFn);
+	let minValue = $state(initialMinValue);
+	let maxValue = $state(initialMaxValue);
 	let onChange = options.onChange;
+
+	const parsedMinValue = $derived(minValue ? parseCalendarDate(minValue) : null);
+	const parsedMaxValue = $derived(maxValue ? parseCalendarDate(maxValue) : null);
 
 	const { value, defaultValue } = options;
 
@@ -265,6 +283,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	// Prop-sync guards: previous external inputs, compared inside `sync` so
 	// parent rerenders with unchanged values do not reset internal state.
 	let previousUnavailableFn = initialUnavailableFn;
+	let previousMinValue = initialMinValue;
+	let previousMaxValue = initialMaxValue;
 	let previousValue = snapshotExternalValue(value);
 	let previousDefaultValue = snapshotExternalValue(defaultValue);
 	let previousVisibleMonths = initialVisibleMonths;
@@ -350,9 +370,13 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		const nextFirstDayOfWeek = next.firstDayOfWeek;
 		const nextMonthHeadingStyle = next.monthHeadingStyle ?? 'composed';
 		const nextUnavailableFn = next.isDateUnavailable;
+		const nextMinValue = normalizeBoundValue(next.minValue);
+		const nextMaxValue = normalizeBoundValue(next.maxValue);
 
 		if (
 			nextUnavailableFn !== previousUnavailableFn ||
+			nextMinValue !== previousMinValue ||
+			nextMaxValue !== previousMaxValue ||
 			nextVisibleMonths !== previousVisibleMonths ||
 			nextShowOutsideDays !== previousShowOutsideDays ||
 			nextLocale !== previousLocale ||
@@ -363,6 +387,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		}
 
 		previousUnavailableFn = nextUnavailableFn;
+		previousMinValue = nextMinValue;
+		previousMaxValue = nextMaxValue;
 		previousVisibleMonths = nextVisibleMonths;
 		previousShowOutsideDays = nextShowOutsideDays;
 		previousLocale = nextLocale;
@@ -390,6 +416,8 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		isDisabled = next.isDisabled ?? false;
 		isReadOnly = next.isReadOnly ?? false;
 		isDateUnavailable = nextUnavailableFn;
+		minValue = nextMinValue;
+		maxValue = nextMaxValue;
 		onChange = next.onChange;
 
 		const nextValue = next.value;
@@ -519,6 +547,22 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		return addMonths(lastVisibleMonthStart, 1);
 	}
 
+	// The previous page is entirely out of range when every one of its days is
+	// before `minValue`, i.e. when `minValue` falls on or after the first day of
+	// the current page (dates are day-granular).
+	const isPreviousPageDisabled = $derived.by(() => {
+		if (!parsedMinValue) return false;
+		return compareDates(parsedMinValue, startOfMonth(currentVisibleMonth)) >= 0;
+	});
+
+	// The next page is entirely out of range when every one of its days is after
+	// `maxValue`, i.e. when `maxValue` is before the first day of the next page.
+	const isNextPageDisabled = $derived.by(() => {
+		if (!parsedMaxValue) return false;
+		const nextPageStart = addMonths(startOfMonth(currentVisibleMonth), visibleMonths);
+		return compareDates(parsedMaxValue, nextPageStart) < 0;
+	});
+
 	function ensureVisible(dateValue: CalendarDateValue) {
 		const date = parseCalendarDate(dateValue);
 		if (!date) return;
@@ -565,12 +609,24 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		return isValueInsideRange(date, getEffectiveRange());
 	}
 
+	function isOutOfBounds(date: CalendarDateValue): boolean {
+		if (!parsedMinValue && !parsedMaxValue) return false;
+		const parsed = parseCalendarDate(date);
+		if (!parsed) return false;
+		if (parsedMinValue && compareDates(parsed, parsedMinValue) < 0) return true;
+		if (parsedMaxValue && compareDates(parsed, parsedMaxValue) > 0) return true;
+		return false;
+	}
+
 	function isUnavailable(date: CalendarDateValue): boolean {
 		if (unavailableCache.has(date)) {
 			return unavailableCache.get(date)!;
 		}
 
-		const result = isDateUnavailable?.(date) ?? false;
+		// Dates outside [minValue, maxValue] report unavailable, merged with the
+		// user-provided predicate. The cache is cleared whenever the bounds or the
+		// predicate identity change (see `syncExternal`).
+		const result = isOutOfBounds(date) || (isDateUnavailable?.(date) ?? false);
 		unavailableCache.set(date, result);
 		return result;
 	}
@@ -709,19 +765,21 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	}
 
 	function goToNextPage() {
+		if (isNextPageDisabled) return;
 		currentVisibleMonth = startOfMonth(addMonths(currentVisibleMonth, visibleMonths));
 		const focused = parseCalendarDate(currentFocused);
 		if (focused) {
-			currentFocused = formatCalendarDate(addMonths(focused, visibleMonths));
+			currentFocused = clampDateToBounds(formatCalendarDate(addMonths(focused, visibleMonths)));
 		}
 		clearUnavailableCache();
 	}
 
 	function goToPreviousPage() {
+		if (isPreviousPageDisabled) return;
 		currentVisibleMonth = startOfMonth(addMonths(currentVisibleMonth, -visibleMonths));
 		const focused = parseCalendarDate(currentFocused);
 		if (focused) {
-			currentFocused = formatCalendarDate(addMonths(focused, -visibleMonths));
+			currentFocused = clampDateToBounds(formatCalendarDate(addMonths(focused, -visibleMonths)));
 		}
 		clearUnavailableCache();
 	}
@@ -776,9 +834,20 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		return focusableValue;
 	}
 
+	// Keyboard month navigation (PageUp/Down, arrows across months) clamps at
+	// the bounds: focus lands on the nearest in-range date instead of walking
+	// into fully-disabled months.
+	function clampDateToBounds(targetDate: CalendarDateValue): CalendarDateValue {
+		const parsed = parseCalendarDate(targetDate);
+		if (!parsed) return targetDate;
+		if (minValue && parsedMinValue && compareDates(parsed, parsedMinValue) < 0) return minValue;
+		if (maxValue && parsedMaxValue && compareDates(parsed, parsedMaxValue) > 0) return maxValue;
+		return targetDate;
+	}
+
 	function findFocusableDate(targetDate: CalendarDateValue): CalendarDateValue | undefined {
 		if (isDisabled) return undefined;
-		return targetDate;
+		return clampDateToBounds(targetDate);
 	}
 
 	function handleCellKeydown(event: KeyboardEvent, date: CalendarDateValue) {
@@ -859,6 +928,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				break;
 			case 'Enter':
 			case ' ':
+			// Legacy key value emitted by some older browsers/IMEs; kept in sync
+			// with the body-cell press-state handling, which accepts it too.
+			case 'Spacebar':
 				event.preventDefault();
 				setFocusVisible(true);
 				if (
@@ -934,6 +1006,12 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 		},
 		getWeekdayLabels(weekdayStyle: CalendarWeekdayStyle = 'short') {
 			return getWeekdayLabels(locale, resolvedFirstDayOfWeek, weekdayStyle);
+		},
+		get isPreviousPageDisabled() {
+			return isPreviousPageDisabled;
+		},
+		get isNextPageDisabled() {
+			return isNextPageDisabled;
 		},
 		isSelected,
 		isRangeStart,

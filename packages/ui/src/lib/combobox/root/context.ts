@@ -60,6 +60,12 @@ export type ComboBoxContext<T extends object = object> = {
 	focusedItemId: string | number | null;
 	/** Registered item IDs for navigation */
 	itemIds: (string | number)[];
+	/**
+	 * Number of items currently visible after filtering, including
+	 * disabled-but-visible items (used by ComboBox.Status). This can differ from
+	 * `itemIds.length`, which only tracks navigable (enabled) items.
+	 */
+	visibleCount: number;
 	/** Item labels map for selection display */
 	itemLabels: Map<string | number, string>;
 	/** Persistent labels for selected items (not cleared on item unregister) */
@@ -104,6 +110,10 @@ export type ComboBoxContext<T extends object = object> = {
 	registerItem: (id: string | number, label: string) => void;
 	/** Unregister an item */
 	unregisterItem: (id: string | number) => void;
+	/** Register a visible item (independent of disabled state) for counting. */
+	registerVisibleItem: (id: string | number) => void;
+	/** Unregister a visible item. */
+	unregisterVisibleItem: (id: string | number) => void;
 	/** Register an action item that should activate instead of selecting. */
 	registerItemAction: (id: string | number, registration: ComboBoxItemActionRegistration) => void;
 	/** Unregister an action item. */

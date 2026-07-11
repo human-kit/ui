@@ -564,4 +564,136 @@ describe('Calendar', () => {
 		pressKey(document.activeElement!, 'PageUp');
 		await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-09');
 	});
+
+	it('selects a date with the legacy Spacebar key value', async () => {
+		render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const dayCell = getGridCellByDate('2026-02-10').element()!;
+
+		dayCell.focus();
+		pressKey(dayCell, 'Spacebar');
+
+		await expect
+			.poll(() =>
+				document.querySelector('[role="button"][data-selected]')?.getAttribute('data-date')
+			)
+			.toBe('2026-02-10');
+	});
+
+	it('keeps a single roving focus target when showOutsideDays duplicates a date across grids', async () => {
+		render(CalendarRootTest, {
+			defaultValue: '2026-05-31',
+			visibleMonths: 2,
+			showOutsideDays: true,
+			firstDayOfWeek: 'sun'
+		});
+
+		// 2026-05-31 renders in the May grid (inside month) and again in the
+		// June grid as an outside day.
+		const duplicated = document.querySelectorAll('[role="button"][data-date="2026-05-31"]');
+		expect(duplicated.length).toBe(2);
+
+		const rovingTargets = Array.from(duplicated).filter(
+			(cell) => cell.getAttribute('tabindex') === '0'
+		);
+		expect(rovingTargets.length).toBe(1);
+		expect(rovingTargets[0].getAttribute('data-outside-month')).toBeNull();
+	});
+
+	describe('min/max bounds', () => {
+		it('disables the next trigger when the next page is entirely after maxValue', async () => {
+			const screen = render(CalendarRootTest, {
+				defaultValue: '2026-02-10',
+				minValue: '2026-02-01',
+				maxValue: '2026-02-20'
+			});
+
+			const next = screen.getByRole('button', { name: 'Next' });
+			const previous = screen.getByRole('button', { name: 'Previous' });
+
+			await expect.element(next).toBeDisabled();
+			await expect.element(previous).toBeDisabled();
+		});
+
+		it('enables triggers while adjacent pages still intersect the bounds', async () => {
+			const screen = render(CalendarRootTest, {
+				defaultValue: '2026-02-10',
+				minValue: '2026-01-15',
+				maxValue: '2026-03-15'
+			});
+
+			const next = screen.getByRole('button', { name: 'Next' });
+			const previous = screen.getByRole('button', { name: 'Previous' });
+
+			await expect.element(next).not.toBeDisabled();
+			await expect.element(previous).not.toBeDisabled();
+
+			// After navigating to March the next page (April) is fully out of range.
+			await next.click();
+			await expect.element(next).toBeDisabled();
+			await expect.element(previous).not.toBeDisabled();
+		});
+
+		it('marks dates outside the bounds as unavailable and unselectable', async () => {
+			render(CalendarRootTest, {
+				defaultValue: '2026-02-10',
+				minValue: '2026-02-05',
+				maxValue: '2026-02-20'
+			});
+
+			expect(getGridCellByDate('2026-02-04').element()?.getAttribute('aria-disabled')).toBe('true');
+			expect(getGridCellByDate('2026-02-21').element()?.getAttribute('aria-disabled')).toBe('true');
+			expect(getGridCellByDate('2026-02-12').element()?.getAttribute('aria-disabled')).toBeNull();
+
+			await getGridCellByDate('2026-02-21').click();
+			expect(
+				document.querySelector('[role="button"][data-selected][data-date="2026-02-21"]')
+			).toBeFalsy();
+		});
+
+		it('merges bounds with a custom isDateUnavailable predicate', async () => {
+			render(CalendarRootTest, {
+				defaultValue: '2026-02-10',
+				maxValue: '2026-02-20',
+				isDateUnavailable: (date: string) => date === '2026-02-12'
+			});
+
+			expect(getGridCellByDate('2026-02-12').element()?.getAttribute('aria-disabled')).toBe('true');
+			expect(getGridCellByDate('2026-02-21').element()?.getAttribute('aria-disabled')).toBe('true');
+			expect(getGridCellByDate('2026-02-13').element()?.getAttribute('aria-disabled')).toBeNull();
+		});
+
+		it('keeps focus on maxValue when PageDown would move past the bound', async () => {
+			render(CalendarRootTest, {
+				defaultValue: '2026-02-20',
+				maxValue: '2026-02-20'
+			});
+			const day = getGridCellByDate('2026-02-20');
+			const dayElement = day.element()!;
+
+			dayElement.focus();
+			pressKey(dayElement, 'PageDown');
+
+			await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-20');
+		});
+
+		it('clamps arrow navigation to the nearest in-range date at the bounds', async () => {
+			render(CalendarRootTest, {
+				defaultValue: '2026-02-20',
+				minValue: '2026-02-05',
+				maxValue: '2026-02-20'
+			});
+			const day = getGridCellByDate('2026-02-20');
+			const dayElement = day.element()!;
+
+			dayElement.focus();
+			pressKey(dayElement, 'ArrowRight');
+			await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-20');
+
+			pressKey(document.activeElement!, 'PageUp');
+			await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-05');
+
+			pressKey(document.activeElement!, 'ArrowLeft');
+			await expect.poll(() => document.activeElement?.getAttribute('data-date')).toBe('2026-02-05');
+		});
+	});
 });
