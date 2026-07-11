@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tree } from '@human-kit/ui';
+	import { Tree } from '@human-kit/svelte-components';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	type Node = { id: string; title: string; children?: Node[] };

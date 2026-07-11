@@ -24,7 +24,7 @@ A composable date range picker that pairs two segmented date inputs — start an
 
 ```svelte
 <script>
-	import { DateRangePicker } from '@human-kit/ui/daterangepicker';
+	import { DateRangePicker } from '@human-kit/svelte-components/daterangepicker';
 </script>
 
 <DateRangePicker.Root>

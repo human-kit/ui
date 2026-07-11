@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': minor
+'@human-kit/svelte-components': minor
 ---
 
 Add table row actions and selection-only disabled behavior.

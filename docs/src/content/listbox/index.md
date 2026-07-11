@@ -26,7 +26,7 @@ A headless selectable list primitive with keyboard navigation, single and multip
 
 ```svelte
 <script>
-	import { ListBox } from '@human-kit/ui';
+	import { ListBox } from '@human-kit/svelte-components';
 </script>
 
 <ListBox.Root aria-label="Options">

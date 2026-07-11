@@ -12,7 +12,7 @@
 	},
 	"dependencies": {
 		"@human-kit/markdown": "^0.3.0",
-		"@human-kit/ui": "workspace:*",
+		"@human-kit/svelte-components": "workspace:*",
 		"@sveltejs/adapter-vercel": "^6.3.1",
 		"svelte-render-scan": "^1.1.0",
 		"vite-plugin-devtools-json": "^1.0.0"

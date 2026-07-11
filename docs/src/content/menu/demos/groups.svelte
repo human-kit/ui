@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu } from '@human-kit/ui';
+	import { Menu } from '@human-kit/svelte-components';
 
 	const itemClass =
 		'flex cursor-default items-center rounded-md px-3 py-1.5 text-sm text-neutral-700 outline-none ' +

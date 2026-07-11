@@ -24,7 +24,7 @@ A single component that renders a native `<input>` (`type="text"` by default) an
 
 ```svelte
 <script>
-	import { Input } from '@human-kit/ui';
+	import { Input } from '@human-kit/svelte-components';
 </script>
 
 <Input aria-label="Email" placeholder="name@example.com" invalid={hasError} required />

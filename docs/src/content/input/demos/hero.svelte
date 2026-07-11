@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Input } from '@human-kit/ui';
+	import { Input } from '@human-kit/svelte-components';
 
 	let value = $state('');
 </script>

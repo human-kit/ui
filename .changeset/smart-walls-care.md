@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': minor
+'@human-kit/svelte-components': minor
 ---
 
 Add short helper types to the public `table` module for column-driven wrappers and consumer-defined table abstractions.

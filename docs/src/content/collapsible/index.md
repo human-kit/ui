@@ -24,7 +24,7 @@ The collapsible is assembled from three parts. `Collapsible.Root` provides the s
 
 ```svelte
 <script>
-	import { Collapsible } from '@human-kit/ui';
+	import { Collapsible } from '@human-kit/svelte-components';
 </script>
 
 <Collapsible.Root defaultOpen>

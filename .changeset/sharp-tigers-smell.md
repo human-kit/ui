@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': patch
+'@human-kit/svelte-components': patch
 ---
 
 # Table Body typing and overscan

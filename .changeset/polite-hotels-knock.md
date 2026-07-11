@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': patch
+'@human-kit/svelte-components': patch
 ---
 
 Standardize focus-visible modality behavior across overlay flows.

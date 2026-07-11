@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table, type TableSelectionKey } from '@human-kit/ui';
+	import { Table, type TableSelectionKey } from '@human-kit/svelte-components';
 	import Check from '@lucide/svelte/icons/check';
 	import Minus from '@lucide/svelte/icons/minus';
 

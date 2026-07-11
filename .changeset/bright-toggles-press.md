@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': minor
+'@human-kit/svelte-components': minor
 ---
 
 Add the new `Toggle` primitive with a single `Root` part.

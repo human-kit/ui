@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': minor
+'@human-kit/svelte-components': minor
 ---
 
 Add an `autofocus` prop to `Input` that reliably focuses the element on mount.

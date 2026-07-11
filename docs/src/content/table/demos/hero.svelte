@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table } from '@human-kit/ui';
+	import { Table } from '@human-kit/svelte-components';
 
 	const deployments = [
 		{ id: 'dep-1', service: 'Checkout API', owner: 'Infra', status: 'Healthy' },

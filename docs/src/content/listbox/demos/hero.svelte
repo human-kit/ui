@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ListBox } from '@human-kit/ui';
+	import { ListBox } from '@human-kit/svelte-components';
 
 	const fruits = [
 		{ id: 'apple', name: 'Apple' },

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Switch } from '@human-kit/ui';
+	import { Switch } from '@human-kit/svelte-components';
 
 	let submitted = $state('');
 

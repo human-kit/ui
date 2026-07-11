@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Clock } from '@human-kit/ui';
+	import { Clock } from '@human-kit/svelte-components';
 
 	let value = $state<string | null>('10:30');
 	const minValue = '09:00';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TextArea } from '@human-kit/ui';
+	import { TextArea } from '@human-kit/svelte-components';
 
 	let value = $state('TextArea renders a native multiline textbox with headless state attributes.');
 

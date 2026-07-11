@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '@human-kit/ui';
-	import { TimePicker } from '@human-kit/ui/timepicker';
+	import { LocaleProvider } from '@human-kit/svelte-components';
+	import { TimePicker } from '@human-kit/svelte-components/timepicker';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 
 	let value = $state<string | null>(null);

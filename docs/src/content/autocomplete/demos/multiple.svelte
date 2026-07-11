@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Autocomplete } from '@human-kit/ui';
+	import { Autocomplete } from '@human-kit/svelte-components';
 
 	const fruits = [
 		{ id: 'apple', name: 'Apple' },

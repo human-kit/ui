@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Calendar, LocaleProvider } from '@human-kit/ui';
+	import { Calendar, LocaleProvider } from '@human-kit/svelte-components';
 
 	let locale = $state('es-ES');
 	let value = $state('');

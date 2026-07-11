@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in improving `@human-kit/ui`. This guide
+Thanks for your interest in improving `@human-kit/svelte-components`. This guide
 covers how to get set up and the workflow we use for changes.
 
 ## Prerequisites
@@ -22,7 +22,7 @@ pnpm run dev        # start the docs/demo app
 
 ## Repository layout
 
-- `packages/ui/` — the publishable library (`@human-kit/ui`).
+- `packages/ui/` — the publishable library (`@human-kit/svelte-components`).
 - `docs/` — documentation site and interactive playground.
 - `.changeset/` — versioning and release notes.
 - `scripts/` — repo automation (PR workflow, changeset helpers, TODO linting).

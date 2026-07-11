@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check';
-	import { Checkbox } from '@human-kit/ui';
+	import { Checkbox } from '@human-kit/svelte-components';
 
 	let checked = $state(true);
 </script>

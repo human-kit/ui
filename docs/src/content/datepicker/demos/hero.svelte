@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '@human-kit/ui';
-	import { DatePicker } from '@human-kit/ui/datepicker';
+	import { LocaleProvider } from '@human-kit/svelte-components';
+	import { DatePicker } from '@human-kit/svelte-components/datepicker';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 
 	let value = $state<string | null>(null);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@human-kit/ui';
+	import { Button } from '@human-kit/svelte-components';
 	import LoaderCircle from '@lucide/svelte/icons/loader-circle';
 
 	let pending = $state(false);

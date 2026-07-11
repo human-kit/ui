@@ -26,7 +26,7 @@ Selection lives in the inner list — pass `selectionMode`, `value` / `defaultVa
 
 ```svelte
 <script>
-	import { Autocomplete } from '@human-kit/ui';
+	import { Autocomplete } from '@human-kit/svelte-components';
 </script>
 
 <Autocomplete.Root aria-label="Fruits">

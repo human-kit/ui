@@ -28,7 +28,7 @@ The checkbox is assembled from two parts. `Checkbox.Root` renders the control (a
 
 ```svelte
 <script>
-	import { Checkbox } from '@human-kit/ui';
+	import { Checkbox } from '@human-kit/svelte-components';
 </script>
 
 <Checkbox.Root aria-label="Accept terms">

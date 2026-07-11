@@ -26,7 +26,7 @@ Floating content anchored to a trigger element. It supports modal and non-modal 
 
 ```svelte
 <script>
-	import { Popover } from '@human-kit/ui';
+	import { Popover } from '@human-kit/svelte-components';
 </script>
 
 <Popover.Root>

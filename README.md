@@ -5,7 +5,7 @@ This repository contains the publishable library and the docs/demo app.
 
 ## Quick Overview
 
-- npm library: `@human-kit/ui` (in `packages/ui`).
+- npm library: `@human-kit/svelte-components` (in `packages/ui`).
 - Docs/demo app: `docs` (SvelteKit + Vite).
 - Versioning and releases: `.changeset`.
 - PR automation: `scripts/pr.sh`.
@@ -15,7 +15,7 @@ This repository contains the publishable library and the docs/demo app.
 ```text
 .
 |- packages/
-|  |- svelte/          # publishable package @human-kit/ui
+|  |- svelte/          # publishable package @human-kit/svelte-components
 |- docs/               # documentation site and playground
 |- .changeset/         # semantic versioning and release notes
 |- scripts/            # utility scripts (e.g. PR workflow)
@@ -41,14 +41,14 @@ This repository contains the publishable library and the docs/demo app.
 ## Package Installation (Consumers)
 
 ```bash
-npm install @human-kit/ui
+npm install @human-kit/svelte-components
 ```
 
 Quick usage:
 
 ```svelte
 <script lang="ts">
-	import { ComboBox, Dialog, Input, Label } from '@human-kit/ui';
+	import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
 </script>
 ```
 
@@ -84,7 +84,7 @@ Workspaces are defined in `pnpm-workspace.yaml` (`packages/*` and `docs`).
 | Script        | What it does                                                   |
 | ------------- | -------------------------------------------------------------- |
 | `dev`         | Starts the `docs` development environment using a pnpm filter. |
-| `build`       | Packages the `@human-kit/ui` library.                          |
+| `build`       | Packages the `@human-kit/svelte-components` library.                          |
 | `build:docs`  | Builds the `docs` site for production.                         |
 | `test`        | Runs library tests (`packages/ui`).                            |
 | `typecheck`   | Runs type checking for library and docs.                       |

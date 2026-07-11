@@ -26,7 +26,7 @@ All parts live inside `Dialog.Root`. `Dialog.Trigger` opens the dialog, and the 
 
 ```svelte
 <script>
-	import { Dialog } from '@human-kit/ui';
+	import { Dialog } from '@human-kit/svelte-components';
 </script>
 
 <Dialog.Root>

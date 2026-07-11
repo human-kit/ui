@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TimePicker } from '@human-kit/ui/timepicker';
+	import { TimePicker } from '@human-kit/svelte-components/timepicker';
 	import ClockIcon from '@lucide/svelte/icons/clock';
 
 	let value = $state<string | null>('09:30');

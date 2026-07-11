@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': minor
+'@human-kit/svelte-components': minor
 ---
 
 Add follow-up ComboBox and Popover improvements after the previous prerelease changeset was already consumed.

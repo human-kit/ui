@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': patch
+'@human-kit/svelte-components': patch
 ---
 
 Fix ComboBox and ListBox interaction regressions around input behavior, focus handling, and virtual focus scrolling.

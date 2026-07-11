@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TextArea } from '@human-kit/ui';
+	import { TextArea } from '@human-kit/svelte-components';
 
 	const textAreaClass =
 		'min-h-20 w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm leading-6 text-neutral-900 shadow-sm outline-none transition-all placeholder:text-neutral-400 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[invalid=true]:border-red-500 data-[invalid=true]:ring-red-500 data-[readonly=true]:cursor-default data-[readonly=true]:border-teal-500 dark:border-neutral-600 dark:bg-neutral-900 dark:text-white';

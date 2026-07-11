@@ -26,7 +26,7 @@ A composable time picker that pairs a segmented time input with a popover contai
 
 ```svelte
 <script>
-	import { TimePicker } from '@human-kit/ui/timepicker';
+	import { TimePicker } from '@human-kit/svelte-components/timepicker';
 </script>
 
 <TimePicker.Root>

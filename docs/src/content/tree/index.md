@@ -26,7 +26,7 @@ A headless hierarchical collection primitive with keyboard navigation, expansion
 
 ```svelte
 <script>
-	import { Tree } from '@human-kit/ui';
+	import { Tree } from '@human-kit/svelte-components';
 </script>
 
 <Tree.Root aria-label="Files" selectionMode="multiple">

@@ -1,5 +1,5 @@
 {
-	"name": "@human-kit/ui",
+	"name": "@human-kit/svelte-components",
 	"version": "1.0.0-alpha.22",
 	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
 	"license": "MIT",

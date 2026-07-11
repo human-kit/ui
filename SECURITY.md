@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-The latest published release of `@human-kit/ui` receives security
+The latest published release of `@human-kit/svelte-components` receives security
 updates. Older versions are not maintained.
 
 ## Reporting a vulnerability

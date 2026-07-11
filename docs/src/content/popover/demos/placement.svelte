@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Popover } from '@human-kit/ui';
-	import type { ExtendedPlacement } from '@human-kit/ui/primitives';
+	import { Popover } from '@human-kit/svelte-components';
+	import type { ExtendedPlacement } from '@human-kit/svelte-components/primitives';
 
 	const placements: ExtendedPlacement[] = ['top', 'bottom', 'left', 'right'];
 </script>

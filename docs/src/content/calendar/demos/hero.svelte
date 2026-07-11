@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Calendar } from '@human-kit/ui';
+	import { Calendar } from '@human-kit/svelte-components';
 
 	let value = $state('');
 </script>

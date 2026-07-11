@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu } from '@human-kit/ui';
+	import { Menu } from '@human-kit/svelte-components';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	const itemClass =

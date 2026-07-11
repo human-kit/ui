@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Collapsible } from '@human-kit/ui';
+	import { Collapsible } from '@human-kit/svelte-components';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 </script>
 

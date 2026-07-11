@@ -26,7 +26,7 @@ ComboBox combines text input, popover, and listbox behavior into a single access
 
 ```svelte
 <script>
-	import { ComboBox } from '@human-kit/ui';
+	import { ComboBox } from '@human-kit/svelte-components';
 </script>
 
 <ComboBox.Root>

@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': patch
+'@human-kit/svelte-components': patch
 ---
 
 Fix ListBox and ComboBox interaction state issues so keyboard focus, hover, and virtual focus stay in sync.

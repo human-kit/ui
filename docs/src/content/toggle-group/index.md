@@ -26,7 +26,7 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 
 ```svelte
 <script>
-	import { Toggle, ToggleGroup } from '@human-kit/ui';
+	import { Toggle, ToggleGroup } from '@human-kit/svelte-components';
 </script>
 
 <ToggleGroup.Root defaultValue={['bold']} selectionMode="multiple" aria-label="Text style">

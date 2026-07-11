@@ -1,5 +1,5 @@
 ---
-'@human-kit/ui': minor
+'@human-kit/svelte-components': minor
 ---
 
 Add `Menu`, an accessible dropdown / action menu following the WAI-ARIA menu button pattern.

@@ -26,7 +26,7 @@ Give every `Tabs.Tab` a unique `value` and pair it with a `Tabs.Panel` carrying 
 
 ```svelte
 <script>
-	import { Tabs } from '@human-kit/ui';
+	import { Tabs } from '@human-kit/svelte-components';
 </script>
 
 <Tabs.Root defaultValue="overview">

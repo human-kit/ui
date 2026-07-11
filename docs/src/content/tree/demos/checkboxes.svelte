@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tree } from '@human-kit/ui';
+	import { Tree } from '@human-kit/svelte-components';
 	import Check from '@lucide/svelte/icons/check';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 	import Minus from '@lucide/svelte/icons/minus';

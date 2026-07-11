@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TextArea } from '@human-kit/ui';
+	import { TextArea } from '@human-kit/svelte-components';
 
 	let growing = $state('Type more lines here and the textarea grows with the content.');
 	let fixed = $state('This textarea keeps native rows and manual resize behavior.');

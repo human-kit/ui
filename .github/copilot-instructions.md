@@ -4,7 +4,7 @@
 
 - This is a pnpm monorepo: publishable library in `packages/ui`, docs/playground app in `docs`.
 - Main public entrypoint is `packages/ui/src/lib/index.ts`; each component also has subpath exports (see `packages/ui/package.json` `exports`).
-- Docs intentionally import source, not built dist: `docs/vite.config.ts` aliases `@human-kit/ui` to `../packages/ui/src/lib`.
+- Docs intentionally import source, not built dist: `docs/vite.config.ts` aliases `@human-kit/svelte-components` to `../packages/ui/src/lib`.
 
 ## Core Dev Workflows
 
