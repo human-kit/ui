@@ -101,11 +101,11 @@
 {#if headings.length > 0}
 	<nav aria-label={label} class="text-sm">
 		<h4
-			class="text-xs font-semibold tracking-wide text-neutral-400 uppercase dark:text-neutral-500"
+			class="text-xs font-semibold tracking-wide text-muted-foreground uppercase"
 		>
 			{label}
 		</h4>
-		<ul class="mt-3 space-y-1.5 border-l border-neutral-200 dark:border-neutral-800">
+		<ul class="mt-3 space-y-1.5 border-l border-border">
 			{#each headings as heading (heading.id)}
 				<li>
 					<a
@@ -113,8 +113,8 @@
 						class="-ml-px block border-l py-0.5 transition-colors {heading.depth === 3
 							? 'pl-7'
 							: 'pl-4'} {activeId === heading.id
-							? 'border-neutral-900 font-medium text-neutral-900 dark:border-white dark:text-white'
-							: 'border-transparent text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200'}"
+							? 'border-foreground font-medium text-foreground'
+							: 'border-transparent text-muted-foreground hover:text-foreground'}"
 					>
 						{heading.text}
 					</a>

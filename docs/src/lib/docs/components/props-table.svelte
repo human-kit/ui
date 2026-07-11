@@ -9,25 +9,25 @@
 	let { part, props }: Props = $props();
 </script>
 
-<div class="not-prose overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+<div class="not-prose overflow-x-auto rounded-lg border border-border">
 	<table class="w-full border-collapse text-sm">
 		<thead>
-			<tr class="border-b border-neutral-200 text-left dark:border-neutral-800">
-				<th class="px-3 py-2 font-semibold text-neutral-900 dark:text-white">Prop</th>
-				<th class="px-3 py-2 font-semibold text-neutral-900 dark:text-white">Type</th>
-				<th class="px-3 py-2 font-semibold text-neutral-900 dark:text-white">Default</th>
-				<th class="px-3 py-2 font-semibold text-neutral-900 dark:text-white">Description</th>
+			<tr class="border-b border-border text-left">
+				<th class="px-3 py-2 font-semibold text-foreground">Prop</th>
+				<th class="px-3 py-2 font-semibold text-foreground">Type</th>
+				<th class="px-3 py-2 font-semibold text-foreground">Default</th>
+				<th class="px-3 py-2 font-semibold text-foreground">Description</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each props as prop (prop.name)}
 				<tr
 					id="{part}-{prop.name}"
-					class="border-b border-neutral-100 last:border-b-0 dark:border-neutral-800/60"
+					class="border-b border-border-subtle last:border-b-0"
 				>
 					<td class="px-3 py-2 align-top whitespace-nowrap">
 						<code
-							class="rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100"
+							class="rounded bg-accent px-1.5 py-0.5 text-xs text-foreground"
 						>
 							{prop.name}{prop.required ? '*' : ''}
 						</code>
@@ -37,12 +37,12 @@
 					</td>
 					<td class="px-3 py-2 align-top whitespace-nowrap">
 						{#if prop.default !== null}
-							<code class="text-xs text-neutral-600 dark:text-neutral-400">{prop.default}</code>
+							<code class="text-xs text-muted-foreground">{prop.default}</code>
 						{:else}
-							<span class="text-neutral-400 dark:text-neutral-600">—</span>
+							<span class="text-muted-foreground">—</span>
 						{/if}
 					</td>
-					<td class="min-w-48 px-3 py-2 align-top text-neutral-600 dark:text-neutral-400">
+					<td class="min-w-48 px-3 py-2 align-top text-muted-foreground">
 						{prop.description}
 					</td>
 				</tr>

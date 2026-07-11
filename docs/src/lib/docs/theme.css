@@ -7,12 +7,105 @@
    in app.html. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Semantic design tokens (shadcn-style). Name the *intent* here; the raw
+ * neutral shade lives in ONE place and dark mode is resolved once per token,
+ * so components never repeat a `dark:` variant or hardcode a scale number.
+ *
+ * `@theme inline` (below) exposes each token as a Tailwind color utility:
+ *   --color-border        -> border-border
+ *   --color-muted         -> bg-muted
+ *   --color-foreground    -> text-foreground
+ *   --color-muted-foreground -> text-muted-foreground   (etc.)
+ */
 :root {
 	color-scheme: light;
+
+	--background: var(--color-white);
+	--surface: var(--color-white);
+	--muted: var(--color-neutral-50);
+	--accent: var(--color-neutral-100);
+	--border: var(--color-neutral-200);
+	--border-subtle: var(--color-neutral-100);
+	--foreground: var(--color-neutral-900);
+	--muted-foreground: var(--color-neutral-500);
+	--subtle-foreground: var(--color-neutral-700);
+	--link: var(--color-blue-600);
+
+	/* Button system (ported from celagem-svelte, dark values designed here). */
+	--primary: oklch(0.59 0.2 277);
+	--primary-foreground: oklch(0.985 0 0);
+	/* Elevation scale: depth-0 is the base surface; higher steps read as more
+	   inset/recessed in light. Dark inverts (higher = lighter) below. */
+	--depth-0: oklch(0.985 0 0);
+	--depth-1: oklch(0.975 0 0);
+	--depth-2: oklch(0.965 0 0);
+	--depth-3: oklch(0.955 0 0);
+	--depth-4: oklch(0.94 0 0);
+	/* Inner edges that give the raised/sunken (neumorphic) look. */
+	--raised-highlight: oklch(1 0 0 / 0.65);
+	--sunken-shadow: oklch(0 0 0 / 0.05);
 }
 
 .dark {
 	color-scheme: dark;
+
+	--background: var(--color-neutral-950);
+	--surface: var(--color-neutral-950);
+	--muted: var(--color-neutral-900);
+	--accent: var(--color-neutral-800);
+	--border: var(--color-neutral-800);
+	--border-subtle: var(--color-neutral-800);
+	--foreground: var(--color-white);
+	--muted-foreground: var(--color-neutral-400);
+	--subtle-foreground: var(--color-neutral-300);
+	--link: var(--color-blue-400);
+
+	--primary: oklch(0.64 0.19 277);
+	--primary-foreground: oklch(0.985 0 0);
+	/* Dark elevation: base is darkest, higher steps get lighter (Material-style). */
+	--depth-0: oklch(0.205 0 0);
+	--depth-1: oklch(0.225 0 0);
+	--depth-2: oklch(0.245 0 0);
+	--depth-3: oklch(0.265 0 0);
+	--depth-4: oklch(0.285 0 0);
+	/* Faint top highlight + deeper inset so the effect survives on dark surfaces. */
+	--raised-highlight: oklch(1 0 0 / 0.06);
+	--sunken-shadow: oklch(0 0 0 / 0.35);
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-surface: var(--surface);
+	--color-muted: var(--muted);
+	--color-accent: var(--accent);
+	--color-border: var(--border);
+	--color-border-subtle: var(--border-subtle);
+	--color-foreground: var(--foreground);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-subtle-foreground: var(--subtle-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-depth-0: var(--depth-0);
+	--color-depth-1: var(--depth-1);
+	--color-depth-2: var(--depth-2);
+	--color-depth-3: var(--depth-3);
+	--color-depth-4: var(--depth-4);
+}
+
+/*
+ * Neumorphic surface utilities used by the button recipe. celagem derived these
+ * from its (light-only) background/foreground; here they use dedicated tokens so
+ * the raised highlight and sunken inset both read correctly in dark mode.
+ */
+@utility raised {
+	box-shadow: inset 0 1px 1px var(--raised-highlight);
+}
+
+@utility sunken {
+	box-shadow:
+		inset 0 1px 2px var(--sunken-shadow),
+		inset 0 0 0 1px var(--sunken-shadow);
 }
 
 /* Shiki dual-theme: light vars by default, dark vars under .dark */
@@ -33,18 +126,14 @@
 	.hd-prose {
 		font-size: 0.9375rem;
 		line-height: 1.7;
-		color: var(--color-neutral-700);
-	}
-
-	.dark .hd-prose {
-		color: var(--color-neutral-300);
+		color: var(--subtle-foreground);
 	}
 
 	.hd-prose h1 {
 		font-size: 1.875rem;
 		font-weight: 700;
 		letter-spacing: -0.025em;
-		color: var(--color-neutral-900);
+		color: var(--foreground);
 		scroll-margin-top: 5rem;
 	}
 
@@ -54,7 +143,7 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		letter-spacing: -0.015em;
-		color: var(--color-neutral-900);
+		color: var(--foreground);
 		scroll-margin-top: 5rem;
 	}
 
@@ -63,14 +152,8 @@
 		margin-bottom: 0.5rem;
 		font-size: 1.0625rem;
 		font-weight: 600;
-		color: var(--color-neutral-900);
+		color: var(--foreground);
 		scroll-margin-top: 5rem;
-	}
-
-	.dark .hd-prose h1,
-	.dark .hd-prose h2,
-	.dark .hd-prose h3 {
-		color: var(--color-white);
 	}
 
 	.hd-prose ul,
@@ -92,29 +175,21 @@
 	}
 
 	.hd-prose a {
-		color: var(--color-blue-600);
+		color: var(--link);
 		text-decoration: underline;
 		text-underline-offset: 2px;
 	}
 
-	.dark .hd-prose a {
-		color: var(--color-blue-400);
-	}
-
 	.hd-prose :not(pre)>code {
 		font-size: 0.875em;
-		background-color: var(--color-neutral-100);
+		background-color: var(--accent);
 		padding: 0.125rem 0.375rem;
 		border-radius: 0.375rem;
 	}
 
-	.dark .hd-prose :not(pre)>code {
-		background-color: var(--color-neutral-800);
-	}
-
 	.hd-prose pre.shiki {
 		margin-top: 1rem;
-		border: 1px solid var(--color-neutral-200);
+		border: 1px solid var(--border);
 		border-radius: 0.75rem;
 		padding: 1rem;
 		overflow-x: auto;
@@ -122,17 +197,9 @@
 		line-height: 1.6;
 	}
 
-	.dark .hd-prose pre.shiki {
-		border-color: var(--color-neutral-800);
-	}
-
 	.hd-prose hr {
 		margin-top: 2.5rem;
-		border-color: var(--color-neutral-200);
-	}
-
-	.dark .hd-prose hr {
-		border-color: var(--color-neutral-800);
+		border-color: var(--border);
 	}
 
 	.hd-prose table {
@@ -144,22 +211,13 @@
 	.hd-prose th {
 		text-align: left;
 		font-weight: 600;
-		color: var(--color-neutral-900);
+		color: var(--foreground);
 		padding: 0.5rem 0.75rem;
-		border-bottom: 1px solid var(--color-neutral-200);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.hd-prose td {
 		padding: 0.5rem 0.75rem;
-		border-bottom: 1px solid var(--color-neutral-100);
-	}
-
-	.dark .hd-prose th {
-		color: var(--color-white);
-		border-bottom-color: var(--color-neutral-700);
-	}
-
-	.dark .hd-prose td {
-		border-bottom-color: var(--color-neutral-800);
+		border-bottom: 1px solid var(--border-subtle);
 	}
 }

@@ -16,7 +16,7 @@
 	{#each nav as group (group.label)}
 		<div>
 			<h4
-				class="px-3 text-xs font-semibold tracking-wide text-neutral-400 uppercase dark:text-neutral-500"
+				class="px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
 			>
 				{group.label}
 			</h4>
@@ -35,8 +35,8 @@
 							{href}
 							aria-current={active ? 'page' : undefined}
 							class="block rounded-md px-3 py-1.5 text-sm transition-colors {active
-								? 'bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white'
-								: 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-200'}"
+								? 'bg-accent font-medium text-foreground'
+								: 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
 						>
 							{item.title}
 						</a>

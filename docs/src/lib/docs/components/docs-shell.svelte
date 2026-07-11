@@ -59,7 +59,7 @@
 	}: Props = $props();
 </script>
 
-<div class="min-h-screen bg-white dark:bg-neutral-950">
+<div class="min-h-screen bg-background">
 	{#if header}
 		{@render header()}
 	{:else}
@@ -68,7 +68,7 @@
 
 	<div class="mx-auto flex w-full max-w-screen-2xl">
 		<aside
-			class="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-neutral-200 md:block dark:border-neutral-800"
+			class="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border md:block"
 		>
 			{#if sidebar}
 				{@render sidebar()}
