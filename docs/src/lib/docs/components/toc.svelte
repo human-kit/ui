@@ -100,9 +100,7 @@
 
 {#if headings.length > 0}
 	<nav aria-label={label} class="text-sm">
-		<h4
-			class="text-xs font-semibold tracking-wide text-muted-foreground uppercase"
-		>
+		<h4 class="text-xs font-medium text-muted-foreground">
 			{label}
 		</h4>
 		<ul class="mt-3 space-y-1.5 border-l border-border">

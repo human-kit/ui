@@ -1,4 +1,6 @@
 <script lang="ts">
+	import '@fontsource-variable/geist';
+	import '@fontsource-variable/roboto-serif';
 	import '../app.css';
 	import { dev } from '$app/environment';
 	import { RenderScan } from 'svelte-render-scan';

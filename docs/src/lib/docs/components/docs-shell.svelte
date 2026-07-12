@@ -3,6 +3,7 @@
 	import Header from './header.svelte';
 	import Sidebar from './sidebar.svelte';
 	import Toc from './toc.svelte';
+	import { Frame } from './frame/index.js';
 	import { provideTocRegistry } from './toc-registry.svelte.js';
 	import type { NavGroup } from '../nav.js';
 
@@ -59,36 +60,37 @@
 	}: Props = $props();
 </script>
 
-<div class="min-h-screen bg-background">
+<!-- Frame layout: the chrome (header + side rails) sits at level 1, the reading
+     pane at level 0. See ./frame/recipe.ts for the structure and sticky math. -->
+<Frame.Root>
 	{#if header}
 		{@render header()}
 	{:else}
 		<Header {title} {badge} {githubUrl} {homeHref} {brand} {actions} />
 	{/if}
 
-	<div class="mx-auto flex w-full max-w-screen-2xl">
-		<aside
-			class="sticky top-10 hidden h-[calc(100vh-2.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border md:block"
-		>
+	<Frame.Body>
+		<!-- Left rail: primary navigation. -->
+		<Frame.Sidebar class="docs-scrollbar hidden w-60 md:block">
 			{#if sidebar}
 				{@render sidebar()}
 			{:else}
 				<Sidebar {nav} {basePath} />
 			{/if}
-		</aside>
+		</Frame.Sidebar>
 
-		<main class="min-w-0 flex-1 px-6 py-10 lg:px-12">
+		<!-- Center: the reading pane (level 0). -->
+		<Frame.Content>
 			{@render children()}
-		</main>
+		</Frame.Content>
 
-		<aside
-			class="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-56 shrink-0 overflow-y-auto px-4 py-10 xl:block"
-		>
+		<!-- Right rail: "on this page" outline. -->
+		<Frame.Sidebar class="docs-scrollbar hidden w-56 px-2 xl:block mx-1">
 			{#if toc}
 				{@render toc()}
 			{:else}
 				<Toc {headings} />
 			{/if}
-		</aside>
-	</div>
-</div>
+		</Frame.Sidebar>
+	</Frame.Body>
+</Frame.Root>

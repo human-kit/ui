@@ -8,7 +8,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Semantic design tokens (shadcn-style). Name the *intent* here; the raw
+ * Semantic design tokens. Name the *intent* here; the raw
  * neutral shade lives in ONE place and dark mode is resolved once per token,
  * so components never repeat a `dark:` variant or hardcode a scale number.
  *
@@ -21,8 +21,9 @@
 :root {
 	color-scheme: light;
 
-	--background: var(--color-white);
-	--surface: var(--color-white);
+	/* The page/base surface is depth-0, not pure white. */
+	--background: var(--depth-0);
+	--surface: var(--depth-0);
 	--muted: var(--color-neutral-50);
 	--accent: var(--color-neutral-100);
 	--border: var(--color-neutral-200);
@@ -35,20 +36,33 @@
 	--primary: oklch(0.59 0.2 277);
 	--primary-foreground: oklch(0.985 0 0);
 	--depth-0: oklch(0.990 0 0);
-	--depth-1: oklch(0.975 0 0);
-	--depth-2: oklch(0.965 0 0);
-	--depth-3: oklch(0.955 0 0);
-	--depth-4: oklch(0.94 0 0);
+	--depth-1: oklch(0.980 0 0);
+	--depth-2: oklch(0.970 0 0);
+	--depth-3: oklch(0.960 0 0);
+	--depth-4: oklch(0.950 0 0);
+	/* Button elevation surfaces, relative to the surface it sits on. Defaults
+	   assume a depth-0 surface; a <Surface> republishes them to its own level.
+	     --surface-bg = the surface's own depth (sunken outer-shadow lip)
+	     --raise-bg   = surface − 1, toward the top (ghost/outline hover fill)
+	     --sink-bg    = surface + 2 (pressed fill) */
+	--surface-bg: var(--depth-0);
+	--raise-bg: var(--depth-0);
+	--sink-bg: var(--depth-2);
 	/* Inner edges that give the raised/sunken (neumorphic) look. */
 	--raised-highlight: oklch(1 0 0 / 0.65);
 	--sunken-shadow: oklch(0 0 0 / 0.05);
+
+	/* Thin overlay scrollbar thumb (the nav rail). */
+	--scrollbar-thumb: oklch(0.750 0 0);
+	--scrollbar-thumb-hover: oklch(0.650 0 0);
 }
 
 .dark {
 	color-scheme: dark;
 
-	--background: var(--color-neutral-950);
-	--surface: var(--color-neutral-950);
+	/* The page/base surface is depth-0, not pure black (see the light block). */
+	--background: var(--depth-0);
+	--surface: var(--depth-0);
 	--muted: var(--color-neutral-900);
 	--accent: var(--color-neutral-800);
 	--border: var(--color-neutral-800);
@@ -60,14 +74,19 @@
 
 	--primary: oklch(0.64 0.19 277);
 	--primary-foreground: oklch(0.985 0 0);
-	/* Dark elevation: base is darkest, higher steps get lighter (Material-style). */
-	--depth-0: oklch(0.205 0 0);
-	--depth-1: oklch(0.225 0 0);
-	--depth-2: oklch(0.245 0 0);
-	--depth-3: oklch(0.265 0 0);
-	--depth-4: oklch(0.285 0 0);
+	/* Dark elevation: depth-0 sits just off pure black, higher steps get lighter.
+	   Steps are BIGGER than light's 0.01 because near black a given lightness delta
+	   reads as less contrast than the same delta near white. */
+	--depth-0: oklch(0.170 0 0);
+	--depth-1: oklch(0.210 0 0);
+	--depth-2: oklch(0.250 0 0);
+	--depth-3: oklch(0.290 0 0);
+	--depth-4: oklch(0.330 0 0);
 	--raised-highlight: oklch(1 0 0 / 0.06);
 	--sunken-shadow: oklch(0 0 0 / 0.35);
+
+	--scrollbar-thumb: oklch(0.430 0 0);
+	--scrollbar-thumb-hover: oklch(0.530 0 0);
 }
 
 /*
@@ -83,6 +102,12 @@
 	::after,
 	::backdrop {
 		border-color: var(--border);
+	}
+
+	/* Default typeset is 15px (see the `--text-*` scale in app.css). rem base is
+	   untouched, so this only affects text with no explicit size. */
+	body {
+		font-size: var(--text-base);
 	}
 }
 
@@ -106,16 +131,100 @@
 }
 
 /*
- * Neumorphic inner edges (celagem's raised/sunken). Re-expressed with dedicated
- * tokens instead of celagem's background/foreground so they read correctly in
- * dark mode too.
+ * Neumorphic elevation edges. flat / raised / sunken share the SAME 2-layer
+ * box-shadow structure (an inset edge + an outer drop). box-shadow only animates
+ * between values with a matching layer count and inset pattern, so keeping the
+ * structure identical is what lets the raise→press transition animate smoothly
+ * instead of snapping. Only the colors change between states.
  */
+@utility flat {
+	box-shadow:
+		inset 0 1px 0px transparent,
+		0 1px 2px transparent;
+}
+
 @utility raised {
-	box-shadow: inset 0 1px 1px var(--raised-highlight);
+	box-shadow:
+		inset 0 1px 0px var(--raised-highlight),
+		0 1px 0px oklch(0 0 0 / 0.05);
 }
 
 @utility sunken {
-	box-shadow: inset 0 1px 2px var(--sunken-shadow);
+	/* 2xs inset (faint dark inner edge) + outer shadow colored with surface − 1
+	   (--raise-bg) — the lip where the sunken element meets its surface.
+	   Pressed bg is the surface's own depth (--surface-bg), so the element blends
+	   into the surface and the inset + lip do the "pressed-in" work. */
+	box-shadow:
+		inset 0 1px 0px var(--sunken-shadow),
+		0 1px 0px var(--raise-bg);
+}
+
+/*
+ * Thin, rounded, always-visible scrollbar for the nav rail (opt-in via
+ * `.docs-scrollbar`), matching a Base UI-style rail. The thumb is inset with a
+ * transparent border + content-box clip so it reads as a slim pill in the gutter.
+ *
+ * IMPORTANT: only the WebKit pseudo-elements are used on Chromium/Safari — NOT
+ * the standard `scrollbar-width`/`scrollbar-color`. In Chromium 121+, setting
+ * either standard property makes the engine use the thin auto-hiding OVERLAY
+ * scrollbar and IGNORE `::-webkit-scrollbar`, which is exactly what we don't want.
+ * The standard props are applied only where `::-webkit-scrollbar` is unsupported
+ * (Firefox) via the `@supports` fallback below.
+ */
+.docs-scrollbar {
+	/* Always show the (custom, transparent) track so its 10px is reserved even
+	   with no overflow — revealing/hiding the thumb never shifts the rail's
+	   content. `overflow-y: scroll` is used instead of `scrollbar-gutter: stable`
+	   because in Chromium the latter forces the native scrollbar and disables the
+	   `::-webkit-scrollbar` styling below. */
+	overflow-y: scroll;
+	/* Thumb paint color, toggled on hover. Blink IGNORES the container's `:hover`
+	   pseudo when restyling `::-webkit-scrollbar-*` (so `.rail:hover::thumb` never
+	   repaints), but it DOES repaint when a custom property the thumb reads
+	   changes — so we drive the reveal through this variable instead. */
+	--sb-thumb: transparent;
+}
+
+.docs-scrollbar:hover {
+	--sb-thumb: var(--scrollbar-thumb);
+}
+
+.docs-scrollbar::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+.docs-scrollbar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.docs-scrollbar::-webkit-scrollbar-thumb {
+	/* Transparent at rest, revealed via `--sb-thumb` when the rail is hovered. The
+	   transparent border + content-box clip makes it read as a slim inset pill. */
+	background-color: var(--sb-thumb);
+	border-radius: 9999px;
+	border: 3px solid transparent;
+	background-clip: content-box;
+}
+
+/* Pointer directly on the thumb — Blink DOES honour `:hover` on the scrollbar
+   parts themselves, so this darker state works without the variable. */
+.docs-scrollbar::-webkit-scrollbar-thumb:hover {
+	background-color: var(--scrollbar-thumb-hover);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	/* Firefox: `overflow-y: scroll` above reserves the space; keep the thumb
+	   hidden until the rail is hovered (Firefox honours container `:hover` for the
+	   standard `scrollbar-color`). */
+	.docs-scrollbar {
+		scrollbar-width: thin;
+		scrollbar-color: transparent transparent;
+	}
+
+	.docs-scrollbar:hover {
+		scrollbar-color: var(--scrollbar-thumb) transparent;
+	}
 }
 
 /* Shiki dual-theme: light vars by default, dark vars under .dark */
@@ -131,12 +240,24 @@
 	background-color: var(--shiki-dark-bg);
 }
 
-/* Prose styles for markdown-rendered docs content */
+.hd-prose pre.shiki {
+	background-color: var(--depth-1);
+}
+
+.hd-prose pre.shiki span {
+	background-color: transparent;
+}
+
 @layer components {
 	.hd-prose {
 		font-size: 0.9375rem;
 		line-height: 1.7;
 		color: var(--subtle-foreground);
+	}
+
+	/* Titles use the serif display face. */
+	.hd-prose :is(h1, h2, h3, h4) {
+		font-family: var(--font-serif);
 	}
 
 	.hd-prose h1 {
@@ -158,7 +279,7 @@
 	}
 
 	.hd-prose h3 {
-		margin-top: 2rem;
+		margin-top: 1rem;
 		margin-bottom: 0.5rem;
 		font-size: 1.0625rem;
 		font-weight: 600;
@@ -200,7 +321,8 @@
 	.hd-prose pre.shiki {
 		margin-top: 1rem;
 		border: 1px solid var(--border);
-		border-radius: 0.75rem;
+		border-radius: 1rem;
+		corner-shape: squircle;
 		padding: 1rem;
 		overflow-x: auto;
 		font-size: 0.8125rem;

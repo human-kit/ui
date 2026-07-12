@@ -8,9 +8,12 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest",
 		"api": "hk-extract-api --lib ../packages/ui/src/lib --content src/content"
 	},
 	"dependencies": {
+		"@fontsource-variable/geist": "^5.2.9",
+		"@fontsource-variable/roboto-serif": "^5.2.9",
 		"@human-kit/markdown": "^0.3.0",
 		"@human-kit/svelte-components": "workspace:*",
 		"@lucide/svelte": "^0.574.0",

@@ -105,6 +105,12 @@ importers:
 
   docs:
     dependencies:
+      '@fontsource-variable/geist':
+        specifier: ^5.2.9
+        version: 5.2.9
+      '@fontsource-variable/roboto-serif':
+        specifier: ^5.2.9
+        version: 5.2.9
       '@human-kit/markdown':
         specifier: ^0.3.0
         version: 0.3.0(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
@@ -510,6 +516,12 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
+
+  '@fontsource-variable/geist@5.2.9':
+    resolution: {integrity: sha512-TP+QSBG3wxKGPE33CbMy/L0Nu3qvJ6Fy81Yc4LnQ95xH+i+cfEp8fyU8/kfV14YwszxIFPhnoMTbjL71waVpyQ==}
+
+  '@fontsource-variable/roboto-serif@5.2.9':
+    resolution: {integrity: sha512-C502AILLgiRZmP3mgXXJiYp8/tQ+J/XQWw/dWtlRgE9X0yziBse9VHM9pCgaWqqzkdz4JB36fc0eYz0UritJIQ==}
 
   '@human-kit/markdown@0.3.0':
     resolution: {integrity: sha512-daHQ7tYMPytrMjIzTI2Z1lyR9lvRO/84+R04c0kRpORAX8TXySKxe0WQ1bZEAKKH6SWX5nRDst/vUxrtZBeSvA==}
@@ -3178,6 +3190,10 @@ snapshots:
       '@floating-ui/utils': 0.2.11
 
   '@floating-ui/utils@0.2.11': {}
+
+  '@fontsource-variable/geist@5.2.9': {}
+
+  '@fontsource-variable/roboto-serif@5.2.9': {}
 
   '@human-kit/markdown@0.3.0(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))':
     dependencies:

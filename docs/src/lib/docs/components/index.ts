@@ -2,6 +2,7 @@ export { default as ApiReference } from './api-reference.svelte';
 export { default as DataAttributesTable } from './data-attributes-table.svelte';
 export { default as Demo } from './demo.svelte';
 export { default as DocsShell } from './docs-shell.svelte';
+export { Frame } from './frame/index.js';
 export { default as Header } from './header.svelte';
 export { default as PropsTable } from './props-table.svelte';
 export { default as Sidebar } from './sidebar.svelte';

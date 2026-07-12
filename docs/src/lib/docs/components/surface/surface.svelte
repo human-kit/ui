@@ -21,16 +21,24 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'class'> {
+	interface Props extends Omit<HTMLAttributes<HTMLElement>, 'class'> {
 		/** Override the auto-derived nesting depth (0 = top surface). */
 		level?: number;
+		/** Element to render. Defaults to a `div`; use e.g. `"header"`/`"section"`. */
+		as?: string;
 		class?: string;
-		element?: HTMLDivElement | null;
+		element?: HTMLElement | null;
 		children: Snippet;
 	}
 
-	let { level, class: className = '', element = $bindable(null), children, ...rest }: Props =
-		$props();
+	let {
+		level,
+		as = 'div',
+		class: className = '',
+		element = $bindable(null),
+		children,
+		...rest
+	}: Props = $props();
 
 	// undefined at the top of the tree → this is depth 0. Each nested Surface is
 	// its parent's depth + 1, clamped to the last available token.
@@ -43,8 +51,27 @@
 			return depth;
 		}
 	});
+
+	// Republish the elevation surfaces for this level so buttons inside a deep
+	// Surface elevate relative to it, without hardcoding a depth:
+	//   --surface-bg = this level (sunken outer-shadow lip),
+	//   --raise-bg   = one step UP toward the top surface (ghost/outline hover fill),
+	//   --sink-bg    = two steps deeper (pressed fill).
+	// Defaults live at :root for buttons outside any Surface.
+	const raiseDepth = $derived(Math.max(depth - 1, 0));
+	const sinkDepth = $derived(Math.min(depth + 2, MAX_DEPTH));
+	const elevationVars = $derived(
+		`--surface-bg: var(--depth-${depth}); --raise-bg: var(--depth-${raiseDepth}); --sink-bg: var(--depth-${sinkDepth});`
+	);
 </script>
 
-<div bind:this={element} class="{DEPTH_BG[depth]} {className}" data-depth={depth} {...rest}>
+<svelte:element
+	this={as}
+	bind:this={element}
+	class="{DEPTH_BG[depth]} {className}"
+	{...rest}
+	style={elevationVars}
+	data-depth={depth}
+>
 	{@render children()}
-</div>
+</svelte:element>

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import ThemeToggle from './theme-toggle.svelte';
+	import { Frame } from './frame/index.js';
 	import { buttonVariants } from './button/recipe';
 	import Github from './icons/github.svelte';
 
@@ -19,11 +20,9 @@
 	let { title = 'Docs', badge, githubUrl, homeHref, brand, actions }: Props = $props();
 </script>
 
-<header
-	class="sticky top-0 z-40 flex h-10 items-center justify-between border-b bg-accent/80 px-2 backdrop-blur"
->
+<Frame.Header>
 	<a
-		href={homeHref ?? `${base}/`}
+		href={homeHref ?? resolve('/')}
 		class="flex items-center gap-2 text-sm font-semibold text-foreground"
 	>
 		{#if brand}
@@ -57,4 +56,4 @@
 		{/if}
 		<ThemeToggle />
 	</div>
-</header>
+</Frame.Header>
