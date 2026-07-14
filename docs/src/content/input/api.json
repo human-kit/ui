@@ -1,0 +1,94 @@
+{
+	"component": "input",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "A native input element with modality-aware focus state and validation data attributes.",
+			"props": [
+				{
+					"name": "class",
+					"type": "ClassValue",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "disabled",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Disables the input natively."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Native readonly, also exposed as `aria-readonly`."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the value as invalid: maps to `aria-invalid` and `data-invalid`."
+				},
+				{
+					"name": "required",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Native required, also exposed as `aria-required`."
+				},
+				{
+					"name": "value",
+					"type": "HTMLInputAttributes['value']",
+					"required": false,
+					"default": null,
+					"description": "Current value. Bindable."
+				},
+				{
+					"name": "element",
+					"type": "HTMLInputElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the element has focus."
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present while the pointer is over the element."
+				},
+				{
+					"name": "data-input-root",
+					"description": "Identifies the input element."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the value is marked invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when required."
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,174 @@
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+	import {
+		createCalendarContext,
+		setCalendarContext,
+		type CalendarRangeValue,
+		type CalendarSelectionMode,
+		type CalendarValue
+	} from './context.svelte';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import {
+		isValidCalendarDateValue,
+		type CalendarDateValue,
+		type CalendarFirstDayOfWeek,
+		type CalendarMonthHeadingStyle
+	} from './date-utils';
+
+	function isRangeValue(
+		valueToCheck: CalendarValue | undefined
+	): valueToCheck is CalendarRangeValue {
+		if (!valueToCheck || typeof valueToCheck === 'string') return false;
+		return true;
+	}
+
+	function normalizeRangeValue(
+		valueToCheck: CalendarRangeValue | undefined
+	): CalendarRangeValue | undefined {
+		if (!valueToCheck) return undefined;
+		const start =
+			valueToCheck.start && isValidCalendarDateValue(valueToCheck.start)
+				? valueToCheck.start
+				: undefined;
+		const end =
+			valueToCheck.end && isValidCalendarDateValue(valueToCheck.end) ? valueToCheck.end : undefined;
+		if (!start && !end) return undefined;
+		return { start, end };
+	}
+
+	type CalendarRootProps = {
+		selectionMode?: CalendarSelectionMode;
+		visibleMonths?: number;
+		showOutsideDays?: boolean;
+		firstDayOfWeek?: CalendarFirstDayOfWeek;
+		monthHeadingStyle?: CalendarMonthHeadingStyle;
+		/** Earliest selectable date (`YYYY-MM-DD`). Earlier dates report unavailable and page/focus navigation clamps at this bound. */
+		minValue?: CalendarDateValue;
+		/** Latest selectable date (`YYYY-MM-DD`). Later dates report unavailable and page/focus navigation clamps at this bound. */
+		maxValue?: CalendarDateValue;
+		isDateUnavailable?: (date: string) => boolean;
+		disabled?: boolean;
+		readonly?: boolean;
+		children?: Snippet;
+		class?: string;
+		id?: string;
+		element?: HTMLDivElement | null;
+		'aria-label'?: string;
+	};
+
+	type CalendarRootSingleProps = CalendarRootProps & {
+		selectionMode?: 'single';
+		value?: CalendarDateValue | null;
+		defaultValue?: CalendarDateValue;
+		onChange?: (value: CalendarDateValue) => void;
+	};
+
+	type CalendarRootRangeProps = CalendarRootProps & {
+		selectionMode: 'range';
+		value?: CalendarRangeValue | null;
+		defaultValue?: CalendarRangeValue;
+		onChange?: (value: CalendarRangeValue) => void;
+	};
+
+	type CalendarRootTypedProps = CalendarRootSingleProps | CalendarRootRangeProps;
+
+	let {
+		selectionMode = 'single',
+		visibleMonths = 1,
+		showOutsideDays = false,
+		firstDayOfWeek,
+		monthHeadingStyle = 'composed',
+		minValue,
+		maxValue,
+		isDateUnavailable,
+		disabled = false,
+		readonly = false,
+		value = $bindable(),
+		defaultValue,
+		onChange,
+		children,
+		class: className = '',
+		id,
+		element = $bindable<HTMLDivElement | null>(null),
+		'aria-label': ariaLabel
+	}: CalendarRootTypedProps = $props();
+
+	let rootRef: HTMLDivElement | null = $state(null);
+
+	$effect(() => {
+		element = rootRef;
+	});
+
+	function isCalendarRangeValue(valueToCheck: CalendarValue): valueToCheck is CalendarRangeValue {
+		if (!valueToCheck || typeof valueToCheck === 'string') return false;
+		return true;
+	}
+
+	const localeContext = useLocaleContextOptional();
+	const localeStore = localeContext?.locale;
+	const localeFromContext = $derived.by(() => {
+		if (!localeStore) return undefined;
+		return $localeStore;
+	});
+	const resolvedLocale = $derived(
+		localeFromContext ?? Intl.DateTimeFormat().resolvedOptions().locale
+	);
+
+	function getSyncOptions() {
+		const normalizedDefaultValue =
+			selectionMode === 'range'
+				? normalizeRangeValue(isRangeValue(defaultValue) ? defaultValue : undefined)
+				: typeof defaultValue === 'string' && isValidCalendarDateValue(defaultValue)
+					? defaultValue
+					: undefined;
+
+		return {
+			selectionMode,
+			visibleMonths,
+			showOutsideDays,
+			locale: resolvedLocale,
+			firstDayOfWeek,
+			monthHeadingStyle,
+			minValue:
+				typeof minValue === 'string' && isValidCalendarDateValue(minValue) ? minValue : undefined,
+			maxValue:
+				typeof maxValue === 'string' && isValidCalendarDateValue(maxValue) ? maxValue : undefined,
+			isDateUnavailable,
+			isDisabled: disabled,
+			isReadOnly: readonly,
+			value,
+			defaultValue: normalizedDefaultValue,
+			onChange: (nextValue: CalendarValue) => {
+				if (selectionMode === 'range' && isCalendarRangeValue(nextValue)) {
+					(onChange as ((value: CalendarRangeValue) => void) | undefined)?.(nextValue);
+				} else if (selectionMode !== 'range' && typeof nextValue === 'string') {
+					(onChange as ((value: CalendarDateValue) => void) | undefined)?.(nextValue);
+				}
+				value = nextValue;
+			}
+		};
+	}
+
+	const context = createCalendarContext(getSyncOptions());
+
+	setCalendarContext(context);
+
+	$effect(() => {
+		context.sync(getSyncOptions());
+	});
+</script>
+
+<div
+	bind:this={rootRef}
+	{id}
+	class={className}
+	role={ariaLabel ? 'group' : undefined}
+	data-disabled={disabled || undefined}
+	data-readonly={readonly || undefined}
+	inert={disabled || undefined}
+	aria-label={ariaLabel}
+>
+	{#if children}
+		{@render children()}
+	{/if}
+</div>

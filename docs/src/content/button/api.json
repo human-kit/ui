@@ -1,0 +1,87 @@
+{
+	"component": "button",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "A native button element with pending semantics and interaction-state data attributes.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[ButtonRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content. Receives the live render state (hovered, pressed, focused, pending…) when used as a one-argument snippet."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "pending",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the button focusable while blocking activation, and announces the pending state politely."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Disables the button natively."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				},
+				{
+					"name": "pressed",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Overrides the internally tracked pressed state."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-button-live-region",
+					"description": "Identifies the internal polite live region used for pending announcements."
+				},
+				{
+					"name": "data-button-root",
+					"description": "Identifies the button element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the element has focus."
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present while the pointer is over the element."
+				},
+				{
+					"name": "data-pending",
+					"description": "Present while the button is pending: focusable but blocked from activation."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the button is actively pressed via pointer or keyboard."
+				}
+			]
+		}
+	]
+}

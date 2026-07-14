@@ -3,6 +3,8 @@ globs:
   - packages/**/*.md
 ignores:
   - '**/node_modules/**'
+  # Svelte-flavored markdown content (frontmatter + components), not plain markdown
+  - 'docs/src/content/**'
   - '**/.svelte-kit/**'
   - '**/.vercel/**'
   - '**/dist/**'

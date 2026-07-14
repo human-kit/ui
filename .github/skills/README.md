@@ -14,5 +14,5 @@ When working on a composable part (`root`, `trigger`, `content`, `item`, etc.), 
 
 When working on component-level docs or planning files, also apply:
 
-- `component-readme-base-standard.md` for `packages/svelte/src/lib/<component>/README.md`
-- `todo-standard.md` for `packages/svelte/src/lib/<component>/TODO.md`
+- `component-readme-base-standard.md` for `packages/ui/src/lib/<component>/README.md`
+- `todo-standard.md` for `packages/ui/src/lib/<component>/TODO.md`

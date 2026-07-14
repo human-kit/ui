@@ -1,0 +1,364 @@
+{
+	"component": "accordion",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "Groups all items and manages selection state and roving focus.",
+			"props": [
+				{
+					"name": "value",
+					"type": "AccordionValue[]",
+					"required": false,
+					"default": null,
+					"description": "Controlled list of open item values."
+				},
+				{
+					"name": "defaultValue",
+					"type": "AccordionValue[]",
+					"required": false,
+					"default": null,
+					"description": "Initially open item values when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: AccordionValue[]) => void",
+					"required": false,
+					"default": null,
+					"description": "Called with the new list of open item values after a user toggle."
+				},
+				{
+					"name": "selectionMode",
+					"type": "AccordionSelectionMode",
+					"required": false,
+					"default": "'single'",
+					"description": "Whether one (`'single'`) or several (`'multiple'`) panels can be open at once."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables every item in the accordion."
+				},
+				{
+					"name": "orientation",
+					"type": "AccordionOrientation",
+					"required": false,
+					"default": "'vertical'",
+					"description": "Axis used for arrow-key navigation between triggers."
+				},
+				{
+					"name": "disallowEmptySelection",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps at least one panel open at all times."
+				},
+				{
+					"name": "loop",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether trigger focus wraps at the first and last items."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "context",
+					"type": "AccordionContext",
+					"required": false,
+					"default": null,
+					"description": "Externally created accordion context, for advanced composition."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-accordion-root",
+					"description": "Identifies the root element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when disabled."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The accordion orientation: 'vertical' or 'horizontal'."
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "Wraps one collapsible section. Provides its value to Header, Trigger and Panel via context.",
+			"props": [
+				{
+					"name": "value",
+					"type": "AccordionValue",
+					"required": true,
+					"default": null,
+					"description": "Unique value identifying the item. Header, Trigger and Panel read it from context."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables this item only."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered item element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-accordion-item",
+					"description": "Identifies an item element."
+				},
+				{
+					"name": "data-accordion-value",
+					"description": "The item value, serialized as a string."
+				},
+				{
+					"name": "data-accordion-value-type",
+					"description": "The runtime type of the item value (string or number)."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when disabled."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the item is expanded."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The accordion orientation: 'vertical' or 'horizontal'."
+				}
+			]
+		},
+		{
+			"name": "Header",
+			"description": "A real heading element (h3 by default) wrapping the trigger.",
+			"props": [
+				{
+					"name": "level",
+					"type": "1 | 2 | 3 | 4 | 5 | 6",
+					"required": false,
+					"default": "3",
+					"description": "Heading level of the rendered element, to match the surrounding document outline."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLHeadingElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered heading element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-accordion-header",
+					"description": "Identifies a header element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when disabled."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the item is expanded."
+				}
+			]
+		},
+		{
+			"name": "Trigger",
+			"description": "The button that toggles its panel. Exposes aria-expanded and aria-controls.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered trigger button."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-accordion-trigger",
+					"description": "Identifies a trigger element."
+				},
+				{
+					"name": "data-accordion-value",
+					"description": "The item value, serialized as a string."
+				},
+				{
+					"name": "data-accordion-value-type",
+					"description": "The runtime type of the item value (string or number)."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the element has focus."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the item is expanded."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The accordion orientation: 'vertical' or 'horizontal'."
+				}
+			]
+		},
+		{
+			"name": "Panel",
+			"description": "The collapsible region, hidden and inert while collapsed.",
+			"props": [
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered panel element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-accordion-panel",
+					"description": "Identifies a panel element."
+				},
+				{
+					"name": "data-accordion-panel-content",
+					"description": "Identifies the inner content wrapper used for height animation."
+				},
+				{
+					"name": "data-accordion-value",
+					"description": "The item value, serialized as a string."
+				},
+				{
+					"name": "data-accordion-value-type",
+					"description": "The runtime type of the item value (string or number)."
+				},
+				{
+					"name": "data-closed",
+					"description": "Present while the item is collapsed."
+				},
+				{
+					"name": "data-ending-style",
+					"description": "Present while the panel is collapsing, for CSS exit transitions."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the item is expanded."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The accordion orientation: 'vertical' or 'horizontal'."
+				},
+				{
+					"name": "data-starting-style",
+					"description": "Present for one frame when the panel starts expanding, for CSS transitions."
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,239 @@
+<script lang="ts">
+	import { onDestroy } from 'svelte';
+	import {
+		setTableCellContext,
+		useTableContext,
+		useTableRowContext,
+		type TableSelectionKey
+	} from '../root/context.svelte';
+	import type { TableCellProps } from '../types.js';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
+	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
+
+	let { children, class: className = '', ...restProps }: TableCellProps = $props();
+
+	const table = useTableContext();
+	const row = useTableRowContext();
+	const key = table.createInstanceToken('cell');
+
+	let element = $state<HTMLElement | undefined>(undefined);
+	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
+	row.registerCellToken(key, () => element);
+	const cellIndex = $derived.by(() => {
+		void row.cellOrderEpoch;
+		return row.getCellIndex(key);
+	});
+
+	function syncCellRegistration() {
+		if (row.section !== 'body') return;
+		table.registerCell({
+			key,
+			rowToken: row.rowToken,
+			section: 'body',
+			columnIndex: cellIndex,
+			element,
+			focusDelegate
+		});
+	}
+
+	function registerFocusDelegate(getElement: () => HTMLElement | undefined) {
+		focusDelegate = getElement;
+	}
+
+	function unregisterFocusDelegate() {
+		focusDelegate = undefined;
+	}
+
+	setTableCellContext({
+		cellKey: key,
+		registerFocusDelegate,
+		unregisterFocusDelegate
+	});
+
+	$effect(() => {
+		syncCellRegistration();
+	});
+
+	onDestroy(() => {
+		row.unregisterCellToken(key);
+		if (row.section === 'body') {
+			table.unregisterCell(key);
+		}
+	});
+
+	// Layout-cache-mediated read: depends on the layout epoch only. It must
+	// NOT gain a focus dependency (focus moves would needlessly rebuild the
+	// column layout for every cell).
+	const column = $derived.by(() => {
+		void table.layoutEpoch;
+		return cellIndex >= 0 ? table.getColumnLayoutAt(cellIndex) : undefined;
+	});
+	const resolvedColumn = $derived(column?.column);
+	const isColumnHidden = $derived(column?.isHidden ?? false);
+	const visibleColumnIndex = $derived(column?.visibleColumnIndex ?? -1);
+	const pinState = $derived.by(() => {
+		void table.layoutEpoch;
+		void table.widthEpoch;
+		const columnId = resolvedColumn?.id;
+		return columnId ? table.getColumnPinState(columnId) : null;
+	});
+	const tagName = $derived(row.section === 'body' && resolvedColumn?.isRowHeader ? 'th' : 'td');
+	const role = $derived.by(() => {
+		if (isColumnHidden) return undefined;
+		if (row.section !== 'body') return undefined;
+		return resolvedColumn?.isRowHeader ? 'rowheader' : 'gridcell';
+	});
+	// Focus/selection/disabled state is fine-grained `$state` in the context —
+	// the reads below track it directly, no version counters needed.
+	const isFocused = $derived(row.section === 'body' ? table.isCellFocused(key) : false);
+	const isFocusVisible = $derived(row.section === 'body' ? isFocused && table.focusVisible : false);
+	const isRowSelected = $derived(row.section === 'body' ? row.rowState.isSelected : false);
+	const isRowDisabled = $derived(
+		row.section === 'body'
+			? table.isRowDisabled(row.rowId as TableSelectionKey | undefined, row.isDisabled)
+			: row.isDisabled
+	);
+	const isRowSelectionDisabled = $derived(
+		row.section === 'body' ? row.rowState.isSelectionDisabled : row.isDisabled
+	);
+	const isRowActionable = $derived(row.section === 'body' ? row.rowState.isActionable : false);
+	const selectionUnavailableDescriptionId = $derived.by(() =>
+		row.section === 'body' &&
+		table.selectionMode !== 'none' &&
+		!isRowDisabled &&
+		isRowSelectionDisabled
+			? table.selectionUnavailableDescriptionId
+			: undefined
+	);
+	const isCellFocusable = $derived(row.section !== 'body' || !isRowDisabled);
+	const cellTabIndex = $derived.by(() => {
+		if (row.section !== 'body') return undefined;
+		if (isColumnHidden) return undefined;
+		if (!isCellFocusable) return undefined;
+		if (focusDelegate) return undefined;
+		if (table.focusedCellKey === null && table.getHeaderRowCount() > 0) return -1;
+		return table.isCellTabStop(key) ? 0 : -1;
+	});
+
+	function handleFocus() {
+		if (row.section !== 'body' || isRowDisabled) return;
+		table.setFocusedCell(key);
+		table.setFocusVisible(shouldShowFocusVisible(element ?? null));
+	}
+
+	function handleClick(event: MouseEvent) {
+		if (row.section !== 'body') return;
+		if (isRowDisabled) return;
+		table.focusCellByKey(key);
+		table.pressRow(
+			row.rowId as TableSelectionKey | undefined,
+			'pointer',
+			{
+				shiftKey: event.shiftKey,
+				ctrlKey: event.ctrlKey,
+				metaKey: event.metaKey,
+				altKey: event.altKey
+			},
+			row.isDisabled
+		);
+	}
+
+	function handleDoubleClick() {
+		if (row.section !== 'body') return;
+		if (isRowDisabled) return;
+		table.focusCellByKey(key);
+		table.pressRow(
+			row.rowId as TableSelectionKey | undefined,
+			'pointer-double',
+			{},
+			row.isDisabled
+		);
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		trackInteractionModality(event, element ?? null);
+		table.setFocusVisible(false);
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (row.section !== 'body') return;
+		handleTableBodyKeydown({
+			event,
+			table,
+			focusTarget: element,
+			isDisabled: isRowDisabled,
+			onHome: () => table.moveToRowStart(),
+			onEnd: () => table.moveToRowEnd(),
+			onEnter: () =>
+				table.pressRow(
+					row.rowId as TableSelectionKey | undefined,
+					'keyboard-enter',
+					{
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					},
+					row.isDisabled
+				),
+			onSpace: () =>
+				table.pressRow(
+					row.rowId as TableSelectionKey | undefined,
+					'keyboard-space',
+					{
+						shiftKey: event.shiftKey,
+						ctrlKey: event.ctrlKey,
+						metaKey: event.metaKey,
+						altKey: event.altKey
+					},
+					row.isDisabled
+				)
+		});
+	}
+</script>
+
+<svelte:element
+	this={tagName}
+	bind:this={element}
+	{role}
+	class={className}
+	tabindex={cellTabIndex}
+	scope={row.section === 'body' && resolvedColumn?.isRowHeader ? 'row' : undefined}
+	aria-colindex={!isColumnHidden && visibleColumnIndex >= 0 ? visibleColumnIndex + 1 : undefined}
+	aria-hidden={isColumnHidden ? true : undefined}
+	aria-describedby={selectionUnavailableDescriptionId}
+	aria-disabled={row.section === 'body' && isRowDisabled ? true : undefined}
+	data-focused={isFocused ? 'true' : undefined}
+	data-focus-visible={isFocusVisible ? 'true' : undefined}
+	data-actionable={isRowActionable ? 'true' : undefined}
+	data-row-selected={isRowSelected ? 'true' : undefined}
+	data-selection-disabled={row.section === 'body' &&
+	table.selectionMode !== 'none' &&
+	!isRowDisabled &&
+	isRowSelectionDisabled
+		? 'true'
+		: undefined}
+	data-disabled={isRowDisabled || undefined}
+	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
+	data-pinned={pinState?.side}
+	data-pin-edge={pinState?.isEdge ? 'true' : undefined}
+	style:box-sizing="border-box"
+	style:position={pinState ? 'sticky' : undefined}
+	style:inset-inline-start={pinState?.side === 'left' ? `${pinState.offset}px` : undefined}
+	style:inset-inline-end={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
+	style:z-index={pinState ? 1 : undefined}
+	style:display={isColumnHidden ? 'none' : 'table-cell'}
+	onfocus={row.section === 'body' ? handleFocus : undefined}
+	onclick={row.section === 'body' ? handleClick : undefined}
+	ondblclick={row.section === 'body' ? handleDoubleClick : undefined}
+	onmousedown={row.section === 'body' ? handleMouseDown : undefined}
+	onkeydown={row.section === 'body' ? handleKeyDown : undefined}
+	{...restProps}
+>
+	{#if children}
+		{@render children()}
+	{/if}
+</svelte:element>

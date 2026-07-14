@@ -6,7 +6,7 @@ Keep roadmap/backlog files consistent and CI-safe across components.
 
 ## Applies to
 
-Component-level TODO files under `packages/svelte/src/lib/**/TODO.md`.
+Component-level TODO files under `packages/ui/src/lib/**/TODO.md`.
 
 > Canonical filename: `TODO.md` (not `TODOS.md`).
 
@@ -44,4 +44,4 @@ Examples:
 - [ ] Every checkbox line matches required format.
 - [ ] New items are categorized by severity and priority.
 - [ ] Completed work is marked with `[x]`.
-- [ ] `bun run` workflow with `scripts/check-todo-format.mjs` would pass.
+- [ ] `pnpm run` workflow with `scripts/check-todo-format.mjs` would pass.

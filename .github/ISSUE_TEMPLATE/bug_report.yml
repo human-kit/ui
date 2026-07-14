@@ -1,0 +1,80 @@
+name: Bug report
+description: Report a problem with @human-kit/ui
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug report. Please fill in the details below.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: Which version of @human-kit/ui are you using?
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      description: Which component is affected (if applicable)?
+      options:
+        - Not component-specific
+        - Accordion
+        - Autocomplete
+        - Button
+        - Calendar
+        - Checkbox
+        - Clock
+        - Collapsible
+        - ComboBox
+        - DatePicker
+        - DateRangePicker
+        - Dialog
+        - Dropzone
+        - Input
+        - Label
+        - ListBox
+        - Menu
+        - NumberField
+        - OverflowRow
+        - Popover
+        - Switch
+        - Table
+        - Tabs
+        - TextArea
+        - TimePicker
+        - Toggle
+        - ToggleGroup
+        - Tree
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Steps or a minimal reproduction (a link to a repo or StackBlitz is ideal).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Svelte version, browser, OS, bundler, etc.
+    validations:
+      required: false

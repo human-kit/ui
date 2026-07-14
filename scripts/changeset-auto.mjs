@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const PACKAGE_NAME = '@human-kit/svelte-components';
+const PACKAGE_NAME = '@human-kit/ui';
 const CHANGESET_DIR = '.changeset';
 
 function run(command) {
@@ -51,7 +51,7 @@ function getChangedEntries() {
 }
 
 function hasLibrarySourceChanges(files) {
-	return files.some((filePath) => filePath.startsWith('packages/svelte/src/'));
+	return files.some((filePath) => filePath.startsWith('packages/ui/src/'));
 }
 
 function hasExistingChangeset() {
@@ -61,7 +61,7 @@ function hasExistingChangeset() {
 
 function inferBumpType(files) {
 	const touchesMainEntrypoint = files.some(
-		(filePath) => filePath === 'packages/svelte/src/lib/index.ts'
+		(filePath) => filePath === 'packages/ui/src/lib/index.ts'
 	);
 	const touchesPublicExports = files.some((filePath) =>
 		/^packages\/svelte\/src\/lib\/.+\/index\.ts$/.test(filePath)
@@ -76,9 +76,9 @@ function inferBumpType(files) {
 
 function fallbackSummary(files) {
 	const relevant = files
-		.filter((filePath) => filePath.startsWith('packages/svelte/src/lib/'))
+		.filter((filePath) => filePath.startsWith('packages/ui/src/lib/'))
 		.slice(0, 6)
-		.map((filePath) => `- Update ${filePath.replace('packages/svelte/src/lib/', '')}`);
+		.map((filePath) => `- Update ${filePath.replace('packages/ui/src/lib/', '')}`);
 
 	if (relevant.length === 0) {
 		return '- Internal maintenance updates.';
@@ -105,9 +105,7 @@ function normalizeSummary(summary) {
 
 async function generateAiSummary(files, entries, bumpType) {
 	const addedLibraryFiles = entries
-		.filter(
-			(entry) => entry.status === 'A' && entry.filePath.startsWith('packages/svelte/src/lib/')
-		)
+		.filter((entry) => entry.status === 'A' && entry.filePath.startsWith('packages/ui/src/lib/'))
 		.map((entry) => entry.filePath);
 
 	const prompt = [

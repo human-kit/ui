@@ -127,14 +127,14 @@ fi
 # Require committed-only workflow
 if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
   echo -e "${RED}✗ Uncommitted changes detected.${NC}"
-  echo "  Commit your changes first, then run: bun pr"
+  echo "  Commit your changes first, then run: pnpm pr"
   echo "  (or stash/discard local changes if they should not be included)"
   exit 1
 fi
 
 # Run formatter first and commit any resulting changes before the rest of the flow
-echo -e "${YELLOW}→ Running formatter (bun format)...${NC}"
-if ! bun run format; then
+echo -e "${YELLOW}→ Running formatter (pnpm format)...${NC}"
+if ! pnpm run format; then
   echo -e "${RED}✗ Formatter failed. Fix errors and try again.${NC}"
   exit 1
 fi
@@ -155,7 +155,7 @@ BASE_REF="origin/main"
 AHEAD_COUNT=$(git rev-list --count "${BASE_REF}..HEAD" 2>/dev/null || echo "0")
 if [[ "${AHEAD_COUNT}" == "0" ]]; then
   echo -e "${RED}✗ No committed changes ahead of ${BASE_REF}.${NC}"
-  echo "  Create at least one commit on this branch before running bun pr."
+  echo "  Create at least one commit on this branch before running pnpm pr."
   exit 1
 fi
 
@@ -187,21 +187,21 @@ echo ""
 if [[ "$SKIP_CHECKS" == false ]]; then
   echo ""
   echo -e "${YELLOW}→ Running lint...${NC}"
-  if ! bun run lint; then
+  if ! pnpm run lint; then
     echo -e "${RED}✗ Lint failed. Fix errors and try again.${NC}"
     exit 1
   fi
 
   echo ""
   echo -e "${YELLOW}→ Running typecheck...${NC}"
-  if ! bun run typecheck; then
+  if ! pnpm run typecheck; then
     echo -e "${RED}✗ Typecheck failed. Fix errors and try again.${NC}"
     exit 1
   fi
 
   echo ""
   echo -e "${YELLOW}→ Running build...${NC}"
-  if ! bun run build; then
+  if ! pnpm run build; then
     echo -e "${RED}✗ Build failed. Fix errors and try again.${NC}"
     exit 1
   fi

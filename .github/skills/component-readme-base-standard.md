@@ -6,7 +6,7 @@ Ensure each component root README provides a consistent public overview for user
 
 ## Applies to
 
-Base component README files under `packages/svelte/src/lib/<component>/README.md` (for example `calendar`, `combobox`, `popover`, `clock`, `timepicker`, `datepicker`).
+Base component README files under `packages/ui/src/lib/<component>/README.md` (for example `calendar`, `combobox`, `popover`, `clock`, `timepicker`, `datepicker`).
 
 ## Required sections
 

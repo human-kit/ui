@@ -1,0 +1,761 @@
+{
+	"component": "daterangepicker",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The stateful container. Owns the committed { start, end } range value, the popover open state, and validation shared by both inputs and the calendar.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element. Auto-generated when omitted."
+				},
+				{
+					"name": "value",
+					"type": "DateRangePickerRangeValue | null",
+					"required": false,
+					"default": null,
+					"description": "Controlled range value ({ start, end } of YYYY-MM-DD strings). Bindable. null represents the empty state."
+				},
+				{
+					"name": "defaultValue",
+					"type": "DateRangePickerRangeValue | null",
+					"required": false,
+					"default": null,
+					"description": "Initial range value when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: DateRangePickerRangeValue | null) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the committed range changes. The value stays null while the range is empty or incomplete."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables both inputs, the trigger, and the calendar."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the inputs focusable while preventing edits."
+				},
+				{
+					"name": "minValue",
+					"type": "DatePickerDateValue",
+					"required": false,
+					"default": null,
+					"description": "Earliest selectable date (YYYY-MM-DD) for both ends of the range."
+				},
+				{
+					"name": "maxValue",
+					"type": "DatePickerDateValue",
+					"required": false,
+					"default": null,
+					"description": "Latest selectable date (YYYY-MM-DD) for both ends of the range."
+				},
+				{
+					"name": "isDateUnavailable",
+					"type": "(date: DatePickerDateValue) => boolean",
+					"required": false,
+					"default": null,
+					"description": "Marks specific days as non-selectable in both the inputs and the calendar."
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled popover open state. Bindable."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial popover open state when uncontrolled."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: DateRangePickerOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the popover opens or closes; details include the reason and a cancel() escape hatch."
+				},
+				{
+					"name": "closeOnSelect",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether confirming the range in the calendar closes the popover."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "DateRangePicker parts to compose inside the root."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the range picker when no visible label is associated."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the range picker is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while any part of the range picker contains focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while a segment draft is not committable."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the calendar popover is open."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the range picker is readonly."
+				}
+			]
+		},
+		{
+			"name": "Input",
+			"description": "One segmented date input for one end of the range. Render one with part=\"start\" and one with part=\"end\"; segments render with default styling when the children snippet is omitted.",
+			"props": [
+				{
+					"name": "part",
+					"type": "DateRangePickerRangePart",
+					"required": true,
+					"default": null,
+					"description": "Which end of the range this input edits: 'start' or 'end'."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the input element so label[for] can target it. Auto-generated when omitted."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Name submitted with the form for this end of the range."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[DatePickerSegmentPart]>",
+					"required": false,
+					"default": null,
+					"description": "Renders one segment per part; receives the segment descriptor. Defaults to plain segments."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for this input, e.g. \"Start date\" or \"End date\"."
+				},
+				{
+					"name": "aria-invalid",
+					"type": "HTMLAttributes<HTMLDivElement>['aria-invalid']",
+					"required": false,
+					"default": null,
+					"description": "Overrides the invalid state exposed to assistive technology. Set automatically while the draft is not committable."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-date-range-picker-input",
+					"description": "Identifies a range picker input element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the range picker is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while a segment inside the input has focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while this input's segment draft is not committable."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the calendar popover is open."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the range picker is readonly."
+				}
+			]
+		},
+		{
+			"name": "Segment",
+			"description": "One editable or literal segment of a range end (day, month, year, or separator). Supports typing and arrow-key stepping.",
+			"props": [
+				{
+					"name": "part",
+					"type": "DateRangePickerRangePart",
+					"required": true,
+					"default": null,
+					"description": "Which end of the range the segment belongs to; must match the enclosing input's part."
+				},
+				{
+					"name": "segment",
+					"type": "DatePickerSegmentPart",
+					"required": true,
+					"default": null,
+					"description": "The segment descriptor, as received from the Input children snippet."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-date-range-picker-segment",
+					"description": "Identifies a range picker segment element."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the segment has focus."
+				},
+				{
+					"name": "data-placeholder",
+					"description": "Present while the segment shows its placeholder instead of a value."
+				},
+				{
+					"name": "data-range-part",
+					"description": "Which end of the range the segment belongs to: 'start' or 'end'."
+				},
+				{
+					"name": "data-type",
+					"description": "The segment type, e.g. 'day', 'month', 'year', or 'literal'."
+				}
+			]
+		},
+		{
+			"name": "Trigger",
+			"description": "Button that opens and closes the range calendar popover.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the button, e.g. a calendar icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the trigger has focus."
+				}
+			]
+		},
+		{
+			"name": "Popover",
+			"description": "The floating panel that hosts the range calendar. Forwards Popover.Content props (placement, offset, shouldFlip, …); open state, trigger wiring, and id are controlled internally.",
+			"props": [
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "Offset along the main axis from the anchor element."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": "'bottom'",
+					"description": "Placement relative to the anchor element."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to flip when there's insufficient space."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "Boundary element for positioning constraints."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the popover."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the popover container."
+				},
+				{
+					"name": "nonModal",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether clicking outside the popover should close it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape should close the popover."
+				},
+				{
+					"name": "shouldCloseOnBlur",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+				},
+				{
+					"name": "initialFocus",
+					"type": "FocusTrapOptions['initialFocus']",
+					"required": false,
+					"default": null,
+					"description": "Element or selector to focus first when modal trap activates."
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state (standalone mode)."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element (standalone mode)."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when open state changes (standalone mode)."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Calendar",
+			"description": "The calendar surface inside the popover, fixed to range selection. Forwards Calendar.Root props such as visibleMonths, except those controlled by DateRangePicker.Root.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Calendar parts: triggers, heading, and grid."
+				},
+				{
+					"name": "selectionMode",
+					"type": "CalendarSelectionMode",
+					"required": false,
+					"default": "'single'",
+					"description": "Selection behavior: 'single' selects one YYYY-MM-DD date, 'range' selects a { start, end } pair."
+				},
+				{
+					"name": "visibleMonths",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "How many months are rendered at once and how paging advances."
+				},
+				{
+					"name": "showOutsideDays",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether days outside the current month are shown in the grid."
+				},
+				{
+					"name": "firstDayOfWeek",
+					"type": "CalendarFirstDayOfWeek",
+					"required": false,
+					"default": null,
+					"description": "Overrides the first day of the week specified by the active locale."
+				},
+				{
+					"name": "monthHeadingStyle",
+					"type": "CalendarMonthHeadingStyle",
+					"required": false,
+					"default": "'composed'",
+					"description": "How the heading is rendered: 'composed' uses a locale-composed string, 'month-year' renders separate month and year parts."
+				},
+				{
+					"name": "isDateUnavailable",
+					"type": "(date: string) => boolean",
+					"required": false,
+					"default": null,
+					"description": "Marks specific days as non-selectable. Unavailable cells stay focusable but expose aria-disabled."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables the whole calendar, including paging triggers and day selection."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the calendar navigable while preventing selection changes."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the calendar when no visible label is associated."
+				},
+				{
+					"name": "value",
+					"type": "CalendarDateValue",
+					"required": false,
+					"default": null,
+					"description": "Controlled selected date (single mode) or range (range mode). Bindable."
+				},
+				{
+					"name": "defaultValue",
+					"type": "CalendarDateValue",
+					"required": false,
+					"default": null,
+					"description": "Initially selected date or range when uncontrolled."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: CalendarDateValue) => void",
+					"required": false,
+					"default": null,
+					"description": "Called with the new date or range after a user selection."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "TriggerPrevious",
+			"description": "Button that pages the calendar to the previous month (or set of visible months).",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the button, e.g. an icon or label."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Heading",
+			"description": "Displays the visible month heading, localized through the active locale.",
+			"props": [],
+			"dataAttributes": []
+		},
+		{
+			"name": "TriggerNext",
+			"description": "Button that pages the calendar to the next month (or set of visible months).",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the button, e.g. an icon or label."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Grid",
+			"description": "Renders one visible month as an accessible grid named after the month heading.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Grid content, typically GridHeader and GridBody."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "weekdayStyle",
+					"type": "CalendarWeekdayStyle",
+					"required": false,
+					"default": "'short'",
+					"description": "Width of the weekday header labels: 'narrow', 'short', or 'long'."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-calendar-grid",
+					"description": "Identifies the grid element."
+				},
+				{
+					"name": "data-calendar-month",
+					"description": "The ISO month (YYYY-MM) rendered by this grid."
+				}
+			]
+		},
+		{
+			"name": "GridHeader",
+			"description": "The weekday header row. Iterates the localized weekday labels and passes each to the children snippet.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[string]>",
+					"required": false,
+					"default": null,
+					"description": "Renders one header cell per weekday; receives the localized weekday label."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "HeaderCell",
+			"description": "One weekday label cell inside the grid header row.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The weekday label content."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "GridBody",
+			"description": "The day cells area. Iterates the visible days and passes each ISO date to the children snippet.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[string]>",
+					"required": false,
+					"default": null,
+					"description": "Renders one body cell per day; receives the ISO YYYY-MM-DD date."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-week",
+					"description": "Identifies a week row inside the grid body."
+				}
+			]
+		},
+		{
+			"name": "BodyCell",
+			"description": "One focusable day cell. The first selection starts the range, hover previews it, and the second selection confirms it.",
+			"props": [
+				{
+					"name": "date",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The ISO YYYY-MM-DD date this cell represents, as received from GridBody's snippet."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[string]>",
+					"required": false,
+					"default": null,
+					"description": "Custom cell content; receives the day number label. Defaults to the day number."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-date",
+					"description": "The ISO YYYY-MM-DD date of the cell."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the day cannot be selected (disabled, out of range, or unavailable)."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the cell has focus."
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present while the pointer is over the cell."
+				},
+				{
+					"name": "data-in-range",
+					"description": "Present when the day falls inside the selected or previewed range."
+				},
+				{
+					"name": "data-outside-month",
+					"description": "Present when the day belongs to an adjacent month."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the cell is actively pressed."
+				},
+				{
+					"name": "data-range-end",
+					"description": "Present on the last day of the selected or previewed range."
+				},
+				{
+					"name": "data-range-start",
+					"description": "Present on the first day of the selected or previewed range."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present when the day is part of the committed range."
+				},
+				{
+					"name": "data-today",
+					"description": "Present on today's date."
+				},
+				{
+					"name": "data-unavailable",
+					"description": "Present when isDateUnavailable marks the day as unavailable."
+				}
+			]
+		}
+	]
+}

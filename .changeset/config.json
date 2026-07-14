@@ -1,6 +1,6 @@
 {
 	"$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
-	"changelog": ["@changesets/changelog-github", { "repo": "Agustin-Delgado/svelte-components" }],
+	"changelog": ["@changesets/changelog-github", { "repo": "human-kit/ui" }],
 	"commit": false,
 	"fixed": [],
 	"linked": [],

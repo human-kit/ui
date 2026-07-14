@@ -1,0 +1,223 @@
+{
+	"component": "switch",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The switch control. Renders a span with role=\"switch\" and keeps a hidden checkbox input in sync for form integration.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the hidden input so `label[for]` can target the switch. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": null,
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Name submitted with the form when the switch is checked."
+				},
+				{
+					"name": "value",
+					"type": "string",
+					"required": false,
+					"default": "'on'",
+					"description": "Value submitted with the form when the switch is checked. Does not affect the visual state."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Associates the hidden input with a form by id."
+				},
+				{
+					"name": "checked",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled checked state. Bindable."
+				},
+				{
+					"name": "defaultChecked",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial checked state when uncontrolled."
+				},
+				{
+					"name": "onCheckedChange",
+					"type": "(checked: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the user toggles the switch."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Removes the switch from interaction and focus order."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the switch focusable while preventing state changes."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the hidden input as required for form validation."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label when no visible label is associated."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of the element that labels the switch."
+				},
+				{
+					"name": "tabindex",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Overrides the default tab order."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checked",
+					"description": "Present while the switch is on."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the switch is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the switch has focus."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the switch is actively pressed via pointer or keyboard."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the switch is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the switch is required."
+				},
+				{
+					"name": "data-switch-input",
+					"description": "Identifies the hidden native input."
+				},
+				{
+					"name": "data-switch-root",
+					"description": "Identifies the root element."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present while the switch is off."
+				}
+			]
+		},
+		{
+			"name": "Thumb",
+			"description": "The moving indicator. Mirrors the root state through data attributes for styling.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Optional content rendered inside the thumb."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checked",
+					"description": "Present while the switch is on."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the switch is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the switch has focus."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the switch is actively pressed via pointer or keyboard."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the switch is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the switch is required."
+				},
+				{
+					"name": "data-switch-thumb",
+					"description": "Identifies the thumb element."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present while the switch is off."
+				}
+			]
+		}
+	]
+}

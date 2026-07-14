@@ -1,0 +1,356 @@
+{
+	"component": "autocomplete",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "State container for the autocomplete. Owns the search query, local filtering, and virtual focus, and wires the ARIA relationship between the input and the list.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Stable ID used to generate internal ARIA IDs (recommended for SSR)."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables all user interaction."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the input focusable while preventing query and selection changes."
+				},
+				{
+					"name": "inputValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Current search query. Can be bound with bind:inputValue."
+				},
+				{
+					"name": "defaultInputValue",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "Initial query for uncontrolled mode."
+				},
+				{
+					"name": "filter",
+					"type": "AutocompleteFilter | null",
+					"required": false,
+					"default": "defaultAutocompleteFilter",
+					"description": "Local filter function. Defaults to a case-insensitive \"contains\" match.\nSet to `null` to disable local filtering (e.g. when filtering server-side)."
+				},
+				{
+					"name": "autoHighlight",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Automatically highlight the first matching item as the query changes."
+				},
+				{
+					"name": "onInputChange",
+					"type": "(value: string) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the search query changes."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Composed autocomplete parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class names for the root element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the autocomplete group."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of the element that labels the autocomplete group."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the autocomplete is disabled."
+				}
+			]
+		},
+		{
+			"name": "Input",
+			"description": "Search input with role=\"searchbox\". Keeps DOM focus while arrow keys move a virtual focus through the list via aria-activedescendant.",
+			"props": [
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label for the input."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "ID of element that labels this input."
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "ID of element that describes this input (e.g. usage instructions)."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the autocomplete is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the input has focus."
+				},
+				{
+					"name": "data-input-root",
+					"description": "Identifies the input element."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the autocomplete is readonly."
+				}
+			]
+		},
+		{
+			"name": "List",
+			"description": "The always-visible listbox of filtered options. Accepts the same selection props as ListBox.Root (selectionMode, value, defaultValue, onChange).",
+			"props": [
+				{
+					"name": "items",
+					"type": "Iterable<T>",
+					"required": false,
+					"default": null,
+					"description": "Optional items for dynamic rendering."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[T]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the list. Receives item in dynamic mode."
+				},
+				{
+					"name": "selectionBehavior",
+					"type": "'toggle' | 'replace'",
+					"required": false,
+					"default": "'toggle'",
+					"description": "How selection behaves: 'toggle' allows deselection, 'replace' always selects."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Keys of items that should be disabled and non-selectable."
+				},
+				{
+					"name": "selectionMode",
+					"type": "'single' | 'multiple'",
+					"required": false,
+					"default": "'single'",
+					"description": "Selection mode: 'single' allows one selection, 'multiple' allows many."
+				},
+				{
+					"name": "value",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Controlled value. When provided, the component is in controlled mode."
+				},
+				{
+					"name": "defaultValue",
+					"type": "Iterable<string | number>",
+					"required": false,
+					"default": null,
+					"description": "Initial selection for uncontrolled mode."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the listbox container."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": "'Options'",
+					"description": "Accessible label for the listbox. Announced by screen readers."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: Set<string | number>) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback fired when the selection changes."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Item",
+			"description": "A selectable option inside the list. Matched against the query through its textValue and exposes selection and focus state through data attributes.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string | number",
+					"required": true,
+					"default": null,
+					"description": "Unique identifier for this item. Used for selection tracking."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Text value for typeahead search. If not provided, extracted from content."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether this item is disabled and non-selectable."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class to apply to the item element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render inside the item."
+				},
+				{
+					"name": "pressed",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Override the visual pressed state. When provided, this value is used instead of internal press tracking."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "ItemIndicator",
+			"description": "Visual indicator rendered inside an item while it is selected. Defaults to a checkmark icon.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to render when selected (defaults to a checkmark icon)."
+				},
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Force the indicator to render regardless of selection state."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the indicator element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-state",
+					"description": "\"checked\" while the item is selected, \"unchecked\" otherwise."
+				}
+			]
+		},
+		{
+			"name": "Empty",
+			"description": "Empty state shown when no options match the current query.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content to show when empty (defaults to \"No results\")."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class names for the empty-state element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-empty",
+					"description": "Identifies the empty-state element."
+				}
+			]
+		},
+		{
+			"name": "Status",
+			"description": "Visually hidden aria-live=\"polite\" region that announces the number of visible results to screen readers.",
+			"props": [
+				{
+					"name": "formatMessage",
+					"type": "(count: number) => string",
+					"required": false,
+					"default": "(count: number) =>\n\t\t\tcount === 0 ? 'No results available' : `${count} result${count === 1 ? '' : 's'} available`",
+					"description": "Build the announced message from the visible item count."
+				}
+			],
+			"dataAttributes": []
+		}
+	]
+}

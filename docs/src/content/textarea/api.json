@@ -1,0 +1,119 @@
+{
+	"component": "textarea",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The textarea control. Renders a native <textarea> and forwards all native attributes while exposing state through data attributes.",
+			"props": [
+				{
+					"name": "class",
+					"type": "ClassValue",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "disabled",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Removes the textarea from interaction and focus order."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the textarea focusable while preventing edits. Maps to `readonly` and `aria-readonly`."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the textarea as invalid. Maps to `aria-invalid` and `data-invalid`."
+				},
+				{
+					"name": "required",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Marks the textarea as required. Maps to `required` and `aria-required`."
+				},
+				{
+					"name": "value",
+					"type": "TextAreaValue",
+					"required": false,
+					"default": null,
+					"description": "The text content. Bindable with `bind:value`."
+				},
+				{
+					"name": "element",
+					"type": "HTMLTextAreaElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered textarea element."
+				},
+				{
+					"name": "autoResize",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Grows the textarea height with its content."
+				},
+				{
+					"name": "minRows",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Minimum number of visible rows while auto-resizing."
+				},
+				{
+					"name": "maxRows",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Maximum number of visible rows while auto-resizing."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-autoresize",
+					"description": "Present when auto-resize is enabled."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the textarea is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the textarea has focus."
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present while the pointer is over the textarea."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the textarea is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the textarea is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the textarea is required."
+				},
+				{
+					"name": "data-textarea-root",
+					"description": "Identifies the textarea element."
+				}
+			]
+		}
+	]
+}

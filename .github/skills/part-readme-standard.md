@@ -6,7 +6,7 @@ Guarantee that every public composable part has a README with consistent structu
 
 ## Applies to
 
-Public composable parts under `packages/svelte/src/lib/**` that are exported through `index.parts.ts` (or equivalent part export surface).
+Public composable parts under `packages/ui/src/lib/**` that are exported through `index.parts.ts` (or equivalent part export surface).
 
 Examples:
 
@@ -16,7 +16,7 @@ Examples:
 
 Every exported public part folder **must** contain a `README.md`.
 Every exported public part folder **must** include at least one colocated `*.test.ts` file for that part (with `*-test.svelte` harness when required by interaction setup).
-Part `README.md` structure/style should mirror the canonical examples in `packages/svelte/src/lib/combobox/*/README.md`.
+Part `README.md` structure/style should mirror the canonical examples in `packages/ui/src/lib/combobox/*/README.md`.
 
 ## README structure (required)
 

@@ -1,0 +1,225 @@
+{
+	"name": "@human-kit/ui",
+	"version": "1.0.0-beta.0",
+	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
+	"license": "MIT",
+	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
+	"homepage": "https://github.com/human-kit/ui#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/human-kit/ui.git",
+		"directory": "packages/ui"
+	},
+	"bugs": {
+		"url": "https://github.com/human-kit/ui/issues"
+	},
+	"keywords": [
+		"svelte",
+		"svelte5",
+		"components",
+		"component-library",
+		"ui",
+		"ui-kit",
+		"accessible",
+		"a11y",
+		"headless",
+		"design-system",
+		"tailwind",
+		"human-kit"
+	],
+	"type": "module",
+	"engines": {
+		"node": ">=20"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"sideEffects": false,
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./accordion": {
+			"types": "./dist/accordion/index.d.ts",
+			"svelte": "./dist/accordion/index.js",
+			"default": "./dist/accordion/index.js"
+		},
+		"./autocomplete": {
+			"types": "./dist/autocomplete/index.d.ts",
+			"svelte": "./dist/autocomplete/index.js",
+			"default": "./dist/autocomplete/index.js"
+		},
+		"./dropzone": {
+			"types": "./dist/dropzone/index.d.ts",
+			"svelte": "./dist/dropzone/index.js",
+			"default": "./dist/dropzone/index.js"
+		},
+		"./overflow-row": {
+			"types": "./dist/overflow-row/index.d.ts",
+			"svelte": "./dist/overflow-row/index.js",
+			"default": "./dist/overflow-row/index.js"
+		},
+		"./button": {
+			"types": "./dist/button/index.d.ts",
+			"svelte": "./dist/button/index.js",
+			"default": "./dist/button/index.js"
+		},
+		"./checkbox": {
+			"types": "./dist/checkbox/index.d.ts",
+			"svelte": "./dist/checkbox/index.js",
+			"default": "./dist/checkbox/index.js"
+		},
+		"./collapsible": {
+			"types": "./dist/collapsible/index.d.ts",
+			"svelte": "./dist/collapsible/index.js",
+			"default": "./dist/collapsible/index.js"
+		},
+		"./switch": {
+			"types": "./dist/switch/index.d.ts",
+			"svelte": "./dist/switch/index.js",
+			"default": "./dist/switch/index.js"
+		},
+		"./combobox": {
+			"types": "./dist/combobox/index.d.ts",
+			"svelte": "./dist/combobox/index.js",
+			"default": "./dist/combobox/index.js"
+		},
+		"./calendar": {
+			"types": "./dist/calendar/index.d.ts",
+			"svelte": "./dist/calendar/index.js",
+			"default": "./dist/calendar/index.js"
+		},
+		"./clock": {
+			"types": "./dist/clock/index.d.ts",
+			"svelte": "./dist/clock/index.js",
+			"default": "./dist/clock/index.js"
+		},
+		"./datepicker": {
+			"types": "./dist/datepicker/index.d.ts",
+			"svelte": "./dist/datepicker/index.js",
+			"default": "./dist/datepicker/index.js"
+		},
+		"./daterangepicker": {
+			"types": "./dist/daterangepicker/index.d.ts",
+			"svelte": "./dist/daterangepicker/index.js",
+			"default": "./dist/daterangepicker/index.js"
+		},
+		"./timepicker": {
+			"types": "./dist/timepicker/index.d.ts",
+			"svelte": "./dist/timepicker/index.js",
+			"default": "./dist/timepicker/index.js"
+		},
+		"./dialog": {
+			"types": "./dist/dialog/index.d.ts",
+			"svelte": "./dist/dialog/index.js",
+			"default": "./dist/dialog/index.js"
+		},
+		"./listbox": {
+			"types": "./dist/listbox/index.d.ts",
+			"svelte": "./dist/listbox/index.js",
+			"default": "./dist/listbox/index.js"
+		},
+		"./menu": {
+			"types": "./dist/menu/index.d.ts",
+			"svelte": "./dist/menu/index.js",
+			"default": "./dist/menu/index.js"
+		},
+		"./numberfield": {
+			"types": "./dist/numberfield/index.d.ts",
+			"svelte": "./dist/numberfield/index.js",
+			"default": "./dist/numberfield/index.js"
+		},
+		"./popover": {
+			"types": "./dist/popover/index.d.ts",
+			"svelte": "./dist/popover/index.js",
+			"default": "./dist/popover/index.js"
+		},
+		"./table": {
+			"types": "./dist/table/index.d.ts",
+			"svelte": "./dist/table/index.js",
+			"default": "./dist/table/index.js"
+		},
+		"./tabs": {
+			"types": "./dist/tabs/index.d.ts",
+			"svelte": "./dist/tabs/index.js",
+			"default": "./dist/tabs/index.js"
+		},
+		"./toggle": {
+			"types": "./dist/toggle/index.d.ts",
+			"svelte": "./dist/toggle/index.js",
+			"default": "./dist/toggle/index.js"
+		},
+		"./toggle-group": {
+			"types": "./dist/toggle-group/index.d.ts",
+			"svelte": "./dist/toggle-group/index.js",
+			"default": "./dist/toggle-group/index.js"
+		},
+		"./tree": {
+			"types": "./dist/tree/index.d.ts",
+			"svelte": "./dist/tree/index.js",
+			"default": "./dist/tree/index.js"
+		},
+		"./input": {
+			"types": "./dist/input/index.d.ts",
+			"svelte": "./dist/input/index.js",
+			"default": "./dist/input/index.js"
+		},
+		"./textarea": {
+			"types": "./dist/textarea/index.d.ts",
+			"svelte": "./dist/textarea/index.js",
+			"default": "./dist/textarea/index.js"
+		},
+		"./label": {
+			"types": "./dist/label/index.d.ts",
+			"svelte": "./dist/label/index.js",
+			"default": "./dist/label/index.js"
+		},
+		"./locale-provider": {
+			"types": "./dist/locale-provider/index.d.ts",
+			"svelte": "./dist/locale-provider/index.js",
+			"default": "./dist/locale-provider/index.js"
+		},
+		"./portal": {
+			"types": "./dist/portal/index.d.ts",
+			"svelte": "./dist/portal/index.js",
+			"default": "./dist/portal/index.js"
+		},
+		"./primitives": {
+			"types": "./dist/primitives/index.d.ts",
+			"svelte": "./dist/primitives/index.js",
+			"default": "./dist/primitives/index.js"
+		},
+		"./utils": {
+			"types": "./dist/utils/index.d.ts",
+			"svelte": "./dist/utils/index.js",
+			"default": "./dist/utils/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*",
+		"!dist/**/*-test.svelte",
+		"!dist/**/*-test.svelte.d.ts",
+		"!dist/**/TODO.md"
+	],
+	"scripts": {
+		"package": "svelte-kit sync && svelte-package && publint",
+		"prepublishOnly": "pnpm run package",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest",
+		"test:ssr": "vitest --config vitest.ssr.config.ts"
+	},
+	"dependencies": {
+		"@floating-ui/dom": "^1.7.4"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	}
+}

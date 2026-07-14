@@ -1,5 +1,9 @@
 {
 	"search.exclude": {
 		"**/.agents": true
-	}
+	},
+	"tailwindCSS.experimental.classRegex": [
+		["RecipeConfig\\s*=\\s*(\\{[\\s\\S]+?\\})\\s*as const", "[\"'`]([^\"'`]+)[\"'`]"],
+		["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+	]
 }

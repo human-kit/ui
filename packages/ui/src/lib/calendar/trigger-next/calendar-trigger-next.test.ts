@@ -1,0 +1,31 @@
+import { describe, it, expect } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+import CalendarRootTest from '../root/calendar-root-test.svelte';
+
+describe('Calendar.TriggerNext', () => {
+	it('navigates to next page when clicked', async () => {
+		const screen = render(CalendarRootTest, { defaultValue: '2026-02-10' });
+		const heading = screen.getByRole('heading');
+		const nextButton = screen.getByRole('button', { name: 'Next' });
+
+		const before = heading.element()?.textContent;
+		await nextButton.click();
+		const after = heading.element()?.textContent;
+
+		expect(before).not.toEqual(after);
+	});
+
+	it('is disabled when calendar is disabled', async () => {
+		const screen = render(CalendarRootTest, { disabled: true });
+		const nextButton = screen.getByRole('button', { name: 'Next' });
+
+		await expect.element(nextButton).toBeDisabled();
+	});
+
+	it('localizes the default aria-label in Spanish through LocaleProvider', async () => {
+		const screen = render(CalendarRootTest, { locale: 'es' });
+		const nextButton = screen.getByRole('button', { name: 'Página siguiente' });
+
+		await expect.element(nextButton).toHaveAttribute('aria-label', 'Página siguiente');
+	});
+});

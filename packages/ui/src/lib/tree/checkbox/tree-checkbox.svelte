@@ -1,0 +1,112 @@
+<script lang="ts">
+	import { readable } from 'svelte/store';
+	import { Checkbox } from '../../checkbox';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { getLocaleContext } from '../../locale-provider/context';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
+	import { useTreeContext } from '../root/context.svelte';
+	import { getTreeRenderMode } from '../root/render-mode';
+	import { useTreeItemContext } from '../item/context';
+	import type { TreeCheckboxProps } from '../types';
+
+	let {
+		id,
+		title,
+		children,
+		class: className = '',
+		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledby,
+		...restProps
+	}: TreeCheckboxProps = $props();
+
+	const localeContext = getLocaleContext();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
+
+	const renderMode = getTreeRenderMode();
+	const tree = renderMode === 'display' ? useTreeContext() : undefined;
+	const item = renderMode === 'display' ? useTreeItemContext() : undefined;
+
+	let checkboxElement = $state<HTMLSpanElement | null>(null);
+
+	const isVisible = $derived(tree ? tree.selectionMode !== 'none' : false);
+
+	// `getSelectionState` walks descendants over plain structure, but the context
+	// reads the structure epoch (via the effective-selection cache) plus the
+	// selection/config `$state` internally, so this tracks fine-grained.
+	const selectionState = $derived(item ? item.getSelectionState() : 'none');
+
+	const isChecked = $derived(selectionState === 'all');
+	const isIndeterminate = $derived(selectionState === 'some');
+	const isDisabled = $derived(item ? !isVisible || item.isSelectionDisabled() : true);
+
+	const labelledBy = $derived.by(() => {
+		if (ariaLabelledby) return ariaLabelledby;
+		if (ariaLabel || !item) return undefined;
+		return item.getLabelId();
+	});
+
+	const accessibleLabel = $derived.by(() => {
+		if (!item) return ariaLabel;
+		if (ariaLabel) return ariaLabel;
+		if (labelledBy) return undefined;
+		return resolveLocalizedString($localeStore, 'tree.selectItem', { label: item.getLabel() });
+	});
+
+	function applySelection(nextChecked: boolean) {
+		if (!item || isDisabled) return;
+		item.setSelected(nextChecked);
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		if (!tree || !item) return;
+		trackInteractionModality(event, item.getItemElement() ?? null);
+		event.preventDefault();
+		event.stopPropagation();
+		tree.setFocusVisible(false);
+		item.focusWithPointer();
+	}
+
+	function handleClick(event: MouseEvent) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (!item || !isVisible || isDisabled) return;
+		applySelection(selectionState !== 'all');
+		item.focusWithPointer();
+		item.focusItem();
+	}
+
+	function handleFocus(event: FocusEvent) {
+		if (!tree || !item) return;
+		const target = event.target instanceof HTMLElement ? event.target : item.getItemElement();
+		tree.setFocusedId(item.id);
+		tree.setFocusedElement(target ?? null);
+		tree.setFocusVisible(shouldShowFocusVisible(target ?? null));
+	}
+</script>
+
+{#if renderMode === 'display' && isVisible}
+	<Checkbox.Root
+		{id}
+		bind:element={checkboxElement}
+		checked={isChecked}
+		indeterminate={isIndeterminate}
+		disabled={isDisabled}
+		onCheckedChange={applySelection}
+		{title}
+		aria-label={accessibleLabel}
+		aria-labelledby={labelledBy}
+		data-tree-checkbox="true"
+		tabindex={-1}
+		onclick={handleClick}
+		onfocus={handleFocus}
+		onmousedown={handleMouseDown}
+		class={className}
+		{...restProps}
+	>
+		{@render children?.()}
+	</Checkbox.Root>
+{/if}

@@ -7,23 +7,31 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest",
+		"api": "hk-extract-api --lib ../packages/ui/src/lib --content src/content"
 	},
 	"dependencies": {
-		"@human-kit/svelte-components": "workspace:*",
+		"@fontsource-variable/geist": "^5.2.9",
+		"@fontsource-variable/roboto-serif": "^5.2.9",
+		"@human-kit/markdown": "^0.3.0",
+		"@human-kit/ui": "workspace:*",
+		"@lucide/svelte": "^0.574.0",
 		"@sveltejs/adapter-vercel": "^6.3.1",
 		"svelte-render-scan": "^1.1.0",
+		"tailwind-variants": "^3.2.2",
 		"vite-plugin-devtools-json": "^1.0.0"
 	},
 	"devDependencies": {
-		"@lucide/svelte": "^0.574.0",
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/vite": "^4.1.14",
 		"@toolwind/corner-shape": "^0.0.8-3",
+		"rehype-slug": "^6.0.0",
 		"svelte": "^5.41.0",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.14",
+		"tailwindcss-animate": "^1.0.7",
 		"vite": "^7.1.10"
 	}
 }

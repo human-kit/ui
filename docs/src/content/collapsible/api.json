@@ -1,0 +1,189 @@
+{
+	"component": "collapsible",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The disclosure container. Holds the open state and provides context to the trigger and panel.",
+			"props": [
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled open state. Bindable."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial open state when uncontrolled."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the user toggles the panel."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Prevents the trigger from toggling the panel."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The trigger and panel parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the root element and used to derive the trigger and panel ids. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "context",
+					"type": "CollapsibleContext",
+					"required": false,
+					"default": null,
+					"description": "Bindable handle exposing the collapsible state (`isOpen`, `isDisabled`) and the `setOpen` / `toggle` actions."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-collapsible-root",
+					"description": "Identifies the root element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the collapsible is disabled."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the panel is open."
+				}
+			]
+		},
+		{
+			"name": "Trigger",
+			"description": "The toggle button. Shows and hides the panel via native button activation.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The trigger label content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-collapsible-trigger",
+					"description": "Identifies the trigger element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the collapsible is disabled."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the panel is open."
+				}
+			]
+		},
+		{
+			"name": "Panel",
+			"description": "The content shown and hidden by the trigger. Hidden and inert while collapsed.",
+			"props": [
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The panel content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered panel element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-closed",
+					"description": "Present while the panel is closed (with `forceMount` or during the exit transition)."
+				},
+				{
+					"name": "data-collapsible-panel",
+					"description": "Identifies the panel element."
+				},
+				{
+					"name": "data-collapsible-panel-content",
+					"description": "Identifies the inner content wrapper used for height measurement."
+				},
+				{
+					"name": "data-ending-style",
+					"description": "Present for one frame as the panel starts closing, for exit transitions."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the panel is open."
+				},
+				{
+					"name": "data-starting-style",
+					"description": "Present for one frame as the panel starts opening, for enter transitions."
+				}
+			]
+		}
+	]
+}

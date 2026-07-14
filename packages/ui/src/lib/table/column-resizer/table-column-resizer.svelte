@@ -1,0 +1,636 @@
+<script lang="ts">
+	import { onDestroy } from 'svelte';
+	import { readable } from 'svelte/store';
+	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import {
+		DEFAULT_TABLE_COLUMN_MIN_WIDTH,
+		getTableCellContext,
+		useTableColumnContext,
+		useTableContext
+	} from '../root/context.svelte';
+	import type { TableColumnResizerProps } from '../types.js';
+	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../../primitives/input-modality';
+	import { isRtl } from '../../internal/rtl';
+
+	let {
+		step = 16,
+		shiftStep = 48,
+		children,
+		class: className = '',
+		...restProps
+	}: TableColumnResizerProps = $props();
+
+	const localeContext = useLocaleContextOptional();
+	const emptyLocaleStore = readable<string | undefined>(undefined);
+	const localeStore = localeContext?.locale ?? emptyLocaleStore;
+
+	const table = useTableContext();
+	const column = useTableColumnContext();
+	const cellContext = getTableCellContext();
+	table.registerColumnResizer(column.token);
+	cellContext?.notifyResizerPresent?.();
+
+	let element = $state<HTMLDivElement | undefined>(undefined);
+	// The handle sits on the column's inline-end edge and is shifted half of
+	// its width outwards; the physical shift direction depends on the layout
+	// direction, resolved once the element mounts.
+	const handleRtl = $derived(element ? isRightToLeft() : false);
+
+	let isFocused = $state(false);
+	let isFocusVisible = $state(false);
+	let keyboardResizeActive = $state(false);
+	let keyboardResizeStartWidth = $state<number | null>(null);
+	let removeListeners: (() => void) | null = null;
+	let resizeAnnouncement = $state('');
+	let announceTimeout: ReturnType<typeof setTimeout> | null = null;
+	let focusHeaderTimeout: ReturnType<typeof setTimeout> | null = null;
+	let suppressNextDoubleClickAutofit = $state(false);
+	let recentClickCandidate = $state<{
+		timeStamp: number;
+		clientX: number;
+		clientY: number;
+		button: number;
+		pointerType: string;
+	} | null>(null);
+
+	const DOUBLE_PRESS_MAX_DELAY_MS = 500;
+	const DOUBLE_PRESS_MAX_DISTANCE_PX = 6;
+
+	// `resizingColumnId` is fine-grained `$state`; resizability and widths stay
+	// epoch-mediated (resizer registry and measured widths live in plain caches).
+	const isResizing = $derived(table.resizingColumnId === column.id);
+	const isResizable = $derived.by(() => {
+		void table.layoutEpoch;
+		return !column.isHidden && table.isColumnResizable(column.id);
+	});
+	const currentWidth = $derived.by(() => {
+		void table.widthEpoch;
+		return table.getColumnWidth(column.id) ?? getHeaderWidth();
+	});
+	const minWidth = $derived.by(() => {
+		void table.widthEpoch;
+		return table.getColumnMinWidth(column.id) ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
+	});
+	const maxWidth = $derived.by(() => {
+		void table.widthEpoch;
+		return table.getColumnMaxWidth(column.id);
+	});
+	const accessibleLabel = $derived.by(() => {
+		const text = column.textValue?.trim() || column.id.replace(/[-_]+/g, ' ').trim();
+		const label =
+			text || resolveLocalizedString($localeStore, 'table.columnFallback').toLowerCase();
+		return resolveLocalizedString($localeStore, 'table.resizeColumn', { label });
+	});
+	const accessibleValueText = $derived.by(() => {
+		const width = currentWidth;
+		if (width === undefined) return undefined;
+		return `${width}px wide`;
+	});
+
+	function getAnnouncementLabel() {
+		const text = column.textValue?.trim() || column.id.replace(/[-_]+/g, ' ').trim();
+		return text || resolveLocalizedString($localeStore, 'table.columnFallback');
+	}
+
+	function getHeaderWidth() {
+		return Math.round(element?.closest('th')?.getBoundingClientRect().width ?? 0);
+	}
+
+	function isRightToLeft() {
+		const target = element?.closest('table') ?? element;
+		return isRtl(target);
+	}
+
+	function cleanupPointerListeners() {
+		removeListeners?.();
+		removeListeners = null;
+		table.endColumnResize();
+	}
+
+	function cleanupAnnouncementTimeout() {
+		if (announceTimeout !== null) {
+			clearTimeout(announceTimeout);
+			announceTimeout = null;
+		}
+	}
+
+	function cleanupFocusHeaderTimeout() {
+		if (focusHeaderTimeout !== null) {
+			clearTimeout(focusHeaderTimeout);
+			focusHeaderTimeout = null;
+		}
+	}
+
+	function focusHeaderCell() {
+		const headerCell = element?.closest('th') as HTMLElement | null;
+		headerCell?.focus();
+	}
+
+	function focusResizer() {
+		element?.focus({ preventScroll: true });
+	}
+
+	function focusAdjacentHeaderCell(direction: 'left' | 'right') {
+		const headerCell = element?.closest('th') as HTMLElement | null;
+		const headerRow = headerCell?.closest('tr');
+		if (!headerCell || !headerRow) return false;
+
+		const headerCells = Array.from(
+			headerRow.querySelectorAll<HTMLElement>('th[role="columnheader"]')
+		);
+		const currentIndex = headerCells.indexOf(headerCell);
+		if (currentIndex < 0) return false;
+
+		const target = headerCells[currentIndex + (direction === 'left' ? -1 : 1)] ?? null;
+		target?.focus();
+		return document.activeElement === target;
+	}
+
+	function updateWidth(nextWidth: number) {
+		table.setColumnWidth(column.id, nextWidth);
+	}
+
+	function getResolvedWidth() {
+		return table.getColumnWidth(column.id) ?? getHeaderWidth() ?? minWidth;
+	}
+
+	function announceWidth(width: number) {
+		const message = resolveLocalizedString($localeStore, 'table.columnWidth', {
+			label: getAnnouncementLabel(),
+			width
+		});
+		cleanupAnnouncementTimeout();
+		resizeAnnouncement = '';
+		announceTimeout = setTimeout(() => {
+			resizeAnnouncement = message;
+			announceTimeout = null;
+		}, 0);
+	}
+
+	function commitWidthChange(nextWidth: number, options?: { announce?: boolean }) {
+		updateWidth(nextWidth);
+		const committedWidth = getResolvedWidth();
+		if (options?.announce !== false) {
+			announceWidth(committedWidth);
+		}
+		return committedWidth;
+	}
+
+	function startKeyboardResizeMode() {
+		if (keyboardResizeActive) return;
+		keyboardResizeActive = true;
+		keyboardResizeStartWidth = getResolvedWidth();
+		table.startColumnResize(column.id);
+	}
+
+	function stopKeyboardResizeMode(options?: { restoreWidth?: boolean; focusHeader?: boolean }) {
+		if (options?.restoreWidth && keyboardResizeStartWidth !== null) {
+			updateWidth(keyboardResizeStartWidth);
+		}
+
+		const wasActive = keyboardResizeActive;
+		keyboardResizeActive = false;
+		keyboardResizeStartWidth = null;
+
+		if (wasActive) {
+			table.endColumnResize();
+		}
+
+		if (options?.focusHeader) {
+			cleanupFocusHeaderTimeout();
+			focusHeaderTimeout = setTimeout(() => {
+				focusHeaderTimeout = null;
+				focusHeaderCell();
+			}, 0);
+		}
+	}
+
+	function getAutoFitWidth() {
+		return table.measureColumnContentWidth(column.id) ?? minWidth;
+	}
+
+	function clearRecentClickCandidate() {
+		recentClickCandidate = null;
+	}
+
+	function rememberCompletedClick(event: PointerEvent) {
+		if (event.pointerType !== 'mouse') {
+			clearRecentClickCandidate();
+			return;
+		}
+
+		recentClickCandidate = {
+			timeStamp: event.timeStamp,
+			clientX: event.clientX,
+			clientY: event.clientY,
+			button: event.button,
+			pointerType: event.pointerType
+		};
+	}
+
+	function isSecondPressOfDoubleClick(event: PointerEvent) {
+		const candidate = recentClickCandidate;
+		if (!candidate) return false;
+		if (event.pointerType !== 'mouse' || candidate.pointerType !== 'mouse') return false;
+		if (event.button !== candidate.button) return false;
+		if (event.timeStamp - candidate.timeStamp > DOUBLE_PRESS_MAX_DELAY_MS) return false;
+
+		const deltaX = event.clientX - candidate.clientX;
+		const deltaY = event.clientY - candidate.clientY;
+		return Math.hypot(deltaX, deltaY) <= DOUBLE_PRESS_MAX_DISTANCE_PX;
+	}
+
+	function autoFitColumn() {
+		stopKeyboardResizeMode();
+		table.startColumnResize(column.id);
+		commitWidthChange(getAutoFitWidth());
+		table.endColumnResize();
+	}
+
+	function handleDoubleClick(event: MouseEvent) {
+		if (!isResizable) return;
+		if (suppressNextDoubleClickAutofit) {
+			suppressNextDoubleClickAutofit = false;
+			event.preventDefault();
+			event.stopPropagation();
+			return;
+		}
+		event.preventDefault();
+		event.stopPropagation();
+		trackInteractionModality(event, element ?? null);
+		isFocusVisible = false;
+		autoFitColumn();
+	}
+
+	function handlePointerDown(event: PointerEvent) {
+		if (!isResizable) return;
+		if (event.pointerType === 'mouse' && event.button !== 0) return;
+		if (event.isPrimary === false) return;
+		event.preventDefault();
+		event.stopPropagation();
+		trackInteractionModality(event, element ?? null);
+		isFocusVisible = false;
+		focusResizer();
+
+		if (isSecondPressOfDoubleClick(event)) {
+			clearRecentClickCandidate();
+			suppressNextDoubleClickAutofit = true;
+			autoFitColumn();
+			return;
+		}
+
+		suppressNextDoubleClickAutofit = false;
+
+		stopKeyboardResizeMode();
+
+		const startWidth = table.getColumnWidth(column.id) ?? getHeaderWidth();
+		const pointerId = event.pointerId;
+		const isRTL = isRightToLeft();
+		const pointerStartClientX = event.clientX;
+		let didDrag = false;
+		let didStartResize = false;
+		let latestClientX = event.clientX;
+		let previousClientX = event.clientX;
+		let dragWidth = startWidth;
+		let animationFrameId: number | null = null;
+
+		// Capture the pointer so we receive move/up events even if the cursor
+		// leaves the browser viewport (e.g. in iframes or when dragging fast).
+		// The try-catch guards against synthetic events with no active pointer.
+		try {
+			element?.setPointerCapture(pointerId);
+		} catch {
+			/* synthetic event */
+		}
+
+		// Note: final clamping is authoritative in context.clampColumnWidth().
+		// This local pre-clamp avoids sending clearly out-of-range values through
+		// the reactive pipeline during drag, reducing unnecessary width notifications.
+		function clampWidth(w: number) {
+			let clamped = Math.round(w);
+			if (!Number.isFinite(clamped) || clamped < minWidth) clamped = minWidth;
+			if (maxWidth !== undefined && clamped > maxWidth) clamped = maxWidth;
+			return clamped;
+		}
+
+		function flushPendingPointerMove() {
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+
+			if (!didStartResize && latestClientX === pointerStartClientX) {
+				return;
+			}
+
+			if (!didStartResize) {
+				table.startColumnResize(column.id);
+				didStartResize = true;
+				previousClientX = pointerStartClientX;
+			}
+
+			const pointerDelta = latestClientX - previousClientX;
+			previousClientX = latestClientX;
+			const widthDelta = isRTL ? -pointerDelta : pointerDelta;
+			dragWidth = clampWidth(dragWidth + widthDelta);
+			const nextWidth = dragWidth;
+			updateWidth(nextWidth);
+		}
+
+		function schedulePointerMove() {
+			if (animationFrameId !== null) return;
+			animationFrameId = requestAnimationFrame(() => {
+				animationFrameId = null;
+				flushPendingPointerMove();
+			});
+		}
+
+		const handlePointerMove = (moveEvent: PointerEvent) => {
+			if (moveEvent.pointerId !== pointerId) return;
+			moveEvent.preventDefault();
+			latestClientX = moveEvent.clientX;
+			if (!didStartResize && latestClientX === pointerStartClientX) {
+				return;
+			}
+			didDrag = true;
+			schedulePointerMove();
+		};
+
+		const handlePointerUp = (upEvent: PointerEvent) => {
+			if (upEvent.pointerId !== pointerId) return;
+			if (didDrag) {
+				latestClientX = upEvent.clientX;
+				flushPendingPointerMove();
+			}
+			if (didDrag) {
+				clearRecentClickCandidate();
+				table.suppressHeaderClickOnce();
+				announceWidth(getResolvedWidth());
+			} else {
+				rememberCompletedClick(upEvent);
+			}
+			cleanupPointerListeners();
+		};
+
+		const handlePointerCancel = (cancelEvent: PointerEvent) => {
+			if (cancelEvent.pointerId !== pointerId) return;
+			cancelPointerResize();
+		};
+
+		function cancelPointerResize(event?: Event) {
+			event?.preventDefault();
+			event?.stopPropagation();
+			clearRecentClickCandidate();
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+			// Treat system-initiated cancellation the same as Escape:
+			// restore the width the column had before the drag started.
+			if (didStartResize) {
+				updateWidth(startWidth);
+			}
+			cleanupPointerListeners();
+		}
+
+		const handleWindowKeyDown = (keyEvent: KeyboardEvent) => {
+			if (keyEvent.key !== 'Escape') return;
+			cancelPointerResize(keyEvent);
+		};
+
+		const handleContextMenu = (menuEvent: MouseEvent) => {
+			if (!didStartResize && !didDrag) return;
+			cancelPointerResize(menuEvent);
+		};
+
+		const handleWindowBlur = () => {
+			cancelPointerResize();
+		};
+
+		// With pointer capture active the browser routes all pointer events for
+		// this pointerId to the capturing element. Those events then bubble up
+		// to window, so we keep using window listeners — this also works in test
+		// environments that dispatch synthetic events directly on window.
+		window.addEventListener('pointermove', handlePointerMove);
+		window.addEventListener('pointerup', handlePointerUp);
+		window.addEventListener('pointercancel', handlePointerCancel);
+		window.addEventListener('keydown', handleWindowKeyDown, true);
+		window.addEventListener('contextmenu', handleContextMenu, true);
+		window.addEventListener('blur', handleWindowBlur);
+		removeListeners = () => {
+			if (animationFrameId !== null) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+			try {
+				element?.releasePointerCapture(pointerId);
+			} catch {
+				/* already released */
+			}
+			window.removeEventListener('pointermove', handlePointerMove);
+			window.removeEventListener('pointerup', handlePointerUp);
+			window.removeEventListener('pointercancel', handlePointerCancel);
+			window.removeEventListener('keydown', handleWindowKeyDown, true);
+			window.removeEventListener('contextmenu', handleContextMenu, true);
+			window.removeEventListener('blur', handleWindowBlur);
+		};
+	}
+
+	function handleClick(event: MouseEvent) {
+		if (!isResizable) return;
+		event.preventDefault();
+		event.stopPropagation();
+	}
+
+	function handleFocus() {
+		isFocused = true;
+		isFocusVisible = shouldShowFocusVisible(element ?? null);
+	}
+
+	function handleBlur() {
+		isFocused = false;
+		isFocusVisible = false;
+		stopKeyboardResizeMode();
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (!isResizable) return;
+		trackInteractionModality(event, element ?? null);
+		isFocusVisible = true;
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
+			event.preventDefault();
+			event.stopPropagation();
+			table.moveToGridStart();
+			return;
+		}
+
+		if ((event.ctrlKey || event.metaKey) && event.key === 'End') {
+			event.preventDefault();
+			event.stopPropagation();
+			table.moveToGridEnd();
+			return;
+		}
+
+		if (!keyboardResizeActive) {
+			switch (event.key) {
+				case 'Enter':
+					event.preventDefault();
+					if (event.repeat) return;
+					event.stopPropagation();
+					startKeyboardResizeMode();
+					return;
+				case 'ArrowLeft':
+				case 'ArrowRight': {
+					event.preventDefault();
+					event.stopPropagation();
+					// The handle sits between its own header (logically previous)
+					// and the next column's header. In RTL layouts the physical
+					// arrows are inverted so navigation follows the visual direction.
+					const movesToNextHeader = isRightToLeft()
+						? event.key === 'ArrowLeft'
+						: event.key === 'ArrowRight';
+					if (movesToNextHeader) {
+						focusAdjacentHeaderCell('right');
+					} else {
+						focusHeaderCell();
+					}
+					return;
+				}
+				case 'ArrowUp':
+					event.preventDefault();
+					event.stopPropagation();
+					table.moveFocus('up');
+					return;
+				case 'ArrowDown':
+					event.preventDefault();
+					event.stopPropagation();
+					table.moveFocus('down');
+					return;
+				case 'Home':
+					event.preventDefault();
+					event.stopPropagation();
+					focusHeaderCell();
+					table.moveToRowStart();
+					return;
+				case 'End':
+					event.preventDefault();
+					event.stopPropagation();
+					focusHeaderCell();
+					table.moveToRowEnd();
+					return;
+			}
+			return;
+		}
+
+		event.stopPropagation();
+
+		const delta = event.shiftKey ? shiftStep : step;
+		const direction = isRightToLeft() ? -1 : 1;
+		const baseWidth = getResolvedWidth();
+
+		switch (event.key) {
+			case 'ArrowLeft':
+				event.preventDefault();
+				commitWidthChange(baseWidth - delta * direction);
+				return;
+			case 'ArrowRight':
+				event.preventDefault();
+				commitWidthChange(baseWidth + delta * direction);
+				return;
+			case 'Home':
+				event.preventDefault();
+				commitWidthChange(minWidth);
+				return;
+			case 'End':
+				event.preventDefault();
+				commitWidthChange(getAutoFitWidth());
+				return;
+			case 'Enter':
+				event.preventDefault();
+				stopKeyboardResizeMode();
+				return;
+			case 'Escape':
+				event.preventDefault();
+				stopKeyboardResizeMode({ restoreWidth: true, focusHeader: true });
+				return;
+		}
+	}
+
+	onDestroy(() => {
+		cleanupAnnouncementTimeout();
+		cleanupFocusHeaderTimeout();
+		stopKeyboardResizeMode();
+		cleanupPointerListeners();
+		table.unregisterColumnResizer(column.token);
+		cellContext?.notifyResizerRemoved?.();
+	});
+</script>
+
+{#if !column.isHidden}
+	<!--
+		tabindex="-1": the grid keeps a single Tab stop, so the handle must not add a Tab stop per
+		resizable column. It stays keyboard-reachable through the roving-focus model (ArrowRight
+		from its header cell) and programmatically focusable after pointer interaction.
+	-->
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+	<div
+		bind:this={element}
+		role={isResizable ? 'separator' : undefined}
+		tabindex={isResizable ? -1 : undefined}
+		class={className}
+		aria-label={isResizable ? accessibleLabel : undefined}
+		aria-orientation={isResizable ? 'vertical' : undefined}
+		aria-valuenow={isResizable ? (currentWidth ?? undefined) : undefined}
+		aria-valuemin={isResizable ? minWidth : undefined}
+		aria-valuemax={isResizable ? maxWidth : undefined}
+		aria-valuetext={isResizable ? accessibleValueText : undefined}
+		data-focused={isFocused ? 'true' : undefined}
+		data-focus-visible={isFocusVisible ? 'true' : undefined}
+		data-resizing={isResizing ? 'true' : undefined}
+		data-resizable={isResizable ? 'true' : undefined}
+		data-table-column-resizer="true"
+		data-resizable-direction="right"
+		style:position="absolute"
+		style:z-index="2"
+		style:top="0"
+		style:inset-inline-end="0"
+		style:transform={handleRtl ? 'translateX(-50%)' : 'translateX(50%)'}
+		style:width="0.75rem"
+		style:height="100%"
+		style:display="flex"
+		style:align-items="center"
+		style:justify-content="center"
+		style:user-select="none"
+		style:pointer-events={isResizable ? 'auto' : 'none'}
+		style:touch-action="none"
+		onpointerdown={handlePointerDown}
+		ondblclick={handleDoubleClick}
+		onclick={handleClick}
+		onfocus={handleFocus}
+		onblur={handleBlur}
+		onkeydown={handleKeyDown}
+		{...restProps}
+	>
+		{#if children}
+			{@render children()}
+		{:else}
+			<span
+				aria-hidden="true"
+				style="display:block;width:1px;min-height:1rem;background:currentColor;opacity:0.35;"
+			></span>
+		{/if}
+		<span
+			data-testid="column-resize-status"
+			role="status"
+			aria-live="polite"
+			aria-atomic="true"
+			style={visuallyHiddenStyle}>{resizeAnnouncement}</span
+		>
+	</div>
+{/if}

@@ -1,0 +1,252 @@
+{
+	"component": "checkbox",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The checkbox control. Renders a span with role=\"checkbox\" and keeps a hidden checkbox input in sync for form integration.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id applied to the hidden input so `label[for]` can target the checkbox. Auto-generated when omitted."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": null,
+					"description": "Bindable reference to the rendered root element."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Name submitted with the form when the checkbox is checked."
+				},
+				{
+					"name": "value",
+					"type": "string",
+					"required": false,
+					"default": "'on'",
+					"description": "Value submitted with the form when the checkbox is checked. Does not affect the visual state."
+				},
+				{
+					"name": "checked",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled checked state. Bindable."
+				},
+				{
+					"name": "defaultChecked",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial checked state when uncontrolled."
+				},
+				{
+					"name": "indeterminate",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Controlled indeterminate (mixed) state. Bindable. Takes precedence over `checked`."
+				},
+				{
+					"name": "defaultIndeterminate",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial indeterminate state when uncontrolled."
+				},
+				{
+					"name": "onCheckedChange",
+					"type": "(checked: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the user changes the checked state."
+				},
+				{
+					"name": "onIndeterminateChange",
+					"type": "(indeterminate: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the indeterminate state changes through user interaction. The first toggle from indeterminate resolves to checked."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Removes the checkbox from interaction and focus order."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the checkbox focusable while preventing state changes."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the hidden input as required for form validation."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible label when no visible label is associated."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of the element that labels the checkbox."
+				},
+				{
+					"name": "tabindex",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Overrides the default tab order."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-input",
+					"description": "Identifies the hidden native input."
+				},
+				{
+					"name": "data-checkbox-root",
+					"description": "Identifies the root element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present while the checkbox is checked."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the checkbox is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the checkbox has focus."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the checkbox is indeterminate (mixed)."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the checkbox is actively pressed via pointer or keyboard."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the checkbox is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the checkbox is required."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present while the checkbox is unchecked."
+				}
+			]
+		},
+		{
+			"name": "Indicator",
+			"description": "The visual check or mixed mark. Only mounted while the checkbox is checked or indeterminate unless `forceMount` is set.",
+			"props": [
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the indicator in the DOM even while the checkbox is unchecked."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content rendered inside the indicator, typically an icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present while the checkbox is checked."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the checkbox is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while focus should be visibly indicated (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the checkbox has focus."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the checkbox is indeterminate (mixed)."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the checkbox is actively pressed via pointer or keyboard."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the checkbox is readonly."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the checkbox is required."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present while the checkbox is unchecked."
+				}
+			]
+		}
+	]
+}

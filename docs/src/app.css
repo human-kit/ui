@@ -1,19 +1,28 @@
 @import 'tailwindcss';
+@import './lib/docs/theme.css';
 
 @plugin "@toolwind/corner-shape";
+@plugin "tailwindcss-animate";
 
-@source '../../packages/svelte/src/lib/**/*.{svelte,ts}';
-
-@plugin "@toolwind/corner-shape";
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-@source '../../packages/svelte/src/lib/**/*.{svelte,ts}';
+@source '../../packages/ui/src/lib/**/*.{svelte,ts}';
 
 @theme {
-	--font-sans: 'Inter', sans-serif;
-}
+	--font-sans: 'Geist Variable', sans-serif;
+	--font-serif: 'Roboto Serif Variable', serif;
 
-:root {
-	color-scheme: light;
+	/*
+	 * 15px-based type scale (the browser default is 16px). The rem base stays 16px
+	 * so spacing/sizing is unaffected — only the font-size utilities shift down by
+	 * 15/16. Line-heights are left as Tailwind's unitless ratios, so they scale to
+	 * the new sizes automatically.
+	 */
+	--text-xs: 0.703125rem; /* 11.25px */
+	--text-sm: 0.8203125rem; /* 13.125px */
+	--text-base: 0.9375rem; /* 15px */
+	--text-lg: 1.0546875rem; /* 16.875px */
+	--text-xl: 1.171875rem; /* 18.75px */
+	--text-2xl: 1.40625rem; /* 22.5px */
+	--text-3xl: 1.7578125rem; /* 28.125px */
+	--text-4xl: 2.109375rem; /* 33.75px */
+	--text-5xl: 2.8125rem; /* 45px */
 }

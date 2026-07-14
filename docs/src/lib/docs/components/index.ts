@@ -1,0 +1,18 @@
+export { default as ApiReference } from './api-reference/api-reference.svelte';
+export { Collapsible, collapsibleRecipe } from './collapsible/index.js';
+export { default as DataAttributesTable } from './data-attributes-table/data-attributes-table.svelte';
+export { default as Demo } from './demo/demo.svelte';
+export { default as DocsShell } from './docs-shell/docs-shell.svelte';
+export { Frame } from './frame/index.js';
+export { default as Header } from './header/header.svelte';
+export { default as DocToolbar } from './doc-toolbar/doc-toolbar.svelte';
+export { Menu, menuRecipe } from './menu/index.js';
+export { default as PropsTable } from './props-table/props-table.svelte';
+export { default as Sidebar } from './sidebar/sidebar.svelte';
+export { default as ThemeToggle } from './theme-toggle/theme-toggle.svelte';
+export { default as Toc } from './toc/toc.svelte';
+export {
+	provideTocRegistry,
+	registerHeadings,
+	getRegisteredHeadings
+} from './toc/toc-registry.svelte.js';

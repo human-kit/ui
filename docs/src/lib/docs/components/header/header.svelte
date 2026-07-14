@@ -1,0 +1,62 @@
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+	import { resolve } from '$app/paths';
+	import ThemeToggle from '../theme-toggle/theme-toggle.svelte';
+	import { Frame } from '../frame/index.js';
+	import { buttonVariants } from '../button/recipe';
+	import Github from '../icons/github.svelte';
+
+	interface Props {
+		title?: string;
+		badge?: string;
+		githubUrl?: string;
+		homeHref?: string;
+		/** Replaces the default title + badge brand block (e.g. a logo). */
+		brand?: Snippet;
+		/** Rendered before the GitHub link and theme toggle. */
+		actions?: Snippet;
+	}
+
+	let { title = 'Docs', badge, githubUrl, homeHref, brand, actions }: Props = $props();
+</script>
+
+<!-- `githubUrl` is an external URL and `homeHref` is a caller-supplied override,
+     so neither goes through SvelteKit's resolve() (which is for internal routes). -->
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
+<Frame.Header>
+	<a
+		href={homeHref ?? resolve('/')}
+		class="flex items-center gap-2 text-sm font-semibold text-foreground"
+	>
+		{#if brand}
+			{@render brand()}
+		{:else}
+			{title}
+			{#if badge}
+				<span
+					class="rounded-full border border-border px-2 py-0.5 text-xs font-normal text-muted-foreground"
+				>
+					{badge}
+				</span>
+			{/if}
+		{/if}
+	</a>
+
+	<div class="flex items-center gap-1">
+		{#if actions}
+			{@render actions()}
+		{/if}
+		{#if githubUrl}
+			<a
+				href={githubUrl}
+				target="_blank"
+				rel="noreferrer"
+				aria-label="GitHub repository"
+				class={buttonVariants({ variant: 'ghost', size: 'icon' })}
+			>
+				<Github />
+			</a>
+		{/if}
+		<ThemeToggle />
+	</div>
+</Frame.Header>

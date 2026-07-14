@@ -1,0 +1,419 @@
+/**
+ * Docs theme (Tailwind CSS v4, CSS-first). Imported from app.css after
+ * `@import 'tailwindcss'`.
+ */
+
+/* Class-based dark mode, toggled by the theme runtime + the anti-FOUC script
+   in app.html. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic design tokens. Name the *intent* here; the raw
+ * neutral shade lives in ONE place and dark mode is resolved once per token,
+ * so components never repeat a `dark:` variant or hardcode a scale number.
+ *
+ * `@theme inline` (below) exposes each token as a Tailwind color utility:
+ *   --color-border        -> border-border
+ *   --color-muted         -> bg-muted
+ *   --color-foreground    -> text-foreground
+ *   --color-muted-foreground -> text-muted-foreground   (etc.)
+ */
+:root {
+	color-scheme: light;
+
+	/* The page/base surface is depth-0, not pure white. */
+	--background: var(--depth-0);
+	--surface: var(--depth-0);
+	--muted: var(--color-neutral-50);
+	--accent: var(--color-neutral-100);
+	--border: var(--color-neutral-200);
+	--border-subtle: var(--color-neutral-100);
+	--foreground: var(--color-neutral-900);
+	--muted-foreground: var(--color-neutral-500);
+	--subtle-foreground: var(--color-neutral-700);
+	--link: var(--color-blue-600);
+
+	--primary: oklch(0.59 0.2 277);
+	--primary-foreground: oklch(0.985 0 0);
+	--depth-0: oklch(0.99 0 0);
+	--depth-1: oklch(0.98 0 0);
+	--depth-2: oklch(0.97 0 0);
+	--depth-3: oklch(0.96 0 0);
+	--depth-4: oklch(0.95 0 0);
+	/* Button elevation surfaces, relative to the surface it sits on. Defaults
+	   assume a depth-0 surface; a <Surface> republishes them to its own level.
+	     --surface-bg = the surface's own depth (sunken outer-shadow lip)
+	     --raise-bg   = surface − 1, toward the top (ghost/outline hover fill)
+	     --press-bg   = surface + 1 (pressed fill)
+	     --sink-bg    = surface + 2 (shadow-variant hover fill) */
+	--surface-bg: var(--depth-0);
+	--raise-bg: var(--depth-0);
+	--press-bg: var(--depth-1);
+	--sink-bg: var(--depth-2);
+	/* Inner edges that give the raised/sunken (neumorphic) look. */
+	--raised-highlight: oklch(1 0 0 / 0.65);
+	--sunken-shadow: oklch(0 0 0 / 0.05);
+
+	/* Thin overlay scrollbar thumb (the nav rail). */
+	--scrollbar-thumb: oklch(0.75 0 0);
+	--scrollbar-thumb-hover: oklch(0.65 0 0);
+}
+
+.dark {
+	color-scheme: dark;
+
+	/* The page/base surface is depth-0, not pure black (see the light block). */
+	--background: var(--depth-0);
+	--surface: var(--depth-0);
+	--muted: var(--color-neutral-900);
+	--accent: var(--color-neutral-800);
+	--border: var(--color-neutral-800);
+	--border-subtle: var(--color-neutral-800);
+	--foreground: var(--color-white);
+	--muted-foreground: var(--color-neutral-400);
+	--subtle-foreground: var(--color-neutral-300);
+	--link: var(--color-blue-400);
+
+	--primary: oklch(0.64 0.19 277);
+	--primary-foreground: oklch(0.985 0 0);
+	/* Dark elevation: depth-0 sits just off pure black, higher steps get lighter.
+	   Steps are BIGGER than light's 0.01 because near black a given lightness delta
+	   reads as less contrast than the same delta near white. */
+	--depth-0: oklch(0.17 0 0);
+	--depth-1: oklch(0.21 0 0);
+	--depth-2: oklch(0.25 0 0);
+	--depth-3: oklch(0.29 0 0);
+	--depth-4: oklch(0.33 0 0);
+	--raised-highlight: oklch(1 0 0 / 0.06);
+	--sunken-shadow: oklch(0 0 0 / 0.35);
+
+	--scrollbar-thumb: oklch(0.43 0 0);
+	--scrollbar-thumb-hover: oklch(0.53 0 0);
+}
+
+/*
+ * Tailwind v4 defaults the `border` utility's color to currentColor. Restore a
+ * sensible default so a bare `border` (or any border-* without an explicit color)
+ * uses the `--border` token — you should never have to write `border-border`.
+ * Explicit colors (border-transparent, border-primary/10, …) still win.
+ */
+@layer base {
+	*,
+	::before,
+	::after,
+	::backdrop {
+		border-color: var(--border);
+	}
+
+	/* Default typeset is 15px (see the `--text-*` scale in app.css). rem base is
+	   untouched, so this only affects text with no explicit size. */
+	body {
+		font-size: var(--text-base);
+	}
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-surface: var(--surface);
+	--color-muted: var(--muted);
+	--color-accent: var(--accent);
+	--color-border: var(--border);
+	--color-border-subtle: var(--border-subtle);
+	--color-foreground: var(--foreground);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-subtle-foreground: var(--subtle-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-depth-0: var(--depth-0);
+	--color-depth-1: var(--depth-1);
+	--color-depth-2: var(--depth-2);
+	--color-depth-3: var(--depth-3);
+	--color-depth-4: var(--depth-4);
+}
+
+/*
+ * Neumorphic elevation edges. flat / raised / sunken share the SAME 2-layer
+ * box-shadow structure (an inset edge + an outer drop). box-shadow only animates
+ * between values with a matching layer count and inset pattern, so keeping the
+ * structure identical is what lets the raise→press transition animate smoothly
+ * instead of snapping. Only the colors change between states.
+ */
+@utility flat {
+	box-shadow:
+		inset 0 1px 0px transparent,
+		0 1px 2px transparent;
+}
+
+@utility raised {
+	box-shadow:
+		inset 0 1px 0px var(--raised-highlight),
+		0 1px 0px oklch(0 0 0 / 0.05);
+}
+
+@utility sunken {
+	/* Experiment: the inner (inset) edge is transparent — only the outer lip
+	   colored with surface − 1 (--raise-bg) remains. The inset LAYER is kept (just
+	   transparent) so flat/raised/sunken stay 2-layer and box-shadow still
+	   interpolates for the press animation. */
+	box-shadow:
+		inset 0 1px 0px transparent,
+		0 1px 0px var(--raise-bg);
+}
+
+/*
+ * Scrollbars — ONE look across the whole app (nav rails, the reading pane, code
+ * blocks, tables, anything). A thin rounded pill thumb over a transparent track,
+ * revealed only while the pointer is within the scrolling element. Applied
+ * globally (not via a class) so every scroll surface matches the nav rail; the
+ * `.docs-scrollbar` class below only adds the reserved gutter the rails want.
+ *
+ * IMPORTANT: only the WebKit pseudo-elements are used on Chromium/Safari — NOT
+ * the standard `scrollbar-width`/`scrollbar-color`. In Chromium 121+, setting
+ * either standard property makes the engine use the thin auto-hiding OVERLAY
+ * scrollbar and IGNORE `::-webkit-scrollbar`, which is exactly what we don't want.
+ * The standard props are applied only where `::-webkit-scrollbar` is unsupported
+ * (Firefox) via the `@supports` fallback below.
+ */
+* {
+	/* Thumb paint color, transparent at rest. Blink IGNORES an element's `:hover`
+	   pseudo when restyling `::-webkit-scrollbar-*` (so `.el:hover::thumb` never
+	   repaints), but it DOES repaint when a custom property the thumb reads
+	   changes — so the reveal is driven through this variable. Defined per element
+	   (not inherited) so each scroll surface toggles its own thumb. */
+	--sb-thumb: transparent;
+}
+
+/* `:hover` matches the hovered element AND its ancestors, so a scroll container
+   reveals its thumb whenever the pointer is anywhere inside it (or on its
+   scrollbar). */
+*:hover {
+	--sb-thumb: var(--scrollbar-thumb);
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	/* Transparent at rest, revealed via `--sb-thumb` on hover. The transparent
+	   border + content-box clip makes it read as a slim inset pill. */
+	background-color: var(--sb-thumb);
+	border-radius: 9999px;
+	border: 3px solid transparent;
+	background-clip: content-box;
+}
+
+/* Pointer directly on the thumb — Blink DOES honour `:hover` on the scrollbar
+   parts themselves, so this darker state works without the variable. */
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(--scrollbar-thumb-hover);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	/* Firefox: same thin, hover-revealed thumb via the standard properties. */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: transparent transparent;
+	}
+
+	*:hover {
+		scrollbar-color: var(--scrollbar-thumb) transparent;
+	}
+}
+
+/* The nav rails reserve the scrollbar gutter (always show the transparent track)
+   so revealing/hiding the thumb never shifts their content. `overflow-y: scroll`
+   is used instead of `scrollbar-gutter: stable` because in Chromium the latter
+   forces the native scrollbar and disables the `::-webkit-scrollbar` styling. */
+.docs-scrollbar {
+	overflow-y: scroll;
+}
+
+/*
+ * Scroll-fade — softens the top/bottom edges of a scroll surface so content
+ * dissolves into the chrome instead of being hard-cut by the container edge.
+ *
+ * IMPORTANT: this is done with two sticky gradient OVERLAYS, NOT a `mask-image`
+ * on the scroller. A mask on a scroll container forces the browser to re-paint
+ * and re-rasterize its contents on every scroll frame (measured: ~4× the paints
+ * and heavy GPU raster), which makes scrolling feel laggy. The overlays instead
+ * sit on their own compositor layer above the content, so the scroller stays on
+ * the fast path — the content just slides underneath, no re-raster.
+ *
+ * `--fade-top` / `--fade-bottom` (0→1, set by the `scrollFade` action from
+ * scroll position) drive each overlay's opacity, and the `opacity` transition
+ * makes a fade appear/disappear smoothly as you reach an end. The fade color is
+ * `--surface-bg` (the elevation the rail sits on, republished by <Surface>), so
+ * content genuinely dissolves into the chrome behind it.
+ */
+.scroll-fade {
+	--fade-size: 1.75rem;
+	--fade-top: 0;
+	--fade-bottom: 0;
+}
+
+.scroll-fade-edge {
+	/* Sticky (not absolute) so no wrapper is needed: the overlay pins to the
+	   scrollport edge while content scrolls under it. Net layout height is zero —
+	   the negative margin cancels the box — so it never shifts content or changes
+	   scrollHeight. */
+	position: sticky;
+	height: var(--fade-size);
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 150ms ease;
+}
+
+.scroll-fade-edge-top {
+	top: 0;
+	margin-bottom: calc(-1 * var(--fade-size));
+	background: linear-gradient(to bottom, var(--surface-bg), transparent);
+	opacity: var(--fade-top, 0);
+}
+
+.scroll-fade-edge-bottom {
+	bottom: 0;
+	margin-top: calc(-1 * var(--fade-size));
+	background: linear-gradient(to top, var(--surface-bg), transparent);
+	opacity: var(--fade-bottom, 0);
+}
+
+/* Shiki dual-theme: light vars by default, dark vars under .dark */
+.shiki,
+.shiki span {
+	color: var(--shiki-light);
+	background-color: var(--shiki-light-bg);
+}
+
+.dark .shiki,
+.dark .shiki span {
+	color: var(--shiki-dark);
+	background-color: var(--shiki-dark-bg);
+}
+
+.hd-prose pre.shiki {
+	background-color: var(--depth-1);
+}
+
+.hd-prose pre.shiki span {
+	background-color: transparent;
+}
+
+@layer components {
+	.hd-prose {
+		font-size: 0.9375rem;
+		line-height: 1.7;
+		color: var(--subtle-foreground);
+	}
+
+	/* Titles use the serif display face. */
+	.hd-prose :is(h1, h2, h3, h4) {
+		font-family: var(--font-serif);
+	}
+
+	.hd-prose h1 {
+		font-size: 1.875rem;
+		font-weight: 600;
+		letter-spacing: -0.025em;
+		color: var(--foreground);
+		scroll-margin-top: 5rem;
+	}
+
+	.hd-prose h2 {
+		margin-top: 2.5rem;
+		margin-bottom: 0.375rem;
+		font-size: 1.25rem;
+		font-weight: 600;
+		letter-spacing: -0.015em;
+		color: var(--foreground);
+		scroll-margin-top: 5rem;
+	}
+
+	.hd-prose h3 {
+		margin-top: 1rem;
+		margin-bottom: 0.375rem;
+		font-size: 1.0625rem;
+		font-weight: 600;
+		color: var(--foreground);
+		scroll-margin-top: 5rem;
+	}
+
+	/* The description right under a heading sits tight against it (the heading's
+	   own bottom margin is the whole gap); later paragraphs keep normal spacing. */
+	.hd-prose :is(h1, h2, h3, h4) + p {
+		margin-top: 0;
+	}
+
+	.hd-prose ul,
+	.hd-prose ol {
+		margin-top: 1rem;
+		padding-left: 1.5rem;
+	}
+
+	.hd-prose ul {
+		list-style-type: disc;
+	}
+
+	.hd-prose ol {
+		list-style-type: decimal;
+	}
+
+	.hd-prose li {
+		margin-top: 0.375rem;
+	}
+
+	/* Prose links get the underlined accent look — but NOT anchors styled as
+	   buttons (the page-action links), which carry their own `buttonVariants`
+	   styling and would otherwise inherit link color + underline from here. */
+	.hd-prose a:not(.hk-button-link) {
+		color: var(--link);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.hd-prose :not(pre) > code {
+		font-size: 0.875em;
+		background-color: var(--accent);
+		padding: 0.125rem 0.375rem;
+		border-radius: 0.375rem;
+	}
+
+	.hd-prose pre.shiki {
+		margin-top: 1rem;
+		border: 1px solid var(--border);
+		border-radius: 0.5rem;
+		padding: 1rem;
+		overflow-x: auto;
+		font-size: 0.8125rem;
+		line-height: 1.6;
+	}
+
+	.hd-prose hr {
+		margin-top: 2.5rem;
+		border-color: var(--border);
+	}
+
+	.hd-prose table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+
+	.hd-prose th {
+		text-align: left;
+		font-weight: 600;
+		color: var(--foreground);
+		padding: 0.5rem 0.75rem;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.hd-prose td {
+		padding: 0.5rem 0.75rem;
+		border-bottom: 1px solid var(--border-subtle);
+	}
+}

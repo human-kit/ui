@@ -1,0 +1,6 @@
+{
+	"tailwindCSS.experimental.classRegex": [
+		["RecipeConfig\\s*=\\s*(\\{[\\s\\S]+?\\})\\s*as const", "[\"'`]([^\"'`]+)[\"'`]"],
+		["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+	]
+}
