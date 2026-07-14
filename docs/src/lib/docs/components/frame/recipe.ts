@@ -31,7 +31,7 @@ const frameRecipeConfig = {
 		// The card clips (overflow-hidden + rounded) so the inner scrollbar is
 		// contained by the rounded corners; the padded `viewport` slot is what
 		// actually scrolls.
-		content: 'min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl border raised shadow-sm corner-squircle',
+		content: 'min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border raised shadow-sm',
 		viewport: 'h-full overflow-y-auto px-6 py-10 lg:px-12',
 		sidebar: 'min-h-0 shrink-0 overflow-y-auto'
 	}
