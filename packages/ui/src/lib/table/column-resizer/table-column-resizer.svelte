@@ -39,11 +39,7 @@
 	// The handle sits on the column's inline-end edge and is shifted half of
 	// its width outwards; the physical shift direction depends on the layout
 	// direction, resolved once the element mounts.
-	let handleRtl = $state(false);
-
-	$effect(() => {
-		handleRtl = element ? isRightToLeft() : false;
-	});
+	const handleRtl = $derived(element ? isRightToLeft() : false);
 
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);

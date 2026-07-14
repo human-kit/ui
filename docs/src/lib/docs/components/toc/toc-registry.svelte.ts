@@ -46,6 +46,9 @@ class TocRegistry {
 	read(): RegisteredHeading[] {
 		// Touch the reactive signal so the caller re-runs when the map changes.
 		void this.version;
+		// Transient local dedup set built and discarded within this call (invoked
+		// inside a $derived) — not reactive state, so a plain Set is correct here.
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
 		const seen = new Set<string>();
 		const headings: RegisteredHeading[] = [];
 		for (const group of this.#map.values()) {

@@ -1,3 +1,9 @@
+/* eslint-disable svelte/prefer-svelte-reactivity --
+ * The Map/Set instances below are transient collections rebuilt inside `$derived`
+ * getters. Svelte forbids mutating a reactive collection (SvelteMap/SvelteSet)
+ * inside a derived (state_unsafe_mutation), and reactivity here is already driven
+ * by a version signal + reassignment — so plain Map/Set is intentional and correct.
+ */
 import { getContext, setContext } from 'svelte';
 import type { Snippet } from 'svelte';
 import { asCommand } from '../../internal/as-command.js';

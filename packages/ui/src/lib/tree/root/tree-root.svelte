@@ -77,6 +77,7 @@
 	function getSetFromKeys(keys: Iterable<TreeNodeId> | undefined) {
 		// Mirror the context's key normalization (numbers -> strings) so prop/state
 		// set comparisons agree with the keys the context stores and emits.
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- transient local set built and returned by this helper, not reactive state
 		const set = new Set<TreeNodeId>();
 		for (const key of keys ?? []) set.add(typeof key === 'number' ? String(key) : key);
 		return set;

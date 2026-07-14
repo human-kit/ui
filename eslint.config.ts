@@ -35,5 +35,16 @@ export default defineConfig(
 				parser: ts.parser
 			}
 		}
+	},
+	{
+		rules: {
+			// Allow intentionally-unused identifiers prefixed with `_` (SSR stubs,
+			// API-shape params like `pushDialog(_close)`, etc.) — matches the
+			// convention already used across the codebase.
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{ argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }
+			]
+		}
 	}
 );

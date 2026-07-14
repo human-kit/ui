@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import { SvelteMap } from 'svelte/reactivity';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { asCommand } from '../../internal/as-command.js';
 
 export type ToggleGroupValue = string | number;
@@ -70,7 +70,7 @@ function normalizeValues(
 	selectionMode: ToggleGroupSelectionMode,
 	order: ToggleGroupValue[] = []
 ) {
-	const normalized = new Set<ToggleGroupValue>();
+	const normalized = new SvelteSet<ToggleGroupValue>();
 
 	if (selectionMode === 'single') {
 		const value = order.find((orderedValue) =>
@@ -232,7 +232,7 @@ export function createToggleGroupContext(
 	) {
 		if (isControlled) return;
 
-		const nextValues = new Set(selectedValues);
+		const nextValues = new SvelteSet(selectedValues);
 		let removedSelectedValue: ToggleGroupValue | undefined;
 
 		for (const selectedValue of selectedValues) {
@@ -345,7 +345,7 @@ export function createToggleGroupContext(
 		if (isToggleDisabled(value)) return null;
 
 		const isValueSelected = selectedValues.has(value);
-		const nextValues = new Set(selectedValues);
+		const nextValues = new SvelteSet(selectedValues);
 
 		if (selectionMode === 'single') {
 			if (isValueSelected) {

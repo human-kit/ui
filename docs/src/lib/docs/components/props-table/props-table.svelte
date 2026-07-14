@@ -61,7 +61,7 @@
 
 {#snippet coloredType(value: string)}
 	<span class="font-mono text-xs">
-		{#each tokenizeType(value) as token}
+		{#each tokenizeType(value) as token, i (i)}
 			{#if token.kind === 'primitive'}
 				<span class="text-blue-600 dark:text-blue-400">{token.text}</span>
 			{:else if token.kind === 'identifier'}

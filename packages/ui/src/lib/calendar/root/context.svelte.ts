@@ -1,3 +1,9 @@
+/* eslint-disable svelte/prefer-svelte-reactivity --
+ * The Map/Set instances below are transient collections rebuilt inside `$derived`
+ * getters. Svelte forbids mutating a reactive collection (SvelteMap/SvelteSet)
+ * inside a derived (state_unsafe_mutation), and reactivity here is already driven
+ * by a version signal + reassignment — so plain Map/Set is intentional and correct.
+ */
 import { getContext, setContext } from 'svelte';
 import { asCommand } from '../../internal/as-command.js';
 import {
@@ -930,9 +936,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 				break;
 			case 'Enter':
 			case ' ':
-			// Legacy key value emitted by some older browsers/IMEs; kept in sync
-			// with the body-cell press-state handling, which accepts it too.
 			case 'Spacebar':
+				// 'Spacebar' is a legacy key value emitted by some older browsers/IMEs;
+				// kept in sync with the body-cell press-state handling, which accepts it too.
 				event.preventDefault();
 				setFocusVisible(true);
 				if (

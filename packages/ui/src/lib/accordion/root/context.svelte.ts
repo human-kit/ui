@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import { SvelteMap } from 'svelte/reactivity';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { asCommand } from '../../internal/as-command.js';
 
 export type AccordionValue = string | number;
@@ -77,7 +77,7 @@ function normalizeValues(
 	selectionMode: AccordionSelectionMode,
 	order: AccordionValue[] = []
 ) {
-	const normalized = new Set<AccordionValue>();
+	const normalized = new SvelteSet<AccordionValue>();
 
 	if (selectionMode === 'single') {
 		const orderedValue = order.find((orderedItem) =>
@@ -244,7 +244,7 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 	function reconcileOpen(changedValue?: AccordionValue, changeOptions?: { notify?: boolean }) {
 		if (isControlled) return;
 
-		const nextValues = new Set(openValues);
+		const nextValues = new SvelteSet(openValues);
 		let removedValue: AccordionValue | undefined;
 
 		for (const openValue of openValues) {
@@ -353,7 +353,7 @@ export function createAccordionContext(options: CreateAccordionContextOptions): 
 		if (isItemDisabled(value)) return null;
 
 		const isValueOpen = openValues.has(value);
-		const nextValues = new Set(openValues);
+		const nextValues = new SvelteSet(openValues);
 
 		if (selectionMode === 'single') {
 			if (isValueOpen) {

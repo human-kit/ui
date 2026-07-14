@@ -20,6 +20,9 @@
 	let { title = 'Docs', badge, githubUrl, homeHref, brand, actions }: Props = $props();
 </script>
 
+<!-- `githubUrl` is an external URL and `homeHref` is a caller-supplied override,
+     so neither goes through SvelteKit's resolve() (which is for internal routes). -->
+<!-- eslint-disable svelte/no-navigation-without-resolve -->
 <Frame.Header>
 	<a
 		href={homeHref ?? resolve('/')}

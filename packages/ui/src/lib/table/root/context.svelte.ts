@@ -375,7 +375,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let focusedCellKey = $state<string | null>(null);
 	let focusedRowTarget = $state<{ rowToken: string; edge: TableRowFocusEdge } | null>(null);
 	let focusVisible = $state(false);
-	const initialSelectedKeys = new Set<TableSelectionKey>(options.initialSelectedKeys ?? []);
+	const initialSelectedKeys = new SvelteSet<TableSelectionKey>(options.initialSelectedKeys ?? []);
 	let selectedKeys = $state(initialSelectedKeys);
 	let selectionAnchorKey = $state<TableSelectionKey | null>(
 		initialSelectedKeys.values().next().value ?? null
@@ -393,24 +393,24 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	} | null = null;
 	let suppressNextHeaderClick = false;
 
-	const columns = new Map<string, TableColumnMetadata>();
-	const columnIds = new Map<string, string>();
+	const columns = new SvelteMap<string, TableColumnMetadata>();
+	const columnIds = new SvelteMap<string, string>();
 	const columnOrder: string[] = [];
-	const columnsWithSortTriggers = new Set<string>();
-	const columnsWithResizers = new Set<string>();
+	const columnsWithSortTriggers = new SvelteSet<string>();
+	const columnsWithResizers = new SvelteSet<string>();
 	let resizerLayoutReady = false;
 	const columnWidths = new SvelteMap<string, TableColumnWidth>(options.initialColumnWidths ?? []);
-	const rows = new Map<string, TableRowRegistration>();
+	const rows = new SvelteMap<string, TableRowRegistration>();
 	const headerRowOrder: string[] = [];
-	const headerRowOrderSet = new Set<string>();
+	const headerRowOrderSet = new SvelteSet<string>();
 	const bodyRowOrder: string[] = [];
-	const bodyRowOrderSet = new Set<string>();
+	const bodyRowOrderSet = new SvelteSet<string>();
 	let bodyRowsInitialized = false;
 	let selectableBodyRowCount = 0;
 	let logicalBodyRowIds: TableSelectionKey[] | null = null;
 	let logicalBodyRowIndexCache: Map<TableSelectionKey, number> | null = null;
-	const cells = new Map<string, TableCellRegistration>();
-	const cellOrderSet = new Set<string>();
+	const cells = new SvelteMap<string, TableCellRegistration>();
+	const cellOrderSet = new SvelteSet<string>();
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
 		header: null,
 		body: null
@@ -440,9 +440,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let layoutEpoch = $state(0);
 	let selectionEpoch = $state(0);
 	let widthEpoch = $state(0);
-	const instanceCounters = new Map<string, number>();
+	const instanceCounters = new SvelteMap<string, number>();
 	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
-	setSelectedKeys(new Set(initialSelectedKeys), initialSelectedKeys.values().next().value ?? null);
+	setSelectedKeys(
+		new SvelteSet(initialSelectedKeys),
+		initialSelectedKeys.values().next().value ?? null
+	);
 
 	function createInstanceToken(prefix: string) {
 		const nextCount = (instanceCounters.get(prefix) ?? 0) + 1;
@@ -912,7 +915,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 		// Pre-build a lookup from columnToken → header cell element to avoid
 		// O(columns × cells) scanning inside the comparator.
-		const headerElementByToken = new Map<string, HTMLElement>();
+		const headerElementByToken = new SvelteMap<string, HTMLElement>();
 		for (const cell of cells.values()) {
 			if (cell.section === 'header' && cell.columnToken && cell.element) {
 				headerElementByToken.set(cell.columnToken, cell.element);
@@ -962,7 +965,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function getVisibleColumnIndexByTokenMap() {
 		if (visibleColumnIndexByTokenCache) return visibleColumnIndexByTokenCache;
 
-		const visibleColumnIndexByToken = new Map(
+		const visibleColumnIndexByToken = new SvelteMap(
 			getVisibleOrderedColumnTokens().map((token, index) => [token, index])
 		);
 
@@ -1119,7 +1122,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getColumnWidths() {
 		if (columnWidthsCache) return columnWidthsCache;
-		const widths = new Map<string, TableColumnWidth>();
+		const widths = new SvelteMap<string, TableColumnWidth>();
 		for (const token of getOrderedColumnTokens()) {
 			const column = columns.get(token);
 			if (!column) continue;
@@ -1134,7 +1137,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getVisibleColumnWidths() {
 		if (visibleColumnWidthsCache) return visibleColumnWidthsCache;
-		const widths = new Map<string, TableColumnWidth>();
+		const widths = new SvelteMap<string, TableColumnWidth>();
 		for (const [columnId, width] of getColumnWidths()) {
 			if (isColumnHidden(columnId)) continue;
 			widths.set(columnId, width);
@@ -1157,7 +1160,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function getResolvedVisibleColumnWidths() {
 		if (resolvedVisibleColumnWidthsCache) return resolvedVisibleColumnWidthsCache;
 
-		const widths = new Map<string, number>();
+		const widths = new SvelteMap<string, number>();
 		const flexibleColumns: Array<{ columnId: string; fr: number; index: number }> = [];
 		const relativeColumns: Array<{ columnId: string; index: number; exactWidth: number }> = [];
 		const tableWidth = getMeasuredTableWidth();
@@ -1261,8 +1264,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function prepareColumnWidthsForResize(activeColumnId: string) {
-		const next = new Map<string, TableColumnWidth>(columnWidths);
-		const baselineWidths = new Map<string, number>();
+		const next = new SvelteMap<string, TableColumnWidth>(columnWidths);
+		const baselineWidths = new SvelteMap<string, number>();
 		const preservedFlexibleColumnId = getResizableRelativeTailColumnId(activeColumnId);
 		const preservedFlexibleEffectiveWidth = preservedFlexibleColumnId
 			? normalizeColumnWidth(getEffectiveColumnWidthSpec(preservedFlexibleColumnId))
@@ -1332,8 +1335,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setColumnWidths(widths?: Iterable<readonly [string, TableColumnWidth]>) {
-		const next = new Map<string, TableColumnWidth>();
-		const incomingWidths = widths ? new Map<string, TableColumnWidth>(widths) : undefined;
+		const next = new SvelteMap<string, TableColumnWidth>();
+		const incomingWidths = widths ? new SvelteMap<string, TableColumnWidth>(widths) : undefined;
 		for (const token of columnOrder) {
 			const column = columns.get(token);
 			if (!column) continue;
@@ -1511,7 +1514,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setHiddenColumns(columnIds?: Iterable<string>) {
-		const next = new Set(columnIds ?? []);
+		const next = new SvelteSet(columnIds ?? []);
 		let changed = next.size !== hiddenColumnIds.size;
 		if (!changed) {
 			for (const columnId of hiddenColumnIds) {
@@ -1786,7 +1789,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function getLogicalBodyRowIndex(id: TableSelectionKey) {
 		if (!logicalBodyRowIds) return -1;
 		if (!logicalBodyRowIndexCache) {
-			logicalBodyRowIndexCache = new Map();
+			logicalBodyRowIndexCache = new SvelteMap();
 			for (let index = 0; index < logicalBodyRowIds.length; index += 1) {
 				const rowId = logicalBodyRowIds[index];
 				if (!logicalBodyRowIndexCache.has(rowId)) {
@@ -2088,7 +2091,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function getRowsWithCells() {
 		if (rowsWithCellsCache) return rowsWithCellsCache;
-		const rowsByIndex = new Map<number, { col: number; key: string; element: HTMLElement }[]>();
+		const rowsByIndex = new SvelteMap<
+			number,
+			{ col: number; key: string; element: HTMLElement }[]
+		>();
 		for (const { cell, coord } of getNavigableCells()) {
 			const rowCells = rowsByIndex.get(coord.row) ?? [];
 			rowCells.push({ col: coord.col, key: cell.key, element: cell.element! });
@@ -2213,13 +2219,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setSelectedKeys(next: Set<TableSelectionKey>, anchor?: TableSelectionKey | null) {
-		const previousSelectedKeys = new Set(selectedKeys);
+		const previousSelectedKeys = new SvelteSet(selectedKeys);
 		selectedKeys =
 			selectionMode === 'none'
-				? new Set()
+				? new SvelteSet()
 				: selectionMode === 'single' && next.size > 1
-					? new Set([next.values().next().value as TableSelectionKey])
-					: next;
+					? new SvelteSet([next.values().next().value as TableSelectionKey])
+					: new SvelteSet(next);
 
 		if (selectionMode !== 'none' && disallowEmptySelection && selectedKeys.size === 0) {
 			const fallbackKey =
@@ -2233,7 +2239,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				fallbackKey !== null &&
 				!isRowSelectionDisabled(fallbackKey)
 			) {
-				selectedKeys = new Set([fallbackKey]);
+				selectedKeys = new SvelteSet([fallbackKey]);
 			}
 		}
 
@@ -2248,7 +2254,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function replaceSelectionWithRow(id: TableSelectionKey | undefined) {
 		if (id === undefined || isRowSelectionDisabled(id)) return;
-		const next = new Set([id]);
+		const next = new SvelteSet([id]);
 		if (hasSameSelection(selectedKeys, next)) {
 			setSelectedKeys(next, id);
 			notifySelection();
@@ -2259,7 +2265,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function applySelectionChange(next: Set<TableSelectionKey>, anchor?: TableSelectionKey | null) {
-		const previousSelection = new Set(selectedKeys);
+		const previousSelection = new SvelteSet(selectedKeys);
 		const previousAnchor = selectionAnchorKey;
 		setSelectedKeys(next, anchor);
 		if (!hasSameSelection(previousSelection, selectedKeys)) {
@@ -2276,12 +2282,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (selectionMode === 'single') {
 			const wasSelected = selectedKeys.has(id);
 			applySelectionChange(
-				selectionBehavior === 'toggle' && wasSelected ? new Set() : new Set([id]),
+				selectionBehavior === 'toggle' && wasSelected ? new SvelteSet() : new SvelteSet([id]),
 				selectionBehavior === 'toggle' && wasSelected ? null : id
 			);
 			return;
 		}
-		const next = new Set(selectedKeys);
+		const next = new SvelteSet(selectedKeys);
 		if (next.has(id)) {
 			next.delete(id);
 		} else {
@@ -2317,7 +2323,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 		const start = Math.min(anchorIndex, targetIndex);
 		const end = Math.max(anchorIndex, targetIndex);
-		applySelectionChange(new Set(orderedIds.slice(start, end + 1)), anchor);
+		applySelectionChange(new SvelteSet(orderedIds.slice(start, end + 1)), anchor);
 	}
 
 	function performRowAction(id: TableSelectionKey | undefined) {
@@ -2602,7 +2608,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function emitSelectionChange() {
-		options.onSelectionChange?.(new Set(selectedKeys));
+		options.onSelectionChange?.(new SvelteSet(selectedKeys));
 		notifySelection();
 	}
 
@@ -2611,11 +2617,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 		if (selectionMode === 'single') {
 			const wasSelected = selectedKeys.has(id);
-			applySelectionChange(wasSelected ? new Set() : new Set([id]), wasSelected ? null : id);
+			applySelectionChange(
+				wasSelected ? new SvelteSet() : new SvelteSet([id]),
+				wasSelected ? null : id
+			);
 			return;
 		}
 
-		const next = new Set(selectedKeys);
+		const next = new SvelteSet(selectedKeys);
 		if (next.has(id)) {
 			next.delete(id);
 		} else {
@@ -2626,19 +2635,19 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function selectAllRows() {
 		if (selectionMode !== 'multiple') return;
-		const next = new Set<TableSelectionKey>(getOrderedSelectableRowIds());
+		const next = new SvelteSet<TableSelectionKey>(getOrderedSelectableRowIds());
 		applySelectionChange(next, next.values().next().value ?? null);
 	}
 
 	function deselectAllRows() {
 		if (selectedKeys.size === 0) return;
-		applySelectionChange(new Set(), null);
+		applySelectionChange(new SvelteSet(), null);
 	}
 
 	function setSelection(keys: Iterable<TableSelectionKey>) {
-		const previousSelection = new Set(selectedKeys);
+		const previousSelection = new SvelteSet(selectedKeys);
 		const previousAnchor = selectionAnchorKey;
-		const next = new Set(keys);
+		const next = new SvelteSet(keys);
 		const preservedAnchor =
 			selectionAnchorKey !== null && next.has(selectionAnchorKey) ? selectionAnchorKey : undefined;
 		setSelectedKeys(next, preservedAnchor);
@@ -2652,10 +2661,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function setSelectionMode(mode: TableSelectionMode) {
-		const previousSelectedKeys = new Set(selectedKeys);
+		const previousSelectedKeys = new SvelteSet(selectedKeys);
 		const previousAnchor = selectionAnchorKey;
 		selectionMode = mode;
-		setSelectedKeys(new Set(selectedKeys), selectionAnchorKey);
+		setSelectedKeys(new SvelteSet(selectedKeys), selectionAnchorKey);
 		if (
 			!hasSameSelection(previousSelectedKeys, selectedKeys) ||
 			previousAnchor !== selectionAnchorKey
@@ -2681,8 +2690,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 
 	function setDisallowEmptySelection(disallow: boolean) {
 		disallowEmptySelection = disallow;
-		const previousSelection = new Set(selectedKeys);
-		setSelectedKeys(new Set(selectedKeys), selectionAnchorKey);
+		const previousSelection = new SvelteSet(selectedKeys);
+		setSelectedKeys(new SvelteSet(selectedKeys), selectionAnchorKey);
 		if (!hasSameSelection(previousSelection, selectedKeys)) {
 			emitSelectionChange();
 			return;
