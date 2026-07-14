@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.meta.title} · Svelte Components</title>
+	<title>{data.meta.title} · @human-kit/ui</title>
 	{#if data.meta.description}
 		<meta name="description" content={data.meta.description} />
 	{/if}
