@@ -9,6 +9,8 @@ export { default as DocToolbar } from './doc-toolbar/doc-toolbar.svelte';
 export { Menu, menuRecipe } from './menu/index.js';
 export { default as PropsTable } from './props-table/props-table.svelte';
 export { default as Sidebar } from './sidebar/sidebar.svelte';
+export { Tabs, tabsRecipe } from './tabs/index.js';
+export { default as InstallCommand } from './install-command/install-command.svelte';
 export { default as ThemeToggle } from './theme-toggle/theme-toggle.svelte';
 export { default as Toc } from './toc/toc.svelte';
 export {

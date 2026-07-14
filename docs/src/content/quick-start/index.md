@@ -3,21 +3,21 @@ title: Quick Start
 description: Install @human-kit/ui and render your first accessible component in a couple of minutes.
 ---
 
+<script>
+	import { InstallCommand } from '$lib/docs/components/index.js';
+</script>
+
 # Quick Start
 
 `@human-kit/ui` is a set of headless, accessible UI primitives for **Svelte 5**. Components ship the behavior, semantics, and keyboard/focus handling — you bring the styles.
 
 ## Installation
 
-```bash
-npm install @human-kit/ui
-```
+<InstallCommand pkg="@human-kit/ui" />
 
 Svelte 5 is a peer dependency, so make sure your project is on it:
 
-```bash
-npm install svelte@^5
-```
+<InstallCommand pkg="svelte@^5" />
 
 The package is published as native ESM with per-component subpath exports, so bundlers only include what you import.
 

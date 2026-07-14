@@ -311,6 +311,17 @@
 		color: var(--subtle-foreground);
 	}
 
+	/* Vertical rhythm: every paragraph is spaced from whatever precedes it
+	   (including code blocks), except the one right under a heading (below). */
+	.hd-prose p {
+		margin-top: 1rem;
+	}
+
+	/* Emphasis stays semibold (600), not the browser-default bold (700). */
+	.hd-prose :is(strong, b) {
+		font-weight: 600;
+	}
+
 	/* Titles use the serif display face. */
 	.hd-prose :is(h1, h2, h3, h4) {
 		font-family: var(--font-serif);

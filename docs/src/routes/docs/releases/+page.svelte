@@ -1,5 +1,6 @@
 <script lang="ts">
 	import releases from '$lib/docs/releases-data.json';
+	import { buttonVariants } from '$lib/docs/components/button/recipe';
 
 	interface Entry {
 		pr: number | null;
@@ -25,12 +26,6 @@
 			month: 'short',
 			day: 'numeric'
 		});
-	}
-
-	// A short channel label from the version's prerelease identifier.
-	function channel(version: string): string {
-		const m = version.match(/-([a-z]+)\./);
-		return m ? m[1] : 'stable';
 	}
 </script>
 
@@ -59,13 +54,11 @@
 	<ol class="timeline">
 		{#each list as release, i (release.version)}
 			<li class="node" class:latest={i === 0}>
-				<div class="mb-3 flex items-center gap-3">
+				<div class="mb-3 flex items-center gap-2">
 					<span class="version">{release.version}</span>
-					{#if i === 0}
-						<span class="tag tag-latest">Latest</span>
-					{:else}
-						<span class="tag">{channel(release.version)}</span>
-					{/if}
+					{#each release.sections as section (section.type)}
+						<span class="kind kind-{section.type.toLowerCase()}">{section.type}</span>
+					{/each}
 					{#if release.date}
 						<time class="ml-auto shrink-0 text-sm text-muted-foreground">
 							{formatDate(release.date)}
@@ -74,26 +67,23 @@
 				</div>
 
 				{#each release.sections as section (section.type)}
-					<div class="mb-3 last:mb-0">
-						<span class="kind kind-{section.type.toLowerCase()}">{section.type}</span>
-						<ul class="entries">
-							{#each section.entries as entry, j (j)}
-								<li>
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -- entry HTML is generated at build time from our own CHANGELOG -->
-									<div class="entry-body">{@html entry.html}</div>
-									{#if entry.pr}
-										<a
-											class="pr"
-											href={entry.prUrl}
-											target="_blank"
-											rel="noreferrer"
-											aria-label="Pull request #{entry.pr}">#{entry.pr}</a
-										>
-									{/if}
-								</li>
-							{/each}
-						</ul>
-					</div>
+					<ul class="entries">
+						{#each section.entries as entry, j (j)}
+							<li>
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -- entry HTML is generated at build time from our own CHANGELOG -->
+								<div class="entry-body">{@html entry.html}</div>
+								{#if entry.pr}
+									<a
+										class="{buttonVariants({ variant: 'outline', size: 'sm' })} shrink-0 font-mono"
+										href={entry.prUrl}
+										target="_blank"
+										rel="noreferrer"
+										aria-label="Pull request #{entry.pr}">#{entry.pr}</a
+									>
+								{/if}
+							</li>
+						{/each}
+					</ul>
 				{/each}
 			</li>
 		{/each}
@@ -101,10 +91,9 @@
 </article>
 
 <style>
-	/* Vertical rail behind the version nodes. */
+	/* Vertical rail behind the version nodes (1px, crisp). */
 	.timeline {
 		position: relative;
-		margin-left: 0.25rem;
 	}
 	.timeline::before {
 		content: '';
@@ -112,29 +101,29 @@
 		left: 5px;
 		top: 6px;
 		bottom: 6px;
-		width: 2px;
+		width: 1px;
 		background: var(--border);
 	}
 
 	.node {
 		position: relative;
-		padding-left: 2rem;
+		padding-left: 1.9rem;
 		padding-bottom: 2.5rem;
 	}
 	.node:last-child {
 		padding-bottom: 0;
 	}
-	/* The dot on the rail. */
+	/* The dot on the rail — 11px so its centre (5.5px) lands on the 1px rail. */
 	.node::before {
 		content: '';
 		position: absolute;
 		left: 0;
-		top: 5px;
-		width: 12px;
-		height: 12px;
+		top: 6px;
+		width: 11px;
+		height: 11px;
 		border-radius: 9999px;
 		background: var(--background);
-		border: 2px solid var(--muted-foreground);
+		border: 1px solid var(--muted-foreground);
 	}
 	.node.latest::before {
 		border-color: var(--primary);
@@ -149,35 +138,22 @@
 		letter-spacing: -0.01em;
 	}
 
-	.tag {
+	/* Change-type badges (Minor / Patch / Major) sit next to the version. */
+	.kind {
+		display: inline-flex;
+		align-items: center;
 		border-radius: 9999px;
 		border: 1px solid var(--border);
+		background: var(--muted);
 		padding: 0.05rem 0.5rem;
 		font-size: 0.7rem;
-		font-weight: 500;
+		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.03em;
 		color: var(--muted-foreground);
 	}
-	.tag-latest {
-		border-color: transparent;
-		background: var(--primary);
-		color: var(--primary-foreground);
-	}
-
-	.kind {
-		display: inline-block;
-		margin-bottom: 0.375rem;
-		font-size: 0.7rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
 	.kind-minor {
 		color: var(--color-blue-600);
-	}
-	.kind-patch {
-		color: var(--muted-foreground);
 	}
 	.kind-major {
 		color: var(--color-amber-600);
@@ -193,6 +169,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.625rem;
+	}
+	.entries:not(:last-child) {
+		margin-bottom: 0.875rem;
 	}
 	.entries > li {
 		display: flex;
@@ -215,6 +194,9 @@
 	.entry-body :global(p + ul) {
 		margin-top: 0.375rem;
 	}
+	.entry-body :global(strong) {
+		font-weight: 600;
+	}
 	.entry-body :global(ul) {
 		margin: 0.375rem 0 0;
 		padding-left: 1.1rem;
@@ -233,24 +215,5 @@
 		color: var(--link);
 		text-decoration: underline;
 		text-underline-offset: 2px;
-	}
-
-	.pr {
-		flex-shrink: 0;
-		margin-top: 0.05rem;
-		border-radius: 0.375rem;
-		border: 1px solid var(--border);
-		padding: 0.05rem 0.375rem;
-		font-family: var(--font-mono, ui-monospace, monospace);
-		font-size: 0.75rem;
-		color: var(--muted-foreground);
-		text-decoration: none;
-		transition:
-			color 150ms ease,
-			border-color 150ms ease;
-	}
-	.pr:hover {
-		color: var(--foreground);
-		border-color: var(--muted-foreground);
 	}
 </style>
