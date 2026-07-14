@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.0.0-beta.0
+
+### Minor Changes
+
+- [`e197413`](https://github.com/human-kit/ui/commit/e197413f9c398fdf9c489f92f6490b3d7be09b0b) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Promote the library to its first public beta, exiting the alpha prerelease line.
+
 ## 1.0.0-alpha.22
 
 ### Minor Changes

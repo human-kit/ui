@@ -1,6 +1,6 @@
 {
 	"name": "@human-kit/ui",
-	"version": "1.0.0-alpha.22",
+	"version": "1.0.0-beta.0",
 	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
 	"license": "MIT",
 	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
