@@ -186,7 +186,12 @@
 	$effect(() => {
 		if (isExpandedControlled && expandedKeys !== undefined) {
 			const nextExpandedKeys = getSetFromKeys(expandedKeys);
-			if (!setsEqual(untrack(() => ctx.getExpandedKeys()), nextExpandedKeys)) {
+			if (
+				!setsEqual(
+					untrack(() => ctx.getExpandedKeys()),
+					nextExpandedKeys
+				)
+			) {
 				ctx.setExpandedKeys(nextExpandedKeys);
 			}
 		}
@@ -195,7 +200,12 @@
 	$effect(() => {
 		if (isSelectionControlled && selectedKeys !== undefined) {
 			const nextSelectedKeys = getSetFromKeys(selectedKeys);
-			if (!setsEqual(untrack(() => ctx.getSelectedKeys()), nextSelectedKeys)) {
+			if (
+				!setsEqual(
+					untrack(() => ctx.getSelectedKeys()),
+					nextSelectedKeys
+				)
+			) {
 				ctx.setSelectedKeys(nextSelectedKeys);
 			}
 		}

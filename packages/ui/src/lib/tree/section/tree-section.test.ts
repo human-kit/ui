@@ -26,10 +26,7 @@ describe('Tree.Section', () => {
 
 		await expect.element(tree.getByText('Documents')).toBeInTheDocument();
 		await expect.element(tree.getByText('Archive')).toBeInTheDocument();
-		expect(treeContext?.getVisibleNodes().map((node) => node.id)).toEqual([
-			'documents',
-			'archive'
-		]);
+		expect(treeContext?.getVisibleNodes().map((node) => node.id)).toEqual(['documents', 'archive']);
 
 		// The loose item is rendered outside any section group.
 		const archive = screen

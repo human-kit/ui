@@ -323,7 +323,9 @@ export function createKeyboardNavigation(
 		// confirm it. With nothing focused, this is a plain first-match-from-start search.
 		const currentIdx = getCurrentIndex();
 		const ordered =
-			currentIdx === -1 ? items : [...items.slice(currentIdx + 1), ...items.slice(0, currentIdx + 1)];
+			currentIdx === -1
+				? items
+				: [...items.slice(currentIdx + 1), ...items.slice(0, currentIdx + 1)];
 
 		const match = ordered.find((el) => {
 			// Prefer an explicit text value (e.g. Menu.Item's `textValue` exposed as
@@ -522,7 +524,9 @@ export function rovingTabindex(
 	const cleanup = action(container);
 
 	return {
-		update(newOptions: Pick<KeyboardNavigationOptions, 'orientation' | 'loop' | 'itemSelector'> = {}) {
+		update(
+			newOptions: Pick<KeyboardNavigationOptions, 'orientation' | 'loop' | 'itemSelector'> = {}
+		) {
 			currentOptions = newOptions;
 			updateItems();
 		},

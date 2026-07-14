@@ -46,7 +46,12 @@
      `hk-button-link` to escape the prose link styling. -->
 <div class="float-right mb-2 ml-6 flex items-center gap-1.5">
 	{#if prev}
-		<a href={resolve(`/docs/${prev.slug}`)} class={iconLink} aria-label="Previous: {prev.title}" title="Previous: {prev.title}">
+		<a
+			href={resolve(`/docs/${prev.slug}`)}
+			class={iconLink}
+			aria-label="Previous: {prev.title}"
+			title="Previous: {prev.title}"
+		>
 			<ArrowLeft />
 		</a>
 	{:else}
@@ -56,7 +61,12 @@
 	{/if}
 
 	{#if next}
-		<a href={resolve(`/docs/${next.slug}`)} class={iconLink} aria-label="Next: {next.title}" title="Next: {next.title}">
+		<a
+			href={resolve(`/docs/${next.slug}`)}
+			class={iconLink}
+			aria-label="Next: {next.title}"
+			title="Next: {next.title}"
+		>
 			<ArrowRight />
 		</a>
 	{:else}

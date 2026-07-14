@@ -6,7 +6,9 @@ import { setPage } from '../../test-stubs/app-state.svelte.js';
 import type { NavGroup } from '../../nav.js';
 
 const NAV: NavGroup[] = [{ label: 'Form', items: [{ slug: 'button', title: 'Button' }] }];
-const children = createRawSnippet(() => ({ render: () => `<p data-testid="content">Page body</p>` }));
+const children = createRawSnippet(() => ({
+	render: () => `<p data-testid="content">Page body</p>`
+}));
 
 describe('DocsShell', () => {
 	it('renders the header, sidebar nav, and page content together', () => {

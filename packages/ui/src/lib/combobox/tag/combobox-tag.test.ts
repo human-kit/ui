@@ -64,9 +64,7 @@ describe('ComboBox.Tag', () => {
 			// Delete removes the virtually focused tag.
 			await userEvent.keyboard('{Delete}');
 			expect(onValueChange).toHaveBeenCalledWith(['apple']);
-			await expect
-				.poll(() => screen.container.querySelectorAll('[data-tag-id]').length)
-				.toBe(1);
+			await expect.poll(() => screen.container.querySelectorAll('[data-tag-id]').length).toBe(1);
 
 			// Virtual focus moves to the remaining tag and activedescendant follows it.
 			const remainingTag = screen.container.querySelector<HTMLElement>('[data-tag-id]')!;

@@ -7,13 +7,7 @@
 
 	// Literal class list so Tailwind's scanner sees every depth utility (a computed
 	// `bg-depth-${n}` string would be invisible to it and get purged).
-	const DEPTH_BG = [
-		'bg-depth-0',
-		'bg-depth-1',
-		'bg-depth-2',
-		'bg-depth-3',
-		'bg-depth-4'
-	] as const;
+	const DEPTH_BG = ['bg-depth-0', 'bg-depth-1', 'bg-depth-2', 'bg-depth-3', 'bg-depth-4'] as const;
 </script>
 
 <script lang="ts">

@@ -216,7 +216,9 @@ describe('DateRangePicker.Root', () => {
 			.poll(() => getSegment('start', 'month').element()?.getAttribute('aria-invalid'))
 			.toBe('true');
 		expect(
-			document.querySelector('[role="group"][aria-label="Start date"]')?.getAttribute('aria-invalid')
+			document
+				.querySelector('[role="group"][aria-label="Start date"]')
+				?.getAttribute('aria-invalid')
 		).toBeNull();
 	});
 
@@ -392,9 +394,9 @@ describe('DateRangePicker.Root', () => {
 		});
 
 		expect(
-			document.querySelector<HTMLInputElement>('input[name="tripStart"]')?.getAttribute(
-				'autocomplete'
-			)
+			document
+				.querySelector<HTMLInputElement>('input[name="tripStart"]')
+				?.getAttribute('autocomplete')
 		).toBe('off');
 		expect(
 			document
@@ -433,7 +435,9 @@ describe('DateRangePicker.Root', () => {
 				)
 				.toBe('true');
 			expect(
-				document.querySelector('[role="group"][aria-label="End date"]')?.getAttribute('data-invalid')
+				document
+					.querySelector('[role="group"][aria-label="End date"]')
+					?.getAttribute('data-invalid')
 			).toBe('true');
 		});
 

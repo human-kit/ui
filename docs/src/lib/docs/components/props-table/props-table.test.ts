@@ -5,12 +5,26 @@ import PropsTable from './props-table.svelte';
 import type { ApiProp } from '../../api-types.js';
 
 const PROPS: ApiProp[] = [
-	{ name: 'value', type: 'string | null', required: true, default: 'null', description: 'The current value.' },
-	{ name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Whether it is disabled.' }
+	{
+		name: 'value',
+		type: 'string | null',
+		required: true,
+		default: 'null',
+		description: 'The current value.'
+	},
+	{
+		name: 'disabled',
+		type: 'boolean',
+		required: false,
+		default: 'false',
+		description: 'Whether it is disabled.'
+	}
 ];
 
 function rowTrigger(name: string): HTMLElement {
-	const el = [...document.querySelectorAll('button')].find((b) => b.textContent?.trim().startsWith(name));
+	const el = [...document.querySelectorAll('button')].find((b) =>
+		b.textContent?.trim().startsWith(name)
+	);
 	if (!el) throw new Error(`no row trigger for ${name}`);
 	return el;
 }

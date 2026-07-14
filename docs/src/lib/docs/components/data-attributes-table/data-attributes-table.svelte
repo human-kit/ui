@@ -24,7 +24,9 @@
 	{#each attributes as attribute (attribute.name)}
 		<!-- Data attributes are simple (name + description), so the description sits
 		     in its own column rather than behind a collapsible. -->
-		<div class="{columns} items-start gap-3 border-b border-border-subtle px-3 py-2 last:border-b-0">
+		<div
+			class="{columns} items-start gap-3 border-b border-border-subtle px-3 py-2 last:border-b-0"
+		>
 			<span class="w-fit rounded bg-accent px-1.5 py-0.5 font-mono text-xs text-foreground">
 				{attribute.name}
 			</span>

@@ -35,11 +35,11 @@
 
 	--primary: oklch(0.59 0.2 277);
 	--primary-foreground: oklch(0.985 0 0);
-	--depth-0: oklch(0.990 0 0);
-	--depth-1: oklch(0.980 0 0);
-	--depth-2: oklch(0.970 0 0);
-	--depth-3: oklch(0.960 0 0);
-	--depth-4: oklch(0.950 0 0);
+	--depth-0: oklch(0.99 0 0);
+	--depth-1: oklch(0.98 0 0);
+	--depth-2: oklch(0.97 0 0);
+	--depth-3: oklch(0.96 0 0);
+	--depth-4: oklch(0.95 0 0);
 	/* Button elevation surfaces, relative to the surface it sits on. Defaults
 	   assume a depth-0 surface; a <Surface> republishes them to its own level.
 	     --surface-bg = the surface's own depth (sunken outer-shadow lip)
@@ -55,8 +55,8 @@
 	--sunken-shadow: oklch(0 0 0 / 0.05);
 
 	/* Thin overlay scrollbar thumb (the nav rail). */
-	--scrollbar-thumb: oklch(0.750 0 0);
-	--scrollbar-thumb-hover: oklch(0.650 0 0);
+	--scrollbar-thumb: oklch(0.75 0 0);
+	--scrollbar-thumb-hover: oklch(0.65 0 0);
 }
 
 .dark {
@@ -79,16 +79,16 @@
 	/* Dark elevation: depth-0 sits just off pure black, higher steps get lighter.
 	   Steps are BIGGER than light's 0.01 because near black a given lightness delta
 	   reads as less contrast than the same delta near white. */
-	--depth-0: oklch(0.170 0 0);
-	--depth-1: oklch(0.210 0 0);
-	--depth-2: oklch(0.250 0 0);
-	--depth-3: oklch(0.290 0 0);
-	--depth-4: oklch(0.330 0 0);
+	--depth-0: oklch(0.17 0 0);
+	--depth-1: oklch(0.21 0 0);
+	--depth-2: oklch(0.25 0 0);
+	--depth-3: oklch(0.29 0 0);
+	--depth-4: oklch(0.33 0 0);
 	--raised-highlight: oklch(1 0 0 / 0.06);
 	--sunken-shadow: oklch(0 0 0 / 0.35);
 
-	--scrollbar-thumb: oklch(0.430 0 0);
-	--scrollbar-thumb-hover: oklch(0.530 0 0);
+	--scrollbar-thumb: oklch(0.43 0 0);
+	--scrollbar-thumb-hover: oklch(0.53 0 0);
 }
 
 /*
@@ -98,7 +98,6 @@
  * Explicit colors (border-transparent, border-primary/10, …) still win.
  */
 @layer base {
-
 	*,
 	::before,
 	::after,
@@ -216,7 +215,6 @@
 }
 
 @supports not selector(::-webkit-scrollbar) {
-
 	/* Firefox: same thin, hover-revealed thumb via the standard properties. */
 	* {
 		scrollbar-width: thin;
@@ -347,7 +345,7 @@
 
 	/* The description right under a heading sits tight against it (the heading's
 	   own bottom margin is the whole gap); later paragraphs keep normal spacing. */
-	.hd-prose :is(h1, h2, h3, h4)+p {
+	.hd-prose :is(h1, h2, h3, h4) + p {
 		margin-top: 0;
 	}
 
@@ -378,7 +376,7 @@
 		text-underline-offset: 2px;
 	}
 
-	.hd-prose :not(pre)>code {
+	.hd-prose :not(pre) > code {
 		font-size: 0.875em;
 		background-color: var(--accent);
 		padding: 0.125rem 0.375rem;

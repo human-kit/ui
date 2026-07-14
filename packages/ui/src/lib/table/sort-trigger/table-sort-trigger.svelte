@@ -1,6 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useTableCellContext, useTableColumnContext, useTableContext } from '../root/context.svelte';
+	import {
+		useTableCellContext,
+		useTableColumnContext,
+		useTableContext
+	} from '../root/context.svelte';
 	import type { TableSortTriggerProps, TableSortTriggerRenderState } from '../types.js';
 	import {
 		shouldShowFocusVisible,

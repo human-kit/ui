@@ -21,7 +21,9 @@ describe('DocToolbar', () => {
 		render(DocToolbar);
 		await userEvent.click(document.querySelector('button[aria-label="Page options"]')!);
 		await expect
-			.poll(() => [...document.querySelectorAll('[role="menuitem"]')].map((i) => i.textContent?.trim()))
+			.poll(() =>
+				[...document.querySelectorAll('[role="menuitem"]')].map((i) => i.textContent?.trim())
+			)
 			.toEqual(['View as Markdown', 'View source']);
 	});
 
@@ -32,7 +34,9 @@ describe('DocToolbar', () => {
 		// and both actions are present and labelled — navigation targets are unit-tested
 		// by the +server route separately.
 		await userEvent.click(document.querySelector('button[aria-label="Page options"]')!);
-		const labels = [...document.querySelectorAll('[role="menuitem"]')].map((i) => i.textContent?.trim());
+		const labels = [...document.querySelectorAll('[role="menuitem"]')].map((i) =>
+			i.textContent?.trim()
+		);
 		expect(labels).toContain('View as Markdown');
 		expect(labels).toContain('View source');
 	});

@@ -5,7 +5,11 @@
 	// which — via `{#key}` — destroys the old registrant and creates the new one,
 	// mirroring how `<data.content />` swaps on client-side navigation.
 	import { untrack } from 'svelte';
-	import { provideTocRegistry, getRegisteredHeadings, type RegisteredHeading } from './toc-registry.svelte.js';
+	import {
+		provideTocRegistry,
+		getRegisteredHeadings,
+		type RegisteredHeading
+	} from './toc-registry.svelte.js';
 	import Registrant from './toc-registry-registrant.svelte';
 
 	interface Page {

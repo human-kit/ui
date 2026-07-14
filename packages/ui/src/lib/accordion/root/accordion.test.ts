@@ -34,9 +34,7 @@ describe('Accordion', () => {
 		render(AccordionTest, { defaultValue: ['overview'], panelRegion: false });
 
 		const overviewPanel = document.querySelector<HTMLElement>('[data-testid="panel-overview"]');
-		const overviewTrigger = document.querySelector<HTMLElement>(
-			'[data-testid="trigger-overview"]'
-		);
+		const overviewTrigger = document.querySelector<HTMLElement>('[data-testid="trigger-overview"]');
 
 		expect(overviewPanel).toBeTruthy();
 		// Opt-out for large accordions: no role="region" landmark on the panel.

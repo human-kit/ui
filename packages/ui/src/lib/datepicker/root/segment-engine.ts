@@ -53,7 +53,11 @@ export function createDateSegmentEngine(adapter: DateSegmentEngineAdapter): Date
 		return adapter.getDraft()[type];
 	}
 
-	function setSegmentValueInternal(type: EditableSegmentType, nextValue: string, fromTyping: boolean) {
+	function setSegmentValueInternal(
+		type: EditableSegmentType,
+		nextValue: string,
+		fromTyping: boolean
+	) {
 		if (!adapter.isEditable()) return;
 
 		const rawNumericLength = nextValue.replace(/\D/g, '').length;

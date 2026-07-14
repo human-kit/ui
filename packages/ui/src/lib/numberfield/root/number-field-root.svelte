@@ -97,7 +97,8 @@
 			}
 		}
 
-		if (options.isInvalid) return resolveLocalizedString(options.locale, 'numberField.invalidValue');
+		if (options.isInvalid)
+			return resolveLocalizedString(options.locale, 'numberField.invalidValue');
 
 		return '';
 	}

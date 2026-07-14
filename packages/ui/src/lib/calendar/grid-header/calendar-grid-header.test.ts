@@ -30,7 +30,15 @@ describe('Calendar.GridHeader', () => {
 		const headerCells = Array.from(
 			document.querySelectorAll<HTMLTableCellElement>('th[role="columnheader"]')
 		);
-		const longNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const longNames = [
+			'Sunday',
+			'Monday',
+			'Tuesday',
+			'Wednesday',
+			'Thursday',
+			'Friday',
+			'Saturday'
+		];
 
 		expect(headerCells.map((cell) => cell.getAttribute('aria-label'))).toEqual(longNames);
 		expect(headerCells.map((cell) => cell.getAttribute('abbr'))).toEqual(longNames);

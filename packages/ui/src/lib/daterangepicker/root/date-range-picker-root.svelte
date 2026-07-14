@@ -200,7 +200,9 @@
 	// An unavailable interior day flags BOTH parts: the blocked path is a
 	// property of the (start, end) pair, not of a single endpoint, so both
 	// inputs surface data-invalid/aria-invalid through the per-part mechanism.
-	const isStartPartInvalid = $derived(startDraftEvaluation.isInvalid || isDraftRangePathUnavailable);
+	const isStartPartInvalid = $derived(
+		startDraftEvaluation.isInvalid || isDraftRangePathUnavailable
+	);
 	const isEndPartInvalid = $derived(endDraftEvaluation.isInvalid || isDraftRangePathUnavailable);
 	const isInvalidDraft = $derived(isStartPartInvalid || isEndPartInvalid);
 

@@ -10,7 +10,9 @@ const children = createRawSnippet(() => ({
 }));
 
 function codeTrigger(): HTMLElement {
-	const el = [...document.querySelectorAll('button')].find((b) => /Show code|Hide code/.test(b.textContent ?? ''));
+	const el = [...document.querySelectorAll('button')].find((b) =>
+		/Show code|Hide code/.test(b.textContent ?? '')
+	);
 	if (!el) throw new Error('no code trigger');
 	return el;
 }

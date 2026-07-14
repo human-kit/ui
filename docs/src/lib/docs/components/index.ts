@@ -11,4 +11,8 @@ export { default as PropsTable } from './props-table/props-table.svelte';
 export { default as Sidebar } from './sidebar/sidebar.svelte';
 export { default as ThemeToggle } from './theme-toggle/theme-toggle.svelte';
 export { default as Toc } from './toc/toc.svelte';
-export { provideTocRegistry, registerHeadings, getRegisteredHeadings } from './toc/toc-registry.svelte.js';
+export {
+	provideTocRegistry,
+	registerHeadings,
+	getRegisteredHeadings
+} from './toc/toc-registry.svelte.js';

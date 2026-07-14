@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-	import { setTableRowContext, useTableContext, useTableSectionContext } from '../root/context.svelte';
+	import {
+		setTableRowContext,
+		useTableContext,
+		useTableSectionContext
+	} from '../root/context.svelte';
 	import type { TableRowProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
@@ -260,12 +264,8 @@
 		return table.getRowAriaIndex(rowToken);
 	});
 	const isSelected = $derived(section.section === 'body' ? table.isRowSelected(id) : false);
-	const isFocusWithin = $derived(
-		section.section === 'body' ? table.isRowFocused(rowToken) : false
-	);
-	const isFocused = $derived(
-		section.section === 'body' ? table.isRowFocusTarget(rowToken) : false
-	);
+	const isFocusWithin = $derived(section.section === 'body' ? table.isRowFocused(rowToken) : false);
+	const isFocused = $derived(section.section === 'body' ? table.isRowFocusTarget(rowToken) : false);
 	const isFocusVisible = $derived(
 		section.section === 'body' ? isFocused && table.focusVisible : false
 	);

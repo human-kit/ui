@@ -89,9 +89,7 @@
 	// Focus/selection/disabled state is fine-grained `$state` in the context —
 	// the reads below track it directly, no version counters needed.
 	const isFocused = $derived(row.section === 'body' ? table.isCellFocused(key) : false);
-	const isFocusVisible = $derived(
-		row.section === 'body' ? isFocused && table.focusVisible : false
-	);
+	const isFocusVisible = $derived(row.section === 'body' ? isFocused && table.focusVisible : false);
 	const isRowSelected = $derived(row.section === 'body' ? row.rowState.isSelected : false);
 	const isRowDisabled = $derived(
 		row.section === 'body'

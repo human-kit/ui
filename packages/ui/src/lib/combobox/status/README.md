@@ -7,8 +7,8 @@
 Name: `ComboBox.Status`  
 Description: Visually-hidden `aria-live="polite"` region that announces the number of results visible in the popover as the filter changes.
 
-| Prop            | Type                        | Default     | Description                                                                                 |
-| --------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| Prop            | Type                        | Default     | Description                                                                                |
+| --------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
 | `formatMessage` | `(count: number) => string` | `undefined` | Builds the announced message from the visible item count. Defaults to a localized message. |
 
 ## Notes

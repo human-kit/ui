@@ -5,11 +5,6 @@
 	let { children } = $props();
 </script>
 
-<DocsShell
-	{nav}
-	title="@human-kit/ui"
-	badge="beta"
-	githubUrl="https://github.com/human-kit/ui"
->
+<DocsShell {nav} title="@human-kit/ui" badge="beta" githubUrl="https://github.com/human-kit/ui">
 	{@render children()}
 </DocsShell>

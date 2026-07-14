@@ -46,12 +46,10 @@ describe('Table.Body', () => {
 		// rowHeight 32, scrollTop 1280 → start index 40, default overscan 18 → first
 		// rendered logical index 22 (row-023) → aria-rowindex 1 (header) + 22 + 1 = 24.
 		await expect
-			.poll(() =>
-				document.querySelector('tbody tr[data-item-id]')?.getAttribute('data-item-id')
-			)
+			.poll(() => document.querySelector('tbody tr[data-item-id]')?.getAttribute('data-item-id'))
 			.toBe('row-023');
-		expect(
-			document.querySelector('tbody tr[data-item-id]')?.getAttribute('aria-rowindex')
-		).toBe('24');
+		expect(document.querySelector('tbody tr[data-item-id]')?.getAttribute('aria-rowindex')).toBe(
+			'24'
+		);
 	});
 });

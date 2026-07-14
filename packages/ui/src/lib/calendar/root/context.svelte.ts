@@ -119,7 +119,9 @@ export function createCalendarContext(options: CreateCalendarContextOptions): Ca
 	const initialMonthHeadingStyle = options.monthHeadingStyle ?? 'composed';
 	const initialUnavailableFn = options.isDateUnavailable;
 
-	function normalizeBoundValue(bound: CalendarDateValue | undefined): CalendarDateValue | undefined {
+	function normalizeBoundValue(
+		bound: CalendarDateValue | undefined
+	): CalendarDateValue | undefined {
 		return bound && isValidCalendarDateValue(bound) ? bound : undefined;
 	}
 

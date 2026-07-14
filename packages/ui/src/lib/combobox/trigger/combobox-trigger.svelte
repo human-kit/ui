@@ -21,7 +21,10 @@
 	const ctx = useComboBoxContext();
 	const isTriggerDisabled = $derived(ctx.isDisabled || ctx.isReadOnly || ctx.isPending);
 	const defaultAriaLabel = $derived(
-		resolveLocalizedString($localeStore, ctx.isOpen ? 'combobox.hideOptions' : 'combobox.showOptions')
+		resolveLocalizedString(
+			$localeStore,
+			ctx.isOpen ? 'combobox.hideOptions' : 'combobox.showOptions'
+		)
 	);
 
 	// Whether the popover was open when the current pointer press started. The

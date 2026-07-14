@@ -442,10 +442,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let widthEpoch = $state(0);
 	const instanceCounters = new Map<string, number>();
 	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
-	setSelectedKeys(
-		new Set(initialSelectedKeys),
-		initialSelectedKeys.values().next().value ?? null
-	);
+	setSelectedKeys(new Set(initialSelectedKeys), initialSelectedKeys.values().next().value ?? null);
 
 	function createInstanceToken(prefix: string) {
 		const nextCount = (instanceCounters.get(prefix) ?? 0) + 1;

@@ -14,7 +14,11 @@ export const page: PageStub = $state({
 	data: {}
 });
 
-export function setPage(next: { pathname?: string; params?: Record<string, string>; data?: Record<string, unknown> }) {
+export function setPage(next: {
+	pathname?: string;
+	params?: Record<string, string>;
+	data?: Record<string, unknown>;
+}) {
 	if (next.pathname !== undefined) page.url = new URL(`http://localhost${next.pathname}`);
 	if (next.params !== undefined) page.params = next.params;
 	if (next.data !== undefined) page.data = next.data;

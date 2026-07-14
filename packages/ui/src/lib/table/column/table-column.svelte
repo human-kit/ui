@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { setTableColumnContext, useTableContext, useTableSectionContext } from '../root/context.svelte';
+	import {
+		setTableColumnContext,
+		useTableContext,
+		useTableSectionContext
+	} from '../root/context.svelte';
 	import type { TableColumnProps } from '../types.js';
 
 	let {

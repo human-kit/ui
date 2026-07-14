@@ -406,9 +406,7 @@ describe('Menu', () => {
 			await expect.poll(highlightedText).toBe('Delete');
 
 			// Give any (buggy) scheduled trigger refocus a chance to run before pressing Enter.
-			await new Promise((resolve) =>
-				requestAnimationFrame(() => requestAnimationFrame(resolve))
-			);
+			await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 			await userEvent.keyboard('{Enter}');
 
@@ -428,9 +426,7 @@ describe('Menu', () => {
 			await userEvent.keyboard('{Enter}');
 
 			await expect.poll(() => queryMenus().length).toBe(2);
-			expect(
-				onSubmenuOpenChange.mock.calls.filter(([open]) => open === true)
-			).toHaveLength(1);
+			expect(onSubmenuOpenChange.mock.calls.filter(([open]) => open === true)).toHaveLength(1);
 		});
 
 		it('does not re-notify onOpenChange when the pointer re-enters the open submenu trigger', async () => {
@@ -450,9 +446,7 @@ describe('Menu', () => {
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
 			expect(queryMenus().length).toBe(2);
-			expect(
-				onSubmenuOpenChange.mock.calls.filter(([open]) => open === true)
-			).toHaveLength(1);
+			expect(onSubmenuOpenChange.mock.calls.filter(([open]) => open === true)).toHaveLength(1);
 		});
 
 		it('does not open the submenu when the pointer only crosses the trigger', async () => {

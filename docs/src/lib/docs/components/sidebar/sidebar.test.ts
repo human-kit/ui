@@ -5,7 +5,13 @@ import { setPage } from '../../test-stubs/app-state.svelte.js';
 import type { NavGroup } from '../../nav.js';
 
 const NAV: NavGroup[] = [
-	{ label: 'Form', items: [{ slug: 'button', title: 'Button' }, { slug: 'input', title: 'Input' }] },
+	{
+		label: 'Form',
+		items: [
+			{ slug: 'button', title: 'Button' },
+			{ slug: 'input', title: 'Input' }
+		]
+	},
 	{ label: 'Overlays', items: [{ slug: 'dialog', title: 'Dialog' }] }
 ];
 

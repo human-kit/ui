@@ -556,9 +556,7 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('aria-expanded', 'true');
 
 			await userEvent.keyboard('{ArrowDown}');
-			await expect
-				.poll(() => input.element().getAttribute('aria-activedescendant'))
-				.toBeTruthy();
+			await expect.poll(() => input.element().getAttribute('aria-activedescendant')).toBeTruthy();
 		});
 
 		it('opens on click when trigger is press (default)', async () => {

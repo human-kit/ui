@@ -52,7 +52,7 @@ describe('TOC registry', () => {
 		}
 	});
 
-	it('never leaves a previous page\'s unique heading behind', async () => {
+	it("never leaves a previous page's unique heading behind", async () => {
 		render(Harness, { pages: PAGES });
 		await userEvent.click(await pickButton('checkbox'));
 		await expect.poll(tocText).toEqual(['Root', 'Indicator']);
