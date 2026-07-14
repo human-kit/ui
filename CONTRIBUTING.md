@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in improving `@human-kit/svelte-components`. This guide
+Thanks for your interest in improving `@human-kit/ui`. This guide
 covers how to get set up and the workflow we use for changes.
 
 ## Prerequisites
@@ -14,15 +14,15 @@ covers how to get set up and the workflow we use for changes.
 ## Getting started
 
 ```bash
-git clone https://github.com/Agustin-Delgado/svelte-components.git
-cd svelte-components
+git clone https://github.com/human-kit/ui.git
+cd ui
 pnpm install
 pnpm run dev        # start the docs/demo app
 ```
 
 ## Repository layout
 
-- `packages/ui/` — the publishable library (`@human-kit/svelte-components`).
+- `packages/ui/` — the publishable library (`@human-kit/ui`).
 - `docs/` — documentation site and interactive playground.
 - `.changeset/` — versioning and release notes.
 - `scripts/` — repo automation (PR workflow, changeset helpers, TODO linting).

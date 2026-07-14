@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tabs } from '@human-kit/svelte-components';
+	import { Tabs } from '@human-kit/ui';
 </script>
 
 <Tabs.Root defaultValue="preview" keyboardActivation="manual" class="w-full max-w-md space-y-4">

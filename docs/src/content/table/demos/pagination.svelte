@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table } from '@human-kit/svelte-components';
+	import { Table } from '@human-kit/ui';
 
 	const customers = ['Northwind', 'Comet', 'Atlas', 'Delta', 'Hearth', 'River', 'Lumen', 'Vertex'];
 	const invoices = customers.map((customer, index) => ({

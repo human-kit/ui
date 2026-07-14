@@ -26,7 +26,7 @@ A composable calendar providing single-date and range selection (ISO `YYYY-MM-DD
 
 ```svelte
 <script>
-	import { Calendar, LocaleProvider } from '@human-kit/svelte-components';
+	import { Calendar, LocaleProvider } from '@human-kit/ui';
 </script>
 
 <LocaleProvider locale="es-ES">

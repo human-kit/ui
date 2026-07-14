@@ -26,7 +26,7 @@ An accessible dropdown / action menu anchored to a trigger. It follows the WAI-A
 
 ```svelte
 <script>
-	import { Menu } from '@human-kit/svelte-components';
+	import { Menu } from '@human-kit/ui';
 </script>
 
 <Menu.Root>

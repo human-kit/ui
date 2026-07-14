@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Accordion } from '@human-kit/svelte-components';
+	import { Accordion } from '@human-kit/ui';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
 	const sections = [

@@ -125,7 +125,7 @@ All public Table part prop types are exported from the table barrel, including `
 - Sorting: `Table.SortTrigger` is the public opt-in for sortable columns. Rendering it inside `Table.ColumnHeaderCell` makes the owning `Table.Column` sortable and toggles `Table.Root.sortDescriptor`.
 - `Table.SortTrigger.children` can consume a `sortDirection` render state so the trigger button can expose stateful labels or visuals without reading the root descriptor directly.
 - Resizing: `Table.ColumnResizer` is the only public opt-in for resizing. Rendering it inside a `Table.ColumnHeaderCell` enables resizing for the owning `Table.Column`.
-- Public input types: import the `Table*Props` types you need from `@human-kit/svelte-components/table` or the main package barrel instead of deriving contracts from component internals.
+- Public input types: import the `Table*Props` types you need from `@human-kit/ui/table` or the main package barrel instead of deriving contracts from component internals.
 - Internal normalized state: table context stores normalized column metadata internally as `TableColumnMetadata`. That metadata is not the public input contract for wrappers or consumers.
 
 ## Accessibility

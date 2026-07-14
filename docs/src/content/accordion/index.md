@@ -24,7 +24,7 @@ Provide a unique `value` on every `Accordion.Item` — the matching `Header`, `T
 
 ```svelte
 <script>
-	import { Accordion } from '@human-kit/svelte-components';
+	import { Accordion } from '@human-kit/ui';
 </script>
 
 <Accordion.Root defaultValue={['overview']}>

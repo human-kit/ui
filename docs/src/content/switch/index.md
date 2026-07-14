@@ -26,7 +26,7 @@ The switch is assembled from two parts. `Switch.Root` renders the track (and a h
 
 ```svelte
 <script>
-	import { Switch } from '@human-kit/svelte-components';
+	import { Switch } from '@human-kit/ui';
 </script>
 
 <Switch.Root aria-label="Enable notifications">

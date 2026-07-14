@@ -24,7 +24,7 @@ A composable date picker that pairs a segmented date input with a calendar popov
 
 ```svelte
 <script>
-	import { DatePicker } from '@human-kit/svelte-components/datepicker';
+	import { DatePicker } from '@human-kit/ui/datepicker';
 </script>
 
 <DatePicker.Root>

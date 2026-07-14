@@ -9,7 +9,7 @@ export default defineConfig(() => ({
 	plugins: [demoHighlight(), tailwindcss(), sveltekit(), devtoolsJson()],
 	resolve: {
 		alias: {
-			'@human-kit/svelte-components': path.resolve(__dirname, '../packages/ui/src/lib')
+			'@human-kit/ui': path.resolve(__dirname, '../packages/ui/src/lib')
 		}
 	}
 }));

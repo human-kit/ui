@@ -1,11 +1,11 @@
-# Svelte Components Monorepo
+# @human-kit/ui
 
 Monorepo for accessible, reusable UI components for Svelte 5.
 This repository contains the publishable library and the docs/demo app.
 
 ## Quick Overview
 
-- npm library: `@human-kit/svelte-components` (in `packages/ui`).
+- npm library: `@human-kit/ui` (in `packages/ui`).
 - Docs/demo app: `docs` (SvelteKit + Vite).
 - Versioning and releases: `.changeset`.
 - PR automation: `scripts/pr.sh`.
@@ -15,7 +15,7 @@ This repository contains the publishable library and the docs/demo app.
 ```text
 .
 |- packages/
-|  |- svelte/          # publishable package @human-kit/svelte-components
+|  |- ui/              # publishable package @human-kit/ui
 |- docs/               # documentation site and playground
 |- .changeset/         # semantic versioning and release notes
 |- scripts/            # utility scripts (e.g. PR workflow)
@@ -41,14 +41,14 @@ This repository contains the publishable library and the docs/demo app.
 ## Package Installation (Consumers)
 
 ```bash
-npm install @human-kit/svelte-components
+npm install @human-kit/ui
 ```
 
 Quick usage:
 
 ```svelte
 <script lang="ts">
-	import { ComboBox, Dialog, Input, Label } from '@human-kit/svelte-components';
+	import { ComboBox, Dialog, Input, Label } from '@human-kit/ui';
 </script>
 ```
 
@@ -84,7 +84,7 @@ Workspaces are defined in `pnpm-workspace.yaml` (`packages/*` and `docs`).
 | Script        | What it does                                                   |
 | ------------- | -------------------------------------------------------------- |
 | `dev`         | Starts the `docs` development environment using a pnpm filter. |
-| `build`       | Packages the `@human-kit/svelte-components` library.                          |
+| `build`       | Packages the `@human-kit/ui` library.                          |
 | `build:docs`  | Builds the `docs` site for production.                         |
 | `test`        | Runs library tests (`packages/ui`).                            |
 | `typecheck`   | Runs type checking for library and docs.                       |

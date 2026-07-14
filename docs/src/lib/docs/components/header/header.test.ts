@@ -4,9 +4,9 @@ import Header from './header.svelte';
 
 describe('Header', () => {
 	it('renders the title and badge', () => {
-		render(Header, { props: { title: 'svelte-components', badge: 'beta' } });
+		render(Header, { props: { title: '@human-kit/ui', badge: 'beta' } });
 		const text = document.body.textContent ?? '';
-		expect(text).toContain('svelte-components');
+		expect(text).toContain('@human-kit/ui');
 		expect(text).toContain('beta');
 	});
 

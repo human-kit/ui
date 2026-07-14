@@ -320,7 +320,7 @@
 
 	.hd-prose h1 {
 		font-size: 1.875rem;
-		font-weight: 700;
+		font-weight: 600;
 		letter-spacing: -0.025em;
 		color: var(--foreground);
 		scroll-margin-top: 5rem;

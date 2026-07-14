@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Toggle, ToggleGroup } from '@human-kit/svelte-components';
-	import type { ToggleGroupValue } from '@human-kit/svelte-components/toggle-group';
+	import { Toggle, ToggleGroup } from '@human-kit/ui';
+	import type { ToggleGroupValue } from '@human-kit/ui/toggle-group';
 
 	let value = $state<ToggleGroupValue[]>(['bold']);
 

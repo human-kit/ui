@@ -13,7 +13,7 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		globals: true,
 		alias: {
-			'@human-kit/svelte-components': resolve(__dirname, '../packages/ui/src/lib'),
+			'@human-kit/ui': resolve(__dirname, '../packages/ui/src/lib'),
 			// SvelteKit isn't loaded under vitest, so `$app/*` is stubbed (see
 			// src/lib/docs/test-stubs). Lets components that read the route/theme render.
 			'$app/environment': resolve(__dirname, 'src/lib/docs/test-stubs/app-environment.ts'),

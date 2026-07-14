@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': patch
+'@human-kit/ui': patch
 ---
 
 # RAC-style Table Widths

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LocaleProvider, NumberField } from '@human-kit/svelte-components';
+	import { LocaleProvider, NumberField } from '@human-kit/ui';
 
 	let amount = $state<number | null>(1234.5);
 

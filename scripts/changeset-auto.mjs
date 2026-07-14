@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const PACKAGE_NAME = '@human-kit/svelte-components';
+const PACKAGE_NAME = '@human-kit/ui';
 const CHANGESET_DIR = '.changeset';
 
 function run(command) {

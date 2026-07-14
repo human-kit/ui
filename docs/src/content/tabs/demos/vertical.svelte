@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tabs } from '@human-kit/svelte-components';
+	import { Tabs } from '@human-kit/ui';
 </script>
 
 <Tabs.Root

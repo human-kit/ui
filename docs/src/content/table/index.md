@@ -26,7 +26,7 @@ A headless interactive table primitive with grid-style keyboard navigation, row 
 
 ```svelte
 <script>
-	import { Table } from '@human-kit/svelte-components';
+	import { Table } from '@human-kit/ui';
 </script>
 
 <Table.Root aria-label="Users table">

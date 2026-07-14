@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ComboBox } from '@human-kit/svelte-components';
+	import { ComboBox } from '@human-kit/ui';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import X from '@lucide/svelte/icons/x';
 

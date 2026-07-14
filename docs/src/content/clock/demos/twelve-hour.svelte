@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Clock, LocaleProvider } from '@human-kit/svelte-components';
+	import { Clock, LocaleProvider } from '@human-kit/ui';
 
 	let value = $state<string | null>('14:45');
 </script>

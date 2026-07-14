@@ -2,7 +2,7 @@
   "mode": "pre",
   "tag": "beta",
   "initialVersions": {
-    "@human-kit/svelte-components": "1.0.0-alpha.22"
+    "@human-kit/ui": "1.0.0-alpha.22"
   },
   "changesets": [
     "blue-camels-cough",

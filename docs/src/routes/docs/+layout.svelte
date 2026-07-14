@@ -7,9 +7,9 @@
 
 <DocsShell
 	{nav}
-	title="svelte-components"
+	title="@human-kit/ui"
 	badge="beta"
-	githubUrl="https://github.com/Agustin-Delgado/svelte-components"
+	githubUrl="https://github.com/human-kit/ui"
 >
 	{@render children()}
 </DocsShell>

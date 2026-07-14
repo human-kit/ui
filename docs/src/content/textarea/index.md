@@ -26,7 +26,7 @@ A headless native multiline text input with modality-aware focus state, RAC-styl
 
 ```svelte
 <script>
-	import { TextArea } from '@human-kit/svelte-components';
+	import { TextArea } from '@human-kit/ui';
 </script>
 
 <TextArea aria-label="Message" placeholder="Write your message..." required autoResize />

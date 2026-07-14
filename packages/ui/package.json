@@ -1,17 +1,17 @@
 {
-	"name": "@human-kit/svelte-components",
+	"name": "@human-kit/ui",
 	"version": "1.0.0-alpha.22",
 	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
 	"license": "MIT",
 	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
-	"homepage": "https://github.com/Agustin-Delgado/svelte-components#readme",
+	"homepage": "https://github.com/human-kit/ui#readme",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Agustin-Delgado/svelte-components.git",
+		"url": "git+https://github.com/human-kit/ui.git",
 		"directory": "packages/ui"
 	},
 	"bugs": {
-		"url": "https://github.com/Agustin-Delgado/svelte-components/issues"
+		"url": "https://github.com/human-kit/ui/issues"
 	},
 	"keywords": [
 		"svelte",

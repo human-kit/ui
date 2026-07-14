@@ -24,7 +24,7 @@ A single part that renders a native `<button>`. The `children` snippet optionall
 
 ```svelte
 <script>
-	import { Button } from '@human-kit/svelte-components';
+	import { Button } from '@human-kit/ui';
 </script>
 
 <Button.Root>

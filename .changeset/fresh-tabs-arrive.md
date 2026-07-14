@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': minor
+'@human-kit/ui': minor
 ---
 
 Add the new `Tabs` primitive with `Root`, `List`, `Tab`, `Indicator`, and `Panel` parts.

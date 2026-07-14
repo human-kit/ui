@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Collapsible } from '@human-kit/svelte-components';
+	import { Collapsible } from '@human-kit/ui';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import { collapsibleRecipe } from './recipe';
 

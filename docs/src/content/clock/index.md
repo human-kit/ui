@@ -26,7 +26,7 @@ A standalone wheel-based time picker with spinbutton columns for hour, minute, s
 
 ```svelte
 <script>
-	import { Clock } from '@human-kit/svelte-components';
+	import { Clock } from '@human-kit/ui';
 </script>
 
 <Clock.Root value="14:30" granularity="minute" hourCycle={24} class="flex gap-2">

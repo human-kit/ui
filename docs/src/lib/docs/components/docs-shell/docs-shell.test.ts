@@ -11,10 +11,10 @@ const children = createRawSnippet(() => ({ render: () => `<p data-testid="conten
 describe('DocsShell', () => {
 	it('renders the header, sidebar nav, and page content together', () => {
 		setPage({ pathname: '/docs/button' });
-		render(DocsShell, { props: { nav: NAV, title: 'svelte-components', badge: 'beta', children } });
+		render(DocsShell, { props: { nav: NAV, title: '@human-kit/ui', badge: 'beta', children } });
 		const text = document.body.textContent ?? '';
 		// Header brand
-		expect(text).toContain('svelte-components');
+		expect(text).toContain('@human-kit/ui');
 		// Sidebar nav item
 		expect(document.querySelector('nav a')?.textContent?.trim()).toBe('Button');
 		// Page content (the children snippet)

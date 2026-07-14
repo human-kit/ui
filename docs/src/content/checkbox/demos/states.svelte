@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import MinusIcon from '@lucide/svelte/icons/minus';
-	import { Checkbox } from '@human-kit/svelte-components';
+	import { Checkbox } from '@human-kit/ui';
 
 	const examples = [
 		{ label: 'Unchecked', checked: false, indeterminate: false, disabled: false, readonly: false },

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ComboBox } from '@human-kit/svelte-components';
+	import { ComboBox } from '@human-kit/ui';
 
 	const countries = [
 		{ id: 'ar', name: 'Argentina' },

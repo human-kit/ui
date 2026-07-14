@@ -10,7 +10,7 @@
 
 	// Repository the component sources live in. NOTE: `SOURCE_DIR` resolves once
 	// the packages/svelte → packages/ui rename lands on `main`.
-	const REPO = 'https://github.com/Agustin-Delgado/svelte-components';
+	const REPO = 'https://github.com/human-kit/ui';
 	const SOURCE_BRANCH = 'main';
 	const SOURCE_DIR = 'packages/ui/src/lib';
 

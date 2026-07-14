@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-The latest published release of `@human-kit/svelte-components` receives security
+The latest published release of `@human-kit/ui` receives security
 updates. Older versions are not maintained.
 
 ## Reporting a vulnerability
@@ -10,7 +10,7 @@ updates. Older versions are not maintained.
 Please **do not** open a public issue for security vulnerabilities.
 
 Instead, report privately through GitHub's
-[private vulnerability reporting](https://github.com/Agustin-Delgado/svelte-components/security/advisories/new),
+[private vulnerability reporting](https://github.com/human-kit/ui/security/advisories/new),
 or email the maintainer at agustindariodelgado@gmail.com.
 
 Include as much detail as possible: affected version, a description of the

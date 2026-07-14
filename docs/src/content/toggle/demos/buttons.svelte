@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toggle } from '@human-kit/svelte-components';
+	import { Toggle } from '@human-kit/ui';
 
 	const modeToggles = [
 		{ value: 'bold', label: 'B', ariaLabel: 'Bold' },

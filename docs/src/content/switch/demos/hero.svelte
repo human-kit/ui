@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Switch } from '@human-kit/svelte-components';
+	import { Switch } from '@human-kit/ui';
 
 	let checked = $state(true);
 </script>

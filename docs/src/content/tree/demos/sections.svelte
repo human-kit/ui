@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tree } from '@human-kit/svelte-components';
+	import { Tree } from '@human-kit/ui';
 
 	const itemClass =
 		'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-neutral-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 data-selected:bg-blue-100 data-selected:text-blue-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:data-selected:bg-blue-500/20 dark:data-selected:text-blue-200';

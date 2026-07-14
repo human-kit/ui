@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '@human-kit/svelte-components';
-	import { DateRangePicker, type DateRangePickerRangeValue } from '@human-kit/svelte-components/daterangepicker';
+	import { LocaleProvider } from '@human-kit/ui';
+	import { DateRangePicker, type DateRangePickerRangeValue } from '@human-kit/ui/daterangepicker';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
 
 	let value = $state<DateRangePickerRangeValue | null>(null);

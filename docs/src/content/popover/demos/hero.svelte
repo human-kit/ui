@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Popover } from '@human-kit/svelte-components';
+	import { Popover } from '@human-kit/ui';
 
 	let open = $state(false);
 </script>

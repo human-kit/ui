@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NumberField } from '@human-kit/svelte-components';
+	import { NumberField } from '@human-kit/ui';
 
 	let value = $state<number | null>(42);
 

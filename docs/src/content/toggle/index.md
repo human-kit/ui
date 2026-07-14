@@ -26,7 +26,7 @@ A headless two-state button with controlled and uncontrolled selected state, nat
 
 ```svelte
 <script>
-	import { Toggle } from '@human-kit/svelte-components';
+	import { Toggle } from '@human-kit/ui';
 </script>
 
 <Toggle.Root defaultSelected aria-label="Favorite">Favorite</Toggle.Root>

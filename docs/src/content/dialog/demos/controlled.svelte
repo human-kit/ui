@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Dialog } from '@human-kit/svelte-components';
+	import { Dialog } from '@human-kit/ui';
 
 	let open = $state(false);
 </script>

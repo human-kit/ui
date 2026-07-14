@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu } from '@human-kit/svelte-components';
+	import { Menu } from '@human-kit/ui';
 
 	let lastAction = $state('—');
 

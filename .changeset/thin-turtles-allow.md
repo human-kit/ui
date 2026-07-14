@@ -1,5 +1,5 @@
 ---
-'@human-kit/svelte-components': minor
+'@human-kit/ui': minor
 ---
 
 Replace implicit table header sorting with an explicit `Table.SortTrigger` part. `Table.Column` no longer accepts `allowsSorting`; columns become sortable by composing `Table.SortTrigger` inside `Table.ColumnHeaderCell`.

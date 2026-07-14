@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, getMenuContext } from '@human-kit/svelte-components';
+	import { Menu, getMenuContext } from '@human-kit/ui';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import { menuRecipe } from './recipe';
 

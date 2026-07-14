@@ -26,7 +26,7 @@ Composable numeric input with formatted text entry, spinbutton semantics, steppe
 
 ```svelte
 <script>
-	import { NumberField } from '@human-kit/svelte-components';
+	import { NumberField } from '@human-kit/ui';
 </script>
 
 <NumberField.Root>

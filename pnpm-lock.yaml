@@ -114,7 +114,7 @@ importers:
       '@human-kit/markdown':
         specifier: ^0.3.0
         version: 0.3.0(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
-      '@human-kit/svelte-components':
+      '@human-kit/ui':
         specifier: workspace:*
         version: link:../packages/ui
       '@lucide/svelte':

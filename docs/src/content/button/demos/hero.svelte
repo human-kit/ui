@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@human-kit/svelte-components';
+	import { Button } from '@human-kit/ui';
 
 	let count = $state(0);
 </script>

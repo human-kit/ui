@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Collapsible } from '@human-kit/svelte-components';
+	import { Collapsible } from '@human-kit/ui';
 	import type { ComponentProps, Snippet } from 'svelte';
 
 	// Pass-through: the docs collapsibles style their own root (a nav group, a demo

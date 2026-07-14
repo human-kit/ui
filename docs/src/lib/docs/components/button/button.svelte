@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@human-kit/svelte-components';
+	import { Button } from '@human-kit/ui';
 	import { LoaderCircle } from '@lucide/svelte';
 	import type { ComponentProps, Snippet } from 'svelte';
 	import type { VariantProps } from 'tailwind-variants';
