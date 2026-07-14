@@ -1,0 +1,28 @@
+<script lang="ts">
+	let { class: className = '' }: { class?: string } = $props();
+</script>
+
+<!-- The canonical Markdown mark (outlined rect + M↓). Unlike the stroke icons in
+     this set it carries its own wide viewBox and mixes a stroked border with a
+     filled glyph, so it renders its own <svg> rather than going through Icon. -->
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 208 128"
+	aria-hidden="true"
+	class={className}
+>
+	<rect
+		width="198"
+		height="118"
+		x="5"
+		y="5"
+		ry="10"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="10"
+	/>
+	<path
+		fill="currentColor"
+		d="M30 98V30h20l20 25 20-25h20v68H90V59L70 84 50 59v39zm125 0l-30-33h20V30h20v35h20z"
+	/>
+</svg>

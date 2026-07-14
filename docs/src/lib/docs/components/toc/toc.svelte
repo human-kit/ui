@@ -42,7 +42,7 @@
 
 	let domHeadings = $state<Heading[]>([]);
 	// The heading the reader has scrolled to; null while at the top so the
-	// first heading stays active — matching SSR.
+	// "(Top)" item is active instead of any heading — matching SSR.
 	let scrollActiveId = $state<string | null>(null);
 
 	// Prefer the data outline (metadata + component-registered headings) so the
@@ -69,41 +69,70 @@
 			depth: el.tagName === 'H2' ? 2 : 3
 		}));
 
-		// Scrollspy driven by IntersectionObserver: it fires on scroll from the
-		// browser itself (no dependency on scroll-event targeting, which proved
-		// unreliable for the document scroller). The active heading is computed by
-		// position — the last one whose top has passed the offset — and at the top
-		// of the page it is null so the first heading stays active, matching SSR.
-		const OFFSET = 100;
+		// Scrollspy. The reading pane — not the window — is the scroll container, so
+		// heading positions are measured against the pane's top edge, and the
+		// activation line sits exactly where `scrollIntoView` parks a clicked
+		// heading: its `scroll-margin-top` below that edge. Measuring against the
+		// window instead would use the wrong origin and mark the heading *above* the
+		// one you clicked. Above the first heading nothing is active, so the "(Top)"
+		// item is, matching SSR.
+		const findScrollPane = (el: HTMLElement | null): HTMLElement | null => {
+			for (let node = el?.parentElement ?? null; node; node = node.parentElement) {
+				const overflowY = getComputedStyle(node).overflowY;
+				if (overflowY === 'auto' || overflowY === 'scroll') return node;
+			}
+			return null;
+		};
+		const pane = findScrollPane(document.querySelector<HTMLElement>(selector));
 		const updateActive = () => {
 			const els = [...document.querySelectorAll<HTMLElement>(selector)];
-			// The active heading is the last one whose top has passed the offset;
-			// at the top of the page that is the first heading.
-			let current = els[0]?.id ?? null;
+			const paneTop = pane ? pane.getBoundingClientRect().top : 0;
+			// Where a clicked heading lands: the pane's top plus its scroll-margin-top.
+			// +1px so a heading resting exactly on the line counts (sub-pixel guard).
+			const scrollMargin = els[0] ? parseFloat(getComputedStyle(els[0]).scrollMarginTop) || 0 : 0;
+			const line = paneTop + scrollMargin + 1;
+			// The active heading is the last one whose top has crossed the line; null
+			// until one does, so above the first heading the "(Top)" item is active.
+			let current: string | null = null;
 			for (const el of els) {
-				if (el.getBoundingClientRect().top <= OFFSET) current = el.id;
+				if (el.getBoundingClientRect().top <= line) current = el.id;
 				else break;
 			}
 			scrollActiveId = current;
 		};
-		// Compute synchronously now (before paint) so the correct item is active
-		// from the first client frame, then keep it in sync via the observer.
+		// Compute synchronously now (before paint) so the correct item is active from
+		// the first client frame, then keep it in sync as the pane scrolls / resizes.
 		updateActive();
-		const observer = new IntersectionObserver(updateActive, {
-			rootMargin: `-${OFFSET}px 0px 0px 0px`,
-			threshold: [0, 1]
-		});
-		for (const el of document.querySelectorAll<HTMLElement>(selector)) observer.observe(el);
-		return () => observer.disconnect();
+		const scroller: Window | HTMLElement = pane ?? window;
+		scroller.addEventListener('scroll', updateActive, { passive: true });
+		window.addEventListener('resize', updateActive, { passive: true });
+		return () => {
+			scroller.removeEventListener('scroll', updateActive);
+			window.removeEventListener('resize', updateActive);
+		};
 	});
 </script>
 
 {#if headings.length > 0}
 	<nav aria-label={label} class="text-sm">
-		<h4 class="text-xs font-medium text-muted-foreground">
+		<h4 class="text-sm text-muted-foreground">
 			{label}
 		</h4>
 		<ul class="mt-3 space-y-1.5 border-l border-border">
+			<!-- Jump back to the top of the reading pane. No element has this id, so
+			     the frame's scroll effect finds no target and resets the pane to 0
+			     (see frame/content.svelte); it's active whenever no heading is (i.e.
+			     the reader is at the top). -->
+			<li>
+				<a
+					href="#top"
+					class="-ml-px block border-l py-0.5 pl-4 transition-colors {activeId === null
+						? 'border-foreground font-medium text-foreground'
+						: 'border-transparent text-muted-foreground hover:text-foreground'}"
+				>
+					(Top)
+				</a>
+			</li>
 			{#each headings as heading (heading.id)}
 				<li>
 					<a

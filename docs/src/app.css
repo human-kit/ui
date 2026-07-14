@@ -2,6 +2,7 @@
 @import './lib/docs/theme.css';
 
 @plugin "@toolwind/corner-shape";
+@plugin "tailwindcss-animate";
 
 @source '../../packages/ui/src/lib/**/*.{svelte,ts}';
 

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { Collapsible } from '@human-kit/svelte-components';
+	import { Collapsible } from '../collapsible';
 	import { ChevronDown } from '@lucide/svelte';
-	import { buttonVariants } from './button/recipe';
-	import type { NavGroup } from '../nav.js';
+	import { buttonVariants } from '../button/recipe';
+	import type { NavGroup } from '../../nav.js';
 
 	interface Props {
 		nav: NavGroup[];
@@ -21,17 +21,15 @@
 		     via `defaultOpen`), so groups can be folded away without losing state. -->
 		<Collapsible.Root defaultOpen>
 			<Collapsible.Trigger
-				class="group flex w-full items-center justify-between rounded-md px-3 text-sm text-muted-foreground font-normal transition-colors hover:text-foreground"
+				class="group flex w-full items-center justify-between rounded-md px-3 text-sm font-normal transition-colors hover:text-foreground"
 			>
 				{group.label}
 				<ChevronDown
-					class="size-3.5 shrink-0 -rotate-90 transition-transform duration-200 group-data-open:rotate-0"
+					class="size-3.5 shrink-0 -rotate-90 transition-transform duration-200 group-data-open:rotate-0 text-muted-foreground"
 				/>
 			</Collapsible.Trigger>
 
-			<Collapsible.Panel
-				class="h-(--collapsible-panel-height) overflow-hidden opacity-100 transition-[height,opacity] duration-200 ease-out data-starting-style:h-0 data-starting-style:opacity-0 data-ending-style:h-0 data-ending-style:opacity-0"
-			>
+			<Collapsible.Panel>
 				<!-- Horizontal inset lives here (padding), NOT as `mx-*` on the
 				     `w-full` items — a margin makes their box 100% + margin wide and
 				     overflows/clips the rounded right edge. -->

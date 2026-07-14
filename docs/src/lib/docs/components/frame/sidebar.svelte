@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { frameRecipe } from './recipe';
+	import { scrollFade } from './scroll-fade';
 
 	interface Props {
 		class?: string;
@@ -15,6 +16,8 @@
 	const recipe = frameRecipe();
 </script>
 
-<aside class={recipe.sidebar({ class: className })}>
+<!-- `scroll-fade` + the `scrollFade` action soften the top/bottom edges so nav
+     content dissolves into the chrome instead of being hard-cut when scrolled. -->
+<aside class={recipe.sidebar({ class: `scroll-fade ${className}` })} use:scrollFade>
 	{@render children()}
 </aside>

@@ -11,11 +11,11 @@ export const buttonRecipeConfig = {
 			default:
 				"focus-visible:ring-offset-1 bg-primary text-primary-foreground border border-primary/10 shadow-2xs shadow-primary/20 inset-shadow-2xs inset-shadow-white/20 hover:bg-primary/90 data-[pressed=true]:bg-primary data-[pressed=true]:shadow-white data-[pressed=true]:inset-shadow-black/5 data-[pressed=true]:after:content-[''] data-[pressed=true]:after:absolute data-[pressed=true]:after:inset-0 data-[pressed=true]:after:bg-black/5 data-[pressed=true]:after:rounded-none",
 			outline:
-				'text-muted-foreground border bg-(--raise-bg) raised hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:bg-(--surface-bg)',
+				'text-muted-foreground border bg-(--raise-bg) raised hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:bg-(--press-bg)',
 			ghost:
-				'border border-transparent flat text-muted-foreground hover:bg-(--raise-bg) hover:raised hover:border-border hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:bg-(--surface-bg) data-[pressed=true]:border-border',
+				'border border-transparent flat text-muted-foreground hover:bg-(--raise-bg) hover:raised hover:border-border hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:bg-(--press-bg) data-[pressed=true]:border-border',
 			shadow:
-				'border border-transparent flat text-muted-foreground hover:bg-(--sink-bg) hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:border-border data-[selected=true]:sunken data-[selected=true]:border-border',
+				'border border-transparent flat text-muted-foreground hover:bg-(--sink-bg) hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:bg-(--press-bg) data-[pressed=true]:border-border data-[selected=true]:sunken data-[selected=true]:bg-(--press-bg) data-[selected=true]:border-border',
 			link: 'inline-block! w-fit max-w-none overflow-visible text-sm! p-0! h-auto! text-foreground decoration-skip-ink-none underline-offset-4 hover:underline justify-start ring-0! ring-offset-0! focus:underline'
 		},
 		size: {

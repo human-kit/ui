@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { resolve } from '$app/paths';
-	import ThemeToggle from './theme-toggle.svelte';
-	import { Frame } from './frame/index.js';
-	import { buttonVariants } from './button/recipe';
-	import Github from './icons/github.svelte';
+	import ThemeToggle from '../theme-toggle/theme-toggle.svelte';
+	import { Frame } from '../frame/index.js';
+	import { buttonVariants } from '../button/recipe';
+	import Github from '../icons/github.svelte';
 
 	interface Props {
 		title?: string;

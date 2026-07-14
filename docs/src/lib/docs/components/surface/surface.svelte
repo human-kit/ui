@@ -56,12 +56,14 @@
 	// Surface elevate relative to it, without hardcoding a depth:
 	//   --surface-bg = this level (sunken outer-shadow lip),
 	//   --raise-bg   = one step UP toward the top surface (ghost/outline hover fill),
-	//   --sink-bg    = two steps deeper (pressed fill).
+	//   --press-bg   = one step deeper (pressed fill),
+	//   --sink-bg    = two steps deeper (shadow-variant hover fill).
 	// Defaults live at :root for buttons outside any Surface.
 	const raiseDepth = $derived(Math.max(depth - 1, 0));
+	const pressDepth = $derived(Math.min(depth + 1, MAX_DEPTH));
 	const sinkDepth = $derived(Math.min(depth + 2, MAX_DEPTH));
 	const elevationVars = $derived(
-		`--surface-bg: var(--depth-${depth}); --raise-bg: var(--depth-${raiseDepth}); --sink-bg: var(--depth-${sinkDepth});`
+		`--surface-bg: var(--depth-${depth}); --raise-bg: var(--depth-${raiseDepth}); --press-bg: var(--depth-${pressDepth}); --sink-bg: var(--depth-${sinkDepth});`
 	);
 </script>
 

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import Header from './header.svelte';
-	import Sidebar from './sidebar.svelte';
-	import Toc from './toc.svelte';
-	import { Frame } from './frame/index.js';
-	import { provideTocRegistry } from './toc-registry.svelte.js';
-	import type { NavGroup } from '../nav.js';
+	import Header from '../header/header.svelte';
+	import Sidebar from '../sidebar/sidebar.svelte';
+	import Toc from '../toc/toc.svelte';
+	import { Frame } from '../frame/index.js';
+	import { provideTocRegistry } from '../toc/toc-registry.svelte.js';
+	import type { NavGroup } from '../../nav.js';
 
 	// Lets content components (e.g. ApiReference) surface their own headings to
 	// the TOC; see toc-registry.svelte.ts.

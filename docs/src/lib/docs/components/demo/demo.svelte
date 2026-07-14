@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { Collapsible } from '@human-kit/svelte-components';
-	import Button from './button/button.svelte';
-	import { buttonVariants } from './button/recipe';
-	import Surface from './surface/surface.svelte';
-	import Check from './icons/check.svelte';
-	import Copy from './icons/copy.svelte';
-	import Code from './icons/code.svelte';
+	import { Collapsible } from '../collapsible';
+	import Button from '../button/button.svelte';
+	import { buttonVariants } from '../button/recipe';
+	import Surface from '../surface/surface.svelte';
+	import Check from '../icons/check.svelte';
+	import Copy from '../icons/copy.svelte';
+	import Code from '../icons/code.svelte';
 
 	interface Props {
 		source: { code: string; html: string };
@@ -61,9 +61,9 @@
 		     primitive exposes it as `--collapsible-panel-height`) plus a fade, driven
 		     by `data-starting-style` / `data-ending-style`. The scroll cap lives on the
 		     inner content (see the style block) so the measured height stays bounded. -->
-		<Collapsible.Panel
-			class="demo-source border-t text-[0.8125rem] leading-relaxed h-(--collapsible-panel-height) overflow-hidden opacity-100 transition-[height,opacity] duration-200 ease-out data-starting-style:h-0 data-starting-style:opacity-0 data-ending-style:h-0 data-ending-style:opacity-0"
-		>
+		<!-- The height+fade animation is baked into the wrapper's Panel; only the
+		     demo-specific type + border are added here. -->
+		<Collapsible.Panel class="demo-source border-t text-[0.8125rem] leading-relaxed">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -- build-time shiki output, not user input -->
 			{@html source.html}
 		</Collapsible.Panel>

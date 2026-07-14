@@ -24,7 +24,7 @@ import { tv } from 'tailwind-variants';
  */
 const frameRecipeConfig = {
 	slots: {
-		root: 'fixed inset-0 flex flex-col gap-2 overflow-clip p-2',
+		root: 'fixed inset-0 flex flex-col overflow-clip p-2',
 		header:
 			'flex h-9 gap-2 px-3 pr-1.5 justify-between',
 		body: 'flex min-h-0 w-full flex-1',

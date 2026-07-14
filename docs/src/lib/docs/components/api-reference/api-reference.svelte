@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import PropsTable from './props-table.svelte';
-	import DataAttributesTable from './data-attributes-table.svelte';
-	import { registerHeadings } from './toc-registry.svelte.js';
-	import type { ComponentApi } from '../api-types.js';
+	import PropsTable from '../props-table/props-table.svelte';
+	import DataAttributesTable from '../data-attributes-table/data-attributes-table.svelte';
+	import { registerHeadings } from '../toc/toc-registry.svelte.js';
+	import type { ComponentApi } from '../../api-types.js';
 
 	interface Props {
 		api: ComponentApi;
@@ -31,16 +31,19 @@
 	{/if}
 
 	{#if part.props.length > 0}
-		<PropsTable part={part.name.toLowerCase()} props={part.props} />
+		<div class="mt-4">
+			<PropsTable part={part.name.toLowerCase()} props={part.props} />
+		</div>
 		<p class="mt-2 text-xs text-muted-foreground">
 			* required. Native HTML attributes of the underlying element are also accepted.
 		</p>
 	{/if}
 
 	{#if part.dataAttributes.length > 0}
-		<h4 class="mt-4 mb-2 text-sm font-semibold text-foreground">
-			Data attributes
-		</h4>
-		<DataAttributesTable attributes={part.dataAttributes} />
+		<!-- Data attributes are part of the same API reference (no separate
+		     heading); they render as the same expandable table as the props. -->
+		<div class="mt-4">
+			<DataAttributesTable attributes={part.dataAttributes} />
+		</div>
 	{/if}
 {/each}
