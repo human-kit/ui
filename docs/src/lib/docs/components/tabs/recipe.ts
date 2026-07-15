@@ -9,7 +9,7 @@ const tabsRecipeConfig = {
 			duration-200 ease-out left-(--active-tab-left) top-(--active-tab-top)
 			h-(--active-tab-height) w-(--active-tab-width) data-[hidden=true]:opacity-0`,
 		panel:
-			'bg-depth-0 border p-3 rounded-b-md ring-offset-background ring-inset focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary h-full shadow-sm'
+			'bg-depth-0 border p-1 rounded-xl rounded-tl-none ring-offset-background ring-inset focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary shadow-2xs'
 	}
 } as const;
 

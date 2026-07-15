@@ -56,9 +56,6 @@
 			<li class="node" class:latest={i === 0}>
 				<div class="mb-3 flex items-center gap-2">
 					<span class="version">{release.version}</span>
-					{#each release.sections as section (section.type)}
-						<span class="kind kind-{section.type.toLowerCase()}">{section.type}</span>
-					{/each}
 					{#if release.date}
 						<time class="ml-auto shrink-0 text-sm text-muted-foreground">
 							{formatDate(release.date)}
@@ -123,7 +120,7 @@
 		height: 11px;
 		border-radius: 9999px;
 		background: var(--background);
-		border: 1px solid var(--muted-foreground);
+		border: 1px solid var(--border);
 	}
 	.node.latest::before {
 		border-color: var(--primary);
@@ -136,33 +133,6 @@
 		font-weight: 600;
 		color: var(--foreground);
 		letter-spacing: -0.01em;
-	}
-
-	/* Change-type badges (Minor / Patch / Major) sit next to the version. */
-	.kind {
-		display: inline-flex;
-		align-items: center;
-		border-radius: 9999px;
-		border: 1px solid var(--border);
-		background: var(--muted);
-		padding: 0.05rem 0.5rem;
-		font-size: 0.7rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-		color: var(--muted-foreground);
-	}
-	.kind-minor {
-		color: var(--color-blue-600);
-	}
-	.kind-major {
-		color: var(--color-amber-600);
-	}
-	:global(.dark) .kind-minor {
-		color: var(--color-blue-400);
-	}
-	:global(.dark) .kind-major {
-		color: var(--color-amber-400);
 	}
 
 	.entries {
