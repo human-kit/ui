@@ -19,10 +19,11 @@
 	// persistPm reads pm.value, so this re-runs (and saves) whenever it changes.
 	$effect(persistPm);
 
-	// Split "pnpm add <pkg>" so the command and the package can be coloured apart.
+	// Split "pnpm add <pkg>" into the command name and the rest (keeping the space),
+	// so each can take the shiki bash colours the code blocks use.
 	function split(cmd: string) {
-		const i = cmd.lastIndexOf(' ');
-		return { command: cmd.slice(0, i), pkg: cmd.slice(i + 1) };
+		const i = cmd.indexOf(' ');
+		return { name: cmd.slice(0, i), rest: cmd.slice(i) };
 	}
 </script>
 
@@ -35,12 +36,32 @@
 	{#each managers as m (m.id)}
 		{@const parts = split(m.cmd)}
 		<Tabs.Panel value={m.id} class="flex items-center justify-between gap-3 px-2.5 py-1.5">
-			<span class="overflow-x-auto text-[0.8125rem] whitespace-nowrap">
-				<span class="text-muted-foreground">{parts.command} </span><span
-					class="text-blue-600 dark:text-blue-400">{parts.pkg}</span
-				>
-			</span>
+			<code class="install-code overflow-x-auto"
+				><span class="tok-cmd">{parts.name}</span><span class="tok-arg">{parts.rest}</span></code
+			>
 			<CopyButton text={m.cmd} label="Copy {m.id} command" />
 		</Tabs.Panel>
 	{/each}
 </Tabs.Root>
+
+<style>
+	.install-code {
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.8125rem;
+		white-space: pre;
+	}
+	/* Shiki github-theme colours for a bash command (command name / arguments), so
+	   install snippets read exactly like the highlighted code blocks. */
+	.tok-cmd {
+		color: #6f42c1;
+	}
+	.tok-arg {
+		color: #032f62;
+	}
+	:global(.dark) .tok-cmd {
+		color: #b392f0;
+	}
+	:global(.dark) .tok-arg {
+		color: #9ecbff;
+	}
+</style>

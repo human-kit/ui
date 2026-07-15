@@ -123,12 +123,11 @@
 		border: 1px solid var(--border);
 	}
 	.node.latest::before {
-		border-color: var(--primary);
-		background: var(--primary);
+		border-color: var(--foreground);
+		background: var(--foreground);
 	}
 
 	.version {
-		font-family: var(--font-mono, ui-monospace, monospace);
 		font-size: 1.0625rem;
 		font-weight: 600;
 		color: var(--foreground);
