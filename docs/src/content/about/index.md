@@ -5,7 +5,7 @@ description: What @human-kit/ui is, the principles behind it, and how it's built
 
 # About
 
-**`@human-kit/ui`** is an open-source library of accessible, typed UI primitives for Svelte 5. It gives you the hard parts — semantics, keyboard interaction, focus management, and state — as unstyled building blocks you can shape into your own design system.
+`@human-kit/ui` is an open-source library of accessible, typed UI primitives for Svelte 5. It gives you the hard parts — semantics, keyboard interaction, focus management, and state — as unstyled building blocks you can shape into your own design system.
 
 ## Principles
 

@@ -42,12 +42,11 @@
 </svelte:head>
 
 <article class="mx-auto max-w-3xl">
-	<header class="mb-10">
-		<h1 class="font-serif text-3xl font-bold tracking-tight text-foreground">Releases</h1>
-		<p class="mt-2 text-subtle-foreground">
-			Every published version of <code
-				class="rounded bg-accent px-1.5 py-0.5 font-mono text-[0.85em]">@human-kit/ui</code
-			>, newest first — generated from the changelog.
+	<header class="hd-prose mb-10">
+		<h1>Releases</h1>
+		<p>
+			Every published version of <code>@human-kit/ui</code>, newest first — generated from the
+			changelog.
 		</p>
 	</header>
 
@@ -122,9 +121,11 @@
 		background: var(--background);
 		border: 1px solid var(--border);
 	}
+	/* Latest = a radio-button dot: foreground ring with a filled centre. */
 	.node.latest::before {
 		border-color: var(--foreground);
-		background: var(--foreground);
+		background-color: var(--background);
+		background-image: radial-gradient(circle, var(--foreground) 1.75px, transparent 1.75px);
 	}
 
 	.version {
@@ -169,7 +170,7 @@
 	.entry-body :global(ul) {
 		margin: 0.375rem 0 0;
 		padding-left: 1.1rem;
-		list-style: disc;
+		list-style: circle;
 	}
 	.entry-body :global(li) {
 		margin-top: 0.15rem;
