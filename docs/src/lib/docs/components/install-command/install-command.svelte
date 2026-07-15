@@ -35,7 +35,7 @@
 		{/each}
 	</Tabs.List>
 	{#each entries as m (m.id)}
-		<Tabs.Panel value={m.id} class="flex items-center justify-between gap-3 px-2.5 py-1.5 pr-1.5">
+		<Tabs.Panel value={m.id} class="flex items-center justify-between gap-3 px-2.5 py-0.5 pr-0.5">
 			{#if m.html}
 				<!-- eslint-disable-next-line svelte/no-at-html-tags -- build-time shiki output from our own commands -->
 				<span class="code shiki overflow-x-auto whitespace-pre">{@html m.html}</span>
