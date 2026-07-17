@@ -116,7 +116,7 @@
 {#if headings.length > 0}
 	<!-- The inset is here rather than on the rail: see docs-shell (padding on a
 	     `flex-1` rail is incompressible and skews the row's free-space split). -->
-	<nav aria-label={label} class="px-2 text-sm">
+	<nav aria-label={label} class="px-2 text-sm py-6">
 		<h4 class="text-sm">
 			{label}
 		</h4>

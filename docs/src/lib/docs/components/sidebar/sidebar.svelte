@@ -15,7 +15,7 @@
 	let { nav, basePath = '/docs' }: Props = $props();
 </script>
 
-<nav class="flex flex-col gap-4 py-1">
+<nav class="flex flex-col gap-4 py-6">
 	{#each nav as group (group.label)}
 		<!-- Each section is an independent collapsible, open by default (uncontrolled
 		     via `defaultOpen`), so groups can be folded away without losing state. -->
