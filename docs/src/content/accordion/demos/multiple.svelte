@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Accordion, type AccordionValue } from '@human-kit/ui';
+	import { Accordion } from '@human-kit/ui';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
 	const sections = [
@@ -13,11 +13,13 @@
 		}
 	];
 
-	let value = $state<AccordionValue[]>(['account', 'billing']);
+	// Uncontrolled with a default: a bound `value` with a defined array makes the
+	// primitive controlled and freezes the triggers (it never writes back).
+	// `defaultValue` seeds the open panels while the accordion owns its state.
 </script>
 
 <Accordion.Root
-	bind:value
+	defaultValue={['account', 'billing']}
 	selectionMode="multiple"
 	class="w-full max-w-md divide-y divide-neutral-200 overflow-hidden rounded-lg border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900"
 >

@@ -1,6 +1,25 @@
 /**
  * Scroll lock primitive.
- * Prevents scrolling of the document body.
+ *
+ * Prevents the page from scrolling while an overlay is open. Two layers work
+ * together:
+ *
+ * 1. The document body is pinned (`overflow: hidden` + `position: fixed`), which
+ *    freezes the *document* scroller and blocks iOS Safari touch scrolling. The
+ *    scrollbar width is compensated so the page doesn't shift.
+ *
+ * 2. `wheel`/`touchmove` are intercepted in the capture phase and cancelled
+ *    unless they target the overlay's own scroll region. Pinning the body is NOT
+ *    enough when the scrollable element is an INNER container (e.g. an app shell
+ *    whose content scrolls in a pane rather than on `<body>`): hiding body
+ *    overflow does nothing to that pane. Cancelling the scroll event itself
+ *    freezes any scroller, inner or not — matching React Aria's `usePreventScroll`.
+ *    This is why an earlier "body only" lock silently did nothing inside layouts
+ *    like the docs shell.
+ *
+ * Scrolling INSIDE the overlay still works, and scroll chaining from the
+ * overlay's inner scroller out to the background is blocked once that scroller
+ * reaches its bounds.
  */
 
 let lockCount = 0;
@@ -12,6 +31,11 @@ let originalLeft = '';
 let originalRight = '';
 let savedScrollX = 0;
 let savedScrollY = 0;
+
+// The overlay nodes whose inner scroll regions stay live while the background is
+// frozen. A Set (rather than just the lock count) so the event handlers can tell
+// an overlay-targeted scroll from a background one.
+const overlayNodes = new Set<HTMLElement>();
 
 function getScrollbarWidth(): number {
 	return window.innerWidth - document.documentElement.clientWidth;
@@ -28,7 +52,92 @@ function reservesStableGutter(): boolean {
 		.includes('stable');
 }
 
-function lock() {
+/** The registered overlay node that contains `target`, if any. */
+function overlayContaining(target: EventTarget | null): HTMLElement | null {
+	if (!(target instanceof Node)) return null;
+	for (const node of overlayNodes) {
+		if (node.contains(target)) return node;
+	}
+	return null;
+}
+
+function isScrollable(el: Element): boolean {
+	const { overflowX, overflowY } = getComputedStyle(el);
+	return /(auto|scroll|overlay)/.test(overflowY) || /(auto|scroll|overlay)/.test(overflowX);
+}
+
+/** Nearest actually-scrollable element between `target` and `root` (inclusive), or null. */
+function scrollableWithin(target: Element, root: HTMLElement): HTMLElement | null {
+	let el: Element | null = target;
+	while (el) {
+		if (
+			el instanceof HTMLElement &&
+			(el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) &&
+			isScrollable(el)
+		) {
+			return el;
+		}
+		if (el === root) break;
+		el = el.parentElement;
+	}
+	return null;
+}
+
+function onWheel(event: WheelEvent) {
+	if (!event.cancelable) return;
+	const overlay = overlayContaining(event.target);
+	if (!overlay) {
+		// Background scroll — freeze it.
+		event.preventDefault();
+		return;
+	}
+	const scroller = scrollableWithin(event.target as Element, overlay);
+	if (!scroller) {
+		// The overlay has no scroll region of its own; the wheel would chain to the
+		// background, so cancel it.
+		event.preventDefault();
+		return;
+	}
+	// Otherwise let the inner scroller consume the delta, but cancel once it hits a
+	// bound so the scroll doesn't chain out to the frozen background.
+	const { deltaX, deltaY } = event;
+	if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+		const atTop = scroller.scrollTop <= 0;
+		const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+		if ((deltaY < 0 && atTop) || (deltaY > 0 && atBottom)) event.preventDefault();
+	} else {
+		const atLeft = scroller.scrollLeft <= 0;
+		const atRight = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
+		if ((deltaX < 0 && atLeft) || (deltaX > 0 && atRight)) event.preventDefault();
+	}
+}
+
+function onTouchMove(event: TouchEvent) {
+	if (!event.cancelable) return;
+	// Leave multi-touch gestures (pinch-zoom) alone.
+	if (event.touches.length > 1) return;
+	const overlay = overlayContaining(event.target);
+	if (!overlay) {
+		event.preventDefault();
+		return;
+	}
+	// An inner scroll region present → let the browser scroll it natively; none →
+	// block so the touch doesn't scroll the background.
+	if (!scrollableWithin(event.target as Element, overlay)) event.preventDefault();
+}
+
+function addEventBlockers() {
+	document.addEventListener('wheel', onWheel, { passive: false, capture: true });
+	document.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
+}
+
+function removeEventBlockers() {
+	document.removeEventListener('wheel', onWheel, { capture: true });
+	document.removeEventListener('touchmove', onTouchMove, { capture: true });
+}
+
+function lock(node: HTMLElement) {
+	overlayNodes.add(node);
 	if (lockCount === 0) {
 		const body = document.body;
 
@@ -56,11 +165,14 @@ function lock() {
 		body.style.top = `${-savedScrollY}px`;
 		body.style.left = '0';
 		body.style.right = '0';
+
+		addEventBlockers();
 	}
 	lockCount++;
 }
 
-function unlock() {
+function unlock(node: HTMLElement) {
+	overlayNodes.delete(node);
 	lockCount--;
 	if (lockCount === 0) {
 		const body = document.body;
@@ -72,6 +184,8 @@ function unlock() {
 		body.style.left = originalLeft;
 		body.style.right = originalRight;
 
+		removeEventBlockers();
+
 		// Pinning the body reset the document scroll offset; put the page back where it was.
 		window.scrollTo(savedScrollX, savedScrollY);
 	}
@@ -79,8 +193,9 @@ function unlock() {
 }
 
 /**
- * Svelte action that locks scrolling on the document body.
- * Handles multiple nested scroll locks correctly.
+ * Svelte action that locks scrolling while `enabled`. The `node` it is placed on
+ * is treated as the overlay whose inner scroll region stays live; everything
+ * else is frozen. Handles multiple nested locks correctly (reference-counted).
  *
  * @example
  * ```svelte
@@ -91,21 +206,21 @@ function unlock() {
  */
 export function scrollLock(node: HTMLElement, enabled: boolean = true) {
 	if (enabled) {
-		lock();
+		lock(node);
 	}
 
 	return {
 		update(newEnabled: boolean) {
 			if (newEnabled && !enabled) {
-				lock();
+				lock(node);
 			} else if (!newEnabled && enabled) {
-				unlock();
+				unlock(node);
 			}
 			enabled = newEnabled;
 		},
 		destroy() {
 			if (enabled) {
-				unlock();
+				unlock(node);
 			}
 		}
 	};

@@ -2,9 +2,11 @@
 	import { Popover } from '@human-kit/ui';
 
 	let open = $state(false);
+	// Controlled: a bare `bind:open` with a defined initial value freezes the popover
+	// (the primitive treats it as controlled and never writes back). Sync via onOpenChange.
 </script>
 
-<Popover.Root bind:open>
+<Popover.Root {open} onOpenChange={(next) => (open = next)}>
 	<Popover.Trigger
 		class="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 text-sm font-medium text-white outline-none transition-colors hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:focus-visible:outline-white"
 	>

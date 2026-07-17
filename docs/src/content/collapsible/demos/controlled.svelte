@@ -3,6 +3,9 @@
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
 	let open = $state(false);
+	// Controlled: `bind:open` with a defined initial value freezes the trigger — the
+	// primitive treats it as controlled and never writes back, so only the external
+	// buttons worked. onOpenChange syncs the trigger's own toggle too.
 </script>
 
 <div class="flex w-full max-w-md flex-col gap-4">
@@ -24,7 +27,8 @@
 	</div>
 
 	<Collapsible.Root
-		bind:open
+		{open}
+		onOpenChange={(next) => (open = next)}
 		class="overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
 	>
 		<Collapsible.Trigger

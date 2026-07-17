@@ -2,6 +2,9 @@
 	import { Dialog } from '@human-kit/ui';
 
 	let open = $state(false);
+	// Controlled: `bind:open` with a defined initial value freezes the dialog — the
+	// primitive treats it as controlled and never writes back, so Escape / backdrop /
+	// the close helper wouldn't update `open`. onOpenChange syncs every close path.
 </script>
 
 <div class="flex flex-col items-center gap-3">
@@ -13,7 +16,7 @@
 	</button>
 	<p class="text-sm text-neutral-500 dark:text-neutral-400">open: <code>{open}</code></p>
 
-	<Dialog.Root bind:open>
+	<Dialog.Root {open} onOpenChange={(next) => (open = next)}>
 		{#snippet children({ close })}
 			<Dialog.Portal>
 				<Dialog.Overlay class="fixed inset-0 bg-black/50" />
