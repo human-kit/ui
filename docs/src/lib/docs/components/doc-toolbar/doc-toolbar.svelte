@@ -41,10 +41,12 @@
 	}
 </script>
 
-<!-- Floated so the toolbar sits at the top-right and the page title (the first
-     block of the article) flows to its left. `not-prose`-style anchors carry
-     `hk-button-link` to escape the prose link styling. -->
-<div class="float-right mb-2 ml-6 flex items-center gap-1.5">
+<!-- Pinned to the top-right of the (relative) article, beside the page title.
+     The h1's line box is taller than its text (line-height 1.7 × 1.875rem ≈
+     3.19rem); matching that height and centering the buttons aligns them with
+     the title text instead of the top of its line box. `not-prose`-style anchors
+     carry `hk-button-link` to escape the prose link styling. -->
+<div class="absolute top-0 right-0 flex h-12.75 items-center gap-1.5">
 	{#if prev}
 		<a
 			href={resolve(`/docs/${prev.slug}`)}

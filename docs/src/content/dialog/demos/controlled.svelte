@@ -7,7 +7,7 @@
 <div class="flex flex-col items-center gap-3">
 	<button
 		onclick={() => (open = true)}
-		class="rounded-lg bg-neutral-900 px-4 py-2 text-sm text-white transition-colors hover:bg-black dark:bg-white dark:text-neutral-900"
+		class="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 text-sm font-medium text-white outline-none transition-colors hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:focus-visible:outline-white"
 	>
 		Open externally
 	</button>
@@ -16,9 +16,9 @@
 	<Dialog.Root bind:open>
 		{#snippet children({ close })}
 			<Dialog.Portal>
-				<Dialog.Overlay />
+				<Dialog.Overlay class="fixed inset-0 bg-black/50" />
 				<Dialog.Content
-					class="w-100 max-w-[90vw] rounded-xl bg-white p-6 shadow-2xl dark:bg-neutral-800"
+					class="w-100 max-w-[90vw] rounded-xl border border-neutral-200 bg-white p-6 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
 				>
 					<h3 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">
 						Controlled dialog
@@ -30,7 +30,7 @@
 					<div class="flex justify-end">
 						<button
 							onclick={close}
-							class="rounded-lg bg-neutral-900 px-4 py-2 text-sm text-white transition-colors hover:bg-black dark:bg-white dark:text-neutral-900"
+							class="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 text-sm font-medium text-white outline-none transition-colors hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:focus-visible:outline-white"
 						>
 							Close
 						</button>

@@ -312,6 +312,14 @@
 	background-color: transparent;
 }
 
+/* `.code.shiki` snippets take their surface from whatever card they sit in, so
+   shiki's own theme background must not paint over it. Declared after the
+   `.dark .shiki span` block: same specificity, later wins. */
+.code.shiki,
+.code.shiki span {
+	background-color: transparent;
+}
+
 @layer components {
 	.hd-prose {
 		font-size: 0.9375rem;
@@ -403,10 +411,17 @@
 		border-radius: 0.375rem;
 	}
 
+	/* Positioning host for the code block's copy button (the wrapper comes from
+	   markdown/rehype-code-copy.js). No border/padding of its own, so the <pre>'s
+	   top margin still collapses through it and the rhythm is unchanged. */
+	.hd-prose .code-block {
+		position: relative;
+	}
+
 	.hd-prose pre.shiki {
 		margin-top: 1rem;
 		border: 1px solid var(--border);
-		border-radius: 0.5rem;
+		border-radius: 0.75rem;
 		padding: 1rem;
 		overflow-x: auto;
 		font-size: 0.8125rem;

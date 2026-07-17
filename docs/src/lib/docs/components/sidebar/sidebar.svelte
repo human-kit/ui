@@ -32,8 +32,11 @@
 			<Collapsible.Panel>
 				<!-- Horizontal inset lives here (padding), NOT as `mx-*` on the
 				     `w-full` items — a margin makes their box 100% + margin wide and
-				     overflows/clips the rounded right edge. -->
-				<ul class="space-y-0.5 px-0.5 py-1">
+				     overflows/clips the rounded right edge.
+				     `pl-5` = the item's own px-2 short of 28px, so its LABEL lands 1rem
+				     right of the group label — the same indent the TOC gives its
+				     headings under "On this page". -->
+				<ul class="space-y-0.5 py-2 pr-0.5 pl-4">
 					{#each group.items as item (item.slug)}
 						{@const route = `${basePath}/${item.slug}`}
 						<!-- Active check must not use the resolved href: under `paths.relative`

@@ -3,6 +3,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { humandocsMarkdown } from '@human-kit/markdown';
 import { highlight } from '@human-kit/markdown/shiki';
 import rehypeSlug from 'rehype-slug';
+import { rehypeCodeCopy } from './src/lib/docs/markdown/rehype-code-copy.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,7 +11,7 @@ const config = {
 	preprocess: [
 		vitePreprocess(),
 		humandocsMarkdown({
-			rehypePlugins: [rehypeSlug],
+			rehypePlugins: [rehypeSlug, rehypeCodeCopy],
 			highlight
 		})
 	],

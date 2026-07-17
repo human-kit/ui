@@ -24,21 +24,21 @@
 	];
 
 	const cellClass =
-		'px-4 py-3 text-sm text-neutral-600 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300';
+		'px-4 py-3 text-sm text-neutral-600 outline-none data-[focus-visible=true]:outline-2 data-[focus-visible=true]:-outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:text-neutral-300 dark:data-[focus-visible=true]:outline-white';
 	const buttonClass =
-		'rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-700 disabled:opacity-40 dark:border-neutral-700 dark:text-neutral-200';
+		'inline-flex h-8 items-center justify-center rounded-md border border-neutral-300 bg-white px-3 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800';
 </script>
 
 <div
-	class="w-full space-y-3 rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900"
+	class="w-full space-y-3 rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900"
 >
 	<Table.Root aria-label="Paginated invoices table" class="min-w-full border-collapse text-left">
 		<Table.Header>
-			<Table.Row class="border-b border-neutral-200 dark:border-neutral-700">
+			<Table.Row class="border-b border-neutral-200 dark:border-neutral-800">
 				{#each columns as column (column.id)}
 					<Table.Column id={column.id} rowHeader={column.rowHeader} textValue={column.label}>
 						<Table.ColumnHeaderCell
-							class="px-4 py-3 text-xs font-semibold tracking-widest text-neutral-500 uppercase outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300"
+							class="px-4 py-3 text-xs font-semibold tracking-widest text-neutral-500 uppercase outline-none data-[focus-visible=true]:outline-2 data-[focus-visible=true]:-outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:text-neutral-400 dark:data-[focus-visible=true]:outline-white"
 						>
 							{column.label}
 						</Table.ColumnHeaderCell>
@@ -50,7 +50,7 @@
 			{#each paginated as invoice (invoice.id)}
 				<Table.Row class="border-b border-neutral-100 dark:border-neutral-800">
 					<Table.Cell
-						class="px-4 py-3 text-sm font-medium text-neutral-900 outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-inset data-[focus-visible=true]:ring-blue-500 dark:text-white"
+						class="px-4 py-3 text-sm font-medium text-neutral-900 outline-none data-[focus-visible=true]:outline-2 data-[focus-visible=true]:-outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:text-white dark:data-[focus-visible=true]:outline-white"
 					>
 						{invoice.customer}
 					</Table.Cell>

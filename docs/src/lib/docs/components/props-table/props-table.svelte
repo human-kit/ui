@@ -75,7 +75,7 @@
 	</span>
 {/snippet}
 
-<div class="not-prose overflow-hidden rounded-lg border">
+<div class="not-prose overflow-hidden rounded-xl border">
 	<div
 		class="{columns} items-center gap-3 border-b bg-(--sink-bg) px-3 py-1.5 text-sm font-medium text-foreground"
 	>

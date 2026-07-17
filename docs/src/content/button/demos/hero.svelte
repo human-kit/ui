@@ -6,7 +6,7 @@
 
 <Button.Root
 	onclick={() => count++}
-	class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors data-[hovered=true]:bg-blue-700 data-[pressed=true]:bg-blue-800 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[focus-visible=true]:ring-offset-2 dark:data-[focus-visible=true]:ring-offset-neutral-900"
+	class="inline-flex h-8 items-center justify-center gap-2 rounded-md bg-neutral-900 px-3 text-sm font-medium text-white outline-none transition-colors data-[hovered=true]:bg-neutral-700 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:bg-white dark:text-neutral-900 dark:data-[hovered=true]:bg-neutral-200 dark:data-[focus-visible=true]:outline-white"
 >
 	Clicked {count}
 	{count === 1 ? 'time' : 'times'}

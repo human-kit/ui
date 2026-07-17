@@ -11,6 +11,8 @@ description: An accessible combination of text input, popover, and listbox with 
 	import tagsSource from './demos/tags.svelte?highlight';
 	import Pending from './demos/pending.svelte';
 	import pendingSource from './demos/pending.svelte?highlight';
+	import Modes from './demos/modes.svelte';
+	import modesSource from './demos/modes.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -46,6 +48,12 @@ ComboBox combines text input, popover, and listbox behavior into a single access
 Set `selectionMode="multiple"` and render the selected values with `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove`. The popover stays open after each selection, and `Backspace` in an empty input removes the last tag.
 
 <Demo source={tagsSource}><Tags /></Demo>
+
+## Opening modes
+
+`trigger` controls when the popover opens: `"focus"` opens as soon as the input is focused, `"input"` opens once the user starts typing, and `"press"` opens only when `ComboBox.Trigger` is pressed. Switch the mode below and reopen the field to feel the difference.
+
+<Demo source={modesSource}><Modes /></Demo>
 
 ## Pending state
 

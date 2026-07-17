@@ -13,7 +13,7 @@
 	const columns = 'grid grid-cols-[minmax(9rem,1fr)_2.4fr]';
 </script>
 
-<div class="not-prose overflow-hidden rounded-lg border border-border">
+<div class="not-prose overflow-hidden rounded-xl border border-border">
 	<div
 		class="{columns} items-center gap-3 border-b border-border bg-(--sink-bg) px-3 py-1.5 text-sm font-medium text-foreground"
 	>

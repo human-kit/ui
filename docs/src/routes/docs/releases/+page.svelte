@@ -1,6 +1,7 @@
 <script lang="ts">
 	import releases from '$lib/docs/releases-data.json';
 	import { buttonVariants } from '$lib/docs/components/button/recipe';
+	import { releaseAnchor } from '$lib/docs/releases.js';
 
 	interface Entry {
 		pr: number | null;
@@ -54,7 +55,9 @@
 		{#each list as release, i (release.version)}
 			<li class="node" class:latest={i === 0}>
 				<div class="mb-3 flex items-center gap-2">
-					<span class="version">{release.version}</span>
+					<!-- A real heading, not a styled span: this is what makes the version a
+					     linkable section and what the TOC lists (see +page.ts). -->
+					<h2 id={releaseAnchor(release.version)} class="version">{release.version}</h2>
 					{#if release.date}
 						<time class="ml-auto shrink-0 text-sm text-muted-foreground">
 							{formatDate(release.date)}
@@ -121,11 +124,22 @@
 		background: var(--background);
 		border: 1px solid var(--border);
 	}
-	/* Latest = a radio-button dot: foreground ring with a filled centre. */
-	.node.latest::before {
-		border-color: var(--foreground);
-		background-color: var(--background);
-		background-image: radial-gradient(circle, var(--foreground) 1.75px, transparent 1.75px);
+	/* Latest = a radio-button dot: ring above, filled centre below.
+	   The centre is a real ::after circle, NOT a radial-gradient: a gradient's
+	   hard colour stop is rasterized without antialiasing, so at this size the
+	   dot came out visibly stair-stepped. A border-radius box goes through the
+	   normal (antialiased) rounded-rect path and reads smooth. */
+	.node.latest::after {
+		content: '';
+		position: absolute;
+		/* Centred inside the 11px ring at (5.5, 11.5): (11 − 5) / 2 = 3 across,
+		   6 + 3 = 9 down. */
+		left: 3px;
+		top: 9px;
+		width: 5px;
+		height: 5px;
+		border-radius: 9999px;
+		background: var(--foreground);
 	}
 
 	.version {
@@ -133,6 +147,9 @@
 		font-weight: 600;
 		color: var(--foreground);
 		letter-spacing: -0.01em;
+		/* Where a TOC click parks the version: the same offset .hd-prose gives its
+		   headings, which this one can't inherit (it lives outside the prose). */
+		scroll-margin-top: 5rem;
 	}
 
 	.entries {

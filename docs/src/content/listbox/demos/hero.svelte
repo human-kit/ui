@@ -9,26 +9,31 @@
 		{ id: 'orange', name: 'Orange' }
 	];
 
-	let value = $state<Set<string | number>>(new Set(['banana']));
+	// Uncontrolled with an initial default: `bind:value` with a defined Set makes the
+	// primitive treat it as controlled and freeze (it decides controlled-ness once,
+	// from whether `value` was set). `defaultValue` seeds the selection while the
+	// ListBox owns its state; `onChange` mirrors it for the caption.
+	let selected = $state<(string | number)[]>(['banana']);
 </script>
 
 <div class="flex w-full max-w-xs flex-col gap-3">
 	<ListBox.Root
 		selectionMode="single"
-		bind:value
+		defaultValue={['banana']}
+		onChange={(next) => (selected = [...next])}
 		aria-label="Fruits"
-		class="w-full rounded-lg border border-neutral-300 bg-white p-2 dark:border-neutral-600 dark:bg-neutral-800"
+		class="w-full rounded-md border border-neutral-300 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
 	>
 		{#each fruits as fruit (fruit.id)}
 			<ListBox.Item
 				id={fruit.id}
-				class="mb-1 cursor-pointer rounded-lg px-3 py-2 text-neutral-900 last:mb-0 hover:bg-neutral-100 data-selected:bg-blue-600 data-selected:text-white dark:text-white dark:hover:bg-neutral-700"
+				class="mb-1 cursor-default rounded-sm px-2 py-2 text-sm text-neutral-900 outline-none last:mb-0 hover:bg-neutral-100 data-selected:bg-neutral-900 data-selected:text-white dark:text-white dark:hover:bg-neutral-800 dark:data-selected:bg-white dark:data-selected:text-neutral-900"
 			>
 				{fruit.name}
 			</ListBox.Item>
 		{/each}
 	</ListBox.Root>
-	<p class="text-sm text-neutral-600 dark:text-neutral-400">
-		Selected: {[...value].join(', ') || 'none'}
+	<p class="text-sm text-neutral-500 dark:text-neutral-400">
+		Selected: {selected.join(', ') || 'none'}
 	</p>
 </div>

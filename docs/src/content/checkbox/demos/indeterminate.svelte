@@ -7,7 +7,7 @@
 	let indeterminate = $state(true);
 
 	const buttonClass =
-		'rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800';
+		'inline-flex h-8 items-center justify-center rounded-md border border-neutral-300 bg-white px-3 text-sm text-neutral-700 outline-none transition-colors hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus-visible:outline-white';
 
 	function set(nextChecked: boolean, nextIndeterminate: boolean) {
 		checked = nextChecked;
@@ -16,23 +16,29 @@
 </script>
 
 <div class="flex flex-col items-center gap-4">
-	<label class="flex items-center gap-3">
+	<div class="flex items-center gap-2">
 		<Checkbox.Root
-			bind:checked
-			bind:indeterminate
-			aria-label="Select all rows"
-			class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 shadow-sm outline-none transition-all data-[checked=true]:border-blue-600 data-[checked=true]:bg-blue-600 data-[checked=true]:text-white data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[indeterminate=true]:border-amber-500 data-[indeterminate=true]:bg-amber-500 data-[indeterminate=true]:text-white dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+			id="select-all"
+			{checked}
+			{indeterminate}
+			onCheckedChange={(next) => (checked = next)}
+			onIndeterminateChange={(next) => (indeterminate = next)}
+			class="inline-flex size-4 shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-white outline-none transition-colors data-[checked=true]:border-neutral-900 data-[checked=true]:bg-neutral-900 data-[indeterminate=true]:border-neutral-900 data-[indeterminate=true]:bg-neutral-900 data-[disabled=true]:opacity-50 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-900 dark:data-[checked=true]:border-white dark:data-[checked=true]:bg-white dark:data-[indeterminate=true]:border-white dark:data-[indeterminate=true]:bg-white dark:data-[focus-visible=true]:outline-white"
 		>
 			<Checkbox.Indicator class="contents">
 				{#if indeterminate}
-					<MinusIcon class="h-3.5 w-3.5" />
+					<MinusIcon class="size-3" />
 				{:else}
-					<CheckIcon class="h-3.5 w-3.5" />
+					<CheckIcon class="size-3" />
 				{/if}
 			</Checkbox.Indicator>
 		</Checkbox.Root>
-		<span class="text-sm font-medium text-neutral-900 dark:text-white">Select all rows</span>
-	</label>
+		<label
+			for="select-all"
+			class="cursor-pointer text-sm text-neutral-900 select-none dark:text-white"
+			>Select all rows</label
+		>
+	</div>
 
 	<div class="grid grid-cols-3 gap-2">
 		<button onclick={() => set(false, false)} class={buttonClass}>Unchecked</button>

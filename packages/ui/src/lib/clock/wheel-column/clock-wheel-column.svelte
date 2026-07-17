@@ -31,7 +31,8 @@
 		| 'onclick'
 	> & {
 		type: ClockEditableSegmentType;
-		children?: Snippet<[TimePickerWheelOption]>;
+		/** Receives the option and whether it is the column's selected value. */
+		children?: Snippet<[TimePickerWheelOption, boolean]>;
 		class?: string;
 		'aria-label'?: string;
 	};
@@ -512,7 +513,7 @@
 	>
 	{#each options as option, index (option.value)}
 		{#if children}
-			{@render children(option)}
+			{@render children(option, selectedValue === option.value)}
 		{:else}
 			<TimePickerWheelItem
 				{type}

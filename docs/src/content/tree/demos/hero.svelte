@@ -18,7 +18,7 @@
 	];
 
 	const itemClass =
-		'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-neutral-100 data-focus-visible:ring-2 data-focus-visible:ring-blue-500 data-selected:bg-blue-100 data-selected:text-blue-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:data-selected:bg-blue-500/20 dark:data-selected:text-blue-200';
+		'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-neutral-100 data-focus-visible:outline-2 data-focus-visible:-outline-offset-2 data-focus-visible:outline-neutral-900 data-selected:bg-neutral-900 data-selected:text-white dark:text-neutral-300 dark:hover:bg-neutral-800 dark:data-selected:bg-white dark:data-selected:text-neutral-900 dark:data-focus-visible:outline-white';
 </script>
 
 {#snippet node(item: Node)}
@@ -26,7 +26,7 @@
 		{#if item.children?.length}
 			<Tree.Trigger
 				aria-label={`Toggle ${item.title}`}
-				class="group inline-flex size-6 shrink-0 items-center justify-center rounded text-neutral-500 hover:text-blue-600 dark:hover:text-blue-400"
+				class="group inline-flex size-6 shrink-0 items-center justify-center rounded text-neutral-500 outline-none transition-colors hover:text-neutral-900 dark:hover:text-neutral-200"
 			>
 				<ChevronRight class="size-4 transition-transform group-data-expanded:rotate-90" />
 			</Tree.Trigger>

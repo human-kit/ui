@@ -21,18 +21,36 @@ import { tv } from 'tailwind-variants';
  * Colors are intentionally NOT set here. Every region is a `<Surface>` whose
  * `level` drives its shade, so the frame stays consistent with the elevation
  * system instead of hardcoding depth utilities.
+ *
+ * WIDTH: the shell spans the viewport (it has to — it paints the background and
+ * the 32px side gutters), but its two rows each cap at `--frame-max` and centre.
+ * Capping the ROWS rather than the root is what keeps the header rule and the
+ * rails aligned on the same column while the shell itself still bleeds edge to
+ * edge. Past that cap the reading pane stops growing instead of stretching to
+ * whatever the window is.
+ *
+ * WHO ABSORBS THE SLACK: the reading pane, not the rails. `--pane-max` is its
+ * preferred size (`basis`) and it does NOT grow, so every pixel of leftover goes
+ * to the rails (`flex-1` in docs-shell). Under `--frame-max` the rails give back
+ * their slack first and only then — at their `min-w` — does the pane shrink. The
+ * rails being FIXED width instead is what made the pane collapse to 448px at
+ * 1280: with a fixed rail there is nothing else left to take the hit.
  */
 const frameRecipeConfig = {
 	slots: {
-		root: 'fixed inset-0 flex flex-col overflow-clip p-2 gap-2',
-		header: 'flex h-7 gap-2 px-3 pr-1.5 justify-between',
-		body: 'flex min-h-0 w-full flex-1',
+		// `--pane-max` = the 52rem measure the reading column is designed for, plus
+		// the `viewport` slot's own lg gutters (2 × 3rem) — so the TEXT lands at
+		// 52rem, not the card. Keep the two in step if the padding changes.
+		root: 'fixed inset-0 flex flex-col overflow-clip px-8 py-2 gap-2 [--frame-max:1536px] [--pane-max:calc(52rem+2*3rem)]',
+		header: 'mx-auto w-full max-w-(--frame-max) flex h-7 gap-2 px-3 pr-1.5 justify-between',
+		body: 'mx-auto flex min-h-0 w-full max-w-(--frame-max) flex-1 gap-4',
 		// The card clips (overflow-hidden + rounded) so the inner scrollbar is
 		// contained by the rounded corners; the padded `viewport` slot is what
 		// actually scrolls.
-		content: 'min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border raised shadow-sm',
-		viewport: 'h-full overflow-y-auto px-6 py-10 lg:px-12',
-		sidebar: 'min-h-0 shrink-0 overflow-y-auto'
+		content:
+			'min-h-0 min-w-0 grow-0 shrink basis-(--pane-max) overflow-hidden rounded-xl border raised shadow-sm',
+		viewport: 'h-full overflow-y-auto px-6 py-9 lg:px-12',
+		sidebar: 'min-h-0 overflow-y-auto'
 	}
 } as const;
 

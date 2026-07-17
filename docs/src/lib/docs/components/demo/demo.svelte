@@ -16,7 +16,7 @@
 	let expanded = $state(false);
 </script>
 
-<div class="not-prose my-4 overflow-hidden rounded-lg border border-border">
+<div class="not-prose my-4 overflow-hidden rounded-xl border border-border">
 	<!-- Preview -->
 	<div class="flex min-h-48 items-center justify-center bg-surface p-8">
 		{@render children()}

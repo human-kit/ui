@@ -114,8 +114,10 @@
 </script>
 
 {#if headings.length > 0}
-	<nav aria-label={label} class="text-sm">
-		<h4 class="text-sm text-muted-foreground">
+	<!-- The inset is here rather than on the rail: see docs-shell (padding on a
+	     `flex-1` rail is incompressible and skews the row's free-space split). -->
+	<nav aria-label={label} class="px-2 text-sm">
+		<h4 class="text-sm">
 			{label}
 		</h4>
 		<ul class="mt-3 space-y-1.5 border-l border-border">
