@@ -21,7 +21,7 @@ description: What @human-kit/ui is, the principles behind it, and how it's built
 - **TypeScript** end to end.
 - Floating UI for overlay positioning, with the library's own presence, focus, and layer-stack primitives on top.
 
-The API and interaction contracts are aligned with the patterns established by React Aria Components, adapted to feel native in Svelte.
+The API and interaction contracts are inspired by [Base UI](https://base-ui.com) and [React Aria](https://react-spectrum.adobe.com/react-aria/) — two projects that set the bar for accessible, composable, headless primitives. `@human-kit/ui` adapts their patterns to feel native in Svelte, and owes a lot to the work behind them.
 
 ## Status
 
