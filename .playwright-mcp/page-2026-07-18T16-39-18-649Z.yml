@@ -1,0 +1,235 @@
+- generic [ref=e1]:
+  - button "Disable render scanning" [ref=e2] [cursor=pointer]
+  - generic [ref=e7]:
+    - banner [ref=e8]:
+      - link [ref=e9] [cursor=pointer]:
+        - /url: ../
+      - generic [ref=e12]:
+        - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=e13] [cursor=pointer]:
+          - /url: https://www.npmjs.com/package/@human-kit/ui
+          - text: 1.0.0-beta.0
+        - link "GitHub repository" [ref=e14] [cursor=pointer]:
+          - /url: https://github.com/human-kit/ui
+        - button "Toggle color theme" [ref=e15]
+        - status [ref=e17]
+    - generic [ref=e18]:
+      - complementary [ref=e19]:
+        - navigation [ref=e20]:
+          - generic [ref=e21]:
+            - button "Overview" [expanded] [ref=e22]
+            - status [ref=e25]
+            - list [ref=e28]:
+              - listitem [ref=e29]:
+                - link "Quick Start" [ref=e30] [cursor=pointer]:
+                  - /url: ../docs/quick-start
+              - listitem [ref=e31]:
+                - link "Accessibility" [ref=e32] [cursor=pointer]:
+                  - /url: ../docs/accessibility
+              - listitem [ref=e33]:
+                - link "Releases" [ref=e34] [cursor=pointer]:
+                  - /url: ../docs/releases
+              - listitem [ref=e35]:
+                - link "About" [ref=e36] [cursor=pointer]:
+                  - /url: ../docs/about
+          - generic [ref=e37]:
+            - button "Form" [expanded] [ref=e38]
+            - status [ref=e41]
+            - list [ref=e44]:
+              - listitem [ref=e45]:
+                - link "Button" [ref=e46] [cursor=pointer]:
+                  - /url: ../docs/button
+              - listitem [ref=e47]:
+                - link "Checkbox" [ref=e48] [cursor=pointer]:
+                  - /url: ../docs/checkbox
+              - listitem [ref=e49]:
+                - link "Input" [ref=e50] [cursor=pointer]:
+                  - /url: ../docs/input
+              - listitem [ref=e51]:
+                - link "NumberField" [ref=e52] [cursor=pointer]:
+                  - /url: ../docs/numberfield
+              - listitem [ref=e53]:
+                - link "Switch" [ref=e54] [cursor=pointer]:
+                  - /url: ../docs/switch
+              - listitem [ref=e55]:
+                - link "TextArea" [ref=e56] [cursor=pointer]:
+                  - /url: ../docs/textarea
+              - listitem [ref=e57]:
+                - link "Toggle" [ref=e58] [cursor=pointer]:
+                  - /url: ../docs/toggle
+              - listitem [ref=e59]:
+                - link "ToggleGroup" [ref=e60] [cursor=pointer]:
+                  - /url: ../docs/toggle-group
+          - generic [ref=e61]:
+            - button "Pickers" [expanded] [ref=e62]
+            - status [ref=e65]
+            - list [ref=e68]:
+              - listitem [ref=e69]:
+                - link "Autocomplete" [ref=e70] [cursor=pointer]:
+                  - /url: ../docs/autocomplete
+              - listitem [ref=e71]:
+                - link "ComboBox" [ref=e72] [cursor=pointer]:
+                  - /url: ../docs/combobox
+              - listitem [ref=e73]:
+                - link "ListBox" [ref=e74] [cursor=pointer]:
+                  - /url: ../docs/listbox
+              - listitem [ref=e75]:
+                - link "Calendar" [ref=e76] [cursor=pointer]:
+                  - /url: ../docs/calendar
+              - listitem [ref=e77]:
+                - link "Clock" [ref=e78] [cursor=pointer]:
+                  - /url: ../docs/clock
+              - listitem [ref=e79]:
+                - link "DatePicker" [ref=e80] [cursor=pointer]:
+                  - /url: ../docs/datepicker
+              - listitem [ref=e81]:
+                - link "DateRangePicker" [ref=e82] [cursor=pointer]:
+                  - /url: ../docs/daterangepicker
+              - listitem [ref=e83]:
+                - link "TimePicker" [ref=e84] [cursor=pointer]:
+                  - /url: ../docs/timepicker
+          - generic [ref=e85]:
+            - button "Overlays" [expanded] [ref=e86]
+            - status [ref=e89]
+            - list [ref=e92]:
+              - listitem [ref=e93]:
+                - link "Dialog" [ref=e94] [cursor=pointer]:
+                  - /url: ../docs/dialog
+              - listitem [ref=e95]:
+                - link "Menu" [ref=e96] [cursor=pointer]:
+                  - /url: ../docs/menu
+              - listitem [ref=e97]:
+                - link "Popover" [ref=e98] [cursor=pointer]:
+                  - /url: ../docs/popover
+          - generic [ref=e99]:
+            - button "Structure" [expanded] [ref=e100]
+            - status [ref=e103]
+            - list [ref=e106]:
+              - listitem [ref=e107]:
+                - link "Accordion" [ref=e108] [cursor=pointer]:
+                  - /url: ../docs/accordion
+              - listitem [ref=e109]:
+                - link "Collapsible" [ref=e110] [cursor=pointer]:
+                  - /url: ../docs/collapsible
+              - listitem [ref=e111]:
+                - link "Table" [ref=e112] [cursor=pointer]:
+                  - /url: ../docs/table
+              - listitem [ref=e113]:
+                - link "Tabs" [ref=e114] [cursor=pointer]:
+                  - /url: ../docs/tabs
+              - listitem [ref=e115]:
+                - link "Tree" [ref=e116] [cursor=pointer]:
+                  - /url: ../docs/tree
+      - main [ref=e117]:
+        - article [ref=e119]:
+          - generic [ref=e120]:
+            - 'link "Next: Accessibility" [ref=e121] [cursor=pointer]':
+              - /url: ../docs/accessibility
+            - button "Page options" [ref=e122]
+            - status [ref=e123]
+          - heading "Quick Start" [level=1] [ref=e124]
+          - paragraph [ref=e125]:
+            - code [ref=e126]: "@human-kit/ui"
+            - text: is a set of headless, accessible UI primitives for
+            - strong [ref=e127]: Svelte 5
+            - text: . Components ship the behavior, semantics, and keyboard/focus handling — you bring the styles.
+          - heading "Installation" [level=2] [ref=e128]
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - tablist "Package manager" [ref=e133]:
+                - tab "pnpm" [selected] [ref=e134]
+                - status [ref=e135]
+                - tab "npm" [ref=e136]
+                - status [ref=e137]
+                - tab "yarn" [ref=e138]
+                - status [ref=e139]
+                - tab "bun" [ref=e140]
+                - status [ref=e141]
+              - button "Copy pnpm command" [ref=e142]
+              - status [ref=e144]
+            - tabpanel "pnpm" [ref=e146]:
+              - generic [ref=e147]: pnpm add @human-kit/ui
+          - paragraph [ref=e149]: "Svelte 5 is a peer dependency, so make sure your project is on it:"
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - tablist "Package manager" [ref=e154]:
+                - tab "pnpm" [selected] [ref=e155]
+                - status [ref=e156]
+                - tab "npm" [ref=e157]
+                - status [ref=e158]
+                - tab "yarn" [ref=e159]
+                - status [ref=e160]
+                - tab "bun" [ref=e161]
+                - status [ref=e162]
+              - button "Copy pnpm command" [ref=e163]
+              - status [ref=e165]
+            - tabpanel "pnpm" [ref=e167]:
+              - generic [ref=e168]: pnpm add svelte@^5
+          - paragraph [ref=e170]: The package is published as native ESM with per-component subpath exports, so bundlers only include what you import.
+          - heading "Your first component" [level=2] [ref=e171]
+          - paragraph [ref=e172]: "Every primitive is a set of composable parts under a namespace. Import from the barrel or a per-component subpath:"
+          - code [ref=e175]:
+            - generic [ref=e176]: <script lang="ts">
+            - generic [ref=e177]: "import { Button } from '@human-kit/ui';"
+            - generic [ref=e178]: "// or: import { Button } from '@human-kit/ui/button';"
+            - generic [ref=e179]: let count = $state(0);
+            - generic [ref=e180]: </script>
+            - generic [ref=e181]: "<Button.Root onclick={() => count++}>"
+            - generic [ref=e182]: "Clicked {count} times"
+            - generic [ref=e183]: </Button.Root>
+          - paragraph [ref=e184]:
+            - text: That renders a real native
+            - code [ref=e185]: <button>
+            - text: with correct semantics, focus behavior, and modality-aware focus data attributes — no styling assumptions baked in.
+          - heading "Styling" [level=2] [ref=e186]
+          - paragraph [ref=e187]:
+            - text: Components are
+            - strong [ref=e188]: headless
+            - text: ": they expose state through"
+            - code [ref=e189]: data-*
+            - text: "attributes and leave the visuals to you. Style them with plain CSS, Tailwind, or anything else:"
+          - code [ref=e192]:
+            - generic [ref=e193]: <Button.Root class="rounded-md bg-black px-3 py-1.5 text-white data-[pressed]:opacity-80">
+            - generic [ref=e194]: Save
+            - generic [ref=e195]: </Button.Root>
+          - paragraph [ref=e196]:
+            - text: "Common state hooks you can target:"
+            - code [ref=e197]: data-pressed
+            - text: ","
+            - code [ref=e198]: data-disabled
+            - text: ","
+            - code [ref=e199]: data-focus-visible
+            - text: ", and"
+            - code [ref=e200]: data-pending
+            - text: . Each component's page lists its full data-attribute contract.
+          - heading "Next steps" [level=2] [ref=e201]
+          - list [ref=e202]:
+            - listitem [ref=e203]: Browse the components in the sidebar — each has a live demo, an anatomy breakdown, and a full API reference.
+            - listitem [ref=e204]:
+              - text: Read
+              - link "Accessibility" [ref=e205] [cursor=pointer]:
+                - /url: /docs/accessibility
+              - text: to see the standards every component follows.
+            - listitem [ref=e206]:
+              - text: Follow the
+              - link "Releases" [ref=e207] [cursor=pointer]:
+                - /url: /docs/releases
+              - text: timeline to track what's new.
+      - complementary [ref=e208]:
+        - navigation "On this page" [ref=e209]:
+          - heading "On this page" [level=4] [ref=e210]
+          - list [ref=e211]:
+            - listitem [ref=e212]:
+              - link "(Top)" [ref=e213] [cursor=pointer]:
+                - /url: "#top"
+            - listitem [ref=e214]:
+              - link "Installation" [ref=e215] [cursor=pointer]:
+                - /url: "#installation"
+            - listitem [ref=e216]:
+              - link "Your first component" [ref=e217] [cursor=pointer]:
+                - /url: "#your-first-component"
+            - listitem [ref=e218]:
+              - link "Styling" [ref=e219] [cursor=pointer]:
+                - /url: "#styling"
+            - listitem [ref=e220]:
+              - link "Next steps" [ref=e221] [cursor=pointer]:
+                - /url: "#next-steps"

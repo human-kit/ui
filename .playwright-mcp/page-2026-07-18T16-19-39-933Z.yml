@@ -1,0 +1,4 @@
+- generic [ref=e2]:
+  - button "Disable render scanning" [ref=e3] [cursor=pointer]
+  - heading "404" [level=1] [ref=e8]
+  - paragraph [ref=e9]: Not Found

@@ -1,0 +1,235 @@
+- generic [ref=f2e1]:
+  - button "Disable render scanning" [ref=f2e2] [cursor=pointer]
+  - generic [ref=f2e7]:
+    - banner [ref=f2e8]:
+      - link [ref=f2e9] [cursor=pointer]:
+        - /url: ../
+      - generic [ref=f2e12]:
+        - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f2e13] [cursor=pointer]:
+          - /url: https://www.npmjs.com/package/@human-kit/ui
+          - text: 1.0.0-beta.0
+        - link "GitHub repository" [ref=f2e14] [cursor=pointer]:
+          - /url: https://github.com/human-kit/ui
+        - button "Toggle color theme" [ref=f2e15]
+        - status [ref=f2e17]
+    - generic [ref=f2e18]:
+      - complementary [ref=f2e19]:
+        - navigation [ref=f2e20]:
+          - generic [ref=f2e21]:
+            - button "Overview" [expanded] [ref=f2e22]
+            - status [ref=f2e25]
+            - list [ref=f2e28]:
+              - listitem [ref=f2e29]:
+                - link "Quick Start" [ref=f2e30] [cursor=pointer]:
+                  - /url: ../docs/quick-start
+              - listitem [ref=f2e31]:
+                - link "Accessibility" [ref=f2e32] [cursor=pointer]:
+                  - /url: ../docs/accessibility
+              - listitem [ref=f2e33]:
+                - link "Releases" [ref=f2e34] [cursor=pointer]:
+                  - /url: ../docs/releases
+              - listitem [ref=f2e35]:
+                - link "About" [ref=f2e36] [cursor=pointer]:
+                  - /url: ../docs/about
+          - generic [ref=f2e37]:
+            - button "Form" [expanded] [ref=f2e38]
+            - status [ref=f2e41]
+            - list [ref=f2e44]:
+              - listitem [ref=f2e45]:
+                - link "Button" [ref=f2e46] [cursor=pointer]:
+                  - /url: ../docs/button
+              - listitem [ref=f2e47]:
+                - link "Checkbox" [ref=f2e48] [cursor=pointer]:
+                  - /url: ../docs/checkbox
+              - listitem [ref=f2e49]:
+                - link "Input" [ref=f2e50] [cursor=pointer]:
+                  - /url: ../docs/input
+              - listitem [ref=f2e51]:
+                - link "NumberField" [ref=f2e52] [cursor=pointer]:
+                  - /url: ../docs/numberfield
+              - listitem [ref=f2e53]:
+                - link "Switch" [ref=f2e54] [cursor=pointer]:
+                  - /url: ../docs/switch
+              - listitem [ref=f2e55]:
+                - link "TextArea" [ref=f2e56] [cursor=pointer]:
+                  - /url: ../docs/textarea
+              - listitem [ref=f2e57]:
+                - link "Toggle" [ref=f2e58] [cursor=pointer]:
+                  - /url: ../docs/toggle
+              - listitem [ref=f2e59]:
+                - link "ToggleGroup" [ref=f2e60] [cursor=pointer]:
+                  - /url: ../docs/toggle-group
+          - generic [ref=f2e61]:
+            - button "Pickers" [expanded] [ref=f2e62]
+            - status [ref=f2e65]
+            - list [ref=f2e68]:
+              - listitem [ref=f2e69]:
+                - link "Autocomplete" [ref=f2e70] [cursor=pointer]:
+                  - /url: ../docs/autocomplete
+              - listitem [ref=f2e71]:
+                - link "ComboBox" [ref=f2e72] [cursor=pointer]:
+                  - /url: ../docs/combobox
+              - listitem [ref=f2e73]:
+                - link "ListBox" [ref=f2e74] [cursor=pointer]:
+                  - /url: ../docs/listbox
+              - listitem [ref=f2e75]:
+                - link "Calendar" [ref=f2e76] [cursor=pointer]:
+                  - /url: ../docs/calendar
+              - listitem [ref=f2e77]:
+                - link "Clock" [ref=f2e78] [cursor=pointer]:
+                  - /url: ../docs/clock
+              - listitem [ref=f2e79]:
+                - link "DatePicker" [ref=f2e80] [cursor=pointer]:
+                  - /url: ../docs/datepicker
+              - listitem [ref=f2e81]:
+                - link "DateRangePicker" [ref=f2e82] [cursor=pointer]:
+                  - /url: ../docs/daterangepicker
+              - listitem [ref=f2e83]:
+                - link "TimePicker" [ref=f2e84] [cursor=pointer]:
+                  - /url: ../docs/timepicker
+          - generic [ref=f2e85]:
+            - button "Overlays" [expanded] [ref=f2e86]
+            - status [ref=f2e89]
+            - list [ref=f2e92]:
+              - listitem [ref=f2e93]:
+                - link "Dialog" [ref=f2e94] [cursor=pointer]:
+                  - /url: ../docs/dialog
+              - listitem [ref=f2e95]:
+                - link "Menu" [ref=f2e96] [cursor=pointer]:
+                  - /url: ../docs/menu
+              - listitem [ref=f2e97]:
+                - link "Popover" [ref=f2e98] [cursor=pointer]:
+                  - /url: ../docs/popover
+          - generic [ref=f2e99]:
+            - button "Structure" [expanded] [ref=f2e100]
+            - status [ref=f2e103]
+            - list [ref=f2e106]:
+              - listitem [ref=f2e107]:
+                - link "Accordion" [ref=f2e108] [cursor=pointer]:
+                  - /url: ../docs/accordion
+              - listitem [ref=f2e109]:
+                - link "Collapsible" [ref=f2e110] [cursor=pointer]:
+                  - /url: ../docs/collapsible
+              - listitem [ref=f2e111]:
+                - link "Table" [ref=f2e112] [cursor=pointer]:
+                  - /url: ../docs/table
+              - listitem [ref=f2e113]:
+                - link "Tabs" [ref=f2e114] [cursor=pointer]:
+                  - /url: ../docs/tabs
+              - listitem [ref=f2e115]:
+                - link "Tree" [ref=f2e116] [cursor=pointer]:
+                  - /url: ../docs/tree
+      - main [ref=f2e117]:
+        - article [ref=f2e119]:
+          - generic [ref=f2e120]:
+            - 'link "Next: Accessibility" [ref=f2e121] [cursor=pointer]':
+              - /url: ../docs/accessibility
+            - button "Page options" [ref=f2e122]
+            - status [ref=f2e123]
+          - heading "Quick Start" [level=1] [ref=f2e124]
+          - paragraph [ref=f2e125]:
+            - code [ref=f2e126]: "@human-kit/ui"
+            - text: is a set of headless, accessible UI primitives for
+            - strong [ref=f2e127]: Svelte 5
+            - text: . Components ship the behavior, semantics, and keyboard/focus handling — you bring the styles.
+          - heading "Installation" [level=2] [ref=f2e128]
+          - generic [ref=f2e129]:
+            - generic [ref=f2e130]:
+              - tablist "Package manager" [ref=f2e133]:
+                - tab "pnpm" [selected] [ref=f2e134]
+                - status [ref=f2e135]
+                - tab "npm" [ref=f2e136]
+                - status [ref=f2e137]
+                - tab "yarn" [ref=f2e138]
+                - status [ref=f2e139]
+                - tab "bun" [ref=f2e140]
+                - status [ref=f2e141]
+              - button "Copy pnpm command" [ref=f2e142]
+              - status [ref=f2e144]
+            - tabpanel "yarn" [ref=f2e146]:
+              - generic [ref=f2e147]: yarn add @human-kit/ui
+          - paragraph [ref=f2e149]: "Svelte 5 is a peer dependency, so make sure your project is on it:"
+          - generic [ref=f2e150]:
+            - generic [ref=f2e151]:
+              - tablist "Package manager" [ref=f2e154]:
+                - tab "pnpm" [selected] [ref=f2e155]
+                - status [ref=f2e156]
+                - tab "npm" [ref=f2e157]
+                - status [ref=f2e158]
+                - tab "yarn" [ref=f2e159]
+                - status [ref=f2e160]
+                - tab "bun" [ref=f2e161]
+                - status [ref=f2e162]
+              - button "Copy pnpm command" [ref=f2e163]
+              - status [ref=f2e165]
+            - tabpanel "yarn" [ref=f2e167]:
+              - generic [ref=f2e168]: yarn add svelte@^5
+          - paragraph [ref=f2e170]: The package is published as native ESM with per-component subpath exports, so bundlers only include what you import.
+          - heading "Your first component" [level=2] [ref=f2e171]
+          - paragraph [ref=f2e172]: "Every primitive is a set of composable parts under a namespace. Import from the barrel or a per-component subpath:"
+          - code [ref=f2e175]:
+            - generic [ref=f2e176]: <script lang="ts">
+            - generic [ref=f2e177]: "import { Button } from '@human-kit/ui';"
+            - generic [ref=f2e178]: "// or: import { Button } from '@human-kit/ui/button';"
+            - generic [ref=f2e179]: let count = $state(0);
+            - generic [ref=f2e180]: </script>
+            - generic [ref=f2e181]: "<Button.Root onclick={() => count++}>"
+            - generic [ref=f2e182]: "Clicked {count} times"
+            - generic [ref=f2e183]: </Button.Root>
+          - paragraph [ref=f2e184]:
+            - text: That renders a real native
+            - code [ref=f2e185]: <button>
+            - text: with correct semantics, focus behavior, and modality-aware focus data attributes — no styling assumptions baked in.
+          - heading "Styling" [level=2] [ref=f2e186]
+          - paragraph [ref=f2e187]:
+            - text: Components are
+            - strong [ref=f2e188]: headless
+            - text: ": they expose state through"
+            - code [ref=f2e189]: data-*
+            - text: "attributes and leave the visuals to you. Style them with plain CSS, Tailwind, or anything else:"
+          - code [ref=f2e192]:
+            - generic [ref=f2e193]: <Button.Root class="rounded-md bg-black px-3 py-1.5 text-white data-[pressed]:opacity-80">
+            - generic [ref=f2e194]: Save
+            - generic [ref=f2e195]: </Button.Root>
+          - paragraph [ref=f2e196]:
+            - text: "Common state hooks you can target:"
+            - code [ref=f2e197]: data-pressed
+            - text: ","
+            - code [ref=f2e198]: data-disabled
+            - text: ","
+            - code [ref=f2e199]: data-focus-visible
+            - text: ", and"
+            - code [ref=f2e200]: data-pending
+            - text: . Each component's page lists its full data-attribute contract.
+          - heading "Next steps" [level=2] [ref=f2e201]
+          - list [ref=f2e202]:
+            - listitem [ref=f2e203]: Browse the components in the sidebar — each has a live demo, an anatomy breakdown, and a full API reference.
+            - listitem [ref=f2e204]:
+              - text: Read
+              - link "Accessibility" [ref=f2e205] [cursor=pointer]:
+                - /url: /docs/accessibility
+              - text: to see the standards every component follows.
+            - listitem [ref=f2e206]:
+              - text: Follow the
+              - link "Releases" [ref=f2e207] [cursor=pointer]:
+                - /url: /docs/releases
+              - text: timeline to track what's new.
+      - complementary [ref=f2e208]:
+        - navigation "On this page" [ref=f2e209]:
+          - heading "On this page" [level=4] [ref=f2e210]
+          - list [ref=f2e211]:
+            - listitem [ref=f2e212]:
+              - link "(Top)" [ref=f2e213] [cursor=pointer]:
+                - /url: "#top"
+            - listitem [ref=f2e214]:
+              - link "Installation" [ref=f2e215] [cursor=pointer]:
+                - /url: "#installation"
+            - listitem [ref=f2e216]:
+              - link "Your first component" [ref=f2e217] [cursor=pointer]:
+                - /url: "#your-first-component"
+            - listitem [ref=f2e218]:
+              - link "Styling" [ref=f2e219] [cursor=pointer]:
+                - /url: "#styling"
+            - listitem [ref=f2e220]:
+              - link "Next steps" [ref=f2e221] [cursor=pointer]:
+                - /url: "#next-steps"

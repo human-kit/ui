@@ -452,3 +452,38 @@
 		border-bottom: 1px solid var(--border-subtle);
 	}
 }
+
+/*
+ * Install-command package-manager tabs. The active manager is a per-user,
+ * client-only preference, so SSR can't know it and always renders 'pnpm'. The
+ * anti-FOUC script in app.html writes the stored choice to `<html data-pm>` before
+ * the first paint; these rules read that attribute so the right command shows and
+ * the right tab reads pressed on the very first frame — no flash to the stored
+ * choice after hydration — and they still default to pnpm with no JS. The command
+ * bodies are plain always-mounted panels (NOT Tabs.Panel, whose `hidden` attribute
+ * is `display:none !important` at the UA level and so can't be revealed by CSS),
+ * so any one can be shown by the reveal rules below. The tab's pressed look also
+ * lives here (not on Tabs' own `data-selected`, which SSR still puts on 'pnpm').
+ * Kept in sync with package-manager.svelte.ts and the app.html script (same key,
+ * attribute, and managers). Left unlayered so it wins over the button recipe's
+ * utility classes.
+ */
+[data-pm-panel] {
+	display: none;
+}
+
+:where(html:not([data-pm]), html[data-pm='pnpm']) [data-pm-panel='pnpm'],
+:where(html[data-pm='npm']) [data-pm-panel='npm'],
+:where(html[data-pm='yarn']) [data-pm-panel='yarn'],
+:where(html[data-pm='bun']) [data-pm-panel='bun'] {
+	display: block;
+}
+
+:where(html:not([data-pm]), html[data-pm='pnpm']) [data-pm-tab='pnpm'],
+:where(html[data-pm='npm']) [data-pm-tab='npm'],
+:where(html[data-pm='yarn']) [data-pm-tab='yarn'],
+:where(html[data-pm='bun']) [data-pm-tab='bun'] {
+	@apply sunken;
+	background-color: var(--press-bg);
+	border-color: var(--border);
+}

@@ -129,7 +129,7 @@
 				<a
 					href="#top"
 					class="-ml-px block border-l py-0.5 pl-4 transition-colors {activeId === null
-						? 'border-foreground font-medium text-foreground'
+						? 'border-foreground border-l-2 font-medium text-foreground'
 						: 'border-transparent text-muted-foreground hover:text-foreground'}"
 				>
 					(Top)
@@ -142,7 +142,7 @@
 						class="-ml-px block border-l py-0.5 transition-colors {heading.depth === 3
 							? 'pl-7'
 							: 'pl-4'} {activeId === heading.id
-							? 'border-foreground font-medium text-foreground'
+							? 'border-foreground border-l-2 font-medium text-foreground'
 							: 'border-transparent text-muted-foreground hover:text-foreground'}"
 					>
 						{heading.text}
