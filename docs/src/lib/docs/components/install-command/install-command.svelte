@@ -54,11 +54,7 @@
 	$effect(persistPm);
 </script>
 
-<Tabs.Root
-	id={uid}
-	bind:value={pm.value}
-	class="not-prose my-4 overflow-hidden rounded-xl border shadow-xs"
->
+<Tabs.Root id={uid} bind:value={pm.value} class="not-prose my-4 overflow-hidden rounded-xl border">
 	<div class="flex items-center gap-2 border-b py-1.5 pr-1.5 pl-3">
 		<Terminal class="size-4 text-muted-foreground" />
 
