@@ -39,7 +39,7 @@
 			selectionMode="multiple"
 			disabledKeys={['nora']}
 			bind:selectedKeys
-			class="min-w-full border-collapse text-left [&_td]:border-0 [&_th]:border-0"
+			class="min-w-full border-collapse text-left [&_td]:border-0 [&_th]:border-0 [&_tbody_th]:font-medium [&_thead_th]:font-normal"
 		>
 			<Table.Header>
 				<Table.Row class="border-b border-neutral-200 dark:border-neutral-800">
