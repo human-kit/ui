@@ -1,0 +1,636 @@
+- generic [ref=f10e1]:
+  - button "Disable render scanning" [ref=f10e2] [cursor=pointer]
+  - generic [ref=f10e7]:
+    - banner [ref=f10e8]:
+      - link [ref=f10e9] [cursor=pointer]:
+        - /url: ../
+      - generic [ref=f10e12]:
+        - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f10e13] [cursor=pointer]:
+          - /url: https://www.npmjs.com/package/@human-kit/ui
+          - text: 1.0.0-beta.0
+        - link "GitHub repository" [ref=f10e14] [cursor=pointer]:
+          - /url: https://github.com/human-kit/ui
+        - button "Toggle color theme" [ref=f10e15]
+        - status [ref=f10e17]
+    - generic [ref=f10e18]:
+      - complementary [ref=f10e19]:
+        - navigation [ref=f10e20]:
+          - generic [ref=f10e21]:
+            - button "Overview" [expanded] [ref=f10e22]
+            - status [ref=f10e25]
+            - list [ref=f10e28]:
+              - listitem [ref=f10e29]:
+                - link "Quick Start" [ref=f10e30] [cursor=pointer]:
+                  - /url: ../docs/quick-start
+              - listitem [ref=f10e31]:
+                - link "Accessibility" [ref=f10e32] [cursor=pointer]:
+                  - /url: ../docs/accessibility
+              - listitem [ref=f10e33]:
+                - link "Releases" [ref=f10e34] [cursor=pointer]:
+                  - /url: ../docs/releases
+              - listitem [ref=f10e35]:
+                - link "About" [ref=f10e36] [cursor=pointer]:
+                  - /url: ../docs/about
+          - generic [ref=f10e37]:
+            - button "Form" [expanded] [ref=f10e38]
+            - status [ref=f10e41]
+            - list [ref=f10e44]:
+              - listitem [ref=f10e45]:
+                - link "Button" [ref=f10e46] [cursor=pointer]:
+                  - /url: ../docs/button
+              - listitem [ref=f10e47]:
+                - link "Checkbox" [ref=f10e48] [cursor=pointer]:
+                  - /url: ../docs/checkbox
+              - listitem [ref=f10e49]:
+                - link "Input" [ref=f10e50] [cursor=pointer]:
+                  - /url: ../docs/input
+              - listitem [ref=f10e51]:
+                - link "NumberField" [ref=f10e52] [cursor=pointer]:
+                  - /url: ../docs/numberfield
+              - listitem [ref=f10e53]:
+                - link "Switch" [ref=f10e54] [cursor=pointer]:
+                  - /url: ../docs/switch
+              - listitem [ref=f10e55]:
+                - link "TextArea" [ref=f10e56] [cursor=pointer]:
+                  - /url: ../docs/textarea
+              - listitem [ref=f10e57]:
+                - link "Toggle" [ref=f10e58] [cursor=pointer]:
+                  - /url: ../docs/toggle
+              - listitem [ref=f10e59]:
+                - link "ToggleGroup" [ref=f10e60] [cursor=pointer]:
+                  - /url: ../docs/toggle-group
+          - generic [ref=f10e61]:
+            - button "Pickers" [expanded] [ref=f10e62]
+            - status [ref=f10e65]
+            - list [ref=f10e68]:
+              - listitem [ref=f10e69]:
+                - link "Autocomplete" [ref=f10e70] [cursor=pointer]:
+                  - /url: ../docs/autocomplete
+              - listitem [ref=f10e71]:
+                - link "ComboBox" [ref=f10e72] [cursor=pointer]:
+                  - /url: ../docs/combobox
+              - listitem [ref=f10e73]:
+                - link "ListBox" [ref=f10e74] [cursor=pointer]:
+                  - /url: ../docs/listbox
+              - listitem [ref=f10e75]:
+                - link "Calendar" [ref=f10e76] [cursor=pointer]:
+                  - /url: ../docs/calendar
+              - listitem [ref=f10e77]:
+                - link "Clock" [ref=f10e78] [cursor=pointer]:
+                  - /url: ../docs/clock
+              - listitem [ref=f10e79]:
+                - link "DatePicker" [ref=f10e80] [cursor=pointer]:
+                  - /url: ../docs/datepicker
+              - listitem [ref=f10e81]:
+                - link "DateRangePicker" [ref=f10e82] [cursor=pointer]:
+                  - /url: ../docs/daterangepicker
+              - listitem [ref=f10e83]:
+                - link "TimePicker" [ref=f10e84] [cursor=pointer]:
+                  - /url: ../docs/timepicker
+          - generic [ref=f10e85]:
+            - button "Overlays" [expanded] [ref=f10e86]
+            - status [ref=f10e89]
+            - list [ref=f10e92]:
+              - listitem [ref=f10e93]:
+                - link "Dialog" [ref=f10e94] [cursor=pointer]:
+                  - /url: ../docs/dialog
+              - listitem [ref=f10e95]:
+                - link "Menu" [ref=f10e96] [cursor=pointer]:
+                  - /url: ../docs/menu
+              - listitem [ref=f10e97]:
+                - link "Popover" [ref=f10e98] [cursor=pointer]:
+                  - /url: ../docs/popover
+          - generic [ref=f10e99]:
+            - button "Structure" [expanded] [ref=f10e100]
+            - status [ref=f10e103]
+            - list [ref=f10e106]:
+              - listitem [ref=f10e107]:
+                - link "Accordion" [ref=f10e108] [cursor=pointer]:
+                  - /url: ../docs/accordion
+              - listitem [ref=f10e109]:
+                - link "Collapsible" [ref=f10e110] [cursor=pointer]:
+                  - /url: ../docs/collapsible
+              - listitem [ref=f10e111]:
+                - link "Table" [ref=f10e112] [cursor=pointer]:
+                  - /url: ../docs/table
+              - listitem [ref=f10e113]:
+                - link "Tabs" [ref=f10e114] [cursor=pointer]:
+                  - /url: ../docs/tabs
+              - listitem [ref=f10e115]:
+                - link "Tree" [ref=f10e116] [cursor=pointer]:
+                  - /url: ../docs/tree
+      - main [ref=f10e117]:
+        - article [ref=f10e119]:
+          - generic [ref=f10e120]:
+            - 'link "Previous: Popover" [ref=f10e121] [cursor=pointer]':
+              - /url: ../docs/popover
+            - 'link "Next: Collapsible" [ref=f10e122] [cursor=pointer]':
+              - /url: ../docs/collapsible
+            - button "Page options" [ref=f10e123]
+            - status [ref=f10e124]
+          - heading "Accordion" [level=1] [ref=f10e125]
+          - paragraph [ref=f10e126]: "A headless disclosure primitive: a vertical (or horizontal) stack of collapsible sections with roving focus, single or multiple expansion, disabled items, and controlled/uncontrolled open state."
+          - generic [ref=f10e127]:
+            - generic [ref=f10e129]:
+              - generic [ref=f10e130]:
+                - heading [level=3] [ref=f10e131]:
+                  - button "Shipping & delivery" [expanded] [ref=f10e132]
+                  - status [ref=f10e135]
+                - region "Shipping & delivery" [ref=f10e136]:
+                  - generic [ref=f10e137]: Orders ship within two business days. Tracking details are emailed as soon as the carrier scans your package.
+              - heading [level=3] [ref=f10e139]:
+                - button "Returns & refunds" [ref=f10e140]
+                - status [ref=f10e143]
+              - heading [level=3] [ref=f10e145]:
+                - button "Warranty" [ref=f10e146]
+                - status [ref=f10e149]
+            - generic [ref=f10e151]:
+              - button "Copy source code" [ref=f10e152]
+              - status [ref=f10e154]
+              - button "Show code" [ref=f10e155]
+              - status [ref=f10e156]
+          - heading "Anatomy" [level=2] [ref=f10e157]
+          - paragraph [ref=f10e158]:
+            - text: Provide a unique
+            - code [ref=f10e159]: value
+            - text: on every
+            - code [ref=f10e160]: Accordion.Item
+            - text: — the matching
+            - code [ref=f10e161]: Header
+            - text: ","
+            - code [ref=f10e162]: Trigger
+            - text: and
+            - code [ref=f10e163]: Panel
+            - text: read it from the item context, so you only declare it once.
+          - code [ref=f10e166]:
+            - generic [ref=f10e167]: <script>
+            - generic [ref=f10e168]: "import { Accordion } from '@human-kit/ui';"
+            - generic [ref=f10e169]: </script>
+            - generic [ref=f10e170]: "<Accordion.Root defaultValue={['overview']}>"
+            - generic [ref=f10e171]: <Accordion.Item value="overview">
+            - generic [ref=f10e172]: <Accordion.Header>
+            - generic [ref=f10e173]: <Accordion.Trigger>Overview</Accordion.Trigger>
+            - generic [ref=f10e174]: </Accordion.Header>
+            - generic [ref=f10e175]: <Accordion.Panel>Overview content</Accordion.Panel>
+            - generic [ref=f10e176]: </Accordion.Item>
+            - generic [ref=f10e177]: </Accordion.Root>
+          - heading "Multiple expansion and disabled items" [level=2] [ref=f10e178]
+          - paragraph [ref=f10e179]:
+            - text: Set
+            - code [ref=f10e180]: selectionMode="multiple"
+            - text: to allow more than one panel open at a time (default is
+            - code [ref=f10e181]: "\"single\""
+            - text: ). Use
+            - code [ref=f10e182]: disabled
+            - text: "on"
+            - code [ref=f10e183]: Accordion.Item
+            - text: to disable a single item, or on
+            - code [ref=f10e184]: Accordion.Root
+            - text: to disable the whole accordion.
+          - generic [ref=f10e185]:
+            - generic [ref=f10e187]:
+              - generic [ref=f10e188]:
+                - heading [level=3] [ref=f10e189]:
+                  - button "Account" [expanded] [ref=f10e190]
+                  - status [ref=f10e193]
+                - region "Account" [ref=f10e194]:
+                  - generic [ref=f10e195]: Profile, password, and login sessions.
+              - generic [ref=f10e196]:
+                - heading [level=3] [ref=f10e197]:
+                  - button "Billing" [expanded] [ref=f10e198]
+                  - status [ref=f10e201]
+                - region "Billing" [ref=f10e202]:
+                  - generic [ref=f10e203]: Payment methods, invoices, and tax details.
+              - heading [level=3] [ref=f10e205]:
+                - button "Team" [disabled] [ref=f10e206]
+                - status [ref=f10e209]
+            - generic [ref=f10e211]:
+              - button "Copy source code" [ref=f10e212]
+              - status [ref=f10e214]
+              - button "Show code" [ref=f10e215]
+              - status [ref=f10e216]
+          - heading "Usage guidelines" [level=2] [ref=f10e217]
+          - list [ref=f10e218]:
+            - listitem [ref=f10e219]:
+              - text: Use
+              - code [ref=f10e220]: value
+              - text: /
+              - code [ref=f10e221]: onChange
+              - text: for controlled state and
+              - code [ref=f10e222]: defaultValue
+              - text: for uncontrolled state. Both are arrays of open item values.
+            - listitem [ref=f10e223]:
+              - text: Use
+              - code [ref=f10e224]: disallowEmptySelection
+              - text: to keep at least one panel open.
+            - listitem [ref=f10e225]:
+              - text: Use
+              - code [ref=f10e226]: orientation="horizontal"
+              - text: to switch the arrow-key navigation axis.
+            - listitem [ref=f10e227]:
+              - text: Use
+              - code [ref=f10e228]: "loop={false}"
+              - text: to stop focus from wrapping at the first and last triggers.
+            - listitem [ref=f10e229]:
+              - text: Use
+              - code [ref=f10e230]: forceMount
+              - text: "on"
+              - code [ref=f10e231]: Accordion.Panel
+              - text: when collapsed panel content must stay in the DOM.
+            - listitem [ref=f10e232]:
+              - text: Set
+              - code [ref=f10e233]: level
+              - text: "on"
+              - code [ref=f10e234]: Accordion.Header
+              - text: (1–6, default
+              - code [ref=f10e235]: "3"
+              - text: ) to match the surrounding document outline.
+          - heading "Accessibility" [level=2] [ref=f10e236]
+          - list [ref=f10e237]:
+            - listitem [ref=f10e238]:
+              - code [ref=f10e239]: Accordion.Header
+              - text: renders a real heading element (
+              - code [ref=f10e240]: <h3>
+              - text: by default) that wraps the trigger button, following the WAI-ARIA accordion pattern.
+            - listitem [ref=f10e241]:
+              - code [ref=f10e242]: Accordion.Trigger
+              - text: renders button semantics with
+              - code [ref=f10e243]: aria-expanded
+              - text: and
+              - code [ref=f10e244]: aria-controls
+              - text: .
+            - listitem [ref=f10e245]:
+              - code [ref=f10e246]: Accordion.Panel
+              - text: renders
+              - code [ref=f10e247]: role="region"
+              - text: and
+              - code [ref=f10e248]: aria-labelledby
+              - text: pointing at its trigger, and is
+              - code [ref=f10e249]: hidden
+              - text: +
+              - code [ref=f10e250]: inert
+              - text: while collapsed.
+            - listitem [ref=f10e251]:
+              - text: Arrow keys move focus between triggers, Home/End jump to the first or last enabled trigger, and focus wraps at the ends unless
+              - code [ref=f10e252]: "loop={false}"
+              - text: .
+            - listitem [ref=f10e253]: Enter/Space toggle the focused panel via native button activation.
+          - heading "API reference" [level=2] [ref=f10e254]
+          - heading "Root" [level=3] [ref=f10e255]
+          - paragraph [ref=f10e256]: Groups all items and manages selection state and roving focus.
+          - generic [ref=f10e258]:
+            - generic [ref=f10e259]:
+              - generic [ref=f10e260]: Prop
+              - generic [ref=f10e261]: Type
+              - generic [ref=f10e262]: Default
+            - generic [ref=f10e263]:
+              - button "value AccordionValue[] —" [ref=f10e264]:
+                - generic [ref=f10e265]: value
+                - generic [ref=f10e266]: AccordionValue[]
+                - generic [ref=f10e268]: —
+              - status [ref=f10e271]
+            - generic [ref=f10e272]:
+              - button "defaultValue AccordionValue[] —" [ref=f10e273]:
+                - generic [ref=f10e274]: defaultValue
+                - generic [ref=f10e275]: AccordionValue[]
+                - generic [ref=f10e277]: —
+              - status [ref=f10e280]
+            - generic [ref=f10e281]:
+              - 'button "onChange (value: AccordionValue[]) => void —" [ref=f10e282]':
+                - generic [ref=f10e283]: onChange
+                - generic [ref=f10e284]: "(value: AccordionValue[]) => void"
+                - generic [ref=f10e286]: —
+              - status [ref=f10e289]
+            - generic [ref=f10e290]:
+              - button "selectionMode AccordionSelectionMode 'single'" [ref=f10e291]:
+                - generic [ref=f10e292]: selectionMode
+                - generic [ref=f10e293]: AccordionSelectionMode
+                - generic [ref=f10e295]: "'single'"
+              - status [ref=f10e299]
+            - generic [ref=f10e300]:
+              - button "disabled boolean false" [ref=f10e301]:
+                - generic [ref=f10e302]: disabled
+                - generic [ref=f10e303]: boolean
+                - generic [ref=f10e305]: "false"
+              - status [ref=f10e309]
+            - generic [ref=f10e310]:
+              - button "orientation AccordionOrientation 'vertical'" [ref=f10e311]:
+                - generic [ref=f10e312]: orientation
+                - generic [ref=f10e313]: AccordionOrientation
+                - generic [ref=f10e315]: "'vertical'"
+              - status [ref=f10e319]
+            - generic [ref=f10e320]:
+              - button "disallowEmptySelection boolean false" [ref=f10e321]:
+                - generic [ref=f10e322]: disallowEmptySelection
+                - generic [ref=f10e323]: boolean
+                - generic [ref=f10e325]: "false"
+              - status [ref=f10e329]
+            - generic [ref=f10e330]:
+              - button "loop boolean true" [ref=f10e331]:
+                - generic [ref=f10e332]: loop
+                - generic [ref=f10e333]: boolean
+                - generic [ref=f10e335]: "true"
+              - status [ref=f10e339]
+            - generic [ref=f10e340]:
+              - button "children Snippet —" [ref=f10e341]:
+                - generic [ref=f10e342]: children
+                - generic [ref=f10e343]: Snippet
+                - generic [ref=f10e345]: —
+              - status [ref=f10e348]
+            - generic [ref=f10e349]:
+              - button "class string ''" [ref=f10e350]:
+                - generic [ref=f10e351]: class
+                - generic [ref=f10e352]: string
+                - generic [ref=f10e354]: "''"
+              - status [ref=f10e358]
+            - generic [ref=f10e359]:
+              - button "id string —" [ref=f10e360]:
+                - generic [ref=f10e361]: id
+                - generic [ref=f10e362]: string
+                - generic [ref=f10e364]: —
+              - status [ref=f10e367]
+            - generic [ref=f10e368]:
+              - button "element HTMLDivElement | null null" [ref=f10e369]:
+                - generic [ref=f10e370]: element
+                - generic [ref=f10e371]: HTMLDivElement | null
+                - generic [ref=f10e373]: "null"
+              - status [ref=f10e377]
+            - generic [ref=f10e378]:
+              - button "context AccordionContext —" [ref=f10e379]:
+                - generic [ref=f10e380]: context
+                - generic [ref=f10e381]: AccordionContext
+                - generic [ref=f10e383]: —
+              - status [ref=f10e386]
+          - paragraph [ref=f10e387]: "* required. Native HTML attributes of the underlying element are also accepted."
+          - generic [ref=f10e389]:
+            - generic [ref=f10e390]:
+              - generic [ref=f10e391]: Data attribute
+              - generic [ref=f10e392]: Description
+            - generic [ref=f10e393]:
+              - generic [ref=f10e394]: data-accordion-root
+              - generic [ref=f10e395]: Identifies the root element.
+            - generic [ref=f10e396]:
+              - generic [ref=f10e397]: data-disabled
+              - generic [ref=f10e398]: Present when disabled.
+            - generic [ref=f10e399]:
+              - generic [ref=f10e400]: data-orientation
+              - generic [ref=f10e401]: "The accordion orientation: 'vertical' or 'horizontal'."
+          - heading "Item" [level=3] [ref=f10e402]
+          - paragraph [ref=f10e403]: Wraps one collapsible section. Provides its value to Header, Trigger and Panel via context.
+          - generic [ref=f10e405]:
+            - generic [ref=f10e406]:
+              - generic [ref=f10e407]: Prop
+              - generic [ref=f10e408]: Type
+              - generic [ref=f10e409]: Default
+            - generic [ref=f10e410]:
+              - button "value* AccordionValue —" [ref=f10e411]:
+                - generic [ref=f10e412]: value*
+                - generic [ref=f10e413]: AccordionValue
+                - generic [ref=f10e415]: —
+              - status [ref=f10e418]
+            - generic [ref=f10e419]:
+              - button "disabled boolean false" [ref=f10e420]:
+                - generic [ref=f10e421]: disabled
+                - generic [ref=f10e422]: boolean
+                - generic [ref=f10e424]: "false"
+              - status [ref=f10e428]
+            - generic [ref=f10e429]:
+              - button "children Snippet —" [ref=f10e430]:
+                - generic [ref=f10e431]: children
+                - generic [ref=f10e432]: Snippet
+                - generic [ref=f10e434]: —
+              - status [ref=f10e437]
+            - generic [ref=f10e438]:
+              - button "class string ''" [ref=f10e439]:
+                - generic [ref=f10e440]: class
+                - generic [ref=f10e441]: string
+                - generic [ref=f10e443]: "''"
+              - status [ref=f10e447]
+            - generic [ref=f10e448]:
+              - button "element HTMLDivElement | null null" [ref=f10e449]:
+                - generic [ref=f10e450]: element
+                - generic [ref=f10e451]: HTMLDivElement | null
+                - generic [ref=f10e453]: "null"
+              - status [ref=f10e457]
+          - paragraph [ref=f10e458]: "* required. Native HTML attributes of the underlying element are also accepted."
+          - generic [ref=f10e460]:
+            - generic [ref=f10e461]:
+              - generic [ref=f10e462]: Data attribute
+              - generic [ref=f10e463]: Description
+            - generic [ref=f10e464]:
+              - generic [ref=f10e465]: data-accordion-item
+              - generic [ref=f10e466]: Identifies an item element.
+            - generic [ref=f10e467]:
+              - generic [ref=f10e468]: data-accordion-value
+              - generic [ref=f10e469]: The item value, serialized as a string.
+            - generic [ref=f10e470]:
+              - generic [ref=f10e471]: data-accordion-value-type
+              - generic [ref=f10e472]: The runtime type of the item value (string or number).
+            - generic [ref=f10e473]:
+              - generic [ref=f10e474]: data-disabled
+              - generic [ref=f10e475]: Present when disabled.
+            - generic [ref=f10e476]:
+              - generic [ref=f10e477]: data-open
+              - generic [ref=f10e478]: Present while the item is expanded.
+            - generic [ref=f10e479]:
+              - generic [ref=f10e480]: data-orientation
+              - generic [ref=f10e481]: "The accordion orientation: 'vertical' or 'horizontal'."
+          - heading "Header" [level=3] [ref=f10e482]
+          - paragraph [ref=f10e483]: A real heading element (h3 by default) wrapping the trigger.
+          - generic [ref=f10e485]:
+            - generic [ref=f10e486]:
+              - generic [ref=f10e487]: Prop
+              - generic [ref=f10e488]: Type
+              - generic [ref=f10e489]: Default
+            - generic [ref=f10e490]:
+              - button "level 1 | 2 | 3 | 4 | 5 | 6 3" [ref=f10e491]:
+                - generic [ref=f10e492]: level
+                - generic [ref=f10e493]: 1 | 2 | 3 | 4 | 5 | 6
+                - generic [ref=f10e495]: "3"
+              - status [ref=f10e499]
+            - generic [ref=f10e500]:
+              - button "children Snippet —" [ref=f10e501]:
+                - generic [ref=f10e502]: children
+                - generic [ref=f10e503]: Snippet
+                - generic [ref=f10e505]: —
+              - status [ref=f10e508]
+            - generic [ref=f10e509]:
+              - button "class string ''" [ref=f10e510]:
+                - generic [ref=f10e511]: class
+                - generic [ref=f10e512]: string
+                - generic [ref=f10e514]: "''"
+              - status [ref=f10e518]
+            - generic [ref=f10e519]:
+              - button "element HTMLHeadingElement | null null" [ref=f10e520]:
+                - generic [ref=f10e521]: element
+                - generic [ref=f10e522]: HTMLHeadingElement | null
+                - generic [ref=f10e524]: "null"
+              - status [ref=f10e528]
+          - paragraph [ref=f10e529]: "* required. Native HTML attributes of the underlying element are also accepted."
+          - generic [ref=f10e531]:
+            - generic [ref=f10e532]:
+              - generic [ref=f10e533]: Data attribute
+              - generic [ref=f10e534]: Description
+            - generic [ref=f10e535]:
+              - generic [ref=f10e536]: data-accordion-header
+              - generic [ref=f10e537]: Identifies a header element.
+            - generic [ref=f10e538]:
+              - generic [ref=f10e539]: data-disabled
+              - generic [ref=f10e540]: Present when disabled.
+            - generic [ref=f10e541]:
+              - generic [ref=f10e542]: data-open
+              - generic [ref=f10e543]: Present while the item is expanded.
+          - heading "Trigger" [level=3] [ref=f10e544]
+          - paragraph [ref=f10e545]: The button that toggles its panel. Exposes aria-expanded and aria-controls.
+          - generic [ref=f10e547]:
+            - generic [ref=f10e548]:
+              - generic [ref=f10e549]: Prop
+              - generic [ref=f10e550]: Type
+              - generic [ref=f10e551]: Default
+            - generic [ref=f10e552]:
+              - button "children Snippet —" [ref=f10e553]:
+                - generic [ref=f10e554]: children
+                - generic [ref=f10e555]: Snippet
+                - generic [ref=f10e557]: —
+              - status [ref=f10e560]
+            - generic [ref=f10e561]:
+              - button "class string ''" [ref=f10e562]:
+                - generic [ref=f10e563]: class
+                - generic [ref=f10e564]: string
+                - generic [ref=f10e566]: "''"
+              - status [ref=f10e570]
+            - generic [ref=f10e571]:
+              - button "element HTMLButtonElement | null null" [ref=f10e572]:
+                - generic [ref=f10e573]: element
+                - generic [ref=f10e574]: HTMLButtonElement | null
+                - generic [ref=f10e576]: "null"
+              - status [ref=f10e580]
+          - paragraph [ref=f10e581]: "* required. Native HTML attributes of the underlying element are also accepted."
+          - generic [ref=f10e583]:
+            - generic [ref=f10e584]:
+              - generic [ref=f10e585]: Data attribute
+              - generic [ref=f10e586]: Description
+            - generic [ref=f10e587]:
+              - generic [ref=f10e588]: data-accordion-trigger
+              - generic [ref=f10e589]: Identifies a trigger element.
+            - generic [ref=f10e590]:
+              - generic [ref=f10e591]: data-accordion-value
+              - generic [ref=f10e592]: The item value, serialized as a string.
+            - generic [ref=f10e593]:
+              - generic [ref=f10e594]: data-accordion-value-type
+              - generic [ref=f10e595]: The runtime type of the item value (string or number).
+            - generic [ref=f10e596]:
+              - generic [ref=f10e597]: data-disabled
+              - generic [ref=f10e598]: Present when disabled.
+            - generic [ref=f10e599]:
+              - generic [ref=f10e600]: data-focus-visible
+              - generic [ref=f10e601]: Present while focus should be visibly indicated (keyboard modality).
+            - generic [ref=f10e602]:
+              - generic [ref=f10e603]: data-focused
+              - generic [ref=f10e604]: Present while the element has focus.
+            - generic [ref=f10e605]:
+              - generic [ref=f10e606]: data-open
+              - generic [ref=f10e607]: Present while the item is expanded.
+            - generic [ref=f10e608]:
+              - generic [ref=f10e609]: data-orientation
+              - generic [ref=f10e610]: "The accordion orientation: 'vertical' or 'horizontal'."
+          - heading "Panel" [level=3] [ref=f10e611]
+          - paragraph [ref=f10e612]: The collapsible region, hidden and inert while collapsed.
+          - generic [ref=f10e614]:
+            - generic [ref=f10e615]:
+              - generic [ref=f10e616]: Prop
+              - generic [ref=f10e617]: Type
+              - generic [ref=f10e618]: Default
+            - generic [ref=f10e619]:
+              - button "forceMount boolean false" [ref=f10e620]:
+                - generic [ref=f10e621]: forceMount
+                - generic [ref=f10e622]: boolean
+                - generic [ref=f10e624]: "false"
+              - status [ref=f10e628]
+            - generic [ref=f10e629]:
+              - button "children Snippet —" [ref=f10e630]:
+                - generic [ref=f10e631]: children
+                - generic [ref=f10e632]: Snippet
+                - generic [ref=f10e634]: —
+              - status [ref=f10e637]
+            - generic [ref=f10e638]:
+              - button "class string ''" [ref=f10e639]:
+                - generic [ref=f10e640]: class
+                - generic [ref=f10e641]: string
+                - generic [ref=f10e643]: "''"
+              - status [ref=f10e647]
+            - generic [ref=f10e648]:
+              - button "element HTMLDivElement | null null" [ref=f10e649]:
+                - generic [ref=f10e650]: element
+                - generic [ref=f10e651]: HTMLDivElement | null
+                - generic [ref=f10e653]: "null"
+              - status [ref=f10e657]
+          - paragraph [ref=f10e658]: "* required. Native HTML attributes of the underlying element are also accepted."
+          - generic [ref=f10e660]:
+            - generic [ref=f10e661]:
+              - generic [ref=f10e662]: Data attribute
+              - generic [ref=f10e663]: Description
+            - generic [ref=f10e664]:
+              - generic [ref=f10e665]: data-accordion-panel
+              - generic [ref=f10e666]: Identifies a panel element.
+            - generic [ref=f10e667]:
+              - generic [ref=f10e668]: data-accordion-panel-content
+              - generic [ref=f10e669]: Identifies the inner content wrapper used for height animation.
+            - generic [ref=f10e670]:
+              - generic [ref=f10e671]: data-accordion-value
+              - generic [ref=f10e672]: The item value, serialized as a string.
+            - generic [ref=f10e673]:
+              - generic [ref=f10e674]: data-accordion-value-type
+              - generic [ref=f10e675]: The runtime type of the item value (string or number).
+            - generic [ref=f10e676]:
+              - generic [ref=f10e677]: data-closed
+              - generic [ref=f10e678]: Present while the item is collapsed.
+            - generic [ref=f10e679]:
+              - generic [ref=f10e680]: data-ending-style
+              - generic [ref=f10e681]: Present while the panel is collapsing, for CSS exit transitions.
+            - generic [ref=f10e682]:
+              - generic [ref=f10e683]: data-open
+              - generic [ref=f10e684]: Present while the item is expanded.
+            - generic [ref=f10e685]:
+              - generic [ref=f10e686]: data-orientation
+              - generic [ref=f10e687]: "The accordion orientation: 'vertical' or 'horizontal'."
+            - generic [ref=f10e688]:
+              - generic [ref=f10e689]: data-starting-style
+              - generic [ref=f10e690]: Present for one frame when the panel starts expanding, for CSS transitions.
+      - complementary [ref=f10e691]:
+        - navigation "On this page" [ref=f10e692]:
+          - heading "On this page" [level=4] [ref=f10e693]
+          - list [ref=f10e694]:
+            - listitem [ref=f10e695]:
+              - link "(Top)" [ref=f10e696] [cursor=pointer]:
+                - /url: "#top"
+            - listitem [ref=f10e697]:
+              - link "Anatomy" [ref=f10e698] [cursor=pointer]:
+                - /url: "#anatomy"
+            - listitem [ref=f10e699]:
+              - link "Multiple expansion and disabled items" [ref=f10e700] [cursor=pointer]:
+                - /url: "#multiple-expansion-and-disabled-items"
+            - listitem [ref=f10e701]:
+              - link "Usage guidelines" [ref=f10e702] [cursor=pointer]:
+                - /url: "#usage-guidelines"
+            - listitem [ref=f10e703]:
+              - link "Accessibility" [ref=f10e704] [cursor=pointer]:
+                - /url: "#accessibility"
+            - listitem [ref=f10e705]:
+              - link "API reference" [ref=f10e706] [cursor=pointer]:
+                - /url: "#api-reference"
+            - listitem [ref=f10e707]:
+              - link "Root" [ref=f10e708] [cursor=pointer]:
+                - /url: "#api-root"
+            - listitem [ref=f10e709]:
+              - link "Item" [ref=f10e710] [cursor=pointer]:
+                - /url: "#api-item"
+            - listitem [ref=f10e711]:
+              - link "Header" [ref=f10e712] [cursor=pointer]:
+                - /url: "#api-header"
+            - listitem [ref=f10e713]:
+              - link "Trigger" [ref=f10e714] [cursor=pointer]:
+                - /url: "#api-trigger"
+            - listitem [ref=f10e715]:
+              - link "Panel" [ref=f10e716] [cursor=pointer]:
+                - /url: "#api-panel"

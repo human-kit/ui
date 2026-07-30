@@ -1,0 +1,52 @@
+{
+  "label": "rz-fix",
+  "createdAt": "2026-07-30T12:44:47.998Z",
+  "mode": "dev",
+  "url": "http://localhost:5311/bench/table?rows=5000&columns=8",
+  "throttle": 4,
+  "repeat": 4,
+  "scenarios": {
+    "resize-column": {
+      "scenario": "resize-column",
+      "config": {
+        "rows": 5000,
+        "columns": 8,
+        "selectionMode": "multiple",
+        "resizable": true,
+        "pinFirstColumn": false,
+        "virtualized": true,
+        "rowHeight": 32,
+        "cellVariant": "rich",
+        "viewportHeight": 640
+      },
+      "frames": {
+        "count": 120,
+        "mean": 49,
+        "p50": 48.5,
+        "p95": 70.29999999999563,
+        "p99": 74.5,
+        "max": 87,
+        "dropped": 116,
+        "droppedRatio": 0.9666666666666667,
+        "jankMs": 3880.000000000007
+      },
+      "longTasks": {
+        "count": 51,
+        "totalMs": 3276,
+        "maxMs": 506,
+        "supported": true
+      },
+      "renderedRows": 40,
+      "durationMs": 5902.300000011921,
+      "samples": [
+        48.5,
+        51.2,
+        51.3,
+        51.6
+      ],
+      "bestMs": 48.5,
+      "medianMs": 51.3,
+      "spread": 0.064
+    }
+  }
+}
