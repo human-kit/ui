@@ -21,8 +21,12 @@ export function buildWheelOptions(params: {
 	minuteStep: number;
 	secondStep: number;
 	hasRangeBounds: boolean;
-	getCandidateFromPartial: (partial: Partial<TimePickerDraft>) => TimePickerTimeValue | null;
-	isOutOfRange: (value: TimePickerTimeValue) => boolean;
+	/**
+	 * Whether fixing this one segment leaves no in-range time at all. Receives the
+	 * partial draft for the option; the caller decides how much freedom the
+	 * remaining segments have (see `create-time-selection-state`).
+	 */
+	isPartialOutOfRange: (partial: Partial<TimePickerDraft>) => boolean;
 	locale?: string;
 }): WheelOption[] {
 	const {
@@ -32,8 +36,7 @@ export function buildWheelOptions(params: {
 		minuteStep,
 		secondStep,
 		hasRangeBounds,
-		getCandidateFromPartial,
-		isOutOfRange,
+		isPartialOutOfRange,
 		locale
 	} = params;
 
@@ -41,12 +44,7 @@ export function buildWheelOptions(params: {
 
 	if (type === 'dayPeriod') {
 		for (const option of ['AM', 'PM'] as const) {
-			const disabled = hasRangeBounds
-				? (() => {
-						const candidate = getCandidateFromPartial({ dayPeriod: option });
-						return candidate ? isOutOfRange(candidate) : false;
-					})()
-				: false;
+			const disabled = hasRangeBounds ? isPartialOutOfRange({ dayPeriod: option }) : false;
 			options.push({
 				value: option,
 				label: locale ? getLocalizedDayPeriod(locale, option) : option,
@@ -81,16 +79,13 @@ export function buildWheelOptions(params: {
 	for (let current = min; current <= max; current += step) {
 		const valueString = String(current);
 		const disabled = hasRangeBounds
-			? (() => {
-					const candidate = getCandidateFromPartial(
-						type === 'hour'
-							? { hour: valueString }
-							: type === 'minute'
-								? { minute: valueString }
-								: { second: valueString }
-					);
-					return candidate ? isOutOfRange(candidate) : false;
-				})()
+			? isPartialOutOfRange(
+					type === 'hour'
+						? { hour: valueString }
+						: type === 'minute'
+							? { minute: valueString }
+							: { second: valueString }
+				)
 			: false;
 
 		options.push({

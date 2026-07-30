@@ -23,7 +23,7 @@
 			{indeterminate}
 			onCheckedChange={(next) => (checked = next)}
 			onIndeterminateChange={(next) => (indeterminate = next)}
-			class="inline-flex size-4 shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-white outline-none transition-colors data-[checked=true]:border-neutral-900 data-[checked=true]:bg-neutral-900 data-[indeterminate=true]:border-neutral-900 data-[indeterminate=true]:bg-neutral-900 data-[disabled=true]:opacity-50 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-900 dark:data-[checked=true]:border-white dark:data-[checked=true]:bg-white dark:data-[indeterminate=true]:border-white dark:data-[indeterminate=true]:bg-white dark:data-[focus-visible=true]:outline-white"
+			class="inline-flex size-4 shrink-0 items-center justify-center border border-neutral-300 bg-white text-white outline-none transition-colors data-[checked=true]:border-neutral-900 data-[checked=true]:bg-neutral-900 data-[indeterminate=true]:border-neutral-900 data-[indeterminate=true]:bg-neutral-900 data-[disabled=true]:opacity-50 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-900 dark:data-[checked=true]:border-white dark:data-[checked=true]:bg-white dark:data-[indeterminate=true]:border-white dark:data-[indeterminate=true]:bg-white dark:data-[focus-visible=true]:outline-white"
 		>
 			<Checkbox.Indicator class="contents">
 				{#if indeterminate}

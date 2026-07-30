@@ -7,8 +7,6 @@ description: A headless tab primitive with roving focus, automatic or manual key
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import Manual from './demos/manual.svelte';
-	import manualSource from './demos/manual.svelte?highlight';
 	import Vertical from './demos/vertical.svelte';
 	import verticalSource from './demos/vertical.svelte?highlight';
 	import api from './api.json';
@@ -44,8 +42,6 @@ Give every `Tabs.Tab` a unique `value` and pair it with a `Tabs.Panel` carrying 
 ## Manual activation
 
 By default arrow keys activate tabs as focus moves. With `keyboardActivation="manual"`, arrow keys only move focus and the focused tab activates on Enter or Space — useful when switching panels is expensive.
-
-<Demo source={manualSource}><Manual /></Demo>
 
 ## Vertical orientation and disabled tabs
 

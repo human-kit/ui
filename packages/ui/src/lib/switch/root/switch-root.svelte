@@ -31,10 +31,17 @@
 		value?: string;
 		/** Associates the hidden input with a form by id. */
 		form?: string;
-		/** Controlled checked state. Bindable. */
+		/** Checked state. Two-way by default — use `bind:checked`. */
 		checked?: boolean;
-		/** Initial checked state when uncontrolled. */
+		/** Initial checked state, for when `checked` is not supplied. */
 		defaultChecked?: boolean;
+		/**
+		 * Opt into fully controlled state: the component stops writing back to `checked`
+		 * and only reports through `onCheckedChange`, so the parent can reject a change by
+		 * not flowing the new value back down. Off by default, because `bind:checked` —
+		 * the common case — needs the write-back to work at all.
+		 */
+		controlledChecked?: boolean;
 		/** Called when the user toggles the switch. */
 		onCheckedChange?: (checked: boolean) => void;
 		/** Removes the switch from interaction and focus order. */
@@ -87,6 +94,7 @@
 		form,
 		checked = $bindable(),
 		defaultChecked = false,
+		controlledChecked = false,
 		onCheckedChange,
 		disabled = false,
 		readonly = false,
@@ -141,14 +149,20 @@
 		}
 	});
 
-	// Controlled-ness is decided once, from whether the prop was provided at init.
-	const isCheckedControlled = untrack(() => checked) !== undefined;
-
-	// In uncontrolled mode, write the initial state back so `bind:` parents see the default.
-	if (!isCheckedControlled) {
+	// Controlled-ness is NOT inferred from `checked` being defined: `bind:checked={value}`
+	// and `checked={value}` are indistinguishable at runtime, so inferring it silently
+	// broke every `bind:checked` seeded with `false`. It is opt-in via `controlledChecked`.
+	// Write the initial state back so `bind:` parents see the resolved default. Read
+	// untracked: this is a deliberate one-time seed at init, not a reactive mirror.
+	if (!untrack(() => controlledChecked)) {
 		checked = initialChecked;
 	}
-	const currentChecked = $derived(isCheckedControlled ? Boolean(checked) : checkedInternal);
+
+	// `checked` wins whenever it is supplied — that covers both `bind:checked` and a plain
+	// `checked={...}` — and the internal state only carries the fully uncontrolled case.
+	const currentChecked = $derived(
+		controlledChecked ? Boolean(checked) : (checked ?? checkedInternal)
+	);
 	const currentUnchecked = $derived(!currentChecked);
 
 	function clearPressState() {
@@ -159,7 +173,7 @@
 	function publishChecked(nextChecked: boolean, event?: Event) {
 		const previousChecked = currentChecked;
 
-		if (!isCheckedControlled) {
+		if (!controlledChecked) {
 			checkedInternal = nextChecked;
 			checked = nextChecked;
 		}

@@ -9,8 +9,6 @@ description: An always-visible, filterable list — a search input on top of a L
 	import heroSource from './demos/hero.svelte?highlight';
 	import Multiple from './demos/multiple.svelte';
 	import multipleSource from './demos/multiple.svelte?highlight';
-	import External from './demos/external.svelte';
-	import externalSource from './demos/external.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -51,8 +49,6 @@ Pass `selectionMode="multiple"` to `Autocomplete.List`. Selected items show an i
 ## External filtering
 
 Set `filter={null}` on `Autocomplete.Root` to disable local filtering and compute the list yourself (e.g. from a backend) using `bind:inputValue`.
-
-<Demo source={externalSource}><External /></Demo>
 
 ## Usage guidelines
 

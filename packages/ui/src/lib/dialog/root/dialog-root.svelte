@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { untrack } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
 	import {
@@ -14,10 +13,17 @@
 	 * Provides context for Trigger and Content children.
 	 */
 	type DialogRootProps = {
-		/** Controlled open state. */
+		/** Open state. Two-way by default — use `bind:open`. */
 		open?: boolean;
-		/** Initial open state for uncontrolled mode. */
+		/** Initial open state, for when `open` is not supplied. */
 		defaultOpen?: boolean;
+		/**
+		 * Opt into fully controlled state: the component stops writing back to `open` and
+		 * only reports through `onOpenChange`, so the parent can reject a change by not
+		 * flowing the new value back down. Off by default, because `bind:open` — the
+		 * common case — needs the write-back to work at all.
+		 */
+		controlledOpen?: boolean;
 		/** Callback when open state changes. */
 		onOpenChange?: (open: boolean) => void;
 		/** Reference to the trigger element. Can be set manually or via Dialog.Trigger. */
@@ -29,6 +35,7 @@
 	let {
 		open: openProp = $bindable(),
 		defaultOpen = false,
+		controlledOpen = false,
 		onOpenChange,
 		triggerRef = $bindable<HTMLElement | null>(null),
 		children
@@ -40,23 +47,24 @@
 	// Stack level for z-index calculation
 	let stackLevel = $state(0);
 
-	// Controlled-ness is captured once at init: a parent that passes `open`
-	// owns the state for the lifetime of the component.
-	const isControlled = untrack(() => openProp !== undefined);
-	const isOpen = $derived(isControlled ? Boolean(openProp) : isOpenInternal);
+	// `open` wins whenever it is supplied — that covers both `bind:open` and a plain
+	// `open={...}` — and the internal state only carries the fully uncontrolled case.
+	// Controlled-ness is NOT inferred from `open` being defined: `bind:open={value}` and
+	// `open={value}` are indistinguishable at runtime, so inferring it silently broke
+	// every `bind:open` seeded with `false`. It is opt-in via `controlledOpen` instead.
+	const isOpen = $derived(controlledOpen ? Boolean(openProp) : (openProp ?? isOpenInternal));
 
 	function setOpen(value: boolean) {
-		if (isControlled) {
-			// In controlled mode the parent owns the state: it reacts in `onOpenChange`
-			// and flows the value back down (or ignores it to reject the change).
-			// Writing `openProp` here would locally override the parent's prop.
-			onOpenChange?.(value);
-			return;
-		}
+		onOpenChange?.(value);
+
+		// Fully controlled: the parent owns the state and reacts in `onOpenChange`,
+		// flowing the value back down (or ignoring it to reject the change). Writing
+		// `openProp` here would locally override the parent's prop.
+		if (controlledOpen) return;
+
 		isOpenInternal = value;
 		// Sync bindable prop
 		openProp = value;
-		onOpenChange?.(value);
 	}
 
 	function toggle() {

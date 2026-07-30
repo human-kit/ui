@@ -54,6 +54,7 @@
 		id?: string;
 		value?: DateRangePickerRangeValue | null;
 		defaultValue?: DateRangePickerRangeValue | null;
+		controlledValue?: boolean;
 		onChange?: (value: DateRangePickerRangeValue | null) => void;
 		disabled?: boolean;
 		readonly?: boolean;
@@ -62,6 +63,7 @@
 		isDateUnavailable?: (date: DatePickerDateValue) => boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
+		controlledOpen?: boolean;
 		onOpenChange?: (open: boolean, details: DateRangePickerOpenChangeDetails) => void;
 		closeOnSelect?: boolean;
 		children?: Snippet;
@@ -75,6 +77,7 @@
 		id,
 		value = $bindable(),
 		defaultValue,
+		controlledValue = false,
 		onChange,
 		disabled = false,
 		readonly = false,
@@ -83,6 +86,7 @@
 		isDateUnavailable,
 		open = $bindable(),
 		defaultOpen = false,
+		controlledOpen = false,
 		onOpenChange,
 		closeOnSelect = true,
 		children,
@@ -265,6 +269,14 @@
 
 		if (!didInternalChange && !didBindableValueChange) return false;
 
+		// Fully controlled: report only, and let the parent flow the value back down.
+		if (controlledValue) {
+			if (emitChange && didInternalChange) {
+				onChange?.(normalizedNextValue);
+			}
+			return true;
+		}
+
 		valueInternal = normalizedNextValue;
 		if (didBindableValueChange) {
 			value = normalizedNextValue;
@@ -343,6 +355,10 @@
 
 		onOpenChange?.(nextOpen, eventDetails);
 		if (eventDetails.isCanceled) return;
+
+		// Fully controlled: the parent owns the state and flows it back down through the
+		// `open` prop (the adopt effect above picks it up), so don't write it here.
+		if (controlledOpen) return;
 
 		openInternal = nextOpen;
 		open = nextOpen;

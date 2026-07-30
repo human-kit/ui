@@ -18,6 +18,16 @@
 	}
 </script>
 
-<Switch.Root {checked} onCheckedChange={handleCheckedChange} aria-label="Enable notifications">
+<!--
+	`controlledChecked` states the intent: this parent owns the state and decides whether
+	to apply a change, so the component must not write back. It has to be explicit now —
+	passing `checked` alone reads as an ordinary one-way value and no longer implies it.
+-->
+<Switch.Root
+	{checked}
+	controlledChecked
+	onCheckedChange={handleCheckedChange}
+	aria-label="Enable notifications"
+>
 	<Switch.Thumb />
 </Switch.Root>

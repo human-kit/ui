@@ -9,8 +9,6 @@ description: A headless hierarchical collection primitive with keyboard navigati
 	import heroSource from './demos/hero.svelte?highlight';
 	import Checkboxes from './demos/checkboxes.svelte';
 	import checkboxesSource from './demos/checkboxes.svelte?highlight';
-	import Sections from './demos/sections.svelte';
-	import sectionsSource from './demos/sections.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -55,8 +53,6 @@ With `selectionMode="multiple"`, `Tree.Checkbox` and `Tree.CheckboxIndicator` gi
 ## Sections and headers
 
 `Tree.Section` groups related top-level items and `Tree.Header` labels the group. When a section does not render a header, provide `aria-label` on the section instead.
-
-<Demo source={sectionsSource}><Sections /></Demo>
 
 ## Usage guidelines
 

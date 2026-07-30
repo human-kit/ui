@@ -7,12 +7,8 @@ description: A composable tri-state checkbox with separate checked and indetermi
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import States from './demos/states.svelte';
-	import statesSource from './demos/states.svelte?highlight';
 	import Indeterminate from './demos/indeterminate.svelte';
 	import indeterminateSource from './demos/indeterminate.svelte?highlight';
-	import Form from './demos/form.svelte';
-	import formSource from './demos/form.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -42,8 +38,6 @@ The checkbox is assembled from two parts. `Checkbox.Root` renders the control (a
 
 Every visual state is exposed through `data-*` attributes on both parts, so all styling — including `disabled`, `readonly`, and `indeterminate` — is done with plain CSS or utility classes.
 
-<Demo source={statesSource}><States /></Demo>
-
 ## Indeterminate
 
 The mixed state has its own `indeterminate` / `defaultIndeterminate` binding and takes precedence over `checked`. The first user toggle from the indeterminate state resolves to checked.
@@ -53,8 +47,6 @@ The mixed state has its own `indeterminate` / `defaultIndeterminate` binding and
 ## Forms
 
 `Checkbox.Root` keeps a hidden checkbox input in sync: give it a `name` and `value` and the pair is submitted when the checkbox is checked. Unchecked and indeterminate states submit no entry.
-
-<Demo source={formSource}><Form /></Demo>
 
 ## Usage guidelines
 

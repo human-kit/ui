@@ -9,8 +9,6 @@ description: A headless interactive table primitive with grid-style keyboard nav
 	import heroSource from './demos/hero.svelte?highlight';
 	import Selection from './demos/selection.svelte';
 	import selectionSource from './demos/selection.svelte?highlight';
-	import Pagination from './demos/pagination.svelte';
-	import paginationSource from './demos/pagination.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -60,8 +58,6 @@ Set `selectionMode="multiple"` (or `"single"`) and give every body row an `id`. 
 ## Pagination
 
 Pagination stays consumer-owned: slice the dataset before rendering and drive the current page from external controls or app state.
-
-<Demo source={paginationSource}><Pagination /></Demo>
 
 ## Usage guidelines
 

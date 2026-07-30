@@ -81,12 +81,13 @@
 
 - Locale is read from `LocaleProvider` when available.
 - Segment accessible names are resolved automatically from the active locale.
-- During segment editing, the committed value is set to `null` when the draft is incomplete, invalid, out-of-range, or unavailable.
+- During segment editing, the committed value is set to `null` only when the draft spells no date at all — empty, incomplete, or impossible (31/02). A complete date that `minValue`/`maxValue`/`isDateUnavailable` reject is still committed; see the UX decision below.
 - Current MVP focuses on date-only values.
 
 ## UX Decisions
 
-- **No Date Auto-Correction:** When users manually type dates out of the configured bounds (`minValue`/`maxValue`) or dates that are unavailable, the DatePicker **does not auto-correct** the typed value. Instead, it exposes `aria-invalid="true"` and `data-invalid` on the input, allowing the user to see what they typed incorrectly. The underlying committed value is kept as `null` until a valid date is completed. Auto-correcting input without explicit user consent is an inaccessible anti-pattern.
+- **No Date Auto-Correction:** When users manually type dates out of the configured bounds (`minValue`/`maxValue`) or dates that are unavailable, the DatePicker **does not auto-correct** the typed value, and does not snap it back. It exposes `aria-invalid="true"` and `data-invalid` on the input, so the user sees what they typed and that it is refused. Auto-correcting input without explicit user consent is an inaccessible anti-pattern.
+- **A Rejected Date Is Still Committed:** the typed date is published through `onChange`/`value` even when the bounds refuse it. Publishing `null` instead would leave the input showing a date the consumer reads as an empty field — which is how a form ends up printing "required" underneath a filled-in control. Rejection travels as an invalid state, not as absence, so the layer that owns the rule (a form schema, usually) is the one that phrases the error. Typing bypasses the bounds this way; the Calendar does not — a disabled day is never selectable by pointer or keyboard.
 - **Navigable Disabled Dates:** When using the Calendar, disabled dates remain focusable via keyboard navigation. This ensures ARIA Grid spatial navigation parity so that screen readers can consistently announce all calendar cells and report them as "disabled", rather than skipping over them and disorienting the user.
 
 ## Focus behavior decisions

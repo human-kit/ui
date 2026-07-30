@@ -38,8 +38,15 @@
 {/snippet}
 
 {#if controlled}
+	<!--
+		`controlledOpen` makes the intent explicit: the parent owns the state and applies
+		changes from `onOpenChange`, so the component must not write back. Without it this
+		is just a two-way binding, and `bind:open` would apply the change regardless of
+		what the handler decides.
+	-->
 	<Collapsible.Root
 		bind:open={currentOpen}
+		controlledOpen
 		{disabled}
 		onOpenChange={handleOpenChange}
 		data-testid="root"

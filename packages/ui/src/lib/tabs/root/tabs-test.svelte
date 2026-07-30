@@ -3,7 +3,14 @@
 	import type { TabsKeyboardActivation, TabsOrientation, TabsValue } from './context.svelte';
 
 	type TabsTestProps = {
+		/** Render the `bind:value` variant instead of the `defaultValue` one. */
 		controlled?: boolean;
+		/**
+		 * Opt the bound variant into fully controlled state. Separate from `controlled`
+		 * on purpose: two-way binding and parent-owned state are different things, and
+		 * some tests here exercise the binding while others exercise the rejection.
+		 */
+		controlledValue?: boolean;
 		value?: TabsValue | null;
 		defaultValue?: TabsValue | null;
 		keyboardActivation?: TabsKeyboardActivation;
@@ -18,6 +25,7 @@
 
 	let {
 		controlled = false,
+		controlledValue = false,
 		value,
 		defaultValue,
 		keyboardActivation = 'automatic',
@@ -66,6 +74,7 @@
 {#if controlled}
 	<Tabs.Root
 		bind:value={currentValue}
+		{controlledValue}
 		{keyboardActivation}
 		{orientation}
 		{disabled}

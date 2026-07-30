@@ -206,6 +206,9 @@ describe('Tabs', () => {
 	it('does not publish fallback selection when a controlled active tab becomes disabled', async () => {
 		const screen = render(TabsTest, {
 			controlled: true,
+			// Genuinely parent-owned: the point of this test is that the component must
+			// not publish a fallback selection on its own. Opting in is now required.
+			controlledValue: true,
 			value: 'billing',
 			showControls: true
 		});

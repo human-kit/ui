@@ -7,8 +7,6 @@ description: A headless native text input with modality-aware focus state, nativ
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import Validation from './demos/validation.svelte';
-	import validationSource from './demos/validation.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -33,8 +31,6 @@ A single component that renders a native `<input>` (`type="text"` by default) an
 ## Validation
 
 Use `disabled`, `readonly`, `invalid`, and `required` to control validation and interaction state while keeping native behavior. `invalid` maps to `aria-invalid` and `data-invalid`.
-
-<Demo source={validationSource}><Validation /></Demo>
 
 ## Usage guidelines
 

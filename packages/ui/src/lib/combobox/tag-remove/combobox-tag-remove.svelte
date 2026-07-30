@@ -13,9 +13,21 @@
 		/** Content of the button (defaults to X icon) */
 		children?: Snippet;
 		class?: string;
+		/**
+		 * Accessible name of the button. Defaults to `Remove <tag label>`; override it to
+		 * translate the verb, or to name the tag by something other than its combobox
+		 * label (which falls back to the raw value when the selection was set
+		 * programmatically and the option never rendered).
+		 */
+		'aria-label'?: string;
 	} & Omit<HTMLButtonAttributes, 'class' | 'children' | 'type' | 'onclick' | 'aria-label'>;
 
-	let { children, class: className, ...restProps }: ComboBoxTagRemoveProps = $props();
+	let {
+		children,
+		class: className,
+		'aria-label': ariaLabel,
+		...restProps
+	}: ComboBoxTagRemoveProps = $props();
 
 	const maybeTagCtx = getContext<TagContext | undefined>(TAG_CONTEXT_KEY);
 
@@ -37,7 +49,7 @@
 	<ButtonRoot
 		type="button"
 		onclick={handleClick}
-		aria-label={`Remove ${tagCtx.label}`}
+		aria-label={ariaLabel ?? `Remove ${tagCtx.label}`}
 		tabindex={-1}
 		class={className}
 		{...restProps}

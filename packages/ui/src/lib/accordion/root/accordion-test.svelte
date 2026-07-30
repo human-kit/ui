@@ -77,8 +77,15 @@
 {/snippet}
 
 {#if controlled}
+	<!--
+		`controlledValue` makes the intent explicit: the parent owns the state and applies
+		changes from `onChange`, so the component must not write back. Without it this is
+		just a two-way binding, and `bind:value` would apply the change regardless of what
+		the handler decides.
+	-->
 	<Accordion.Root
 		bind:value={currentValue}
+		controlledValue
 		{selectionMode}
 		{orientation}
 		{disabled}

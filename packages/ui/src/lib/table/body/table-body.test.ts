@@ -15,13 +15,15 @@ describe('Table.Body', () => {
 		await expect
 			.poll(() => document.querySelector('[role="grid"]')?.getAttribute('aria-rowcount'))
 			.toBe('121');
-		await expect.poll(() => document.querySelectorAll('tbody tr').length).toBeLessThan(30);
+		// 240px viewport / 32px rows = 8 visible, + 18 overscan = index 25, snapped
+		// up to the next multiple of the 5-row block = index 29 (row-030).
+		await expect.poll(() => document.querySelectorAll('tbody tr').length).toBeLessThan(35);
 		expect(document.querySelector('tbody [data-item-id="row-001"]')).toBeTruthy();
 		await expect
-			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-026"]')))
+			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-030"]')))
 			.toBe(true);
 		await expect
-			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-027"]')))
+			.poll(() => Boolean(document.querySelector('tbody [data-item-id="row-031"]')))
 			.toBe(false);
 	});
 
@@ -43,13 +45,14 @@ describe('Table.Body', () => {
 		scroller!.scrollTop = 40 * 32;
 		scroller!.dispatchEvent(new Event('scroll'));
 
-		// rowHeight 32, scrollTop 1280 → start index 40, default overscan 18 → first
-		// rendered logical index 22 (row-023) → aria-rowindex 1 (header) + 22 + 1 = 24.
+		// rowHeight 32, scrollTop 1280 → start index 40, minus the default overscan
+		// of 18 = 22, snapped down to the 5-row block boundary = logical index 20
+		// (row-021) → aria-rowindex 1 (header) + 20 + 1 = 22.
 		await expect
 			.poll(() => document.querySelector('tbody tr[data-item-id]')?.getAttribute('data-item-id'))
-			.toBe('row-023');
+			.toBe('row-021');
 		expect(document.querySelector('tbody tr[data-item-id]')?.getAttribute('aria-rowindex')).toBe(
-			'24'
+			'22'
 		);
 	});
 });

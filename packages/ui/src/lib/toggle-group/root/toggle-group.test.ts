@@ -125,12 +125,36 @@ describe('ToggleGroup.Root', () => {
 		const changes: unknown[] = [];
 		render(ToggleGroupTest, {
 			value: [],
+			controlledValue: true,
 			disallowEmptySelection: true,
 			onChange: (value) => changes.push(value)
 		});
 		const bold = getToggle('toggle-bold');
 
+		// The parent owns an empty selection, and `disallowEmptySelection` must not
+		// override it by picking a fallback on the component's own initiative.
 		expect(bold.getAttribute('aria-pressed')).toBe('false');
+
+		await userEvent.click(bold);
+
+		// The press is reported, but this parent never flows it back down — so nothing
+		// moves. Previously the component suppressed the fallback (acting controlled) yet
+		// applied the click anyway (acting uncontrolled); that split is now gone, and
+		// "controlled" means the same thing on both paths.
+		expect(changes).toEqual([['bold']]);
+		expect(bold.getAttribute('aria-pressed')).toBe('false');
+	});
+
+	it('applies the press itself when an empty value is merely bound', async () => {
+		const changes: unknown[] = [];
+		render(ToggleGroupTest, {
+			value: [],
+			// No `controlledValue`: an ordinary two-way binding, so the component owns the
+			// change and writes it back. This is the half of the old hybrid behaviour that
+			// consumers actually relied on.
+			onChange: (value) => changes.push(value)
+		});
+		const bold = getToggle('toggle-bold');
 
 		await userEvent.click(bold);
 
@@ -190,6 +214,9 @@ describe('ToggleGroup.Root', () => {
 		const changes: unknown[] = [];
 		render(ToggleGroupTest, {
 			value: ['bold'],
+			// Parent-owned: disabling the selected toggle must not make the component
+			// publish a different selection by itself.
+			controlledValue: true,
 			onChange: (value) => changes.push(value)
 		});
 		const bold = getToggle('toggle-bold');

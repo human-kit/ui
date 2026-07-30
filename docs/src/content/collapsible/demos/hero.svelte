@@ -5,7 +5,7 @@
 
 <Collapsible.Root
 	defaultOpen
-	class="w-full max-w-md overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
+	class="w-full max-w-md overflow-hidden border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
 >
 	<Collapsible.Trigger
 		class="group flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-neutral-900 outline-none transition-colors hover:bg-neutral-50 data-focus-visible:outline-2 data-focus-visible:-outline-offset-2 data-focus-visible:outline-neutral-900 dark:text-white dark:hover:bg-neutral-800 dark:data-focus-visible:outline-white"

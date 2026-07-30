@@ -7,10 +7,6 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import Single from './demos/single.svelte';
-	import singleSource from './demos/single.svelte?highlight';
-	import Vertical from './demos/vertical.svelte';
-	import verticalSource from './demos/vertical.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -39,13 +35,9 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 
 `selectionMode="single"` (the default) keeps at most one value selected while preserving the array model. Add `disallowEmptySelection` when one enabled toggle must always remain selected.
 
-<Demo source={singleSource}><Single /></Demo>
-
 ## Vertical orientation
 
 `orientation="vertical"` switches roving focus to the Up and Down arrow keys. Disabled toggles are skipped by keyboard navigation.
-
-<Demo source={verticalSource}><Vertical /></Demo>
 
 ## Usage guidelines
 

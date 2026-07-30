@@ -39,6 +39,7 @@
 		id?: string;
 		value?: DatePickerDateValue | null;
 		defaultValue?: DatePickerDateValue | null;
+		controlledValue?: boolean;
 		onChange?: (value: DatePickerDateValue | null) => void;
 		disabled?: boolean;
 		readonly?: boolean;
@@ -47,6 +48,7 @@
 		isDateUnavailable?: (date: DatePickerDateValue) => boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
+		controlledOpen?: boolean;
 		onOpenChange?: (open: boolean, details: DatePickerOpenChangeDetails) => void;
 		closeOnSelect?: boolean;
 		children?: Snippet;
@@ -60,6 +62,14 @@
 		id,
 		value = $bindable(),
 		defaultValue,
+		/**
+		 * Opt into fully controlled selection: the component stops writing back to `value`
+		 * and only reports through `onChange`, so the parent can reject a change by not
+		 * flowing the new value back down. Off by default, because `bind:value` — the
+		 * common case — needs the write-back to work at all. For one-off rejections prefer
+		 * `details.cancel()` on `onOpenChange`, which works in either mode.
+		 */
+		controlledValue = false,
 		onChange,
 		disabled = false,
 		readonly = false,
@@ -68,6 +78,8 @@
 		isDateUnavailable,
 		open = $bindable(),
 		defaultOpen = false,
+		/** Opt into fully controlled open state. See `controlledValue`. */
+		controlledOpen = false,
 		onOpenChange,
 		closeOnSelect = true,
 		children,
@@ -168,6 +180,14 @@
 
 		if (!didInternalChange && !didBindableValueChange) return false;
 
+		// Fully controlled: report only, and let the parent flow the value back down.
+		if (controlledValue) {
+			if (emitChange && didInternalChange) {
+				onChange?.(nextValue);
+			}
+			return true;
+		}
+
 		valueInternal = nextValue;
 		if (didBindableValueChange) {
 			value = nextValue;
@@ -208,12 +228,22 @@
 		onOpenChange?.(nextOpen, eventDetails);
 		if (eventDetails.isCanceled) return;
 
+		// Fully controlled: the parent owns the state and flows it back down through the
+		// `open` prop (the adopt effect above picks it up), so don't write it here.
+		if (controlledOpen) return;
+
 		openInternal = nextOpen;
 		open = nextOpen;
 	}
 
 	function setValue(nextValue: DatePickerDateValue, source: 'calendar' | 'input' = 'calendar') {
-		if (!isValidDatePickerValue(nextValue) || isDateUnavailableInternal(nextValue)) return;
+		if (!isValidDatePickerValue(nextValue)) return;
+		// The calendar can only ever select what it renders as selectable, so a rejected day
+		// never gets this far by pointer. Typing is different — the segments accept any date
+		// and keep showing it — so the input path commits a rejected date deliberately (see
+		// `commitDraft`). The default source is the strict one, which is what every external
+		// caller of `context.setValue` gets.
+		if (source === 'calendar' && isDateUnavailableInternal(nextValue)) return;
 		if (disabled || readonly) return;
 		const selectionFocusVisible = getInteractionModality() === 'keyboard';
 
@@ -296,7 +326,13 @@
 				isDateUnavailable: isDateUnavailableInternal
 			});
 
-			if (evaluation.isCommitable && evaluation.value) {
+			// Publish whatever real date the segments spell, including one the bounds reject.
+			// Dropping it to `null` used to leave the input showing 31/12/2026 while the
+			// consumer read the field as empty — a required-field message under a date the
+			// user can see. The rejection is still reported, through `data-invalid` and
+			// `aria-invalid`; deciding what to say about it belongs to whoever owns the rule.
+			// Only segments that spell no date at all (empty, half-typed, 31/02) clear it.
+			if (evaluation.value) {
 				setValue(evaluation.value, 'input');
 				return;
 			}

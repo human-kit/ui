@@ -217,6 +217,14 @@ export function createToggleGroupContext(
 
 		if (!didChange) return false;
 
+		if (isControlled && changeOptions?.notify !== false) {
+			// Controlled mode: request the change and let the parent apply it via props.
+			// Mirrors Accordion's identical `setOpen`, which had this guard while this one
+			// silently fell through and applied the change the parent might have rejected.
+			options.onValueChange?.(nextValue);
+			return true;
+		}
+
 		selectedValues = normalizedValues;
 
 		if (changeOptions?.notify !== false) {

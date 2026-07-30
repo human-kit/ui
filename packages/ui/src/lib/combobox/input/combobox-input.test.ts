@@ -26,11 +26,15 @@ describe('ComboBox.Input', () => {
 			await expect.element(input).toHaveAttribute('aria-autocomplete', 'list');
 		});
 
-		it('disables browser autocomplete', async () => {
+		// Not "off": Chrome ignores that on a field it reads as part of an address form, and
+		// covered the option list with its saved addresses. "new-password" is the value it
+		// honours as never-autofill.
+		it('disables browser autofill', async () => {
 			const screen = render(ComboBoxTest);
 			const input = screen.getByRole('combobox');
 
-			await expect.element(input).toHaveAttribute('autocomplete', 'off');
+			await expect.element(input).toHaveAttribute('autocomplete', 'new-password');
+			await expect.element(input).toHaveAttribute('data-form-type', 'other');
 		});
 
 		it('has aria-expanded matching open state', async () => {

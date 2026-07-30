@@ -203,6 +203,13 @@
 			const fallbackIndex = findClosestEnabledIndex(nextIndex, direction);
 			if (fallbackIndex >= 0 && fallbackIndex !== nextIndex) {
 				lastCenteredIndex = fallbackIndex;
+				// The wheel re-centres on the fallback, so the value has to follow it.
+				// Leaving it behind desynced the column from the committed time: the
+				// item under the axis read `16` while the value stayed on `15`.
+				const fallbackOption = options[fallbackIndex];
+				if (fallbackOption && selectedValue !== fallbackOption.value) {
+					clock.selectWheelValue(type, fallbackOption.value);
+				}
 				return fallbackIndex;
 			}
 			return null;

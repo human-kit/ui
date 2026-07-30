@@ -15,6 +15,7 @@
 		"docs:releases": "node scripts/gen-releases.mjs",
 		"docs:install": "node scripts/gen-install.mjs",
 		"test": "pnpm --filter @human-kit/ui test",
+		"bench:table": "node scripts/bench-table.mjs",
 		"typecheck": "pnpm --filter @human-kit/ui check && pnpm --filter docs check",
 		"check": "pnpm -r run check",
 		"format": "prettier --write .",

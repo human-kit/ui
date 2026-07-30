@@ -694,7 +694,7 @@ describe('ComboBox', () => {
 			await expect.element(input).toHaveAttribute('role', 'combobox');
 			await expect.element(input).toHaveAttribute('aria-haspopup', 'listbox');
 			await expect.element(input).toHaveAttribute('aria-autocomplete', 'list');
-			await expect.element(input).toHaveAttribute('autocomplete', 'off');
+			await expect.element(input).toHaveAttribute('autocomplete', 'new-password');
 			await expect.element(input).toHaveAttribute('aria-expanded', 'false');
 		});
 

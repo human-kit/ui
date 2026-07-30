@@ -7,10 +7,6 @@ description: A headless two-state button with controlled and uncontrolled select
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import Buttons from './demos/buttons.svelte';
-	import buttonsSource from './demos/buttons.svelte?highlight';
-	import Controlled from './demos/controlled.svelte';
-	import controlledSource from './demos/controlled.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -36,13 +32,9 @@ A headless two-state button with controlled and uncontrolled selected state, nat
 
 Every visual state is exposed through `data-*` attributes — `data-selected`, `data-pressed`, `data-hovered`, `data-focus-visible`, `data-disabled` — so all styling is done with plain CSS or utility classes. Use `defaultSelected` for uncontrolled state.
 
-<Demo source={buttonsSource}><Buttons /></Demo>
-
 ## Controlled state
 
 Bind `selected` to drive the toggle externally, and use `onChange` to react to user-driven changes.
-
-<Demo source={controlledSource}><Controlled /></Demo>
 
 ## Usage guidelines
 

@@ -264,10 +264,62 @@ describe('DatePicker.Root', () => {
 		await userEvent.keyboard('{Backspace}{Backspace}15'); // 2026-02-15 is out of range
 
 		await expect.poll(() => root?.getAttribute('data-invalid')).toBe('true');
-		// No auto-correction: the out-of-range date is not silently committed.
-		expect(document.querySelector('[data-testid="date-picker-value"]')?.textContent).not.toBe(
-			'2026-02-15'
-		);
+		// No auto-correction and no snap-back: the segments keep showing 15, unchanged.
+		expect(daySegment.element()?.textContent?.trim()).toBe('15');
+	});
+
+	it('publishes a typed date the bounds reject instead of clearing the value', async () => {
+		// The picker used to publish `null` here while the input went on showing the typed
+		// date. A consumer reading only the value saw an empty field and said "required"
+		// under a date the user could see. The rejection now travels as `data-invalid`, and
+		// the value says what was actually typed, so whoever owns the rule writes the message.
+		render(DatePickerTest, { defaultValue: '2026-02-14', maxValue: '2026-02-14' });
+		const daySegment = getSegment('day');
+		// The harness only records what `onChange` reports, so it starts empty even though
+		// the picker holds `defaultValue` — which makes it the right probe here.
+		const reportedValue = () =>
+			document.querySelector('[data-testid="date-picker-value"]')?.textContent;
+
+		expect(reportedValue()).toBe('');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}{Backspace}15'); // past maxValue
+
+		await expect.poll(reportedValue).toBe('2026-02-15');
+	});
+
+	it('publishes a typed date the availability predicate rejects', async () => {
+		// Same contract for the other way a date gets refused: a bound and a predicate differ
+		// only in who decides, not in what the user sees.
+		render(DatePickerTest, {
+			defaultValue: '2026-02-14',
+			isDateUnavailable: (date: string) => date === '2026-02-15'
+		});
+		const daySegment = getSegment('day');
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}{Backspace}15');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="date-picker-value"]')?.textContent)
+			.toBe('2026-02-15');
+	});
+
+	it('still clears the value while the segments spell no date at all', async () => {
+		// The counterpart to the two above: half-typed really is empty, and must keep
+		// clearing the value so a required-field rule can fire on it.
+		render(DatePickerTest, { defaultValue: '2026-02-14', maxValue: '2026-02-28' });
+		const daySegment = getSegment('day');
+		const reportedValue = () =>
+			document.querySelector('[data-testid="date-picker-value"]')?.textContent;
+
+		daySegment.element()?.focus();
+		await userEvent.keyboard('{Backspace}{Backspace}16');
+		await expect.poll(reportedValue).toBe('2026-02-16');
+
+		await userEvent.keyboard('{Backspace}{Backspace}');
+
+		await expect.poll(reportedValue).toBe('');
 	});
 
 	it('toggles invalid draft attributes when draft becomes invalid and valid again', async () => {

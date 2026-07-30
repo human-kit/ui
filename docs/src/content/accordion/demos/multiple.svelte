@@ -21,7 +21,7 @@
 <Accordion.Root
 	defaultValue={['account', 'billing']}
 	selectionMode="multiple"
-	class="w-full max-w-md divide-y divide-neutral-200 overflow-hidden rounded-lg border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900"
+	class="w-full max-w-md divide-y divide-neutral-200 overflow-hidden border border-neutral-200 bg-white [&_h3]:m-0 dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900"
 >
 	{#each sections as section (section.value)}
 		<Accordion.Item
@@ -39,7 +39,9 @@
 					/>
 				</Accordion.Trigger>
 			</Accordion.Header>
-			<Accordion.Panel class="px-4 pb-4 text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+			<Accordion.Panel
+				class="border-t border-neutral-200 px-4 py-3 text-sm leading-6 text-neutral-600 dark:border-neutral-800 dark:text-neutral-300"
+			>
 				{section.body}
 			</Accordion.Panel>
 		</Accordion.Item>

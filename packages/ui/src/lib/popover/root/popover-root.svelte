@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { onDestroy, untrack } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import {
 		setPopoverContext,
 		type PopoverCanonicalCloseReason,
@@ -21,10 +21,18 @@
 	 * Provides context for Trigger and Content children.
 	 */
 	type PopoverRootProps = {
-		/** Controlled open state. */
+		/** Open state. Two-way by default — use `bind:open`. */
 		open?: boolean;
-		/** Initial open state for uncontrolled mode. */
+		/** Initial open state, for when `open` is not supplied. */
 		defaultOpen?: boolean;
+		/**
+		 * Opt into fully controlled state: the component stops writing back to `open` and
+		 * only reports through `onOpenChange`, so the parent can reject a change by not
+		 * flowing the new value back down. Off by default, because `bind:open` — the
+		 * common case — needs the write-back to work at all. For one-off rejections
+		 * prefer `details.cancel()`, which works in either mode.
+		 */
+		controlledOpen?: boolean;
 		/** Callback when open state changes. */
 		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
 		/** Reference to the trigger element. Can be set manually or via Popover.Trigger. */
@@ -36,6 +44,7 @@
 	let {
 		open = $bindable(),
 		defaultOpen = false,
+		controlledOpen = false,
 		onOpenChange,
 		triggerRef = $bindable<HTMLElement | null>(null),
 		children
@@ -47,10 +56,13 @@
 	// Use function to capture initial value only (not reactive)
 	let isOpenInternal = $state((() => defaultOpen)());
 
-	// Controlled-ness is captured once at init: a parent that passes `open`
-	// owns the state for the lifetime of the component.
-	const isControlled = untrack(() => open !== undefined);
-	const isOpen = $derived(isControlled ? Boolean(open) : isOpenInternal);
+	// `open` wins whenever it is supplied — that covers both `bind:open` and a plain
+	// `open={...}` — and the internal state only carries the fully uncontrolled case.
+	// Controlled-ness is NOT inferred from `open` being defined: `bind:open={value}` and
+	// `open={value}` are indistinguishable at runtime, so inferring it silently broke
+	// every `bind:open` seeded with `false` — the popover would report the open and then
+	// drop it, never appearing at all. It is opt-in via `controlledOpen` instead.
+	const isOpen = $derived(controlledOpen ? Boolean(open) : (open ?? isOpenInternal));
 
 	function setOpenWithDetails(
 		value: boolean,
@@ -71,10 +83,10 @@
 		onOpenChange?.(value, details);
 		if (details.isCanceled) return;
 
-		// In controlled mode the parent owns the state: it reacts in `onOpenChange`
-		// and flows the value back down (or ignores it to reject the change).
-		// Writing `open` here would locally override the parent's prop.
-		if (isControlled) return;
+		// Fully controlled: the parent owns the state and reacts in `onOpenChange`,
+		// flowing the value back down (or ignoring it to reject the change). Writing
+		// `open` here would locally override the parent's prop.
+		if (controlledOpen) return;
 
 		isOpenInternal = value;
 		open = value;

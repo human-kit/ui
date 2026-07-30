@@ -265,6 +265,10 @@ describe('Tree.Root', () => {
 		const screen = render(TreeTest, {
 			selectionMode: 'multiple',
 			selectedKeys: ['budget'],
+			// Opting in is now required: supplying the prop alongside a listener is exactly
+			// what `bind:selectedKeys` plus a listener looks like, so it no longer implies
+			// that the parent owns the state.
+			controlledSelectedKeys: true,
 			onSelectionChange
 		});
 		const documentsLabel = screen.getByText('Documents').element() as HTMLElement | null;
@@ -289,6 +293,8 @@ describe('Tree.Root', () => {
 		const screen = render(TreeTest, {
 			selectionMode: 'none',
 			expandedKeys: [],
+			// See the selection case above: the parent must now say it owns the state.
+			controlledExpandedKeys: true,
 			onExpandedKeysChange
 		});
 		const documents = screen

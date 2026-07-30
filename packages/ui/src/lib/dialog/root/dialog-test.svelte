@@ -4,6 +4,7 @@
 	type Props = {
 		open?: boolean;
 		defaultOpen?: boolean;
+		controlledOpen?: boolean;
 		shouldCloseOnInteractOutside?: boolean;
 		shouldCloseOnEscape?: boolean;
 		onOpenChange?: (open: boolean) => void;
@@ -12,13 +13,14 @@
 	let {
 		open,
 		defaultOpen = false,
+		controlledOpen = false,
 		shouldCloseOnInteractOutside = true,
 		shouldCloseOnEscape = true,
 		onOpenChange
 	}: Props = $props();
 </script>
 
-<Dialog.Root {open} {defaultOpen} {onOpenChange}>
+<Dialog.Root {open} {defaultOpen} {controlledOpen} {onOpenChange}>
 	{#snippet children({ close })}
 		<Dialog.Trigger>Open Dialog</Dialog.Trigger>
 

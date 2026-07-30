@@ -18,20 +18,20 @@
 		<Autocomplete.Input
 			placeholder="Search fruits..."
 			aria-label="Search fruits"
-			class="h-8 w-full rounded-md border border-neutral-300 bg-white px-2 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:outline-2 focus:-outline-offset-1 focus:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500 dark:focus:outline-white"
+			class="h-8 w-full border border-neutral-300 bg-white px-2 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 data-[focused=true]:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500 dark:data-[focused=true]:border-white"
 		/>
 		<Autocomplete.Status />
 		<Autocomplete.List
 			aria-label="Fruits"
 			selectionMode="multiple"
-			class="mt-1 max-h-60 overflow-auto rounded-lg border border-neutral-200 bg-white p-1 shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+			class="mt-1 max-h-60 overflow-auto border border-neutral-200 bg-white p-1 shadow-md dark:border-neutral-800 dark:bg-neutral-900"
 			onChange={(value) => (selected = Array.from(value))}
 		>
 			{#each fruits as fruit (fruit.id)}
 				<Autocomplete.Item
 					id={fruit.id}
 					textValue={fruit.name}
-					class="flex cursor-default items-center justify-between gap-2 rounded-sm px-2 py-2 text-sm text-neutral-900 outline-none data-[hovered=true]:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 data-[selected=true]:font-medium dark:text-white dark:data-[hovered=true]:bg-neutral-800 dark:data-[focus-visible=true]:bg-neutral-800"
+					class="flex cursor-default items-center justify-between gap-2 px-2 py-1 text-sm text-neutral-900 outline-none data-[hovered=true]:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 data-[selected=true]:font-medium dark:text-white dark:data-[hovered=true]:bg-neutral-800 dark:data-[focus-visible=true]:bg-neutral-800"
 				>
 					{fruit.name}
 					<Autocomplete.ItemIndicator class="text-current" />

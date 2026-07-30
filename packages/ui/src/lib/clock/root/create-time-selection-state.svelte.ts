@@ -14,6 +14,7 @@ import {
 	isValidTimePickerValue,
 	normalizeSegmentNumberInput,
 	normalizeTimePickerValue,
+	parseTimePickerValue,
 	toDraftFromTimeValue,
 	type TimePickerDraft,
 	type TimePickerEditableSegmentType,
@@ -27,6 +28,26 @@ export type TimeSelectionWheelOption = {
 	label: string;
 	disabled: boolean;
 };
+
+/**
+ * Editable segments ordered from most to least significant. Range checks and
+ * boundary clamping both need to know which segments a given column is free to
+ * move: picking an hour may rewrite the minute, never the other way around.
+ */
+const SEGMENT_SIGNIFICANCE: readonly TimePickerEditableSegmentType[] = [
+	'dayPeriod',
+	'hour',
+	'minute',
+	'second'
+];
+
+function getLessSignificantSegments(
+	type: TimePickerEditableSegmentType
+): TimePickerEditableSegmentType[] {
+	const index = SEGMENT_SIGNIFICANCE.indexOf(type);
+	if (index < 0) return [];
+	return SEGMENT_SIGNIFICANCE.slice(index + 1) as TimePickerEditableSegmentType[];
+}
 
 export type TimeSelectionStateOptions = {
 	/** Reactive getter for the bindable `value` prop (`undefined` when uncontrolled). */
@@ -116,6 +137,11 @@ export type TimeSelectionState = {
  *   values entirely (TimePicker's historical policy, now applied to both); and
  *   externally provided values (controlled `value` prop or `defaultValue`) are
  *   normalized to `null` when malformed or out of range before being adopted.
+ * - Wheel selection is the one path that adjusts rather than rejects: a wheel
+ *   option is offered whenever *some* in-range time still fits it, and picking
+ *   it clamps the less significant segments onto the boundary (hour `17` under
+ *   a `17:00` max commits `17:00`, not `null`). Without this the boundary hour
+ *   was unreachable unless the minute already happened to be low enough.
  * - `isEditable` differs: TimePicker also blocks mutations while `readonly`;
  *   Clock has no readonly concept and only checks `disabled`.
  * - TimePicker layers a multi-digit typing buffer on top of this state via the
@@ -256,6 +282,12 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 
 	function setSegmentValue(type: TimePickerEditableSegmentType, nextValue: string) {
 		if (!options.isEditable()) return;
+		writeSegmentValue(type, nextValue);
+		commitFromDraft();
+	}
+
+	/** Normalizes and writes a segment into the draft without committing it. */
+	function writeSegmentValue(type: TimePickerEditableSegmentType, nextValue: string) {
 		options.onBeforeSegmentMutation?.(type);
 		if (type === 'dayPeriod') {
 			const normalized = nextValue.trim().toUpperCase();
@@ -292,8 +324,6 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 				segmentDraft.dayPeriod = 'AM';
 			}
 		}
-
-		commitFromDraft();
 	}
 
 	function commitFromDraft() {
@@ -331,14 +361,48 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 		options.onDraftReplaced?.();
 	}
 
+	/**
+	 * Pulls the segments below `changedType` onto the range boundary when the
+	 * draft overshot it. Picking hour `17` under a `17:00` max leaves the minute
+	 * on whatever it was (`17:30`); rather than refusing the commit, the minute
+	 * moves to the boundary's own (`17:00`). Only runs when the boundary shares
+	 * the segments at or above `changedType`, so it can never rewrite the
+	 * selection the user just made.
+	 */
+	function clampDraftToRangeBoundary(changedType: TimePickerEditableSegmentType) {
+		const granularity = options.granularity();
+		const parts = buildTimePartsFromDraft(segmentDraft, granularity, resolvedHourCycle);
+		if (!parts) return;
+
+		const candidate = formatTimePickerValue(parts, granularity);
+		const overshootsMax = isTimeOutOfRange(candidate, undefined, normalizedMaxValue, granularity);
+		const undershootsMin = isTimeOutOfRange(candidate, normalizedMinValue, undefined, granularity);
+		if (!overshootsMax && !undershootsMin) return;
+
+		const boundary = overshootsMax ? normalizedMaxValue : normalizedMinValue;
+		if (!boundary) return;
+		const boundaryParts = parseTimePickerValue(boundary);
+		if (!boundaryParts) return;
+
+		// The hour is the only segment above `minute`/`second` that can differ here;
+		// if it does, the boundary belongs to another hour and its minutes say
+		// nothing about this one.
+		const lessSignificant = getLessSignificantSegments(changedType);
+		if (lessSignificant.includes('minute') && boundaryParts.hour !== parts.hour) return;
+
+		for (const segment of lessSignificant) {
+			if (segment === 'minute') segmentDraft.minute = String(boundaryParts.minute);
+			if (segment === 'second') segmentDraft.second = String(boundaryParts.second);
+		}
+	}
+
 	function selectWheelValue(type: TimePickerEditableSegmentType, optionValue: string) {
 		if (!options.isEditable()) return;
 
-		if (type === 'dayPeriod') {
-			setSegmentValue(type, optionValue.toUpperCase());
-		} else {
-			setSegmentValue(type, optionValue);
-		}
+		const nextValue = type === 'dayPeriod' ? optionValue.toUpperCase() : optionValue;
+		writeSegmentValue(type, nextValue);
+		clampDraftToRangeBoundary(type);
+		commitFromDraft();
 	}
 
 	function getSelectedWheelValue(type: TimePickerEditableSegmentType): string | null {
@@ -364,6 +428,23 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 			return formatTimePickerValue(parts, granularity);
 		};
 
+		// An option is out of range only when EVERY time it can still produce is out
+		// of range. Testing the single candidate built from the current draft would
+		// disable the boundary option whenever a less significant segment happens to
+		// overshoot — with max `17:00` and the minute sitting on `30`, hour `17` would
+		// read as `17:30` and never become selectable. Comparing the earliest/latest
+		// time the option spans keeps the boundary reachable; `selectWheelValue`
+		// clamps the less significant segments when the option is committed.
+		const isOptionOutOfRange = (partial: Partial<TimePickerDraft>): boolean => {
+			const earliest = getCandidateFromPartial(fillLessSignificant(type, partial, 'earliest'));
+			const latest = getCandidateFromPartial(fillLessSignificant(type, partial, 'latest'));
+			if (!earliest || !latest) return false;
+
+			const startsAfterMax = isTimeOutOfRange(earliest, undefined, normalizedMaxValue, granularity);
+			const endsBeforeMin = isTimeOutOfRange(latest, normalizedMinValue, undefined, granularity);
+			return startsAfterMax || endsBeforeMin;
+		};
+
 		return buildWheelOptions({
 			type,
 			granularity,
@@ -372,11 +453,39 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 			minuteStep: options.minuteStep(),
 			secondStep: options.secondStep(),
 			hasRangeBounds,
-			getCandidateFromPartial,
-			isOutOfRange: (candidate) =>
-				isTimeOutOfRange(candidate, normalizedMinValue, normalizedMaxValue, granularity),
+			isPartialOutOfRange: isOptionOutOfRange,
 			locale: resolvedLocale
 		});
+	}
+
+	/**
+	 * Fills the segments below `type` with the lowest / highest value they can
+	 * take, so the caller can measure the whole span an option covers. In the
+	 * 12-hour cycle the lowest hour is `12` (midnight / noon), not `1`.
+	 */
+	function fillLessSignificant(
+		type: TimePickerEditableSegmentType,
+		partial: Partial<TimePickerDraft>,
+		edge: 'earliest' | 'latest'
+	): Partial<TimePickerDraft> {
+		const filled: Partial<TimePickerDraft> = { ...partial };
+		for (const segment of getLessSignificantSegments(type)) {
+			if (segment === 'hour') {
+				filled.hour =
+					edge === 'earliest'
+						? resolvedHourCycle === 12
+							? '12'
+							: '0'
+						: resolvedHourCycle === 12
+							? '11'
+							: '23';
+			} else if (segment === 'minute') {
+				filled.minute = edge === 'earliest' ? '0' : '59';
+			} else if (segment === 'second') {
+				filled.second = edge === 'earliest' ? '0' : '59';
+			}
+		}
+		return filled;
 	}
 
 	function getSegmentLabelByType(type: TimePickerEditableSegmentType): string {

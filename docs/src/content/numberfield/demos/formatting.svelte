@@ -4,7 +4,7 @@
 	let amount = $state<number | null>(1234.5);
 
 	const groupClass =
-		'inline-flex h-8 items-stretch overflow-hidden rounded-md border border-neutral-300 bg-white transition-colors data-[focus-within=true]:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:data-[focus-within=true]:border-white';
+		'inline-flex h-8 items-stretch overflow-hidden border border-neutral-300 bg-white transition-colors data-[focus-within=true]:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:data-[focus-within=true]:border-white';
 	const inputClass =
 		'w-28 border-0 bg-transparent px-2 text-center text-sm tabular-nums text-neutral-900 outline-none data-[disabled=true]:opacity-50 dark:text-white';
 	const buttonClass =

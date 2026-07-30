@@ -21,12 +21,12 @@
 		defaultValue={['apple', 'cherry']}
 		onChange={(next) => (selected = [...next])}
 		aria-label="Fruits"
-		class="w-full rounded-md border border-neutral-300 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
+		class="w-full border border-neutral-200 bg-white p-1 shadow-md dark:border-neutral-800 dark:bg-neutral-900"
 	>
 		{#each fruits as fruit (fruit.id)}
 			<ListBox.Item
 				id={fruit.id}
-				class="mb-1 cursor-default rounded-sm px-2 py-2 text-sm text-neutral-900 outline-none last:mb-0 hover:bg-neutral-100 data-selected:bg-neutral-900 data-selected:text-white dark:text-white dark:hover:bg-neutral-800 dark:data-selected:bg-white dark:data-selected:text-neutral-900"
+				class="cursor-default px-2 py-1 text-sm text-neutral-900 outline-none hover:bg-neutral-100 data-[focused=true]:bg-neutral-100 data-[selected=true]:bg-neutral-900 data-[selected=true]:text-white dark:text-white dark:hover:bg-neutral-800 dark:data-[focused=true]:bg-neutral-800 dark:data-[selected=true]:bg-white dark:data-[selected=true]:text-neutral-900"
 			>
 				{fruit.name}
 			</ListBox.Item>

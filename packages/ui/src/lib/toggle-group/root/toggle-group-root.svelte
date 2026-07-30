@@ -18,6 +18,7 @@
 		id,
 		value = $bindable(),
 		defaultValue,
+		controlledValue = false,
 		onChange,
 		selectionMode = 'single',
 		disabled: disabledProp = false,
@@ -32,7 +33,11 @@
 		...restProps
 	}: ToggleGroupRootProps = $props();
 
-	const isControlled = untrack(() => value !== undefined);
+	// Controlled-ness is opt-in, not inferred from `value` being defined: `bind:value` and
+	// `value={...}` are indistinguishable at runtime. It used to be inferred here, and the
+	// write-back below ignored the result anyway, so a controlled parent could not reject
+	// a change — the selection moved regardless of what `onChange` decided.
+	const isControlled = untrack(() => controlledValue);
 	const instanceId = untrack(() => id) ?? generatedId;
 
 	let rootRef: HTMLDivElement | null = $state(null);
@@ -40,13 +45,16 @@
 	const toggleGroup = setToggleGroupContext(
 		createToggleGroupContext({
 			isControlled,
-			initialValue: isControlled ? untrack(() => value) : untrack(() => defaultValue),
+			// `value` seeds the initial selection whenever it is supplied, bound or not.
+			initialValue: untrack(() => value) ?? untrack(() => defaultValue),
 			selectionMode: (() => selectionMode)(),
 			isDisabled: (() => disabledProp)(),
 			orientation: (() => orientation)(),
 			disallowEmptySelection: (() => disallowEmptySelection)(),
 			onValueChange: (nextValue) => {
-				value = nextValue;
+				if (!isControlled) {
+					value = nextValue;
+				}
 				onChange?.(nextValue);
 			}
 		})
@@ -78,8 +86,15 @@
 		toggleGroup.setDisallowEmptySelection(disallowEmptySelection);
 	});
 
+	// Whether to adopt an incoming `value` is a separate question from who owns the state,
+	// so it is latched at init off the prop rather than off `controlledValue`: a parent
+	// that supplies `value` drives the selection, bound or not. Latched, not reactive —
+	// re-checking `value !== undefined` would switch this on the moment our own write-back
+	// defines it, and the component would then re-adopt the echo of its own change.
+	const adoptsValueProp = untrack(() => value !== undefined);
+
 	$effect(() => {
-		if (!isControlled) return;
+		if (!adoptsValueProp) return;
 		toggleGroup.setSelectedValues(value);
 	});
 

@@ -36,6 +36,15 @@ export type VirtualFocusOptions = {
 	itemPrefix?: string;
 	/** Reference to container element for scoped DOM queries */
 	containerRef?: () => HTMLElement | null;
+	/**
+	 * The authoritative item order, when the caller has one.
+	 *
+	 * Navigation otherwise reads the order off the DOM, which is only the same thing while
+	 * every item is mounted. A virtualized list mounts a window of rows, so without this
+	 * `last()` would land on the last *rendered* item and `next()` would stop at the edge of
+	 * that window. Return `undefined` to fall back to the DOM order.
+	 */
+	orderedIds?: () => (string | number)[] | undefined;
 };
 
 export type VirtualFocusReturn = {
@@ -65,7 +74,12 @@ export type VirtualFocusReturn = {
 };
 
 export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusReturn {
-	const { instanceId, itemPrefix = 'combobox-item', containerRef } = options;
+	const {
+		instanceId,
+		itemPrefix = 'combobox-item',
+		containerRef,
+		orderedIds: getOrderedIds
+	} = options;
 
 	// Internal state
 	let focusedId: string | number | null = $state(null);
@@ -89,6 +103,13 @@ export function useVirtualFocus(options: VirtualFocusOptions): VirtualFocusRetur
 	 * Uses cache when available, queries DOM otherwise.
 	 */
 	function getItemIdsInOrder(): (string | number)[] {
+		// Given order wins over the DOM, and is never cached: it is derived from the caller's
+		// own list, which already changes exactly when the order does.
+		const given = getOrderedIds?.();
+		if (given !== undefined) {
+			return given;
+		}
+
 		if (cachedItemOrder !== null) {
 			return cachedItemOrder;
 		}

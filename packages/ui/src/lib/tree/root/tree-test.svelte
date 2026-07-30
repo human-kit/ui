@@ -9,8 +9,10 @@
 		selectionPropagation?: 'none' | 'descendants';
 		expandedKeys?: Iterable<string | number>;
 		defaultExpandedKeys?: Iterable<string | number>;
+		controlledExpandedKeys?: boolean;
 		selectedKeys?: Iterable<string | number>;
 		defaultSelectedKeys?: Iterable<string | number>;
+		controlledSelectedKeys?: boolean;
 		disabledKeys?: Iterable<string | number>;
 		onAction?: (id: string | number) => void;
 		onExpandedKeysChange?: (keys: Set<string | number>) => void;
@@ -26,8 +28,10 @@
 		selectionPropagation = 'none',
 		expandedKeys,
 		defaultExpandedKeys = ['documents'],
+		controlledExpandedKeys = false,
 		selectedKeys,
 		defaultSelectedKeys,
+		controlledSelectedKeys = false,
 		disabledKeys,
 		onAction,
 		onExpandedKeysChange,
@@ -54,8 +58,10 @@
 	{selectionPropagation}
 	{expandedKeys}
 	{defaultExpandedKeys}
+	{controlledExpandedKeys}
 	{selectedKeys}
 	{defaultSelectedKeys}
+	{controlledSelectedKeys}
 	{disabledKeys}
 	{onAction}
 	{onExpandedKeysChange}
