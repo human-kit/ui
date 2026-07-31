@@ -14,10 +14,12 @@
 			<Dialog.Content
 				class="w-100 max-w-[90vw] border border-neutral-200 bg-white p-6 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
 			>
-				<h3 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">First dialog</h3>
-				<p class="mb-6 text-sm text-neutral-600 dark:text-neutral-300">
+				<Dialog.Title class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">
+					First dialog
+				</Dialog.Title>
+				<Dialog.Description class="mb-6 text-sm text-neutral-600 dark:text-neutral-300">
 					Open a second dialog on top. Escape and outside clicks only close the topmost one.
-				</p>
+				</Dialog.Description>
 
 				<Dialog.Root>
 					{#snippet children({ close: closeNested })}
@@ -31,12 +33,12 @@
 							<Dialog.Content
 								class="w-87.5 max-w-[85vw] border border-neutral-200 bg-white p-6 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
 							>
-								<h3 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">
+								<Dialog.Title class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">
 									Nested dialog
-								</h3>
-								<p class="mb-6 text-sm text-neutral-600 dark:text-neutral-300">
+								</Dialog.Title>
+								<Dialog.Description class="mb-6 text-sm text-neutral-600 dark:text-neutral-300">
 									This dialog stacks above the first one.
-								</p>
+								</Dialog.Description>
 								<div class="flex justify-end">
 									<button
 										onclick={closeNested}

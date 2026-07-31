@@ -31,7 +31,7 @@
 					class="flex items-center gap-0.5 text-sm text-neutral-900 dark:text-white"
 				/>
 				<DateRangePicker.Trigger
-					class="ml-auto inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+					class="touch-target ml-auto inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
 				>
 					<CalendarIcon class="size-3.5" />
 				</DateRangePicker.Trigger>

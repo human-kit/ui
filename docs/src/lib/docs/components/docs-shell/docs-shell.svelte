@@ -3,6 +3,8 @@
 	import Header from '../header/header.svelte';
 	import Sidebar from '../sidebar/sidebar.svelte';
 	import Toc from '../toc/toc.svelte';
+	import MobileNav from '../mobile-nav/mobile-nav.svelte';
+	import MobileToc from '../mobile-nav/mobile-toc.svelte';
 	import { Frame } from '../frame/index.js';
 	import { provideTocRegistry } from '../toc/toc-registry.svelte.js';
 	import type { NavGroup } from '../../nav.js';
@@ -66,12 +68,31 @@
 	{#if header}
 		{@render header()}
 	{:else}
-		<Header {title} {badge} {githubUrl} {homeHref} {brand} {actions} />
+		<!-- Both rails collapse on narrow screens (the sidebar below `md`, the outline
+		     below `xl`), so each gets a drawer standing in for it at exactly the width
+		     where it disappears. The triggers carry their own breakpoint classes. -->
+		<Header {title} {badge} {githubUrl} {homeHref} {brand} {actions}>
+			{#snippet navTrigger()}
+				<MobileNav {nav} {basePath} {actions} {githubUrl} />
+			{/snippet}
+			{#snippet tocTrigger()}
+				<MobileToc {headings} />
+			{/snippet}
+		</Header>
 	{/if}
 
 	<Frame.Body>
-		<!-- Left rail: primary navigation. -->
-		<Frame.Sidebar class="docs-scrollbar hidden w-60 md:block">
+		<!--
+			Left rail: primary navigation.
+
+			Both rails share one sizing recipe on purpose: `basis-60` is the size they
+			want, `flex-1` lets them split whatever the reading pane leaves over, and
+			`max-w-72` stops a single rail from swallowing all of it in the range where
+			its opposite number is hidden. Fixed widths — what these used to be — meant
+			the leftover piled up past the right rail instead, so the right column read
+			as much wider than the left even though it was 16px narrower.
+		-->
+		<Frame.Sidebar class="docs-scrollbar hidden min-w-56 flex-1 basis-60 md:block md:max-w-72">
 			{#if sidebar}
 				{@render sidebar()}
 			{:else}
@@ -84,8 +105,9 @@
 			{@render children()}
 		</Frame.Content>
 
-		<!-- Right rail: "on this page" outline. -->
-		<Frame.Sidebar class="docs-scrollbar hidden w-56 px-2 xl:block mx-1">
+		<!-- Right rail: "on this page" outline. Same sizing as the left one; `px-2` is
+		     inner padding for the outline, so it does not change the column's width. -->
+		<Frame.Sidebar class="docs-scrollbar hidden min-w-56 flex-1 basis-60 px-2 xl:block xl:max-w-72">
 			{#if toc}
 				{@render toc()}
 			{:else}

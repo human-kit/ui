@@ -48,6 +48,13 @@
 					"description": "Initial selection for uncontrolled mode."
 				},
 				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled selection: the component stops writing back to `value`\nand only reports through `onChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:value` — the\ncommon case — needs the write-back to work at all."
+				},
+				{
 					"name": "inputValue",
 					"type": "string",
 					"required": false,
@@ -60,6 +67,13 @@
 					"required": false,
 					"default": "''",
 					"description": "Initial input value for uncontrolled mode."
+				},
+				{
+					"name": "controlledInputValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled input text. See `controlledValue`."
 				},
 				{
 					"name": "selectionBehavior",
@@ -88,6 +102,13 @@
 					"required": false,
 					"default": null,
 					"description": "Whether the popover is open. Can be bound with bind:open"
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled open state. See `controlledValue`."
 				},
 				{
 					"name": "trigger",
@@ -231,7 +252,16 @@
 					"description": "CSS class names for the input element."
 				}
 			],
-			"dataAttributes": []
+			"dataAttributes": [
+				{
+					"name": "data-form-type",
+					"description": "Tells password managers the field is not a credential, so they leave it alone."
+				},
+				{
+					"name": "data-lpignore",
+					"description": "Asks LastPass not to attach its autofill overlay to the field, which would cover the listbox."
+				}
+			]
 		},
 		{
 			"name": "Trigger",
@@ -278,12 +308,7 @@
 					"description": "Custom trigger content. If omitted, a chevron icon is rendered."
 				}
 			],
-			"dataAttributes": [
-				{
-					"name": "data-open",
-					"description": "Present while the popover is open."
-				}
-			]
+			"dataAttributes": []
 		},
 		{
 			"name": "Clear",
@@ -409,6 +434,20 @@
 					"description": "Content of the listbox. Receives item in dynamic mode."
 				},
 				{
+					"name": "virtualizer",
+					"type": "{ rowHeight?: number; overscan?: number }",
+					"required": false,
+					"default": null,
+					"description": "Renders only the options near the viewport. See `ListBox`'s own `virtualizer` for\nthe constraints (uniform row height, the list is the scroller).\n\nWith no `items` of its own it virtualizes the ComboBox's, already filtered: the\nper-item filtering an unvirtualized list relies on cannot work when most items were\nnever rendered."
+				},
+				{
+					"name": "header",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Rows rendered above the options, inside the listbox (e.g. a \"Create …\" action)."
+				},
+				{
 					"name": "emptyPlaceholder",
 					"type": "string | Snippet",
 					"required": false,
@@ -421,6 +460,13 @@
 					"required": false,
 					"default": null,
 					"description": "Keys of items that should be disabled and non-selectable."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new selection back down. Off by default, because `bind:value` — the common\ncase — needs the write-back to work at all."
 				},
 				{
 					"name": "class",
@@ -442,6 +488,20 @@
 					"required": false,
 					"default": "false",
 					"description": "Disable DOM focus handling on the root container for virtual-focus compositions."
+				},
+				{
+					"name": "loop",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether arrow-key navigation wraps from the last item to the first (and back)."
+				},
+				{
+					"name": "typeahead",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether typing characters moves focus to the option whose text matches."
 				}
 			],
 			"dataAttributes": []
@@ -557,6 +617,20 @@
 			]
 		},
 		{
+			"name": "Status",
+			"description": "",
+			"props": [
+				{
+					"name": "formatMessage",
+					"type": "(count: number) => string",
+					"required": false,
+					"default": null,
+					"description": "Build the announced message from the visible item count."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
 			"name": "Tags",
 			"description": "Container that renders the selected values as tags in multiple mode. Supports an optional single-line overflow mode.",
 			"props": [
@@ -587,6 +661,13 @@
 					"required": false,
 					"default": "''",
 					"description": "CSS class names for the tags container."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": "'Selected values'",
+					"description": "Accessible name of the tag row. Defaults to `Selected values`."
 				}
 			],
 			"dataAttributes": []
@@ -642,6 +723,13 @@
 					"required": false,
 					"default": null,
 					"description": "CSS class names for the remove button."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Accessible name of the button. Defaults to `Remove <tag label>`; override it to\ntranslate the verb, or to name the tag by something other than its combobox\nlabel (which falls back to the raw value when the selection was set\nprogrammatically and the option never rendered)."
 				}
 			],
 			"dataAttributes": []

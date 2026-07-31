@@ -19,3 +19,5 @@ export {
 	registerHeadings,
 	getRegisteredHeadings
 } from './toc/toc-registry.svelte.js';
+export { default as MobileNav } from './mobile-nav/mobile-nav.svelte';
+export { default as MobileToc } from './mobile-nav/mobile-toc.svelte';

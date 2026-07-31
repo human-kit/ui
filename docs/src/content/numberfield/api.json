@@ -333,28 +333,7 @@
 					"description": "Content rendered inside the button, typically an icon or symbol."
 				}
 			],
-			"dataAttributes": [
-				{
-					"name": "data-disabled",
-					"description": "Present when the button cannot step further or the field is disabled."
-				},
-				{
-					"name": "data-invalid",
-					"description": "Present when the field is invalid."
-				},
-				{
-					"name": "data-number-field-increment",
-					"description": "Identifies the increment button."
-				},
-				{
-					"name": "data-readonly",
-					"description": "Present when the field is readonly."
-				},
-				{
-					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
-				}
-			]
+			"dataAttributes": []
 		},
 		{
 			"name": "Decrement",
@@ -375,28 +354,7 @@
 					"description": "Content rendered inside the button, typically an icon or symbol."
 				}
 			],
-			"dataAttributes": [
-				{
-					"name": "data-disabled",
-					"description": "Present when the button cannot step further or the field is disabled."
-				},
-				{
-					"name": "data-invalid",
-					"description": "Present when the field is invalid."
-				},
-				{
-					"name": "data-number-field-decrement",
-					"description": "Identifies the decrement button."
-				},
-				{
-					"name": "data-readonly",
-					"description": "Present when the field is readonly."
-				},
-				{
-					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
-				}
-			]
+			"dataAttributes": []
 		},
 		{
 			"name": "ScrubArea",
@@ -429,13 +387,6 @@
 					"required": false,
 					"default": "2",
 					"description": "Pixels of pointer movement required per step."
-				},
-				{
-					"name": "teleportDistance",
-					"type": "number",
-					"required": false,
-					"default": null,
-					"description": "Wraps the virtual cursor after it travels this many pixels, allowing unlimited scrubbing in a bounded area."
 				}
 			],
 			"dataAttributes": [

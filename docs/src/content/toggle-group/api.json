@@ -10,14 +10,21 @@
 					"type": "ToggleGroupValue[]",
 					"required": false,
 					"default": null,
-					"description": "Controlled array of selected toggle values. Bindable. Used for both single and multiple selection."
+					"description": "Selected values. Two-way by default — use `bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "ToggleGroupValue[]",
 					"required": false,
 					"default": null,
-					"description": "Initial selected values when uncontrolled."
+					"description": "Initially selected values, for when `value` is not supplied."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new value back down. Off by default, because `bind:value` — the common case —\nneeds the write-back to work at all."
 				},
 				{
 					"name": "onChange",

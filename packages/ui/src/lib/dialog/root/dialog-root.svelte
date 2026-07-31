@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { untrack, type Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
 	import {
@@ -46,6 +46,12 @@
 
 	// Stack level for z-index calculation
 	let stackLevel = $state(0);
+
+	// Label/description ids, in registration order. Arrays rather than a single id
+	// because `aria-labelledby` takes a list, and a dialog may legitimately be named
+	// by more than one element.
+	let labelIds = $state<string[]>([]);
+	let descriptionIds = $state<string[]>([]);
 
 	// `open` wins whenever it is supplied — that covers both `bind:open` and a plain
 	// `open={...}` — and the internal state only carries the fully uncontrolled case.
@@ -107,6 +113,34 @@
 		},
 		get stackLevel() {
 			return stackLevel;
+		},
+		get labelledBy() {
+			return labelIds.length > 0 ? labelIds.join(' ') : undefined;
+		},
+		get describedBy() {
+			return descriptionIds.length > 0 ? descriptionIds.join(' ') : undefined;
+		},
+		// `untrack` is load-bearing: these are called from an `$effect` inside
+		// Dialog.Title/Description, and reading the list to append to it would
+		// subscribe that effect to the very state it writes — an update loop that
+		// registers the same id forever.
+		registerLabel(id: string) {
+			untrack(() => {
+				labelIds = [...labelIds, id];
+			});
+			return () =>
+				untrack(() => {
+					labelIds = labelIds.filter((candidate) => candidate !== id);
+				});
+		},
+		registerDescription(id: string) {
+			untrack(() => {
+				descriptionIds = [...descriptionIds, id];
+			});
+			return () =>
+				untrack(() => {
+					descriptionIds = descriptionIds.filter((candidate) => candidate !== id);
+				});
 		},
 		setTriggerRef,
 		setStackLevel,

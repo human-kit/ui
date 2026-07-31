@@ -161,6 +161,8 @@
 		class={className}
 		role="dialog"
 		aria-modal={isOpen ? 'true' : undefined}
+		aria-labelledby={dialogCtx.labelledBy}
+		aria-describedby={dialogCtx.describedBy}
 		inert={!isOpen}
 		data-dialog-content
 		data-state={isOpen ? 'open' : 'closed'}

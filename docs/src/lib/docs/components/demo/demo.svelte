@@ -18,7 +18,7 @@
 
 <div class="not-prose my-4 overflow-hidden rounded-xl border border-border">
 	<!-- Preview -->
-	<div class="flex min-h-48 items-center justify-center bg-surface p-8">
+	<div class="flex min-h-48 items-center justify-center bg-surface p-4 sm:p-8">
 		{@render children()}
 	</div>
 

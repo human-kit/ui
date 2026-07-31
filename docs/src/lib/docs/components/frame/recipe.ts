@@ -41,15 +41,18 @@ const frameRecipeConfig = {
 		// `--pane-max` = the 52rem measure the reading column is designed for, plus
 		// the `viewport` slot's own lg gutters (2 × 3rem) — so the TEXT lands at
 		// 52rem, not the card. Keep the two in step if the padding changes.
-		root: 'fixed inset-0 flex flex-col overflow-clip px-8 py-2 gap-2 [--frame-max:1536px] [--pane-max:calc(52rem+2*3rem)]',
-		header: 'mx-auto w-full max-w-(--frame-max) flex h-7 gap-2 px-3 pr-1.5 justify-between',
+		root: 'fixed inset-0 flex flex-col overflow-clip px-3 py-2 gap-2 sm:px-8 [--frame-max:1536px] [--pane-max:calc(52rem+2*3rem)]',
+		// `relative` so the brand can be centred against the row on narrow screens,
+		// where flanking it with two icon buttons of unequal weight would not.
+		header:
+			'relative mx-auto w-full max-w-(--frame-max) flex h-7 gap-2 px-3 pr-1.5 justify-between',
 		body: 'mx-auto flex min-h-0 w-full max-w-(--frame-max) flex-1 gap-4',
 		// The card clips (overflow-hidden + rounded) so the inner scrollbar is
 		// contained by the rounded corners; the padded `viewport` slot is what
 		// actually scrolls.
 		content:
 			'min-h-0 min-w-0 grow-0 shrink basis-(--pane-max) overflow-hidden rounded-xl border raised shadow-sm',
-		viewport: 'h-full overflow-y-auto px-6 py-9 lg:px-12',
+		viewport: 'h-full overflow-y-auto px-4 py-6 sm:px-6 sm:py-9 lg:px-12',
 		sidebar: 'min-h-0 overflow-y-auto'
 	}
 } as const;

@@ -14,12 +14,20 @@
 		/** Where to look for headings when none are provided. */
 		selector?: string;
 		label?: string;
+		/**
+		 * Whether to paint the label as a heading. Turn it off where the surrounding
+		 * chrome already shows it — the mobile sheet titles itself "On this page", and
+		 * a second copy directly underneath reads as a mistake. `aria-label` stays
+		 * either way, so the nav keeps its accessible name.
+		 */
+		showLabel?: boolean;
 	}
 
 	let {
 		headings: providedHeadings,
 		selector = 'article h2[id], article h3[id]',
-		label = 'On this page'
+		label = 'On this page',
+		showLabel = true
 	}: Props = $props();
 
 	// Headings that content components (e.g. ApiReference) rendered before the
@@ -117,9 +125,11 @@
 	<!-- The inset is here rather than on the rail: see docs-shell (padding on a
 	     `flex-1` rail is incompressible and skews the row's free-space split). -->
 	<nav aria-label={label} class="px-2 text-sm py-6">
-		<h4 class="text-sm">
-			{label}
-		</h4>
+		{#if showLabel}
+			<h4 class="text-sm">
+				{label}
+			</h4>
+		{/if}
 		<ul class="mt-3 space-y-1.5 border-l border-border">
 			<!-- Jump back to the top of the reading pane. No element has this id, so
 			     the frame's scroll effect finds no target and resets the pane to 0

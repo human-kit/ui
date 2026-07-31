@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { MediaQuery } from 'svelte/reactivity';
 	import { LocaleProvider } from '@human-kit/ui';
 	import { DateRangePicker, type DateRangePickerRangeValue } from '@human-kit/ui/daterangepicker';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
@@ -6,6 +7,10 @@
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	let value = $state<DateRangePickerRangeValue | null>(null);
+
+	// Two months side by side need ~460px; a phone has less than that, so the
+	// second month would be clipped. Drop to a single month below `sm`.
+	const isWide = new MediaQuery('min-width: 640px', true);
 </script>
 
 <LocaleProvider locale="es-AR">
@@ -41,7 +46,7 @@
 				{/snippet}
 			</DateRangePicker.Input>
 			<DateRangePicker.Trigger
-				class="ml-auto inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+				class="touch-target ml-auto inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
 			>
 				<CalendarIcon class="size-3.5" />
 			</DateRangePicker.Trigger>
@@ -50,7 +55,7 @@
 			placement="bottom"
 			class="mt-1 border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
 		>
-			<DateRangePicker.Calendar visibleMonths={2}>
+			<DateRangePicker.Calendar visibleMonths={isWide.current ? 2 : 1}>
 				<div class="flex items-center justify-between gap-2 p-2">
 					<DateRangePicker.TriggerPrevious
 						class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"

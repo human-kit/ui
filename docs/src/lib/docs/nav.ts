@@ -48,6 +48,7 @@ export const nav: NavGroup[] = [
 		label: 'Overlays',
 		items: [
 			{ slug: 'dialog', title: 'Dialog' },
+			{ slug: 'drawer', title: 'Drawer' },
 			{ slug: 'menu', title: 'Menu' },
 			{ slug: 'popover', title: 'Popover' }
 		]

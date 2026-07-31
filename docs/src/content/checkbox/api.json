@@ -34,32 +34,53 @@
 					"description": "Value submitted with the form when the checkbox is checked. Does not affect the visual state."
 				},
 				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Associates the hidden input with a form by id."
+				},
+				{
 					"name": "checked",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled checked state. Bindable."
+					"description": "Checked state. Two-way by default — use `bind:checked`."
 				},
 				{
 					"name": "defaultChecked",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial checked state when uncontrolled."
+					"description": "Initial checked state, for when `checked` is not supplied."
+				},
+				{
+					"name": "controlledChecked",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled `checked`: the component stops writing back to the prop\nand only reports through `onCheckedChange`, so the parent can reject a change by\nnot flowing the new value back down. Off by default, because `bind:checked` —\nthe common case — needs the write-back to work at all."
 				},
 				{
 					"name": "indeterminate",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled indeterminate (mixed) state. Bindable. Takes precedence over `checked`."
+					"description": "Indeterminate state. Two-way by default — use `bind:indeterminate`."
 				},
 				{
 					"name": "defaultIndeterminate",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial indeterminate state when uncontrolled."
+					"description": "Initial indeterminate state, for when `indeterminate` is not supplied."
+				},
+				{
+					"name": "controlledIndeterminate",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled `indeterminate`. See `controlledChecked`."
 				},
 				{
 					"name": "onCheckedChange",

@@ -14,10 +14,15 @@
 			<Dialog.Content
 				class="w-100 max-w-[90vw] border border-neutral-200 bg-white p-6 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
 			>
-				<h3 class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">Delete project</h3>
-				<p class="mb-6 text-sm text-neutral-600 dark:text-neutral-300">
+				<!-- Dialog.Title / Dialog.Description rather than a bare h3 and p: a
+				     role="dialog" takes its name from aria-labelledby, which these wire up.
+				     Plain markup here leaves the dialog unnamed to a screen reader. -->
+				<Dialog.Title class="mb-4 text-lg font-semibold text-neutral-900 dark:text-white">
+					Delete project
+				</Dialog.Title>
+				<Dialog.Description class="mb-6 text-sm text-neutral-600 dark:text-neutral-300">
 					This action cannot be undone. The project and all of its data will be permanently removed.
-				</p>
+				</Dialog.Description>
 				<div class="flex justify-end gap-3">
 					<button
 						onclick={close}

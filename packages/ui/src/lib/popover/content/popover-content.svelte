@@ -17,7 +17,7 @@
 		type PopoverCloseReason
 	} from '../root/context';
 	import { pushPopoverLayer, removePopoverLayer, isTopmostPopover } from '../root/popover-stack';
-	import { getFloatingLayerZIndex } from '../../dialog/root/dialog-stack';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
 	import {
 		addTriggerBlurCleanup,
 		applyTriggerCloseFocusState,

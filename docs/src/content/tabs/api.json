@@ -31,14 +31,21 @@
 					"type": "TabsValue | null",
 					"required": false,
 					"default": null,
-					"description": "Controlled selected tab value. Bindable. Pass null for no active tab."
+					"description": "Selected tab value. Two-way by default — use `bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "TabsValue | null",
 					"required": false,
 					"default": null,
-					"description": "Initially selected tab value when uncontrolled. Pass null when no tab should start active."
+					"description": "Initially selected value, for when `value` is not supplied."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new value back down. Off by default, because `bind:value` — the common case —\nneeds the write-back to work at all."
 				},
 				{
 					"name": "disabledKeys",

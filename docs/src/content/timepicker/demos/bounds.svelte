@@ -24,7 +24,7 @@
 				{/snippet}
 			</TimePicker.Input>
 			<TimePicker.Trigger
-				class="inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+				class="touch-target inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
 			>
 				<ClockIcon class="size-3.5" />
 			</TimePicker.Trigger>

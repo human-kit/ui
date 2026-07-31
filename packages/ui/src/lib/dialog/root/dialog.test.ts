@@ -267,3 +267,40 @@ describe('Dialog', () => {
 		});
 	});
 });
+
+describe('Dialog labelling', () => {
+	afterEach(() => {
+		document.querySelectorAll('[role="dialog"]').forEach((node) => node.remove());
+	});
+
+	it('names the dialog from Dialog.Title and describes it from Dialog.Description', async () => {
+		const screen = render(DialogTest, { defaultOpen: true });
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		const dialog = document.querySelector('[role="dialog"]')!;
+		const labelId = dialog.getAttribute('aria-labelledby');
+		expect(labelId).toBeTruthy();
+		expect(document.getElementById(labelId!)?.textContent).toBe('Dialog Title');
+
+		const describedId = dialog.getAttribute('aria-describedby');
+		expect(describedId).toBeTruthy();
+		expect(document.getElementById(describedId!)?.textContent).toBe('Dialog content goes here.');
+
+		// The name has to resolve through the accessibility tree, not just the attribute.
+		await expect.element(screen.getByRole('dialog', { name: 'Dialog Title' })).toBeInTheDocument();
+	});
+
+	it('renders the title as a heading', async () => {
+		render(DialogTest, { defaultOpen: true });
+		await expect.poll(() => document.querySelector('[data-dialog-title]')).toBeTruthy();
+		expect(document.querySelector('[data-dialog-title]')?.tagName).toBe('H2');
+	});
+
+	it('closes from Dialog.Close', async () => {
+		render(DialogTest, { defaultOpen: true });
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		document.querySelector<HTMLButtonElement>('[data-dialog-close]')!.click();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+	});
+});

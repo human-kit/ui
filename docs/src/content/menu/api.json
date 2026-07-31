@@ -297,6 +297,10 @@
 				{
 					"name": "data-pressed",
 					"description": "Present while the item is actively pressed via pointer."
+				},
+				{
+					"name": "data-text-value",
+					"description": "The text typeahead matches against, when it differs from the label."
 				}
 			]
 		},
@@ -548,6 +552,10 @@
 				{
 					"name": "data-submenu-trigger",
 					"description": "Identifies the submenu trigger element."
+				},
+				{
+					"name": "data-text-value",
+					"description": "The text typeahead matches against, when it differs from the label."
 				}
 			]
 		}

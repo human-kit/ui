@@ -3,7 +3,7 @@
 	import { Portal } from '../../portal';
 	import { createPresence } from '../../primitives/presence.svelte';
 	import { getPopoverContext } from '../root/context';
-	import { getFloatingLayerOverlayZIndex } from '../../dialog/root/dialog-stack';
+	import { getFloatingLayerOverlayZIndex } from '../../primitives/layer-stack';
 
 	/**
 	 * Popover.Overlay - An optional backdrop rendered behind the popover.

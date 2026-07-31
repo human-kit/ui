@@ -58,9 +58,19 @@ export type FloatingOptions = {
 	shouldFlip?: boolean;
 	/** Boundary element for positioning constraints. */
 	boundaryElement?: Element | null;
+	/**
+	 * Minimum gap kept between the floating element and the boundary edges, in
+	 * pixels. Without it the panel sits flush against the viewport edge, which on
+	 * a phone reads as clipped content; it also caps `--available-width/height`
+	 * so a panel that shrinks to fit still leaves the gutter visible.
+	 */
+	collisionPadding?: number;
 	/** Callback when position is updated. */
 	onPositionUpdate?: (x: number, y: number, placement: FloatingPlacement) => void;
 };
+
+/** Viewport gutter applied when no `collisionPadding` is given. */
+const DEFAULT_COLLISION_PADDING = 8;
 
 /**
  * Converts extended placement syntax to Floating UI placement.
@@ -176,12 +186,14 @@ export function floating(
 		const offset = currentOptions.offset ?? 8;
 		const shouldFlip = currentOptions.shouldFlip ?? true;
 		const boundaryElement = currentOptions.boundaryElement || null;
+		const padding = currentOptions.collisionPadding ?? DEFAULT_COLLISION_PADDING;
 
 		return [
 			offsetMiddleware(offset),
-			...(shouldFlip ? [flip({ boundary: boundaryElement || undefined })] : []),
-			shift({ boundary: boundaryElement || undefined }),
+			...(shouldFlip ? [flip({ boundary: boundaryElement || undefined, padding })] : []),
+			shift({ boundary: boundaryElement || undefined, padding }),
 			size({
+				padding,
 				apply({ rects, availableWidth, availableHeight, elements, placement }) {
 					const floatingEl = elements.floating;
 					const clampedAvailableWidth = Math.max(0, availableWidth);

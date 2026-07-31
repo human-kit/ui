@@ -28,9 +28,10 @@
 			<Dialog.Overlay data-testid="dialog-overlay" />
 			<Dialog.Content class="dialog-content" {shouldCloseOnInteractOutside} {shouldCloseOnEscape}>
 				<div class="dialog-body">
-					<h3>Dialog Title</h3>
-					<p>Dialog content goes here.</p>
+					<Dialog.Title>Dialog Title</Dialog.Title>
+					<Dialog.Description>Dialog content goes here.</Dialog.Description>
 					<button type="button" class="close-btn" onclick={close}>Close</button>
+					<Dialog.Close>Dismiss</Dialog.Close>
 				</div>
 			</Dialog.Content>
 		</Dialog.Portal>

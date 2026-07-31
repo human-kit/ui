@@ -26,7 +26,7 @@
 		{#if item.children?.length}
 			<Tree.Trigger
 				aria-label={`Toggle ${item.title}`}
-				class="group inline-flex size-5 shrink-0 items-center justify-center text-current opacity-60 outline-none transition-opacity hover:opacity-100"
+				class="touch-target group inline-flex size-5 shrink-0 items-center justify-center text-current opacity-60 outline-none transition-opacity hover:opacity-100"
 			>
 				<ChevronRight class="size-3.5 transition-transform group-data-expanded:rotate-90" />
 			</Tree.Trigger>

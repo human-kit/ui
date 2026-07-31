@@ -11,7 +11,7 @@
 	import { Portal } from '../../portal';
 	import { useMenuContext } from '../root/context';
 	import { pushMenuLayer, removeMenuLayer, isTopmostMenu } from '../root/menu-stack';
-	import { getFloatingLayerZIndex } from '../../dialog/root/dialog-stack';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
 
 	/**
 	 * Menu.Content - The floating menu panel (role="menu").

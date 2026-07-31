@@ -1,0 +1,618 @@
+{
+	"component": "drawer",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "",
+			"props": [
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Open state. Two-way by default — use `bind:open`."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Initial open state, for when `open` is not supplied."
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the\ncommon case — needs the write-back to work at all."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when the open state changes."
+				},
+				{
+					"name": "side",
+					"type": "DrawerSide",
+					"required": false,
+					"default": "'bottom'",
+					"description": "Edge the panel is anchored to."
+				},
+				{
+					"name": "modal",
+					"type": "DrawerModal",
+					"required": false,
+					"default": "true",
+					"description": "Focus trap / scroll lock behaviour. See `DrawerModal`."
+				},
+				{
+					"name": "dismissible",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether a swipe toward the anchored edge may dismiss the drawer."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing Escape closes the drawer."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether pressing outside the panel closes it."
+				},
+				{
+					"name": "snapPoints",
+					"type": "readonly DrawerSnapPoint[]",
+					"required": false,
+					"default": null,
+					"description": "Resting positions the panel may settle on, smallest offset first is not\nrequired — they are sorted internally. See `DrawerSnapPoint` for the accepted\nvalue forms. Without this the drawer is either fully open or closed."
+				},
+				{
+					"name": "snapPoint",
+					"type": "DrawerSnapPoint | null",
+					"required": false,
+					"default": null,
+					"description": "Active snap point. Two-way by default — use `bind:snapPoint`."
+				},
+				{
+					"name": "defaultSnapPoint",
+					"type": "DrawerSnapPoint | null",
+					"required": false,
+					"default": "null",
+					"description": "Initial snap point, for when `snapPoint` is not supplied."
+				},
+				{
+					"name": "onSnapPointChange",
+					"type": "(snapPoint: DrawerSnapPoint | null, event?: Event) => void",
+					"required": false,
+					"default": null,
+					"description": "Callback when the active snap point changes."
+				},
+				{
+					"name": "snapToSequentialPoints",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Stops a fast flick from skipping past the neighbouring snap point. Use it when\nevery step is meaningful and jumping two at once would disorient."
+				},
+				{
+					"name": "handle",
+					"type": "DrawerHandle<Payload>",
+					"required": false,
+					"default": null,
+					"description": "Drives the drawer from a detached handle instead of the `open` prop, so\ntriggers can live anywhere in the tree. See `createDrawerHandle`."
+				},
+				{
+					"name": "triggerRef",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Reference to the trigger element. Set manually or via Drawer.Trigger."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[DrawerStateHelpers<Payload>]>",
+					"required": false,
+					"default": null,
+					"description": "Children snippet, receiving state helpers."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Trigger",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button label."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button."
+				},
+				{
+					"name": "handle",
+					"type": "DrawerHandle<Payload>",
+					"required": false,
+					"default": null,
+					"description": "Opens the drawer through a detached handle instead of context, so the trigger\ncan live anywhere in the tree. See `createDrawerHandle`."
+				},
+				{
+					"name": "payload",
+					"type": "Payload",
+					"required": false,
+					"default": null,
+					"description": "Value handed to the drawer's `children` snippet when this trigger opens it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-trigger",
+					"description": "Identifies the trigger button."
+				}
+			]
+		},
+		{
+			"name": "Portal",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The layers to portal (Overlay, Viewport/Content)."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Overlay",
+			"description": "",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the overlay."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-overlay",
+					"description": "Identifies the backdrop element."
+				},
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-nested",
+					"description": "Present when a drawer is already open behind this one, in which case this backdrop stands down and the one at the back of the stack is the only one painted."
+				},
+				{
+					"name": "data-side",
+					"description": "The edge the drawer is anchored to: `top`, `right`, `bottom` or `left`."
+				},
+				{
+					"name": "data-starting-style",
+					"description": "Present for the first painted frame after mounting, so a CSS transition has a value to animate from."
+				},
+				{
+					"name": "data-state",
+					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+				},
+				{
+					"name": "data-swiping",
+					"description": "Present while a drag is in flight. Drop your transitions under it."
+				}
+			]
+		},
+		{
+			"name": "Viewport",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The panel this viewport places."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the viewport."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-viewport",
+					"description": "Identifies the positioning layer."
+				},
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-side",
+					"description": "The edge the drawer is anchored to: `top`, `right`, `bottom` or `left`."
+				},
+				{
+					"name": "data-state",
+					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+				}
+			]
+		},
+		{
+			"name": "Content",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the panel."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the panel."
+				},
+				{
+					"name": "initialFocus",
+					"type": "HTMLElement | string | (() => HTMLElement | null | undefined)",
+					"required": false,
+					"default": null,
+					"description": "Where focus lands when the drawer opens. Defaults to the first focusable\nelement inside the panel."
+				},
+				{
+					"name": "touchAction",
+					"type": "string | null",
+					"required": false,
+					"default": null,
+					"description": "`touch-action` for the panel. Defaults to `pan-y` for left/right drawers —\nchildren keep scrolling vertically while the horizontal axis is reserved for\nthe drag — and to nothing for top/bottom ones, where reserving the vertical\naxis would break every scrollable region inside (`touch-action` intersects\ndown the ancestor chain, so a child cannot opt back in)."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-bleed",
+					"description": "Identifies the strip painted just outside the anchored edge, which covers the page while the panel is stretched past fully open."
+				},
+				{
+					"name": "data-drawer-content",
+					"description": "Identifies the panel."
+				},
+				{
+					"name": "data-entering",
+					"description": "Present while the enter animation is running."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present while the exit animation is running."
+				},
+				{
+					"name": "data-expanded",
+					"description": "Present at the most open snap point."
+				},
+				{
+					"name": "data-nested-drawer-open",
+					"description": "Present while a drawer opened after this one is open."
+				},
+				{
+					"name": "data-nested-drawer-swiping",
+					"description": "Present while that nested drawer is being dragged."
+				},
+				{
+					"name": "data-side",
+					"description": "The edge the drawer is anchored to: `top`, `right`, `bottom` or `left`."
+				},
+				{
+					"name": "data-starting-style",
+					"description": "Present for the first painted frame after mounting, so a CSS transition has a value to animate from."
+				},
+				{
+					"name": "data-state",
+					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+				},
+				{
+					"name": "data-swipe-direction",
+					"description": "Direction of the gesture: `up`, `down`, `left` or `right`."
+				},
+				{
+					"name": "data-swipe-dismiss",
+					"description": "Present once a swipe has dismissed the drawer, through its exit."
+				},
+				{
+					"name": "data-swiping",
+					"description": "Present while a drag is in flight. Drop your transitions under it."
+				}
+			]
+		},
+		{
+			"name": "Body",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content of the body region."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the body."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-body",
+					"description": "Identifies the content region. The drawer cannot be dragged from inside it."
+				}
+			]
+		},
+		{
+			"name": "Title",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The drawer's name."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the heading."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the generated id."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-title",
+					"description": "Identifies the heading that names the drawer."
+				}
+			]
+		},
+		{
+			"name": "Description",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Supporting text announced after the title."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the paragraph."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the generated id."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-description",
+					"description": "Identifies the supporting description."
+				}
+			]
+		},
+		{
+			"name": "Close",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button label."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-close",
+					"description": "Identifies a button that closes the drawer."
+				}
+			]
+		},
+		{
+			"name": "SwipeArea",
+			"description": "",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the strip."
+				},
+				{
+					"name": "size",
+					"type": "string",
+					"required": false,
+					"default": "'24px'",
+					"description": "Thickness of the strip, as a CSS length."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Turns the gesture off without unmounting the strip."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-axis",
+					"description": "Axis the open gesture travels along: `x` or `y`."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the open gesture is turned off."
+				},
+				{
+					"name": "data-drawer-swipe-area",
+					"description": "Identifies the edge strip that opens the drawer."
+				},
+				{
+					"name": "data-state",
+					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+				},
+				{
+					"name": "data-swipe-direction",
+					"description": "Direction of the gesture: `up`, `down`, `left` or `right`."
+				},
+				{
+					"name": "data-swiping",
+					"description": "Present while a drag is in flight. Drop your transitions under it."
+				}
+			]
+		},
+		{
+			"name": "Indent",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The app UI that pulls back while a drawer is open."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the wrapper."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-indent",
+					"description": "Identifies the wrapper around the app UI."
+				},
+				{
+					"name": "data-state",
+					"description": "Either `\"open\"` or `\"closed\"`, following whether any drawer is open."
+				},
+				{
+					"name": "data-swiping",
+					"description": "Present while any drawer is being dragged. Drop your transitions under it."
+				}
+			]
+		},
+		{
+			"name": "IndentBackground",
+			"description": "",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the layer."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-drawer-indent-background",
+					"description": "Identifies the surface revealed behind an indented app."
+				},
+				{
+					"name": "data-state",
+					"description": "Either `\"open\"` or `\"closed\"`, following whether any drawer is open."
+				}
+			]
+		},
+		{
+			"name": "VirtualKeyboardProvider",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The subtree the keyboard inset is published to."
+				}
+			],
+			"dataAttributes": []
+		}
+	]
+}

@@ -17,7 +17,7 @@
 		id="terms"
 		{checked}
 		onCheckedChange={(next) => (checked = next)}
-		class="inline-flex size-4 shrink-0 items-center justify-center border border-neutral-300 bg-white text-white outline-none transition-colors data-[checked=true]:border-neutral-900 data-[checked=true]:bg-neutral-900 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-900 dark:data-[checked=true]:border-white dark:data-[checked=true]:bg-white dark:data-[focus-visible=true]:outline-white"
+		class="touch-target inline-flex size-4 shrink-0 items-center justify-center border border-neutral-300 bg-white text-white outline-none transition-colors data-[checked=true]:border-neutral-900 data-[checked=true]:bg-neutral-900 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-2 data-[focus-visible=true]:outline-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-900 dark:data-[checked=true]:border-white dark:data-[checked=true]:bg-white dark:data-[focus-visible=true]:outline-white"
 	>
 		<Checkbox.Indicator class="contents">
 			<CheckIcon class="size-3" />
