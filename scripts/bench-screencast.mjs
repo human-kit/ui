@@ -23,7 +23,7 @@ const EMPTY_LINE_RATIO = 0.985;
  * Analysis runs inside a scratch page: decoding JPEG in Node would need a
  * dependency, while the browser already has an image decoder and a canvas.
  */
-export async function measureBlankBand({ page, cdp, analyzer, region, drive }) {
+export async function measureBlankBand({ page: _page, cdp, analyzer, region, drive }) {
 	const frames = [];
 	const onFrame = async (frame) => {
 		frames.push(frame.data);

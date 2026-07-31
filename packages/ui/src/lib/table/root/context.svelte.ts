@@ -414,6 +414,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	// Cell keys grouped by row, so dropping a row does not have to scan every
 	// registered cell. Virtualized scrolling unmounts rows continuously, and a
 	// full scan there costs (rows unmounted x total cells) per frame.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a lookup index, not state: see the note above on the per-frame cost.
 	const cellKeysByRowToken = new Map<string, Set<string>>();
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
 		header: null,
@@ -448,6 +449,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	// reads them reactively. As a SvelteMap every row and every cell created a
 	// reactive source on mount — hundreds per scroll tick — and in dev each of
 	// those costs a stack capture (`get_stack` was 58% of mount in the profile).
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- see the note above: reactive here cost 58% of mount time.
 	const instanceCounters = new Map<string, number>();
 	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
 	setSelectedKeys(
@@ -2000,6 +2002,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			existing.add(cell.key);
 			return;
 		}
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a bucket inside the non-reactive index above.
 		cellKeysByRowToken.set(cell.rowToken, new Set([cell.key]));
 	}
 

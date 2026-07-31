@@ -3,8 +3,7 @@ import {
 	type TimePickerDraft,
 	type TimePickerEditableSegmentType,
 	type TimePickerGranularity,
-	type TimePickerHourCycle,
-	type TimePickerTimeValue
+	type TimePickerHourCycle
 } from './time-utils';
 
 export type WheelOption = {
