@@ -1,56 +1,52 @@
 {
-  "label": "smooth",
-  "createdAt": "2026-07-29T19:35:05.598Z",
-  "mode": "dev",
-  "url": "http://localhost:5305/bench/table?rows=5000&columns=8",
-  "throttle": 4,
-  "repeat": 3,
-  "scenarios": {
-    "scroll-smooth": {
-      "scenario": "scroll-smooth",
-      "config": {
-        "rows": 5000,
-        "columns": 8,
-        "selectionMode": "multiple",
-        "resizable": true,
-        "pinFirstColumn": false,
-        "virtualized": true,
-        "rowHeight": 32,
-        "cellVariant": "rich",
-        "viewportHeight": 640
-      },
-      "epochs": {
-        "layout": 0,
-        "width": 0,
-        "selection": 0
-      },
-      "frames": {
-        "count": 150,
-        "mean": 31.462666666666678,
-        "p50": 14.100000000002183,
-        "p95": 100.29999999999927,
-        "p99": 105.70000000000073,
-        "max": 117.70000000000073,
-        "dropped": 37,
-        "droppedRatio": 0.24666666666666667,
-        "jankMs": 2641.3000000000075
-      },
-      "longTasks": {
-        "count": 36,
-        "totalMs": 3103,
-        "maxMs": 112,
-        "supported": true
-      },
-      "renderedRows": 56,
-      "durationMs": 4742.5,
-      "samples": [
-        14.1,
-        15.3,
-        16.7
-      ],
-      "bestMs": 14.1,
-      "medianMs": 15.3,
-      "spread": 0.184
-    }
-  }
+	"label": "smooth",
+	"createdAt": "2026-07-29T19:35:05.598Z",
+	"mode": "dev",
+	"url": "http://localhost:5305/bench/table?rows=5000&columns=8",
+	"throttle": 4,
+	"repeat": 3,
+	"scenarios": {
+		"scroll-smooth": {
+			"scenario": "scroll-smooth",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 31.462666666666678,
+				"p50": 14.100000000002183,
+				"p95": 100.29999999999927,
+				"p99": 105.70000000000073,
+				"max": 117.70000000000073,
+				"dropped": 37,
+				"droppedRatio": 0.24666666666666667,
+				"jankMs": 2641.3000000000075
+			},
+			"longTasks": {
+				"count": 36,
+				"totalMs": 3103,
+				"maxMs": 112,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 4742.5,
+			"samples": [14.1, 15.3, 16.7],
+			"bestMs": 14.1,
+			"medianMs": 15.3,
+			"spread": 0.184
+		}
+	}
 }

@@ -1,413 +1,413 @@
 - generic [ref=f11e1]:
-  - button "Disable render scanning" [ref=f11e2] [cursor=pointer]
-  - generic [ref=f11e7]:
-    - banner [ref=f11e8]:
-      - link [ref=f11e9] [cursor=pointer]:
-        - /url: ../
-      - generic [ref=f11e12]:
-        - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f11e13] [cursor=pointer]:
-          - /url: https://www.npmjs.com/package/@human-kit/ui
-          - text: 1.0.0-beta.0
-        - link "GitHub repository" [ref=f11e14] [cursor=pointer]:
-          - /url: https://github.com/human-kit/ui
-        - button "Toggle color theme" [ref=f11e15]
-        - status [ref=f11e17]
-    - generic [ref=f11e18]:
-      - complementary [ref=f11e19]:
-        - navigation [ref=f11e20]:
-          - generic [ref=f11e21]:
-            - button "Overview" [expanded] [ref=f11e22]
-            - status [ref=f11e25]
-            - list [ref=f11e28]:
-              - listitem [ref=f11e29]:
-                - link "Quick Start" [ref=f11e30] [cursor=pointer]:
-                  - /url: ../docs/quick-start
-              - listitem [ref=f11e31]:
-                - link "Accessibility" [ref=f11e32] [cursor=pointer]:
-                  - /url: ../docs/accessibility
-              - listitem [ref=f11e33]:
-                - link "Releases" [ref=f11e34] [cursor=pointer]:
-                  - /url: ../docs/releases
-              - listitem [ref=f11e35]:
-                - link "About" [ref=f11e36] [cursor=pointer]:
-                  - /url: ../docs/about
-          - generic [ref=f11e37]:
-            - button "Form" [expanded] [ref=f11e38]
-            - status [ref=f11e41]
-            - list [ref=f11e44]:
-              - listitem [ref=f11e45]:
-                - link "Button" [ref=f11e46] [cursor=pointer]:
-                  - /url: ../docs/button
-              - listitem [ref=f11e47]:
-                - link "Checkbox" [ref=f11e48] [cursor=pointer]:
-                  - /url: ../docs/checkbox
-              - listitem [ref=f11e49]:
-                - link "Input" [ref=f11e50] [cursor=pointer]:
-                  - /url: ../docs/input
-              - listitem [ref=f11e51]:
-                - link "NumberField" [ref=f11e52] [cursor=pointer]:
-                  - /url: ../docs/numberfield
-              - listitem [ref=f11e53]:
-                - link "Switch" [ref=f11e54] [cursor=pointer]:
-                  - /url: ../docs/switch
-              - listitem [ref=f11e55]:
-                - link "TextArea" [ref=f11e56] [cursor=pointer]:
-                  - /url: ../docs/textarea
-              - listitem [ref=f11e57]:
-                - link "Toggle" [ref=f11e58] [cursor=pointer]:
-                  - /url: ../docs/toggle
-              - listitem [ref=f11e59]:
-                - link "ToggleGroup" [ref=f11e60] [cursor=pointer]:
-                  - /url: ../docs/toggle-group
-          - generic [ref=f11e61]:
-            - button "Pickers" [expanded] [ref=f11e62]
-            - status [ref=f11e65]
-            - list [ref=f11e68]:
-              - listitem [ref=f11e69]:
-                - link "Autocomplete" [ref=f11e70] [cursor=pointer]:
-                  - /url: ../docs/autocomplete
-              - listitem [ref=f11e71]:
-                - link "ComboBox" [ref=f11e72] [cursor=pointer]:
-                  - /url: ../docs/combobox
-              - listitem [ref=f11e73]:
-                - link "ListBox" [ref=f11e74] [cursor=pointer]:
-                  - /url: ../docs/listbox
-              - listitem [ref=f11e75]:
-                - link "Calendar" [ref=f11e76] [cursor=pointer]:
-                  - /url: ../docs/calendar
-              - listitem [ref=f11e77]:
-                - link "Clock" [ref=f11e78] [cursor=pointer]:
-                  - /url: ../docs/clock
-              - listitem [ref=f11e79]:
-                - link "DatePicker" [ref=f11e80] [cursor=pointer]:
-                  - /url: ../docs/datepicker
-              - listitem [ref=f11e81]:
-                - link "DateRangePicker" [ref=f11e82] [cursor=pointer]:
-                  - /url: ../docs/daterangepicker
-              - listitem [ref=f11e83]:
-                - link "TimePicker" [ref=f11e84] [cursor=pointer]:
-                  - /url: ../docs/timepicker
-          - generic [ref=f11e85]:
-            - button "Overlays" [expanded] [ref=f11e86]
-            - status [ref=f11e89]
-            - list [ref=f11e92]:
-              - listitem [ref=f11e93]:
-                - link "Dialog" [ref=f11e94] [cursor=pointer]:
-                  - /url: ../docs/dialog
-              - listitem [ref=f11e95]:
-                - link "Menu" [ref=f11e96] [cursor=pointer]:
-                  - /url: ../docs/menu
-              - listitem [ref=f11e97]:
-                - link "Popover" [ref=f11e98] [cursor=pointer]:
-                  - /url: ../docs/popover
-          - generic [ref=f11e99]:
-            - button "Structure" [expanded] [ref=f11e100]
-            - status [ref=f11e103]
-            - list [ref=f11e106]:
-              - listitem [ref=f11e107]:
-                - link "Accordion" [ref=f11e108] [cursor=pointer]:
-                  - /url: ../docs/accordion
-              - listitem [ref=f11e109]:
-                - link "Collapsible" [ref=f11e110] [cursor=pointer]:
-                  - /url: ../docs/collapsible
-              - listitem [ref=f11e111]:
-                - link "Table" [ref=f11e112] [cursor=pointer]:
-                  - /url: ../docs/table
-              - listitem [ref=f11e113]:
-                - link "Tabs" [ref=f11e114] [cursor=pointer]:
-                  - /url: ../docs/tabs
-              - listitem [ref=f11e115]:
-                - link "Tree" [ref=f11e116] [cursor=pointer]:
-                  - /url: ../docs/tree
-      - main [ref=f11e117]:
-        - article [ref=f11e119]:
-          - generic [ref=f11e120]:
-            - 'link "Previous: Accordion" [ref=f11e121] [cursor=pointer]':
-              - /url: ../docs/accordion
-            - 'link "Next: Table" [ref=f11e122] [cursor=pointer]':
-              - /url: ../docs/table
-            - button "Page options" [ref=f11e123]
-            - status [ref=f11e124]
-          - heading "Collapsible" [level=1] [ref=f11e125]
-          - paragraph [ref=f11e126]: "A headless single disclosure primitive: a button that shows and hides an associated panel, with controlled or uncontrolled open state and a disabled state."
-          - generic [ref=f11e127]:
-            - generic [ref=f11e129]:
-              - button "Recovery keys" [expanded] [ref=f11e130]
-              - status [ref=f11e133]
-              - generic [ref=f11e134]: Store these one-time recovery keys somewhere safe. Each key can be used a single time to regain access if you lose your authenticator.
-            - generic [ref=f11e137]:
-              - button "Copy source code" [ref=f11e138]
-              - status [ref=f11e140]
-              - button "Show code" [ref=f11e141]
-              - status [ref=f11e142]
-          - heading "Anatomy" [level=2] [ref=f11e143]
-          - paragraph [ref=f11e144]:
-            - text: The collapsible is assembled from three parts.
-            - code [ref=f11e145]: Collapsible.Root
-            - text: provides the shared context,
-            - code [ref=f11e146]: Collapsible.Trigger
-            - text: renders the toggle button, and
-            - code [ref=f11e147]: Collapsible.Panel
-            - text: holds the content that is shown and hidden.
-          - code [ref=f11e150]:
-            - generic [ref=f11e151]: <script>
-            - generic [ref=f11e152]: "import { Collapsible } from '@human-kit/ui';"
-            - generic [ref=f11e153]: </script>
-            - generic [ref=f11e154]: <Collapsible.Root defaultOpen>
-            - generic [ref=f11e155]: <Collapsible.Trigger>Details</Collapsible.Trigger>
-            - generic [ref=f11e156]: <Collapsible.Panel>Hidden content revealed on toggle.</Collapsible.Panel>
-            - generic [ref=f11e157]: </Collapsible.Root>
-          - heading "Controlled state" [level=2] [ref=f11e158]
-          - paragraph [ref=f11e159]:
-            - text: Bind
-            - code [ref=f11e160]: open
-            - text: (or pair
-            - code [ref=f11e161]: open
-            - text: with
-            - code [ref=f11e162]: onOpenChange
-            - text: ) to drive the panel from outside — for example from buttons elsewhere in the UI. Use
-            - code [ref=f11e163]: defaultOpen
-            - text: instead when the collapsible should manage its own state.
-          - heading "Usage guidelines" [level=2] [ref=f11e164]
-          - list [ref=f11e165]:
-            - listitem [ref=f11e166]:
-              - text: Use
-              - code [ref=f11e167]: open
-              - text: /
-              - code [ref=f11e168]: onOpenChange
-              - text: for controlled state and
-              - code [ref=f11e169]: defaultOpen
-              - text: for uncontrolled state.
-            - listitem [ref=f11e170]:
-              - text: Use
-              - code [ref=f11e171]: disabled
-              - text: to prevent the trigger from toggling the panel.
-            - listitem [ref=f11e172]:
-              - text: Use
-              - code [ref=f11e173]: forceMount
-              - text: "on"
-              - code [ref=f11e174]: Collapsible.Panel
-              - text: when collapsed content must stay in the DOM.
-            - listitem [ref=f11e175]:
-              - text: For grouped disclosures where only one section opens at a time, use
-              - code [ref=f11e176]: Accordion
-              - text: instead.
-          - heading "Accessibility" [level=2] [ref=f11e177]
-          - list [ref=f11e178]:
-            - listitem [ref=f11e179]:
-              - code [ref=f11e180]: Collapsible.Trigger
-              - text: renders button semantics with
-              - code [ref=f11e181]: aria-expanded
-              - text: and
-              - code [ref=f11e182]: aria-controls
-              - text: pointing at the panel, following the WAI-ARIA disclosure pattern.
-            - listitem [ref=f11e183]:
-              - code [ref=f11e184]: Collapsible.Panel
-              - text: is
-              - code [ref=f11e185]: hidden
-              - text: +
-              - code [ref=f11e186]: inert
-              - text: while collapsed and carries the
-              - code [ref=f11e187]: id
-              - text: referenced by the trigger.
-            - listitem [ref=f11e188]: Enter/Space toggle the panel via native button activation.
-          - heading "API reference" [level=2] [ref=f11e189]
-          - heading "Root" [level=3] [ref=f11e190]
-          - paragraph [ref=f11e191]: The disclosure container. Holds the open state and provides context to the trigger and panel.
-          - generic [ref=f11e193]:
-            - generic [ref=f11e194]:
-              - generic [ref=f11e195]: Prop
-              - generic [ref=f11e196]: Type
-              - generic [ref=f11e197]: Default
-            - generic [ref=f11e198]:
-              - button "open boolean —" [ref=f11e199]:
-                - generic [ref=f11e200]: open
-                - generic [ref=f11e201]: boolean
-                - generic [ref=f11e203]: —
-              - status [ref=f11e206]
-            - generic [ref=f11e207]:
-              - button "defaultOpen boolean false" [ref=f11e208]:
-                - generic [ref=f11e209]: defaultOpen
-                - generic [ref=f11e210]: boolean
-                - generic [ref=f11e212]: "false"
-              - status [ref=f11e216]
-            - generic [ref=f11e217]:
-              - 'button "onOpenChange (open: boolean) => void —" [ref=f11e218]':
-                - generic [ref=f11e219]: onOpenChange
-                - generic [ref=f11e220]: "(open: boolean) => void"
-                - generic [ref=f11e222]: —
-              - status [ref=f11e225]
-            - generic [ref=f11e226]:
-              - button "disabled boolean false" [ref=f11e227]:
-                - generic [ref=f11e228]: disabled
-                - generic [ref=f11e229]: boolean
-                - generic [ref=f11e231]: "false"
-              - status [ref=f11e235]
-            - generic [ref=f11e236]:
-              - button "children Snippet —" [ref=f11e237]:
-                - generic [ref=f11e238]: children
-                - generic [ref=f11e239]: Snippet
-                - generic [ref=f11e241]: —
-              - status [ref=f11e244]
-            - generic [ref=f11e245]:
-              - button "class string ''" [ref=f11e246]:
-                - generic [ref=f11e247]: class
-                - generic [ref=f11e248]: string
-                - generic [ref=f11e250]: "''"
-              - status [ref=f11e254]
-            - generic [ref=f11e255]:
-              - button "id string —" [ref=f11e256]:
-                - generic [ref=f11e257]: id
-                - generic [ref=f11e258]: string
-                - generic [ref=f11e260]: —
-              - status [ref=f11e263]
-            - generic [ref=f11e264]:
-              - button "element HTMLDivElement | null null" [ref=f11e265]:
-                - generic [ref=f11e266]: element
-                - generic [ref=f11e267]: HTMLDivElement | null
-                - generic [ref=f11e269]: "null"
-              - status [ref=f11e273]
-            - generic [ref=f11e274]:
-              - button "context CollapsibleContext —" [ref=f11e275]:
-                - generic [ref=f11e276]: context
-                - generic [ref=f11e277]: CollapsibleContext
-                - generic [ref=f11e279]: —
-              - status [ref=f11e282]
-          - paragraph [ref=f11e283]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f11e285]:
-            - generic [ref=f11e286]:
-              - generic [ref=f11e287]: Data attribute
-              - generic [ref=f11e288]: Description
-            - generic [ref=f11e289]:
-              - generic [ref=f11e290]: data-collapsible-root
-              - generic [ref=f11e291]: Identifies the root element.
-            - generic [ref=f11e292]:
-              - generic [ref=f11e293]: data-disabled
-              - generic [ref=f11e294]: Present when the collapsible is disabled.
-            - generic [ref=f11e295]:
-              - generic [ref=f11e296]: data-open
-              - generic [ref=f11e297]: Present while the panel is open.
-          - heading "Trigger" [level=3] [ref=f11e298]
-          - paragraph [ref=f11e299]: The toggle button. Shows and hides the panel via native button activation.
-          - generic [ref=f11e301]:
-            - generic [ref=f11e302]:
-              - generic [ref=f11e303]: Prop
-              - generic [ref=f11e304]: Type
-              - generic [ref=f11e305]: Default
-            - generic [ref=f11e306]:
-              - button "children Snippet —" [ref=f11e307]:
-                - generic [ref=f11e308]: children
-                - generic [ref=f11e309]: Snippet
-                - generic [ref=f11e311]: —
-              - status [ref=f11e314]
-            - generic [ref=f11e315]:
-              - button "class string ''" [ref=f11e316]:
-                - generic [ref=f11e317]: class
-                - generic [ref=f11e318]: string
-                - generic [ref=f11e320]: "''"
-              - status [ref=f11e324]
-            - generic [ref=f11e325]:
-              - button "element HTMLButtonElement | null null" [ref=f11e326]:
-                - generic [ref=f11e327]: element
-                - generic [ref=f11e328]: HTMLButtonElement | null
-                - generic [ref=f11e330]: "null"
-              - status [ref=f11e334]
-          - paragraph [ref=f11e335]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f11e337]:
-            - generic [ref=f11e338]:
-              - generic [ref=f11e339]: Data attribute
-              - generic [ref=f11e340]: Description
-            - generic [ref=f11e341]:
-              - generic [ref=f11e342]: data-collapsible-trigger
-              - generic [ref=f11e343]: Identifies the trigger element.
-            - generic [ref=f11e344]:
-              - generic [ref=f11e345]: data-disabled
-              - generic [ref=f11e346]: Present when the collapsible is disabled.
-            - generic [ref=f11e347]:
-              - generic [ref=f11e348]: data-open
-              - generic [ref=f11e349]: Present while the panel is open.
-          - heading "Panel" [level=3] [ref=f11e350]
-          - paragraph [ref=f11e351]: The content shown and hidden by the trigger. Hidden and inert while collapsed.
-          - generic [ref=f11e353]:
-            - generic [ref=f11e354]:
-              - generic [ref=f11e355]: Prop
-              - generic [ref=f11e356]: Type
-              - generic [ref=f11e357]: Default
-            - generic [ref=f11e358]:
-              - button "forceMount boolean false" [ref=f11e359]:
-                - generic [ref=f11e360]: forceMount
-                - generic [ref=f11e361]: boolean
-                - generic [ref=f11e363]: "false"
-              - status [ref=f11e367]
-            - generic [ref=f11e368]:
-              - button "children Snippet —" [ref=f11e369]:
-                - generic [ref=f11e370]: children
-                - generic [ref=f11e371]: Snippet
-                - generic [ref=f11e373]: —
-              - status [ref=f11e376]
-            - generic [ref=f11e377]:
-              - button "class string ''" [ref=f11e378]:
-                - generic [ref=f11e379]: class
-                - generic [ref=f11e380]: string
-                - generic [ref=f11e382]: "''"
-              - status [ref=f11e386]
-            - generic [ref=f11e387]:
-              - button "element HTMLDivElement | null null" [ref=f11e388]:
-                - generic [ref=f11e389]: element
-                - generic [ref=f11e390]: HTMLDivElement | null
-                - generic [ref=f11e392]: "null"
-              - status [ref=f11e396]
-          - paragraph [ref=f11e397]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f11e399]:
-            - generic [ref=f11e400]:
-              - generic [ref=f11e401]: Data attribute
-              - generic [ref=f11e402]: Description
-            - generic [ref=f11e403]:
-              - generic [ref=f11e404]: data-closed
-              - generic [ref=f11e405]: "Present while the panel is closed (with `forceMount` or during the exit transition)."
-            - generic [ref=f11e406]:
-              - generic [ref=f11e407]: data-collapsible-panel
-              - generic [ref=f11e408]: Identifies the panel element.
-            - generic [ref=f11e409]:
-              - generic [ref=f11e410]: data-collapsible-panel-content
-              - generic [ref=f11e411]: Identifies the inner content wrapper used for height measurement.
-            - generic [ref=f11e412]:
-              - generic [ref=f11e413]: data-ending-style
-              - generic [ref=f11e414]: Present for one frame as the panel starts closing, for exit transitions.
-            - generic [ref=f11e415]:
-              - generic [ref=f11e416]: data-open
-              - generic [ref=f11e417]: Present while the panel is open.
-            - generic [ref=f11e418]:
-              - generic [ref=f11e419]: data-starting-style
-              - generic [ref=f11e420]: Present for one frame as the panel starts opening, for enter transitions.
-      - complementary [ref=f11e421]:
-        - navigation "On this page" [ref=f11e422]:
-          - heading "On this page" [level=4] [ref=f11e423]
-          - list [ref=f11e424]:
-            - listitem [ref=f11e425]:
-              - link "(Top)" [ref=f11e426] [cursor=pointer]:
-                - /url: "#top"
-            - listitem [ref=f11e427]:
-              - link "Anatomy" [ref=f11e428] [cursor=pointer]:
-                - /url: "#anatomy"
-            - listitem [ref=f11e429]:
-              - link "Controlled state" [ref=f11e430] [cursor=pointer]:
-                - /url: "#controlled-state"
-            - listitem [ref=f11e431]:
-              - link "Usage guidelines" [ref=f11e432] [cursor=pointer]:
-                - /url: "#usage-guidelines"
-            - listitem [ref=f11e433]:
-              - link "Accessibility" [ref=f11e434] [cursor=pointer]:
-                - /url: "#accessibility"
-            - listitem [ref=f11e435]:
-              - link "API reference" [ref=f11e436] [cursor=pointer]:
-                - /url: "#api-reference"
-            - listitem [ref=f11e437]:
-              - link "Root" [ref=f11e438] [cursor=pointer]:
-                - /url: "#api-root"
-            - listitem [ref=f11e439]:
-              - link "Trigger" [ref=f11e440] [cursor=pointer]:
-                - /url: "#api-trigger"
-            - listitem [ref=f11e441]:
-              - link "Panel" [ref=f11e442] [cursor=pointer]:
-                - /url: "#api-panel"
+    - button "Disable render scanning" [ref=f11e2] [cursor=pointer]
+    - generic [ref=f11e7]:
+        - banner [ref=f11e8]:
+            - link [ref=f11e9] [cursor=pointer]:
+                - /url: ../
+            - generic [ref=f11e12]:
+                - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f11e13] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@human-kit/ui
+                    - text: 1.0.0-beta.0
+                - link "GitHub repository" [ref=f11e14] [cursor=pointer]:
+                    - /url: https://github.com/human-kit/ui
+                - button "Toggle color theme" [ref=f11e15]
+                - status [ref=f11e17]
+        - generic [ref=f11e18]:
+            - complementary [ref=f11e19]:
+                - navigation [ref=f11e20]:
+                    - generic [ref=f11e21]:
+                        - button "Overview" [expanded] [ref=f11e22]
+                        - status [ref=f11e25]
+                        - list [ref=f11e28]:
+                            - listitem [ref=f11e29]:
+                                - link "Quick Start" [ref=f11e30] [cursor=pointer]:
+                                    - /url: ../docs/quick-start
+                            - listitem [ref=f11e31]:
+                                - link "Accessibility" [ref=f11e32] [cursor=pointer]:
+                                    - /url: ../docs/accessibility
+                            - listitem [ref=f11e33]:
+                                - link "Releases" [ref=f11e34] [cursor=pointer]:
+                                    - /url: ../docs/releases
+                            - listitem [ref=f11e35]:
+                                - link "About" [ref=f11e36] [cursor=pointer]:
+                                    - /url: ../docs/about
+                    - generic [ref=f11e37]:
+                        - button "Form" [expanded] [ref=f11e38]
+                        - status [ref=f11e41]
+                        - list [ref=f11e44]:
+                            - listitem [ref=f11e45]:
+                                - link "Button" [ref=f11e46] [cursor=pointer]:
+                                    - /url: ../docs/button
+                            - listitem [ref=f11e47]:
+                                - link "Checkbox" [ref=f11e48] [cursor=pointer]:
+                                    - /url: ../docs/checkbox
+                            - listitem [ref=f11e49]:
+                                - link "Input" [ref=f11e50] [cursor=pointer]:
+                                    - /url: ../docs/input
+                            - listitem [ref=f11e51]:
+                                - link "NumberField" [ref=f11e52] [cursor=pointer]:
+                                    - /url: ../docs/numberfield
+                            - listitem [ref=f11e53]:
+                                - link "Switch" [ref=f11e54] [cursor=pointer]:
+                                    - /url: ../docs/switch
+                            - listitem [ref=f11e55]:
+                                - link "TextArea" [ref=f11e56] [cursor=pointer]:
+                                    - /url: ../docs/textarea
+                            - listitem [ref=f11e57]:
+                                - link "Toggle" [ref=f11e58] [cursor=pointer]:
+                                    - /url: ../docs/toggle
+                            - listitem [ref=f11e59]:
+                                - link "ToggleGroup" [ref=f11e60] [cursor=pointer]:
+                                    - /url: ../docs/toggle-group
+                    - generic [ref=f11e61]:
+                        - button "Pickers" [expanded] [ref=f11e62]
+                        - status [ref=f11e65]
+                        - list [ref=f11e68]:
+                            - listitem [ref=f11e69]:
+                                - link "Autocomplete" [ref=f11e70] [cursor=pointer]:
+                                    - /url: ../docs/autocomplete
+                            - listitem [ref=f11e71]:
+                                - link "ComboBox" [ref=f11e72] [cursor=pointer]:
+                                    - /url: ../docs/combobox
+                            - listitem [ref=f11e73]:
+                                - link "ListBox" [ref=f11e74] [cursor=pointer]:
+                                    - /url: ../docs/listbox
+                            - listitem [ref=f11e75]:
+                                - link "Calendar" [ref=f11e76] [cursor=pointer]:
+                                    - /url: ../docs/calendar
+                            - listitem [ref=f11e77]:
+                                - link "Clock" [ref=f11e78] [cursor=pointer]:
+                                    - /url: ../docs/clock
+                            - listitem [ref=f11e79]:
+                                - link "DatePicker" [ref=f11e80] [cursor=pointer]:
+                                    - /url: ../docs/datepicker
+                            - listitem [ref=f11e81]:
+                                - link "DateRangePicker" [ref=f11e82] [cursor=pointer]:
+                                    - /url: ../docs/daterangepicker
+                            - listitem [ref=f11e83]:
+                                - link "TimePicker" [ref=f11e84] [cursor=pointer]:
+                                    - /url: ../docs/timepicker
+                    - generic [ref=f11e85]:
+                        - button "Overlays" [expanded] [ref=f11e86]
+                        - status [ref=f11e89]
+                        - list [ref=f11e92]:
+                            - listitem [ref=f11e93]:
+                                - link "Dialog" [ref=f11e94] [cursor=pointer]:
+                                    - /url: ../docs/dialog
+                            - listitem [ref=f11e95]:
+                                - link "Menu" [ref=f11e96] [cursor=pointer]:
+                                    - /url: ../docs/menu
+                            - listitem [ref=f11e97]:
+                                - link "Popover" [ref=f11e98] [cursor=pointer]:
+                                    - /url: ../docs/popover
+                    - generic [ref=f11e99]:
+                        - button "Structure" [expanded] [ref=f11e100]
+                        - status [ref=f11e103]
+                        - list [ref=f11e106]:
+                            - listitem [ref=f11e107]:
+                                - link "Accordion" [ref=f11e108] [cursor=pointer]:
+                                    - /url: ../docs/accordion
+                            - listitem [ref=f11e109]:
+                                - link "Collapsible" [ref=f11e110] [cursor=pointer]:
+                                    - /url: ../docs/collapsible
+                            - listitem [ref=f11e111]:
+                                - link "Table" [ref=f11e112] [cursor=pointer]:
+                                    - /url: ../docs/table
+                            - listitem [ref=f11e113]:
+                                - link "Tabs" [ref=f11e114] [cursor=pointer]:
+                                    - /url: ../docs/tabs
+                            - listitem [ref=f11e115]:
+                                - link "Tree" [ref=f11e116] [cursor=pointer]:
+                                    - /url: ../docs/tree
+            - main [ref=f11e117]:
+                - article [ref=f11e119]:
+                    - generic [ref=f11e120]:
+                        - 'link "Previous: Accordion" [ref=f11e121] [cursor=pointer]':
+                            - /url: ../docs/accordion
+                        - 'link "Next: Table" [ref=f11e122] [cursor=pointer]':
+                            - /url: ../docs/table
+                        - button "Page options" [ref=f11e123]
+                        - status [ref=f11e124]
+                    - heading "Collapsible" [level=1] [ref=f11e125]
+                    - paragraph [ref=f11e126]: 'A headless single disclosure primitive: a button that shows and hides an associated panel, with controlled or uncontrolled open state and a disabled state.'
+                    - generic [ref=f11e127]:
+                        - generic [ref=f11e129]:
+                            - button "Recovery keys" [expanded] [ref=f11e130]
+                            - status [ref=f11e133]
+                            - generic [ref=f11e134]: Store these one-time recovery keys somewhere safe. Each key can be used a single time to regain access if you lose your authenticator.
+                        - generic [ref=f11e137]:
+                            - button "Copy source code" [ref=f11e138]
+                            - status [ref=f11e140]
+                            - button "Show code" [ref=f11e141]
+                            - status [ref=f11e142]
+                    - heading "Anatomy" [level=2] [ref=f11e143]
+                    - paragraph [ref=f11e144]:
+                        - text: The collapsible is assembled from three parts.
+                        - code [ref=f11e145]: Collapsible.Root
+                        - text: provides the shared context,
+                        - code [ref=f11e146]: Collapsible.Trigger
+                        - text: renders the toggle button, and
+                        - code [ref=f11e147]: Collapsible.Panel
+                        - text: holds the content that is shown and hidden.
+                    - code [ref=f11e150]:
+                        - generic [ref=f11e151]: <script>
+                        - generic [ref=f11e152]: "import { Collapsible } from '@human-kit/ui';"
+                        - generic [ref=f11e153]: </script>
+                        - generic [ref=f11e154]: <Collapsible.Root defaultOpen>
+                        - generic [ref=f11e155]: <Collapsible.Trigger>Details</Collapsible.Trigger>
+                        - generic [ref=f11e156]: <Collapsible.Panel>Hidden content revealed on toggle.</Collapsible.Panel>
+                        - generic [ref=f11e157]: </Collapsible.Root>
+                    - heading "Controlled state" [level=2] [ref=f11e158]
+                    - paragraph [ref=f11e159]:
+                        - text: Bind
+                        - code [ref=f11e160]: open
+                        - text: (or pair
+                        - code [ref=f11e161]: open
+                        - text: with
+                        - code [ref=f11e162]: onOpenChange
+                        - text: ) to drive the panel from outside — for example from buttons elsewhere in the UI. Use
+                        - code [ref=f11e163]: defaultOpen
+                        - text: instead when the collapsible should manage its own state.
+                    - heading "Usage guidelines" [level=2] [ref=f11e164]
+                    - list [ref=f11e165]:
+                        - listitem [ref=f11e166]:
+                            - text: Use
+                            - code [ref=f11e167]: open
+                            - text: /
+                            - code [ref=f11e168]: onOpenChange
+                            - text: for controlled state and
+                            - code [ref=f11e169]: defaultOpen
+                            - text: for uncontrolled state.
+                        - listitem [ref=f11e170]:
+                            - text: Use
+                            - code [ref=f11e171]: disabled
+                            - text: to prevent the trigger from toggling the panel.
+                        - listitem [ref=f11e172]:
+                            - text: Use
+                            - code [ref=f11e173]: forceMount
+                            - text: 'on'
+                            - code [ref=f11e174]: Collapsible.Panel
+                            - text: when collapsed content must stay in the DOM.
+                        - listitem [ref=f11e175]:
+                            - text: For grouped disclosures where only one section opens at a time, use
+                            - code [ref=f11e176]: Accordion
+                            - text: instead.
+                    - heading "Accessibility" [level=2] [ref=f11e177]
+                    - list [ref=f11e178]:
+                        - listitem [ref=f11e179]:
+                            - code [ref=f11e180]: Collapsible.Trigger
+                            - text: renders button semantics with
+                            - code [ref=f11e181]: aria-expanded
+                            - text: and
+                            - code [ref=f11e182]: aria-controls
+                            - text: pointing at the panel, following the WAI-ARIA disclosure pattern.
+                        - listitem [ref=f11e183]:
+                            - code [ref=f11e184]: Collapsible.Panel
+                            - text: is
+                            - code [ref=f11e185]: hidden
+                            - text: +
+                            - code [ref=f11e186]: inert
+                            - text: while collapsed and carries the
+                            - code [ref=f11e187]: id
+                            - text: referenced by the trigger.
+                        - listitem [ref=f11e188]: Enter/Space toggle the panel via native button activation.
+                    - heading "API reference" [level=2] [ref=f11e189]
+                    - heading "Root" [level=3] [ref=f11e190]
+                    - paragraph [ref=f11e191]: The disclosure container. Holds the open state and provides context to the trigger and panel.
+                    - generic [ref=f11e193]:
+                        - generic [ref=f11e194]:
+                            - generic [ref=f11e195]: Prop
+                            - generic [ref=f11e196]: Type
+                            - generic [ref=f11e197]: Default
+                        - generic [ref=f11e198]:
+                            - button "open boolean —" [ref=f11e199]:
+                                - generic [ref=f11e200]: open
+                                - generic [ref=f11e201]: boolean
+                                - generic [ref=f11e203]: —
+                            - status [ref=f11e206]
+                        - generic [ref=f11e207]:
+                            - button "defaultOpen boolean false" [ref=f11e208]:
+                                - generic [ref=f11e209]: defaultOpen
+                                - generic [ref=f11e210]: boolean
+                                - generic [ref=f11e212]: 'false'
+                            - status [ref=f11e216]
+                        - generic [ref=f11e217]:
+                            - 'button "onOpenChange (open: boolean) => void —" [ref=f11e218]':
+                                - generic [ref=f11e219]: onOpenChange
+                                - generic [ref=f11e220]: '(open: boolean) => void'
+                                - generic [ref=f11e222]: —
+                            - status [ref=f11e225]
+                        - generic [ref=f11e226]:
+                            - button "disabled boolean false" [ref=f11e227]:
+                                - generic [ref=f11e228]: disabled
+                                - generic [ref=f11e229]: boolean
+                                - generic [ref=f11e231]: 'false'
+                            - status [ref=f11e235]
+                        - generic [ref=f11e236]:
+                            - button "children Snippet —" [ref=f11e237]:
+                                - generic [ref=f11e238]: children
+                                - generic [ref=f11e239]: Snippet
+                                - generic [ref=f11e241]: —
+                            - status [ref=f11e244]
+                        - generic [ref=f11e245]:
+                            - button "class string ''" [ref=f11e246]:
+                                - generic [ref=f11e247]: class
+                                - generic [ref=f11e248]: string
+                                - generic [ref=f11e250]: "''"
+                            - status [ref=f11e254]
+                        - generic [ref=f11e255]:
+                            - button "id string —" [ref=f11e256]:
+                                - generic [ref=f11e257]: id
+                                - generic [ref=f11e258]: string
+                                - generic [ref=f11e260]: —
+                            - status [ref=f11e263]
+                        - generic [ref=f11e264]:
+                            - button "element HTMLDivElement | null null" [ref=f11e265]:
+                                - generic [ref=f11e266]: element
+                                - generic [ref=f11e267]: HTMLDivElement | null
+                                - generic [ref=f11e269]: 'null'
+                            - status [ref=f11e273]
+                        - generic [ref=f11e274]:
+                            - button "context CollapsibleContext —" [ref=f11e275]:
+                                - generic [ref=f11e276]: context
+                                - generic [ref=f11e277]: CollapsibleContext
+                                - generic [ref=f11e279]: —
+                            - status [ref=f11e282]
+                    - paragraph [ref=f11e283]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f11e285]:
+                        - generic [ref=f11e286]:
+                            - generic [ref=f11e287]: Data attribute
+                            - generic [ref=f11e288]: Description
+                        - generic [ref=f11e289]:
+                            - generic [ref=f11e290]: data-collapsible-root
+                            - generic [ref=f11e291]: Identifies the root element.
+                        - generic [ref=f11e292]:
+                            - generic [ref=f11e293]: data-disabled
+                            - generic [ref=f11e294]: Present when the collapsible is disabled.
+                        - generic [ref=f11e295]:
+                            - generic [ref=f11e296]: data-open
+                            - generic [ref=f11e297]: Present while the panel is open.
+                    - heading "Trigger" [level=3] [ref=f11e298]
+                    - paragraph [ref=f11e299]: The toggle button. Shows and hides the panel via native button activation.
+                    - generic [ref=f11e301]:
+                        - generic [ref=f11e302]:
+                            - generic [ref=f11e303]: Prop
+                            - generic [ref=f11e304]: Type
+                            - generic [ref=f11e305]: Default
+                        - generic [ref=f11e306]:
+                            - button "children Snippet —" [ref=f11e307]:
+                                - generic [ref=f11e308]: children
+                                - generic [ref=f11e309]: Snippet
+                                - generic [ref=f11e311]: —
+                            - status [ref=f11e314]
+                        - generic [ref=f11e315]:
+                            - button "class string ''" [ref=f11e316]:
+                                - generic [ref=f11e317]: class
+                                - generic [ref=f11e318]: string
+                                - generic [ref=f11e320]: "''"
+                            - status [ref=f11e324]
+                        - generic [ref=f11e325]:
+                            - button "element HTMLButtonElement | null null" [ref=f11e326]:
+                                - generic [ref=f11e327]: element
+                                - generic [ref=f11e328]: HTMLButtonElement | null
+                                - generic [ref=f11e330]: 'null'
+                            - status [ref=f11e334]
+                    - paragraph [ref=f11e335]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f11e337]:
+                        - generic [ref=f11e338]:
+                            - generic [ref=f11e339]: Data attribute
+                            - generic [ref=f11e340]: Description
+                        - generic [ref=f11e341]:
+                            - generic [ref=f11e342]: data-collapsible-trigger
+                            - generic [ref=f11e343]: Identifies the trigger element.
+                        - generic [ref=f11e344]:
+                            - generic [ref=f11e345]: data-disabled
+                            - generic [ref=f11e346]: Present when the collapsible is disabled.
+                        - generic [ref=f11e347]:
+                            - generic [ref=f11e348]: data-open
+                            - generic [ref=f11e349]: Present while the panel is open.
+                    - heading "Panel" [level=3] [ref=f11e350]
+                    - paragraph [ref=f11e351]: The content shown and hidden by the trigger. Hidden and inert while collapsed.
+                    - generic [ref=f11e353]:
+                        - generic [ref=f11e354]:
+                            - generic [ref=f11e355]: Prop
+                            - generic [ref=f11e356]: Type
+                            - generic [ref=f11e357]: Default
+                        - generic [ref=f11e358]:
+                            - button "forceMount boolean false" [ref=f11e359]:
+                                - generic [ref=f11e360]: forceMount
+                                - generic [ref=f11e361]: boolean
+                                - generic [ref=f11e363]: 'false'
+                            - status [ref=f11e367]
+                        - generic [ref=f11e368]:
+                            - button "children Snippet —" [ref=f11e369]:
+                                - generic [ref=f11e370]: children
+                                - generic [ref=f11e371]: Snippet
+                                - generic [ref=f11e373]: —
+                            - status [ref=f11e376]
+                        - generic [ref=f11e377]:
+                            - button "class string ''" [ref=f11e378]:
+                                - generic [ref=f11e379]: class
+                                - generic [ref=f11e380]: string
+                                - generic [ref=f11e382]: "''"
+                            - status [ref=f11e386]
+                        - generic [ref=f11e387]:
+                            - button "element HTMLDivElement | null null" [ref=f11e388]:
+                                - generic [ref=f11e389]: element
+                                - generic [ref=f11e390]: HTMLDivElement | null
+                                - generic [ref=f11e392]: 'null'
+                            - status [ref=f11e396]
+                    - paragraph [ref=f11e397]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f11e399]:
+                        - generic [ref=f11e400]:
+                            - generic [ref=f11e401]: Data attribute
+                            - generic [ref=f11e402]: Description
+                        - generic [ref=f11e403]:
+                            - generic [ref=f11e404]: data-closed
+                            - generic [ref=f11e405]: 'Present while the panel is closed (with `forceMount` or during the exit transition).'
+                        - generic [ref=f11e406]:
+                            - generic [ref=f11e407]: data-collapsible-panel
+                            - generic [ref=f11e408]: Identifies the panel element.
+                        - generic [ref=f11e409]:
+                            - generic [ref=f11e410]: data-collapsible-panel-content
+                            - generic [ref=f11e411]: Identifies the inner content wrapper used for height measurement.
+                        - generic [ref=f11e412]:
+                            - generic [ref=f11e413]: data-ending-style
+                            - generic [ref=f11e414]: Present for one frame as the panel starts closing, for exit transitions.
+                        - generic [ref=f11e415]:
+                            - generic [ref=f11e416]: data-open
+                            - generic [ref=f11e417]: Present while the panel is open.
+                        - generic [ref=f11e418]:
+                            - generic [ref=f11e419]: data-starting-style
+                            - generic [ref=f11e420]: Present for one frame as the panel starts opening, for enter transitions.
+            - complementary [ref=f11e421]:
+                - navigation "On this page" [ref=f11e422]:
+                    - heading "On this page" [level=4] [ref=f11e423]
+                    - list [ref=f11e424]:
+                        - listitem [ref=f11e425]:
+                            - link "(Top)" [ref=f11e426] [cursor=pointer]:
+                                - /url: '#top'
+                        - listitem [ref=f11e427]:
+                            - link "Anatomy" [ref=f11e428] [cursor=pointer]:
+                                - /url: '#anatomy'
+                        - listitem [ref=f11e429]:
+                            - link "Controlled state" [ref=f11e430] [cursor=pointer]:
+                                - /url: '#controlled-state'
+                        - listitem [ref=f11e431]:
+                            - link "Usage guidelines" [ref=f11e432] [cursor=pointer]:
+                                - /url: '#usage-guidelines'
+                        - listitem [ref=f11e433]:
+                            - link "Accessibility" [ref=f11e434] [cursor=pointer]:
+                                - /url: '#accessibility'
+                        - listitem [ref=f11e435]:
+                            - link "API reference" [ref=f11e436] [cursor=pointer]:
+                                - /url: '#api-reference'
+                        - listitem [ref=f11e437]:
+                            - link "Root" [ref=f11e438] [cursor=pointer]:
+                                - /url: '#api-root'
+                        - listitem [ref=f11e439]:
+                            - link "Trigger" [ref=f11e440] [cursor=pointer]:
+                                - /url: '#api-trigger'
+                        - listitem [ref=f11e441]:
+                            - link "Panel" [ref=f11e442] [cursor=pointer]:
+                                - /url: '#api-panel'

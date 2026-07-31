@@ -134,9 +134,7 @@
 
 	const columnIds = $derived(Array.from({ length: config.columns }, (_, index) => `col${index}`));
 	const virtualizer = $derived(
-		config.virtualized
-			? { rowHeight: config.rowHeight, overscan: config.overscan }
-			: undefined
+		config.virtualized ? { rowHeight: config.rowHeight, overscan: config.overscan } : undefined
 	);
 
 	function countRenderedRows() {
@@ -588,10 +586,7 @@
 		flex-direction: column;
 		gap: 12px;
 		padding: 16px;
-		font-family:
-			ui-sans-serif,
-			system-ui,
-			sans-serif;
+		font-family: ui-sans-serif, system-ui, sans-serif;
 		font-size: 13px;
 	}
 

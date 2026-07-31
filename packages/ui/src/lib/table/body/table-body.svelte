@@ -80,8 +80,7 @@
 	// Plain (non-reactive) memo of the last window, used only to keep the derived
 	// value's identity stable across recomputations that produce the same window.
 	let lastVisibleRange:
-		| { from: number; to: number; topSpacerHeight: number; bottomSpacerHeight: number }
-		| undefined;
+		{ from: number; to: number; topSpacerHeight: number; bottomSpacerHeight: number } | undefined;
 
 	const visibleRange = $derived.by(() => {
 		if (!virtualizer || !virtualizerEnabled || itemList.length === 0) {

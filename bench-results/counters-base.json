@@ -1,142 +1,124 @@
 {
-  "label": "counters-base",
-  "createdAt": "2026-07-29T19:09:21.867Z",
-  "mode": "dev",
-  "url": "http://localhost:5302/bench/table?rows=5000&columns=8",
-  "throttle": 4,
-  "repeat": 5,
-  "scenarios": {
-    "scroll-fast": {
-      "scenario": "scroll-fast",
-      "config": {
-        "rows": 5000,
-        "columns": 8,
-        "selectionMode": "multiple",
-        "resizable": true,
-        "pinFirstColumn": false,
-        "virtualized": true,
-        "rowHeight": 32,
-        "cellVariant": "rich",
-        "viewportHeight": 640
-      },
-      "frames": {
-        "count": 150,
-        "mean": 109.1146666666667,
-        "p50": 110,
-        "p95": 145.79999999999563,
-        "p99": 161.3000000000029,
-        "max": 166.1999999999971,
-        "dropped": 148,
-        "droppedRatio": 0.9866666666666667,
-        "jankMs": 13867.20000000003
-      },
-      "longTasks": {
-        "count": 148,
-        "totalMs": 16055,
-        "maxMs": 170,
-        "supported": true
-      },
-      "renderedRows": 56,
-      "durationMs": 16433.59999999404,
-      "samples": [
-        110,
-        112,
-        115.5,
-        122.6,
-        126.1
-      ],
-      "bestMs": 110,
-      "medianMs": 115.5,
-      "spread": 0.146
-    },
-    "scroll-wheel": {
-      "scenario": "scroll-wheel",
-      "config": {
-        "rows": 5000,
-        "columns": 8,
-        "selectionMode": "multiple",
-        "resizable": true,
-        "pinFirstColumn": false,
-        "virtualized": true,
-        "rowHeight": 32,
-        "cellVariant": "rich",
-        "viewportHeight": 640
-      },
-      "frames": {
-        "count": 294,
-        "mean": 70.03469387755106,
-        "p50": 17.5,
-        "p95": 293.6000000000058,
-        "p99": 453.5,
-        "max": 490.3000000000029,
-        "dropped": 62,
-        "droppedRatio": 0.2108843537414966,
-        "jankMs": 15977.200000000124
-      },
-      "coverage": {
-        "samples": 295,
-        "blankFrameRatio": 0,
-        "meanRatio": 0,
-        "maxRatio": 0,
-        "maxBlankPx": 0
-      },
-      "longTasks": {
-        "count": 62,
-        "totalMs": 17010,
-        "maxMs": 496,
-        "supported": true
-      },
-      "renderedRows": 56,
-      "durationMs": 20632.20000001788,
-      "blankBand": {
-        "frames": 63,
-        "blankFrameRatio": 0.015873015873015872,
-        "maxBlankPx": 7,
-        "meanBlankPx": 1
-      },
-      "samples": [
-        17.5,
-        17.6,
-        17.6,
-        17.7,
-        17.7
-      ],
-      "bestMs": 17.5,
-      "medianMs": 17.6,
-      "spread": 0.011
-    },
-    "mount": {
-      "scenario": "mount",
-      "config": {
-        "rows": 5000,
-        "columns": 8,
-        "selectionMode": "multiple",
-        "resizable": true,
-        "pinFirstColumn": false,
-        "virtualized": true,
-        "rowHeight": 32,
-        "cellVariant": "rich",
-        "viewportHeight": 640
-      },
-      "longTasks": {
-        "count": 2,
-        "totalMs": 972,
-        "maxMs": 870,
-        "supported": true
-      },
-      "syncMs": 845.9000000059605,
-      "renderedRows": 38,
-      "durationMs": 1029.300000011921,
-      "samples": [
-        845.9,
-        985,
-        1094.2,
-        1111.4,
-        1230.5
-      ],
-      "bestMs": 845.9,
-      "medianMs": 1094.2,
-      "spread": 0.455
-    }
-  }
+	"label": "counters-base",
+	"createdAt": "2026-07-29T19:09:21.867Z",
+	"mode": "dev",
+	"url": "http://localhost:5302/bench/table?rows=5000&columns=8",
+	"throttle": 4,
+	"repeat": 5,
+	"scenarios": {
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 150,
+				"mean": 109.1146666666667,
+				"p50": 110,
+				"p95": 145.79999999999563,
+				"p99": 161.3000000000029,
+				"max": 166.1999999999971,
+				"dropped": 148,
+				"droppedRatio": 0.9866666666666667,
+				"jankMs": 13867.20000000003
+			},
+			"longTasks": {
+				"count": 148,
+				"totalMs": 16055,
+				"maxMs": 170,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 16433.59999999404,
+			"samples": [110, 112, 115.5, 122.6, 126.1],
+			"bestMs": 110,
+			"medianMs": 115.5,
+			"spread": 0.146
+		},
+		"scroll-wheel": {
+			"scenario": "scroll-wheel",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 294,
+				"mean": 70.03469387755106,
+				"p50": 17.5,
+				"p95": 293.6000000000058,
+				"p99": 453.5,
+				"max": 490.3000000000029,
+				"dropped": 62,
+				"droppedRatio": 0.2108843537414966,
+				"jankMs": 15977.200000000124
+			},
+			"coverage": {
+				"samples": 295,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 62,
+				"totalMs": 17010,
+				"maxMs": 496,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 20632.20000001788,
+			"blankBand": {
+				"frames": 63,
+				"blankFrameRatio": 0.015873015873015872,
+				"maxBlankPx": 7,
+				"meanBlankPx": 1
+			},
+			"samples": [17.5, 17.6, 17.6, 17.7, 17.7],
+			"bestMs": 17.5,
+			"medianMs": 17.6,
+			"spread": 0.011
+		},
+		"mount": {
+			"scenario": "mount",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"longTasks": {
+				"count": 2,
+				"totalMs": 972,
+				"maxMs": 870,
+				"supported": true
+			},
+			"syncMs": 845.9000000059605,
+			"renderedRows": 38,
+			"durationMs": 1029.300000011921,
+			"samples": [845.9, 985, 1094.2, 1111.4, 1230.5],
+			"bestMs": 845.9,
+			"medianMs": 1094.2,
+			"spread": 0.455
+		}
+	}
 }

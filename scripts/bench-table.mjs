@@ -149,7 +149,10 @@ function parseArgs(argv) {
 				args.repeat = Number(next());
 				break;
 			case '--scenarios':
-				args.scenarios = next().split(',').map((value) => value.trim()).filter(Boolean);
+				args.scenarios = next()
+					.split(',')
+					.map((value) => value.trim())
+					.filter(Boolean);
 				break;
 			case '--rows':
 				args.rows = Number(next());

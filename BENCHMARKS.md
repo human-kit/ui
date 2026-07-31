@@ -12,13 +12,13 @@ time. Every optimisation is judged by re-running it, not by reasoning about it.
 
 ## Layout
 
-| Path                              | Role                                                                             |
-| --------------------------------- | -------------------------------------------------------------------------------- |
-| `docs/src/lib/bench/metrics.ts`    | Measurement primitives: frame recorder, long-task observer, blank-viewport probe |
-| `docs/src/lib/bench/types.ts`      | Config, scenario names, the `window.__tableBench` contract                        |
-| `docs/src/routes/bench/table/`     | The benchmark page — a table shaped like a real app list                          |
-| `scripts/bench-table.mjs`          | Playwright runner: drives scenarios, collects CPU profiles, writes/compares JSON  |
-| `bench-results/`                   | Committed baselines, so regressions are visible in review                         |
+| Path                            | Role                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| `docs/src/lib/bench/metrics.ts` | Measurement primitives: frame recorder, long-task observer, blank-viewport probe |
+| `docs/src/lib/bench/types.ts`   | Config, scenario names, the `window.__tableBench` contract                       |
+| `docs/src/routes/bench/table/`  | The benchmark page — a table shaped like a real app list                         |
+| `scripts/bench-table.mjs`       | Playwright runner: drives scenarios, collects CPU profiles, writes/compares JSON |
+| `bench-results/`                | Committed baselines, so regressions are visible in review                        |
 
 The bench page uses the same `@human-kit/ui` source alias as the rest of the
 docs app, so edits to the table are measurable without repackaging.
@@ -48,16 +48,16 @@ Vite's HMR reloads the page and the run dies with "execution context destroyed".
 
 ## Scenarios
 
-| Scenario        | What it drives                                        | Primary metric          |
-| --------------- | ----------------------------------------------------- | ----------------------- |
-| `mount`         | First render of the table, forced synchronous          | `syncMs`                |
-| `scroll-smooth` | 8 px/frame, programmatic                               | frame p95               |
-| `scroll-fast`   | 60 px/frame, programmatic                              | frame p95               |
-| `scroll-wheel`  | Real wheel bursts over CDP                             | blank-frame ratio       |
-| `scroll-jump`   | Random teleports — defeats every locality optimisation | frame p95               |
-| `resize-column` | 120 frames of pointer drag on a resizer                | frame p95               |
-| `select-all`    | Select-all propagation to every rendered row           | `syncMs`                |
-| `sort-toggle`   | Sort descriptor change                                 | `syncMs`                |
+| Scenario        | What it drives                                         | Primary metric    |
+| --------------- | ------------------------------------------------------ | ----------------- |
+| `mount`         | First render of the table, forced synchronous          | `syncMs`          |
+| `scroll-smooth` | 8 px/frame, programmatic                               | frame p95         |
+| `scroll-fast`   | 60 px/frame, programmatic                              | frame p95         |
+| `scroll-wheel`  | Real wheel bursts over CDP                             | blank-frame ratio |
+| `scroll-jump`   | Random teleports — defeats every locality optimisation | frame p95         |
+| `resize-column` | 120 frames of pointer drag on a resizer                | frame p95         |
+| `select-all`    | Select-all propagation to every rendered row           | `syncMs`          |
+| `sort-toggle`   | Sort descriptor change                                 | `syncMs`          |
 
 `scroll-wheel` is the one that reproduces the "white gaps while scrolling"
 report. Programmatic `scrollTop` writes cannot: the virtualizer's scroll handler
@@ -69,7 +69,7 @@ real input lets the compositor scroll ahead of a busy main thread.
 ### Trust the spread before the delta
 
 Every scenario reports a `spread` — how much slower the worst run was than the
-best. A developer machine only ever makes a run *slower*, so the headline is the
+best. A developer machine only ever makes a run _slower_, so the headline is the
 **best** run, and `--compare` marks any delta smaller than the spread as
 `inconclusive` rather than printing a ✔ that means nothing.
 
@@ -102,11 +102,11 @@ nothing at all about a code change. Two rules follow:
 A cost model for the virtualized table, measured at 4x CPU throttle on a
 production build (5000 rows x 8 resizable columns, 640px viewport):
 
-| Operation                       | Cost                                     |
-| ------------------------------- | ---------------------------------------- |
-| Relayout after a DOM change     | **~1.16 ms per mounted row** (~62% of a frame) |
-| Creating one row (9 cells)      | ~18 ms                                   |
-| Updating one row's contents     | ~3 ms                                    |
+| Operation                   | Cost                                           |
+| --------------------------- | ---------------------------------------------- |
+| Relayout after a DOM change | **~1.16 ms per mounted row** (~62% of a frame) |
+| Creating one row (9 cells)  | ~18 ms                                         |
+| Updating one row's contents | ~3 ms                                          |
 
 The decisive insight: **inserting or removing a single `<tr>` relayouts the whole
 table**, so the cost of a scroll frame is driven by how many rows are mounted,
@@ -121,7 +121,7 @@ Two changes followed, both measured against an in-build control:
   construction: `from` only rounds down and `to` only rounds up, so the retained
   margin never falls below `overscan`. `scroll-fast` p50 125 → 26.5 ms (−79%),
   `scroll-smooth` p95 128.5 → 61.8 ms (−52%), `scroll-wheel` p95 −14%.
-- **No overscan during a column drag** — the buffer absorbs *scrolling*, and the
+- **No overscan during a column drag** — the buffer absorbs _scrolling_, and the
   pointer cannot scroll while dragging a resizer. `resize-column` p50 87.7 →
   48.5 ms (−45%).
 
@@ -135,7 +135,7 @@ blindly:
   it looks like a large win in every frame-time metric.
 - **`content-visibility: auto` on rows** — inert. CSS Containment does not apply
   to elements with internal table display types.
-- **Recycling rows** (keying by slot instead of id) — 2.5x *worse*. It trades 2
+- **Recycling rows** (keying by slot instead of id) — 2.5x _worse_. It trades 2
   row creations for updating every mounted row.
 - **Indexing cells by row / plain `Map` for token counters** — correct in
   principle and kept, but no measurable effect in production.

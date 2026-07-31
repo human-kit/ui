@@ -1,1241 +1,1241 @@
 - generic [ref=f18e1]:
-  - button "Disable render scanning" [ref=f18e2] [cursor=pointer]
-  - generic [ref=f18e7]:
-    - banner [ref=f18e8]:
-      - link [ref=f18e9] [cursor=pointer]:
-        - /url: ../
-      - generic [ref=f18e12]:
-        - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f18e13] [cursor=pointer]:
-          - /url: https://www.npmjs.com/package/@human-kit/ui
-          - text: 1.0.0-beta.0
-        - link "GitHub repository" [ref=f18e14] [cursor=pointer]:
-          - /url: https://github.com/human-kit/ui
-        - button "Toggle color theme" [ref=f18e15]
-        - status [ref=f18e17]
-    - generic [ref=f18e18]:
-      - complementary [ref=f18e19]:
-        - navigation [ref=f18e20]:
-          - generic [ref=f18e21]:
-            - button "Overview" [expanded] [ref=f18e22]
-            - status [ref=f18e25]
-            - list [ref=f18e28]:
-              - listitem [ref=f18e29]:
-                - link "Quick Start" [ref=f18e30] [cursor=pointer]:
-                  - /url: ../docs/quick-start
-              - listitem [ref=f18e31]:
-                - link "Accessibility" [ref=f18e32] [cursor=pointer]:
-                  - /url: ../docs/accessibility
-              - listitem [ref=f18e33]:
-                - link "Releases" [ref=f18e34] [cursor=pointer]:
-                  - /url: ../docs/releases
-              - listitem [ref=f18e35]:
-                - link "About" [ref=f18e36] [cursor=pointer]:
-                  - /url: ../docs/about
-          - generic [ref=f18e37]:
-            - button "Form" [expanded] [ref=f18e38]
-            - status [ref=f18e41]
-            - list [ref=f18e44]:
-              - listitem [ref=f18e45]:
-                - link "Button" [ref=f18e46] [cursor=pointer]:
-                  - /url: ../docs/button
-              - listitem [ref=f18e47]:
-                - link "Checkbox" [ref=f18e48] [cursor=pointer]:
-                  - /url: ../docs/checkbox
-              - listitem [ref=f18e49]:
-                - link "Input" [ref=f18e50] [cursor=pointer]:
-                  - /url: ../docs/input
-              - listitem [ref=f18e51]:
-                - link "NumberField" [ref=f18e52] [cursor=pointer]:
-                  - /url: ../docs/numberfield
-              - listitem [ref=f18e53]:
-                - link "Switch" [ref=f18e54] [cursor=pointer]:
-                  - /url: ../docs/switch
-              - listitem [ref=f18e55]:
-                - link "TextArea" [ref=f18e56] [cursor=pointer]:
-                  - /url: ../docs/textarea
-              - listitem [ref=f18e57]:
-                - link "Toggle" [ref=f18e58] [cursor=pointer]:
-                  - /url: ../docs/toggle
-              - listitem [ref=f18e59]:
-                - link "ToggleGroup" [ref=f18e60] [cursor=pointer]:
-                  - /url: ../docs/toggle-group
-          - generic [ref=f18e61]:
-            - button "Pickers" [expanded] [ref=f18e62]
-            - status [ref=f18e65]
-            - list [ref=f18e68]:
-              - listitem [ref=f18e69]:
-                - link "Autocomplete" [ref=f18e70] [cursor=pointer]:
-                  - /url: ../docs/autocomplete
-              - listitem [ref=f18e71]:
-                - link "ComboBox" [ref=f18e72] [cursor=pointer]:
-                  - /url: ../docs/combobox
-              - listitem [ref=f18e73]:
-                - link "ListBox" [ref=f18e74] [cursor=pointer]:
-                  - /url: ../docs/listbox
-              - listitem [ref=f18e75]:
-                - link "Calendar" [ref=f18e76] [cursor=pointer]:
-                  - /url: ../docs/calendar
-              - listitem [ref=f18e77]:
-                - link "Clock" [ref=f18e78] [cursor=pointer]:
-                  - /url: ../docs/clock
-              - listitem [ref=f18e79]:
-                - link "DatePicker" [ref=f18e80] [cursor=pointer]:
-                  - /url: ../docs/datepicker
-              - listitem [ref=f18e81]:
-                - link "DateRangePicker" [ref=f18e82] [cursor=pointer]:
-                  - /url: ../docs/daterangepicker
-              - listitem [ref=f18e83]:
-                - link "TimePicker" [ref=f18e84] [cursor=pointer]:
-                  - /url: ../docs/timepicker
-          - generic [ref=f18e85]:
-            - button "Overlays" [expanded] [ref=f18e86]
-            - status [ref=f18e89]
-            - list [ref=f18e92]:
-              - listitem [ref=f18e93]:
-                - link "Dialog" [ref=f18e94] [cursor=pointer]:
-                  - /url: ../docs/dialog
-              - listitem [ref=f18e95]:
-                - link "Menu" [ref=f18e96] [cursor=pointer]:
-                  - /url: ../docs/menu
-              - listitem [ref=f18e97]:
-                - link "Popover" [ref=f18e98] [cursor=pointer]:
-                  - /url: ../docs/popover
-          - generic [ref=f18e99]:
-            - button "Structure" [expanded] [ref=f18e100]
-            - status [ref=f18e103]
-            - list [ref=f18e106]:
-              - listitem [ref=f18e107]:
-                - link "Accordion" [ref=f18e108] [cursor=pointer]:
-                  - /url: ../docs/accordion
-              - listitem [ref=f18e109]:
-                - link "Collapsible" [ref=f18e110] [cursor=pointer]:
-                  - /url: ../docs/collapsible
-              - listitem [ref=f18e111]:
-                - link "Table" [ref=f18e112] [cursor=pointer]:
-                  - /url: ../docs/table
-              - listitem [ref=f18e113]:
-                - link "Tabs" [ref=f18e114] [cursor=pointer]:
-                  - /url: ../docs/tabs
-              - listitem [ref=f18e115]:
-                - link "Tree" [ref=f18e116] [cursor=pointer]:
-                  - /url: ../docs/tree
-      - main [ref=f18e117]:
-        - article [ref=f18e119]:
-          - generic [ref=f18e120]:
-            - 'link "Previous: Collapsible" [ref=f18e121] [cursor=pointer]':
-              - /url: ../docs/collapsible
-            - 'link "Next: Tabs" [ref=f18e122] [cursor=pointer]':
-              - /url: ../docs/tabs
-            - button "Page options" [ref=f18e123]
-            - status [ref=f18e124]
-          - heading "Table" [level=1] [ref=f18e125]
-          - paragraph [ref=f18e126]: A headless interactive table primitive with grid-style keyboard navigation, row selection, explicit sortable header triggers, and a composable part-based API.
-          - generic [ref=f18e127]:
-            - generic [ref=f18e129]:
-              - grid "Deployments table" [ref=f18e130]:
-                - rowgroup [ref=f18e131]:
-                  - row [ref=f18e132]:
-                    - columnheader "Service" [ref=f18e133]
-                    - columnheader "Owner" [ref=f18e134]
-                    - columnheader "Status" [ref=f18e135]
-                - rowgroup [ref=f18e136]:
-                  - row [ref=f18e137]:
-                    - rowheader "Checkout API" [ref=f18e138]
-                    - gridcell "Infra" [ref=f18e139]
-                    - gridcell "Healthy" [ref=f18e140]
-                  - row [ref=f18e141]:
-                    - rowheader "Identity Worker" [ref=f18e142]
-                    - gridcell "Platform" [ref=f18e143]
-                    - gridcell "Rolling" [ref=f18e144]
-                  - row [ref=f18e145]:
-                    - rowheader "Billing Queue" [ref=f18e146]
-                    - gridcell "Finance" [ref=f18e147]
-                    - gridcell "Healthy" [ref=f18e148]
-                  - row [ref=f18e149]:
-                    - rowheader "Session Cache" [ref=f18e150]
-                    - gridcell "Platform" [ref=f18e151]
-                    - gridcell "Degraded" [ref=f18e152]
-                  - row [ref=f18e153]:
-                    - rowheader "Audit Trail" [ref=f18e154]
-                    - gridcell "Security" [ref=f18e155]
-                    - gridcell "Rolling" [ref=f18e156]
-                - text: Total 5 services
-              - status [ref=f18e157]
-              - generic [ref=f18e158]: Selection unavailable for this row.
-            - generic [ref=f18e160]:
-              - button "Copy source code" [ref=f18e161]
-              - status [ref=f18e163]
-              - button "Show code" [ref=f18e164]
-              - status [ref=f18e165]
-          - heading "Anatomy" [level=2] [ref=f18e166]
-          - paragraph [ref=f18e167]:
-            - code [ref=f18e168]: Table.Root
-            - text: renders an interactive
-            - code [ref=f18e169]: grid
-            - text: over native table markup. Wrap each header cell in a
-            - code [ref=f18e170]: Table.Column
-            - text: — a metadata-only part that registers the column — and opt into sorting or resizing per column by composing
-            - code [ref=f18e171]: Table.SortTrigger
-            - text: or
-            - code [ref=f18e172]: Table.ColumnResizer
-            - text: inside its
-            - code [ref=f18e173]: Table.ColumnHeaderCell
-            - text: .
-          - code [ref=f18e176]:
-            - generic [ref=f18e177]: <script>
-            - generic [ref=f18e178]: "import { Table } from '@human-kit/ui';"
-            - generic [ref=f18e179]: </script>
-            - generic [ref=f18e180]: <Table.Root aria-label="Users table">
-            - generic [ref=f18e181]: <Table.Header>
-            - generic [ref=f18e182]: <Table.Row>
-            - generic [ref=f18e183]: <Table.Column id="email" rowHeader>
-            - generic [ref=f18e184]: <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-            - generic [ref=f18e185]: </Table.Column>
-            - generic [ref=f18e186]: <Table.Column id="group">
-            - generic [ref=f18e187]: <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
-            - generic [ref=f18e188]: </Table.Column>
-            - generic [ref=f18e189]: </Table.Row>
-            - generic [ref=f18e190]: </Table.Header>
-            - generic [ref=f18e191]: <Table.Body>
-            - generic [ref=f18e192]: <Table.Row id="danilo">
-            - generic [ref=f18e193]: <Table.Cell>danilo@example.com</Table.Cell>
-            - generic [ref=f18e194]: <Table.Cell>Developer</Table.Cell>
-            - generic [ref=f18e195]: </Table.Row>
-            - generic [ref=f18e196]: <Table.EmptyState>No users found.</Table.EmptyState>
-            - generic [ref=f18e197]: </Table.Body>
-            - generic [ref=f18e198]: </Table.Root>
-          - heading "Row selection" [level=2] [ref=f18e199]
-          - paragraph [ref=f18e200]:
-            - text: Set
-            - code [ref=f18e201]: selectionMode="multiple"
-            - text: (or
-            - code [ref=f18e202]: "\"single\""
-            - text: ) and give every body row an
-            - code [ref=f18e203]: id
-            - text: .
-            - code [ref=f18e204]: Table.Checkbox
-            - text: and
-            - code [ref=f18e205]: Table.CheckboxIndicator
-            - text: compose explicit selection UI inside cells — the header checkbox selects all rows and shows an indeterminate state, while
-            - code [ref=f18e206]: disabledKeys
-            - text: keeps specific rows rendered but non-selectable.
-          - generic [ref=f18e207]:
-            - generic [ref=f18e210]:
-              - grid "Users table" [ref=f18e211]:
-                - rowgroup [ref=f18e212]:
-                  - row [ref=f18e213]:
-                    - columnheader [ref=f18e214]:
-                      - checkbox "Select all rows" [checked=mixed] [ref=f18e215]:
-                        - checkbox
-                    - columnheader "Email" [ref=f18e218]
-                    - columnheader "Group" [ref=f18e219]
-                - rowgroup [ref=f18e220]:
-                  - row [selected] [ref=f18e221]:
-                    - gridcell [ref=f18e222]:
-                      - checkbox "Select row danilo" [checked] [ref=f18e223]:
-                        - checkbox [checked]
-                    - rowheader "danilo@example.com" [ref=f18e227]
-                    - gridcell "Developer" [ref=f18e228]
-                  - row [ref=f18e229]:
-                    - gridcell [ref=f18e230]:
-                      - checkbox "Select row zahra" [ref=f18e231]:
-                        - checkbox
-                    - rowheader "zahra@example.com" [ref=f18e232]
-                    - gridcell "Admin" [ref=f18e233]
-                  - row [ref=f18e234]:
-                    - gridcell [ref=f18e235]:
-                      - checkbox "Select row jasper" [ref=f18e236]:
-                        - checkbox
-                    - rowheader "jasper@example.com" [ref=f18e237]
-                    - gridcell "Developer" [ref=f18e238]
-                  - row [ref=f18e239]:
-                    - gridcell [ref=f18e240]:
-                      - checkbox "Select row marta" [ref=f18e241]:
-                        - checkbox
-                    - rowheader "marta@example.com" [ref=f18e242]
-                    - gridcell "Support" [ref=f18e243]
-                  - row [disabled] [ref=f18e244]:
-                    - gridcell [disabled] [ref=f18e245]:
-                      - checkbox "Select row nora" [disabled] [ref=f18e246]:
-                        - checkbox [disabled]
-                    - rowheader "nora@example.com" [disabled] [ref=f18e247]
-                    - gridcell "Finance" [disabled] [ref=f18e248]
-              - status [ref=f18e249]
-              - generic [ref=f18e250]: Selection unavailable for this row.
-            - generic [ref=f18e252]:
-              - button "Copy source code" [ref=f18e253]
-              - status [ref=f18e255]
-              - button "Show code" [ref=f18e256]
-              - status [ref=f18e257]
-          - heading "Pagination" [level=2] [ref=f18e258]
-          - paragraph [ref=f18e259]: "Pagination stays consumer-owned: slice the dataset before rendering and drive the current page from external controls or app state."
-          - heading "Usage guidelines" [level=2] [ref=f18e260]
-          - list [ref=f18e261]:
-            - listitem [ref=f18e262]:
-              - text: Use
-              - code [ref=f18e263]: Table.Root
-              - text: as the stateful container for focus, selection, and sorting state, and give it
-              - code [ref=f18e264]: aria-label
-              - text: or
-              - code [ref=f18e265]: aria-labelledby
-              - text: .
-            - listitem [ref=f18e266]:
-              - text: Wrap each header cell in
-              - code [ref=f18e267]: Table.Column
-              - text: so the table can register stable column metadata;
-              - code [ref=f18e268]: Table.Column
-              - text: renders no DOM by itself.
-            - listitem [ref=f18e269]:
-              - text: Use
-              - code [ref=f18e270]: selectedKeys
-              - text: /
-              - code [ref=f18e271]: onSelectionChange
-              - text: for controlled row selection and
-              - code [ref=f18e272]: defaultSelectedKeys
-              - text: for uncontrolled initial selection.
-            - listitem [ref=f18e273]:
-              - text: Use
-              - code [ref=f18e274]: selectionBehavior="toggle"
-              - text: to allow deselecting an already selected row, or
-              - code [ref=f18e275]: "\"replace\""
-              - text: to keep selected rows selected when pressed again.
-            - listitem [ref=f18e276]:
-              - text: Use
-              - code [ref=f18e277]: sortDescriptor
-              - text: /
-              - code [ref=f18e278]: onSortChange
-              - text: for controlled sorting and
-              - code [ref=f18e279]: defaultSortDescriptor
-              - text: for uncontrolled initial sort state;
-              - code [ref=f18e280]: Table.SortTrigger
-              - text: inside a header cell makes the owning column sortable.
-            - listitem [ref=f18e281]:
-              - text: Use
-              - code [ref=f18e282]: columnWidths
-              - text: /
-              - code [ref=f18e283]: onColumnWidthsChange
-              - text: for controlled column widths (px,
-              - code [ref=f18e284]: "%"
-              - text: ", or"
-              - code [ref=f18e285]: fr
-              - text: ), and add
-              - code [ref=f18e286]: Table.ColumnResizer
-              - text: inside
-              - code [ref=f18e287]: Table.ColumnHeaderCell
-              - text: to make a column resizable.
-            - listitem [ref=f18e288]:
-              - text: Dedicated utility columns like selection checkboxes should usually set an explicit
-              - code [ref=f18e289]: width
-              - text: ","
-              - code [ref=f18e290]: minWidth
-              - text: ", and"
-              - code [ref=f18e291]: maxWidth
-              - text: "on"
-              - code [ref=f18e292]: Table.Column
-              - text: so sibling resizes do not redistribute their space.
-            - listitem [ref=f18e293]:
-              - text: Use
-              - code [ref=f18e294]: Table.EmptyState
-              - text: inside
-              - code [ref=f18e295]: Table.Body
-              - text: instead of conditionally rendering freeform body content.
-            - listitem [ref=f18e296]:
-              - text: Use
-              - code [ref=f18e297]: Table.InteractiveCell
-              - text: for body cells that contain their own focusable controls.
-          - heading "Accessibility" [level=2] [ref=f18e298]
-          - list [ref=f18e299]:
-            - listitem [ref=f18e300]:
-              - code [ref=f18e301]: Table.Root
-              - text: renders an interactive
-              - code [ref=f18e302]: grid
-              - text: over native table markup, and keyboard navigation uses roving
-              - code [ref=f18e303]: tabindex
-              - text: across header and body cells.
-            - listitem [ref=f18e304]: Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
-            - listitem [ref=f18e305]:
-              - text: First-column body cells become
-              - code [ref=f18e306]: rowheader
-              - text: when their associated column has
-              - code [ref=f18e307]: rowHeader
-              - text: .
-            - listitem [ref=f18e308]: Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
-            - listitem [ref=f18e309]:
-              - code [ref=f18e310]: Table.SortTrigger
-              - text: renders the trigger button, while the header cell remains the roving-focus target; sort changes are mirrored into a polite live region for screen readers.
-            - listitem [ref=f18e311]:
-              - text: "Column resize handles are keyboard accessible separators: press"
-              - code [ref=f18e312]: Enter
-              - text: to enter resize mode, use the horizontal arrow keys to resize,
-              - code [ref=f18e313]: Home
-              - text: to jump to the minimum width,
-              - code [ref=f18e314]: End
-              - text: to auto-fit, and
-              - code [ref=f18e315]: Enter
-              - text: again to exit.
-          - heading "API reference" [level=2] [ref=f18e316]
-          - heading "Root" [level=3] [ref=f18e317]
-          - paragraph [ref=f18e318]: The stateful table container. Renders an interactive grid over native table markup and manages focus, selection, sorting, column widths, and column visibility.
-          - generic [ref=f18e320]:
-            - generic [ref=f18e321]:
-              - generic [ref=f18e322]: Prop
-              - generic [ref=f18e323]: Type
-              - generic [ref=f18e324]: Default
-            - generic [ref=f18e325]:
-              - button "selectionMode TableSelectionMode 'none'" [ref=f18e326]:
-                - generic [ref=f18e327]: selectionMode
-                - generic [ref=f18e328]: TableSelectionMode
-                - generic [ref=f18e330]: "'none'"
-              - status [ref=f18e334]
-            - generic [ref=f18e335]:
-              - button "selectionBehavior TableSelectionBehavior 'toggle'" [ref=f18e336]:
-                - generic [ref=f18e337]: selectionBehavior
-                - generic [ref=f18e338]: TableSelectionBehavior
-                - generic [ref=f18e340]: "'toggle'"
-              - status [ref=f18e344]
-            - generic [ref=f18e345]:
-              - button "disabledBehavior TableDisabledBehavior 'all'" [ref=f18e346]:
-                - generic [ref=f18e347]: disabledBehavior
-                - generic [ref=f18e348]: TableDisabledBehavior
-                - generic [ref=f18e350]: "'all'"
-              - status [ref=f18e354]
-            - generic [ref=f18e355]:
-              - button "disallowEmptySelection boolean false" [ref=f18e356]:
-                - generic [ref=f18e357]: disallowEmptySelection
-                - generic [ref=f18e358]: boolean
-                - generic [ref=f18e360]: "false"
-              - status [ref=f18e364]
-            - generic [ref=f18e365]:
-              - button "hiddenColumns Iterable<string> —" [ref=f18e366]:
-                - generic [ref=f18e367]: hiddenColumns
-                - generic [ref=f18e368]: Iterable<string>
-                - generic [ref=f18e370]: —
-              - status [ref=f18e373]
-            - generic [ref=f18e374]:
-              - button "defaultHiddenColumns Iterable<string> —" [ref=f18e375]:
-                - generic [ref=f18e376]: defaultHiddenColumns
-                - generic [ref=f18e377]: Iterable<string>
-                - generic [ref=f18e379]: —
-              - status [ref=f18e382]
-            - generic [ref=f18e383]:
-              - button "selectedKeys Iterable<TableSelectionKey> —" [ref=f18e384]:
-                - generic [ref=f18e385]: selectedKeys
-                - generic [ref=f18e386]: Iterable<TableSelectionKey>
-                - generic [ref=f18e388]: —
-              - status [ref=f18e391]
-            - generic [ref=f18e392]:
-              - button "defaultSelectedKeys Iterable<TableSelectionKey> —" [ref=f18e393]:
-                - generic [ref=f18e394]: defaultSelectedKeys
-                - generic [ref=f18e395]: Iterable<TableSelectionKey>
-                - generic [ref=f18e397]: —
-              - status [ref=f18e400]
-            - generic [ref=f18e401]:
-              - button "sortDescriptor TableSortDescriptor —" [ref=f18e402]:
-                - generic [ref=f18e403]: sortDescriptor
-                - generic [ref=f18e404]: TableSortDescriptor
-                - generic [ref=f18e406]: —
-              - status [ref=f18e409]
-            - generic [ref=f18e410]:
-              - button "defaultSortDescriptor TableSortDescriptor —" [ref=f18e411]:
-                - generic [ref=f18e412]: defaultSortDescriptor
-                - generic [ref=f18e413]: TableSortDescriptor
-                - generic [ref=f18e415]: —
-              - status [ref=f18e418]
-            - generic [ref=f18e419]:
-              - button "columnWidths Map<string, TableColumnWidth> —" [ref=f18e420]:
-                - generic [ref=f18e421]: columnWidths
-                - generic [ref=f18e422]: Map<string, TableColumnWidth>
-                - generic [ref=f18e424]: —
-              - status [ref=f18e427]
-            - generic [ref=f18e428]:
-              - button "defaultColumnWidths Iterable<readonly [string, TableColumnWidth]> —" [ref=f18e429]:
-                - generic [ref=f18e430]: defaultColumnWidths
-                - generic [ref=f18e431]: Iterable<readonly [string, TableColumnWidth]>
-                - generic [ref=f18e433]: —
-              - status [ref=f18e436]
-            - generic [ref=f18e437]:
-              - button "ssrMinTableWidth number —" [ref=f18e438]:
-                - generic [ref=f18e439]: ssrMinTableWidth
-                - generic [ref=f18e440]: number
-                - generic [ref=f18e442]: —
-              - status [ref=f18e445]
-            - generic [ref=f18e446]:
-              - button "disabledKeys Iterable<TableSelectionKey> —" [ref=f18e447]:
-                - generic [ref=f18e448]: disabledKeys
-                - generic [ref=f18e449]: Iterable<TableSelectionKey>
-                - generic [ref=f18e451]: —
-              - status [ref=f18e454]
-            - generic [ref=f18e455]:
-              - button "onRowAction TableRowActionHandler —" [ref=f18e456]:
-                - generic [ref=f18e457]: onRowAction
-                - generic [ref=f18e458]: TableRowActionHandler
-                - generic [ref=f18e460]: —
-              - status [ref=f18e463]
-            - generic [ref=f18e464]:
-              - 'button "onSelectionChange (keys: Set<TableSelectionKey>) => void —" [ref=f18e465]':
-                - generic [ref=f18e466]: onSelectionChange
-                - generic [ref=f18e467]: "(keys: Set<TableSelectionKey>) => void"
-                - generic [ref=f18e469]: —
-              - status [ref=f18e472]
-            - generic [ref=f18e473]:
-              - 'button "onSortChange (descriptor: TableSortDescriptor | undefined) => void —" [ref=f18e474]':
-                - generic [ref=f18e475]: onSortChange
-                - generic [ref=f18e476]: "(descriptor: TableSortDescriptor | undefined) => void"
-                - generic [ref=f18e478]: —
-              - status [ref=f18e481]
-            - generic [ref=f18e482]:
-              - 'button "onColumnWidthsChange (widths: Map<string, TableColumnWidth>) => void —" [ref=f18e483]':
-                - generic [ref=f18e484]: onColumnWidthsChange
-                - generic [ref=f18e485]: "(widths: Map<string, TableColumnWidth>) => void"
-                - generic [ref=f18e487]: —
-              - status [ref=f18e490]
-            - generic [ref=f18e491]:
-              - 'button "onHiddenColumnsChange (columnIds: string[]) => void —" [ref=f18e492]':
-                - generic [ref=f18e493]: onHiddenColumnsChange
-                - generic [ref=f18e494]: "(columnIds: string[]) => void"
-                - generic [ref=f18e496]: —
-              - status [ref=f18e499]
-            - generic [ref=f18e500]:
-              - 'button "onColumnResizeStart (columnId: string) => void —" [ref=f18e501]':
-                - generic [ref=f18e502]: onColumnResizeStart
-                - generic [ref=f18e503]: "(columnId: string) => void"
-                - generic [ref=f18e505]: —
-              - status [ref=f18e508]
-            - generic [ref=f18e509]:
-              - 'button "onColumnResizeEnd (widths: Map<string, TableColumnWidth>) => void —" [ref=f18e510]':
-                - generic [ref=f18e511]: onColumnResizeEnd
-                - generic [ref=f18e512]: "(widths: Map<string, TableColumnWidth>) => void"
-                - generic [ref=f18e514]: —
-              - status [ref=f18e517]
-            - generic [ref=f18e518]:
-              - button "children Snippet —" [ref=f18e519]:
-                - generic [ref=f18e520]: children
-                - generic [ref=f18e521]: Snippet
-                - generic [ref=f18e523]: —
-              - status [ref=f18e526]
-            - generic [ref=f18e527]:
-              - button "class string ''" [ref=f18e528]:
-                - generic [ref=f18e529]: class
-                - generic [ref=f18e530]: string
-                - generic [ref=f18e532]: "''"
-              - status [ref=f18e536]
-            - generic [ref=f18e537]:
-              - button "context TableContext —" [ref=f18e538]:
-                - generic [ref=f18e539]: context
-                - generic [ref=f18e540]: TableContext
-                - generic [ref=f18e542]: —
-              - status [ref=f18e545]
-            - generic [ref=f18e546]:
-              - button "element HTMLTableElement —" [ref=f18e547]:
-                - generic [ref=f18e548]: element
-                - generic [ref=f18e549]: HTMLTableElement
-                - generic [ref=f18e551]: —
-              - status [ref=f18e554]
-          - paragraph [ref=f18e555]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e557]:
-            - generic [ref=f18e558]:
-              - generic [ref=f18e559]: Data attribute
-              - generic [ref=f18e560]: Description
-            - generic [ref=f18e561]:
-              - generic [ref=f18e562]: data-disabled-behavior
-              - generic [ref=f18e563]: The configured disabled behavior ('all' | 'selection').
-            - generic [ref=f18e564]:
-              - generic [ref=f18e565]: data-focus-visible
-              - generic [ref=f18e566]: Present while focus inside the table should be visibly indicated (keyboard modality).
-            - generic [ref=f18e567]:
-              - generic [ref=f18e568]: data-focus-within
-              - generic [ref=f18e569]: Present while focus is inside the table.
-            - generic [ref=f18e570]:
-              - generic [ref=f18e571]: data-selection-behavior
-              - generic [ref=f18e572]: The configured selection behavior ('toggle' | 'replace').
-            - generic [ref=f18e573]:
-              - generic [ref=f18e574]: data-selection-mode
-              - generic [ref=f18e575]: The configured selection mode ('none' | 'single' | 'multiple').
-            - generic [ref=f18e576]:
-              - generic [ref=f18e577]: data-table-column-resizer
-              - generic [ref=f18e578]: Marks resize handles inside the table; the root switches to a fixed table layout when any are present.
-            - generic [ref=f18e579]:
-              - generic [ref=f18e580]: data-table-implicit-width
-              - generic [ref=f18e581]: Present on a column's col element while it still uses an implicit width (before widths are materialized by a resize).
-          - heading "Column" [level=3] [ref=f18e582]
-          - paragraph [ref=f18e583]: Metadata-only wrapper for a column. Renders no DOM itself; it registers the column and should wrap a single Table.ColumnHeaderCell.
-          - generic [ref=f18e585]:
-            - generic [ref=f18e586]:
-              - generic [ref=f18e587]: Prop
-              - generic [ref=f18e588]: Type
-              - generic [ref=f18e589]: Default
-            - generic [ref=f18e590]:
-              - button "id* string —" [ref=f18e591]:
-                - generic [ref=f18e592]: id*
-                - generic [ref=f18e593]: string
-                - generic [ref=f18e595]: —
-              - status [ref=f18e598]
-            - generic [ref=f18e599]:
-              - button "rowHeader boolean false" [ref=f18e600]:
-                - generic [ref=f18e601]: rowHeader
-                - generic [ref=f18e602]: boolean
-                - generic [ref=f18e604]: "false"
-              - status [ref=f18e608]
-            - generic [ref=f18e609]:
-              - button "textValue string —" [ref=f18e610]:
-                - generic [ref=f18e611]: textValue
-                - generic [ref=f18e612]: string
-                - generic [ref=f18e614]: —
-              - status [ref=f18e617]
-            - generic [ref=f18e618]:
-              - button "width TableColumnWidth —" [ref=f18e619]:
-                - generic [ref=f18e620]: width
-                - generic [ref=f18e621]: TableColumnWidth
-                - generic [ref=f18e623]: —
-              - status [ref=f18e626]
-            - generic [ref=f18e627]:
-              - button "defaultWidth TableColumnWidth —" [ref=f18e628]:
-                - generic [ref=f18e629]: defaultWidth
-                - generic [ref=f18e630]: TableColumnWidth
-                - generic [ref=f18e632]: —
-              - status [ref=f18e635]
-            - generic [ref=f18e636]:
-              - button "minWidth number —" [ref=f18e637]:
-                - generic [ref=f18e638]: minWidth
-                - generic [ref=f18e639]: number
-                - generic [ref=f18e641]: —
-              - status [ref=f18e644]
-            - generic [ref=f18e645]:
-              - button "maxWidth number —" [ref=f18e646]:
-                - generic [ref=f18e647]: maxWidth
-                - generic [ref=f18e648]: number
-                - generic [ref=f18e650]: —
-              - status [ref=f18e653]
-            - generic [ref=f18e654]:
-              - button "pin TableColumnPin —" [ref=f18e655]:
-                - generic [ref=f18e656]: pin
-                - generic [ref=f18e657]: TableColumnPin
-                - generic [ref=f18e659]: —
-              - status [ref=f18e662]
-            - generic [ref=f18e663]:
-              - button "children Snippet —" [ref=f18e664]:
-                - generic [ref=f18e665]: children
-                - generic [ref=f18e666]: Snippet
-                - generic [ref=f18e668]: —
-              - status [ref=f18e671]
-          - paragraph [ref=f18e672]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - heading "Header" [level=3] [ref=f18e673]
-          - paragraph [ref=f18e674]: The table head section containing the header row.
-          - generic [ref=f18e676]:
-            - generic [ref=f18e677]:
-              - generic [ref=f18e678]: Prop
-              - generic [ref=f18e679]: Type
-              - generic [ref=f18e680]: Default
-            - generic [ref=f18e681]:
-              - button "children Snippet —" [ref=f18e682]:
-                - generic [ref=f18e683]: children
-                - generic [ref=f18e684]: Snippet
-                - generic [ref=f18e686]: —
-              - status [ref=f18e689]
-            - generic [ref=f18e690]:
-              - button "class string ''" [ref=f18e691]:
-                - generic [ref=f18e692]: class
-                - generic [ref=f18e693]: string
-                - generic [ref=f18e695]: "''"
-              - status [ref=f18e699]
-          - paragraph [ref=f18e700]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e702]:
-            - generic [ref=f18e703]:
-              - generic [ref=f18e704]: Data attribute
-              - generic [ref=f18e705]: Description
-            - generic [ref=f18e706]:
-              - generic [ref=f18e707]: data-table-header
-              - generic [ref=f18e708]: Identifies the header element.
-          - heading "Body" [level=3] [ref=f18e709]
-          - paragraph [ref=f18e710]: The table body section. Renders the data rows and hosts the empty state.
-          - generic [ref=f18e712]:
-            - generic [ref=f18e713]:
-              - generic [ref=f18e714]: Prop
-              - generic [ref=f18e715]: Type
-              - generic [ref=f18e716]: Default
-            - generic [ref=f18e717]:
-              - button "class string ''" [ref=f18e718]:
-                - generic [ref=f18e719]: class
-                - generic [ref=f18e720]: string
-                - generic [ref=f18e722]: "''"
-              - status [ref=f18e726]
-            - generic [ref=f18e727]:
-              - button "items undefined —" [ref=f18e728]:
-                - generic [ref=f18e729]: items
-                - generic [ref=f18e730]: undefined
-                - generic [ref=f18e732]: —
-              - status [ref=f18e735]
-            - generic [ref=f18e736]:
-              - button "virtualizer undefined —" [ref=f18e737]:
-                - generic [ref=f18e738]: virtualizer
-                - generic [ref=f18e739]: undefined
-                - generic [ref=f18e741]: —
-              - status [ref=f18e744]
-            - generic [ref=f18e745]:
-              - button "children Snippet —" [ref=f18e746]:
-                - generic [ref=f18e747]: children
-                - generic [ref=f18e748]: Snippet
-                - generic [ref=f18e750]: —
-              - status [ref=f18e753]
-            - generic [ref=f18e754]:
-              - button "empty undefined —" [ref=f18e755]:
-                - generic [ref=f18e756]: empty
-                - generic [ref=f18e757]: undefined
-                - generic [ref=f18e759]: —
-              - status [ref=f18e762]
-          - paragraph [ref=f18e763]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e765]:
-            - generic [ref=f18e766]:
-              - generic [ref=f18e767]: Data attribute
-              - generic [ref=f18e768]: Description
-            - generic [ref=f18e769]:
-              - generic [ref=f18e770]: data-empty
-              - generic [ref=f18e771]: Present while the body has no rows.
-            - generic [ref=f18e772]:
-              - generic [ref=f18e773]: data-table-body
-              - generic [ref=f18e774]: Identifies the body element.
-            - generic [ref=f18e775]:
-              - generic [ref=f18e776]: data-virtual-spacer
-              - generic [ref=f18e777]: Identifies the top or bottom spacer rows used by virtualization ('top' | 'bottom').
-          - heading "EmptyState" [level=3] [ref=f18e778]
-          - paragraph [ref=f18e779]: A placeholder row shown inside the body while the table has no rows. Use it instead of conditionally rendering freeform body content.
-          - generic [ref=f18e781]:
-            - generic [ref=f18e782]:
-              - generic [ref=f18e783]: Prop
-              - generic [ref=f18e784]: Type
-              - generic [ref=f18e785]: Default
-            - generic [ref=f18e786]:
-              - button "children Snippet —" [ref=f18e787]:
-                - generic [ref=f18e788]: children
-                - generic [ref=f18e789]: Snippet
-                - generic [ref=f18e791]: —
-              - status [ref=f18e794]
-            - generic [ref=f18e795]:
-              - button "class string ''" [ref=f18e796]:
-                - generic [ref=f18e797]: class
-                - generic [ref=f18e798]: string
-                - generic [ref=f18e800]: "''"
-              - status [ref=f18e804]
-          - paragraph [ref=f18e805]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e807]:
-            - generic [ref=f18e808]:
-              - generic [ref=f18e809]: Data attribute
-              - generic [ref=f18e810]: Description
-            - generic [ref=f18e811]:
-              - generic [ref=f18e812]: data-empty
-              - generic [ref=f18e813]: Identifies the empty state row.
-          - heading "Footer" [level=3] [ref=f18e814]
-          - paragraph [ref=f18e815]: The table foot section, for summary rows.
-          - generic [ref=f18e817]:
-            - generic [ref=f18e818]:
-              - generic [ref=f18e819]: Prop
-              - generic [ref=f18e820]: Type
-              - generic [ref=f18e821]: Default
-            - generic [ref=f18e822]:
-              - button "children Snippet —" [ref=f18e823]:
-                - generic [ref=f18e824]: children
-                - generic [ref=f18e825]: Snippet
-                - generic [ref=f18e827]: —
-              - status [ref=f18e830]
-            - generic [ref=f18e831]:
-              - button "class string ''" [ref=f18e832]:
-                - generic [ref=f18e833]: class
-                - generic [ref=f18e834]: string
-                - generic [ref=f18e836]: "''"
-              - status [ref=f18e840]
-          - paragraph [ref=f18e841]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e843]:
-            - generic [ref=f18e844]:
-              - generic [ref=f18e845]: Data attribute
-              - generic [ref=f18e846]: Description
-            - generic [ref=f18e847]:
-              - generic [ref=f18e848]: data-table-footer
-              - generic [ref=f18e849]: Identifies the footer element.
-          - heading "Row" [level=3] [ref=f18e850]
-          - paragraph [ref=f18e851]: A table row. Body rows take an id to participate in selection, focus navigation, and row actions.
-          - generic [ref=f18e853]:
-            - generic [ref=f18e854]:
-              - generic [ref=f18e855]: Prop
-              - generic [ref=f18e856]: Type
-              - generic [ref=f18e857]: Default
-            - generic [ref=f18e858]:
-              - button "id TableSelectionKey —" [ref=f18e859]:
-                - generic [ref=f18e860]: id
-                - generic [ref=f18e861]: TableSelectionKey
-                - generic [ref=f18e863]: —
-              - status [ref=f18e866]
-            - generic [ref=f18e867]:
-              - button "disabled boolean false" [ref=f18e868]:
-                - generic [ref=f18e869]: disabled
-                - generic [ref=f18e870]: boolean
-                - generic [ref=f18e872]: "false"
-              - status [ref=f18e876]
-            - generic [ref=f18e877]:
-              - button "textValue string —" [ref=f18e878]:
-                - generic [ref=f18e879]: textValue
-                - generic [ref=f18e880]: string
-                - generic [ref=f18e882]: —
-              - status [ref=f18e885]
-            - generic [ref=f18e886]:
-              - button "children Snippet —" [ref=f18e887]:
-                - generic [ref=f18e888]: children
-                - generic [ref=f18e889]: Snippet
-                - generic [ref=f18e891]: —
-              - status [ref=f18e894]
-            - generic [ref=f18e895]:
-              - button "class string ''" [ref=f18e896]:
-                - generic [ref=f18e897]: class
-                - generic [ref=f18e898]: string
-                - generic [ref=f18e900]: "''"
-              - status [ref=f18e904]
-          - paragraph [ref=f18e905]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e907]:
-            - generic [ref=f18e908]:
-              - generic [ref=f18e909]: Data attribute
-              - generic [ref=f18e910]: Description
-            - generic [ref=f18e911]:
-              - generic [ref=f18e912]: data-actionable
-              - generic [ref=f18e913]: Present when activating the row triggers a row action.
-            - generic [ref=f18e914]:
-              - generic [ref=f18e915]: data-disabled
-              - generic [ref=f18e916]: Present when the row is disabled.
-            - generic [ref=f18e917]:
-              - generic [ref=f18e918]: data-focus-visible
-              - generic [ref=f18e919]: Present while the row itself is focused and focus should be visibly indicated.
-            - generic [ref=f18e920]:
-              - generic [ref=f18e921]: data-focus-visible-within
-              - generic [ref=f18e922]: Present while an element inside the row has visibly indicated focus.
-            - generic [ref=f18e923]:
-              - generic [ref=f18e924]: data-focus-within
-              - generic [ref=f18e925]: Present while focus is inside the row.
-            - generic [ref=f18e926]:
-              - generic [ref=f18e927]: data-focused
-              - generic [ref=f18e928]: Present while the row itself has focus.
-            - generic [ref=f18e929]:
-              - generic [ref=f18e930]: data-selected
-              - generic [ref=f18e931]: Present while the row is selected.
-            - generic [ref=f18e932]:
-              - generic [ref=f18e933]: data-selection-disabled
-              - generic [ref=f18e934]: Present when the row cannot be selected.
-          - heading "ColumnHeaderCell" [level=3] [ref=f18e935]
-          - paragraph [ref=f18e936]: A header cell. Remains the roving-focus target for its column even when it contains a sort trigger or resizer.
-          - generic [ref=f18e938]:
-            - generic [ref=f18e939]:
-              - generic [ref=f18e940]: Prop
-              - generic [ref=f18e941]: Type
-              - generic [ref=f18e942]: Default
-            - generic [ref=f18e943]:
-              - button "children Snippet —" [ref=f18e944]:
-                - generic [ref=f18e945]: children
-                - generic [ref=f18e946]: Snippet
-                - generic [ref=f18e948]: —
-              - status [ref=f18e951]
-            - generic [ref=f18e952]:
-              - button "class string ''" [ref=f18e953]:
-                - generic [ref=f18e954]: class
-                - generic [ref=f18e955]: string
-                - generic [ref=f18e957]: "''"
-              - status [ref=f18e961]
-          - paragraph [ref=f18e962]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e964]:
-            - generic [ref=f18e965]:
-              - generic [ref=f18e966]: Data attribute
-              - generic [ref=f18e967]: Description
-            - generic [ref=f18e968]:
-              - generic [ref=f18e969]: data-column-index
-              - generic [ref=f18e970]: Index of the cell's column among visible columns.
-            - generic [ref=f18e971]:
-              - generic [ref=f18e972]: data-focus-visible
-              - generic [ref=f18e973]: Present while the cell is focused and focus should be visibly indicated.
-            - generic [ref=f18e974]:
-              - generic [ref=f18e975]: data-focus-visible-within
-              - generic [ref=f18e976]: Present while an element inside the cell has visibly indicated focus.
-            - generic [ref=f18e977]:
-              - generic [ref=f18e978]: data-focus-within
-              - generic [ref=f18e979]: Present while focus is inside the cell.
-            - generic [ref=f18e980]:
-              - generic [ref=f18e981]: data-focused
-              - generic [ref=f18e982]: Present while the cell has focus.
-            - generic [ref=f18e983]:
-              - generic [ref=f18e984]: data-pin-edge
-              - generic [ref=f18e985]: The edge the owning column is pinned to ('left' | 'right').
-            - generic [ref=f18e986]:
-              - generic [ref=f18e987]: data-pinned
-              - generic [ref=f18e988]: Present when the owning column is pinned.
-            - generic [ref=f18e989]:
-              - generic [ref=f18e990]: data-sort-direction
-              - generic [ref=f18e991]: The active sort direction while this column is sorted ('ascending' | 'descending').
-            - generic [ref=f18e992]:
-              - generic [ref=f18e993]: data-sortable
-              - generic [ref=f18e994]: Present when the owning column is sortable.
-          - heading "SortTrigger" [level=3] [ref=f18e995]
-          - paragraph [ref=f18e996]: The explicit opt-in button for sorting. Rendering it inside a header cell makes the owning column sortable and toggles the root's sortDescriptor.
-          - generic [ref=f18e998]:
-            - generic [ref=f18e999]:
-              - generic [ref=f18e1000]: Prop
-              - generic [ref=f18e1001]: Type
-              - generic [ref=f18e1002]: Default
-            - generic [ref=f18e1003]:
-              - button "children Snippet<[TableSortTriggerRenderState]> | Snippet —" [ref=f18e1004]:
-                - generic [ref=f18e1005]: children
-                - generic [ref=f18e1006]: Snippet<[TableSortTriggerRenderState]> | Snippet
-                - generic [ref=f18e1008]: —
-              - status [ref=f18e1011]
-            - generic [ref=f18e1012]:
-              - button "class string ''" [ref=f18e1013]:
-                - generic [ref=f18e1014]: class
-                - generic [ref=f18e1015]: string
-                - generic [ref=f18e1017]: "''"
-              - status [ref=f18e1021]
-            - generic [ref=f18e1022]:
-              - button "element HTMLButtonElement | null null" [ref=f18e1023]:
-                - generic [ref=f18e1024]: element
-                - generic [ref=f18e1025]: HTMLButtonElement | null
-                - generic [ref=f18e1027]: "null"
-              - status [ref=f18e1031]
-          - paragraph [ref=f18e1032]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e1034]:
-            - generic [ref=f18e1035]:
-              - generic [ref=f18e1036]: Data attribute
-              - generic [ref=f18e1037]: Description
-            - generic [ref=f18e1038]:
-              - generic [ref=f18e1039]: data-sort-direction
-              - generic [ref=f18e1040]: The active sort direction while the owning column is sorted ('ascending' | 'descending').
-            - generic [ref=f18e1041]:
-              - generic [ref=f18e1042]: data-sorted
-              - generic [ref=f18e1043]: Present while the owning column is the active sort column.
-            - generic [ref=f18e1044]:
-              - generic [ref=f18e1045]: data-table-sort-trigger
-              - generic [ref=f18e1046]: Identifies the sort trigger element.
-          - heading "ColumnResizer" [level=3] [ref=f18e1047]
-          - paragraph [ref=f18e1048]: A keyboard-accessible resize handle. Rendering it inside a header cell makes the owning column resizable.
-          - generic [ref=f18e1050]:
-            - generic [ref=f18e1051]:
-              - generic [ref=f18e1052]: Prop
-              - generic [ref=f18e1053]: Type
-              - generic [ref=f18e1054]: Default
-            - generic [ref=f18e1055]:
-              - button "step number 16" [ref=f18e1056]:
-                - generic [ref=f18e1057]: step
-                - generic [ref=f18e1058]: number
-                - generic [ref=f18e1060]: "16"
-              - status [ref=f18e1064]
-            - generic [ref=f18e1065]:
-              - button "shiftStep number 48" [ref=f18e1066]:
-                - generic [ref=f18e1067]: shiftStep
-                - generic [ref=f18e1068]: number
-                - generic [ref=f18e1070]: "48"
-              - status [ref=f18e1074]
-            - generic [ref=f18e1075]:
-              - button "children Snippet —" [ref=f18e1076]:
-                - generic [ref=f18e1077]: children
-                - generic [ref=f18e1078]: Snippet
-                - generic [ref=f18e1080]: —
-              - status [ref=f18e1083]
-            - generic [ref=f18e1084]:
-              - button "class string ''" [ref=f18e1085]:
-                - generic [ref=f18e1086]: class
-                - generic [ref=f18e1087]: string
-                - generic [ref=f18e1089]: "''"
-              - status [ref=f18e1093]
-          - paragraph [ref=f18e1094]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e1096]:
-            - generic [ref=f18e1097]:
-              - generic [ref=f18e1098]: Data attribute
-              - generic [ref=f18e1099]: Description
-            - generic [ref=f18e1100]:
-              - generic [ref=f18e1101]: data-focus-visible
-              - generic [ref=f18e1102]: Present while the handle is focused and focus should be visibly indicated.
-            - generic [ref=f18e1103]:
-              - generic [ref=f18e1104]: data-focused
-              - generic [ref=f18e1105]: Present while the handle has focus.
-            - generic [ref=f18e1106]:
-              - generic [ref=f18e1107]: data-resizable
-              - generic [ref=f18e1108]: Present when the owning column can currently be resized.
-            - generic [ref=f18e1109]:
-              - generic [ref=f18e1110]: data-resizable-direction
-              - generic [ref=f18e1111]: The direction the handle resizes toward (currently always 'right').
-            - generic [ref=f18e1112]:
-              - generic [ref=f18e1113]: data-resizing
-              - generic [ref=f18e1114]: Present while a pointer or keyboard resize is in progress.
-            - generic [ref=f18e1115]:
-              - generic [ref=f18e1116]: data-table-column-resizer
-              - generic [ref=f18e1117]: Identifies the resize handle element.
-            - generic [ref=f18e1118]:
-              - generic [ref=f18e1119]: data-testid
-              - generic [ref=f18e1120]: Identifies the hidden resize status live region ('column-resize-status'); not a styling target.
-          - heading "Checkbox" [level=3] [ref=f18e1121]
-          - paragraph [ref=f18e1122]: An explicit selection control inside header or body cells. Auto-hides in header cells unless selectionMode is 'multiple', and everywhere when selection is disabled.
-          - generic [ref=f18e1124]:
-            - generic [ref=f18e1125]:
-              - generic [ref=f18e1126]: Prop
-              - generic [ref=f18e1127]: Type
-              - generic [ref=f18e1128]: Default
-            - generic [ref=f18e1129]:
-              - button "id string —" [ref=f18e1130]:
-                - generic [ref=f18e1131]: id
-                - generic [ref=f18e1132]: string
-                - generic [ref=f18e1134]: —
-              - status [ref=f18e1137]
-            - generic [ref=f18e1138]:
-              - button "title string —" [ref=f18e1139]:
-                - generic [ref=f18e1140]: title
-                - generic [ref=f18e1141]: string
-                - generic [ref=f18e1143]: —
-              - status [ref=f18e1146]
-            - generic [ref=f18e1147]:
-              - button "children Snippet —" [ref=f18e1148]:
-                - generic [ref=f18e1149]: children
-                - generic [ref=f18e1150]: Snippet
-                - generic [ref=f18e1152]: —
-              - status [ref=f18e1155]
-            - generic [ref=f18e1156]:
-              - button "class string ''" [ref=f18e1157]:
-                - generic [ref=f18e1158]: class
-                - generic [ref=f18e1159]: string
-                - generic [ref=f18e1161]: "''"
-              - status [ref=f18e1165]
-            - generic [ref=f18e1166]:
-              - button "aria-label string —" [ref=f18e1167]:
-                - generic [ref=f18e1168]: aria-label
-                - generic [ref=f18e1169]: string
-                - generic [ref=f18e1171]: —
-              - status [ref=f18e1174]
-            - generic [ref=f18e1175]:
-              - button "aria-labelledby string —" [ref=f18e1176]:
-                - generic [ref=f18e1177]: aria-labelledby
-                - generic [ref=f18e1178]: string
-                - generic [ref=f18e1180]: —
-              - status [ref=f18e1183]
-          - paragraph [ref=f18e1184]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e1186]:
-            - generic [ref=f18e1187]:
-              - generic [ref=f18e1188]: Data attribute
-              - generic [ref=f18e1189]: Description
-            - generic [ref=f18e1190]:
-              - generic [ref=f18e1191]: data-table-checkbox
-              - generic [ref=f18e1192]: Identifies the checkbox element.
-          - heading "CheckboxIndicator" [level=3] [ref=f18e1193]
-          - paragraph [ref=f18e1194]: The visual mark inside a table checkbox, composing custom affordances for checked and indeterminate states.
-          - generic [ref=f18e1196]:
-            - generic [ref=f18e1197]:
-              - generic [ref=f18e1198]: Prop
-              - generic [ref=f18e1199]: Type
-              - generic [ref=f18e1200]: Default
-            - generic [ref=f18e1201]:
-              - button "forceMount boolean false" [ref=f18e1202]:
-                - generic [ref=f18e1203]: forceMount
-                - generic [ref=f18e1204]: boolean
-                - generic [ref=f18e1206]: "false"
-              - status [ref=f18e1210]
-            - generic [ref=f18e1211]:
-              - button "children Snippet —" [ref=f18e1212]:
-                - generic [ref=f18e1213]: children
-                - generic [ref=f18e1214]: Snippet
-                - generic [ref=f18e1216]: —
-              - status [ref=f18e1219]
-            - generic [ref=f18e1220]:
-              - button "class string ''" [ref=f18e1221]:
-                - generic [ref=f18e1222]: class
-                - generic [ref=f18e1223]: string
-                - generic [ref=f18e1225]: "''"
-              - status [ref=f18e1229]
-          - paragraph [ref=f18e1230]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e1232]:
-            - generic [ref=f18e1233]:
-              - generic [ref=f18e1234]: Data attribute
-              - generic [ref=f18e1235]: Description
-            - generic [ref=f18e1236]:
-              - generic [ref=f18e1237]: data-checkbox-indicator
-              - generic [ref=f18e1238]: Identifies the indicator element.
-            - generic [ref=f18e1239]:
-              - generic [ref=f18e1240]: data-checked
-              - generic [ref=f18e1241]: Present while the checkbox is checked.
-            - generic [ref=f18e1242]:
-              - generic [ref=f18e1243]: data-disabled
-              - generic [ref=f18e1244]: Present when the checkbox is disabled.
-            - generic [ref=f18e1245]:
-              - generic [ref=f18e1246]: data-focus-visible
-              - generic [ref=f18e1247]: Present while focus should be visibly indicated (keyboard modality).
-            - generic [ref=f18e1248]:
-              - generic [ref=f18e1249]: data-focused
-              - generic [ref=f18e1250]: Present while the checkbox has focus.
-            - generic [ref=f18e1251]:
-              - generic [ref=f18e1252]: data-indeterminate
-              - generic [ref=f18e1253]: Present while the checkbox is indeterminate (partial selection).
-            - generic [ref=f18e1254]:
-              - generic [ref=f18e1255]: data-pressed
-              - generic [ref=f18e1256]: Present while the checkbox is actively pressed.
-            - generic [ref=f18e1257]:
-              - generic [ref=f18e1258]: data-unchecked
-              - generic [ref=f18e1259]: "Present while the checkbox is unchecked (with `forceMount`)."
-          - heading "Cell" [level=3] [ref=f18e1260]
-          - paragraph [ref=f18e1261]: A body or footer cell participating in grid keyboard navigation. First-column body cells render as rowheader when their column has rowHeader.
-          - generic [ref=f18e1263]:
-            - generic [ref=f18e1264]:
-              - generic [ref=f18e1265]: Prop
-              - generic [ref=f18e1266]: Type
-              - generic [ref=f18e1267]: Default
-            - generic [ref=f18e1268]:
-              - button "children Snippet —" [ref=f18e1269]:
-                - generic [ref=f18e1270]: children
-                - generic [ref=f18e1271]: Snippet
-                - generic [ref=f18e1273]: —
-              - status [ref=f18e1276]
-            - generic [ref=f18e1277]:
-              - button "class string ''" [ref=f18e1278]:
-                - generic [ref=f18e1279]: class
-                - generic [ref=f18e1280]: string
-                - generic [ref=f18e1282]: "''"
-              - status [ref=f18e1286]
-          - paragraph [ref=f18e1287]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e1289]:
-            - generic [ref=f18e1290]:
-              - generic [ref=f18e1291]: Data attribute
-              - generic [ref=f18e1292]: Description
-            - generic [ref=f18e1293]:
-              - generic [ref=f18e1294]: data-actionable
-              - generic [ref=f18e1295]: Present when activating the cell's row triggers a row action.
-            - generic [ref=f18e1296]:
-              - generic [ref=f18e1297]: data-column-index
-              - generic [ref=f18e1298]: Index of the cell's column among visible columns.
-            - generic [ref=f18e1299]:
-              - generic [ref=f18e1300]: data-disabled
-              - generic [ref=f18e1301]: Present when the cell's row is disabled.
-            - generic [ref=f18e1302]:
-              - generic [ref=f18e1303]: data-focus-visible
-              - generic [ref=f18e1304]: Present while the cell is focused and focus should be visibly indicated.
-            - generic [ref=f18e1305]:
-              - generic [ref=f18e1306]: data-focused
-              - generic [ref=f18e1307]: Present while the cell has focus.
-            - generic [ref=f18e1308]:
-              - generic [ref=f18e1309]: data-pin-edge
-              - generic [ref=f18e1310]: The edge the owning column is pinned to ('left' | 'right').
-            - generic [ref=f18e1311]:
-              - generic [ref=f18e1312]: data-pinned
-              - generic [ref=f18e1313]: Present when the owning column is pinned.
-            - generic [ref=f18e1314]:
-              - generic [ref=f18e1315]: data-row-selected
-              - generic [ref=f18e1316]: Present while the cell's row is selected.
-            - generic [ref=f18e1317]:
-              - generic [ref=f18e1318]: data-selection-disabled
-              - generic [ref=f18e1319]: Present when the cell's row cannot be selected.
-          - heading "InteractiveCell" [level=3] [ref=f18e1320]
-          - paragraph [ref=f18e1321]: A body cell for content with its own focusable controls. The cell keeps grid keyboard navigation while focus is on it; focused descendants own their interactions.
-          - generic [ref=f18e1323]:
-            - generic [ref=f18e1324]:
-              - generic [ref=f18e1325]: Prop
-              - generic [ref=f18e1326]: Type
-              - generic [ref=f18e1327]: Default
-            - generic [ref=f18e1328]:
-              - button "children Snippet —" [ref=f18e1329]:
-                - generic [ref=f18e1330]: children
-                - generic [ref=f18e1331]: Snippet
-                - generic [ref=f18e1333]: —
-              - status [ref=f18e1336]
-            - generic [ref=f18e1337]:
-              - button "class string ''" [ref=f18e1338]:
-                - generic [ref=f18e1339]: class
-                - generic [ref=f18e1340]: string
-                - generic [ref=f18e1342]: "''"
-              - status [ref=f18e1346]
-          - paragraph [ref=f18e1347]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f18e1349]:
-            - generic [ref=f18e1350]:
-              - generic [ref=f18e1351]: Data attribute
-              - generic [ref=f18e1352]: Description
-            - generic [ref=f18e1353]:
-              - generic [ref=f18e1354]: data-actionable
-              - generic [ref=f18e1355]: Present when activating the cell's row triggers a row action.
-            - generic [ref=f18e1356]:
-              - generic [ref=f18e1357]: data-column-index
-              - generic [ref=f18e1358]: Index of the cell's column among visible columns.
-            - generic [ref=f18e1359]:
-              - generic [ref=f18e1360]: data-disabled
-              - generic [ref=f18e1361]: Present when the cell's row is disabled.
-            - generic [ref=f18e1362]:
-              - generic [ref=f18e1363]: data-focus-visible
-              - generic [ref=f18e1364]: Present while the cell is focused and focus should be visibly indicated.
-            - generic [ref=f18e1365]:
-              - generic [ref=f18e1366]: data-focused
-              - generic [ref=f18e1367]: Present while the cell has focus.
-            - generic [ref=f18e1368]:
-              - generic [ref=f18e1369]: data-pin-edge
-              - generic [ref=f18e1370]: The edge the owning column is pinned to ('left' | 'right').
-            - generic [ref=f18e1371]:
-              - generic [ref=f18e1372]: data-pinned
-              - generic [ref=f18e1373]: Present when the owning column is pinned.
-            - generic [ref=f18e1374]:
-              - generic [ref=f18e1375]: data-row-selected
-              - generic [ref=f18e1376]: Present while the cell's row is selected.
-            - generic [ref=f18e1377]:
-              - generic [ref=f18e1378]: data-selection-disabled
-              - generic [ref=f18e1379]: Present when the cell's row cannot be selected.
-          - paragraph [ref=f18e1380]: More advanced patterns — column visibility, fixed and pinned columns, sticky headers, column resizing, and row actions — are supported by the same parts; see the API reference above for the corresponding props.
-      - complementary [ref=f18e1381]:
-        - navigation "On this page" [ref=f18e1382]:
-          - heading "On this page" [level=4] [ref=f18e1383]
-          - list [ref=f18e1384]:
-            - listitem [ref=f18e1385]:
-              - link "(Top)" [ref=f18e1386] [cursor=pointer]:
-                - /url: "#top"
-            - listitem [ref=f18e1387]:
-              - link "Anatomy" [ref=f18e1388] [cursor=pointer]:
-                - /url: "#anatomy"
-            - listitem [ref=f18e1389]:
-              - link "Row selection" [ref=f18e1390] [cursor=pointer]:
-                - /url: "#row-selection"
-            - listitem [ref=f18e1391]:
-              - link "Pagination" [ref=f18e1392] [cursor=pointer]:
-                - /url: "#pagination"
-            - listitem [ref=f18e1393]:
-              - link "Usage guidelines" [ref=f18e1394] [cursor=pointer]:
-                - /url: "#usage-guidelines"
-            - listitem [ref=f18e1395]:
-              - link "Accessibility" [ref=f18e1396] [cursor=pointer]:
-                - /url: "#accessibility"
-            - listitem [ref=f18e1397]:
-              - link "API reference" [ref=f18e1398] [cursor=pointer]:
-                - /url: "#api-reference"
-            - listitem [ref=f18e1399]:
-              - link "Root" [ref=f18e1400] [cursor=pointer]:
-                - /url: "#api-root"
-            - listitem [ref=f18e1401]:
-              - link "Column" [ref=f18e1402] [cursor=pointer]:
-                - /url: "#api-column"
-            - listitem [ref=f18e1403]:
-              - link "Header" [ref=f18e1404] [cursor=pointer]:
-                - /url: "#api-header"
-            - listitem [ref=f18e1405]:
-              - link "Body" [ref=f18e1406] [cursor=pointer]:
-                - /url: "#api-body"
-            - listitem [ref=f18e1407]:
-              - link "EmptyState" [ref=f18e1408] [cursor=pointer]:
-                - /url: "#api-emptystate"
-            - listitem [ref=f18e1409]:
-              - link "Footer" [ref=f18e1410] [cursor=pointer]:
-                - /url: "#api-footer"
-            - listitem [ref=f18e1411]:
-              - link "Row" [ref=f18e1412] [cursor=pointer]:
-                - /url: "#api-row"
-            - listitem [ref=f18e1413]:
-              - link "ColumnHeaderCell" [ref=f18e1414] [cursor=pointer]:
-                - /url: "#api-columnheadercell"
-            - listitem [ref=f18e1415]:
-              - link "SortTrigger" [ref=f18e1416] [cursor=pointer]:
-                - /url: "#api-sorttrigger"
-            - listitem [ref=f18e1417]:
-              - link "ColumnResizer" [ref=f18e1418] [cursor=pointer]:
-                - /url: "#api-columnresizer"
-            - listitem [ref=f18e1419]:
-              - link "Checkbox" [ref=f18e1420] [cursor=pointer]:
-                - /url: "#api-checkbox"
-            - listitem [ref=f18e1421]:
-              - link "CheckboxIndicator" [ref=f18e1422] [cursor=pointer]:
-                - /url: "#api-checkboxindicator"
-            - listitem [ref=f18e1423]:
-              - link "Cell" [ref=f18e1424] [cursor=pointer]:
-                - /url: "#api-cell"
-            - listitem [ref=f18e1425]:
-              - link "InteractiveCell" [ref=f18e1426] [cursor=pointer]:
-                - /url: "#api-interactivecell"
+    - button "Disable render scanning" [ref=f18e2] [cursor=pointer]
+    - generic [ref=f18e7]:
+        - banner [ref=f18e8]:
+            - link [ref=f18e9] [cursor=pointer]:
+                - /url: ../
+            - generic [ref=f18e12]:
+                - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f18e13] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@human-kit/ui
+                    - text: 1.0.0-beta.0
+                - link "GitHub repository" [ref=f18e14] [cursor=pointer]:
+                    - /url: https://github.com/human-kit/ui
+                - button "Toggle color theme" [ref=f18e15]
+                - status [ref=f18e17]
+        - generic [ref=f18e18]:
+            - complementary [ref=f18e19]:
+                - navigation [ref=f18e20]:
+                    - generic [ref=f18e21]:
+                        - button "Overview" [expanded] [ref=f18e22]
+                        - status [ref=f18e25]
+                        - list [ref=f18e28]:
+                            - listitem [ref=f18e29]:
+                                - link "Quick Start" [ref=f18e30] [cursor=pointer]:
+                                    - /url: ../docs/quick-start
+                            - listitem [ref=f18e31]:
+                                - link "Accessibility" [ref=f18e32] [cursor=pointer]:
+                                    - /url: ../docs/accessibility
+                            - listitem [ref=f18e33]:
+                                - link "Releases" [ref=f18e34] [cursor=pointer]:
+                                    - /url: ../docs/releases
+                            - listitem [ref=f18e35]:
+                                - link "About" [ref=f18e36] [cursor=pointer]:
+                                    - /url: ../docs/about
+                    - generic [ref=f18e37]:
+                        - button "Form" [expanded] [ref=f18e38]
+                        - status [ref=f18e41]
+                        - list [ref=f18e44]:
+                            - listitem [ref=f18e45]:
+                                - link "Button" [ref=f18e46] [cursor=pointer]:
+                                    - /url: ../docs/button
+                            - listitem [ref=f18e47]:
+                                - link "Checkbox" [ref=f18e48] [cursor=pointer]:
+                                    - /url: ../docs/checkbox
+                            - listitem [ref=f18e49]:
+                                - link "Input" [ref=f18e50] [cursor=pointer]:
+                                    - /url: ../docs/input
+                            - listitem [ref=f18e51]:
+                                - link "NumberField" [ref=f18e52] [cursor=pointer]:
+                                    - /url: ../docs/numberfield
+                            - listitem [ref=f18e53]:
+                                - link "Switch" [ref=f18e54] [cursor=pointer]:
+                                    - /url: ../docs/switch
+                            - listitem [ref=f18e55]:
+                                - link "TextArea" [ref=f18e56] [cursor=pointer]:
+                                    - /url: ../docs/textarea
+                            - listitem [ref=f18e57]:
+                                - link "Toggle" [ref=f18e58] [cursor=pointer]:
+                                    - /url: ../docs/toggle
+                            - listitem [ref=f18e59]:
+                                - link "ToggleGroup" [ref=f18e60] [cursor=pointer]:
+                                    - /url: ../docs/toggle-group
+                    - generic [ref=f18e61]:
+                        - button "Pickers" [expanded] [ref=f18e62]
+                        - status [ref=f18e65]
+                        - list [ref=f18e68]:
+                            - listitem [ref=f18e69]:
+                                - link "Autocomplete" [ref=f18e70] [cursor=pointer]:
+                                    - /url: ../docs/autocomplete
+                            - listitem [ref=f18e71]:
+                                - link "ComboBox" [ref=f18e72] [cursor=pointer]:
+                                    - /url: ../docs/combobox
+                            - listitem [ref=f18e73]:
+                                - link "ListBox" [ref=f18e74] [cursor=pointer]:
+                                    - /url: ../docs/listbox
+                            - listitem [ref=f18e75]:
+                                - link "Calendar" [ref=f18e76] [cursor=pointer]:
+                                    - /url: ../docs/calendar
+                            - listitem [ref=f18e77]:
+                                - link "Clock" [ref=f18e78] [cursor=pointer]:
+                                    - /url: ../docs/clock
+                            - listitem [ref=f18e79]:
+                                - link "DatePicker" [ref=f18e80] [cursor=pointer]:
+                                    - /url: ../docs/datepicker
+                            - listitem [ref=f18e81]:
+                                - link "DateRangePicker" [ref=f18e82] [cursor=pointer]:
+                                    - /url: ../docs/daterangepicker
+                            - listitem [ref=f18e83]:
+                                - link "TimePicker" [ref=f18e84] [cursor=pointer]:
+                                    - /url: ../docs/timepicker
+                    - generic [ref=f18e85]:
+                        - button "Overlays" [expanded] [ref=f18e86]
+                        - status [ref=f18e89]
+                        - list [ref=f18e92]:
+                            - listitem [ref=f18e93]:
+                                - link "Dialog" [ref=f18e94] [cursor=pointer]:
+                                    - /url: ../docs/dialog
+                            - listitem [ref=f18e95]:
+                                - link "Menu" [ref=f18e96] [cursor=pointer]:
+                                    - /url: ../docs/menu
+                            - listitem [ref=f18e97]:
+                                - link "Popover" [ref=f18e98] [cursor=pointer]:
+                                    - /url: ../docs/popover
+                    - generic [ref=f18e99]:
+                        - button "Structure" [expanded] [ref=f18e100]
+                        - status [ref=f18e103]
+                        - list [ref=f18e106]:
+                            - listitem [ref=f18e107]:
+                                - link "Accordion" [ref=f18e108] [cursor=pointer]:
+                                    - /url: ../docs/accordion
+                            - listitem [ref=f18e109]:
+                                - link "Collapsible" [ref=f18e110] [cursor=pointer]:
+                                    - /url: ../docs/collapsible
+                            - listitem [ref=f18e111]:
+                                - link "Table" [ref=f18e112] [cursor=pointer]:
+                                    - /url: ../docs/table
+                            - listitem [ref=f18e113]:
+                                - link "Tabs" [ref=f18e114] [cursor=pointer]:
+                                    - /url: ../docs/tabs
+                            - listitem [ref=f18e115]:
+                                - link "Tree" [ref=f18e116] [cursor=pointer]:
+                                    - /url: ../docs/tree
+            - main [ref=f18e117]:
+                - article [ref=f18e119]:
+                    - generic [ref=f18e120]:
+                        - 'link "Previous: Collapsible" [ref=f18e121] [cursor=pointer]':
+                            - /url: ../docs/collapsible
+                        - 'link "Next: Tabs" [ref=f18e122] [cursor=pointer]':
+                            - /url: ../docs/tabs
+                        - button "Page options" [ref=f18e123]
+                        - status [ref=f18e124]
+                    - heading "Table" [level=1] [ref=f18e125]
+                    - paragraph [ref=f18e126]: A headless interactive table primitive with grid-style keyboard navigation, row selection, explicit sortable header triggers, and a composable part-based API.
+                    - generic [ref=f18e127]:
+                        - generic [ref=f18e129]:
+                            - grid "Deployments table" [ref=f18e130]:
+                                - rowgroup [ref=f18e131]:
+                                    - row [ref=f18e132]:
+                                        - columnheader "Service" [ref=f18e133]
+                                        - columnheader "Owner" [ref=f18e134]
+                                        - columnheader "Status" [ref=f18e135]
+                                - rowgroup [ref=f18e136]:
+                                    - row [ref=f18e137]:
+                                        - rowheader "Checkout API" [ref=f18e138]
+                                        - gridcell "Infra" [ref=f18e139]
+                                        - gridcell "Healthy" [ref=f18e140]
+                                    - row [ref=f18e141]:
+                                        - rowheader "Identity Worker" [ref=f18e142]
+                                        - gridcell "Platform" [ref=f18e143]
+                                        - gridcell "Rolling" [ref=f18e144]
+                                    - row [ref=f18e145]:
+                                        - rowheader "Billing Queue" [ref=f18e146]
+                                        - gridcell "Finance" [ref=f18e147]
+                                        - gridcell "Healthy" [ref=f18e148]
+                                    - row [ref=f18e149]:
+                                        - rowheader "Session Cache" [ref=f18e150]
+                                        - gridcell "Platform" [ref=f18e151]
+                                        - gridcell "Degraded" [ref=f18e152]
+                                    - row [ref=f18e153]:
+                                        - rowheader "Audit Trail" [ref=f18e154]
+                                        - gridcell "Security" [ref=f18e155]
+                                        - gridcell "Rolling" [ref=f18e156]
+                                - text: Total 5 services
+                            - status [ref=f18e157]
+                            - generic [ref=f18e158]: Selection unavailable for this row.
+                        - generic [ref=f18e160]:
+                            - button "Copy source code" [ref=f18e161]
+                            - status [ref=f18e163]
+                            - button "Show code" [ref=f18e164]
+                            - status [ref=f18e165]
+                    - heading "Anatomy" [level=2] [ref=f18e166]
+                    - paragraph [ref=f18e167]:
+                        - code [ref=f18e168]: Table.Root
+                        - text: renders an interactive
+                        - code [ref=f18e169]: grid
+                        - text: over native table markup. Wrap each header cell in a
+                        - code [ref=f18e170]: Table.Column
+                        - text: — a metadata-only part that registers the column — and opt into sorting or resizing per column by composing
+                        - code [ref=f18e171]: Table.SortTrigger
+                        - text: or
+                        - code [ref=f18e172]: Table.ColumnResizer
+                        - text: inside its
+                        - code [ref=f18e173]: Table.ColumnHeaderCell
+                        - text: .
+                    - code [ref=f18e176]:
+                        - generic [ref=f18e177]: <script>
+                        - generic [ref=f18e178]: "import { Table } from '@human-kit/ui';"
+                        - generic [ref=f18e179]: </script>
+                        - generic [ref=f18e180]: <Table.Root aria-label="Users table">
+                        - generic [ref=f18e181]: <Table.Header>
+                        - generic [ref=f18e182]: <Table.Row>
+                        - generic [ref=f18e183]: <Table.Column id="email" rowHeader>
+                        - generic [ref=f18e184]: <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
+                        - generic [ref=f18e185]: </Table.Column>
+                        - generic [ref=f18e186]: <Table.Column id="group">
+                        - generic [ref=f18e187]: <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
+                        - generic [ref=f18e188]: </Table.Column>
+                        - generic [ref=f18e189]: </Table.Row>
+                        - generic [ref=f18e190]: </Table.Header>
+                        - generic [ref=f18e191]: <Table.Body>
+                        - generic [ref=f18e192]: <Table.Row id="danilo">
+                        - generic [ref=f18e193]: <Table.Cell>danilo@example.com</Table.Cell>
+                        - generic [ref=f18e194]: <Table.Cell>Developer</Table.Cell>
+                        - generic [ref=f18e195]: </Table.Row>
+                        - generic [ref=f18e196]: <Table.EmptyState>No users found.</Table.EmptyState>
+                        - generic [ref=f18e197]: </Table.Body>
+                        - generic [ref=f18e198]: </Table.Root>
+                    - heading "Row selection" [level=2] [ref=f18e199]
+                    - paragraph [ref=f18e200]:
+                        - text: Set
+                        - code [ref=f18e201]: selectionMode="multiple"
+                        - text: (or
+                        - code [ref=f18e202]: '"single"'
+                        - text: ) and give every body row an
+                        - code [ref=f18e203]: id
+                        - text: .
+                        - code [ref=f18e204]: Table.Checkbox
+                        - text: and
+                        - code [ref=f18e205]: Table.CheckboxIndicator
+                        - text: compose explicit selection UI inside cells — the header checkbox selects all rows and shows an indeterminate state, while
+                        - code [ref=f18e206]: disabledKeys
+                        - text: keeps specific rows rendered but non-selectable.
+                    - generic [ref=f18e207]:
+                        - generic [ref=f18e210]:
+                            - grid "Users table" [ref=f18e211]:
+                                - rowgroup [ref=f18e212]:
+                                    - row [ref=f18e213]:
+                                        - columnheader [ref=f18e214]:
+                                            - checkbox "Select all rows" [checked=mixed] [ref=f18e215]:
+                                                - checkbox
+                                        - columnheader "Email" [ref=f18e218]
+                                        - columnheader "Group" [ref=f18e219]
+                                - rowgroup [ref=f18e220]:
+                                    - row [selected] [ref=f18e221]:
+                                        - gridcell [ref=f18e222]:
+                                            - checkbox "Select row danilo" [checked] [ref=f18e223]:
+                                                - checkbox [checked]
+                                        - rowheader "danilo@example.com" [ref=f18e227]
+                                        - gridcell "Developer" [ref=f18e228]
+                                    - row [ref=f18e229]:
+                                        - gridcell [ref=f18e230]:
+                                            - checkbox "Select row zahra" [ref=f18e231]:
+                                                - checkbox
+                                        - rowheader "zahra@example.com" [ref=f18e232]
+                                        - gridcell "Admin" [ref=f18e233]
+                                    - row [ref=f18e234]:
+                                        - gridcell [ref=f18e235]:
+                                            - checkbox "Select row jasper" [ref=f18e236]:
+                                                - checkbox
+                                        - rowheader "jasper@example.com" [ref=f18e237]
+                                        - gridcell "Developer" [ref=f18e238]
+                                    - row [ref=f18e239]:
+                                        - gridcell [ref=f18e240]:
+                                            - checkbox "Select row marta" [ref=f18e241]:
+                                                - checkbox
+                                        - rowheader "marta@example.com" [ref=f18e242]
+                                        - gridcell "Support" [ref=f18e243]
+                                    - row [disabled] [ref=f18e244]:
+                                        - gridcell [disabled] [ref=f18e245]:
+                                            - checkbox "Select row nora" [disabled] [ref=f18e246]:
+                                                - checkbox [disabled]
+                                        - rowheader "nora@example.com" [disabled] [ref=f18e247]
+                                        - gridcell "Finance" [disabled] [ref=f18e248]
+                            - status [ref=f18e249]
+                            - generic [ref=f18e250]: Selection unavailable for this row.
+                        - generic [ref=f18e252]:
+                            - button "Copy source code" [ref=f18e253]
+                            - status [ref=f18e255]
+                            - button "Show code" [ref=f18e256]
+                            - status [ref=f18e257]
+                    - heading "Pagination" [level=2] [ref=f18e258]
+                    - paragraph [ref=f18e259]: 'Pagination stays consumer-owned: slice the dataset before rendering and drive the current page from external controls or app state.'
+                    - heading "Usage guidelines" [level=2] [ref=f18e260]
+                    - list [ref=f18e261]:
+                        - listitem [ref=f18e262]:
+                            - text: Use
+                            - code [ref=f18e263]: Table.Root
+                            - text: as the stateful container for focus, selection, and sorting state, and give it
+                            - code [ref=f18e264]: aria-label
+                            - text: or
+                            - code [ref=f18e265]: aria-labelledby
+                            - text: .
+                        - listitem [ref=f18e266]:
+                            - text: Wrap each header cell in
+                            - code [ref=f18e267]: Table.Column
+                            - text: so the table can register stable column metadata;
+                            - code [ref=f18e268]: Table.Column
+                            - text: renders no DOM by itself.
+                        - listitem [ref=f18e269]:
+                            - text: Use
+                            - code [ref=f18e270]: selectedKeys
+                            - text: /
+                            - code [ref=f18e271]: onSelectionChange
+                            - text: for controlled row selection and
+                            - code [ref=f18e272]: defaultSelectedKeys
+                            - text: for uncontrolled initial selection.
+                        - listitem [ref=f18e273]:
+                            - text: Use
+                            - code [ref=f18e274]: selectionBehavior="toggle"
+                            - text: to allow deselecting an already selected row, or
+                            - code [ref=f18e275]: '"replace"'
+                            - text: to keep selected rows selected when pressed again.
+                        - listitem [ref=f18e276]:
+                            - text: Use
+                            - code [ref=f18e277]: sortDescriptor
+                            - text: /
+                            - code [ref=f18e278]: onSortChange
+                            - text: for controlled sorting and
+                            - code [ref=f18e279]: defaultSortDescriptor
+                            - text: for uncontrolled initial sort state;
+                            - code [ref=f18e280]: Table.SortTrigger
+                            - text: inside a header cell makes the owning column sortable.
+                        - listitem [ref=f18e281]:
+                            - text: Use
+                            - code [ref=f18e282]: columnWidths
+                            - text: /
+                            - code [ref=f18e283]: onColumnWidthsChange
+                            - text: for controlled column widths (px,
+                            - code [ref=f18e284]: '%'
+                            - text: ', or'
+                            - code [ref=f18e285]: fr
+                            - text: ), and add
+                            - code [ref=f18e286]: Table.ColumnResizer
+                            - text: inside
+                            - code [ref=f18e287]: Table.ColumnHeaderCell
+                            - text: to make a column resizable.
+                        - listitem [ref=f18e288]:
+                            - text: Dedicated utility columns like selection checkboxes should usually set an explicit
+                            - code [ref=f18e289]: width
+                            - text: ','
+                            - code [ref=f18e290]: minWidth
+                            - text: ', and'
+                            - code [ref=f18e291]: maxWidth
+                            - text: 'on'
+                            - code [ref=f18e292]: Table.Column
+                            - text: so sibling resizes do not redistribute their space.
+                        - listitem [ref=f18e293]:
+                            - text: Use
+                            - code [ref=f18e294]: Table.EmptyState
+                            - text: inside
+                            - code [ref=f18e295]: Table.Body
+                            - text: instead of conditionally rendering freeform body content.
+                        - listitem [ref=f18e296]:
+                            - text: Use
+                            - code [ref=f18e297]: Table.InteractiveCell
+                            - text: for body cells that contain their own focusable controls.
+                    - heading "Accessibility" [level=2] [ref=f18e298]
+                    - list [ref=f18e299]:
+                        - listitem [ref=f18e300]:
+                            - code [ref=f18e301]: Table.Root
+                            - text: renders an interactive
+                            - code [ref=f18e302]: grid
+                            - text: over native table markup, and keyboard navigation uses roving
+                            - code [ref=f18e303]: tabindex
+                            - text: across header and body cells.
+                        - listitem [ref=f18e304]: Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
+                        - listitem [ref=f18e305]:
+                            - text: First-column body cells become
+                            - code [ref=f18e306]: rowheader
+                            - text: when their associated column has
+                            - code [ref=f18e307]: rowHeader
+                            - text: .
+                        - listitem [ref=f18e308]: Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
+                        - listitem [ref=f18e309]:
+                            - code [ref=f18e310]: Table.SortTrigger
+                            - text: renders the trigger button, while the header cell remains the roving-focus target; sort changes are mirrored into a polite live region for screen readers.
+                        - listitem [ref=f18e311]:
+                            - text: 'Column resize handles are keyboard accessible separators: press'
+                            - code [ref=f18e312]: Enter
+                            - text: to enter resize mode, use the horizontal arrow keys to resize,
+                            - code [ref=f18e313]: Home
+                            - text: to jump to the minimum width,
+                            - code [ref=f18e314]: End
+                            - text: to auto-fit, and
+                            - code [ref=f18e315]: Enter
+                            - text: again to exit.
+                    - heading "API reference" [level=2] [ref=f18e316]
+                    - heading "Root" [level=3] [ref=f18e317]
+                    - paragraph [ref=f18e318]: The stateful table container. Renders an interactive grid over native table markup and manages focus, selection, sorting, column widths, and column visibility.
+                    - generic [ref=f18e320]:
+                        - generic [ref=f18e321]:
+                            - generic [ref=f18e322]: Prop
+                            - generic [ref=f18e323]: Type
+                            - generic [ref=f18e324]: Default
+                        - generic [ref=f18e325]:
+                            - button "selectionMode TableSelectionMode 'none'" [ref=f18e326]:
+                                - generic [ref=f18e327]: selectionMode
+                                - generic [ref=f18e328]: TableSelectionMode
+                                - generic [ref=f18e330]: "'none'"
+                            - status [ref=f18e334]
+                        - generic [ref=f18e335]:
+                            - button "selectionBehavior TableSelectionBehavior 'toggle'" [ref=f18e336]:
+                                - generic [ref=f18e337]: selectionBehavior
+                                - generic [ref=f18e338]: TableSelectionBehavior
+                                - generic [ref=f18e340]: "'toggle'"
+                            - status [ref=f18e344]
+                        - generic [ref=f18e345]:
+                            - button "disabledBehavior TableDisabledBehavior 'all'" [ref=f18e346]:
+                                - generic [ref=f18e347]: disabledBehavior
+                                - generic [ref=f18e348]: TableDisabledBehavior
+                                - generic [ref=f18e350]: "'all'"
+                            - status [ref=f18e354]
+                        - generic [ref=f18e355]:
+                            - button "disallowEmptySelection boolean false" [ref=f18e356]:
+                                - generic [ref=f18e357]: disallowEmptySelection
+                                - generic [ref=f18e358]: boolean
+                                - generic [ref=f18e360]: 'false'
+                            - status [ref=f18e364]
+                        - generic [ref=f18e365]:
+                            - button "hiddenColumns Iterable<string> —" [ref=f18e366]:
+                                - generic [ref=f18e367]: hiddenColumns
+                                - generic [ref=f18e368]: Iterable<string>
+                                - generic [ref=f18e370]: —
+                            - status [ref=f18e373]
+                        - generic [ref=f18e374]:
+                            - button "defaultHiddenColumns Iterable<string> —" [ref=f18e375]:
+                                - generic [ref=f18e376]: defaultHiddenColumns
+                                - generic [ref=f18e377]: Iterable<string>
+                                - generic [ref=f18e379]: —
+                            - status [ref=f18e382]
+                        - generic [ref=f18e383]:
+                            - button "selectedKeys Iterable<TableSelectionKey> —" [ref=f18e384]:
+                                - generic [ref=f18e385]: selectedKeys
+                                - generic [ref=f18e386]: Iterable<TableSelectionKey>
+                                - generic [ref=f18e388]: —
+                            - status [ref=f18e391]
+                        - generic [ref=f18e392]:
+                            - button "defaultSelectedKeys Iterable<TableSelectionKey> —" [ref=f18e393]:
+                                - generic [ref=f18e394]: defaultSelectedKeys
+                                - generic [ref=f18e395]: Iterable<TableSelectionKey>
+                                - generic [ref=f18e397]: —
+                            - status [ref=f18e400]
+                        - generic [ref=f18e401]:
+                            - button "sortDescriptor TableSortDescriptor —" [ref=f18e402]:
+                                - generic [ref=f18e403]: sortDescriptor
+                                - generic [ref=f18e404]: TableSortDescriptor
+                                - generic [ref=f18e406]: —
+                            - status [ref=f18e409]
+                        - generic [ref=f18e410]:
+                            - button "defaultSortDescriptor TableSortDescriptor —" [ref=f18e411]:
+                                - generic [ref=f18e412]: defaultSortDescriptor
+                                - generic [ref=f18e413]: TableSortDescriptor
+                                - generic [ref=f18e415]: —
+                            - status [ref=f18e418]
+                        - generic [ref=f18e419]:
+                            - button "columnWidths Map<string, TableColumnWidth> —" [ref=f18e420]:
+                                - generic [ref=f18e421]: columnWidths
+                                - generic [ref=f18e422]: Map<string, TableColumnWidth>
+                                - generic [ref=f18e424]: —
+                            - status [ref=f18e427]
+                        - generic [ref=f18e428]:
+                            - button "defaultColumnWidths Iterable<readonly [string, TableColumnWidth]> —" [ref=f18e429]:
+                                - generic [ref=f18e430]: defaultColumnWidths
+                                - generic [ref=f18e431]: Iterable<readonly [string, TableColumnWidth]>
+                                - generic [ref=f18e433]: —
+                            - status [ref=f18e436]
+                        - generic [ref=f18e437]:
+                            - button "ssrMinTableWidth number —" [ref=f18e438]:
+                                - generic [ref=f18e439]: ssrMinTableWidth
+                                - generic [ref=f18e440]: number
+                                - generic [ref=f18e442]: —
+                            - status [ref=f18e445]
+                        - generic [ref=f18e446]:
+                            - button "disabledKeys Iterable<TableSelectionKey> —" [ref=f18e447]:
+                                - generic [ref=f18e448]: disabledKeys
+                                - generic [ref=f18e449]: Iterable<TableSelectionKey>
+                                - generic [ref=f18e451]: —
+                            - status [ref=f18e454]
+                        - generic [ref=f18e455]:
+                            - button "onRowAction TableRowActionHandler —" [ref=f18e456]:
+                                - generic [ref=f18e457]: onRowAction
+                                - generic [ref=f18e458]: TableRowActionHandler
+                                - generic [ref=f18e460]: —
+                            - status [ref=f18e463]
+                        - generic [ref=f18e464]:
+                            - 'button "onSelectionChange (keys: Set<TableSelectionKey>) => void —" [ref=f18e465]':
+                                - generic [ref=f18e466]: onSelectionChange
+                                - generic [ref=f18e467]: '(keys: Set<TableSelectionKey>) => void'
+                                - generic [ref=f18e469]: —
+                            - status [ref=f18e472]
+                        - generic [ref=f18e473]:
+                            - 'button "onSortChange (descriptor: TableSortDescriptor | undefined) => void —" [ref=f18e474]':
+                                - generic [ref=f18e475]: onSortChange
+                                - generic [ref=f18e476]: '(descriptor: TableSortDescriptor | undefined) => void'
+                                - generic [ref=f18e478]: —
+                            - status [ref=f18e481]
+                        - generic [ref=f18e482]:
+                            - 'button "onColumnWidthsChange (widths: Map<string, TableColumnWidth>) => void —" [ref=f18e483]':
+                                - generic [ref=f18e484]: onColumnWidthsChange
+                                - generic [ref=f18e485]: '(widths: Map<string, TableColumnWidth>) => void'
+                                - generic [ref=f18e487]: —
+                            - status [ref=f18e490]
+                        - generic [ref=f18e491]:
+                            - 'button "onHiddenColumnsChange (columnIds: string[]) => void —" [ref=f18e492]':
+                                - generic [ref=f18e493]: onHiddenColumnsChange
+                                - generic [ref=f18e494]: '(columnIds: string[]) => void'
+                                - generic [ref=f18e496]: —
+                            - status [ref=f18e499]
+                        - generic [ref=f18e500]:
+                            - 'button "onColumnResizeStart (columnId: string) => void —" [ref=f18e501]':
+                                - generic [ref=f18e502]: onColumnResizeStart
+                                - generic [ref=f18e503]: '(columnId: string) => void'
+                                - generic [ref=f18e505]: —
+                            - status [ref=f18e508]
+                        - generic [ref=f18e509]:
+                            - 'button "onColumnResizeEnd (widths: Map<string, TableColumnWidth>) => void —" [ref=f18e510]':
+                                - generic [ref=f18e511]: onColumnResizeEnd
+                                - generic [ref=f18e512]: '(widths: Map<string, TableColumnWidth>) => void'
+                                - generic [ref=f18e514]: —
+                            - status [ref=f18e517]
+                        - generic [ref=f18e518]:
+                            - button "children Snippet —" [ref=f18e519]:
+                                - generic [ref=f18e520]: children
+                                - generic [ref=f18e521]: Snippet
+                                - generic [ref=f18e523]: —
+                            - status [ref=f18e526]
+                        - generic [ref=f18e527]:
+                            - button "class string ''" [ref=f18e528]:
+                                - generic [ref=f18e529]: class
+                                - generic [ref=f18e530]: string
+                                - generic [ref=f18e532]: "''"
+                            - status [ref=f18e536]
+                        - generic [ref=f18e537]:
+                            - button "context TableContext —" [ref=f18e538]:
+                                - generic [ref=f18e539]: context
+                                - generic [ref=f18e540]: TableContext
+                                - generic [ref=f18e542]: —
+                            - status [ref=f18e545]
+                        - generic [ref=f18e546]:
+                            - button "element HTMLTableElement —" [ref=f18e547]:
+                                - generic [ref=f18e548]: element
+                                - generic [ref=f18e549]: HTMLTableElement
+                                - generic [ref=f18e551]: —
+                            - status [ref=f18e554]
+                    - paragraph [ref=f18e555]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e557]:
+                        - generic [ref=f18e558]:
+                            - generic [ref=f18e559]: Data attribute
+                            - generic [ref=f18e560]: Description
+                        - generic [ref=f18e561]:
+                            - generic [ref=f18e562]: data-disabled-behavior
+                            - generic [ref=f18e563]: The configured disabled behavior ('all' | 'selection').
+                        - generic [ref=f18e564]:
+                            - generic [ref=f18e565]: data-focus-visible
+                            - generic [ref=f18e566]: Present while focus inside the table should be visibly indicated (keyboard modality).
+                        - generic [ref=f18e567]:
+                            - generic [ref=f18e568]: data-focus-within
+                            - generic [ref=f18e569]: Present while focus is inside the table.
+                        - generic [ref=f18e570]:
+                            - generic [ref=f18e571]: data-selection-behavior
+                            - generic [ref=f18e572]: The configured selection behavior ('toggle' | 'replace').
+                        - generic [ref=f18e573]:
+                            - generic [ref=f18e574]: data-selection-mode
+                            - generic [ref=f18e575]: The configured selection mode ('none' | 'single' | 'multiple').
+                        - generic [ref=f18e576]:
+                            - generic [ref=f18e577]: data-table-column-resizer
+                            - generic [ref=f18e578]: Marks resize handles inside the table; the root switches to a fixed table layout when any are present.
+                        - generic [ref=f18e579]:
+                            - generic [ref=f18e580]: data-table-implicit-width
+                            - generic [ref=f18e581]: Present on a column's col element while it still uses an implicit width (before widths are materialized by a resize).
+                    - heading "Column" [level=3] [ref=f18e582]
+                    - paragraph [ref=f18e583]: Metadata-only wrapper for a column. Renders no DOM itself; it registers the column and should wrap a single Table.ColumnHeaderCell.
+                    - generic [ref=f18e585]:
+                        - generic [ref=f18e586]:
+                            - generic [ref=f18e587]: Prop
+                            - generic [ref=f18e588]: Type
+                            - generic [ref=f18e589]: Default
+                        - generic [ref=f18e590]:
+                            - button "id* string —" [ref=f18e591]:
+                                - generic [ref=f18e592]: id*
+                                - generic [ref=f18e593]: string
+                                - generic [ref=f18e595]: —
+                            - status [ref=f18e598]
+                        - generic [ref=f18e599]:
+                            - button "rowHeader boolean false" [ref=f18e600]:
+                                - generic [ref=f18e601]: rowHeader
+                                - generic [ref=f18e602]: boolean
+                                - generic [ref=f18e604]: 'false'
+                            - status [ref=f18e608]
+                        - generic [ref=f18e609]:
+                            - button "textValue string —" [ref=f18e610]:
+                                - generic [ref=f18e611]: textValue
+                                - generic [ref=f18e612]: string
+                                - generic [ref=f18e614]: —
+                            - status [ref=f18e617]
+                        - generic [ref=f18e618]:
+                            - button "width TableColumnWidth —" [ref=f18e619]:
+                                - generic [ref=f18e620]: width
+                                - generic [ref=f18e621]: TableColumnWidth
+                                - generic [ref=f18e623]: —
+                            - status [ref=f18e626]
+                        - generic [ref=f18e627]:
+                            - button "defaultWidth TableColumnWidth —" [ref=f18e628]:
+                                - generic [ref=f18e629]: defaultWidth
+                                - generic [ref=f18e630]: TableColumnWidth
+                                - generic [ref=f18e632]: —
+                            - status [ref=f18e635]
+                        - generic [ref=f18e636]:
+                            - button "minWidth number —" [ref=f18e637]:
+                                - generic [ref=f18e638]: minWidth
+                                - generic [ref=f18e639]: number
+                                - generic [ref=f18e641]: —
+                            - status [ref=f18e644]
+                        - generic [ref=f18e645]:
+                            - button "maxWidth number —" [ref=f18e646]:
+                                - generic [ref=f18e647]: maxWidth
+                                - generic [ref=f18e648]: number
+                                - generic [ref=f18e650]: —
+                            - status [ref=f18e653]
+                        - generic [ref=f18e654]:
+                            - button "pin TableColumnPin —" [ref=f18e655]:
+                                - generic [ref=f18e656]: pin
+                                - generic [ref=f18e657]: TableColumnPin
+                                - generic [ref=f18e659]: —
+                            - status [ref=f18e662]
+                        - generic [ref=f18e663]:
+                            - button "children Snippet —" [ref=f18e664]:
+                                - generic [ref=f18e665]: children
+                                - generic [ref=f18e666]: Snippet
+                                - generic [ref=f18e668]: —
+                            - status [ref=f18e671]
+                    - paragraph [ref=f18e672]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Header" [level=3] [ref=f18e673]
+                    - paragraph [ref=f18e674]: The table head section containing the header row.
+                    - generic [ref=f18e676]:
+                        - generic [ref=f18e677]:
+                            - generic [ref=f18e678]: Prop
+                            - generic [ref=f18e679]: Type
+                            - generic [ref=f18e680]: Default
+                        - generic [ref=f18e681]:
+                            - button "children Snippet —" [ref=f18e682]:
+                                - generic [ref=f18e683]: children
+                                - generic [ref=f18e684]: Snippet
+                                - generic [ref=f18e686]: —
+                            - status [ref=f18e689]
+                        - generic [ref=f18e690]:
+                            - button "class string ''" [ref=f18e691]:
+                                - generic [ref=f18e692]: class
+                                - generic [ref=f18e693]: string
+                                - generic [ref=f18e695]: "''"
+                            - status [ref=f18e699]
+                    - paragraph [ref=f18e700]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e702]:
+                        - generic [ref=f18e703]:
+                            - generic [ref=f18e704]: Data attribute
+                            - generic [ref=f18e705]: Description
+                        - generic [ref=f18e706]:
+                            - generic [ref=f18e707]: data-table-header
+                            - generic [ref=f18e708]: Identifies the header element.
+                    - heading "Body" [level=3] [ref=f18e709]
+                    - paragraph [ref=f18e710]: The table body section. Renders the data rows and hosts the empty state.
+                    - generic [ref=f18e712]:
+                        - generic [ref=f18e713]:
+                            - generic [ref=f18e714]: Prop
+                            - generic [ref=f18e715]: Type
+                            - generic [ref=f18e716]: Default
+                        - generic [ref=f18e717]:
+                            - button "class string ''" [ref=f18e718]:
+                                - generic [ref=f18e719]: class
+                                - generic [ref=f18e720]: string
+                                - generic [ref=f18e722]: "''"
+                            - status [ref=f18e726]
+                        - generic [ref=f18e727]:
+                            - button "items undefined —" [ref=f18e728]:
+                                - generic [ref=f18e729]: items
+                                - generic [ref=f18e730]: undefined
+                                - generic [ref=f18e732]: —
+                            - status [ref=f18e735]
+                        - generic [ref=f18e736]:
+                            - button "virtualizer undefined —" [ref=f18e737]:
+                                - generic [ref=f18e738]: virtualizer
+                                - generic [ref=f18e739]: undefined
+                                - generic [ref=f18e741]: —
+                            - status [ref=f18e744]
+                        - generic [ref=f18e745]:
+                            - button "children Snippet —" [ref=f18e746]:
+                                - generic [ref=f18e747]: children
+                                - generic [ref=f18e748]: Snippet
+                                - generic [ref=f18e750]: —
+                            - status [ref=f18e753]
+                        - generic [ref=f18e754]:
+                            - button "empty undefined —" [ref=f18e755]:
+                                - generic [ref=f18e756]: empty
+                                - generic [ref=f18e757]: undefined
+                                - generic [ref=f18e759]: —
+                            - status [ref=f18e762]
+                    - paragraph [ref=f18e763]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e765]:
+                        - generic [ref=f18e766]:
+                            - generic [ref=f18e767]: Data attribute
+                            - generic [ref=f18e768]: Description
+                        - generic [ref=f18e769]:
+                            - generic [ref=f18e770]: data-empty
+                            - generic [ref=f18e771]: Present while the body has no rows.
+                        - generic [ref=f18e772]:
+                            - generic [ref=f18e773]: data-table-body
+                            - generic [ref=f18e774]: Identifies the body element.
+                        - generic [ref=f18e775]:
+                            - generic [ref=f18e776]: data-virtual-spacer
+                            - generic [ref=f18e777]: Identifies the top or bottom spacer rows used by virtualization ('top' | 'bottom').
+                    - heading "EmptyState" [level=3] [ref=f18e778]
+                    - paragraph [ref=f18e779]: A placeholder row shown inside the body while the table has no rows. Use it instead of conditionally rendering freeform body content.
+                    - generic [ref=f18e781]:
+                        - generic [ref=f18e782]:
+                            - generic [ref=f18e783]: Prop
+                            - generic [ref=f18e784]: Type
+                            - generic [ref=f18e785]: Default
+                        - generic [ref=f18e786]:
+                            - button "children Snippet —" [ref=f18e787]:
+                                - generic [ref=f18e788]: children
+                                - generic [ref=f18e789]: Snippet
+                                - generic [ref=f18e791]: —
+                            - status [ref=f18e794]
+                        - generic [ref=f18e795]:
+                            - button "class string ''" [ref=f18e796]:
+                                - generic [ref=f18e797]: class
+                                - generic [ref=f18e798]: string
+                                - generic [ref=f18e800]: "''"
+                            - status [ref=f18e804]
+                    - paragraph [ref=f18e805]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e807]:
+                        - generic [ref=f18e808]:
+                            - generic [ref=f18e809]: Data attribute
+                            - generic [ref=f18e810]: Description
+                        - generic [ref=f18e811]:
+                            - generic [ref=f18e812]: data-empty
+                            - generic [ref=f18e813]: Identifies the empty state row.
+                    - heading "Footer" [level=3] [ref=f18e814]
+                    - paragraph [ref=f18e815]: The table foot section, for summary rows.
+                    - generic [ref=f18e817]:
+                        - generic [ref=f18e818]:
+                            - generic [ref=f18e819]: Prop
+                            - generic [ref=f18e820]: Type
+                            - generic [ref=f18e821]: Default
+                        - generic [ref=f18e822]:
+                            - button "children Snippet —" [ref=f18e823]:
+                                - generic [ref=f18e824]: children
+                                - generic [ref=f18e825]: Snippet
+                                - generic [ref=f18e827]: —
+                            - status [ref=f18e830]
+                        - generic [ref=f18e831]:
+                            - button "class string ''" [ref=f18e832]:
+                                - generic [ref=f18e833]: class
+                                - generic [ref=f18e834]: string
+                                - generic [ref=f18e836]: "''"
+                            - status [ref=f18e840]
+                    - paragraph [ref=f18e841]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e843]:
+                        - generic [ref=f18e844]:
+                            - generic [ref=f18e845]: Data attribute
+                            - generic [ref=f18e846]: Description
+                        - generic [ref=f18e847]:
+                            - generic [ref=f18e848]: data-table-footer
+                            - generic [ref=f18e849]: Identifies the footer element.
+                    - heading "Row" [level=3] [ref=f18e850]
+                    - paragraph [ref=f18e851]: A table row. Body rows take an id to participate in selection, focus navigation, and row actions.
+                    - generic [ref=f18e853]:
+                        - generic [ref=f18e854]:
+                            - generic [ref=f18e855]: Prop
+                            - generic [ref=f18e856]: Type
+                            - generic [ref=f18e857]: Default
+                        - generic [ref=f18e858]:
+                            - button "id TableSelectionKey —" [ref=f18e859]:
+                                - generic [ref=f18e860]: id
+                                - generic [ref=f18e861]: TableSelectionKey
+                                - generic [ref=f18e863]: —
+                            - status [ref=f18e866]
+                        - generic [ref=f18e867]:
+                            - button "disabled boolean false" [ref=f18e868]:
+                                - generic [ref=f18e869]: disabled
+                                - generic [ref=f18e870]: boolean
+                                - generic [ref=f18e872]: 'false'
+                            - status [ref=f18e876]
+                        - generic [ref=f18e877]:
+                            - button "textValue string —" [ref=f18e878]:
+                                - generic [ref=f18e879]: textValue
+                                - generic [ref=f18e880]: string
+                                - generic [ref=f18e882]: —
+                            - status [ref=f18e885]
+                        - generic [ref=f18e886]:
+                            - button "children Snippet —" [ref=f18e887]:
+                                - generic [ref=f18e888]: children
+                                - generic [ref=f18e889]: Snippet
+                                - generic [ref=f18e891]: —
+                            - status [ref=f18e894]
+                        - generic [ref=f18e895]:
+                            - button "class string ''" [ref=f18e896]:
+                                - generic [ref=f18e897]: class
+                                - generic [ref=f18e898]: string
+                                - generic [ref=f18e900]: "''"
+                            - status [ref=f18e904]
+                    - paragraph [ref=f18e905]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e907]:
+                        - generic [ref=f18e908]:
+                            - generic [ref=f18e909]: Data attribute
+                            - generic [ref=f18e910]: Description
+                        - generic [ref=f18e911]:
+                            - generic [ref=f18e912]: data-actionable
+                            - generic [ref=f18e913]: Present when activating the row triggers a row action.
+                        - generic [ref=f18e914]:
+                            - generic [ref=f18e915]: data-disabled
+                            - generic [ref=f18e916]: Present when the row is disabled.
+                        - generic [ref=f18e917]:
+                            - generic [ref=f18e918]: data-focus-visible
+                            - generic [ref=f18e919]: Present while the row itself is focused and focus should be visibly indicated.
+                        - generic [ref=f18e920]:
+                            - generic [ref=f18e921]: data-focus-visible-within
+                            - generic [ref=f18e922]: Present while an element inside the row has visibly indicated focus.
+                        - generic [ref=f18e923]:
+                            - generic [ref=f18e924]: data-focus-within
+                            - generic [ref=f18e925]: Present while focus is inside the row.
+                        - generic [ref=f18e926]:
+                            - generic [ref=f18e927]: data-focused
+                            - generic [ref=f18e928]: Present while the row itself has focus.
+                        - generic [ref=f18e929]:
+                            - generic [ref=f18e930]: data-selected
+                            - generic [ref=f18e931]: Present while the row is selected.
+                        - generic [ref=f18e932]:
+                            - generic [ref=f18e933]: data-selection-disabled
+                            - generic [ref=f18e934]: Present when the row cannot be selected.
+                    - heading "ColumnHeaderCell" [level=3] [ref=f18e935]
+                    - paragraph [ref=f18e936]: A header cell. Remains the roving-focus target for its column even when it contains a sort trigger or resizer.
+                    - generic [ref=f18e938]:
+                        - generic [ref=f18e939]:
+                            - generic [ref=f18e940]: Prop
+                            - generic [ref=f18e941]: Type
+                            - generic [ref=f18e942]: Default
+                        - generic [ref=f18e943]:
+                            - button "children Snippet —" [ref=f18e944]:
+                                - generic [ref=f18e945]: children
+                                - generic [ref=f18e946]: Snippet
+                                - generic [ref=f18e948]: —
+                            - status [ref=f18e951]
+                        - generic [ref=f18e952]:
+                            - button "class string ''" [ref=f18e953]:
+                                - generic [ref=f18e954]: class
+                                - generic [ref=f18e955]: string
+                                - generic [ref=f18e957]: "''"
+                            - status [ref=f18e961]
+                    - paragraph [ref=f18e962]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e964]:
+                        - generic [ref=f18e965]:
+                            - generic [ref=f18e966]: Data attribute
+                            - generic [ref=f18e967]: Description
+                        - generic [ref=f18e968]:
+                            - generic [ref=f18e969]: data-column-index
+                            - generic [ref=f18e970]: Index of the cell's column among visible columns.
+                        - generic [ref=f18e971]:
+                            - generic [ref=f18e972]: data-focus-visible
+                            - generic [ref=f18e973]: Present while the cell is focused and focus should be visibly indicated.
+                        - generic [ref=f18e974]:
+                            - generic [ref=f18e975]: data-focus-visible-within
+                            - generic [ref=f18e976]: Present while an element inside the cell has visibly indicated focus.
+                        - generic [ref=f18e977]:
+                            - generic [ref=f18e978]: data-focus-within
+                            - generic [ref=f18e979]: Present while focus is inside the cell.
+                        - generic [ref=f18e980]:
+                            - generic [ref=f18e981]: data-focused
+                            - generic [ref=f18e982]: Present while the cell has focus.
+                        - generic [ref=f18e983]:
+                            - generic [ref=f18e984]: data-pin-edge
+                            - generic [ref=f18e985]: The edge the owning column is pinned to ('left' | 'right').
+                        - generic [ref=f18e986]:
+                            - generic [ref=f18e987]: data-pinned
+                            - generic [ref=f18e988]: Present when the owning column is pinned.
+                        - generic [ref=f18e989]:
+                            - generic [ref=f18e990]: data-sort-direction
+                            - generic [ref=f18e991]: The active sort direction while this column is sorted ('ascending' | 'descending').
+                        - generic [ref=f18e992]:
+                            - generic [ref=f18e993]: data-sortable
+                            - generic [ref=f18e994]: Present when the owning column is sortable.
+                    - heading "SortTrigger" [level=3] [ref=f18e995]
+                    - paragraph [ref=f18e996]: The explicit opt-in button for sorting. Rendering it inside a header cell makes the owning column sortable and toggles the root's sortDescriptor.
+                    - generic [ref=f18e998]:
+                        - generic [ref=f18e999]:
+                            - generic [ref=f18e1000]: Prop
+                            - generic [ref=f18e1001]: Type
+                            - generic [ref=f18e1002]: Default
+                        - generic [ref=f18e1003]:
+                            - button "children Snippet<[TableSortTriggerRenderState]> | Snippet —" [ref=f18e1004]:
+                                - generic [ref=f18e1005]: children
+                                - generic [ref=f18e1006]: Snippet<[TableSortTriggerRenderState]> | Snippet
+                                - generic [ref=f18e1008]: —
+                            - status [ref=f18e1011]
+                        - generic [ref=f18e1012]:
+                            - button "class string ''" [ref=f18e1013]:
+                                - generic [ref=f18e1014]: class
+                                - generic [ref=f18e1015]: string
+                                - generic [ref=f18e1017]: "''"
+                            - status [ref=f18e1021]
+                        - generic [ref=f18e1022]:
+                            - button "element HTMLButtonElement | null null" [ref=f18e1023]:
+                                - generic [ref=f18e1024]: element
+                                - generic [ref=f18e1025]: HTMLButtonElement | null
+                                - generic [ref=f18e1027]: 'null'
+                            - status [ref=f18e1031]
+                    - paragraph [ref=f18e1032]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e1034]:
+                        - generic [ref=f18e1035]:
+                            - generic [ref=f18e1036]: Data attribute
+                            - generic [ref=f18e1037]: Description
+                        - generic [ref=f18e1038]:
+                            - generic [ref=f18e1039]: data-sort-direction
+                            - generic [ref=f18e1040]: The active sort direction while the owning column is sorted ('ascending' | 'descending').
+                        - generic [ref=f18e1041]:
+                            - generic [ref=f18e1042]: data-sorted
+                            - generic [ref=f18e1043]: Present while the owning column is the active sort column.
+                        - generic [ref=f18e1044]:
+                            - generic [ref=f18e1045]: data-table-sort-trigger
+                            - generic [ref=f18e1046]: Identifies the sort trigger element.
+                    - heading "ColumnResizer" [level=3] [ref=f18e1047]
+                    - paragraph [ref=f18e1048]: A keyboard-accessible resize handle. Rendering it inside a header cell makes the owning column resizable.
+                    - generic [ref=f18e1050]:
+                        - generic [ref=f18e1051]:
+                            - generic [ref=f18e1052]: Prop
+                            - generic [ref=f18e1053]: Type
+                            - generic [ref=f18e1054]: Default
+                        - generic [ref=f18e1055]:
+                            - button "step number 16" [ref=f18e1056]:
+                                - generic [ref=f18e1057]: step
+                                - generic [ref=f18e1058]: number
+                                - generic [ref=f18e1060]: '16'
+                            - status [ref=f18e1064]
+                        - generic [ref=f18e1065]:
+                            - button "shiftStep number 48" [ref=f18e1066]:
+                                - generic [ref=f18e1067]: shiftStep
+                                - generic [ref=f18e1068]: number
+                                - generic [ref=f18e1070]: '48'
+                            - status [ref=f18e1074]
+                        - generic [ref=f18e1075]:
+                            - button "children Snippet —" [ref=f18e1076]:
+                                - generic [ref=f18e1077]: children
+                                - generic [ref=f18e1078]: Snippet
+                                - generic [ref=f18e1080]: —
+                            - status [ref=f18e1083]
+                        - generic [ref=f18e1084]:
+                            - button "class string ''" [ref=f18e1085]:
+                                - generic [ref=f18e1086]: class
+                                - generic [ref=f18e1087]: string
+                                - generic [ref=f18e1089]: "''"
+                            - status [ref=f18e1093]
+                    - paragraph [ref=f18e1094]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e1096]:
+                        - generic [ref=f18e1097]:
+                            - generic [ref=f18e1098]: Data attribute
+                            - generic [ref=f18e1099]: Description
+                        - generic [ref=f18e1100]:
+                            - generic [ref=f18e1101]: data-focus-visible
+                            - generic [ref=f18e1102]: Present while the handle is focused and focus should be visibly indicated.
+                        - generic [ref=f18e1103]:
+                            - generic [ref=f18e1104]: data-focused
+                            - generic [ref=f18e1105]: Present while the handle has focus.
+                        - generic [ref=f18e1106]:
+                            - generic [ref=f18e1107]: data-resizable
+                            - generic [ref=f18e1108]: Present when the owning column can currently be resized.
+                        - generic [ref=f18e1109]:
+                            - generic [ref=f18e1110]: data-resizable-direction
+                            - generic [ref=f18e1111]: The direction the handle resizes toward (currently always 'right').
+                        - generic [ref=f18e1112]:
+                            - generic [ref=f18e1113]: data-resizing
+                            - generic [ref=f18e1114]: Present while a pointer or keyboard resize is in progress.
+                        - generic [ref=f18e1115]:
+                            - generic [ref=f18e1116]: data-table-column-resizer
+                            - generic [ref=f18e1117]: Identifies the resize handle element.
+                        - generic [ref=f18e1118]:
+                            - generic [ref=f18e1119]: data-testid
+                            - generic [ref=f18e1120]: Identifies the hidden resize status live region ('column-resize-status'); not a styling target.
+                    - heading "Checkbox" [level=3] [ref=f18e1121]
+                    - paragraph [ref=f18e1122]: An explicit selection control inside header or body cells. Auto-hides in header cells unless selectionMode is 'multiple', and everywhere when selection is disabled.
+                    - generic [ref=f18e1124]:
+                        - generic [ref=f18e1125]:
+                            - generic [ref=f18e1126]: Prop
+                            - generic [ref=f18e1127]: Type
+                            - generic [ref=f18e1128]: Default
+                        - generic [ref=f18e1129]:
+                            - button "id string —" [ref=f18e1130]:
+                                - generic [ref=f18e1131]: id
+                                - generic [ref=f18e1132]: string
+                                - generic [ref=f18e1134]: —
+                            - status [ref=f18e1137]
+                        - generic [ref=f18e1138]:
+                            - button "title string —" [ref=f18e1139]:
+                                - generic [ref=f18e1140]: title
+                                - generic [ref=f18e1141]: string
+                                - generic [ref=f18e1143]: —
+                            - status [ref=f18e1146]
+                        - generic [ref=f18e1147]:
+                            - button "children Snippet —" [ref=f18e1148]:
+                                - generic [ref=f18e1149]: children
+                                - generic [ref=f18e1150]: Snippet
+                                - generic [ref=f18e1152]: —
+                            - status [ref=f18e1155]
+                        - generic [ref=f18e1156]:
+                            - button "class string ''" [ref=f18e1157]:
+                                - generic [ref=f18e1158]: class
+                                - generic [ref=f18e1159]: string
+                                - generic [ref=f18e1161]: "''"
+                            - status [ref=f18e1165]
+                        - generic [ref=f18e1166]:
+                            - button "aria-label string —" [ref=f18e1167]:
+                                - generic [ref=f18e1168]: aria-label
+                                - generic [ref=f18e1169]: string
+                                - generic [ref=f18e1171]: —
+                            - status [ref=f18e1174]
+                        - generic [ref=f18e1175]:
+                            - button "aria-labelledby string —" [ref=f18e1176]:
+                                - generic [ref=f18e1177]: aria-labelledby
+                                - generic [ref=f18e1178]: string
+                                - generic [ref=f18e1180]: —
+                            - status [ref=f18e1183]
+                    - paragraph [ref=f18e1184]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e1186]:
+                        - generic [ref=f18e1187]:
+                            - generic [ref=f18e1188]: Data attribute
+                            - generic [ref=f18e1189]: Description
+                        - generic [ref=f18e1190]:
+                            - generic [ref=f18e1191]: data-table-checkbox
+                            - generic [ref=f18e1192]: Identifies the checkbox element.
+                    - heading "CheckboxIndicator" [level=3] [ref=f18e1193]
+                    - paragraph [ref=f18e1194]: The visual mark inside a table checkbox, composing custom affordances for checked and indeterminate states.
+                    - generic [ref=f18e1196]:
+                        - generic [ref=f18e1197]:
+                            - generic [ref=f18e1198]: Prop
+                            - generic [ref=f18e1199]: Type
+                            - generic [ref=f18e1200]: Default
+                        - generic [ref=f18e1201]:
+                            - button "forceMount boolean false" [ref=f18e1202]:
+                                - generic [ref=f18e1203]: forceMount
+                                - generic [ref=f18e1204]: boolean
+                                - generic [ref=f18e1206]: 'false'
+                            - status [ref=f18e1210]
+                        - generic [ref=f18e1211]:
+                            - button "children Snippet —" [ref=f18e1212]:
+                                - generic [ref=f18e1213]: children
+                                - generic [ref=f18e1214]: Snippet
+                                - generic [ref=f18e1216]: —
+                            - status [ref=f18e1219]
+                        - generic [ref=f18e1220]:
+                            - button "class string ''" [ref=f18e1221]:
+                                - generic [ref=f18e1222]: class
+                                - generic [ref=f18e1223]: string
+                                - generic [ref=f18e1225]: "''"
+                            - status [ref=f18e1229]
+                    - paragraph [ref=f18e1230]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e1232]:
+                        - generic [ref=f18e1233]:
+                            - generic [ref=f18e1234]: Data attribute
+                            - generic [ref=f18e1235]: Description
+                        - generic [ref=f18e1236]:
+                            - generic [ref=f18e1237]: data-checkbox-indicator
+                            - generic [ref=f18e1238]: Identifies the indicator element.
+                        - generic [ref=f18e1239]:
+                            - generic [ref=f18e1240]: data-checked
+                            - generic [ref=f18e1241]: Present while the checkbox is checked.
+                        - generic [ref=f18e1242]:
+                            - generic [ref=f18e1243]: data-disabled
+                            - generic [ref=f18e1244]: Present when the checkbox is disabled.
+                        - generic [ref=f18e1245]:
+                            - generic [ref=f18e1246]: data-focus-visible
+                            - generic [ref=f18e1247]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f18e1248]:
+                            - generic [ref=f18e1249]: data-focused
+                            - generic [ref=f18e1250]: Present while the checkbox has focus.
+                        - generic [ref=f18e1251]:
+                            - generic [ref=f18e1252]: data-indeterminate
+                            - generic [ref=f18e1253]: Present while the checkbox is indeterminate (partial selection).
+                        - generic [ref=f18e1254]:
+                            - generic [ref=f18e1255]: data-pressed
+                            - generic [ref=f18e1256]: Present while the checkbox is actively pressed.
+                        - generic [ref=f18e1257]:
+                            - generic [ref=f18e1258]: data-unchecked
+                            - generic [ref=f18e1259]: 'Present while the checkbox is unchecked (with `forceMount`).'
+                    - heading "Cell" [level=3] [ref=f18e1260]
+                    - paragraph [ref=f18e1261]: A body or footer cell participating in grid keyboard navigation. First-column body cells render as rowheader when their column has rowHeader.
+                    - generic [ref=f18e1263]:
+                        - generic [ref=f18e1264]:
+                            - generic [ref=f18e1265]: Prop
+                            - generic [ref=f18e1266]: Type
+                            - generic [ref=f18e1267]: Default
+                        - generic [ref=f18e1268]:
+                            - button "children Snippet —" [ref=f18e1269]:
+                                - generic [ref=f18e1270]: children
+                                - generic [ref=f18e1271]: Snippet
+                                - generic [ref=f18e1273]: —
+                            - status [ref=f18e1276]
+                        - generic [ref=f18e1277]:
+                            - button "class string ''" [ref=f18e1278]:
+                                - generic [ref=f18e1279]: class
+                                - generic [ref=f18e1280]: string
+                                - generic [ref=f18e1282]: "''"
+                            - status [ref=f18e1286]
+                    - paragraph [ref=f18e1287]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e1289]:
+                        - generic [ref=f18e1290]:
+                            - generic [ref=f18e1291]: Data attribute
+                            - generic [ref=f18e1292]: Description
+                        - generic [ref=f18e1293]:
+                            - generic [ref=f18e1294]: data-actionable
+                            - generic [ref=f18e1295]: Present when activating the cell's row triggers a row action.
+                        - generic [ref=f18e1296]:
+                            - generic [ref=f18e1297]: data-column-index
+                            - generic [ref=f18e1298]: Index of the cell's column among visible columns.
+                        - generic [ref=f18e1299]:
+                            - generic [ref=f18e1300]: data-disabled
+                            - generic [ref=f18e1301]: Present when the cell's row is disabled.
+                        - generic [ref=f18e1302]:
+                            - generic [ref=f18e1303]: data-focus-visible
+                            - generic [ref=f18e1304]: Present while the cell is focused and focus should be visibly indicated.
+                        - generic [ref=f18e1305]:
+                            - generic [ref=f18e1306]: data-focused
+                            - generic [ref=f18e1307]: Present while the cell has focus.
+                        - generic [ref=f18e1308]:
+                            - generic [ref=f18e1309]: data-pin-edge
+                            - generic [ref=f18e1310]: The edge the owning column is pinned to ('left' | 'right').
+                        - generic [ref=f18e1311]:
+                            - generic [ref=f18e1312]: data-pinned
+                            - generic [ref=f18e1313]: Present when the owning column is pinned.
+                        - generic [ref=f18e1314]:
+                            - generic [ref=f18e1315]: data-row-selected
+                            - generic [ref=f18e1316]: Present while the cell's row is selected.
+                        - generic [ref=f18e1317]:
+                            - generic [ref=f18e1318]: data-selection-disabled
+                            - generic [ref=f18e1319]: Present when the cell's row cannot be selected.
+                    - heading "InteractiveCell" [level=3] [ref=f18e1320]
+                    - paragraph [ref=f18e1321]: A body cell for content with its own focusable controls. The cell keeps grid keyboard navigation while focus is on it; focused descendants own their interactions.
+                    - generic [ref=f18e1323]:
+                        - generic [ref=f18e1324]:
+                            - generic [ref=f18e1325]: Prop
+                            - generic [ref=f18e1326]: Type
+                            - generic [ref=f18e1327]: Default
+                        - generic [ref=f18e1328]:
+                            - button "children Snippet —" [ref=f18e1329]:
+                                - generic [ref=f18e1330]: children
+                                - generic [ref=f18e1331]: Snippet
+                                - generic [ref=f18e1333]: —
+                            - status [ref=f18e1336]
+                        - generic [ref=f18e1337]:
+                            - button "class string ''" [ref=f18e1338]:
+                                - generic [ref=f18e1339]: class
+                                - generic [ref=f18e1340]: string
+                                - generic [ref=f18e1342]: "''"
+                            - status [ref=f18e1346]
+                    - paragraph [ref=f18e1347]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f18e1349]:
+                        - generic [ref=f18e1350]:
+                            - generic [ref=f18e1351]: Data attribute
+                            - generic [ref=f18e1352]: Description
+                        - generic [ref=f18e1353]:
+                            - generic [ref=f18e1354]: data-actionable
+                            - generic [ref=f18e1355]: Present when activating the cell's row triggers a row action.
+                        - generic [ref=f18e1356]:
+                            - generic [ref=f18e1357]: data-column-index
+                            - generic [ref=f18e1358]: Index of the cell's column among visible columns.
+                        - generic [ref=f18e1359]:
+                            - generic [ref=f18e1360]: data-disabled
+                            - generic [ref=f18e1361]: Present when the cell's row is disabled.
+                        - generic [ref=f18e1362]:
+                            - generic [ref=f18e1363]: data-focus-visible
+                            - generic [ref=f18e1364]: Present while the cell is focused and focus should be visibly indicated.
+                        - generic [ref=f18e1365]:
+                            - generic [ref=f18e1366]: data-focused
+                            - generic [ref=f18e1367]: Present while the cell has focus.
+                        - generic [ref=f18e1368]:
+                            - generic [ref=f18e1369]: data-pin-edge
+                            - generic [ref=f18e1370]: The edge the owning column is pinned to ('left' | 'right').
+                        - generic [ref=f18e1371]:
+                            - generic [ref=f18e1372]: data-pinned
+                            - generic [ref=f18e1373]: Present when the owning column is pinned.
+                        - generic [ref=f18e1374]:
+                            - generic [ref=f18e1375]: data-row-selected
+                            - generic [ref=f18e1376]: Present while the cell's row is selected.
+                        - generic [ref=f18e1377]:
+                            - generic [ref=f18e1378]: data-selection-disabled
+                            - generic [ref=f18e1379]: Present when the cell's row cannot be selected.
+                    - paragraph [ref=f18e1380]: More advanced patterns — column visibility, fixed and pinned columns, sticky headers, column resizing, and row actions — are supported by the same parts; see the API reference above for the corresponding props.
+            - complementary [ref=f18e1381]:
+                - navigation "On this page" [ref=f18e1382]:
+                    - heading "On this page" [level=4] [ref=f18e1383]
+                    - list [ref=f18e1384]:
+                        - listitem [ref=f18e1385]:
+                            - link "(Top)" [ref=f18e1386] [cursor=pointer]:
+                                - /url: '#top'
+                        - listitem [ref=f18e1387]:
+                            - link "Anatomy" [ref=f18e1388] [cursor=pointer]:
+                                - /url: '#anatomy'
+                        - listitem [ref=f18e1389]:
+                            - link "Row selection" [ref=f18e1390] [cursor=pointer]:
+                                - /url: '#row-selection'
+                        - listitem [ref=f18e1391]:
+                            - link "Pagination" [ref=f18e1392] [cursor=pointer]:
+                                - /url: '#pagination'
+                        - listitem [ref=f18e1393]:
+                            - link "Usage guidelines" [ref=f18e1394] [cursor=pointer]:
+                                - /url: '#usage-guidelines'
+                        - listitem [ref=f18e1395]:
+                            - link "Accessibility" [ref=f18e1396] [cursor=pointer]:
+                                - /url: '#accessibility'
+                        - listitem [ref=f18e1397]:
+                            - link "API reference" [ref=f18e1398] [cursor=pointer]:
+                                - /url: '#api-reference'
+                        - listitem [ref=f18e1399]:
+                            - link "Root" [ref=f18e1400] [cursor=pointer]:
+                                - /url: '#api-root'
+                        - listitem [ref=f18e1401]:
+                            - link "Column" [ref=f18e1402] [cursor=pointer]:
+                                - /url: '#api-column'
+                        - listitem [ref=f18e1403]:
+                            - link "Header" [ref=f18e1404] [cursor=pointer]:
+                                - /url: '#api-header'
+                        - listitem [ref=f18e1405]:
+                            - link "Body" [ref=f18e1406] [cursor=pointer]:
+                                - /url: '#api-body'
+                        - listitem [ref=f18e1407]:
+                            - link "EmptyState" [ref=f18e1408] [cursor=pointer]:
+                                - /url: '#api-emptystate'
+                        - listitem [ref=f18e1409]:
+                            - link "Footer" [ref=f18e1410] [cursor=pointer]:
+                                - /url: '#api-footer'
+                        - listitem [ref=f18e1411]:
+                            - link "Row" [ref=f18e1412] [cursor=pointer]:
+                                - /url: '#api-row'
+                        - listitem [ref=f18e1413]:
+                            - link "ColumnHeaderCell" [ref=f18e1414] [cursor=pointer]:
+                                - /url: '#api-columnheadercell'
+                        - listitem [ref=f18e1415]:
+                            - link "SortTrigger" [ref=f18e1416] [cursor=pointer]:
+                                - /url: '#api-sorttrigger'
+                        - listitem [ref=f18e1417]:
+                            - link "ColumnResizer" [ref=f18e1418] [cursor=pointer]:
+                                - /url: '#api-columnresizer'
+                        - listitem [ref=f18e1419]:
+                            - link "Checkbox" [ref=f18e1420] [cursor=pointer]:
+                                - /url: '#api-checkbox'
+                        - listitem [ref=f18e1421]:
+                            - link "CheckboxIndicator" [ref=f18e1422] [cursor=pointer]:
+                                - /url: '#api-checkboxindicator'
+                        - listitem [ref=f18e1423]:
+                            - link "Cell" [ref=f18e1424] [cursor=pointer]:
+                                - /url: '#api-cell'
+                        - listitem [ref=f18e1425]:
+                            - link "InteractiveCell" [ref=f18e1426] [cursor=pointer]:
+                                - /url: '#api-interactivecell'

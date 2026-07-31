@@ -1,830 +1,830 @@
 - generic [ref=f24e1]:
-  - button "Disable render scanning" [ref=f24e2] [cursor=pointer]
-  - generic [ref=f24e7]:
-    - banner [ref=f24e8]:
-      - link [ref=f24e9] [cursor=pointer]:
-        - /url: ../
-      - generic [ref=f24e12]:
-        - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f24e13] [cursor=pointer]:
-          - /url: https://www.npmjs.com/package/@human-kit/ui
-          - text: 1.0.0-beta.0
-        - link "GitHub repository" [ref=f24e14] [cursor=pointer]:
-          - /url: https://github.com/human-kit/ui
-        - button "Toggle color theme" [ref=f24e15]
-        - status [ref=f24e17]
-    - generic [ref=f24e18]:
-      - complementary [ref=f24e19]:
-        - navigation [ref=f24e20]:
-          - generic [ref=f24e21]:
-            - button "Overview" [expanded] [ref=f24e22]
-            - status [ref=f24e25]
-            - list [ref=f24e28]:
-              - listitem [ref=f24e29]:
-                - link "Quick Start" [ref=f24e30] [cursor=pointer]:
-                  - /url: ../docs/quick-start
-              - listitem [ref=f24e31]:
-                - link "Accessibility" [ref=f24e32] [cursor=pointer]:
-                  - /url: ../docs/accessibility
-              - listitem [ref=f24e33]:
-                - link "Releases" [ref=f24e34] [cursor=pointer]:
-                  - /url: ../docs/releases
-              - listitem [ref=f24e35]:
-                - link "About" [ref=f24e36] [cursor=pointer]:
-                  - /url: ../docs/about
-          - generic [ref=f24e37]:
-            - button "Form" [expanded] [ref=f24e38]
-            - status [ref=f24e41]
-            - list [ref=f24e44]:
-              - listitem [ref=f24e45]:
-                - link "Button" [ref=f24e46] [cursor=pointer]:
-                  - /url: ../docs/button
-              - listitem [ref=f24e47]:
-                - link "Checkbox" [ref=f24e48] [cursor=pointer]:
-                  - /url: ../docs/checkbox
-              - listitem [ref=f24e49]:
-                - link "Input" [ref=f24e50] [cursor=pointer]:
-                  - /url: ../docs/input
-              - listitem [ref=f24e51]:
-                - link "NumberField" [ref=f24e52] [cursor=pointer]:
-                  - /url: ../docs/numberfield
-              - listitem [ref=f24e53]:
-                - link "Switch" [ref=f24e54] [cursor=pointer]:
-                  - /url: ../docs/switch
-              - listitem [ref=f24e55]:
-                - link "TextArea" [ref=f24e56] [cursor=pointer]:
-                  - /url: ../docs/textarea
-              - listitem [ref=f24e57]:
-                - link "Toggle" [ref=f24e58] [cursor=pointer]:
-                  - /url: ../docs/toggle
-              - listitem [ref=f24e59]:
-                - link "ToggleGroup" [ref=f24e60] [cursor=pointer]:
-                  - /url: ../docs/toggle-group
-          - generic [ref=f24e61]:
-            - button "Pickers" [expanded] [ref=f24e62]
-            - status [ref=f24e65]
-            - list [ref=f24e68]:
-              - listitem [ref=f24e69]:
-                - link "Autocomplete" [ref=f24e70] [cursor=pointer]:
-                  - /url: ../docs/autocomplete
-              - listitem [ref=f24e71]:
-                - link "ComboBox" [ref=f24e72] [cursor=pointer]:
-                  - /url: ../docs/combobox
-              - listitem [ref=f24e73]:
-                - link "ListBox" [ref=f24e74] [cursor=pointer]:
-                  - /url: ../docs/listbox
-              - listitem [ref=f24e75]:
-                - link "Calendar" [ref=f24e76] [cursor=pointer]:
-                  - /url: ../docs/calendar
-              - listitem [ref=f24e77]:
-                - link "Clock" [ref=f24e78] [cursor=pointer]:
-                  - /url: ../docs/clock
-              - listitem [ref=f24e79]:
-                - link "DatePicker" [ref=f24e80] [cursor=pointer]:
-                  - /url: ../docs/datepicker
-              - listitem [ref=f24e81]:
-                - link "DateRangePicker" [ref=f24e82] [cursor=pointer]:
-                  - /url: ../docs/daterangepicker
-              - listitem [ref=f24e83]:
-                - link "TimePicker" [ref=f24e84] [cursor=pointer]:
-                  - /url: ../docs/timepicker
-          - generic [ref=f24e85]:
-            - button "Overlays" [expanded] [ref=f24e86]
-            - status [ref=f24e89]
-            - list [ref=f24e92]:
-              - listitem [ref=f24e93]:
-                - link "Dialog" [ref=f24e94] [cursor=pointer]:
-                  - /url: ../docs/dialog
-              - listitem [ref=f24e95]:
-                - link "Menu" [ref=f24e96] [cursor=pointer]:
-                  - /url: ../docs/menu
-              - listitem [ref=f24e97]:
-                - link "Popover" [ref=f24e98] [cursor=pointer]:
-                  - /url: ../docs/popover
-          - generic [ref=f24e99]:
-            - button "Structure" [expanded] [ref=f24e100]
-            - status [ref=f24e103]
-            - list [ref=f24e106]:
-              - listitem [ref=f24e107]:
-                - link "Accordion" [ref=f24e108] [cursor=pointer]:
-                  - /url: ../docs/accordion
-              - listitem [ref=f24e109]:
-                - link "Collapsible" [ref=f24e110] [cursor=pointer]:
-                  - /url: ../docs/collapsible
-              - listitem [ref=f24e111]:
-                - link "Table" [ref=f24e112] [cursor=pointer]:
-                  - /url: ../docs/table
-              - listitem [ref=f24e113]:
-                - link "Tabs" [ref=f24e114] [cursor=pointer]:
-                  - /url: ../docs/tabs
-              - listitem [ref=f24e115]:
-                - link "Tree" [ref=f24e116] [cursor=pointer]:
-                  - /url: ../docs/tree
-      - main [ref=f24e117]:
-        - article [ref=f24e119]:
-          - generic [ref=f24e120]:
-            - 'link "Previous: Tabs" [ref=f24e121] [cursor=pointer]':
-              - /url: ../docs/tabs
-            - button "Page options" [ref=f24e122]
-            - status [ref=f24e123]
-          - heading "Tree" [level=1] [ref=f24e124]
-          - paragraph [ref=f24e125]: A headless hierarchical collection primitive with keyboard navigation, expansion state, row selection, and section labels.
-          - generic [ref=f24e126]:
-            - tree "Project files" [ref=f24e128]:
-              - treeitem "Toggle Documents Documents" [expanded] [level=1] [ref=f24e129]:
-                - button "Toggle Documents" [expanded] [ref=f24e130]
-                - status [ref=f24e133]
-                - generic [ref=f24e134]: Documents
-              - treeitem "Toggle Reports Reports" [expanded] [level=2] [ref=f24e135]:
-                - button "Toggle Reports" [expanded] [ref=f24e136]
-                - status [ref=f24e139]
-                - generic [ref=f24e140]: Reports
-              - treeitem "Weekly report" [level=3] [selected] [ref=f24e141]
-              - treeitem "Contracts" [level=2] [ref=f24e144]
-              - treeitem "Toggle Photos Photos" [level=1] [ref=f24e147]:
-                - button "Toggle Photos" [ref=f24e148]
-                - status [ref=f24e151]
-                - generic [ref=f24e152]: Photos
-              - treeitem "Archive" [level=1] [ref=f24e153]
-            - generic [ref=f24e157]:
-              - button "Copy source code" [ref=f24e158]
-              - status [ref=f24e160]
-              - button "Show code" [ref=f24e161]
-              - status [ref=f24e162]
-          - heading "Anatomy" [level=2] [ref=f24e163]
-          - paragraph [ref=f24e164]:
-            - code [ref=f24e165]: Tree.Item
-            - text: declares every node and
-            - code [ref=f24e166]: Tree.Children
-            - text: marks the nested subtree explicitly — its presence is what makes a parent expandible. Interactive parts (
-            - code [ref=f24e167]: Tree.Trigger
-            - text: ","
-            - code [ref=f24e168]: Tree.Checkbox
-            - text: ","
-            - code [ref=f24e169]: Tree.Label
-            - text: ) go directly inside the item. Rows indent automatically through the
-            - code [ref=f24e170]: "--tree-indent-size"
-            - text: CSS variable.
-          - code [ref=f24e173]:
-            - generic [ref=f24e174]: <script>
-            - generic [ref=f24e175]: "import { Tree } from '@human-kit/ui';"
-            - generic [ref=f24e176]: </script>
-            - generic [ref=f24e177]: <Tree.Root aria-label="Files" selectionMode="multiple">
-            - generic [ref=f24e178]: <Tree.Section aria-label="Primary files">
-            - generic [ref=f24e179]: <Tree.Header>Files</Tree.Header>
-            - generic [ref=f24e180]: <Tree.Item id="documents" title="Documents">
-            - generic [ref=f24e181]: <Tree.Trigger aria-label="Toggle Documents">▶</Tree.Trigger>
-            - generic [ref=f24e182]: <Tree.Checkbox aria-label="Select Documents" />
-            - generic [ref=f24e183]: <Tree.Label>Documents</Tree.Label>
-            - generic [ref=f24e184]: <Tree.Children>
-            - generic [ref=f24e185]: <Tree.Item id="reports" title="Reports">
-            - generic [ref=f24e186]: <Tree.Label>Reports</Tree.Label>
-            - generic [ref=f24e187]: </Tree.Item>
-            - generic [ref=f24e188]: </Tree.Children>
-            - generic [ref=f24e189]: </Tree.Item>
-            - generic [ref=f24e190]: </Tree.Section>
-            - generic [ref=f24e191]: </Tree.Root>
-          - heading "Checkbox selection" [level=2] [ref=f24e192]
-          - paragraph [ref=f24e193]:
-            - text: With
-            - code [ref=f24e194]: selectionMode="multiple"
-            - text: ","
-            - code [ref=f24e195]: Tree.Checkbox
-            - text: and
-            - code [ref=f24e196]: Tree.CheckboxIndicator
-            - text: give each row an explicit selection affordance.
-            - code [ref=f24e197]: selectionPropagation="descendants"
-            - text: propagates selection through a subtree, marking partially selected ancestors as indeterminate; the default
-            - code [ref=f24e198]: "\"none\""
-            - text: keeps selection flat, so ancestors stay unchecked unless explicitly selected.
-          - generic [ref=f24e199]:
-            - tree "Report files" [ref=f24e202]:
-              - treeitem "Toggle Reports Select Reports Reports" [checked=mixed] [expanded] [level=1] [ref=f24e203]:
-                - button "Toggle Reports" [expanded] [ref=f24e204]
-                - status [ref=f24e207]
-                - checkbox "Select Reports" [checked=mixed] [ref=f24e208]:
-                  - checkbox
-                - generic [ref=f24e211]: Reports
-              - treeitem "Select Weekly report Weekly report" [checked] [level=2] [selected] [ref=f24e212]:
-                - checkbox "Select Weekly report" [checked] [ref=f24e213]:
-                  - checkbox [checked]
-                - generic [ref=f24e217]: Weekly report
-              - treeitem "Select Budget Budget" [level=2] [ref=f24e218]:
-                - checkbox "Select Budget" [ref=f24e219]:
-                  - checkbox
-                - generic [ref=f24e220]: Budget
-            - generic [ref=f24e222]:
-              - button "Copy source code" [ref=f24e223]
-              - status [ref=f24e225]
-              - button "Show code" [ref=f24e226]
-              - status [ref=f24e227]
-          - heading "Sections and headers" [level=2] [ref=f24e228]
-          - paragraph [ref=f24e229]:
-            - code [ref=f24e230]: Tree.Section
-            - text: groups related top-level items and
-            - code [ref=f24e231]: Tree.Header
-            - text: labels the group. When a section does not render a header, provide
-            - code [ref=f24e232]: aria-label
-            - text: on the section instead.
-          - heading "Usage guidelines" [level=2] [ref=f24e233]
-          - list [ref=f24e234]:
-            - listitem [ref=f24e235]:
-              - text: Use
-              - code [ref=f24e236]: Tree.Root
-              - text: as the stateful container for focus, expansion, selection, and actions, and give it
-              - code [ref=f24e237]: aria-label
-              - text: or
-              - code [ref=f24e238]: aria-labelledby
-              - text: .
-            - listitem [ref=f24e239]:
-              - text: Use
-              - code [ref=f24e240]: expandedKeys
-              - text: /
-              - code [ref=f24e241]: onExpandedKeysChange
-              - text: for controlled expansion and
-              - code [ref=f24e242]: defaultExpandedKeys
-              - text: for uncontrolled initial expansion.
-            - listitem [ref=f24e243]:
-              - text: Use
-              - code [ref=f24e244]: selectedKeys
-              - text: /
-              - code [ref=f24e245]: onSelectionChange
-              - text: for controlled selection and
-              - code [ref=f24e246]: defaultSelectedKeys
-              - text: for uncontrolled initial selection.
-            - listitem [ref=f24e247]:
-              - text: Use
-              - code [ref=f24e248]: selectionPropagation="none"
-              - text: for flat selection where ancestors stay unchecked unless explicitly selected, or
-              - code [ref=f24e249]: selectionPropagation="descendants"
-              - text: to propagate selection through a subtree.
-            - listitem [ref=f24e250]:
-              - text: Use
-              - code [ref=f24e251]: Tree.Item
-              - text: for every node, regardless of whether it is currently a branch or a leaf, and place nested descendants inside
-              - code [ref=f24e252]: Tree.Children
-              - text: .
-            - listitem [ref=f24e253]:
-              - text: Use
-              - code [ref=f24e254]: Tree.Trigger
-              - text: for explicit branch expansion affordances and
-              - code [ref=f24e255]: Tree.Checkbox
-              - text: /
-              - code [ref=f24e256]: Tree.CheckboxIndicator
-              - text: for explicit selection affordances.
-            - listitem [ref=f24e257]:
-              - code [ref=f24e258]: Tree.Item
-              - text: is the real
-              - code [ref=f24e259]: treeitem
-              - text: "surface: focus, hover, selection, and pressed states are exposed on the item itself."
-            - listitem [ref=f24e260]: Collapsed descendants are omitted from the rendered tree DOM while their structural state remains in the internal collection.
-          - heading "Accessibility" [level=2] [ref=f24e261]
-          - list [ref=f24e262]:
-            - listitem [ref=f24e263]:
-              - code [ref=f24e264]: Tree.Root
-              - text: renders
-              - code [ref=f24e265]: role="tree"
-              - text: and each
-              - code [ref=f24e266]: Tree.Item
-              - text: renders as a flattened
-              - code [ref=f24e267]: role="treeitem"
-              - text: row.
-            - listitem [ref=f24e268]:
-              - code [ref=f24e269]: Tree.Section
-              - text: renders
-              - code [ref=f24e270]: role="group"
-              - text: when top-level items need a labeled section.
-            - listitem [ref=f24e271]:
-              - text: Keyboard support includes
-              - code [ref=f24e272]: ArrowUp
-              - text: ","
-              - code [ref=f24e273]: ArrowDown
-              - text: ","
-              - code [ref=f24e274]: ArrowLeft
-              - text: ","
-              - code [ref=f24e275]: ArrowRight
-              - text: ","
-              - code [ref=f24e276]: Home
-              - text: ","
-              - code [ref=f24e277]: End
-              - text: ","
-              - code [ref=f24e278]: Space
-              - text: ","
-              - code [ref=f24e279]: Enter
-              - text: ", and typeahead."
-            - listitem [ref=f24e280]:
-              - code [ref=f24e281]: ArrowLeft
-              - text: and
-              - code [ref=f24e282]: ArrowRight
-              - text: are the primary expansion keys.
-              - code [ref=f24e283]: Enter
-              - text: only toggles expansion when selection is disabled and no
-              - code [ref=f24e284]: onAction
-              - text: handler is present.
-            - listitem [ref=f24e285]:
-              - text: Focus stays on the item row;
-              - code [ref=f24e286]: Tree.Trigger
-              - text: is clickable but is not part of arrow-key navigation.
-            - listitem [ref=f24e287]:
-              - code [ref=f24e288]: disabledBehavior="selection"
-              - text: keeps items focusable and actionable while blocking selection;
-              - code [ref=f24e289]: disabledBehavior="all"
-              - text: makes disabled items fully non-interactive.
-          - heading "API reference" [level=2] [ref=f24e290]
-          - heading "Root" [level=3] [ref=f24e291]
-          - paragraph [ref=f24e292]: The stateful tree container. Renders role="tree" and manages focus, expansion, selection, and actions for all items.
-          - generic [ref=f24e294]:
-            - generic [ref=f24e295]:
-              - generic [ref=f24e296]: Prop
-              - generic [ref=f24e297]: Type
-              - generic [ref=f24e298]: Default
-            - generic [ref=f24e299]:
-              - button "expandedKeys Iterable<TreeNodeId> —" [ref=f24e300]:
-                - generic [ref=f24e301]: expandedKeys
-                - generic [ref=f24e302]: Iterable<TreeNodeId>
-                - generic [ref=f24e304]: —
-              - status [ref=f24e307]
-            - generic [ref=f24e308]:
-              - button "defaultExpandedKeys Iterable<TreeNodeId> —" [ref=f24e309]:
-                - generic [ref=f24e310]: defaultExpandedKeys
-                - generic [ref=f24e311]: Iterable<TreeNodeId>
-                - generic [ref=f24e313]: —
-              - status [ref=f24e316]
-            - generic [ref=f24e317]:
-              - button "selectedKeys Iterable<TreeNodeId> —" [ref=f24e318]:
-                - generic [ref=f24e319]: selectedKeys
-                - generic [ref=f24e320]: Iterable<TreeNodeId>
-                - generic [ref=f24e322]: —
-              - status [ref=f24e325]
-            - generic [ref=f24e326]:
-              - button "defaultSelectedKeys Iterable<TreeNodeId> —" [ref=f24e327]:
-                - generic [ref=f24e328]: defaultSelectedKeys
-                - generic [ref=f24e329]: Iterable<TreeNodeId>
-                - generic [ref=f24e331]: —
-              - status [ref=f24e334]
-            - generic [ref=f24e335]:
-              - button "disabledKeys Iterable<TreeNodeId> —" [ref=f24e336]:
-                - generic [ref=f24e337]: disabledKeys
-                - generic [ref=f24e338]: Iterable<TreeNodeId>
-                - generic [ref=f24e340]: —
-              - status [ref=f24e343]
-            - generic [ref=f24e344]:
-              - button "selectionMode TreeSelectionMode 'none'" [ref=f24e345]:
-                - generic [ref=f24e346]: selectionMode
-                - generic [ref=f24e347]: TreeSelectionMode
-                - generic [ref=f24e349]: "'none'"
-              - status [ref=f24e353]
-            - generic [ref=f24e354]:
-              - button "selectionBehavior TreeSelectionBehavior 'toggle'" [ref=f24e355]:
-                - generic [ref=f24e356]: selectionBehavior
-                - generic [ref=f24e357]: TreeSelectionBehavior
-                - generic [ref=f24e359]: "'toggle'"
-              - status [ref=f24e363]
-            - generic [ref=f24e364]:
-              - button "disabledBehavior TreeDisabledBehavior 'all'" [ref=f24e365]:
-                - generic [ref=f24e366]: disabledBehavior
-                - generic [ref=f24e367]: TreeDisabledBehavior
-                - generic [ref=f24e369]: "'all'"
-              - status [ref=f24e373]
-            - generic [ref=f24e374]:
-              - button "selectionPropagation TreeSelectionPropagation 'none'" [ref=f24e375]:
-                - generic [ref=f24e376]: selectionPropagation
-                - generic [ref=f24e377]: TreeSelectionPropagation
-                - generic [ref=f24e379]: "'none'"
-              - status [ref=f24e383]
-            - generic [ref=f24e384]:
-              - button "disallowEmptySelection boolean false" [ref=f24e385]:
-                - generic [ref=f24e386]: disallowEmptySelection
-                - generic [ref=f24e387]: boolean
-                - generic [ref=f24e389]: "false"
-              - status [ref=f24e393]
-            - generic [ref=f24e394]:
-              - button "items Iterable<T> —" [ref=f24e395]:
-                - generic [ref=f24e396]: items
-                - generic [ref=f24e397]: Iterable<T>
-                - generic [ref=f24e399]: —
-              - status [ref=f24e402]
-            - generic [ref=f24e403]:
-              - button "children Snippet | Snippet<[T]> —" [ref=f24e404]:
-                - generic [ref=f24e405]: children
-                - generic [ref=f24e406]: Snippet | Snippet<[T]>
-                - generic [ref=f24e408]: —
-              - status [ref=f24e411]
-            - generic [ref=f24e412]:
-              - button "renderEmptyState Snippet<[TreeEmptyStateRenderProps]> —" [ref=f24e413]:
-                - generic [ref=f24e414]: renderEmptyState
-                - generic [ref=f24e415]: Snippet<[TreeEmptyStateRenderProps]>
-                - generic [ref=f24e417]: —
-              - status [ref=f24e420]
-            - generic [ref=f24e421]:
-              - 'button "onExpandedKeysChange (keys: Set<TreeNodeId>) => void —" [ref=f24e422]':
-                - generic [ref=f24e423]: onExpandedKeysChange
-                - generic [ref=f24e424]: "(keys: Set<TreeNodeId>) => void"
-                - generic [ref=f24e426]: —
-              - status [ref=f24e429]
-            - generic [ref=f24e430]:
-              - 'button "onSelectionChange (keys: Set<TreeNodeId>) => void —" [ref=f24e431]':
-                - generic [ref=f24e432]: onSelectionChange
-                - generic [ref=f24e433]: "(keys: Set<TreeNodeId>) => void"
-                - generic [ref=f24e435]: —
-              - status [ref=f24e438]
-            - generic [ref=f24e439]:
-              - button "onAction TreeActionHandler —" [ref=f24e440]:
-                - generic [ref=f24e441]: onAction
-                - generic [ref=f24e442]: TreeActionHandler
-                - generic [ref=f24e444]: —
-              - status [ref=f24e447]
-            - generic [ref=f24e448]:
-              - button "itemTransition TreeItemTransition —" [ref=f24e449]:
-                - generic [ref=f24e450]: itemTransition
-                - generic [ref=f24e451]: TreeItemTransition
-                - generic [ref=f24e453]: —
-              - status [ref=f24e456]
-            - generic [ref=f24e457]:
-              - button "class string ''" [ref=f24e458]:
-                - generic [ref=f24e459]: class
-                - generic [ref=f24e460]: string
-                - generic [ref=f24e462]: "''"
-              - status [ref=f24e466]
-            - generic [ref=f24e467]:
-              - button "context TreeContext —" [ref=f24e468]:
-                - generic [ref=f24e469]: context
-                - generic [ref=f24e470]: TreeContext
-                - generic [ref=f24e472]: —
-              - status [ref=f24e475]
-            - generic [ref=f24e476]:
-              - button "element HTMLElement —" [ref=f24e477]:
-                - generic [ref=f24e478]: element
-                - generic [ref=f24e479]: HTMLElement
-                - generic [ref=f24e481]: —
-              - status [ref=f24e484]
-          - paragraph [ref=f24e485]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f24e487]:
-            - generic [ref=f24e488]:
-              - generic [ref=f24e489]: Data attribute
-              - generic [ref=f24e490]: Description
-            - generic [ref=f24e491]:
-              - generic [ref=f24e492]: data-empty
-              - generic [ref=f24e493]: Present when the tree has no items.
-            - generic [ref=f24e494]:
-              - generic [ref=f24e495]: data-focus-visible
-              - generic [ref=f24e496]: Present while focus inside the tree should be visibly indicated (keyboard modality).
-            - generic [ref=f24e497]:
-              - generic [ref=f24e498]: data-focus-within
-              - generic [ref=f24e499]: Present while focus is inside the tree.
-            - generic [ref=f24e500]:
-              - generic [ref=f24e501]: data-focused
-              - generic [ref=f24e502]: Present while focus is inside the tree.
-            - generic [ref=f24e503]:
-              - generic [ref=f24e504]: data-selection-mode
-              - generic [ref=f24e505]: The active selection mode ('single' | 'multiple'); absent when selection is disabled.
-            - generic [ref=f24e506]:
-              - generic [ref=f24e507]: data-tree-registration
-              - generic [ref=f24e508]: Identifies the hidden container used to register item structure; not a styling target.
-          - heading "Section" [level=3] [ref=f24e509]
-          - paragraph [ref=f24e510]: Groups related top-level items under an optional header. Renders role="group".
-          - generic [ref=f24e512]:
-            - generic [ref=f24e513]:
-              - generic [ref=f24e514]: Prop
-              - generic [ref=f24e515]: Type
-              - generic [ref=f24e516]: Default
-            - generic [ref=f24e517]:
-              - button "id TreeNodeId —" [ref=f24e518]:
-                - generic [ref=f24e519]: id
-                - generic [ref=f24e520]: TreeNodeId
-                - generic [ref=f24e522]: —
-              - status [ref=f24e525]
-            - generic [ref=f24e526]:
-              - button "value T —" [ref=f24e527]:
-                - generic [ref=f24e528]: value
-                - generic [ref=f24e529]: T
-                - generic [ref=f24e531]: —
-              - status [ref=f24e534]
-            - generic [ref=f24e535]:
-              - button "items Iterable<T> —" [ref=f24e536]:
-                - generic [ref=f24e537]: items
-                - generic [ref=f24e538]: Iterable<T>
-                - generic [ref=f24e540]: —
-              - status [ref=f24e543]
-            - generic [ref=f24e544]:
-              - button "children Snippet | Snippet<[T]> —" [ref=f24e545]:
-                - generic [ref=f24e546]: children
-                - generic [ref=f24e547]: Snippet | Snippet<[T]>
-                - generic [ref=f24e549]: —
-              - status [ref=f24e552]
-            - generic [ref=f24e553]:
-              - button "class string ''" [ref=f24e554]:
-                - generic [ref=f24e555]: class
-                - generic [ref=f24e556]: string
-                - generic [ref=f24e558]: "''"
-              - status [ref=f24e562]
-          - paragraph [ref=f24e563]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - heading "Header" [level=3] [ref=f24e564]
-          - paragraph [ref=f24e565]: A visual label for a section's items.
-          - generic [ref=f24e567]:
-            - generic [ref=f24e568]:
-              - generic [ref=f24e569]: Prop
-              - generic [ref=f24e570]: Type
-              - generic [ref=f24e571]: Default
-            - generic [ref=f24e572]:
-              - button "children Snippet —" [ref=f24e573]:
-                - generic [ref=f24e574]: children
-                - generic [ref=f24e575]: Snippet
-                - generic [ref=f24e577]: —
-              - status [ref=f24e580]
-            - generic [ref=f24e581]:
-              - button "class string ''" [ref=f24e582]:
-                - generic [ref=f24e583]: class
-                - generic [ref=f24e584]: string
-                - generic [ref=f24e586]: "''"
-              - status [ref=f24e590]
-          - paragraph [ref=f24e591]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - heading "Item" [level=3] [ref=f24e592]
-          - paragraph [ref=f24e593]: A single tree node. Renders the flattened role="treeitem" row and exposes focus, hover, selection, and pressed state on it.
-          - generic [ref=f24e595]:
-            - generic [ref=f24e596]:
-              - generic [ref=f24e597]: Prop
-              - generic [ref=f24e598]: Type
-              - generic [ref=f24e599]: Default
-            - generic [ref=f24e600]:
-              - button "id TreeNodeId —" [ref=f24e601]:
-                - generic [ref=f24e602]: id
-                - generic [ref=f24e603]: TreeNodeId
-                - generic [ref=f24e605]: —
-              - status [ref=f24e608]
-            - generic [ref=f24e609]:
-              - button "value T —" [ref=f24e610]:
-                - generic [ref=f24e611]: value
-                - generic [ref=f24e612]: T
-                - generic [ref=f24e614]: —
-              - status [ref=f24e617]
-            - generic [ref=f24e618]:
-              - button "title string —" [ref=f24e619]:
-                - generic [ref=f24e620]: title
-                - generic [ref=f24e621]: string
-                - generic [ref=f24e623]: —
-              - status [ref=f24e626]
-            - generic [ref=f24e627]:
-              - button "textValue string —" [ref=f24e628]:
-                - generic [ref=f24e629]: textValue
-                - generic [ref=f24e630]: string
-                - generic [ref=f24e632]: —
-              - status [ref=f24e635]
-            - generic [ref=f24e636]:
-              - button "disabled boolean false" [ref=f24e637]:
-                - generic [ref=f24e638]: disabled
-                - generic [ref=f24e639]: boolean
-                - generic [ref=f24e641]: "false"
-              - status [ref=f24e645]
-            - generic [ref=f24e646]:
-              - button "children Snippet —" [ref=f24e647]:
-                - generic [ref=f24e648]: children
-                - generic [ref=f24e649]: Snippet
-                - generic [ref=f24e651]: —
-              - status [ref=f24e654]
-            - generic [ref=f24e655]:
-              - button "class string ''" [ref=f24e656]:
-                - generic [ref=f24e657]: class
-                - generic [ref=f24e658]: string
-                - generic [ref=f24e660]: "''"
-              - status [ref=f24e664]
-          - paragraph [ref=f24e665]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - heading "Children" [level=3] [ref=f24e666]
-          - paragraph [ref=f24e667]: Marks the nested subtree of an item. Its presence makes the parent expandible on first render and during SSR.
-          - generic [ref=f24e669]:
-            - generic [ref=f24e670]:
-              - generic [ref=f24e671]: Prop
-              - generic [ref=f24e672]: Type
-              - generic [ref=f24e673]: Default
-            - generic [ref=f24e674]:
-              - button "children Snippet —" [ref=f24e675]:
-                - generic [ref=f24e676]: children
-                - generic [ref=f24e677]: Snippet
-                - generic [ref=f24e679]: —
-              - status [ref=f24e682]
-            - generic [ref=f24e683]:
-              - button "class string —" [ref=f24e684]:
-                - generic [ref=f24e685]: class
-                - generic [ref=f24e686]: string
-                - generic [ref=f24e688]: —
-              - status [ref=f24e691]
-          - paragraph [ref=f24e692]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - heading "Label" [level=3] [ref=f24e693]
-          - paragraph [ref=f24e694]: The text label of an item row; also labels the row for assistive technology.
-          - generic [ref=f24e696]:
-            - generic [ref=f24e697]:
-              - generic [ref=f24e698]: Prop
-              - generic [ref=f24e699]: Type
-              - generic [ref=f24e700]: Default
-            - generic [ref=f24e701]:
-              - button "children Snippet —" [ref=f24e702]:
-                - generic [ref=f24e703]: children
-                - generic [ref=f24e704]: Snippet
-                - generic [ref=f24e706]: —
-              - status [ref=f24e709]
-            - generic [ref=f24e710]:
-              - button "class string ''" [ref=f24e711]:
-                - generic [ref=f24e712]: class
-                - generic [ref=f24e713]: string
-                - generic [ref=f24e715]: "''"
-              - status [ref=f24e719]
-          - paragraph [ref=f24e720]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f24e722]:
-            - generic [ref=f24e723]:
-              - generic [ref=f24e724]: Data attribute
-              - generic [ref=f24e725]: Description
-            - generic [ref=f24e726]:
-              - generic [ref=f24e727]: data-tree-label
-              - generic [ref=f24e728]: Identifies the label element.
-          - heading "Trigger" [level=3] [ref=f24e729]
-          - paragraph [ref=f24e730]: An explicit expand/collapse button for a branch. Only rendered when the item has children, and not part of arrow-key navigation.
-          - generic [ref=f24e732]:
-            - generic [ref=f24e733]:
-              - generic [ref=f24e734]: Prop
-              - generic [ref=f24e735]: Type
-              - generic [ref=f24e736]: Default
-            - generic [ref=f24e737]:
-              - button "children Snippet —" [ref=f24e738]:
-                - generic [ref=f24e739]: children
-                - generic [ref=f24e740]: Snippet
-                - generic [ref=f24e742]: —
-              - status [ref=f24e745]
-            - generic [ref=f24e746]:
-              - button "class string ''" [ref=f24e747]:
-                - generic [ref=f24e748]: class
-                - generic [ref=f24e749]: string
-                - generic [ref=f24e751]: "''"
-              - status [ref=f24e755]
-          - paragraph [ref=f24e756]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f24e758]:
-            - generic [ref=f24e759]:
-              - generic [ref=f24e760]: Data attribute
-              - generic [ref=f24e761]: Description
-            - generic [ref=f24e762]:
-              - generic [ref=f24e763]: data-disabled
-              - generic [ref=f24e764]: Present when the item is disabled.
-            - generic [ref=f24e765]:
-              - generic [ref=f24e766]: data-expanded
-              - generic [ref=f24e767]: Present while the branch is expanded.
-            - generic [ref=f24e768]:
-              - generic [ref=f24e769]: data-pressed-when-expanded
-              - generic [ref=f24e770]: Always present; marks the trigger as a control whose pressed styling should follow the expanded state.
-            - generic [ref=f24e771]:
-              - generic [ref=f24e772]: data-tree-trigger
-              - generic [ref=f24e773]: Identifies the trigger element.
-          - heading "Checkbox" [level=3] [ref=f24e774]
-          - paragraph [ref=f24e775]: An explicit selection affordance for an item row, kept in sync with the tree selection (including indeterminate ancestors).
-          - generic [ref=f24e777]:
-            - generic [ref=f24e778]:
-              - generic [ref=f24e779]: Prop
-              - generic [ref=f24e780]: Type
-              - generic [ref=f24e781]: Default
-            - generic [ref=f24e782]:
-              - button "id string —" [ref=f24e783]:
-                - generic [ref=f24e784]: id
-                - generic [ref=f24e785]: string
-                - generic [ref=f24e787]: —
-              - status [ref=f24e790]
-            - generic [ref=f24e791]:
-              - button "title string —" [ref=f24e792]:
-                - generic [ref=f24e793]: title
-                - generic [ref=f24e794]: string
-                - generic [ref=f24e796]: —
-              - status [ref=f24e799]
-            - generic [ref=f24e800]:
-              - button "children Snippet —" [ref=f24e801]:
-                - generic [ref=f24e802]: children
-                - generic [ref=f24e803]: Snippet
-                - generic [ref=f24e805]: —
-              - status [ref=f24e808]
-            - generic [ref=f24e809]:
-              - button "class string ''" [ref=f24e810]:
-                - generic [ref=f24e811]: class
-                - generic [ref=f24e812]: string
-                - generic [ref=f24e814]: "''"
-              - status [ref=f24e818]
-            - generic [ref=f24e819]:
-              - button "aria-label string —" [ref=f24e820]:
-                - generic [ref=f24e821]: aria-label
-                - generic [ref=f24e822]: string
-                - generic [ref=f24e824]: —
-              - status [ref=f24e827]
-            - generic [ref=f24e828]:
-              - button "aria-labelledby string —" [ref=f24e829]:
-                - generic [ref=f24e830]: aria-labelledby
-                - generic [ref=f24e831]: string
-                - generic [ref=f24e833]: —
-              - status [ref=f24e836]
-          - paragraph [ref=f24e837]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f24e839]:
-            - generic [ref=f24e840]:
-              - generic [ref=f24e841]: Data attribute
-              - generic [ref=f24e842]: Description
-            - generic [ref=f24e843]:
-              - generic [ref=f24e844]: data-tree-checkbox
-              - generic [ref=f24e845]: Identifies the checkbox element.
-          - heading "CheckboxIndicator" [level=3] [ref=f24e846]
-          - paragraph [ref=f24e847]: The visual mark inside a tree checkbox. Mounted while the checkbox is checked or indeterminate.
-          - generic [ref=f24e849]:
-            - generic [ref=f24e850]:
-              - generic [ref=f24e851]: Prop
-              - generic [ref=f24e852]: Type
-              - generic [ref=f24e853]: Default
-            - generic [ref=f24e854]:
-              - button "forceMount boolean false" [ref=f24e855]:
-                - generic [ref=f24e856]: forceMount
-                - generic [ref=f24e857]: boolean
-                - generic [ref=f24e859]: "false"
-              - status [ref=f24e863]
-            - generic [ref=f24e864]:
-              - button "children Snippet —" [ref=f24e865]:
-                - generic [ref=f24e866]: children
-                - generic [ref=f24e867]: Snippet
-                - generic [ref=f24e869]: —
-              - status [ref=f24e872]
-            - generic [ref=f24e873]:
-              - button "class string ''" [ref=f24e874]:
-                - generic [ref=f24e875]: class
-                - generic [ref=f24e876]: string
-                - generic [ref=f24e878]: "''"
-              - status [ref=f24e882]
-          - paragraph [ref=f24e883]: "* required. Native HTML attributes of the underlying element are also accepted."
-          - generic [ref=f24e885]:
-            - generic [ref=f24e886]:
-              - generic [ref=f24e887]: Data attribute
-              - generic [ref=f24e888]: Description
-            - generic [ref=f24e889]:
-              - generic [ref=f24e890]: data-checked
-              - generic [ref=f24e891]: Present while the checkbox is checked.
-            - generic [ref=f24e892]:
-              - generic [ref=f24e893]: data-disabled
-              - generic [ref=f24e894]: Present when the checkbox is disabled.
-            - generic [ref=f24e895]:
-              - generic [ref=f24e896]: data-focus-visible
-              - generic [ref=f24e897]: Present while focus should be visibly indicated (keyboard modality).
-            - generic [ref=f24e898]:
-              - generic [ref=f24e899]: data-focused
-              - generic [ref=f24e900]: Present while the checkbox has focus.
-            - generic [ref=f24e901]:
-              - generic [ref=f24e902]: data-indeterminate
-              - generic [ref=f24e903]: Present while the checkbox is indeterminate (partially selected subtree).
-            - generic [ref=f24e904]:
-              - generic [ref=f24e905]: data-pressed
-              - generic [ref=f24e906]: Present while the checkbox is actively pressed.
-            - generic [ref=f24e907]:
-              - generic [ref=f24e908]: data-tree-checkbox-indicator
-              - generic [ref=f24e909]: Identifies the indicator element.
-            - generic [ref=f24e910]:
-              - generic [ref=f24e911]: data-unchecked
-              - generic [ref=f24e912]: "Present while the checkbox is unchecked (with `forceMount`)."
-      - complementary [ref=f24e913]:
-        - navigation "On this page" [ref=f24e914]:
-          - heading "On this page" [level=4] [ref=f24e915]
-          - list [ref=f24e916]:
-            - listitem [ref=f24e917]:
-              - link "(Top)" [ref=f24e918] [cursor=pointer]:
-                - /url: "#top"
-            - listitem [ref=f24e919]:
-              - link "Anatomy" [ref=f24e920] [cursor=pointer]:
-                - /url: "#anatomy"
-            - listitem [ref=f24e921]:
-              - link "Checkbox selection" [ref=f24e922] [cursor=pointer]:
-                - /url: "#checkbox-selection"
-            - listitem [ref=f24e923]:
-              - link "Sections and headers" [ref=f24e924] [cursor=pointer]:
-                - /url: "#sections-and-headers"
-            - listitem [ref=f24e925]:
-              - link "Usage guidelines" [ref=f24e926] [cursor=pointer]:
-                - /url: "#usage-guidelines"
-            - listitem [ref=f24e927]:
-              - link "Accessibility" [ref=f24e928] [cursor=pointer]:
-                - /url: "#accessibility"
-            - listitem [ref=f24e929]:
-              - link "API reference" [ref=f24e930] [cursor=pointer]:
-                - /url: "#api-reference"
-            - listitem [ref=f24e931]:
-              - link "Root" [ref=f24e932] [cursor=pointer]:
-                - /url: "#api-root"
-            - listitem [ref=f24e933]:
-              - link "Section" [ref=f24e934] [cursor=pointer]:
-                - /url: "#api-section"
-            - listitem [ref=f24e935]:
-              - link "Header" [ref=f24e936] [cursor=pointer]:
-                - /url: "#api-header"
-            - listitem [ref=f24e937]:
-              - link "Item" [ref=f24e938] [cursor=pointer]:
-                - /url: "#api-item"
-            - listitem [ref=f24e939]:
-              - link "Children" [ref=f24e940] [cursor=pointer]:
-                - /url: "#api-children"
-            - listitem [ref=f24e941]:
-              - link "Label" [ref=f24e942] [cursor=pointer]:
-                - /url: "#api-label"
-            - listitem [ref=f24e943]:
-              - link "Trigger" [ref=f24e944] [cursor=pointer]:
-                - /url: "#api-trigger"
-            - listitem [ref=f24e945]:
-              - link "Checkbox" [ref=f24e946] [cursor=pointer]:
-                - /url: "#api-checkbox"
-            - listitem [ref=f24e947]:
-              - link "CheckboxIndicator" [ref=f24e948] [cursor=pointer]:
-                - /url: "#api-checkboxindicator"
+    - button "Disable render scanning" [ref=f24e2] [cursor=pointer]
+    - generic [ref=f24e7]:
+        - banner [ref=f24e8]:
+            - link [ref=f24e9] [cursor=pointer]:
+                - /url: ../
+            - generic [ref=f24e12]:
+                - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f24e13] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@human-kit/ui
+                    - text: 1.0.0-beta.0
+                - link "GitHub repository" [ref=f24e14] [cursor=pointer]:
+                    - /url: https://github.com/human-kit/ui
+                - button "Toggle color theme" [ref=f24e15]
+                - status [ref=f24e17]
+        - generic [ref=f24e18]:
+            - complementary [ref=f24e19]:
+                - navigation [ref=f24e20]:
+                    - generic [ref=f24e21]:
+                        - button "Overview" [expanded] [ref=f24e22]
+                        - status [ref=f24e25]
+                        - list [ref=f24e28]:
+                            - listitem [ref=f24e29]:
+                                - link "Quick Start" [ref=f24e30] [cursor=pointer]:
+                                    - /url: ../docs/quick-start
+                            - listitem [ref=f24e31]:
+                                - link "Accessibility" [ref=f24e32] [cursor=pointer]:
+                                    - /url: ../docs/accessibility
+                            - listitem [ref=f24e33]:
+                                - link "Releases" [ref=f24e34] [cursor=pointer]:
+                                    - /url: ../docs/releases
+                            - listitem [ref=f24e35]:
+                                - link "About" [ref=f24e36] [cursor=pointer]:
+                                    - /url: ../docs/about
+                    - generic [ref=f24e37]:
+                        - button "Form" [expanded] [ref=f24e38]
+                        - status [ref=f24e41]
+                        - list [ref=f24e44]:
+                            - listitem [ref=f24e45]:
+                                - link "Button" [ref=f24e46] [cursor=pointer]:
+                                    - /url: ../docs/button
+                            - listitem [ref=f24e47]:
+                                - link "Checkbox" [ref=f24e48] [cursor=pointer]:
+                                    - /url: ../docs/checkbox
+                            - listitem [ref=f24e49]:
+                                - link "Input" [ref=f24e50] [cursor=pointer]:
+                                    - /url: ../docs/input
+                            - listitem [ref=f24e51]:
+                                - link "NumberField" [ref=f24e52] [cursor=pointer]:
+                                    - /url: ../docs/numberfield
+                            - listitem [ref=f24e53]:
+                                - link "Switch" [ref=f24e54] [cursor=pointer]:
+                                    - /url: ../docs/switch
+                            - listitem [ref=f24e55]:
+                                - link "TextArea" [ref=f24e56] [cursor=pointer]:
+                                    - /url: ../docs/textarea
+                            - listitem [ref=f24e57]:
+                                - link "Toggle" [ref=f24e58] [cursor=pointer]:
+                                    - /url: ../docs/toggle
+                            - listitem [ref=f24e59]:
+                                - link "ToggleGroup" [ref=f24e60] [cursor=pointer]:
+                                    - /url: ../docs/toggle-group
+                    - generic [ref=f24e61]:
+                        - button "Pickers" [expanded] [ref=f24e62]
+                        - status [ref=f24e65]
+                        - list [ref=f24e68]:
+                            - listitem [ref=f24e69]:
+                                - link "Autocomplete" [ref=f24e70] [cursor=pointer]:
+                                    - /url: ../docs/autocomplete
+                            - listitem [ref=f24e71]:
+                                - link "ComboBox" [ref=f24e72] [cursor=pointer]:
+                                    - /url: ../docs/combobox
+                            - listitem [ref=f24e73]:
+                                - link "ListBox" [ref=f24e74] [cursor=pointer]:
+                                    - /url: ../docs/listbox
+                            - listitem [ref=f24e75]:
+                                - link "Calendar" [ref=f24e76] [cursor=pointer]:
+                                    - /url: ../docs/calendar
+                            - listitem [ref=f24e77]:
+                                - link "Clock" [ref=f24e78] [cursor=pointer]:
+                                    - /url: ../docs/clock
+                            - listitem [ref=f24e79]:
+                                - link "DatePicker" [ref=f24e80] [cursor=pointer]:
+                                    - /url: ../docs/datepicker
+                            - listitem [ref=f24e81]:
+                                - link "DateRangePicker" [ref=f24e82] [cursor=pointer]:
+                                    - /url: ../docs/daterangepicker
+                            - listitem [ref=f24e83]:
+                                - link "TimePicker" [ref=f24e84] [cursor=pointer]:
+                                    - /url: ../docs/timepicker
+                    - generic [ref=f24e85]:
+                        - button "Overlays" [expanded] [ref=f24e86]
+                        - status [ref=f24e89]
+                        - list [ref=f24e92]:
+                            - listitem [ref=f24e93]:
+                                - link "Dialog" [ref=f24e94] [cursor=pointer]:
+                                    - /url: ../docs/dialog
+                            - listitem [ref=f24e95]:
+                                - link "Menu" [ref=f24e96] [cursor=pointer]:
+                                    - /url: ../docs/menu
+                            - listitem [ref=f24e97]:
+                                - link "Popover" [ref=f24e98] [cursor=pointer]:
+                                    - /url: ../docs/popover
+                    - generic [ref=f24e99]:
+                        - button "Structure" [expanded] [ref=f24e100]
+                        - status [ref=f24e103]
+                        - list [ref=f24e106]:
+                            - listitem [ref=f24e107]:
+                                - link "Accordion" [ref=f24e108] [cursor=pointer]:
+                                    - /url: ../docs/accordion
+                            - listitem [ref=f24e109]:
+                                - link "Collapsible" [ref=f24e110] [cursor=pointer]:
+                                    - /url: ../docs/collapsible
+                            - listitem [ref=f24e111]:
+                                - link "Table" [ref=f24e112] [cursor=pointer]:
+                                    - /url: ../docs/table
+                            - listitem [ref=f24e113]:
+                                - link "Tabs" [ref=f24e114] [cursor=pointer]:
+                                    - /url: ../docs/tabs
+                            - listitem [ref=f24e115]:
+                                - link "Tree" [ref=f24e116] [cursor=pointer]:
+                                    - /url: ../docs/tree
+            - main [ref=f24e117]:
+                - article [ref=f24e119]:
+                    - generic [ref=f24e120]:
+                        - 'link "Previous: Tabs" [ref=f24e121] [cursor=pointer]':
+                            - /url: ../docs/tabs
+                        - button "Page options" [ref=f24e122]
+                        - status [ref=f24e123]
+                    - heading "Tree" [level=1] [ref=f24e124]
+                    - paragraph [ref=f24e125]: A headless hierarchical collection primitive with keyboard navigation, expansion state, row selection, and section labels.
+                    - generic [ref=f24e126]:
+                        - tree "Project files" [ref=f24e128]:
+                            - treeitem "Toggle Documents Documents" [expanded] [level=1] [ref=f24e129]:
+                                - button "Toggle Documents" [expanded] [ref=f24e130]
+                                - status [ref=f24e133]
+                                - generic [ref=f24e134]: Documents
+                            - treeitem "Toggle Reports Reports" [expanded] [level=2] [ref=f24e135]:
+                                - button "Toggle Reports" [expanded] [ref=f24e136]
+                                - status [ref=f24e139]
+                                - generic [ref=f24e140]: Reports
+                            - treeitem "Weekly report" [level=3] [selected] [ref=f24e141]
+                            - treeitem "Contracts" [level=2] [ref=f24e144]
+                            - treeitem "Toggle Photos Photos" [level=1] [ref=f24e147]:
+                                - button "Toggle Photos" [ref=f24e148]
+                                - status [ref=f24e151]
+                                - generic [ref=f24e152]: Photos
+                            - treeitem "Archive" [level=1] [ref=f24e153]
+                        - generic [ref=f24e157]:
+                            - button "Copy source code" [ref=f24e158]
+                            - status [ref=f24e160]
+                            - button "Show code" [ref=f24e161]
+                            - status [ref=f24e162]
+                    - heading "Anatomy" [level=2] [ref=f24e163]
+                    - paragraph [ref=f24e164]:
+                        - code [ref=f24e165]: Tree.Item
+                        - text: declares every node and
+                        - code [ref=f24e166]: Tree.Children
+                        - text: marks the nested subtree explicitly — its presence is what makes a parent expandible. Interactive parts (
+                        - code [ref=f24e167]: Tree.Trigger
+                        - text: ','
+                        - code [ref=f24e168]: Tree.Checkbox
+                        - text: ','
+                        - code [ref=f24e169]: Tree.Label
+                        - text: ) go directly inside the item. Rows indent automatically through the
+                        - code [ref=f24e170]: '--tree-indent-size'
+                        - text: CSS variable.
+                    - code [ref=f24e173]:
+                        - generic [ref=f24e174]: <script>
+                        - generic [ref=f24e175]: "import { Tree } from '@human-kit/ui';"
+                        - generic [ref=f24e176]: </script>
+                        - generic [ref=f24e177]: <Tree.Root aria-label="Files" selectionMode="multiple">
+                        - generic [ref=f24e178]: <Tree.Section aria-label="Primary files">
+                        - generic [ref=f24e179]: <Tree.Header>Files</Tree.Header>
+                        - generic [ref=f24e180]: <Tree.Item id="documents" title="Documents">
+                        - generic [ref=f24e181]: <Tree.Trigger aria-label="Toggle Documents">▶</Tree.Trigger>
+                        - generic [ref=f24e182]: <Tree.Checkbox aria-label="Select Documents" />
+                        - generic [ref=f24e183]: <Tree.Label>Documents</Tree.Label>
+                        - generic [ref=f24e184]: <Tree.Children>
+                        - generic [ref=f24e185]: <Tree.Item id="reports" title="Reports">
+                        - generic [ref=f24e186]: <Tree.Label>Reports</Tree.Label>
+                        - generic [ref=f24e187]: </Tree.Item>
+                        - generic [ref=f24e188]: </Tree.Children>
+                        - generic [ref=f24e189]: </Tree.Item>
+                        - generic [ref=f24e190]: </Tree.Section>
+                        - generic [ref=f24e191]: </Tree.Root>
+                    - heading "Checkbox selection" [level=2] [ref=f24e192]
+                    - paragraph [ref=f24e193]:
+                        - text: With
+                        - code [ref=f24e194]: selectionMode="multiple"
+                        - text: ','
+                        - code [ref=f24e195]: Tree.Checkbox
+                        - text: and
+                        - code [ref=f24e196]: Tree.CheckboxIndicator
+                        - text: give each row an explicit selection affordance.
+                        - code [ref=f24e197]: selectionPropagation="descendants"
+                        - text: propagates selection through a subtree, marking partially selected ancestors as indeterminate; the default
+                        - code [ref=f24e198]: '"none"'
+                        - text: keeps selection flat, so ancestors stay unchecked unless explicitly selected.
+                    - generic [ref=f24e199]:
+                        - tree "Report files" [ref=f24e202]:
+                            - treeitem "Toggle Reports Select Reports Reports" [checked=mixed] [expanded] [level=1] [ref=f24e203]:
+                                - button "Toggle Reports" [expanded] [ref=f24e204]
+                                - status [ref=f24e207]
+                                - checkbox "Select Reports" [checked=mixed] [ref=f24e208]:
+                                    - checkbox
+                                - generic [ref=f24e211]: Reports
+                            - treeitem "Select Weekly report Weekly report" [checked] [level=2] [selected] [ref=f24e212]:
+                                - checkbox "Select Weekly report" [checked] [ref=f24e213]:
+                                    - checkbox [checked]
+                                - generic [ref=f24e217]: Weekly report
+                            - treeitem "Select Budget Budget" [level=2] [ref=f24e218]:
+                                - checkbox "Select Budget" [ref=f24e219]:
+                                    - checkbox
+                                - generic [ref=f24e220]: Budget
+                        - generic [ref=f24e222]:
+                            - button "Copy source code" [ref=f24e223]
+                            - status [ref=f24e225]
+                            - button "Show code" [ref=f24e226]
+                            - status [ref=f24e227]
+                    - heading "Sections and headers" [level=2] [ref=f24e228]
+                    - paragraph [ref=f24e229]:
+                        - code [ref=f24e230]: Tree.Section
+                        - text: groups related top-level items and
+                        - code [ref=f24e231]: Tree.Header
+                        - text: labels the group. When a section does not render a header, provide
+                        - code [ref=f24e232]: aria-label
+                        - text: on the section instead.
+                    - heading "Usage guidelines" [level=2] [ref=f24e233]
+                    - list [ref=f24e234]:
+                        - listitem [ref=f24e235]:
+                            - text: Use
+                            - code [ref=f24e236]: Tree.Root
+                            - text: as the stateful container for focus, expansion, selection, and actions, and give it
+                            - code [ref=f24e237]: aria-label
+                            - text: or
+                            - code [ref=f24e238]: aria-labelledby
+                            - text: .
+                        - listitem [ref=f24e239]:
+                            - text: Use
+                            - code [ref=f24e240]: expandedKeys
+                            - text: /
+                            - code [ref=f24e241]: onExpandedKeysChange
+                            - text: for controlled expansion and
+                            - code [ref=f24e242]: defaultExpandedKeys
+                            - text: for uncontrolled initial expansion.
+                        - listitem [ref=f24e243]:
+                            - text: Use
+                            - code [ref=f24e244]: selectedKeys
+                            - text: /
+                            - code [ref=f24e245]: onSelectionChange
+                            - text: for controlled selection and
+                            - code [ref=f24e246]: defaultSelectedKeys
+                            - text: for uncontrolled initial selection.
+                        - listitem [ref=f24e247]:
+                            - text: Use
+                            - code [ref=f24e248]: selectionPropagation="none"
+                            - text: for flat selection where ancestors stay unchecked unless explicitly selected, or
+                            - code [ref=f24e249]: selectionPropagation="descendants"
+                            - text: to propagate selection through a subtree.
+                        - listitem [ref=f24e250]:
+                            - text: Use
+                            - code [ref=f24e251]: Tree.Item
+                            - text: for every node, regardless of whether it is currently a branch or a leaf, and place nested descendants inside
+                            - code [ref=f24e252]: Tree.Children
+                            - text: .
+                        - listitem [ref=f24e253]:
+                            - text: Use
+                            - code [ref=f24e254]: Tree.Trigger
+                            - text: for explicit branch expansion affordances and
+                            - code [ref=f24e255]: Tree.Checkbox
+                            - text: /
+                            - code [ref=f24e256]: Tree.CheckboxIndicator
+                            - text: for explicit selection affordances.
+                        - listitem [ref=f24e257]:
+                            - code [ref=f24e258]: Tree.Item
+                            - text: is the real
+                            - code [ref=f24e259]: treeitem
+                            - text: 'surface: focus, hover, selection, and pressed states are exposed on the item itself.'
+                        - listitem [ref=f24e260]: Collapsed descendants are omitted from the rendered tree DOM while their structural state remains in the internal collection.
+                    - heading "Accessibility" [level=2] [ref=f24e261]
+                    - list [ref=f24e262]:
+                        - listitem [ref=f24e263]:
+                            - code [ref=f24e264]: Tree.Root
+                            - text: renders
+                            - code [ref=f24e265]: role="tree"
+                            - text: and each
+                            - code [ref=f24e266]: Tree.Item
+                            - text: renders as a flattened
+                            - code [ref=f24e267]: role="treeitem"
+                            - text: row.
+                        - listitem [ref=f24e268]:
+                            - code [ref=f24e269]: Tree.Section
+                            - text: renders
+                            - code [ref=f24e270]: role="group"
+                            - text: when top-level items need a labeled section.
+                        - listitem [ref=f24e271]:
+                            - text: Keyboard support includes
+                            - code [ref=f24e272]: ArrowUp
+                            - text: ','
+                            - code [ref=f24e273]: ArrowDown
+                            - text: ','
+                            - code [ref=f24e274]: ArrowLeft
+                            - text: ','
+                            - code [ref=f24e275]: ArrowRight
+                            - text: ','
+                            - code [ref=f24e276]: Home
+                            - text: ','
+                            - code [ref=f24e277]: End
+                            - text: ','
+                            - code [ref=f24e278]: Space
+                            - text: ','
+                            - code [ref=f24e279]: Enter
+                            - text: ', and typeahead.'
+                        - listitem [ref=f24e280]:
+                            - code [ref=f24e281]: ArrowLeft
+                            - text: and
+                            - code [ref=f24e282]: ArrowRight
+                            - text: are the primary expansion keys.
+                            - code [ref=f24e283]: Enter
+                            - text: only toggles expansion when selection is disabled and no
+                            - code [ref=f24e284]: onAction
+                            - text: handler is present.
+                        - listitem [ref=f24e285]:
+                            - text: Focus stays on the item row;
+                            - code [ref=f24e286]: Tree.Trigger
+                            - text: is clickable but is not part of arrow-key navigation.
+                        - listitem [ref=f24e287]:
+                            - code [ref=f24e288]: disabledBehavior="selection"
+                            - text: keeps items focusable and actionable while blocking selection;
+                            - code [ref=f24e289]: disabledBehavior="all"
+                            - text: makes disabled items fully non-interactive.
+                    - heading "API reference" [level=2] [ref=f24e290]
+                    - heading "Root" [level=3] [ref=f24e291]
+                    - paragraph [ref=f24e292]: The stateful tree container. Renders role="tree" and manages focus, expansion, selection, and actions for all items.
+                    - generic [ref=f24e294]:
+                        - generic [ref=f24e295]:
+                            - generic [ref=f24e296]: Prop
+                            - generic [ref=f24e297]: Type
+                            - generic [ref=f24e298]: Default
+                        - generic [ref=f24e299]:
+                            - button "expandedKeys Iterable<TreeNodeId> —" [ref=f24e300]:
+                                - generic [ref=f24e301]: expandedKeys
+                                - generic [ref=f24e302]: Iterable<TreeNodeId>
+                                - generic [ref=f24e304]: —
+                            - status [ref=f24e307]
+                        - generic [ref=f24e308]:
+                            - button "defaultExpandedKeys Iterable<TreeNodeId> —" [ref=f24e309]:
+                                - generic [ref=f24e310]: defaultExpandedKeys
+                                - generic [ref=f24e311]: Iterable<TreeNodeId>
+                                - generic [ref=f24e313]: —
+                            - status [ref=f24e316]
+                        - generic [ref=f24e317]:
+                            - button "selectedKeys Iterable<TreeNodeId> —" [ref=f24e318]:
+                                - generic [ref=f24e319]: selectedKeys
+                                - generic [ref=f24e320]: Iterable<TreeNodeId>
+                                - generic [ref=f24e322]: —
+                            - status [ref=f24e325]
+                        - generic [ref=f24e326]:
+                            - button "defaultSelectedKeys Iterable<TreeNodeId> —" [ref=f24e327]:
+                                - generic [ref=f24e328]: defaultSelectedKeys
+                                - generic [ref=f24e329]: Iterable<TreeNodeId>
+                                - generic [ref=f24e331]: —
+                            - status [ref=f24e334]
+                        - generic [ref=f24e335]:
+                            - button "disabledKeys Iterable<TreeNodeId> —" [ref=f24e336]:
+                                - generic [ref=f24e337]: disabledKeys
+                                - generic [ref=f24e338]: Iterable<TreeNodeId>
+                                - generic [ref=f24e340]: —
+                            - status [ref=f24e343]
+                        - generic [ref=f24e344]:
+                            - button "selectionMode TreeSelectionMode 'none'" [ref=f24e345]:
+                                - generic [ref=f24e346]: selectionMode
+                                - generic [ref=f24e347]: TreeSelectionMode
+                                - generic [ref=f24e349]: "'none'"
+                            - status [ref=f24e353]
+                        - generic [ref=f24e354]:
+                            - button "selectionBehavior TreeSelectionBehavior 'toggle'" [ref=f24e355]:
+                                - generic [ref=f24e356]: selectionBehavior
+                                - generic [ref=f24e357]: TreeSelectionBehavior
+                                - generic [ref=f24e359]: "'toggle'"
+                            - status [ref=f24e363]
+                        - generic [ref=f24e364]:
+                            - button "disabledBehavior TreeDisabledBehavior 'all'" [ref=f24e365]:
+                                - generic [ref=f24e366]: disabledBehavior
+                                - generic [ref=f24e367]: TreeDisabledBehavior
+                                - generic [ref=f24e369]: "'all'"
+                            - status [ref=f24e373]
+                        - generic [ref=f24e374]:
+                            - button "selectionPropagation TreeSelectionPropagation 'none'" [ref=f24e375]:
+                                - generic [ref=f24e376]: selectionPropagation
+                                - generic [ref=f24e377]: TreeSelectionPropagation
+                                - generic [ref=f24e379]: "'none'"
+                            - status [ref=f24e383]
+                        - generic [ref=f24e384]:
+                            - button "disallowEmptySelection boolean false" [ref=f24e385]:
+                                - generic [ref=f24e386]: disallowEmptySelection
+                                - generic [ref=f24e387]: boolean
+                                - generic [ref=f24e389]: 'false'
+                            - status [ref=f24e393]
+                        - generic [ref=f24e394]:
+                            - button "items Iterable<T> —" [ref=f24e395]:
+                                - generic [ref=f24e396]: items
+                                - generic [ref=f24e397]: Iterable<T>
+                                - generic [ref=f24e399]: —
+                            - status [ref=f24e402]
+                        - generic [ref=f24e403]:
+                            - button "children Snippet | Snippet<[T]> —" [ref=f24e404]:
+                                - generic [ref=f24e405]: children
+                                - generic [ref=f24e406]: Snippet | Snippet<[T]>
+                                - generic [ref=f24e408]: —
+                            - status [ref=f24e411]
+                        - generic [ref=f24e412]:
+                            - button "renderEmptyState Snippet<[TreeEmptyStateRenderProps]> —" [ref=f24e413]:
+                                - generic [ref=f24e414]: renderEmptyState
+                                - generic [ref=f24e415]: Snippet<[TreeEmptyStateRenderProps]>
+                                - generic [ref=f24e417]: —
+                            - status [ref=f24e420]
+                        - generic [ref=f24e421]:
+                            - 'button "onExpandedKeysChange (keys: Set<TreeNodeId>) => void —" [ref=f24e422]':
+                                - generic [ref=f24e423]: onExpandedKeysChange
+                                - generic [ref=f24e424]: '(keys: Set<TreeNodeId>) => void'
+                                - generic [ref=f24e426]: —
+                            - status [ref=f24e429]
+                        - generic [ref=f24e430]:
+                            - 'button "onSelectionChange (keys: Set<TreeNodeId>) => void —" [ref=f24e431]':
+                                - generic [ref=f24e432]: onSelectionChange
+                                - generic [ref=f24e433]: '(keys: Set<TreeNodeId>) => void'
+                                - generic [ref=f24e435]: —
+                            - status [ref=f24e438]
+                        - generic [ref=f24e439]:
+                            - button "onAction TreeActionHandler —" [ref=f24e440]:
+                                - generic [ref=f24e441]: onAction
+                                - generic [ref=f24e442]: TreeActionHandler
+                                - generic [ref=f24e444]: —
+                            - status [ref=f24e447]
+                        - generic [ref=f24e448]:
+                            - button "itemTransition TreeItemTransition —" [ref=f24e449]:
+                                - generic [ref=f24e450]: itemTransition
+                                - generic [ref=f24e451]: TreeItemTransition
+                                - generic [ref=f24e453]: —
+                            - status [ref=f24e456]
+                        - generic [ref=f24e457]:
+                            - button "class string ''" [ref=f24e458]:
+                                - generic [ref=f24e459]: class
+                                - generic [ref=f24e460]: string
+                                - generic [ref=f24e462]: "''"
+                            - status [ref=f24e466]
+                        - generic [ref=f24e467]:
+                            - button "context TreeContext —" [ref=f24e468]:
+                                - generic [ref=f24e469]: context
+                                - generic [ref=f24e470]: TreeContext
+                                - generic [ref=f24e472]: —
+                            - status [ref=f24e475]
+                        - generic [ref=f24e476]:
+                            - button "element HTMLElement —" [ref=f24e477]:
+                                - generic [ref=f24e478]: element
+                                - generic [ref=f24e479]: HTMLElement
+                                - generic [ref=f24e481]: —
+                            - status [ref=f24e484]
+                    - paragraph [ref=f24e485]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f24e487]:
+                        - generic [ref=f24e488]:
+                            - generic [ref=f24e489]: Data attribute
+                            - generic [ref=f24e490]: Description
+                        - generic [ref=f24e491]:
+                            - generic [ref=f24e492]: data-empty
+                            - generic [ref=f24e493]: Present when the tree has no items.
+                        - generic [ref=f24e494]:
+                            - generic [ref=f24e495]: data-focus-visible
+                            - generic [ref=f24e496]: Present while focus inside the tree should be visibly indicated (keyboard modality).
+                        - generic [ref=f24e497]:
+                            - generic [ref=f24e498]: data-focus-within
+                            - generic [ref=f24e499]: Present while focus is inside the tree.
+                        - generic [ref=f24e500]:
+                            - generic [ref=f24e501]: data-focused
+                            - generic [ref=f24e502]: Present while focus is inside the tree.
+                        - generic [ref=f24e503]:
+                            - generic [ref=f24e504]: data-selection-mode
+                            - generic [ref=f24e505]: The active selection mode ('single' | 'multiple'); absent when selection is disabled.
+                        - generic [ref=f24e506]:
+                            - generic [ref=f24e507]: data-tree-registration
+                            - generic [ref=f24e508]: Identifies the hidden container used to register item structure; not a styling target.
+                    - heading "Section" [level=3] [ref=f24e509]
+                    - paragraph [ref=f24e510]: Groups related top-level items under an optional header. Renders role="group".
+                    - generic [ref=f24e512]:
+                        - generic [ref=f24e513]:
+                            - generic [ref=f24e514]: Prop
+                            - generic [ref=f24e515]: Type
+                            - generic [ref=f24e516]: Default
+                        - generic [ref=f24e517]:
+                            - button "id TreeNodeId —" [ref=f24e518]:
+                                - generic [ref=f24e519]: id
+                                - generic [ref=f24e520]: TreeNodeId
+                                - generic [ref=f24e522]: —
+                            - status [ref=f24e525]
+                        - generic [ref=f24e526]:
+                            - button "value T —" [ref=f24e527]:
+                                - generic [ref=f24e528]: value
+                                - generic [ref=f24e529]: T
+                                - generic [ref=f24e531]: —
+                            - status [ref=f24e534]
+                        - generic [ref=f24e535]:
+                            - button "items Iterable<T> —" [ref=f24e536]:
+                                - generic [ref=f24e537]: items
+                                - generic [ref=f24e538]: Iterable<T>
+                                - generic [ref=f24e540]: —
+                            - status [ref=f24e543]
+                        - generic [ref=f24e544]:
+                            - button "children Snippet | Snippet<[T]> —" [ref=f24e545]:
+                                - generic [ref=f24e546]: children
+                                - generic [ref=f24e547]: Snippet | Snippet<[T]>
+                                - generic [ref=f24e549]: —
+                            - status [ref=f24e552]
+                        - generic [ref=f24e553]:
+                            - button "class string ''" [ref=f24e554]:
+                                - generic [ref=f24e555]: class
+                                - generic [ref=f24e556]: string
+                                - generic [ref=f24e558]: "''"
+                            - status [ref=f24e562]
+                    - paragraph [ref=f24e563]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Header" [level=3] [ref=f24e564]
+                    - paragraph [ref=f24e565]: A visual label for a section's items.
+                    - generic [ref=f24e567]:
+                        - generic [ref=f24e568]:
+                            - generic [ref=f24e569]: Prop
+                            - generic [ref=f24e570]: Type
+                            - generic [ref=f24e571]: Default
+                        - generic [ref=f24e572]:
+                            - button "children Snippet —" [ref=f24e573]:
+                                - generic [ref=f24e574]: children
+                                - generic [ref=f24e575]: Snippet
+                                - generic [ref=f24e577]: —
+                            - status [ref=f24e580]
+                        - generic [ref=f24e581]:
+                            - button "class string ''" [ref=f24e582]:
+                                - generic [ref=f24e583]: class
+                                - generic [ref=f24e584]: string
+                                - generic [ref=f24e586]: "''"
+                            - status [ref=f24e590]
+                    - paragraph [ref=f24e591]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Item" [level=3] [ref=f24e592]
+                    - paragraph [ref=f24e593]: A single tree node. Renders the flattened role="treeitem" row and exposes focus, hover, selection, and pressed state on it.
+                    - generic [ref=f24e595]:
+                        - generic [ref=f24e596]:
+                            - generic [ref=f24e597]: Prop
+                            - generic [ref=f24e598]: Type
+                            - generic [ref=f24e599]: Default
+                        - generic [ref=f24e600]:
+                            - button "id TreeNodeId —" [ref=f24e601]:
+                                - generic [ref=f24e602]: id
+                                - generic [ref=f24e603]: TreeNodeId
+                                - generic [ref=f24e605]: —
+                            - status [ref=f24e608]
+                        - generic [ref=f24e609]:
+                            - button "value T —" [ref=f24e610]:
+                                - generic [ref=f24e611]: value
+                                - generic [ref=f24e612]: T
+                                - generic [ref=f24e614]: —
+                            - status [ref=f24e617]
+                        - generic [ref=f24e618]:
+                            - button "title string —" [ref=f24e619]:
+                                - generic [ref=f24e620]: title
+                                - generic [ref=f24e621]: string
+                                - generic [ref=f24e623]: —
+                            - status [ref=f24e626]
+                        - generic [ref=f24e627]:
+                            - button "textValue string —" [ref=f24e628]:
+                                - generic [ref=f24e629]: textValue
+                                - generic [ref=f24e630]: string
+                                - generic [ref=f24e632]: —
+                            - status [ref=f24e635]
+                        - generic [ref=f24e636]:
+                            - button "disabled boolean false" [ref=f24e637]:
+                                - generic [ref=f24e638]: disabled
+                                - generic [ref=f24e639]: boolean
+                                - generic [ref=f24e641]: 'false'
+                            - status [ref=f24e645]
+                        - generic [ref=f24e646]:
+                            - button "children Snippet —" [ref=f24e647]:
+                                - generic [ref=f24e648]: children
+                                - generic [ref=f24e649]: Snippet
+                                - generic [ref=f24e651]: —
+                            - status [ref=f24e654]
+                        - generic [ref=f24e655]:
+                            - button "class string ''" [ref=f24e656]:
+                                - generic [ref=f24e657]: class
+                                - generic [ref=f24e658]: string
+                                - generic [ref=f24e660]: "''"
+                            - status [ref=f24e664]
+                    - paragraph [ref=f24e665]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Children" [level=3] [ref=f24e666]
+                    - paragraph [ref=f24e667]: Marks the nested subtree of an item. Its presence makes the parent expandible on first render and during SSR.
+                    - generic [ref=f24e669]:
+                        - generic [ref=f24e670]:
+                            - generic [ref=f24e671]: Prop
+                            - generic [ref=f24e672]: Type
+                            - generic [ref=f24e673]: Default
+                        - generic [ref=f24e674]:
+                            - button "children Snippet —" [ref=f24e675]:
+                                - generic [ref=f24e676]: children
+                                - generic [ref=f24e677]: Snippet
+                                - generic [ref=f24e679]: —
+                            - status [ref=f24e682]
+                        - generic [ref=f24e683]:
+                            - button "class string —" [ref=f24e684]:
+                                - generic [ref=f24e685]: class
+                                - generic [ref=f24e686]: string
+                                - generic [ref=f24e688]: —
+                            - status [ref=f24e691]
+                    - paragraph [ref=f24e692]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Label" [level=3] [ref=f24e693]
+                    - paragraph [ref=f24e694]: The text label of an item row; also labels the row for assistive technology.
+                    - generic [ref=f24e696]:
+                        - generic [ref=f24e697]:
+                            - generic [ref=f24e698]: Prop
+                            - generic [ref=f24e699]: Type
+                            - generic [ref=f24e700]: Default
+                        - generic [ref=f24e701]:
+                            - button "children Snippet —" [ref=f24e702]:
+                                - generic [ref=f24e703]: children
+                                - generic [ref=f24e704]: Snippet
+                                - generic [ref=f24e706]: —
+                            - status [ref=f24e709]
+                        - generic [ref=f24e710]:
+                            - button "class string ''" [ref=f24e711]:
+                                - generic [ref=f24e712]: class
+                                - generic [ref=f24e713]: string
+                                - generic [ref=f24e715]: "''"
+                            - status [ref=f24e719]
+                    - paragraph [ref=f24e720]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f24e722]:
+                        - generic [ref=f24e723]:
+                            - generic [ref=f24e724]: Data attribute
+                            - generic [ref=f24e725]: Description
+                        - generic [ref=f24e726]:
+                            - generic [ref=f24e727]: data-tree-label
+                            - generic [ref=f24e728]: Identifies the label element.
+                    - heading "Trigger" [level=3] [ref=f24e729]
+                    - paragraph [ref=f24e730]: An explicit expand/collapse button for a branch. Only rendered when the item has children, and not part of arrow-key navigation.
+                    - generic [ref=f24e732]:
+                        - generic [ref=f24e733]:
+                            - generic [ref=f24e734]: Prop
+                            - generic [ref=f24e735]: Type
+                            - generic [ref=f24e736]: Default
+                        - generic [ref=f24e737]:
+                            - button "children Snippet —" [ref=f24e738]:
+                                - generic [ref=f24e739]: children
+                                - generic [ref=f24e740]: Snippet
+                                - generic [ref=f24e742]: —
+                            - status [ref=f24e745]
+                        - generic [ref=f24e746]:
+                            - button "class string ''" [ref=f24e747]:
+                                - generic [ref=f24e748]: class
+                                - generic [ref=f24e749]: string
+                                - generic [ref=f24e751]: "''"
+                            - status [ref=f24e755]
+                    - paragraph [ref=f24e756]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f24e758]:
+                        - generic [ref=f24e759]:
+                            - generic [ref=f24e760]: Data attribute
+                            - generic [ref=f24e761]: Description
+                        - generic [ref=f24e762]:
+                            - generic [ref=f24e763]: data-disabled
+                            - generic [ref=f24e764]: Present when the item is disabled.
+                        - generic [ref=f24e765]:
+                            - generic [ref=f24e766]: data-expanded
+                            - generic [ref=f24e767]: Present while the branch is expanded.
+                        - generic [ref=f24e768]:
+                            - generic [ref=f24e769]: data-pressed-when-expanded
+                            - generic [ref=f24e770]: Always present; marks the trigger as a control whose pressed styling should follow the expanded state.
+                        - generic [ref=f24e771]:
+                            - generic [ref=f24e772]: data-tree-trigger
+                            - generic [ref=f24e773]: Identifies the trigger element.
+                    - heading "Checkbox" [level=3] [ref=f24e774]
+                    - paragraph [ref=f24e775]: An explicit selection affordance for an item row, kept in sync with the tree selection (including indeterminate ancestors).
+                    - generic [ref=f24e777]:
+                        - generic [ref=f24e778]:
+                            - generic [ref=f24e779]: Prop
+                            - generic [ref=f24e780]: Type
+                            - generic [ref=f24e781]: Default
+                        - generic [ref=f24e782]:
+                            - button "id string —" [ref=f24e783]:
+                                - generic [ref=f24e784]: id
+                                - generic [ref=f24e785]: string
+                                - generic [ref=f24e787]: —
+                            - status [ref=f24e790]
+                        - generic [ref=f24e791]:
+                            - button "title string —" [ref=f24e792]:
+                                - generic [ref=f24e793]: title
+                                - generic [ref=f24e794]: string
+                                - generic [ref=f24e796]: —
+                            - status [ref=f24e799]
+                        - generic [ref=f24e800]:
+                            - button "children Snippet —" [ref=f24e801]:
+                                - generic [ref=f24e802]: children
+                                - generic [ref=f24e803]: Snippet
+                                - generic [ref=f24e805]: —
+                            - status [ref=f24e808]
+                        - generic [ref=f24e809]:
+                            - button "class string ''" [ref=f24e810]:
+                                - generic [ref=f24e811]: class
+                                - generic [ref=f24e812]: string
+                                - generic [ref=f24e814]: "''"
+                            - status [ref=f24e818]
+                        - generic [ref=f24e819]:
+                            - button "aria-label string —" [ref=f24e820]:
+                                - generic [ref=f24e821]: aria-label
+                                - generic [ref=f24e822]: string
+                                - generic [ref=f24e824]: —
+                            - status [ref=f24e827]
+                        - generic [ref=f24e828]:
+                            - button "aria-labelledby string —" [ref=f24e829]:
+                                - generic [ref=f24e830]: aria-labelledby
+                                - generic [ref=f24e831]: string
+                                - generic [ref=f24e833]: —
+                            - status [ref=f24e836]
+                    - paragraph [ref=f24e837]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f24e839]:
+                        - generic [ref=f24e840]:
+                            - generic [ref=f24e841]: Data attribute
+                            - generic [ref=f24e842]: Description
+                        - generic [ref=f24e843]:
+                            - generic [ref=f24e844]: data-tree-checkbox
+                            - generic [ref=f24e845]: Identifies the checkbox element.
+                    - heading "CheckboxIndicator" [level=3] [ref=f24e846]
+                    - paragraph [ref=f24e847]: The visual mark inside a tree checkbox. Mounted while the checkbox is checked or indeterminate.
+                    - generic [ref=f24e849]:
+                        - generic [ref=f24e850]:
+                            - generic [ref=f24e851]: Prop
+                            - generic [ref=f24e852]: Type
+                            - generic [ref=f24e853]: Default
+                        - generic [ref=f24e854]:
+                            - button "forceMount boolean false" [ref=f24e855]:
+                                - generic [ref=f24e856]: forceMount
+                                - generic [ref=f24e857]: boolean
+                                - generic [ref=f24e859]: 'false'
+                            - status [ref=f24e863]
+                        - generic [ref=f24e864]:
+                            - button "children Snippet —" [ref=f24e865]:
+                                - generic [ref=f24e866]: children
+                                - generic [ref=f24e867]: Snippet
+                                - generic [ref=f24e869]: —
+                            - status [ref=f24e872]
+                        - generic [ref=f24e873]:
+                            - button "class string ''" [ref=f24e874]:
+                                - generic [ref=f24e875]: class
+                                - generic [ref=f24e876]: string
+                                - generic [ref=f24e878]: "''"
+                            - status [ref=f24e882]
+                    - paragraph [ref=f24e883]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f24e885]:
+                        - generic [ref=f24e886]:
+                            - generic [ref=f24e887]: Data attribute
+                            - generic [ref=f24e888]: Description
+                        - generic [ref=f24e889]:
+                            - generic [ref=f24e890]: data-checked
+                            - generic [ref=f24e891]: Present while the checkbox is checked.
+                        - generic [ref=f24e892]:
+                            - generic [ref=f24e893]: data-disabled
+                            - generic [ref=f24e894]: Present when the checkbox is disabled.
+                        - generic [ref=f24e895]:
+                            - generic [ref=f24e896]: data-focus-visible
+                            - generic [ref=f24e897]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f24e898]:
+                            - generic [ref=f24e899]: data-focused
+                            - generic [ref=f24e900]: Present while the checkbox has focus.
+                        - generic [ref=f24e901]:
+                            - generic [ref=f24e902]: data-indeterminate
+                            - generic [ref=f24e903]: Present while the checkbox is indeterminate (partially selected subtree).
+                        - generic [ref=f24e904]:
+                            - generic [ref=f24e905]: data-pressed
+                            - generic [ref=f24e906]: Present while the checkbox is actively pressed.
+                        - generic [ref=f24e907]:
+                            - generic [ref=f24e908]: data-tree-checkbox-indicator
+                            - generic [ref=f24e909]: Identifies the indicator element.
+                        - generic [ref=f24e910]:
+                            - generic [ref=f24e911]: data-unchecked
+                            - generic [ref=f24e912]: 'Present while the checkbox is unchecked (with `forceMount`).'
+            - complementary [ref=f24e913]:
+                - navigation "On this page" [ref=f24e914]:
+                    - heading "On this page" [level=4] [ref=f24e915]
+                    - list [ref=f24e916]:
+                        - listitem [ref=f24e917]:
+                            - link "(Top)" [ref=f24e918] [cursor=pointer]:
+                                - /url: '#top'
+                        - listitem [ref=f24e919]:
+                            - link "Anatomy" [ref=f24e920] [cursor=pointer]:
+                                - /url: '#anatomy'
+                        - listitem [ref=f24e921]:
+                            - link "Checkbox selection" [ref=f24e922] [cursor=pointer]:
+                                - /url: '#checkbox-selection'
+                        - listitem [ref=f24e923]:
+                            - link "Sections and headers" [ref=f24e924] [cursor=pointer]:
+                                - /url: '#sections-and-headers'
+                        - listitem [ref=f24e925]:
+                            - link "Usage guidelines" [ref=f24e926] [cursor=pointer]:
+                                - /url: '#usage-guidelines'
+                        - listitem [ref=f24e927]:
+                            - link "Accessibility" [ref=f24e928] [cursor=pointer]:
+                                - /url: '#accessibility'
+                        - listitem [ref=f24e929]:
+                            - link "API reference" [ref=f24e930] [cursor=pointer]:
+                                - /url: '#api-reference'
+                        - listitem [ref=f24e931]:
+                            - link "Root" [ref=f24e932] [cursor=pointer]:
+                                - /url: '#api-root'
+                        - listitem [ref=f24e933]:
+                            - link "Section" [ref=f24e934] [cursor=pointer]:
+                                - /url: '#api-section'
+                        - listitem [ref=f24e935]:
+                            - link "Header" [ref=f24e936] [cursor=pointer]:
+                                - /url: '#api-header'
+                        - listitem [ref=f24e937]:
+                            - link "Item" [ref=f24e938] [cursor=pointer]:
+                                - /url: '#api-item'
+                        - listitem [ref=f24e939]:
+                            - link "Children" [ref=f24e940] [cursor=pointer]:
+                                - /url: '#api-children'
+                        - listitem [ref=f24e941]:
+                            - link "Label" [ref=f24e942] [cursor=pointer]:
+                                - /url: '#api-label'
+                        - listitem [ref=f24e943]:
+                            - link "Trigger" [ref=f24e944] [cursor=pointer]:
+                                - /url: '#api-trigger'
+                        - listitem [ref=f24e945]:
+                            - link "Checkbox" [ref=f24e946] [cursor=pointer]:
+                                - /url: '#api-checkbox'
+                        - listitem [ref=f24e947]:
+                            - link "CheckboxIndicator" [ref=f24e948] [cursor=pointer]:
+                                - /url: '#api-checkboxindicator'

@@ -1,96 +1,84 @@
 {
-  "label": "base-v2",
-  "createdAt": "2026-07-29T11:55:24.159Z",
-  "mode": "preview",
-  "url": "http://localhost:56212/bench/table?rows=500&columns=8",
-  "throttle": 4,
-  "repeat": 5,
-  "scenarios": {
-    "resize-column": {
-      "scenario": "resize-column",
-      "config": {
-        "rows": 500,
-        "columns": 8,
-        "selectionMode": "multiple",
-        "resizable": true,
-        "pinFirstColumn": false,
-        "virtualized": true,
-        "rowHeight": 32,
-        "cellVariant": "rich",
-        "viewportHeight": 640
-      },
-      "frames": {
-        "count": 120,
-        "mean": 85.14083333333332,
-        "p50": 85.79999999999563,
-        "p95": 104.5,
-        "p99": 109.19999999999709,
-        "max": 126.90000000000146,
-        "dropped": 118,
-        "droppedRatio": 0.9833333333333333,
-        "jankMs": 8216.899999999983
-      },
-      "longTasks": {
-        "count": 118,
-        "totalMs": 10073,
-        "maxMs": 125,
-        "supported": true
-      },
-      "renderedRows": 38,
-      "durationMs": 10272,
-      "samples": [
-        85.8,
-        86.2,
-        86.6,
-        88.6,
-        94.7
-      ],
-      "bestMs": 85.8,
-      "medianMs": 86.6,
-      "spread": 0.104
-    },
-    "scroll-fast": {
-      "scenario": "scroll-fast",
-      "config": {
-        "rows": 500,
-        "columns": 8,
-        "selectionMode": "multiple",
-        "resizable": true,
-        "pinFirstColumn": false,
-        "virtualized": true,
-        "rowHeight": 32,
-        "cellVariant": "rich",
-        "viewportHeight": 640
-      },
-      "frames": {
-        "count": 150,
-        "mean": 108.35600000000015,
-        "p50": 110.89999999999418,
-        "p95": 141.69999999998254,
-        "p99": 151.39999999999418,
-        "max": 151.69999999998254,
-        "dropped": 148,
-        "droppedRatio": 0.9866666666666667,
-        "jankMs": 13753.400000000049
-      },
-      "longTasks": {
-        "count": 146,
-        "totalMs": 15903,
-        "maxMs": 158,
-        "supported": true
-      },
-      "renderedRows": 56,
-      "durationMs": 16296.59999999404,
-      "samples": [
-        110.9,
-        117.8,
-        117.9,
-        119.7,
-        127.4
-      ],
-      "bestMs": 110.9,
-      "medianMs": 117.9,
-      "spread": 0.149
-    }
-  }
+	"label": "base-v2",
+	"createdAt": "2026-07-29T11:55:24.159Z",
+	"mode": "preview",
+	"url": "http://localhost:56212/bench/table?rows=500&columns=8",
+	"throttle": 4,
+	"repeat": 5,
+	"scenarios": {
+		"resize-column": {
+			"scenario": "resize-column",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 120,
+				"mean": 85.14083333333332,
+				"p50": 85.79999999999563,
+				"p95": 104.5,
+				"p99": 109.19999999999709,
+				"max": 126.90000000000146,
+				"dropped": 118,
+				"droppedRatio": 0.9833333333333333,
+				"jankMs": 8216.899999999983
+			},
+			"longTasks": {
+				"count": 118,
+				"totalMs": 10073,
+				"maxMs": 125,
+				"supported": true
+			},
+			"renderedRows": 38,
+			"durationMs": 10272,
+			"samples": [85.8, 86.2, 86.6, 88.6, 94.7],
+			"bestMs": 85.8,
+			"medianMs": 86.6,
+			"spread": 0.104
+		},
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 150,
+				"mean": 108.35600000000015,
+				"p50": 110.89999999999418,
+				"p95": 141.69999999998254,
+				"p99": 151.39999999999418,
+				"max": 151.69999999998254,
+				"dropped": 148,
+				"droppedRatio": 0.9866666666666667,
+				"jankMs": 13753.400000000049
+			},
+			"longTasks": {
+				"count": 146,
+				"totalMs": 15903,
+				"maxMs": 158,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 16296.59999999404,
+			"samples": [110.9, 117.8, 117.9, 119.7, 127.4],
+			"bestMs": 110.9,
+			"medianMs": 117.9,
+			"spread": 0.149
+		}
+	}
 }
