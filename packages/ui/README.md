@@ -5,6 +5,8 @@ Accessible, reusable UI components for **Svelte 5**.
 Built with Svelte 5 runes, typed end to end, and shipped as native ESM with
 per-component subpath exports so bundlers only include what you import.
 
+**[Documentation and live demos → ui.human-kit.com](https://ui.human-kit.com)**
+
 ## Installation
 
 ```bash

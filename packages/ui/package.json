@@ -4,7 +4,7 @@
 	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
 	"license": "MIT",
 	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
-	"homepage": "https://github.com/human-kit/ui#readme",
+	"homepage": "https://ui.human-kit.com",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/human-kit/ui.git",

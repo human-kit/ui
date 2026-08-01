@@ -3,6 +3,8 @@
 Monorepo for accessible, reusable UI components for Svelte 5.
 This repository contains the publishable library and the docs/demo app.
 
+**[Documentation → ui.human-kit.com](https://ui.human-kit.com)**
+
 ## Quick Overview
 
 - npm library: `@human-kit/ui` (in `packages/ui`).
