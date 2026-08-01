@@ -1,0 +1,1048 @@
+- generic [ref=f1e1]:
+    - button "Disable render scanning" [ref=f1e2] [cursor=pointer]
+    - generic [ref=f1e7]:
+        - banner [ref=f1e8]:
+            - link [ref=f1e9] [cursor=pointer]:
+                - /url: ../
+            - generic [ref=f1e12]:
+                - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f1e13] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@human-kit/ui
+                    - text: 1.0.0-beta.0
+                - link "GitHub repository" [ref=f1e14] [cursor=pointer]:
+                    - /url: https://github.com/human-kit/ui
+                - button "Toggle color theme" [ref=f1e15]
+                - status [ref=f1e17]
+        - generic [ref=f1e18]:
+            - complementary [ref=f1e19]:
+                - navigation [ref=f1e20]:
+                    - generic [ref=f1e21]:
+                        - button "Overview" [expanded] [ref=f1e22]
+                        - status [ref=f1e25]
+                        - list [ref=f1e28]:
+                            - listitem [ref=f1e29]:
+                                - link "Quick Start" [ref=f1e30] [cursor=pointer]:
+                                    - /url: ../docs/quick-start
+                            - listitem [ref=f1e31]:
+                                - link "Accessibility" [ref=f1e32] [cursor=pointer]:
+                                    - /url: ../docs/accessibility
+                            - listitem [ref=f1e33]:
+                                - link "Releases" [ref=f1e34] [cursor=pointer]:
+                                    - /url: ../docs/releases
+                            - listitem [ref=f1e35]:
+                                - link "About" [ref=f1e36] [cursor=pointer]:
+                                    - /url: ../docs/about
+                    - generic [ref=f1e37]:
+                        - button "Form" [expanded] [ref=f1e38]
+                        - status [ref=f1e41]
+                        - list [ref=f1e44]:
+                            - listitem [ref=f1e45]:
+                                - link "Button" [ref=f1e46] [cursor=pointer]:
+                                    - /url: ../docs/button
+                            - listitem [ref=f1e47]:
+                                - link "Checkbox" [ref=f1e48] [cursor=pointer]:
+                                    - /url: ../docs/checkbox
+                            - listitem [ref=f1e49]:
+                                - link "Input" [ref=f1e50] [cursor=pointer]:
+                                    - /url: ../docs/input
+                            - listitem [ref=f1e51]:
+                                - link "NumberField" [ref=f1e52] [cursor=pointer]:
+                                    - /url: ../docs/numberfield
+                            - listitem [ref=f1e53]:
+                                - link "Switch" [ref=f1e54] [cursor=pointer]:
+                                    - /url: ../docs/switch
+                            - listitem [ref=f1e55]:
+                                - link "TextArea" [ref=f1e56] [cursor=pointer]:
+                                    - /url: ../docs/textarea
+                            - listitem [ref=f1e57]:
+                                - link "Toggle" [ref=f1e58] [cursor=pointer]:
+                                    - /url: ../docs/toggle
+                            - listitem [ref=f1e59]:
+                                - link "ToggleGroup" [ref=f1e60] [cursor=pointer]:
+                                    - /url: ../docs/toggle-group
+                    - generic [ref=f1e61]:
+                        - button "Pickers" [expanded] [ref=f1e62]
+                        - status [ref=f1e65]
+                        - list [ref=f1e68]:
+                            - listitem [ref=f1e69]:
+                                - link "Autocomplete" [ref=f1e70] [cursor=pointer]:
+                                    - /url: ../docs/autocomplete
+                            - listitem [ref=f1e71]:
+                                - link "ComboBox" [ref=f1e72] [cursor=pointer]:
+                                    - /url: ../docs/combobox
+                            - listitem [ref=f1e73]:
+                                - link "ListBox" [ref=f1e74] [cursor=pointer]:
+                                    - /url: ../docs/listbox
+                            - listitem [ref=f1e75]:
+                                - link "Calendar" [ref=f1e76] [cursor=pointer]:
+                                    - /url: ../docs/calendar
+                            - listitem [ref=f1e77]:
+                                - link "Clock" [ref=f1e78] [cursor=pointer]:
+                                    - /url: ../docs/clock
+                            - listitem [ref=f1e79]:
+                                - link "DatePicker" [ref=f1e80] [cursor=pointer]:
+                                    - /url: ../docs/datepicker
+                            - listitem [ref=f1e81]:
+                                - link "DateRangePicker" [ref=f1e82] [cursor=pointer]:
+                                    - /url: ../docs/daterangepicker
+                            - listitem [ref=f1e83]:
+                                - link "TimePicker" [ref=f1e84] [cursor=pointer]:
+                                    - /url: ../docs/timepicker
+                    - generic [ref=f1e85]:
+                        - button "Overlays" [expanded] [ref=f1e86]
+                        - status [ref=f1e89]
+                        - list [ref=f1e92]:
+                            - listitem [ref=f1e93]:
+                                - link "Dialog" [ref=f1e94] [cursor=pointer]:
+                                    - /url: ../docs/dialog
+                            - listitem [ref=f1e95]:
+                                - link "Menu" [ref=f1e96] [cursor=pointer]:
+                                    - /url: ../docs/menu
+                            - listitem [ref=f1e97]:
+                                - link "Popover" [ref=f1e98] [cursor=pointer]:
+                                    - /url: ../docs/popover
+                    - generic [ref=f1e99]:
+                        - button "Structure" [expanded] [ref=f1e100]
+                        - status [ref=f1e103]
+                        - list [ref=f1e106]:
+                            - listitem [ref=f1e107]:
+                                - link "Accordion" [ref=f1e108] [cursor=pointer]:
+                                    - /url: ../docs/accordion
+                            - listitem [ref=f1e109]:
+                                - link "Collapsible" [ref=f1e110] [cursor=pointer]:
+                                    - /url: ../docs/collapsible
+                            - listitem [ref=f1e111]:
+                                - link "Table" [ref=f1e112] [cursor=pointer]:
+                                    - /url: ../docs/table
+                            - listitem [ref=f1e113]:
+                                - link "Tabs" [ref=f1e114] [cursor=pointer]:
+                                    - /url: ../docs/tabs
+                            - listitem [ref=f1e115]:
+                                - link "Tree" [ref=f1e116] [cursor=pointer]:
+                                    - /url: ../docs/tree
+            - main [ref=f1e117]:
+                - article [ref=f1e119]:
+                    - generic [ref=f1e120]:
+                        - 'link "Previous: DatePicker" [ref=f1e121] [cursor=pointer]':
+                            - /url: ../docs/datepicker
+                        - 'link "Next: TimePicker" [ref=f1e122] [cursor=pointer]':
+                            - /url: ../docs/timepicker
+                        - button "Page options" [ref=f1e123]
+                        - status [ref=f1e124]
+                    - heading "DateRangePicker" [level=1] [ref=f1e125]
+                    - paragraph [ref=f1e126]:
+                        - text: A composable date range picker that pairs two segmented date inputs — start and end — with a popover hosting a range calendar. The committed value is a
+                        - code [ref=f1e127]: '{ start, end }'
+                        - text: pair of
+                        - code [ref=f1e128]: YYYY-MM-DD
+                        - text: strings, or
+                        - code [ref=f1e129]: 'null'
+                        - text: while the range is empty or incomplete.
+                    - generic [ref=f1e130]:
+                        - generic [ref=f1e133]:
+                            - group "Start date" [ref=f1e134]:
+                                - spinbutton "Día" [ref=f1e135]: dd
+                                - generic [ref=f1e136]: /
+                                - spinbutton "Mes" [ref=f1e137]: mm
+                                - generic [ref=f1e138]: /
+                                - spinbutton "Año" [ref=f1e139]: yyyy
+                            - generic [ref=f1e140]: '-'
+                            - group "End date" [ref=f1e141]:
+                                - spinbutton "Día" [ref=f1e142]: dd
+                                - generic [ref=f1e143]: /
+                                - spinbutton "Mes" [ref=f1e144]: mm
+                                - generic [ref=f1e145]: /
+                                - spinbutton "Año" [ref=f1e146]: yyyy
+                            - button [ref=f1e147]
+                            - status [ref=f1e150]
+                        - generic [ref=f1e152]:
+                            - button "Copy source code" [ref=f1e153]
+                            - status [ref=f1e155]
+                            - button "Show code" [ref=f1e156]
+                            - status [ref=f1e157]
+                    - heading "Anatomy" [level=2] [ref=f1e158]
+                    - paragraph [ref=f1e159]:
+                        - code [ref=f1e160]: DateRangePicker.Root
+                        - text: owns the range value and open state. Two
+                        - code [ref=f1e161]: DateRangePicker.Input
+                        - text: parts — one with
+                        - code [ref=f1e162]: part="start"
+                        - text: ', one with'
+                        - code [ref=f1e163]: part="end"
+                        - text: — render locale-resolved segments, and
+                        - code [ref=f1e164]: DateRangePicker.Popover
+                        - text: hosts a calendar fixed to range selection built from the same parts as the standalone
+                        - code [ref=f1e165]: Calendar
+                        - text: .
+                    - code [ref=f1e168]:
+                        - generic [ref=f1e169]: <script>
+                        - generic [ref=f1e170]: "import { DateRangePicker } from '@human-kit/ui/daterangepicker';"
+                        - generic [ref=f1e171]: </script>
+                        - generic [ref=f1e172]: <DateRangePicker.Root>
+                        - generic [ref=f1e173]: <DateRangePicker.Input part="start" aria-label="Start date">
+                        - generic [ref=f1e174]: '{#snippet children(segment)}'
+                        - generic [ref=f1e175]: '<DateRangePicker.Segment part="start" {segment} />'
+                        - generic [ref=f1e176]: '{/snippet}'
+                        - generic [ref=f1e177]: </DateRangePicker.Input>
+                        - generic [ref=f1e178]: <DateRangePicker.Input part="end" aria-label="End date">
+                        - generic [ref=f1e179]: '{#snippet children(segment)}'
+                        - generic [ref=f1e180]: '<DateRangePicker.Segment part="end" {segment} />'
+                        - generic [ref=f1e181]: '{/snippet}'
+                        - generic [ref=f1e182]: </DateRangePicker.Input>
+                        - generic [ref=f1e183]: <DateRangePicker.Trigger />
+                        - generic [ref=f1e184]: <DateRangePicker.Popover>
+                        - generic [ref=f1e185]: <DateRangePicker.Calendar>
+                        - generic [ref=f1e186]: <div>
+                        - generic [ref=f1e187]: <DateRangePicker.TriggerPrevious />
+                        - generic [ref=f1e188]: <DateRangePicker.Heading />
+                        - generic [ref=f1e189]: <DateRangePicker.TriggerNext />
+                        - generic [ref=f1e190]: </div>
+                        - generic [ref=f1e191]: <DateRangePicker.Grid>
+                        - generic [ref=f1e192]: <DateRangePicker.GridHeader />
+                        - generic [ref=f1e193]: <DateRangePicker.GridBody />
+                        - generic [ref=f1e194]: </DateRangePicker.Grid>
+                        - generic [ref=f1e195]: </DateRangePicker.Calendar>
+                        - generic [ref=f1e196]: </DateRangePicker.Popover>
+                        - generic [ref=f1e197]: </DateRangePicker.Root>
+                    - heading "Min and max bounds" [level=2] [ref=f1e198]
+                    - paragraph [ref=f1e199]:
+                        - code [ref=f1e200]: minValue
+                        - text: and
+                        - code [ref=f1e201]: maxValue
+                        - text: constrain both the calendar and the typed inputs. When the
+                        - code [ref=f1e202]: children
+                        - text: snippet is omitted,
+                        - code [ref=f1e203]: DateRangePicker.Input
+                        - text: renders its segments with default styling, as this demo shows.
+                    - generic [ref=f1e204]:
+                        - generic [ref=f1e206]:
+                            - generic [ref=f1e208]:
+                                - group "Start date" [ref=f1e209]:
+                                    - spinbutton "Día" [ref=f1e210]: dd
+                                    - generic [ref=f1e211]: /
+                                    - spinbutton "Mes" [ref=f1e212]: mm
+                                    - generic [ref=f1e213]: /
+                                    - spinbutton "Año" [ref=f1e214]: yyyy
+                                - generic [ref=f1e215]: '-'
+                                - group "End date" [ref=f1e216]:
+                                    - spinbutton "Día" [ref=f1e217]: dd
+                                    - generic [ref=f1e218]: /
+                                    - spinbutton "Mes" [ref=f1e219]: mm
+                                    - generic [ref=f1e220]: /
+                                    - spinbutton "Año" [ref=f1e221]: yyyy
+                                - button [ref=f1e222]
+                                - status [ref=f1e225]
+                            - paragraph [ref=f1e226]: 'Selectable range: 2026-05-01 → 2026-09-30 — value: null'
+                        - generic [ref=f1e228]:
+                            - button "Copy source code" [ref=f1e229]
+                            - status [ref=f1e231]
+                            - button "Show code" [ref=f1e232]
+                            - status [ref=f1e233]
+                    - heading "Usage guidelines" [level=2] [ref=f1e234]
+                    - list [ref=f1e235]:
+                        - listitem [ref=f1e236]:
+                            - text: Use
+                            - code [ref=f1e237]: value
+                            - text: with
+                            - code [ref=f1e238]: onChange
+                            - text: for controlled state and
+                            - code [ref=f1e239]: defaultValue
+                            - text: for uncontrolled state; the value is a
+                            - code [ref=f1e240]: '{ start, end }'
+                            - text: pair and the empty state is
+                            - code [ref=f1e241]: 'null'
+                            - text: .
+                        - listitem [ref=f1e242]:
+                            - text: Always render one input with
+                            - code [ref=f1e243]: part="start"
+                            - text: and one with
+                            - code [ref=f1e244]: part="end"
+                            - text: ', and pass the same'
+                            - code [ref=f1e245]: part
+                            - text: to their segments.
+                        - listitem [ref=f1e246]:
+                            - text: Use
+                            - code [ref=f1e247]: open
+                            - text: /
+                            - code [ref=f1e248]: defaultOpen
+                            - text: /
+                            - code [ref=f1e249]: onOpenChange
+                            - text: to control the popover, and
+                            - code [ref=f1e250]: closeOnSelect
+                            - text: to keep it open after the range is confirmed.
+                        - listitem [ref=f1e251]:
+                            - code [ref=f1e252]: isDateUnavailable
+                            - text: marks specific days as non-selectable in both the inputs and the calendar.
+                        - listitem [ref=f1e253]:
+                            - text: Set
+                            - code [ref=f1e254]: visibleMonths
+                            - text: 'on'
+                            - code [ref=f1e255]: DateRangePicker.Calendar
+                            - text: to show more than one month, which makes range selection easier.
+                        - listitem [ref=f1e256]:
+                            - text: Wrap in a
+                            - code [ref=f1e257]: LocaleProvider
+                            - text: to localize segment order, placeholders, and calendar labels.
+                    - heading "Accessibility" [level=2] [ref=f1e258]
+                    - list [ref=f1e259]:
+                        - listitem [ref=f1e260]:
+                            - text: Give each input its own accessible name (for example
+                            - code [ref=f1e261]: aria-label="Start date"
+                            - text: and
+                            - code [ref=f1e262]: aria-label="End date"
+                            - text: ).
+                        - listitem [ref=f1e263]: Segment accessible names are resolved automatically from the active locale.
+                        - listitem [ref=f1e264]:
+                            - text: Each input exposes
+                            - code [ref=f1e265]: aria-invalid
+                            - text: and
+                            - code [ref=f1e266]: data-invalid
+                            - text: when its segment draft is not committable; invalid input is shown, never auto-corrected.
+                        - listitem [ref=f1e267]: Disabled calendar dates remain focusable via keyboard navigation so screen readers can discover and announce them as disabled.
+                        - listitem [ref=f1e268]:
+                            - text: In the range calendar, the first selection starts the range, arrow keys extend the preview, and
+                            - code [ref=f1e269]: Enter
+                            - text: or
+                            - code [ref=f1e270]: Space
+                            - text: confirms it.
+                    - heading "API reference" [level=2] [ref=f1e271]
+                    - heading "Root" [level=3] [ref=f1e272]
+                    - paragraph [ref=f1e273]: 'The stateful container. Owns the committed { start, end } range value, the popover open state, and validation shared by both inputs and the calendar.'
+                    - generic [ref=f1e275]:
+                        - generic [ref=f1e276]:
+                            - generic [ref=f1e277]: Prop
+                            - generic [ref=f1e278]: Type
+                            - generic [ref=f1e279]: Default
+                        - generic [ref=f1e280]:
+                            - button "id string —" [ref=f1e281]:
+                                - generic [ref=f1e282]: id
+                                - generic [ref=f1e283]: string
+                                - generic [ref=f1e285]: —
+                            - status [ref=f1e288]
+                        - generic [ref=f1e289]:
+                            - button "value DateRangePickerRangeValue | null —" [ref=f1e290]:
+                                - generic [ref=f1e291]: value
+                                - generic [ref=f1e292]: DateRangePickerRangeValue | null
+                                - generic [ref=f1e294]: —
+                            - status [ref=f1e297]
+                        - generic [ref=f1e298]:
+                            - button "defaultValue DateRangePickerRangeValue | null —" [ref=f1e299]:
+                                - generic [ref=f1e300]: defaultValue
+                                - generic [ref=f1e301]: DateRangePickerRangeValue | null
+                                - generic [ref=f1e303]: —
+                            - status [ref=f1e306]
+                        - generic [ref=f1e307]:
+                            - 'button "onChange (value: DateRangePickerRangeValue | null) => void —" [ref=f1e308]':
+                                - generic [ref=f1e309]: onChange
+                                - generic [ref=f1e310]: '(value: DateRangePickerRangeValue | null) => void'
+                                - generic [ref=f1e312]: —
+                            - status [ref=f1e315]
+                        - generic [ref=f1e316]:
+                            - button "disabled boolean false" [ref=f1e317]:
+                                - generic [ref=f1e318]: disabled
+                                - generic [ref=f1e319]: boolean
+                                - generic [ref=f1e321]: 'false'
+                            - status [ref=f1e325]
+                        - generic [ref=f1e326]:
+                            - button "readonly boolean false" [ref=f1e327]:
+                                - generic [ref=f1e328]: readonly
+                                - generic [ref=f1e329]: boolean
+                                - generic [ref=f1e331]: 'false'
+                            - status [ref=f1e335]
+                        - generic [ref=f1e336]:
+                            - button "minValue DatePickerDateValue —" [ref=f1e337]:
+                                - generic [ref=f1e338]: minValue
+                                - generic [ref=f1e339]: DatePickerDateValue
+                                - generic [ref=f1e341]: —
+                            - status [ref=f1e344]
+                        - generic [ref=f1e345]:
+                            - button "maxValue DatePickerDateValue —" [ref=f1e346]:
+                                - generic [ref=f1e347]: maxValue
+                                - generic [ref=f1e348]: DatePickerDateValue
+                                - generic [ref=f1e350]: —
+                            - status [ref=f1e353]
+                        - generic [ref=f1e354]:
+                            - 'button "isDateUnavailable (date: DatePickerDateValue) => boolean —" [ref=f1e355]':
+                                - generic [ref=f1e356]: isDateUnavailable
+                                - generic [ref=f1e357]: '(date: DatePickerDateValue) => boolean'
+                                - generic [ref=f1e359]: —
+                            - status [ref=f1e362]
+                        - generic [ref=f1e363]:
+                            - button "open boolean —" [ref=f1e364]:
+                                - generic [ref=f1e365]: open
+                                - generic [ref=f1e366]: boolean
+                                - generic [ref=f1e368]: —
+                            - status [ref=f1e371]
+                        - generic [ref=f1e372]:
+                            - button "defaultOpen boolean false" [ref=f1e373]:
+                                - generic [ref=f1e374]: defaultOpen
+                                - generic [ref=f1e375]: boolean
+                                - generic [ref=f1e377]: 'false'
+                            - status [ref=f1e381]
+                        - generic [ref=f1e382]:
+                            - 'button "onOpenChange (open: boolean, details: DateRangePickerOpenChangeDetails) => void —" [ref=f1e383]':
+                                - generic [ref=f1e384]: onOpenChange
+                                - generic [ref=f1e385]: '(open: boolean, details: DateRangePickerOpenChangeDetails) => void'
+                                - generic [ref=f1e387]: —
+                            - status [ref=f1e390]
+                        - generic [ref=f1e391]:
+                            - button "closeOnSelect boolean true" [ref=f1e392]:
+                                - generic [ref=f1e393]: closeOnSelect
+                                - generic [ref=f1e394]: boolean
+                                - generic [ref=f1e396]: 'true'
+                            - status [ref=f1e400]
+                        - generic [ref=f1e401]:
+                            - button "children Snippet —" [ref=f1e402]:
+                                - generic [ref=f1e403]: children
+                                - generic [ref=f1e404]: Snippet
+                                - generic [ref=f1e406]: —
+                            - status [ref=f1e409]
+                        - generic [ref=f1e410]:
+                            - button "class string ''" [ref=f1e411]:
+                                - generic [ref=f1e412]: class
+                                - generic [ref=f1e413]: string
+                                - generic [ref=f1e415]: "''"
+                            - status [ref=f1e419]
+                        - generic [ref=f1e420]:
+                            - button "aria-label string —" [ref=f1e421]:
+                                - generic [ref=f1e422]: aria-label
+                                - generic [ref=f1e423]: string
+                                - generic [ref=f1e425]: —
+                            - status [ref=f1e428]
+                    - paragraph [ref=f1e429]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e431]:
+                        - generic [ref=f1e432]:
+                            - generic [ref=f1e433]: Data attribute
+                            - generic [ref=f1e434]: Description
+                        - generic [ref=f1e435]:
+                            - generic [ref=f1e436]: data-disabled
+                            - generic [ref=f1e437]: Present when the range picker is disabled.
+                        - generic [ref=f1e438]:
+                            - generic [ref=f1e439]: data-focus-visible
+                            - generic [ref=f1e440]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f1e441]:
+                            - generic [ref=f1e442]: data-focus-within
+                            - generic [ref=f1e443]: Present while any part of the range picker contains focus.
+                        - generic [ref=f1e444]:
+                            - generic [ref=f1e445]: data-invalid
+                            - generic [ref=f1e446]: Present while a segment draft is not committable.
+                        - generic [ref=f1e447]:
+                            - generic [ref=f1e448]: data-open
+                            - generic [ref=f1e449]: Present while the calendar popover is open.
+                        - generic [ref=f1e450]:
+                            - generic [ref=f1e451]: data-readonly
+                            - generic [ref=f1e452]: Present when the range picker is readonly.
+                    - heading "Input" [level=3] [ref=f1e453]
+                    - paragraph [ref=f1e454]: One segmented date input for one end of the range. Render one with part="start" and one with part="end"; segments render with default styling when the children snippet is omitted.
+                    - generic [ref=f1e456]:
+                        - generic [ref=f1e457]:
+                            - generic [ref=f1e458]: Prop
+                            - generic [ref=f1e459]: Type
+                            - generic [ref=f1e460]: Default
+                        - generic [ref=f1e461]:
+                            - button "part* DateRangePickerRangePart —" [ref=f1e462]:
+                                - generic [ref=f1e463]: part*
+                                - generic [ref=f1e464]: DateRangePickerRangePart
+                                - generic [ref=f1e466]: —
+                            - status [ref=f1e469]
+                        - generic [ref=f1e470]:
+                            - button "id string —" [ref=f1e471]:
+                                - generic [ref=f1e472]: id
+                                - generic [ref=f1e473]: string
+                                - generic [ref=f1e475]: —
+                            - status [ref=f1e478]
+                        - generic [ref=f1e479]:
+                            - button "name string —" [ref=f1e480]:
+                                - generic [ref=f1e481]: name
+                                - generic [ref=f1e482]: string
+                                - generic [ref=f1e484]: —
+                            - status [ref=f1e487]
+                        - generic [ref=f1e488]:
+                            - button "children Snippet<[DatePickerSegmentPart]> —" [ref=f1e489]:
+                                - generic [ref=f1e490]: children
+                                - generic [ref=f1e491]: Snippet<[DatePickerSegmentPart]>
+                                - generic [ref=f1e493]: —
+                            - status [ref=f1e496]
+                        - generic [ref=f1e497]:
+                            - button "class string ''" [ref=f1e498]:
+                                - generic [ref=f1e499]: class
+                                - generic [ref=f1e500]: string
+                                - generic [ref=f1e502]: "''"
+                            - status [ref=f1e506]
+                        - generic [ref=f1e507]:
+                            - button "aria-label string —" [ref=f1e508]:
+                                - generic [ref=f1e509]: aria-label
+                                - generic [ref=f1e510]: string
+                                - generic [ref=f1e512]: —
+                            - status [ref=f1e515]
+                        - generic [ref=f1e516]:
+                            - button "aria-invalid HTMLAttributes<HTMLDivElement>['aria-invalid'] —" [ref=f1e517]:
+                                - generic [ref=f1e518]: aria-invalid
+                                - generic [ref=f1e519]: HTMLAttributes<HTMLDivElement>['aria-invalid']
+                                - generic [ref=f1e521]: —
+                            - status [ref=f1e524]
+                    - paragraph [ref=f1e525]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e527]:
+                        - generic [ref=f1e528]:
+                            - generic [ref=f1e529]: Data attribute
+                            - generic [ref=f1e530]: Description
+                        - generic [ref=f1e531]:
+                            - generic [ref=f1e532]: data-date-range-picker-input
+                            - generic [ref=f1e533]: Identifies a range picker input element.
+                        - generic [ref=f1e534]:
+                            - generic [ref=f1e535]: data-disabled
+                            - generic [ref=f1e536]: Present when the range picker is disabled.
+                        - generic [ref=f1e537]:
+                            - generic [ref=f1e538]: data-focus-visible
+                            - generic [ref=f1e539]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f1e540]:
+                            - generic [ref=f1e541]: data-focus-within
+                            - generic [ref=f1e542]: Present while a segment inside the input has focus.
+                        - generic [ref=f1e543]:
+                            - generic [ref=f1e544]: data-invalid
+                            - generic [ref=f1e545]: Present while this input's segment draft is not committable.
+                        - generic [ref=f1e546]:
+                            - generic [ref=f1e547]: data-open
+                            - generic [ref=f1e548]: Present while the calendar popover is open.
+                        - generic [ref=f1e549]:
+                            - generic [ref=f1e550]: data-readonly
+                            - generic [ref=f1e551]: Present when the range picker is readonly.
+                    - heading "Segment" [level=3] [ref=f1e552]
+                    - paragraph [ref=f1e553]: One editable or literal segment of a range end (day, month, year, or separator). Supports typing and arrow-key stepping.
+                    - generic [ref=f1e555]:
+                        - generic [ref=f1e556]:
+                            - generic [ref=f1e557]: Prop
+                            - generic [ref=f1e558]: Type
+                            - generic [ref=f1e559]: Default
+                        - generic [ref=f1e560]:
+                            - button "part* DateRangePickerRangePart —" [ref=f1e561]:
+                                - generic [ref=f1e562]: part*
+                                - generic [ref=f1e563]: DateRangePickerRangePart
+                                - generic [ref=f1e565]: —
+                            - status [ref=f1e568]
+                        - generic [ref=f1e569]:
+                            - button "segment* DatePickerSegmentPart —" [ref=f1e570]:
+                                - generic [ref=f1e571]: segment*
+                                - generic [ref=f1e572]: DatePickerSegmentPart
+                                - generic [ref=f1e574]: —
+                            - status [ref=f1e577]
+                        - generic [ref=f1e578]:
+                            - button "class string ''" [ref=f1e579]:
+                                - generic [ref=f1e580]: class
+                                - generic [ref=f1e581]: string
+                                - generic [ref=f1e583]: "''"
+                            - status [ref=f1e587]
+                    - paragraph [ref=f1e588]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e590]:
+                        - generic [ref=f1e591]:
+                            - generic [ref=f1e592]: Data attribute
+                            - generic [ref=f1e593]: Description
+                        - generic [ref=f1e594]:
+                            - generic [ref=f1e595]: data-date-range-picker-segment
+                            - generic [ref=f1e596]: Identifies a range picker segment element.
+                        - generic [ref=f1e597]:
+                            - generic [ref=f1e598]: data-focus-visible
+                            - generic [ref=f1e599]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f1e600]:
+                            - generic [ref=f1e601]: data-focused
+                            - generic [ref=f1e602]: Present while the segment has focus.
+                        - generic [ref=f1e603]:
+                            - generic [ref=f1e604]: data-placeholder
+                            - generic [ref=f1e605]: Present while the segment shows its placeholder instead of a value.
+                        - generic [ref=f1e606]:
+                            - generic [ref=f1e607]: data-range-part
+                            - generic [ref=f1e608]: "Which end of the range the segment belongs to: 'start' or 'end'."
+                        - generic [ref=f1e609]:
+                            - generic [ref=f1e610]: data-type
+                            - generic [ref=f1e611]: The segment type, e.g. 'day', 'month', 'year', or 'literal'.
+                    - heading "Trigger" [level=3] [ref=f1e612]
+                    - paragraph [ref=f1e613]: Button that opens and closes the range calendar popover.
+                    - generic [ref=f1e615]:
+                        - generic [ref=f1e616]:
+                            - generic [ref=f1e617]: Prop
+                            - generic [ref=f1e618]: Type
+                            - generic [ref=f1e619]: Default
+                        - generic [ref=f1e620]:
+                            - button "children Snippet —" [ref=f1e621]:
+                                - generic [ref=f1e622]: children
+                                - generic [ref=f1e623]: Snippet
+                                - generic [ref=f1e625]: —
+                            - status [ref=f1e628]
+                        - generic [ref=f1e629]:
+                            - button "class string ''" [ref=f1e630]:
+                                - generic [ref=f1e631]: class
+                                - generic [ref=f1e632]: string
+                                - generic [ref=f1e634]: "''"
+                            - status [ref=f1e638]
+                    - paragraph [ref=f1e639]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e641]:
+                        - generic [ref=f1e642]:
+                            - generic [ref=f1e643]: Data attribute
+                            - generic [ref=f1e644]: Description
+                        - generic [ref=f1e645]:
+                            - generic [ref=f1e646]: data-focus-visible
+                            - generic [ref=f1e647]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f1e648]:
+                            - generic [ref=f1e649]: data-focused
+                            - generic [ref=f1e650]: Present while the trigger has focus.
+                    - heading "Popover" [level=3] [ref=f1e651]
+                    - paragraph [ref=f1e652]: The floating panel that hosts the range calendar. Forwards Popover.Content props (placement, offset, shouldFlip, …); open state, trigger wiring, and id are controlled internally.
+                    - generic [ref=f1e654]:
+                        - generic [ref=f1e655]:
+                            - generic [ref=f1e656]: Prop
+                            - generic [ref=f1e657]: Type
+                            - generic [ref=f1e658]: Default
+                        - generic [ref=f1e659]:
+                            - button "offset number 4" [ref=f1e660]:
+                                - generic [ref=f1e661]: offset
+                                - generic [ref=f1e662]: number
+                                - generic [ref=f1e664]: '4'
+                            - status [ref=f1e668]
+                        - generic [ref=f1e669]:
+                            - button "placement ExtendedPlacement 'bottom'" [ref=f1e670]:
+                                - generic [ref=f1e671]: placement
+                                - generic [ref=f1e672]: ExtendedPlacement
+                                - generic [ref=f1e674]: "'bottom'"
+                            - status [ref=f1e678]
+                        - generic [ref=f1e679]:
+                            - button "shouldFlip boolean true" [ref=f1e680]:
+                                - generic [ref=f1e681]: shouldFlip
+                                - generic [ref=f1e682]: boolean
+                                - generic [ref=f1e684]: 'true'
+                            - status [ref=f1e688]
+                        - generic [ref=f1e689]:
+                            - button "boundaryElement Element | null null" [ref=f1e690]:
+                                - generic [ref=f1e691]: boundaryElement
+                                - generic [ref=f1e692]: Element | null
+                                - generic [ref=f1e694]: 'null'
+                            - status [ref=f1e698]
+                        - generic [ref=f1e699]:
+                            - button "children Snippet —" [ref=f1e700]:
+                                - generic [ref=f1e701]: children
+                                - generic [ref=f1e702]: Snippet
+                                - generic [ref=f1e704]: —
+                            - status [ref=f1e707]
+                        - generic [ref=f1e708]:
+                            - button "class string ''" [ref=f1e709]:
+                                - generic [ref=f1e710]: class
+                                - generic [ref=f1e711]: string
+                                - generic [ref=f1e713]: "''"
+                            - status [ref=f1e717]
+                        - generic [ref=f1e718]:
+                            - button "nonModal boolean false" [ref=f1e719]:
+                                - generic [ref=f1e720]: nonModal
+                                - generic [ref=f1e721]: boolean
+                                - generic [ref=f1e723]: 'false'
+                            - status [ref=f1e727]
+                        - generic [ref=f1e728]:
+                            - button "shouldCloseOnInteractOutside boolean true" [ref=f1e729]:
+                                - generic [ref=f1e730]: shouldCloseOnInteractOutside
+                                - generic [ref=f1e731]: boolean
+                                - generic [ref=f1e733]: 'true'
+                            - status [ref=f1e737]
+                        - generic [ref=f1e738]:
+                            - button "shouldCloseOnEscape boolean true" [ref=f1e739]:
+                                - generic [ref=f1e740]: shouldCloseOnEscape
+                                - generic [ref=f1e741]: boolean
+                                - generic [ref=f1e743]: 'true'
+                            - status [ref=f1e747]
+                        - generic [ref=f1e748]:
+                            - button "shouldCloseOnBlur boolean —" [ref=f1e749]:
+                                - generic [ref=f1e750]: shouldCloseOnBlur
+                                - generic [ref=f1e751]: boolean
+                                - generic [ref=f1e753]: —
+                            - status [ref=f1e756]
+                        - generic [ref=f1e757]:
+                            - button "initialFocus FocusTrapOptions['initialFocus'] —" [ref=f1e758]:
+                                - generic [ref=f1e759]: initialFocus
+                                - generic [ref=f1e760]: FocusTrapOptions['initialFocus']
+                                - generic [ref=f1e762]: —
+                            - status [ref=f1e765]
+                        - generic [ref=f1e766]:
+                            - button "open boolean —" [ref=f1e767]:
+                                - generic [ref=f1e768]: open
+                                - generic [ref=f1e769]: boolean
+                                - generic [ref=f1e771]: —
+                            - status [ref=f1e774]
+                        - generic [ref=f1e775]:
+                            - button "triggerRef HTMLElement | null null" [ref=f1e776]:
+                                - generic [ref=f1e777]: triggerRef
+                                - generic [ref=f1e778]: HTMLElement | null
+                                - generic [ref=f1e780]: 'null'
+                            - status [ref=f1e784]
+                        - generic [ref=f1e785]:
+                            - 'button "onOpenChange (open: boolean, details: PopoverOpenChangeDetails) => void —" [ref=f1e786]':
+                                - generic [ref=f1e787]: onOpenChange
+                                - generic [ref=f1e788]: '(open: boolean, details: PopoverOpenChangeDetails) => void'
+                                - generic [ref=f1e790]: —
+                            - status [ref=f1e793]
+                    - paragraph [ref=f1e794]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Calendar" [level=3] [ref=f1e795]
+                    - paragraph [ref=f1e796]: The calendar surface inside the popover, fixed to range selection. Forwards Calendar.Root props such as visibleMonths, except those controlled by DateRangePicker.Root.
+                    - generic [ref=f1e798]:
+                        - generic [ref=f1e799]:
+                            - generic [ref=f1e800]: Prop
+                            - generic [ref=f1e801]: Type
+                            - generic [ref=f1e802]: Default
+                        - generic [ref=f1e803]:
+                            - button "class string ''" [ref=f1e804]:
+                                - generic [ref=f1e805]: class
+                                - generic [ref=f1e806]: string
+                                - generic [ref=f1e808]: "''"
+                            - status [ref=f1e812]
+                        - generic [ref=f1e813]:
+                            - button "children Snippet —" [ref=f1e814]:
+                                - generic [ref=f1e815]: children
+                                - generic [ref=f1e816]: Snippet
+                                - generic [ref=f1e818]: —
+                            - status [ref=f1e821]
+                        - generic [ref=f1e822]:
+                            - button "selectionMode CalendarSelectionMode 'single'" [ref=f1e823]:
+                                - generic [ref=f1e824]: selectionMode
+                                - generic [ref=f1e825]: CalendarSelectionMode
+                                - generic [ref=f1e827]: "'single'"
+                            - status [ref=f1e831]
+                        - generic [ref=f1e832]:
+                            - button "visibleMonths number 1" [ref=f1e833]:
+                                - generic [ref=f1e834]: visibleMonths
+                                - generic [ref=f1e835]: number
+                                - generic [ref=f1e837]: '1'
+                            - status [ref=f1e841]
+                        - generic [ref=f1e842]:
+                            - button "showOutsideDays boolean false" [ref=f1e843]:
+                                - generic [ref=f1e844]: showOutsideDays
+                                - generic [ref=f1e845]: boolean
+                                - generic [ref=f1e847]: 'false'
+                            - status [ref=f1e851]
+                        - generic [ref=f1e852]:
+                            - button "firstDayOfWeek CalendarFirstDayOfWeek —" [ref=f1e853]:
+                                - generic [ref=f1e854]: firstDayOfWeek
+                                - generic [ref=f1e855]: CalendarFirstDayOfWeek
+                                - generic [ref=f1e857]: —
+                            - status [ref=f1e860]
+                        - generic [ref=f1e861]:
+                            - button "monthHeadingStyle CalendarMonthHeadingStyle 'composed'" [ref=f1e862]:
+                                - generic [ref=f1e863]: monthHeadingStyle
+                                - generic [ref=f1e864]: CalendarMonthHeadingStyle
+                                - generic [ref=f1e866]: "'composed'"
+                            - status [ref=f1e870]
+                        - generic [ref=f1e871]:
+                            - 'button "isDateUnavailable (date: string) => boolean —" [ref=f1e872]':
+                                - generic [ref=f1e873]: isDateUnavailable
+                                - generic [ref=f1e874]: '(date: string) => boolean'
+                                - generic [ref=f1e876]: —
+                            - status [ref=f1e879]
+                        - generic [ref=f1e880]:
+                            - button "disabled boolean false" [ref=f1e881]:
+                                - generic [ref=f1e882]: disabled
+                                - generic [ref=f1e883]: boolean
+                                - generic [ref=f1e885]: 'false'
+                            - status [ref=f1e889]
+                        - generic [ref=f1e890]:
+                            - button "readonly boolean false" [ref=f1e891]:
+                                - generic [ref=f1e892]: readonly
+                                - generic [ref=f1e893]: boolean
+                                - generic [ref=f1e895]: 'false'
+                            - status [ref=f1e899]
+                        - generic [ref=f1e900]:
+                            - button "id string —" [ref=f1e901]:
+                                - generic [ref=f1e902]: id
+                                - generic [ref=f1e903]: string
+                                - generic [ref=f1e905]: —
+                            - status [ref=f1e908]
+                        - generic [ref=f1e909]:
+                            - button "element HTMLDivElement | null null" [ref=f1e910]:
+                                - generic [ref=f1e911]: element
+                                - generic [ref=f1e912]: HTMLDivElement | null
+                                - generic [ref=f1e914]: 'null'
+                            - status [ref=f1e918]
+                        - generic [ref=f1e919]:
+                            - button "aria-label string —" [ref=f1e920]:
+                                - generic [ref=f1e921]: aria-label
+                                - generic [ref=f1e922]: string
+                                - generic [ref=f1e924]: —
+                            - status [ref=f1e927]
+                        - generic [ref=f1e928]:
+                            - button "value CalendarDateValue —" [ref=f1e929]:
+                                - generic [ref=f1e930]: value
+                                - generic [ref=f1e931]: CalendarDateValue
+                                - generic [ref=f1e933]: —
+                            - status [ref=f1e936]
+                        - generic [ref=f1e937]:
+                            - button "defaultValue CalendarDateValue —" [ref=f1e938]:
+                                - generic [ref=f1e939]: defaultValue
+                                - generic [ref=f1e940]: CalendarDateValue
+                                - generic [ref=f1e942]: —
+                            - status [ref=f1e945]
+                        - generic [ref=f1e946]:
+                            - 'button "onChange (value: CalendarDateValue) => void —" [ref=f1e947]':
+                                - generic [ref=f1e948]: onChange
+                                - generic [ref=f1e949]: '(value: CalendarDateValue) => void'
+                                - generic [ref=f1e951]: —
+                            - status [ref=f1e954]
+                    - paragraph [ref=f1e955]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "TriggerPrevious" [level=3] [ref=f1e956]
+                    - paragraph [ref=f1e957]: Button that pages the calendar to the previous month (or set of visible months).
+                    - generic [ref=f1e959]:
+                        - generic [ref=f1e960]:
+                            - generic [ref=f1e961]: Prop
+                            - generic [ref=f1e962]: Type
+                            - generic [ref=f1e963]: Default
+                        - generic [ref=f1e964]:
+                            - button "class string ''" [ref=f1e965]:
+                                - generic [ref=f1e966]: class
+                                - generic [ref=f1e967]: string
+                                - generic [ref=f1e969]: "''"
+                            - status [ref=f1e973]
+                        - generic [ref=f1e974]:
+                            - button "children Snippet —" [ref=f1e975]:
+                                - generic [ref=f1e976]: children
+                                - generic [ref=f1e977]: Snippet
+                                - generic [ref=f1e979]: —
+                            - status [ref=f1e982]
+                    - paragraph [ref=f1e983]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Heading" [level=3] [ref=f1e984]
+                    - paragraph [ref=f1e985]: Displays the visible month heading, localized through the active locale.
+                    - heading "TriggerNext" [level=3] [ref=f1e986]
+                    - paragraph [ref=f1e987]: Button that pages the calendar to the next month (or set of visible months).
+                    - generic [ref=f1e989]:
+                        - generic [ref=f1e990]:
+                            - generic [ref=f1e991]: Prop
+                            - generic [ref=f1e992]: Type
+                            - generic [ref=f1e993]: Default
+                        - generic [ref=f1e994]:
+                            - button "class string ''" [ref=f1e995]:
+                                - generic [ref=f1e996]: class
+                                - generic [ref=f1e997]: string
+                                - generic [ref=f1e999]: "''"
+                            - status [ref=f1e1003]
+                        - generic [ref=f1e1004]:
+                            - button "children Snippet —" [ref=f1e1005]:
+                                - generic [ref=f1e1006]: children
+                                - generic [ref=f1e1007]: Snippet
+                                - generic [ref=f1e1009]: —
+                            - status [ref=f1e1012]
+                    - paragraph [ref=f1e1013]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "Grid" [level=3] [ref=f1e1014]
+                    - paragraph [ref=f1e1015]: Renders one visible month as an accessible grid named after the month heading.
+                    - generic [ref=f1e1017]:
+                        - generic [ref=f1e1018]:
+                            - generic [ref=f1e1019]: Prop
+                            - generic [ref=f1e1020]: Type
+                            - generic [ref=f1e1021]: Default
+                        - generic [ref=f1e1022]:
+                            - button "children Snippet —" [ref=f1e1023]:
+                                - generic [ref=f1e1024]: children
+                                - generic [ref=f1e1025]: Snippet
+                                - generic [ref=f1e1027]: —
+                            - status [ref=f1e1030]
+                        - generic [ref=f1e1031]:
+                            - button "class string ''" [ref=f1e1032]:
+                                - generic [ref=f1e1033]: class
+                                - generic [ref=f1e1034]: string
+                                - generic [ref=f1e1036]: "''"
+                            - status [ref=f1e1040]
+                        - generic [ref=f1e1041]:
+                            - button "weekdayStyle CalendarWeekdayStyle 'short'" [ref=f1e1042]:
+                                - generic [ref=f1e1043]: weekdayStyle
+                                - generic [ref=f1e1044]: CalendarWeekdayStyle
+                                - generic [ref=f1e1046]: "'short'"
+                            - status [ref=f1e1050]
+                    - paragraph [ref=f1e1051]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e1053]:
+                        - generic [ref=f1e1054]:
+                            - generic [ref=f1e1055]: Data attribute
+                            - generic [ref=f1e1056]: Description
+                        - generic [ref=f1e1057]:
+                            - generic [ref=f1e1058]: data-calendar-grid
+                            - generic [ref=f1e1059]: Identifies the grid element.
+                        - generic [ref=f1e1060]:
+                            - generic [ref=f1e1061]: data-calendar-month
+                            - generic [ref=f1e1062]: The ISO month (YYYY-MM) rendered by this grid.
+                    - heading "GridHeader" [level=3] [ref=f1e1063]
+                    - paragraph [ref=f1e1064]: The weekday header row. Iterates the localized weekday labels and passes each to the children snippet.
+                    - generic [ref=f1e1066]:
+                        - generic [ref=f1e1067]:
+                            - generic [ref=f1e1068]: Prop
+                            - generic [ref=f1e1069]: Type
+                            - generic [ref=f1e1070]: Default
+                        - generic [ref=f1e1071]:
+                            - button "children Snippet<[string]> —" [ref=f1e1072]:
+                                - generic [ref=f1e1073]: children
+                                - generic [ref=f1e1074]: Snippet<[string]>
+                                - generic [ref=f1e1076]: —
+                            - status [ref=f1e1079]
+                        - generic [ref=f1e1080]:
+                            - button "class string ''" [ref=f1e1081]:
+                                - generic [ref=f1e1082]: class
+                                - generic [ref=f1e1083]: string
+                                - generic [ref=f1e1085]: "''"
+                            - status [ref=f1e1089]
+                    - paragraph [ref=f1e1090]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "HeaderCell" [level=3] [ref=f1e1091]
+                    - paragraph [ref=f1e1092]: One weekday label cell inside the grid header row.
+                    - generic [ref=f1e1094]:
+                        - generic [ref=f1e1095]:
+                            - generic [ref=f1e1096]: Prop
+                            - generic [ref=f1e1097]: Type
+                            - generic [ref=f1e1098]: Default
+                        - generic [ref=f1e1099]:
+                            - button "children Snippet —" [ref=f1e1100]:
+                                - generic [ref=f1e1101]: children
+                                - generic [ref=f1e1102]: Snippet
+                                - generic [ref=f1e1104]: —
+                            - status [ref=f1e1107]
+                    - paragraph [ref=f1e1108]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - heading "GridBody" [level=3] [ref=f1e1109]
+                    - paragraph [ref=f1e1110]: The day cells area. Iterates the visible days and passes each ISO date to the children snippet.
+                    - generic [ref=f1e1112]:
+                        - generic [ref=f1e1113]:
+                            - generic [ref=f1e1114]: Prop
+                            - generic [ref=f1e1115]: Type
+                            - generic [ref=f1e1116]: Default
+                        - generic [ref=f1e1117]:
+                            - button "children Snippet<[string]> —" [ref=f1e1118]:
+                                - generic [ref=f1e1119]: children
+                                - generic [ref=f1e1120]: Snippet<[string]>
+                                - generic [ref=f1e1122]: —
+                            - status [ref=f1e1125]
+                        - generic [ref=f1e1126]:
+                            - button "class string ''" [ref=f1e1127]:
+                                - generic [ref=f1e1128]: class
+                                - generic [ref=f1e1129]: string
+                                - generic [ref=f1e1131]: "''"
+                            - status [ref=f1e1135]
+                    - paragraph [ref=f1e1136]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e1138]:
+                        - generic [ref=f1e1139]:
+                            - generic [ref=f1e1140]: Data attribute
+                            - generic [ref=f1e1141]: Description
+                        - generic [ref=f1e1142]:
+                            - generic [ref=f1e1143]: data-week
+                            - generic [ref=f1e1144]: Identifies a week row inside the grid body.
+                    - heading "BodyCell" [level=3] [ref=f1e1145]
+                    - paragraph [ref=f1e1146]: One focusable day cell. The first selection starts the range, hover previews it, and the second selection confirms it.
+                    - generic [ref=f1e1148]:
+                        - generic [ref=f1e1149]:
+                            - generic [ref=f1e1150]: Prop
+                            - generic [ref=f1e1151]: Type
+                            - generic [ref=f1e1152]: Default
+                        - generic [ref=f1e1153]:
+                            - button "date* string —" [ref=f1e1154]:
+                                - generic [ref=f1e1155]: date*
+                                - generic [ref=f1e1156]: string
+                                - generic [ref=f1e1158]: —
+                            - status [ref=f1e1161]
+                        - generic [ref=f1e1162]:
+                            - button "children Snippet<[string]> —" [ref=f1e1163]:
+                                - generic [ref=f1e1164]: children
+                                - generic [ref=f1e1165]: Snippet<[string]>
+                                - generic [ref=f1e1167]: —
+                            - status [ref=f1e1170]
+                    - paragraph [ref=f1e1171]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f1e1173]:
+                        - generic [ref=f1e1174]:
+                            - generic [ref=f1e1175]: Data attribute
+                            - generic [ref=f1e1176]: Description
+                        - generic [ref=f1e1177]:
+                            - generic [ref=f1e1178]: data-date
+                            - generic [ref=f1e1179]: The ISO YYYY-MM-DD date of the cell.
+                        - generic [ref=f1e1180]:
+                            - generic [ref=f1e1181]: data-disabled
+                            - generic [ref=f1e1182]: Present when the day cannot be selected (disabled, out of range, or unavailable).
+                        - generic [ref=f1e1183]:
+                            - generic [ref=f1e1184]: data-focus-visible
+                            - generic [ref=f1e1185]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f1e1186]:
+                            - generic [ref=f1e1187]: data-focused
+                            - generic [ref=f1e1188]: Present while the cell has focus.
+                        - generic [ref=f1e1189]:
+                            - generic [ref=f1e1190]: data-hovered
+                            - generic [ref=f1e1191]: Present while the pointer is over the cell.
+                        - generic [ref=f1e1192]:
+                            - generic [ref=f1e1193]: data-in-range
+                            - generic [ref=f1e1194]: Present when the day falls inside the selected or previewed range.
+                        - generic [ref=f1e1195]:
+                            - generic [ref=f1e1196]: data-outside-month
+                            - generic [ref=f1e1197]: Present when the day belongs to an adjacent month.
+                        - generic [ref=f1e1198]:
+                            - generic [ref=f1e1199]: data-pressed
+                            - generic [ref=f1e1200]: Present while the cell is actively pressed.
+                        - generic [ref=f1e1201]:
+                            - generic [ref=f1e1202]: data-range-end
+                            - generic [ref=f1e1203]: Present on the last day of the selected or previewed range.
+                        - generic [ref=f1e1204]:
+                            - generic [ref=f1e1205]: data-range-start
+                            - generic [ref=f1e1206]: Present on the first day of the selected or previewed range.
+                        - generic [ref=f1e1207]:
+                            - generic [ref=f1e1208]: data-selected
+                            - generic [ref=f1e1209]: Present when the day is part of the committed range.
+                        - generic [ref=f1e1210]:
+                            - generic [ref=f1e1211]: data-today
+                            - generic [ref=f1e1212]: Present on today's date.
+                        - generic [ref=f1e1213]:
+                            - generic [ref=f1e1214]: data-unavailable
+                            - generic [ref=f1e1215]: Present when isDateUnavailable marks the day as unavailable.
+            - complementary [ref=f1e1216]:
+                - navigation "On this page" [ref=f1e1217]:
+                    - heading "On this page" [level=4] [ref=f1e1218]
+                    - list [ref=f1e1219]:
+                        - listitem [ref=f1e1220]:
+                            - link "(Top)" [ref=f1e1221] [cursor=pointer]:
+                                - /url: '#top'
+                        - listitem [ref=f1e1222]:
+                            - link "Anatomy" [ref=f1e1223] [cursor=pointer]:
+                                - /url: '#anatomy'
+                        - listitem [ref=f1e1224]:
+                            - link "Min and max bounds" [ref=f1e1225] [cursor=pointer]:
+                                - /url: '#min-and-max-bounds'
+                        - listitem [ref=f1e1226]:
+                            - link "Usage guidelines" [ref=f1e1227] [cursor=pointer]:
+                                - /url: '#usage-guidelines'
+                        - listitem [ref=f1e1228]:
+                            - link "Accessibility" [ref=f1e1229] [cursor=pointer]:
+                                - /url: '#accessibility'
+                        - listitem [ref=f1e1230]:
+                            - link "API reference" [ref=f1e1231] [cursor=pointer]:
+                                - /url: '#api-reference'
+                        - listitem [ref=f1e1232]:
+                            - link "Root" [ref=f1e1233] [cursor=pointer]:
+                                - /url: '#api-root'
+                        - listitem [ref=f1e1234]:
+                            - link "Input" [ref=f1e1235] [cursor=pointer]:
+                                - /url: '#api-input'
+                        - listitem [ref=f1e1236]:
+                            - link "Segment" [ref=f1e1237] [cursor=pointer]:
+                                - /url: '#api-segment'
+                        - listitem [ref=f1e1238]:
+                            - link "Trigger" [ref=f1e1239] [cursor=pointer]:
+                                - /url: '#api-trigger'
+                        - listitem [ref=f1e1240]:
+                            - link "Popover" [ref=f1e1241] [cursor=pointer]:
+                                - /url: '#api-popover'
+                        - listitem [ref=f1e1242]:
+                            - link "Calendar" [ref=f1e1243] [cursor=pointer]:
+                                - /url: '#api-calendar'
+                        - listitem [ref=f1e1244]:
+                            - link "TriggerPrevious" [ref=f1e1245] [cursor=pointer]:
+                                - /url: '#api-triggerprevious'
+                        - listitem [ref=f1e1246]:
+                            - link "Heading" [ref=f1e1247] [cursor=pointer]:
+                                - /url: '#api-heading'
+                        - listitem [ref=f1e1248]:
+                            - link "TriggerNext" [ref=f1e1249] [cursor=pointer]:
+                                - /url: '#api-triggernext'
+                        - listitem [ref=f1e1250]:
+                            - link "Grid" [ref=f1e1251] [cursor=pointer]:
+                                - /url: '#api-grid'
+                        - listitem [ref=f1e1252]:
+                            - link "GridHeader" [ref=f1e1253] [cursor=pointer]:
+                                - /url: '#api-gridheader'
+                        - listitem [ref=f1e1254]:
+                            - link "HeaderCell" [ref=f1e1255] [cursor=pointer]:
+                                - /url: '#api-headercell'
+                        - listitem [ref=f1e1256]:
+                            - link "GridBody" [ref=f1e1257] [cursor=pointer]:
+                                - /url: '#api-gridbody'
+                        - listitem [ref=f1e1258]:
+                            - link "BodyCell" [ref=f1e1259] [cursor=pointer]:
+                                - /url: '#api-bodycell'

@@ -10,14 +10,21 @@
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled open state."
+					"description": "Open state. Two-way by default — use `bind:open`."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial open state for uncontrolled mode."
+					"description": "Initial open state, for when `open` is not supplied."
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the\ncommon case — needs the write-back to work at all."
 				},
 				{
 					"name": "onOpenChange",
@@ -174,6 +181,105 @@
 				{
 					"name": "data-state",
 					"description": "\"open\" while the dialog is open, \"closed\" during exit."
+				}
+			]
+		},
+		{
+			"name": "Title",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The dialog's name."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the heading."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the generated id."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-dialog-title",
+					"description": "Identifies the heading that names the dialog."
+				}
+			]
+		},
+		{
+			"name": "Description",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Supporting text announced after the title."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the paragraph."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Overrides the generated id."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-dialog-description",
+					"description": "Identifies the supporting description."
+				}
+			]
+		},
+		{
+			"name": "Close",
+			"description": "",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button label."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-dialog-close",
+					"description": "Identifies a button that closes the dialog."
 				}
 			]
 		}

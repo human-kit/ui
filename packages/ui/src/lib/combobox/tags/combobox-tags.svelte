@@ -40,6 +40,8 @@
 		 */
 		reserve?: number;
 		class?: string;
+		/** Accessible name of the tag row. Defaults to `Selected values`. */
+		'aria-label'?: string;
 	};
 
 	// Renamed locally: the snippet we hand to `OverflowRow` must itself be named
@@ -49,7 +51,8 @@
 		children: renderTag,
 		overflow,
 		reserve = 0,
-		class: className = ''
+		class: className = '',
+		'aria-label': ariaLabel = 'Selected values'
 	}: ComboBoxTagsProps = $props();
 
 	const ctx = useComboBoxContext();
@@ -73,7 +76,7 @@
 		{reserve}
 		class={cn(className)}
 		role="list"
-		aria-label="Selected values"
+		aria-label={ariaLabel}
 	>
 		{#snippet children({ item: selected })}
 			<TagContextProvider

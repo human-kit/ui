@@ -7,8 +7,6 @@ description: An accessible modal dialog with trigger, portal, overlay, and conte
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import Controlled from './demos/controlled.svelte';
-	import controlledSource from './demos/controlled.svelte?highlight';
 	import Nested from './demos/nested.svelte';
 	import nestedSource from './demos/nested.svelte?highlight';
 	import api from './api.json';
@@ -43,8 +41,6 @@ All parts live inside `Dialog.Root`. `Dialog.Trigger` opens the dialog, and the 
 ## Controlled state
 
 Bind `open` on `Dialog.Root` to drive the dialog from outside — a trigger is optional. `defaultOpen` covers the uncontrolled case, and `onOpenChange` reports every change.
-
-<Demo source={controlledSource}><Controlled /></Demo>
 
 ## Nested dialogs
 

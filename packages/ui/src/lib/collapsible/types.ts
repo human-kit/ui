@@ -5,8 +5,17 @@ import type { CollapsibleContext } from './root/context.js';
 export type { CollapsibleContext } from './root/context.js';
 
 export type CollapsibleRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
+	/** Open state. Two-way by default — use `bind:open`. */
 	open?: boolean;
+	/** Initial open state, for when `open` is not supplied. */
 	defaultOpen?: boolean;
+	/**
+	 * Opt into fully controlled state: the component stops writing back to `open` and
+	 * only reports through `onOpenChange`, so the parent can reject a change by not
+	 * flowing the new value back down. Off by default, because `bind:open` — the common
+	 * case — needs the write-back to work at all.
+	 */
+	controlledOpen?: boolean;
 	onOpenChange?: (open: boolean) => void;
 	disabled?: boolean;
 	children?: Snippet;

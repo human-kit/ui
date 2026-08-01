@@ -168,8 +168,15 @@
 		unsubscribeFocusVisible?.();
 	});
 
-	// Scroll into view when focused (if enabled)
+	// Scroll into view when focused (if enabled).
+	//
+	// Not in a virtualized list: there the scroll is the list's, which places the row against
+	// the whole collection — including rows that aren't mounted. An item pulling itself to
+	// the nearest edge afterwards undid that placement, which is what left the row the list
+	// had just opened on stuck against the bottom edge.
 	$effect(() => {
+		if (listboxCtx.isVirtualized()) return;
+
 		if (scrollOnFocus && isFocusedComputed && isFocusVisibleComputed && elementRef) {
 			requestAnimationFrame(() => {
 				elementRef?.scrollIntoView({ block: 'nearest' });

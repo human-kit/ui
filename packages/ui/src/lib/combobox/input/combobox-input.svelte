@@ -115,6 +115,14 @@
 	}
 </script>
 
+<!--
+	`autocomplete="new-password"` where "off" is what you would expect: Chrome ignores "off"
+	on a field it has classified as part of an address form, so a combobox called "País" got
+	the browser's saved-addresses dropdown *over* its own option list. "new-password" is the
+	one value Chromium honours as "never autofill this", and on a text input it shows no
+	password UI of its own. The `data-*` attributes are the equivalent opt-out for the common
+	password managers. Consumers can still override it through `restProps`.
+-->
 <Input
 	bind:element={inputRef}
 	type="text"
@@ -131,7 +139,10 @@
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	aria-describedby={ariaDescribedby}
-	autocomplete="off"
+	autocomplete="new-password"
+	data-1p-ignore
+	data-lpignore="true"
+	data-form-type="other"
 	value={ctx.displayValue}
 	disabled={ctx.isDisabled}
 	readonly={ctx.isReadOnly}

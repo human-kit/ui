@@ -6,11 +6,11 @@ import { setPage } from '../../test-stubs/app-state.svelte.js';
 
 describe('DocToolbar', () => {
 	it('links prev/next to the neighbouring pages in nav order', () => {
-		// "button" is the first nav item → no previous page, next is "checkbox".
-		setPage({ params: { slug: 'button' } });
+		// "quick-start" is the first nav item → no previous page, next is "accessibility".
+		setPage({ params: { slug: 'quick-start' } });
 		render(DocToolbar);
 		const next = document.querySelector('a[aria-label^="Next:"]');
-		expect(next?.getAttribute('href')).toBe('/docs/checkbox');
+		expect(next?.getAttribute('href')).toBe('/docs/accessibility');
 		// Previous is rendered as a disabled placeholder (not a link).
 		expect(document.querySelector('a[aria-label^="Previous:"]')).toBeNull();
 		expect(document.querySelectorAll('span[aria-hidden="true"]').length).toBeGreaterThanOrEqual(1);

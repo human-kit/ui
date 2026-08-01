@@ -27,6 +27,13 @@
 					"description": "Initial range value when uncontrolled."
 				},
 				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": ""
+				},
+				{
 					"name": "onChange",
 					"type": "(value: DateRangePickerRangeValue | null) => void",
 					"required": false,
@@ -81,6 +88,13 @@
 					"required": false,
 					"default": "false",
 					"description": "Initial popover open state when uncontrolled."
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": ""
 				},
 				{
 					"name": "onOpenChange",
@@ -168,7 +182,7 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Name submitted with the form for this end of the range."
+					"description": "Name of the hidden proxy input used for form submission. The proxy only\nmirrors the committed value: autofill is NOT supported (it renders with\n`autocomplete=\"off\"` so browsers and password managers do not write\ninto it) — dates are entered through the editable segments."
 				},
 				{
 					"name": "children",
@@ -472,6 +486,20 @@
 					"description": "How the heading is rendered: 'composed' uses a locale-composed string, 'month-year' renders separate month and year parts."
 				},
 				{
+					"name": "minValue",
+					"type": "CalendarDateValue",
+					"required": false,
+					"default": null,
+					"description": "Earliest selectable date (`YYYY-MM-DD`). Earlier dates report unavailable and page/focus navigation clamps at this bound."
+				},
+				{
+					"name": "maxValue",
+					"type": "CalendarDateValue",
+					"required": false,
+					"default": null,
+					"description": "Latest selectable date (`YYYY-MM-DD`). Later dates report unavailable and page/focus navigation clamps at this bound."
+				},
+				{
 					"name": "isDateUnavailable",
 					"type": "(date: string) => boolean",
 					"required": false,
@@ -515,7 +543,7 @@
 				},
 				{
 					"name": "value",
-					"type": "CalendarDateValue",
+					"type": "CalendarDateValue | null",
 					"required": false,
 					"default": null,
 					"description": "Controlled selected date (single mode) or range (range mode). Bindable."
@@ -628,10 +656,10 @@
 			"props": [
 				{
 					"name": "children",
-					"type": "Snippet<[string]>",
+					"type": "Snippet<[string, string]>",
 					"required": false,
 					"default": null,
-					"description": "Renders one header cell per weekday; receives the localized weekday label."
+					"description": "Custom header cell rendering. Receives the styled weekday label (per\n`weekdayStyle`) and the long weekday name, useful as an accessible\nlabel when the styled label is narrow (e.g. \"M\" for both Monday and\nWednesday in some locales)."
 				},
 				{
 					"name": "class",

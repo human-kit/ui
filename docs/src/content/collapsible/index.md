@@ -7,8 +7,6 @@ description: A headless single disclosure primitive with controlled or uncontrol
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import Controlled from './demos/controlled.svelte';
-	import controlledSource from './demos/controlled.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -36,8 +34,6 @@ The collapsible is assembled from three parts. `Collapsible.Root` provides the s
 ## Controlled state
 
 Bind `open` (or pair `open` with `onOpenChange`) to drive the panel from outside — for example from buttons elsewhere in the UI. Use `defaultOpen` instead when the collapsible should manage its own state.
-
-<Demo source={controlledSource}><Controlled /></Demo>
 
 ## Usage guidelines
 

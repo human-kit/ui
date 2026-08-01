@@ -197,14 +197,28 @@
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Controlled value. When provided, the component is in controlled mode."
+					"description": "Selected keys. Two-way by default — use `bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Initial selection for uncontrolled mode."
+					"description": "Initial selection, for when `value` is not supplied."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new selection back down. Off by default, because `bind:value` — the common\ncase — needs the write-back to work at all."
+				},
+				{
+					"name": "header",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Rows rendered inside the listbox above the items — an action row such as\n\"Create …\". Kept out of `children` because in dynamic mode that snippet is called\nonce per item.\n\nA virtualized list does not navigate into it: navigation there walks the item\narray, which this is not part of."
 				},
 				{
 					"name": "class",
@@ -226,6 +240,27 @@
 					"required": false,
 					"default": null,
 					"description": "Callback fired when the selection changes."
+				},
+				{
+					"name": "loop",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether arrow-key navigation wraps from the last item to the first (and back)."
+				},
+				{
+					"name": "typeahead",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether typing characters moves focus to the option whose text matches."
+				},
+				{
+					"name": "virtualizer",
+					"type": "{ rowHeight?: number; overscan?: number }",
+					"required": false,
+					"default": null,
+					"description": "Renders only the rows near the viewport instead of all of them.\n\nOnly honoured together with `items`: the listbox has to own the loop to be able to\nslice it, so a list written as static children is never virtualized.\n\nRows must all be the same height — that assumption is what lets the scrollbar be\nsized without measuring every row. The height is measured from the first rendered\nrow unless `rowHeight` says otherwise, so a themed list needs no magic number.\n\nThe listbox element itself is the scroller: give it a max height and\n`overflow-y: auto`, as an unvirtualized long list would need anyway."
 				}
 			],
 			"dataAttributes": []

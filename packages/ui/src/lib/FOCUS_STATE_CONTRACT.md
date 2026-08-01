@@ -56,6 +56,7 @@ The following components implement this contract:
 
 - **Popover** — trigger + content, restore focus on close.
 - **Dialog** — trigger + overlay/content, nested stack support.
+- **Drawer** — trigger + overlay/content, shares the modal layer stack with Dialog. Restore also covers the `swipe` close reason (resolves to `pointer`), and retries the trigger focus after `ariaHideOutside` lifts `inert`.
 - **DatePicker** — segment spinbuttons, trigger, popover (calendar).
 - **TimePicker** — segment spinbuttons, trigger, popover (scrollable columns). Follows the same contract as DatePicker.
 - **Calendar** — grid cells with roving tabindex.

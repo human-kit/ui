@@ -78,6 +78,18 @@ export type ComboBoxContext<T extends object = object> = {
 	listboxRef: HTMLElement | null;
 	/** Optional: Array of items for dynamic rendering */
 	items?: T[];
+	/**
+	 * `items` narrowed by the local filter, in order. Empty when the ComboBox was given no
+	 * `items` (a list written as static children filters itself, item by item).
+	 */
+	filteredItems: T[];
+	/** The ids of {@link filteredItems}, in the same order — the list navigation walks. */
+	filteredItemIds: (string | number)[];
+	/**
+	 * Told by ComboBox.List whether it renders only a window of the options. Navigation reads
+	 * the DOM order otherwise, which is the same thing only while every option is mounted.
+	 */
+	setVirtualized: (virtualized: boolean) => void;
 
 	// Methods
 	/** Set the input ref */

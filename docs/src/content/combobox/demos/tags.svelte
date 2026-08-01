@@ -25,41 +25,45 @@
 <div class="w-full max-w-sm">
 	<ComboBox.Root selectionMode="multiple" bind:value bind:inputValue>
 		<div
-			class="flex flex-wrap items-center gap-1 rounded-lg border border-neutral-300 bg-white px-2 py-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
+			class="flex h-8 items-center gap-0.5 border border-neutral-300 bg-white pr-1 pl-2 transition-colors focus-within:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:focus-within:border-white"
 		>
-			<ComboBox.Tags class="contents">
-				{#snippet children({ item })}
-					<ComboBox.Tag
-						class="inline-flex items-center gap-1 rounded-md bg-blue-100 px-2 py-0.5 text-sm text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-					>
-						{item.label}
-						<ComboBox.TagRemove class="ml-0.5 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
-							<X class="size-3.5" />
-						</ComboBox.TagRemove>
-					</ComboBox.Tag>
-				{/snippet}
-			</ComboBox.Tags>
 			<ComboBox.Input
-				placeholder={value.length === 0 ? 'Select fruits...' : ''}
-				class="min-w-20 flex-1 border-0 bg-transparent px-1 py-0.5 text-neutral-900 outline-none placeholder:text-neutral-500 dark:text-white dark:placeholder:text-neutral-400"
+				placeholder="Select fruits..."
+				class="min-w-0 flex-1 border-0 bg-transparent text-sm text-neutral-900 outline-none placeholder:text-neutral-400 dark:text-white dark:placeholder:text-neutral-500"
 			/>
-			<ComboBox.Trigger class="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">
+			<ComboBox.Trigger
+				class="inline-flex size-6 shrink-0 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+			>
 				<ChevronDown class="size-4" />
 			</ComboBox.Trigger>
 		</div>
 
+		<!-- Selected values live BELOW the field as removable chips, not inside it. -->
+		<ComboBox.Tags class="mt-2 flex flex-wrap gap-1 empty:hidden">
+			{#snippet children({ item })}
+				<ComboBox.Tag
+					class="inline-flex items-center gap-1 bg-neutral-100 py-0.5 pr-1 pl-2 text-xs text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+				>
+					{item.label}
+					<ComboBox.TagRemove class="hover:bg-neutral-200 dark:hover:bg-neutral-700">
+						<X class="size-3.5" />
+					</ComboBox.TagRemove>
+				</ComboBox.Tag>
+			{/snippet}
+		</ComboBox.Tags>
+
 		<ComboBox.Popover
-			class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
+			class="mt-1 max-h-60 w-(--trigger-width) overflow-auto border border-neutral-200 bg-white p-1 shadow-md dark:border-neutral-800 dark:bg-neutral-900"
 		>
 			<ComboBox.List emptyPlaceholder="No fruits found">
 				{#each filtered as fruit (fruit.id)}
 					<ComboBox.Item
 						id={fruit.id}
 						textValue={fruit.name}
-						class="flex cursor-pointer items-center justify-between px-3 py-2 text-neutral-900 hover:bg-neutral-100 data-[focused=true]:bg-neutral-100 data-[selected=true]:bg-blue-50 dark:text-white dark:hover:bg-neutral-700 dark:data-[focused=true]:bg-neutral-700 dark:data-[selected=true]:bg-blue-900/30"
+						class="flex cursor-default items-center justify-between gap-2 px-2 py-1 text-sm text-neutral-900 outline-none hover:bg-neutral-100 data-[focused=true]:bg-neutral-100 data-[selected=true]:font-medium dark:text-white dark:hover:bg-neutral-800 dark:data-[focused=true]:bg-neutral-800"
 					>
 						{fruit.name}
-						<ComboBox.ItemIndicator class="text-blue-600 dark:text-blue-400" />
+						<ComboBox.ItemIndicator class="text-current" />
 					</ComboBox.Item>
 				{/each}
 			</ComboBox.List>

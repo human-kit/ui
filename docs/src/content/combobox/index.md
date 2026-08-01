@@ -9,8 +9,8 @@ description: An accessible combination of text input, popover, and listbox with 
 	import heroSource from './demos/hero.svelte?highlight';
 	import Tags from './demos/tags.svelte';
 	import tagsSource from './demos/tags.svelte?highlight';
-	import Pending from './demos/pending.svelte';
-	import pendingSource from './demos/pending.svelte?highlight';
+	import Modes from './demos/modes.svelte';
+	import modesSource from './demos/modes.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -47,11 +47,15 @@ Set `selectionMode="multiple"` and render the selected values with `ComboBox.Tag
 
 <Demo source={tagsSource}><Tags /></Demo>
 
+## Opening modes
+
+`trigger` controls when the popover opens: `"focus"` opens as soon as the input is focused, `"input"` opens once the user starts typing, and `"press"` opens only when `ComboBox.Trigger` is pressed. Switch the mode below and reopen the field to feel the difference.
+
+<Demo source={modesSource}><Modes /></Demo>
+
 ## Pending state
 
 Set `pending` on `ComboBox.Root` to expose async loading state: the root gets `data-pending`, while the trigger and clear buttons become non-interactive. The input stays editable so the user can keep refining the query.
-
-<Demo source={pendingSource}><Pending /></Demo>
 
 ## Usage guidelines
 

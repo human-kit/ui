@@ -15,10 +15,17 @@ export type {
 } from './root/context.svelte';
 
 export type AccordionRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
-	/** Controlled list of open item values. */
+	/** List of open item values. Two-way by default — use `bind:value`. */
 	value?: AccordionValue[];
-	/** Initially open item values when uncontrolled. */
+	/** Initially open item values, for when `value` is not supplied. */
 	defaultValue?: AccordionValue[];
+	/**
+	 * Opt into fully controlled state: the component stops writing back to `value` and
+	 * only reports through `onChange`, so the parent can reject a change by not flowing
+	 * the new value back down. Off by default, because `bind:value` — the common case —
+	 * needs the write-back to work at all.
+	 */
+	controlledValue?: boolean;
 	/** Called with the new list of open item values after a user toggle. */
 	onChange?: (value: AccordionValue[]) => void;
 	/** Whether one (`'single'`) or several (`'multiple'`) panels can be open at once. */

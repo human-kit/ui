@@ -1,0 +1,470 @@
+[
+	{
+		"version": "1.0.0-beta.0",
+		"date": "2026-07-14T14:08:38-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": null,
+						"prUrl": null,
+						"html": "<p>Promote the library to its first public beta, exiting the alpha prerelease line.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.22",
+		"date": "2026-07-03T11:54:19-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add the new <code>Toggle</code> primitive with a single <code>Root</code> part.</p>\n<ul>\n<li>support controlled and uncontrolled selected state with <code>selected</code>, <code>defaultSelected</code>, and <code>onChange</code></li>\n<li>expose native button semantics with <code>aria-pressed</code>, disabled behavior, and keyboard activation</li>\n<li>add styling hooks for selected, unselected, pressed, hover, focus, and focus-visible states</li>\n<li>expose the <code>./toggle</code> package entry and add docs/demo coverage</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add a <code>filter</code> prop to <code>ComboBox.Root</code> so consumers can customize local option filtering or pass <code>null</code> to disable it for externally filtered lists.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add the new <code>Tabs</code> primitive with <code>Root</code>, <code>List</code>, <code>Tab</code>, <code>Indicator</code>, and <code>Panel</code> parts.</p>\n<ul>\n<li>support controlled and uncontrolled selection, including <code>null</code> values</li>\n<li>add automatic and manual keyboard activation with horizontal and vertical roving focus</li>\n<li>include accessible tab and tabpanel wiring, SSR-ready default selection, disabled tabs, and indicator positioning hooks</li>\n<li>expose the <code>./tabs</code> package entry and add docs/demo coverage</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add an <code>autofocus</code> prop to <code>Input</code> that reliably focuses the element on mount.</p>\n<p>Native <code>autofocus</code> only focuses the first autofocus element inserted per document, so it silently fails for inputs that mount inside an already-open popover/dialog or that remount as a view swaps. The prop focuses the underlying input on mount instead, so it works every time the input appears.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add <code>Menu</code>, an accessible dropdown / action menu following the WAI-ARIA menu button pattern.</p>\n<ul>\n<li>Compose <code>Menu.Root</code>, <code>Menu.Trigger</code>, and <code>Menu.Content</code> (portal + floating + <code>role=&quot;menu&quot;</code> panel), built on the same positioning/presence primitives as <code>Popover</code>.</li>\n<li><code>Menu.Item</code> with <code>onSelect</code>, <code>disabled</code>, <code>closeOnSelect</code>, and <code>textValue</code>; arrow-key navigation, typeahead, Home/End, and hover highlighting via roving focus.</li>\n<li><code>Menu.Separator</code>, plus <code>Menu.Group</code> + <code>Menu.GroupLabel</code> with <code>aria-labelledby</code> wiring.</li>\n<li><code>Menu.SubmenuRoot</code> + <code>Menu.SubmenuTrigger</code> for nested submenus, with a layer stack so only the topmost menu handles Escape / outside-press, <code>ArrowRight</code>/<code>ArrowLeft</code> open/close, and sibling submenus collapse on hover.</li>\n<li><code>Menu.Root</code> exposes <code>open</code>/<code>defaultOpen</code>/<code>onOpenChange</code> (with cancelable <code>details</code>), <code>loop</code>, <code>typeahead</code>, and <code>closeOnSelect</code>. Escape and selection return focus to the trigger; Tab and outside interaction close the whole chain.</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add the ToggleGroup primitive with single and multiple selection, roving focus, disabled reconciliation, SSR-safe default selection, documentation, and demo coverage.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add short helper types to the public <code>table</code> module for column-driven wrappers and consumer-defined table abstractions.</p>\n<ul>\n<li>export <code>RowData</code>, <code>Row</code>, <code>ColumnDef</code>, <code>CellContext</code>, <code>CellProps</code>, and <code>CellRenderer</code></li>\n<li>keep these helpers generic so consumers can build any wrapper shape on top of the existing table primitives</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add a new headless <code>Tree</code> component with hierarchical keyboard navigation, controlled and uncontrolled expansion state, configurable selection propagation, section headers, and docs/demo coverage.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Bias <code>Table.Body</code> virtualization overscan toward the current scroll direction when no explicit <code>overscan</code> distribution is provided, reducing the chance of visible blanking ahead of the viewport during fast scrolling.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p><strong>Summary</strong></p>\n<p>Add the composable <code>NumberField</code> component with locale-aware formatting, spinbutton semantics, steppers, wheel scrubbing, and pointer scrubbing.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Fix nested popovers dismissing together: add a popover layer stack so only the topmost open popover handles Escape, outside-press, outside-scroll, and focus-out. Closing a nested popover (e.g. a date picker calendar inside a filter popover) no longer closes its ancestors.</p>"
+					},
+					{
+						"pr": 53,
+						"prUrl": "https://github.com/human-kit/ui/pull/53",
+						"html": "<p><strong>Table Body typing and overscan</strong></p>\n<p>Improve <code>Table.Body</code> item-driven typings and virtualization defaults.</p>\n<ul>\n<li>Infer the <code>children(item)</code> snippet parameter from the <code>items</code> element type in item-driven mode.</li>\n<li>Make body virtualization derive <code>overscan</code> automatically from the current viewport row count when it is not provided.</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p><strong>Summary</strong></p>\n<p>Add the headless <code>TextArea</code> primitive with native textarea semantics, shared focus state attributes, RAC-style state props, and opt-in auto-resize.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.21",
+		"date": "2026-05-02T12:06:33-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 53,
+						"prUrl": "https://github.com/human-kit/ui/pull/53",
+						"html": "<p><strong>Table Body typing and overscan</strong></p>\n<p>Improve <code>Table.Body</code> item-driven typings and virtualization defaults.</p>\n<ul>\n<li>Infer the <code>children(item)</code> snippet parameter from the <code>items</code> element type in item-driven mode.</li>\n<li>Increase the default body virtualization <code>overscan</code> from <code>6</code> to <code>18</code> rows when it is not provided.</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.20",
+		"date": "2026-04-29T19:00:23-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 51,
+						"prUrl": "https://github.com/human-kit/ui/pull/51",
+						"html": "<p>Replace implicit table header sorting with an explicit <code>Table.SortTrigger</code> part. <code>Table.Column</code> no longer accepts <code>allowsSorting</code>; columns become sortable by composing <code>Table.SortTrigger</code> inside <code>Table.ColumnHeaderCell</code>.</p>\n<p>This change prevents nested header actions like filter popovers from triggering sort through click bubbling and lets sortable headers take DOM focus directly through the trigger while keeping the table grid navigation contract.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.19",
+		"date": "2026-04-24T19:36:00-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 49,
+						"prUrl": "https://github.com/human-kit/ui/pull/49",
+						"html": "<p>Fix <code>Table</code> minimum width calculations so relative and resizable columns preserve measured minimum widths more reliably during layout and resize updates.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.18",
+		"date": "2026-04-22T18:17:09-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 46,
+						"prUrl": "https://github.com/human-kit/ui/pull/46",
+						"html": "<p>Fix <code>Table</code> column sizing and ordering edge cases by keeping trailing flexible columns in sync during resize recovery, recomputing relative widths after viewport or container size changes, avoiding one-pixel width loss from relative-column rounding, and updating body cell column indices correctly when keyed columns reorder.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.17",
+		"date": "2026-04-21T11:55:49-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 43,
+						"prUrl": "https://github.com/human-kit/ui/pull/43",
+						"html": "<p><strong>RAC-style Table Widths</strong></p>\n<p>Add <code>%</code> and <code>fr</code> support to table width state, and preserve a flexible trailing column during resize so RAC-style resizable tables can keep filling the available width.</p>"
+					},
+					{
+						"pr": 43,
+						"prUrl": "https://github.com/human-kit/ui/pull/43",
+						"html": "<p><strong>Width Contract</strong></p>\n<p>Treat <code>Table.Column.width</code> as a fixed width that disables user resizing, while keeping <code>defaultWidth</code> as the uncontrolled resizable initial width.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.16",
+		"date": "2026-04-19T19:22:02-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 41,
+						"prUrl": "https://github.com/human-kit/ui/pull/41",
+						"html": "<p>Fix table accessibility helper nodes so the sort live region and selection-unavailable description stay visually hidden without contributing to page overflow.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.15",
+		"date": "2026-04-19T15:09:33-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 39,
+						"prUrl": "https://github.com/human-kit/ui/pull/39",
+						"html": "<p><strong>Summary</strong></p>\n<p>Clean up the Table contract by removing the legacy <code>Table.Column.allowsResizing</code> prop, exporting explicit public prop types for <code>Table.Root</code>, <code>Table.Column</code>, <code>Table.ColumnHeaderCell</code>, and <code>Table.ColumnResizer</code>, and documenting the intended composition model separately from internal normalized column metadata.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.14",
+		"date": "2026-04-18T17:17:59-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 37,
+						"prUrl": "https://github.com/human-kit/ui/pull/37",
+						"html": "<p>Add table row actions and selection-only disabled behavior.</p>\n<ul>\n<li>add <code>onRowAction</code> to <code>Table.Root</code> with RAC-style interaction rules across <code>selectionMode</code> and <code>selectionBehavior</code></li>\n<li>add <code>disabledBehavior=&quot;selection&quot; | &quot;all&quot;</code> to split selection disabling from fully disabled rows</li>\n<li>expose actionable and selection-disabled row/cell state through data attributes for styling</li>\n<li>document and demo manual testing flows for toggle-mode actions, replace-mode double click actions, and disabled row behavior</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.13",
+		"date": "2026-04-17T14:36:08-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 35,
+						"prUrl": "https://github.com/human-kit/ui/pull/35",
+						"html": "<p>Fix ComboBox and ListBox interaction regressions around input behavior, focus handling, and virtual focus scrolling.</p>\n<p>This disables native browser autocomplete on ComboBox inputs, prevents the reused ListBox root from stealing DOM focus, avoids filtering flashes during popover close animations, and keeps hover-driven virtual focus from auto-scrolling overflowed option lists.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.12",
+		"date": "2026-04-16T14:38:12-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 33,
+						"prUrl": "https://github.com/human-kit/ui/pull/33",
+						"html": "<p>Fix ListBox and ComboBox interaction state issues so keyboard focus, hover, and virtual focus stay in sync.</p>\n<p>This includes clearing item <code>data-focus-visible</code> on pointer hover, tightening ListBox focus ownership, skipping disabled ComboBox options during keyboard navigation, and continuing keyboard navigation from the clicked option in multiselect flows.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.11",
+		"date": "2026-04-15T19:48:50-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 31,
+						"prUrl": "https://github.com/human-kit/ui/pull/31",
+						"html": "<p>Add follow-up ComboBox and Popover improvements after the previous prerelease changeset was already consumed.</p>\n<ul>\n<li>Forward <code>Popover.Content</code> configuration props through <code>ComboBox.Popover</code>, including positioning options like <code>offset</code>, <code>placement</code>, <code>shouldFlip</code>, <code>shouldCloseOnEscape</code>, and <code>shouldCloseOnBlur</code>.</li>\n<li>Ensure <code>ComboBox</code> virtual focus marks the active <code>ListBox.Item</code> with <code>data-focus-visible</code> during keyboard navigation.</li>\n<li>Keep the interactive ComboBox docs aligned with the shared popover positioning behavior.</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.10",
+		"date": "2026-04-15T15:33:32-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 28,
+						"prUrl": "https://github.com/human-kit/ui/pull/28",
+						"html": "<p>Add new ComboBox trigger and clear parts, plus pending and scroll improvements.</p>\n<ul>\n<li>Add <code>ComboBox.Trigger</code> as the primary trigger part while keeping <code>ComboBox.Button</code> as a compatibility alias.</li>\n<li>Add <code>ComboBox.Clear</code> to reset the input and clear the current selection without stealing focus.</li>\n<li>Reflect <code>isPending</code> on trigger and clear affordances while keeping the root as the main async state source.</li>\n<li>Clear the selected value when a single-select combobox input is fully emptied.</li>\n<li>Allow wheel events to stay inside the combobox when a descendant scroll container can continue scrolling.</li>\n<li>Prevent page scroll when neither the popover nor a descendant scroll container can scroll further.</li>\n<li>Add docs coverage for pending state and the pattern where overflow is applied to <code>ComboBox.List</code> instead of <code>ComboBox.Popover</code>.</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.9",
+		"date": "2026-04-13T20:15:39-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 25,
+						"prUrl": "https://github.com/human-kit/ui/pull/25",
+						"html": "<p><strong>Summary</strong></p>\n<p>Make <code>ComboBox.Input</code> render through the shared <code>Input</code> primitive while preserving existing combobox behavior and accessibility semantics.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.8",
+		"date": "2026-04-13T19:30:21-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 22,
+						"prUrl": "https://github.com/human-kit/ui/pull/22",
+						"html": "<p><strong>Summary</strong></p>\n<p>Upgrade <code>Input</code> to a focus-aware native input primitive with RAC-style disabled, read-only, invalid, and required state props.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.7",
+		"date": "2026-04-12T18:29:50-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 20,
+						"prUrl": "https://github.com/human-kit/ui/pull/20",
+						"html": "<p><strong>Summary</strong></p>\n<p>Add a new headless <code>Button</code> component with modality-aware focus state, pressed and hovered data attributes, and RAC-style pending semantics.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.6",
+		"date": "2026-04-12T11:52:56-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 18,
+						"prUrl": "https://github.com/human-kit/ui/pull/18",
+						"html": "<p>Fix published package entrypoints so generated ESM files no longer import sibling TypeScript source paths.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.5",
+		"date": "2026-04-11T18:40:53-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Add <code>Table.Checkbox</code> and <code>Table.CheckboxIndicator</code> for explicit row selection controls in body cells and select-all behavior in header cells, including keyboard navigation integration with the table grid.</p>\n<p>Add <code>hiddenColumns</code> (bindable) and <code>defaultHiddenColumns</code> props to <code>Table.Root</code> for controlled and uncontrolled column visibility. Hidden columns are excluded from grid navigation, visible column counts (<code>aria-colcount</code>), and resize interactions while preserving their registered widths.</p>\n<p>Add <code>aria-colindex</code> to header and body cells for accurate screen reader column position announcements.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p><strong>Table Column Resizing</strong></p>\n<p>Add column resizing support to <code>Table</code>.</p>\n<ul>\n<li>add <code>Table.ColumnResizer</code> as a public part</li>\n<li>add column width and resize APIs to <code>Table.Root</code> and <code>Table.Column</code></li>\n<li>render managed column widths through <code>colgroup</code></li>\n<li>document and demo resizable table columns</li>\n</ul>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Add a new <code>Table</code> component with composable parts, grid-style keyboard navigation, row selection, sorting support, docs, and tests.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Add a new headless Checkbox component with Root and Indicator parts.</p>\n<ul>\n<li>Add tri-state checkbox behavior with checked and indeterminate bindings.</li>\n<li>Sync a hidden native input for form submission and label targeting.</li>\n<li>Export Checkbox from the root library entrypoint and package subpath exports.</li>\n<li>Add baseline docs and browser tests for checkbox interaction.</li>\n</ul>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Update <code>Table.ColumnResizer</code> keyboard interaction to use an explicit Enter-to-resize mode.</p>\n<ul>\n<li>Focused resize handles now enter keyboard resize mode with <code>Enter</code> and exit with <code>Enter</code>.</li>\n<li><code>Escape</code> cancels keyboard resizing, restores the starting width, and returns focus to the header cell.</li>\n<li>Update table docs, demo styling, and tests to reflect the new focus and resize flow.</li>\n</ul>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Fix table column resizing so keyboard interactions use the same resize lifecycle as pointer input, add Pointer Events support for touch and pen resizing, announce committed width changes to screen readers, respect RTL keyboard controls, support cancelling pointer drags with Escape, and reduce resize overhead with cached column lookups plus animation-frame batched drag updates. Also make table cell and header column indices react correctly when keyed column order changes and replace module-level table instance counters with per-root token generation to avoid shared SSR and test state.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.4",
+		"date": "2026-03-05T12:35:01-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 13,
+						"prUrl": "https://github.com/human-kit/ui/pull/13",
+						"html": "<p>Refactor TimePicker panel to Apple-like wheel architecture.</p>\n<ul>\n<li>Replace <code>TimePicker.Column</code>/<code>TimePicker.ColumnCell</code> with <code>TimePicker.WheelColumn</code>/<code>TimePicker.WheelItem</code>.</li>\n<li>Migrate panel semantics from <code>listbox/option</code> to <code>spinbutton</code> per wheel column.</li>\n<li>Remove <code>shouldCloseOnSelect</code> and <code>closeOnSelect</code> from <code>TimePicker.Root</code>; wheel selection now commits on snap without auto-close.</li>\n<li>Replace root context column APIs with wheel APIs: <code>getWheelOptions</code>, <code>getSelectedWheelValue</code>, <code>selectWheelValue</code>.</li>\n<li>Update docs and tests for wheel interaction and focus behavior.</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.3",
+		"date": "2026-02-27T20:44:45-03:00",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 11,
+						"prUrl": "https://github.com/human-kit/ui/pull/11",
+						"html": "<p>Standardize focus-visible modality behavior across overlay flows.</p>\n<ul>\n<li>Remove DatePicker local interaction modality state and rely on shared input-modality primitive.</li>\n<li>Restore DatePicker trigger focus via <code>focusWithModality</code> for consistent pointer/keyboard semantics.</li>\n<li>Unify close-modality resolution between Popover and Dialog through shared primitive helper.</li>\n<li>Align DatePicker input modality handling with shared focus-visible contract.</li>\n<li>Expand input-modality tests and document primitive usage in the focus-state contract.</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.2",
+		"date": "2026-02-13T20:11:10-03:00",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 6,
+						"prUrl": "https://github.com/human-kit/ui/pull/6",
+						"html": "<p>Add the new Calendar component as a public feature release.</p>\n<ul>\n<li>introduce single and range selection modes</li>\n<li>add keyboard navigation and accessibility improvements</li>\n<li>include docs/demo integration and supporting tests</li>\n</ul>"
+					}
+				]
+			}
+		]
+	},
+	{
+		"version": "1.0.0-alpha.1",
+		"date": "2026-02-08T20:25:52-03:00",
+		"sections": [
+			{
+				"type": "Major",
+				"entries": [
+					{
+						"pr": 1,
+						"prUrl": "https://github.com/human-kit/ui/pull/1",
+						"html": "<p>Initial release of @human-kit/ui</p>\n<ul>\n<li>ComboBox (single &amp; multi-select with tags, virtual focus, filtering)</li>\n<li>Dialog (modal with portal, overlay, nested dialogs, focus trap)</li>\n<li>ListBox (keyboard navigation, single selection)</li>\n<li>Popover (floating UI positioning, click outside, trigger)</li>\n<li>Input, Label, Portal primitives</li>\n<li>Utility primitives (aria-hide-outside, scroll-lock, focus-trap, keyboard-navigation)</li>\n</ul>"
+					}
+				]
+			}
+		]
+	}
+]

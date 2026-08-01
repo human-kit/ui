@@ -9,8 +9,6 @@ description: A headless selectable list primitive with keyboard navigation, sing
 	import heroSource from './demos/hero.svelte?highlight';
 	import Multiple from './demos/multiple.svelte';
 	import multipleSource from './demos/multiple.svelte?highlight';
-	import Disabled from './demos/disabled.svelte';
-	import disabledSource from './demos/disabled.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -43,8 +41,6 @@ Set `selectionMode="multiple"` to allow more than one selected item. `selectionB
 ## Disabled items
 
 Use `disabled` on `ListBox.Item` (or `disabledKeys` on the root) to make individual options non-interactive. Disabled items are skipped by keyboard navigation and styled through `data-disabled`.
-
-<Demo source={disabledSource}><Disabled /></Demo>
 
 ## Usage guidelines
 

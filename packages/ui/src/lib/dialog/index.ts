@@ -7,6 +7,9 @@ import type DialogOverlayComponent from './overlay/dialog-overlay.svelte';
 import type DialogPortalComponent from './portal/dialog-portal.svelte';
 import type DialogRootComponent from './root/dialog-root.svelte';
 import type DialogTriggerComponent from './trigger/dialog-trigger.svelte';
+import type DialogTitleComponent from './title/dialog-title.svelte';
+import type DialogDescriptionComponent from './description/dialog-description.svelte';
+import type DialogCloseComponent from './close/dialog-close.svelte';
 import * as DialogParts from './index.parts.js';
 
 // Named export for namespace usage: import { Dialog } from '...'
@@ -21,6 +24,12 @@ export { default as DialogTrigger } from './trigger/dialog-trigger.svelte';
 export { default as DialogPortal } from './portal/dialog-portal.svelte';
 export { default as DialogOverlay } from './overlay/dialog-overlay.svelte';
 export { default as DialogContent } from './content/dialog-content.svelte';
+export { default as DialogTitle } from './title/dialog-title.svelte';
+export { default as DialogDescription } from './description/dialog-description.svelte';
+export { default as DialogClose } from './close/dialog-close.svelte';
+export type DialogTitleProps = ComponentProps<typeof DialogTitleComponent>;
+export type DialogDescriptionProps = ComponentProps<typeof DialogDescriptionComponent>;
+export type DialogCloseProps = ComponentProps<typeof DialogCloseComponent>;
 export type DialogRootProps = ComponentProps<typeof DialogRootComponent>;
 export type DialogTriggerProps = ComponentProps<typeof DialogTriggerComponent>;
 export type DialogPortalProps = ComponentProps<typeof DialogPortalComponent>;

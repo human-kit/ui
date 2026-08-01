@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from './popover-test.svelte';
+import PopoverBindTest from './popover-bind-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Popover', () => {
@@ -198,6 +199,31 @@ describe('Popover', () => {
 		});
 	});
 
+	describe('Two-way binding (default)', () => {
+		// Regression: controlled-ness used to be inferred from `open !== undefined`, so a
+		// `bind:open` seeded with `false` was misread as controlled. The component then
+		// refused to write back and the popover never opened at all.
+		it('opens from the trigger when bound with bind:open', async () => {
+			const screen = render(PopoverBindTest);
+
+			await screen.getByRole('button', { name: 'Open Popover' }).click();
+
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		});
+
+		it('writes the new state back to the bound variable', async () => {
+			const screen = render(PopoverBindTest);
+			const bound = () => document.querySelector('[data-testid="bound-state"]')?.textContent;
+
+			await screen.getByRole('button', { name: 'Open Popover' }).click();
+			await expect.poll(bound).toBe('open');
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.poll(bound).toBe('closed');
+		});
+	});
+
 	describe('Controlled Mode', () => {
 		it('respects controlled open prop', async () => {
 			render(PopoverTest, { open: true });
@@ -229,7 +255,9 @@ describe('Popover', () => {
 		it('stays open after Escape when a controlled parent ignores onOpenChange', async () => {
 			// A controlled parent owns the state: if it does not flow `false` back
 			// down, the popover must remain open (the child must not overwrite the prop).
-			render(PopoverTest, { open: true, onOpenChange: () => {} });
+			// This requires opting in — passing `open` alone no longer implies it, because
+			// `bind:open={value}` looks identical from here and must keep working.
+			render(PopoverTest, { open: true, controlledOpen: true, onOpenChange: () => {} });
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
 			await userEvent.keyboard('{Escape}');

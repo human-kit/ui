@@ -26,28 +26,32 @@
 
 <div class="w-full max-w-xs">
 	<ComboBox.Root trigger="focus" bind:inputValue bind:value>
-		<div class="flex gap-1">
+		<!-- One bordered field: the input is borderless and the Clear / Trigger are
+		     borderless icon buttons living inside it, so it reads as a single control. -->
+		<div
+			class="flex h-8 items-center gap-0.5 border border-neutral-300 bg-white pr-1 pl-2 transition-colors focus-within:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:focus-within:border-white"
+		>
 			<ComboBox.Input
 				placeholder="Search countries..."
-				class="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-neutral-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white"
+				class="min-w-0 flex-1 border-0 bg-transparent text-sm text-neutral-900 outline-none placeholder:text-neutral-400 dark:text-white dark:placeholder:text-neutral-500"
 			/>
 			<ComboBox.Clear
-				class="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-neutral-500 hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-600"
+				class="inline-flex size-6 shrink-0 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
 			/>
 			<ComboBox.Trigger
-				class="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-neutral-500 hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-600"
+				class="inline-flex size-6 shrink-0 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
 			/>
 		</div>
 
 		<ComboBox.Popover
-			class="mt-1 max-h-60 w-(--trigger-width) overflow-auto rounded-lg border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
+			class="mt-1 max-h-60 w-(--trigger-width) overflow-auto border border-neutral-200 bg-white p-1 shadow-md dark:border-neutral-800 dark:bg-neutral-900"
 		>
 			<ComboBox.List emptyPlaceholder="No countries found">
 				{#each filtered as country (country.id)}
 					<ComboBox.Item
 						id={country.id}
 						textValue={country.name}
-						class="cursor-pointer px-3 py-2 text-neutral-900 hover:bg-neutral-100 data-[focused=true]:bg-neutral-100 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white dark:text-white dark:hover:bg-neutral-700 dark:data-[focused=true]:bg-neutral-700"
+						class="cursor-default px-2 py-1 text-sm text-neutral-900 outline-none hover:bg-neutral-100 data-[focused=true]:bg-neutral-100 data-[selected=true]:bg-neutral-900 data-[selected=true]:text-white dark:text-white dark:hover:bg-neutral-800 dark:data-[focused=true]:bg-neutral-800 dark:data-[selected=true]:bg-white dark:data-[selected=true]:text-neutral-900"
 					>
 						{country.name}
 					</ComboBox.Item>

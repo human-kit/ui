@@ -57,6 +57,38 @@ export type ListBoxContext = {
 	/** Sets whether the focused item should render keyboard focus-visible. */
 	setFocusVisible: (visible: boolean) => void;
 
+	/**
+	 * Brings a row into view by its index in the full list, mounting it when the listbox is
+	 * virtualized and the window hadn't reached it. Resolves once the row exists in the DOM.
+	 *
+	 * A no-op for an unvirtualized listbox, where every row is mounted already. Registered by
+	 * the ListBox itself — the context is created before that function exists, so it starts
+	 * out as the no-op and is replaced on mount.
+	 */
+	scrollIndexIntoView: (
+		index: number,
+		options?: { align?: 'nearest' | 'center' }
+	) => Promise<boolean>;
+	/**
+	 * Whether the ListBox renders only a window of its rows.
+	 *
+	 * An item asks before scrolling itself into view: in a virtualized list the scroll
+	 * belongs to the list, which is the only one that knows where a row *would* be — and
+	 * an item nudging itself to the nearest edge undoes the placement the list just made.
+	 */
+	isVirtualized: () => boolean;
+	/**
+	 * Registers how to read that. A *getter*, registered while the ListBox initializes,
+	 * rather than a value pushed from an effect: a child's effects run before its parent's,
+	 * so an item would ask the question before the answer had been written and scroll itself
+	 * anyway.
+	 */
+	setVirtualized: (isVirtualized: () => boolean) => void;
+	/** Registers the ListBox's own implementation of {@link scrollIndexIntoView}. */
+	setScrollIndexIntoView: (
+		fn: (index: number, options?: { align?: 'nearest' | 'center' }) => Promise<boolean>
+	) => void;
+
 	/** Subscribes to selection changes for a specific item. Returns unsubscribe function. */
 	subscribeToItem: (id: string | number, callback: (selected: boolean) => void) => () => void;
 	/** Subscribes to focus changes for a specific item. Returns unsubscribe function. */
@@ -316,6 +348,12 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		applySelection(newSelection);
 	}
 
+	let readVirtualized: () => boolean = () => false;
+	let scrollIndexIntoViewImpl: (
+		index: number,
+		options?: { align?: 'nearest' | 'center' }
+	) => Promise<boolean> = async () => false;
+
 	const keyboardNav = createKeyboardNavigation({
 		orientation: 'vertical',
 		// Getter-based so reactive prop changes are honoured after creation.
@@ -360,6 +398,14 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		setSelection,
 		setFocusedId,
 		setFocusVisible,
+		isVirtualized: () => readVirtualized(),
+		setVirtualized: (next) => {
+			readVirtualized = next;
+		},
+		scrollIndexIntoView: (index, options) => scrollIndexIntoViewImpl(index, options),
+		setScrollIndexIntoView: (fn) => {
+			scrollIndexIntoViewImpl = fn;
+		},
 		subscribeToItem,
 		subscribeToFocus,
 		subscribeToFocusVisible

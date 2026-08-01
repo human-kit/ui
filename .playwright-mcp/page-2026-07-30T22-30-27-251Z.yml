@@ -1,0 +1,613 @@
+- generic [ref=f20e1]:
+    - button "Disable render scanning" [ref=f20e2] [cursor=pointer]
+    - generic [ref=f20e7]:
+        - banner [ref=f20e8]:
+            - link [ref=f20e9] [cursor=pointer]:
+                - /url: ../
+            - generic [ref=f20e12]:
+                - link "@human-kit/ui on npm — version 1.0.0-beta.0" [ref=f20e13] [cursor=pointer]:
+                    - /url: https://www.npmjs.com/package/@human-kit/ui
+                    - text: 1.0.0-beta.0
+                - link "GitHub repository" [ref=f20e14] [cursor=pointer]:
+                    - /url: https://github.com/human-kit/ui
+                - button "Toggle color theme" [ref=f20e15]
+                - status [ref=f20e17]
+        - generic [ref=f20e18]:
+            - complementary [ref=f20e19]:
+                - navigation [ref=f20e20]:
+                    - generic [ref=f20e21]:
+                        - button "Overview" [expanded] [ref=f20e22]
+                        - status [ref=f20e25]
+                        - list [ref=f20e28]:
+                            - listitem [ref=f20e29]:
+                                - link "Quick Start" [ref=f20e30] [cursor=pointer]:
+                                    - /url: ../docs/quick-start
+                            - listitem [ref=f20e31]:
+                                - link "Accessibility" [ref=f20e32] [cursor=pointer]:
+                                    - /url: ../docs/accessibility
+                            - listitem [ref=f20e33]:
+                                - link "Releases" [ref=f20e34] [cursor=pointer]:
+                                    - /url: ../docs/releases
+                            - listitem [ref=f20e35]:
+                                - link "About" [ref=f20e36] [cursor=pointer]:
+                                    - /url: ../docs/about
+                    - generic [ref=f20e37]:
+                        - button "Form" [expanded] [ref=f20e38]
+                        - status [ref=f20e41]
+                        - list [ref=f20e44]:
+                            - listitem [ref=f20e45]:
+                                - link "Button" [ref=f20e46] [cursor=pointer]:
+                                    - /url: ../docs/button
+                            - listitem [ref=f20e47]:
+                                - link "Checkbox" [ref=f20e48] [cursor=pointer]:
+                                    - /url: ../docs/checkbox
+                            - listitem [ref=f20e49]:
+                                - link "Input" [ref=f20e50] [cursor=pointer]:
+                                    - /url: ../docs/input
+                            - listitem [ref=f20e51]:
+                                - link "NumberField" [ref=f20e52] [cursor=pointer]:
+                                    - /url: ../docs/numberfield
+                            - listitem [ref=f20e53]:
+                                - link "Switch" [ref=f20e54] [cursor=pointer]:
+                                    - /url: ../docs/switch
+                            - listitem [ref=f20e55]:
+                                - link "TextArea" [ref=f20e56] [cursor=pointer]:
+                                    - /url: ../docs/textarea
+                            - listitem [ref=f20e57]:
+                                - link "Toggle" [ref=f20e58] [cursor=pointer]:
+                                    - /url: ../docs/toggle
+                            - listitem [ref=f20e59]:
+                                - link "ToggleGroup" [ref=f20e60] [cursor=pointer]:
+                                    - /url: ../docs/toggle-group
+                    - generic [ref=f20e61]:
+                        - button "Pickers" [expanded] [ref=f20e62]
+                        - status [ref=f20e65]
+                        - list [ref=f20e68]:
+                            - listitem [ref=f20e69]:
+                                - link "Autocomplete" [ref=f20e70] [cursor=pointer]:
+                                    - /url: ../docs/autocomplete
+                            - listitem [ref=f20e71]:
+                                - link "ComboBox" [ref=f20e72] [cursor=pointer]:
+                                    - /url: ../docs/combobox
+                            - listitem [ref=f20e73]:
+                                - link "ListBox" [ref=f20e74] [cursor=pointer]:
+                                    - /url: ../docs/listbox
+                            - listitem [ref=f20e75]:
+                                - link "Calendar" [ref=f20e76] [cursor=pointer]:
+                                    - /url: ../docs/calendar
+                            - listitem [ref=f20e77]:
+                                - link "Clock" [ref=f20e78] [cursor=pointer]:
+                                    - /url: ../docs/clock
+                            - listitem [ref=f20e79]:
+                                - link "DatePicker" [ref=f20e80] [cursor=pointer]:
+                                    - /url: ../docs/datepicker
+                            - listitem [ref=f20e81]:
+                                - link "DateRangePicker" [ref=f20e82] [cursor=pointer]:
+                                    - /url: ../docs/daterangepicker
+                            - listitem [ref=f20e83]:
+                                - link "TimePicker" [ref=f20e84] [cursor=pointer]:
+                                    - /url: ../docs/timepicker
+                    - generic [ref=f20e85]:
+                        - button "Overlays" [expanded] [ref=f20e86]
+                        - status [ref=f20e89]
+                        - list [ref=f20e92]:
+                            - listitem [ref=f20e93]:
+                                - link "Dialog" [ref=f20e94] [cursor=pointer]:
+                                    - /url: ../docs/dialog
+                            - listitem [ref=f20e95]:
+                                - link "Menu" [ref=f20e96] [cursor=pointer]:
+                                    - /url: ../docs/menu
+                            - listitem [ref=f20e97]:
+                                - link "Popover" [ref=f20e98] [cursor=pointer]:
+                                    - /url: ../docs/popover
+                    - generic [ref=f20e99]:
+                        - button "Structure" [expanded] [ref=f20e100]
+                        - status [ref=f20e103]
+                        - list [ref=f20e106]:
+                            - listitem [ref=f20e107]:
+                                - link "Accordion" [ref=f20e108] [cursor=pointer]:
+                                    - /url: ../docs/accordion
+                            - listitem [ref=f20e109]:
+                                - link "Collapsible" [ref=f20e110] [cursor=pointer]:
+                                    - /url: ../docs/collapsible
+                            - listitem [ref=f20e111]:
+                                - link "Table" [ref=f20e112] [cursor=pointer]:
+                                    - /url: ../docs/table
+                            - listitem [ref=f20e113]:
+                                - link "Tabs" [ref=f20e114] [cursor=pointer]:
+                                    - /url: ../docs/tabs
+                            - listitem [ref=f20e115]:
+                                - link "Tree" [ref=f20e116] [cursor=pointer]:
+                                    - /url: ../docs/tree
+            - main [ref=f20e117]:
+                - article [ref=f20e119]:
+                    - generic [ref=f20e120]:
+                        - 'link "Previous: Table" [ref=f20e121] [cursor=pointer]':
+                            - /url: ../docs/table
+                        - 'link "Next: Tree" [ref=f20e122] [cursor=pointer]':
+                            - /url: ../docs/tree
+                        - button "Page options" [ref=f20e123]
+                        - status [ref=f20e124]
+                    - heading "Tabs" [level=1] [ref=f20e125]
+                    - paragraph [ref=f20e126]: A headless tab primitive with roving focus, automatic or manual keyboard activation, disabled tabs, and panel composition.
+                    - generic [ref=f20e127]:
+                        - generic [ref=f20e129]:
+                            - tablist "Project sections" [ref=f20e130]:
+                                - tab "Overview" [selected] [ref=f20e131]
+                                - status [ref=f20e132]
+                                - tab "Activity" [ref=f20e133]
+                                - status [ref=f20e134]
+                                - tab "Settings" [ref=f20e135]
+                                - status [ref=f20e136]
+                            - tabpanel "Overview" [ref=f20e138]: Track the current release shape, ownership, and unresolved checkpoints before the next handoff.
+                        - generic [ref=f20e140]:
+                            - button "Copy source code" [ref=f20e141]
+                            - status [ref=f20e143]
+                            - button "Show code" [ref=f20e144]
+                            - status [ref=f20e145]
+                    - heading "Anatomy" [level=2] [ref=f20e146]
+                    - paragraph [ref=f20e147]:
+                        - text: Give every
+                        - code [ref=f20e148]: Tabs.Tab
+                        - text: a unique
+                        - code [ref=f20e149]: value
+                        - text: and pair it with a
+                        - code [ref=f20e150]: Tabs.Panel
+                        - text: carrying the same value. The optional
+                        - code [ref=f20e151]: Tabs.Indicator
+                        - text: tracks the active tab through CSS variables (
+                        - code [ref=f20e152]: '--active-tab-left'
+                        - text: ','
+                        - code [ref=f20e153]: '--active-tab-top'
+                        - text: ','
+                        - code [ref=f20e154]: '--active-tab-width'
+                        - text: ','
+                        - code [ref=f20e155]: '--active-tab-height'
+                        - text: ) so it can animate between tabs.
+                    - code [ref=f20e158]:
+                        - generic [ref=f20e159]: <script>
+                        - generic [ref=f20e160]: "import { Tabs } from '@human-kit/ui';"
+                        - generic [ref=f20e161]: </script>
+                        - generic [ref=f20e162]: <Tabs.Root defaultValue="overview">
+                        - generic [ref=f20e163]: <Tabs.List aria-label="Account sections">
+                        - generic [ref=f20e164]: <Tabs.Tab value="overview">Overview</Tabs.Tab>
+                        - generic [ref=f20e165]: <Tabs.Tab value="billing">Billing</Tabs.Tab>
+                        - generic [ref=f20e166]: <Tabs.Indicator />
+                        - generic [ref=f20e167]: </Tabs.List>
+                        - generic [ref=f20e168]: <Tabs.Panel value="overview">Overview content</Tabs.Panel>
+                        - generic [ref=f20e169]: <Tabs.Panel value="billing">Billing content</Tabs.Panel>
+                        - generic [ref=f20e170]: </Tabs.Root>
+                    - heading "Manual activation" [level=2] [ref=f20e171]
+                    - paragraph [ref=f20e172]:
+                        - text: By default arrow keys activate tabs as focus moves. With
+                        - code [ref=f20e173]: keyboardActivation="manual"
+                        - text: ', arrow keys only move focus and the focused tab activates on Enter or Space — useful when switching panels is expensive.'
+                    - heading "Vertical orientation and disabled tabs" [level=2] [ref=f20e174]
+                    - paragraph [ref=f20e175]:
+                        - text: Set
+                        - code [ref=f20e176]: orientation="vertical"
+                        - text: to stack the tab list and switch arrow-key navigation to Up/Down. Pass
+                        - code [ref=f20e177]: disabledKeys
+                        - text: 'on'
+                        - code [ref=f20e178]: Tabs.Root
+                        - text: (or
+                        - code [ref=f20e179]: disabled
+                        - text: on a single
+                        - code [ref=f20e180]: Tabs.Tab
+                        - text: ) to keep specific tabs from being activated.
+                    - generic [ref=f20e181]:
+                        - generic [ref=f20e183]:
+                            - tablist "Account settings" [ref=f20e184]:
+                                - tab "Profile" [selected] [ref=f20e185]
+                                - status [ref=f20e186]
+                                - tab "Security" [ref=f20e187]
+                                - status [ref=f20e188]
+                                - tab "Danger zone" [disabled] [ref=f20e189]
+                                - status [ref=f20e190]
+                            - tabpanel "Profile" [ref=f20e191]: Display name, avatar, and public contact details.
+                        - generic [ref=f20e193]:
+                            - button "Copy source code" [ref=f20e194]
+                            - status [ref=f20e196]
+                            - button "Show code" [ref=f20e197]
+                            - status [ref=f20e198]
+                    - heading "Usage guidelines" [level=2] [ref=f20e199]
+                    - list [ref=f20e200]:
+                        - listitem [ref=f20e201]:
+                            - text: Provide a unique
+                            - code [ref=f20e202]: value
+                            - text: for every
+                            - code [ref=f20e203]: Tabs.Tab
+                            - text: and matching
+                            - code [ref=f20e204]: Tabs.Panel
+                            - text: .
+                        - listitem [ref=f20e205]:
+                            - text: Use
+                            - code [ref=f20e206]: value
+                            - text: /
+                            - code [ref=f20e207]: onChange
+                            - text: for controlled state and
+                            - code [ref=f20e208]: defaultValue
+                            - text: for uncontrolled state.
+                        - listitem [ref=f20e209]:
+                            - text: Set
+                            - code [ref=f20e210]: 'defaultValue={null}'
+                            - text: when no tab should be active initially.
+                        - listitem [ref=f20e211]:
+                            - text: Use
+                            - code [ref=f20e212]: keyboardActivation="manual"
+                            - text: when panel activation is expensive or should wait for Enter/Space.
+                        - listitem [ref=f20e213]:
+                            - text: Use
+                            - code [ref=f20e214]: orientation="vertical"
+                            - text: for vertical tab lists.
+                        - listitem [ref=f20e215]:
+                            - text: Use
+                            - code [ref=f20e216]: forceMount
+                            - text: 'on'
+                            - code [ref=f20e217]: Tabs.Panel
+                            - text: when inactive panel state must be preserved in the DOM.
+                    - heading "Accessibility" [level=2] [ref=f20e218]
+                    - list [ref=f20e219]:
+                        - listitem [ref=f20e220]:
+                            - code [ref=f20e221]: Tabs.List
+                            - text: renders
+                            - code [ref=f20e222]: role="tablist"
+                            - text: and mirrors the configured orientation.
+                        - listitem [ref=f20e223]:
+                            - code [ref=f20e224]: Tabs.Tab
+                            - text: renders button semantics with
+                            - code [ref=f20e225]: role="tab"
+                            - text: ','
+                            - code [ref=f20e226]: aria-selected
+                            - text: ', and'
+                            - code [ref=f20e227]: aria-controls
+                            - text: .
+                        - listitem [ref=f20e228]:
+                            - code [ref=f20e229]: Tabs.Panel
+                            - text: renders
+                            - code [ref=f20e230]: role="tabpanel"
+                            - text: and
+                            - code [ref=f20e231]: aria-labelledby
+                            - text: .
+                        - listitem [ref=f20e232]: Arrow keys move focus within the tab list, Home/End jump to the first or last enabled tab, and focus wraps at the ends.
+                    - heading "API reference" [level=2] [ref=f20e233]
+                    - heading "Root" [level=3] [ref=f20e234]
+                    - paragraph [ref=f20e235]: The tabs container. Holds the selected value and provides context to the list, tabs, indicator, and panels.
+                    - generic [ref=f20e237]:
+                        - generic [ref=f20e238]:
+                            - generic [ref=f20e239]: Prop
+                            - generic [ref=f20e240]: Type
+                            - generic [ref=f20e241]: Default
+                        - generic [ref=f20e242]:
+                            - button "keyboardActivation TabsKeyboardActivation 'automatic'" [ref=f20e243]:
+                                - generic [ref=f20e244]: keyboardActivation
+                                - generic [ref=f20e245]: TabsKeyboardActivation
+                                - generic [ref=f20e247]: "'automatic'"
+                            - status [ref=f20e251]
+                        - generic [ref=f20e252]:
+                            - button "orientation TabsOrientation 'horizontal'" [ref=f20e253]:
+                                - generic [ref=f20e254]: orientation
+                                - generic [ref=f20e255]: TabsOrientation
+                                - generic [ref=f20e257]: "'horizontal'"
+                            - status [ref=f20e261]
+                        - generic [ref=f20e262]:
+                            - button "disabled boolean false" [ref=f20e263]:
+                                - generic [ref=f20e264]: disabled
+                                - generic [ref=f20e265]: boolean
+                                - generic [ref=f20e267]: 'false'
+                            - status [ref=f20e271]
+                        - generic [ref=f20e272]:
+                            - button "value TabsValue | null —" [ref=f20e273]:
+                                - generic [ref=f20e274]: value
+                                - generic [ref=f20e275]: TabsValue | null
+                                - generic [ref=f20e277]: —
+                            - status [ref=f20e280]
+                        - generic [ref=f20e281]:
+                            - button "defaultValue TabsValue | null —" [ref=f20e282]:
+                                - generic [ref=f20e283]: defaultValue
+                                - generic [ref=f20e284]: TabsValue | null
+                                - generic [ref=f20e286]: —
+                            - status [ref=f20e289]
+                        - generic [ref=f20e290]:
+                            - button "disabledKeys Iterable<TabsValue> —" [ref=f20e291]:
+                                - generic [ref=f20e292]: disabledKeys
+                                - generic [ref=f20e293]: Iterable<TabsValue>
+                                - generic [ref=f20e295]: —
+                            - status [ref=f20e298]
+                        - generic [ref=f20e299]:
+                            - 'button "onChange (value: TabsValue | null) => void —" [ref=f20e300]':
+                                - generic [ref=f20e301]: onChange
+                                - generic [ref=f20e302]: '(value: TabsValue | null) => void'
+                                - generic [ref=f20e304]: —
+                            - status [ref=f20e307]
+                        - generic [ref=f20e308]:
+                            - button "children Snippet —" [ref=f20e309]:
+                                - generic [ref=f20e310]: children
+                                - generic [ref=f20e311]: Snippet
+                                - generic [ref=f20e313]: —
+                            - status [ref=f20e316]
+                        - generic [ref=f20e317]:
+                            - button "class string ''" [ref=f20e318]:
+                                - generic [ref=f20e319]: class
+                                - generic [ref=f20e320]: string
+                                - generic [ref=f20e322]: "''"
+                            - status [ref=f20e326]
+                        - generic [ref=f20e327]:
+                            - button "id string —" [ref=f20e328]:
+                                - generic [ref=f20e329]: id
+                                - generic [ref=f20e330]: string
+                                - generic [ref=f20e332]: —
+                            - status [ref=f20e335]
+                        - generic [ref=f20e336]:
+                            - button "element HTMLDivElement | null null" [ref=f20e337]:
+                                - generic [ref=f20e338]: element
+                                - generic [ref=f20e339]: HTMLDivElement | null
+                                - generic [ref=f20e341]: 'null'
+                            - status [ref=f20e345]
+                        - generic [ref=f20e346]:
+                            - button "context TabsContext —" [ref=f20e347]:
+                                - generic [ref=f20e348]: context
+                                - generic [ref=f20e349]: TabsContext
+                                - generic [ref=f20e351]: —
+                            - status [ref=f20e354]
+                    - paragraph [ref=f20e355]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f20e357]:
+                        - generic [ref=f20e358]:
+                            - generic [ref=f20e359]: Data attribute
+                            - generic [ref=f20e360]: Description
+                        - generic [ref=f20e361]:
+                            - generic [ref=f20e362]: data-disabled
+                            - generic [ref=f20e363]: Present when the whole tabs group is disabled.
+                        - generic [ref=f20e364]:
+                            - generic [ref=f20e365]: data-orientation
+                            - generic [ref=f20e366]: The configured orientation ('horizontal' | 'vertical').
+                        - generic [ref=f20e367]:
+                            - generic [ref=f20e368]: data-tabs-root
+                            - generic [ref=f20e369]: Identifies the root element.
+                    - heading "List" [level=3] [ref=f20e370]
+                    - paragraph [ref=f20e371]: The tab strip. Renders role="tablist" and manages roving focus between tabs.
+                    - generic [ref=f20e373]:
+                        - generic [ref=f20e374]:
+                            - generic [ref=f20e375]: Prop
+                            - generic [ref=f20e376]: Type
+                            - generic [ref=f20e377]: Default
+                        - generic [ref=f20e378]:
+                            - button "children Snippet —" [ref=f20e379]:
+                                - generic [ref=f20e380]: children
+                                - generic [ref=f20e381]: Snippet
+                                - generic [ref=f20e383]: —
+                            - status [ref=f20e386]
+                        - generic [ref=f20e387]:
+                            - button "class string ''" [ref=f20e388]:
+                                - generic [ref=f20e389]: class
+                                - generic [ref=f20e390]: string
+                                - generic [ref=f20e392]: "''"
+                            - status [ref=f20e396]
+                        - generic [ref=f20e397]:
+                            - button "element HTMLDivElement | null null" [ref=f20e398]:
+                                - generic [ref=f20e399]: element
+                                - generic [ref=f20e400]: HTMLDivElement | null
+                                - generic [ref=f20e402]: 'null'
+                            - status [ref=f20e406]
+                    - paragraph [ref=f20e407]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f20e409]:
+                        - generic [ref=f20e410]:
+                            - generic [ref=f20e411]: Data attribute
+                            - generic [ref=f20e412]: Description
+                        - generic [ref=f20e413]:
+                            - generic [ref=f20e414]: data-disabled
+                            - generic [ref=f20e415]: Present when the whole tabs group is disabled.
+                        - generic [ref=f20e416]:
+                            - generic [ref=f20e417]: data-orientation
+                            - generic [ref=f20e418]: The configured orientation ('horizontal' | 'vertical').
+                        - generic [ref=f20e419]:
+                            - generic [ref=f20e420]: data-tabs-list
+                            - generic [ref=f20e421]: Identifies the list element.
+                    - heading "Tab" [level=3] [ref=f20e422]
+                    - paragraph [ref=f20e423]: A single tab button. Renders role="tab" with aria-selected and aria-controls pointing at its panel.
+                    - generic [ref=f20e425]:
+                        - generic [ref=f20e426]:
+                            - generic [ref=f20e427]: Prop
+                            - generic [ref=f20e428]: Type
+                            - generic [ref=f20e429]: Default
+                        - generic [ref=f20e430]:
+                            - button "value* TabsValue —" [ref=f20e431]:
+                                - generic [ref=f20e432]: value*
+                                - generic [ref=f20e433]: TabsValue
+                                - generic [ref=f20e435]: —
+                            - status [ref=f20e438]
+                        - generic [ref=f20e439]:
+                            - button "disabled boolean false" [ref=f20e440]:
+                                - generic [ref=f20e441]: disabled
+                                - generic [ref=f20e442]: boolean
+                                - generic [ref=f20e444]: 'false'
+                            - status [ref=f20e448]
+                        - generic [ref=f20e449]:
+                            - button "children Snippet —" [ref=f20e450]:
+                                - generic [ref=f20e451]: children
+                                - generic [ref=f20e452]: Snippet
+                                - generic [ref=f20e454]: —
+                            - status [ref=f20e457]
+                        - generic [ref=f20e458]:
+                            - button "class string ''" [ref=f20e459]:
+                                - generic [ref=f20e460]: class
+                                - generic [ref=f20e461]: string
+                                - generic [ref=f20e463]: "''"
+                            - status [ref=f20e467]
+                        - generic [ref=f20e468]:
+                            - button "element HTMLButtonElement | null null" [ref=f20e469]:
+                                - generic [ref=f20e470]: element
+                                - generic [ref=f20e471]: HTMLButtonElement | null
+                                - generic [ref=f20e473]: 'null'
+                            - status [ref=f20e477]
+                    - paragraph [ref=f20e478]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f20e480]:
+                        - generic [ref=f20e481]:
+                            - generic [ref=f20e482]: Data attribute
+                            - generic [ref=f20e483]: Description
+                        - generic [ref=f20e484]:
+                            - generic [ref=f20e485]: data-activation-direction
+                            - generic [ref=f20e486]: Direction the selection moved from the previously active tab ('left' | 'right' | 'up' | 'down').
+                        - generic [ref=f20e487]:
+                            - generic [ref=f20e488]: data-disabled
+                            - generic [ref=f20e489]: Present when the tab is disabled.
+                        - generic [ref=f20e490]:
+                            - generic [ref=f20e491]: data-focus-visible
+                            - generic [ref=f20e492]: Present while focus should be visibly indicated (keyboard modality).
+                        - generic [ref=f20e493]:
+                            - generic [ref=f20e494]: data-focused
+                            - generic [ref=f20e495]: Present while the tab has focus.
+                        - generic [ref=f20e496]:
+                            - generic [ref=f20e497]: data-orientation
+                            - generic [ref=f20e498]: The configured orientation ('horizontal' | 'vertical').
+                        - generic [ref=f20e499]:
+                            - generic [ref=f20e500]: data-selected
+                            - generic [ref=f20e501]: Present while the tab is the active tab.
+                        - generic [ref=f20e502]:
+                            - generic [ref=f20e503]: data-tabs-tab
+                            - generic [ref=f20e504]: Identifies the tab element.
+                        - generic [ref=f20e505]:
+                            - generic [ref=f20e506]: data-tabs-value
+                            - generic [ref=f20e507]: The tab's value, stringified.
+                        - generic [ref=f20e508]:
+                            - generic [ref=f20e509]: data-tabs-value-type
+                            - generic [ref=f20e510]: The runtime type of the tab's value ('string' | 'number').
+                    - heading "Indicator" [level=3] [ref=f20e511]
+                    - paragraph [ref=f20e512]: An optional visual marker for the active tab. Measures the active tab and exposes its position and size through the --active-tab-left/top/width/height CSS variables.
+                    - generic [ref=f20e514]:
+                        - generic [ref=f20e515]:
+                            - generic [ref=f20e516]: Prop
+                            - generic [ref=f20e517]: Type
+                            - generic [ref=f20e518]: Default
+                        - generic [ref=f20e519]:
+                            - button "children Snippet —" [ref=f20e520]:
+                                - generic [ref=f20e521]: children
+                                - generic [ref=f20e522]: Snippet
+                                - generic [ref=f20e524]: —
+                            - status [ref=f20e527]
+                        - generic [ref=f20e528]:
+                            - button "class string ''" [ref=f20e529]:
+                                - generic [ref=f20e530]: class
+                                - generic [ref=f20e531]: string
+                                - generic [ref=f20e533]: "''"
+                            - status [ref=f20e537]
+                        - generic [ref=f20e538]:
+                            - button "element HTMLSpanElement | null null" [ref=f20e539]:
+                                - generic [ref=f20e540]: element
+                                - generic [ref=f20e541]: HTMLSpanElement | null
+                                - generic [ref=f20e543]: 'null'
+                            - status [ref=f20e547]
+                    - paragraph [ref=f20e548]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f20e550]:
+                        - generic [ref=f20e551]:
+                            - generic [ref=f20e552]: Data attribute
+                            - generic [ref=f20e553]: Description
+                        - generic [ref=f20e554]:
+                            - generic [ref=f20e555]: data-activation-direction
+                            - generic [ref=f20e556]: Direction the selection moved from the previously active tab ('left' | 'right' | 'up' | 'down').
+                        - generic [ref=f20e557]:
+                            - generic [ref=f20e558]: data-hidden
+                            - generic [ref=f20e559]: Present when no tab is active.
+                        - generic [ref=f20e560]:
+                            - generic [ref=f20e561]: data-orientation
+                            - generic [ref=f20e562]: The configured orientation ('horizontal' | 'vertical').
+                        - generic [ref=f20e563]:
+                            - generic [ref=f20e564]: data-tabs-indicator
+                            - generic [ref=f20e565]: Identifies the indicator element.
+                    - heading "Panel" [level=3] [ref=f20e566]
+                    - paragraph [ref=f20e567]: The content associated with a tab. Renders role="tabpanel" with aria-labelledby, and is hidden while its tab is inactive.
+                    - generic [ref=f20e569]:
+                        - generic [ref=f20e570]:
+                            - generic [ref=f20e571]: Prop
+                            - generic [ref=f20e572]: Type
+                            - generic [ref=f20e573]: Default
+                        - generic [ref=f20e574]:
+                            - button "value* TabsValue —" [ref=f20e575]:
+                                - generic [ref=f20e576]: value*
+                                - generic [ref=f20e577]: TabsValue
+                                - generic [ref=f20e579]: —
+                            - status [ref=f20e582]
+                        - generic [ref=f20e583]:
+                            - button "forceMount boolean false" [ref=f20e584]:
+                                - generic [ref=f20e585]: forceMount
+                                - generic [ref=f20e586]: boolean
+                                - generic [ref=f20e588]: 'false'
+                            - status [ref=f20e592]
+                        - generic [ref=f20e593]:
+                            - button "children Snippet —" [ref=f20e594]:
+                                - generic [ref=f20e595]: children
+                                - generic [ref=f20e596]: Snippet
+                                - generic [ref=f20e598]: —
+                            - status [ref=f20e601]
+                        - generic [ref=f20e602]:
+                            - button "class string ''" [ref=f20e603]:
+                                - generic [ref=f20e604]: class
+                                - generic [ref=f20e605]: string
+                                - generic [ref=f20e607]: "''"
+                            - status [ref=f20e611]
+                        - generic [ref=f20e612]:
+                            - button "element HTMLDivElement | null null" [ref=f20e613]:
+                                - generic [ref=f20e614]: element
+                                - generic [ref=f20e615]: HTMLDivElement | null
+                                - generic [ref=f20e617]: 'null'
+                            - status [ref=f20e621]
+                    - paragraph [ref=f20e622]: '* required. Native HTML attributes of the underlying element are also accepted.'
+                    - generic [ref=f20e624]:
+                        - generic [ref=f20e625]:
+                            - generic [ref=f20e626]: Data attribute
+                            - generic [ref=f20e627]: Description
+                        - generic [ref=f20e628]:
+                            - generic [ref=f20e629]: data-hidden
+                            - generic [ref=f20e630]: Present while the panel's tab is inactive and the panel is hidden.
+                        - generic [ref=f20e631]:
+                            - generic [ref=f20e632]: data-selected
+                            - generic [ref=f20e633]: Present while the panel's tab is active.
+                        - generic [ref=f20e634]:
+                            - generic [ref=f20e635]: data-tabs-panel
+                            - generic [ref=f20e636]: Identifies the panel element.
+                        - generic [ref=f20e637]:
+                            - generic [ref=f20e638]: data-tabs-value
+                            - generic [ref=f20e639]: The panel's value, stringified.
+                        - generic [ref=f20e640]:
+                            - generic [ref=f20e641]: data-tabs-value-type
+                            - generic [ref=f20e642]: The runtime type of the panel's value ('string' | 'number').
+            - complementary [ref=f20e643]:
+                - navigation "On this page" [ref=f20e644]:
+                    - heading "On this page" [level=4] [ref=f20e645]
+                    - list [ref=f20e646]:
+                        - listitem [ref=f20e647]:
+                            - link "(Top)" [ref=f20e648] [cursor=pointer]:
+                                - /url: '#top'
+                        - listitem [ref=f20e649]:
+                            - link "Anatomy" [ref=f20e650] [cursor=pointer]:
+                                - /url: '#anatomy'
+                        - listitem [ref=f20e651]:
+                            - link "Manual activation" [ref=f20e652] [cursor=pointer]:
+                                - /url: '#manual-activation'
+                        - listitem [ref=f20e653]:
+                            - link "Vertical orientation and disabled tabs" [ref=f20e654] [cursor=pointer]:
+                                - /url: '#vertical-orientation-and-disabled-tabs'
+                        - listitem [ref=f20e655]:
+                            - link "Usage guidelines" [ref=f20e656] [cursor=pointer]:
+                                - /url: '#usage-guidelines'
+                        - listitem [ref=f20e657]:
+                            - link "Accessibility" [ref=f20e658] [cursor=pointer]:
+                                - /url: '#accessibility'
+                        - listitem [ref=f20e659]:
+                            - link "API reference" [ref=f20e660] [cursor=pointer]:
+                                - /url: '#api-reference'
+                        - listitem [ref=f20e661]:
+                            - link "Root" [ref=f20e662] [cursor=pointer]:
+                                - /url: '#api-root'
+                        - listitem [ref=f20e663]:
+                            - link "List" [ref=f20e664] [cursor=pointer]:
+                                - /url: '#api-list'
+                        - listitem [ref=f20e665]:
+                            - link "Tab" [ref=f20e666] [cursor=pointer]:
+                                - /url: '#api-tab'
+                        - listitem [ref=f20e667]:
+                            - link "Indicator" [ref=f20e668] [cursor=pointer]:
+                                - /url: '#api-indicator'
+                        - listitem [ref=f20e669]:
+                            - link "Panel" [ref=f20e670] [cursor=pointer]:
+                                - /url: '#api-panel'

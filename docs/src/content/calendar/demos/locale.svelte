@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { Calendar, LocaleProvider } from '@human-kit/ui';
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
+	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	let locale = $state('es-ES');
 	let value = $state('');
@@ -7,11 +9,11 @@
 	const locales = ['en-US', 'es-ES', 'pt-BR', 'fr-FR', 'de-DE'];
 </script>
 
-<div class="space-y-4">
+<div class="flex flex-col items-center gap-3">
 	<select
 		bind:value={locale}
 		aria-label="Locale"
-		class="rounded border border-neutral-300 bg-white px-2 py-1 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+		class="h-8 border border-neutral-300 bg-white px-2 text-sm text-neutral-900 outline-none transition-colors focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-white"
 	>
 		{#each locales as option (option)}
 			<option value={option}>{option}</option>
@@ -19,26 +21,31 @@
 	</select>
 
 	<LocaleProvider {locale}>
-		<Calendar.Root bind:value class="space-y-4">
-			<div class="flex items-center justify-between gap-3">
+		<Calendar.Root
+			bind:value
+			class="w-fit border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+		>
+			<div class="flex items-center justify-between gap-2 p-2 [&_h2]:m-0">
 				<Calendar.TriggerPrevious
-					class="rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+					class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
 				>
-					←
+					<ChevronLeft class="size-4" />
 				</Calendar.TriggerPrevious>
-				<Calendar.Heading class="text-lg font-semibold text-neutral-900 dark:text-white" />
+				<Calendar.Heading class="text-sm font-medium text-neutral-900 dark:text-white" />
 				<Calendar.TriggerNext
-					class="rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+					class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
 				>
-					→
+					<ChevronRight class="size-4" />
 				</Calendar.TriggerNext>
 			</div>
-
-			<Calendar.Grid weekdayStyle="narrow" class="text-neutral-900 dark:text-neutral-100">
+			<Calendar.Grid
+				weekdayStyle="narrow"
+				class="border-separate border-spacing-1 px-2 pb-2 [&_td]:border-0 [&_td]:p-0 [&_th]:border-0 [&_th]:p-0"
+			>
 				<Calendar.GridHeader>
 					{#snippet children(day)}
 						<Calendar.HeaderCell
-							class="px-2 py-1 text-center text-xs font-medium text-neutral-600 dark:text-neutral-300"
+							class="size-8 text-center text-xs font-medium text-neutral-500 dark:text-neutral-400"
 						>
 							{day}
 						</Calendar.HeaderCell>
@@ -48,7 +55,7 @@
 					{#snippet children(date)}
 						<Calendar.BodyCell
 							{date}
-							class="p-1 text-center text-neutral-900 data-outside-month:opacity-45 data-selected:rounded data-selected:bg-blue-600 data-selected:text-white dark:text-neutral-100"
+							class="inline-flex size-8 items-center justify-center align-middle text-sm text-neutral-900 outline-none transition-colors hover:bg-neutral-100 data-outside-month:opacity-40 data-selected:bg-neutral-900 data-selected:text-white dark:text-neutral-100 dark:hover:bg-neutral-800 dark:data-selected:bg-white dark:data-selected:text-neutral-900"
 						/>
 					{/snippet}
 				</Calendar.GridBody>

@@ -27,6 +27,13 @@
 					"description": "Initial time value when uncontrolled."
 				},
 				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": ""
+				},
+				{
 					"name": "onChange",
 					"type": "(value: TimePickerTimeValue | null) => void",
 					"required": false,
@@ -116,6 +123,13 @@
 					"required": false,
 					"default": "false",
 					"description": "Initial popover open state when uncontrolled."
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": ""
 				},
 				{
 					"name": "onOpenChange",
@@ -424,10 +438,10 @@
 				},
 				{
 					"name": "children",
-					"type": "Snippet<[TimePickerWheelOption]>",
+					"type": "Snippet<[TimePickerWheelOption, boolean]>",
 					"required": false,
 					"default": null,
-					"description": "Renders one item per option; receives the wheel option for the column."
+					"description": "Receives the option and whether it is the column's selected value."
 				},
 				{
 					"name": "class",

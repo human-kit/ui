@@ -14,12 +14,20 @@
 		/** Where to look for headings when none are provided. */
 		selector?: string;
 		label?: string;
+		/**
+		 * Whether to paint the label as a heading. Turn it off where the surrounding
+		 * chrome already shows it — the mobile sheet titles itself "On this page", and
+		 * a second copy directly underneath reads as a mistake. `aria-label` stays
+		 * either way, so the nav keeps its accessible name.
+		 */
+		showLabel?: boolean;
 	}
 
 	let {
 		headings: providedHeadings,
 		selector = 'article h2[id], article h3[id]',
-		label = 'On this page'
+		label = 'On this page',
+		showLabel = true
 	}: Props = $props();
 
 	// Headings that content components (e.g. ApiReference) rendered before the
@@ -114,10 +122,14 @@
 </script>
 
 {#if headings.length > 0}
-	<nav aria-label={label} class="text-sm">
-		<h4 class="text-sm text-muted-foreground">
-			{label}
-		</h4>
+	<!-- The inset is here rather than on the rail: see docs-shell (padding on a
+	     `flex-1` rail is incompressible and skews the row's free-space split). -->
+	<nav aria-label={label} class="px-2 text-sm py-6">
+		{#if showLabel}
+			<h4 class="text-sm">
+				{label}
+			</h4>
+		{/if}
 		<ul class="mt-3 space-y-1.5 border-l border-border">
 			<!-- Jump back to the top of the reading pane. No element has this id, so
 			     the frame's scroll effect finds no target and resets the pane to 0
@@ -126,7 +138,7 @@
 			<li>
 				<a
 					href="#top"
-					class="-ml-px block border-l py-0.5 pl-4 transition-colors {activeId === null
+					class="-ml-px block border-l-2 py-0.5 pl-4 transition-colors {activeId === null
 						? 'border-foreground font-medium text-foreground'
 						: 'border-transparent text-muted-foreground hover:text-foreground'}"
 				>
@@ -137,7 +149,7 @@
 				<li>
 					<a
 						href="#{heading.id}"
-						class="-ml-px block border-l py-0.5 transition-colors {heading.depth === 3
+						class="-ml-px block border-l-2 py-0.5 transition-colors {heading.depth === 3
 							? 'pl-7'
 							: 'pl-4'} {activeId === heading.id
 							? 'border-foreground font-medium text-foreground'

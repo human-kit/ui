@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DialogTest from './dialog-test.svelte';
+import DialogBindTest from './dialog-bind-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Dialog', () => {
@@ -169,6 +170,35 @@ describe('Dialog', () => {
 		});
 	});
 
+	describe('Two-way binding (default)', () => {
+		// Regression: controlled-ness used to be inferred from `open !== undefined`, so a
+		// `bind:open` seeded with `false` was misread as controlled. Every close that
+		// originated inside the component — Escape, the close button wired to the context —
+		// was then reported and dropped, leaving a dialog that could not be dismissed.
+		it('closes on Escape when bound with bind:open', async () => {
+			const screen = render(DialogBindTest);
+
+			await screen.getByRole('button', { name: 'Open Dialog' }).click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+		});
+
+		it('writes the new state back to the bound variable', async () => {
+			const screen = render(DialogBindTest);
+			const bound = () => document.querySelector('[data-testid="bound-state"]')?.textContent;
+
+			await screen.getByRole('button', { name: 'Open Dialog' }).click();
+			await expect.poll(bound).toBe('open');
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect.poll(bound).toBe('closed');
+		});
+	});
+
 	describe('Controlled Mode', () => {
 		it('respects controlled open prop', async () => {
 			render(DialogTest, { open: true });
@@ -179,7 +209,9 @@ describe('Dialog', () => {
 		it('stays open after Escape when a controlled parent ignores onOpenChange', async () => {
 			// A controlled parent owns the state: if it does not flow `false` back
 			// down, the dialog must remain open (the child must not overwrite the prop).
-			render(DialogTest, { open: true, onOpenChange: () => {} });
+			// This requires opting in — passing `open` alone no longer implies it, because
+			// `bind:open={value}` looks identical from here and must keep working.
+			render(DialogTest, { open: true, controlledOpen: true, onOpenChange: () => {} });
 			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
 			await userEvent.keyboard('{Escape}');
@@ -233,5 +265,42 @@ describe('Dialog', () => {
 			expect(dialogRect.top).toBeGreaterThan(0);
 			expect(dialogRect.left).toBeGreaterThan(0);
 		});
+	});
+});
+
+describe('Dialog labelling', () => {
+	afterEach(() => {
+		document.querySelectorAll('[role="dialog"]').forEach((node) => node.remove());
+	});
+
+	it('names the dialog from Dialog.Title and describes it from Dialog.Description', async () => {
+		const screen = render(DialogTest, { defaultOpen: true });
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		const dialog = document.querySelector('[role="dialog"]')!;
+		const labelId = dialog.getAttribute('aria-labelledby');
+		expect(labelId).toBeTruthy();
+		expect(document.getElementById(labelId!)?.textContent).toBe('Dialog Title');
+
+		const describedId = dialog.getAttribute('aria-describedby');
+		expect(describedId).toBeTruthy();
+		expect(document.getElementById(describedId!)?.textContent).toBe('Dialog content goes here.');
+
+		// The name has to resolve through the accessibility tree, not just the attribute.
+		await expect.element(screen.getByRole('dialog', { name: 'Dialog Title' })).toBeInTheDocument();
+	});
+
+	it('renders the title as a heading', async () => {
+		render(DialogTest, { defaultOpen: true });
+		await expect.poll(() => document.querySelector('[data-dialog-title]')).toBeTruthy();
+		expect(document.querySelector('[data-dialog-title]')?.tagName).toBe('H2');
+	});
+
+	it('closes from Dialog.Close', async () => {
+		render(DialogTest, { defaultOpen: true });
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+		document.querySelector<HTMLButtonElement>('[data-dialog-close]')!.click();
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 	});
 });

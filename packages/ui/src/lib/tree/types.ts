@@ -32,10 +32,23 @@ export type TreeRootProps<T extends object = object> = Omit<
 	HTMLAttributes<HTMLDivElement>,
 	'children'
 > & {
+	/** Expanded node keys. Two-way by default — use `bind:expandedKeys`. */
 	expandedKeys?: Iterable<TreeNodeId>;
+	/** Initially expanded keys, for when `expandedKeys` is not supplied. */
 	defaultExpandedKeys?: Iterable<TreeNodeId>;
+	/**
+	 * Opt into fully controlled expansion: the component stops writing back to
+	 * `expandedKeys` and only reports through `onExpandedKeysChange`, so the parent can
+	 * reject a change by not flowing the new keys back down. Off by default, because
+	 * `bind:expandedKeys` — the common case — needs the write-back to work at all.
+	 */
+	controlledExpandedKeys?: boolean;
+	/** Selected node keys. Two-way by default — use `bind:selectedKeys`. */
 	selectedKeys?: Iterable<TreeNodeId>;
+	/** Initially selected keys, for when `selectedKeys` is not supplied. */
 	defaultSelectedKeys?: Iterable<TreeNodeId>;
+	/** Opt into fully controlled selection. See `controlledExpandedKeys`. */
+	controlledSelectedKeys?: boolean;
 	disabledKeys?: Iterable<TreeNodeId>;
 	selectionMode?: TreeSelectionMode;
 	selectionBehavior?: TreeSelectionBehavior;

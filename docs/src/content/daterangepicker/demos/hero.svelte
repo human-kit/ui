@@ -1,15 +1,22 @@
 <script lang="ts">
+	import { MediaQuery } from 'svelte/reactivity';
 	import { LocaleProvider } from '@human-kit/ui';
 	import { DateRangePicker, type DateRangePickerRangeValue } from '@human-kit/ui/daterangepicker';
 	import CalendarIcon from '@lucide/svelte/icons/calendar';
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
+	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	let value = $state<DateRangePickerRangeValue | null>(null);
+
+	// Two months side by side need ~460px; a phone has less than that, so the
+	// second month would be clipped. Drop to a single month below `sm`.
+	const isWide = new MediaQuery('min-width: 640px', true);
 </script>
 
 <LocaleProvider locale="es-AR">
-	<DateRangePicker.Root bind:value class="group w-full max-w-md space-y-2">
+	<DateRangePicker.Root bind:value class="group w-fit space-y-2">
 		<div
-			class="corner-squircle flex min-h-8 flex-wrap items-center gap-1 rounded-xl border border-neutral-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-blue-500 dark:border-neutral-600 dark:bg-neutral-700"
+			class="flex min-h-8 flex-wrap items-center gap-1 border border-neutral-300 bg-white px-1.5 transition-colors group-data-[focus-within=true]:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:group-data-[focus-within=true]:border-white"
 		>
 			<DateRangePicker.Input
 				part="start"
@@ -20,7 +27,7 @@
 					<DateRangePicker.Segment
 						part="start"
 						{segment}
-						class="inline rounded px-0.5 caret-transparent outline-hidden transition-all data-disabled:cursor-not-allowed data-focused:scale-115 data-focused:ring data-focused:ring-white data-placeholder:text-neutral-400 data-[type=literal]:px-0 data-[type=literal]:text-neutral-400"
+						class="inline px-0.5 caret-transparent outline-hidden transition-colors data-disabled:cursor-not-allowed data-focused:bg-neutral-900 data-focused:text-white data-placeholder:text-neutral-400 data-[type=literal]:px-0 data-[type=literal]:text-neutral-400 dark:data-focused:bg-white dark:data-focused:text-neutral-900"
 					/>
 				{/snippet}
 			</DateRangePicker.Input>
@@ -34,41 +41,52 @@
 					<DateRangePicker.Segment
 						part="end"
 						{segment}
-						class="inline rounded px-0.5 caret-transparent outline-hidden transition-all data-disabled:cursor-not-allowed data-focused:scale-115 data-focused:ring data-focused:ring-white data-placeholder:text-neutral-400 data-[type=literal]:px-0 data-[type=literal]:text-neutral-400"
+						class="inline px-0.5 caret-transparent outline-hidden transition-colors data-disabled:cursor-not-allowed data-focused:bg-neutral-900 data-focused:text-white data-placeholder:text-neutral-400 data-[type=literal]:px-0 data-[type=literal]:text-neutral-400 dark:data-focused:bg-white dark:data-focused:text-neutral-900"
 					/>
 				{/snippet}
 			</DateRangePicker.Input>
 			<DateRangePicker.Trigger
-				class="corner-squircle ml-auto inline-flex size-5 items-center justify-center rounded-md text-neutral-500 outline-none hover:bg-neutral-100 data-[focus-visible=true]:ring-1 data-[focus-visible=true]:ring-blue-500 dark:text-neutral-300 dark:hover:bg-neutral-600"
+				class="touch-target ml-auto inline-flex size-5 items-center justify-center text-neutral-500 outline-none transition-colors hover:bg-neutral-100 data-[focus-visible=true]:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
 			>
 				<CalendarIcon class="size-3.5" />
 			</DateRangePicker.Trigger>
 		</div>
 		<DateRangePicker.Popover
 			placement="bottom"
-			class="mt-1 rounded-xl border border-neutral-200 bg-white shadow-xl dark:border-neutral-700 dark:bg-neutral-800"
+			class="mt-1 border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
 		>
-			<DateRangePicker.Calendar visibleMonths={2}>
+			<DateRangePicker.Calendar visibleMonths={isWide.current ? 2 : 1}>
 				<div class="flex items-center justify-between gap-2 p-2">
 					<DateRangePicker.TriggerPrevious
-						class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
-					/>
-					<DateRangePicker.Heading class="text-sm font-medium" />
+						class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+					>
+						<ChevronLeft class="size-4" />
+					</DateRangePicker.TriggerPrevious>
+					<DateRangePicker.Heading class="text-sm font-medium text-neutral-900 dark:text-white" />
 					<DateRangePicker.TriggerNext
-						class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700"
-					/>
+						class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+					>
+						<ChevronRight class="size-4" />
+					</DateRangePicker.TriggerNext>
 				</div>
-				<DateRangePicker.Grid class="w-full border-separate border-spacing-1 px-2 pb-2">
+				<!-- flex lays the two visible months side by side instead of stacked. -->
+				<DateRangePicker.Grid
+					class="flex items-start justify-center gap-4 border-separate border-spacing-1 px-2 pb-2"
+				>
 					<DateRangePicker.GridHeader>
 						{#snippet children(dayLabel: string)}
-							<DateRangePicker.HeaderCell>{dayLabel}</DateRangePicker.HeaderCell>
+							<DateRangePicker.HeaderCell
+								class="size-8 text-xs font-medium text-neutral-500 dark:text-neutral-400"
+							>
+								{dayLabel}
+							</DateRangePicker.HeaderCell>
 						{/snippet}
 					</DateRangePicker.GridHeader>
 					<DateRangePicker.GridBody>
 						{#snippet children(date: string)}
 							<DateRangePicker.BodyCell
 								{date}
-								class="h-8 w-8 rounded-md text-sm text-neutral-900 hover:bg-neutral-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 data-[in-range=true]:bg-blue-100 data-[range-end=true]:bg-blue-600 data-[range-end=true]:text-white data-[range-start=true]:bg-blue-600 data-[range-start=true]:text-white dark:text-white dark:hover:bg-neutral-700 dark:data-[in-range=true]:bg-blue-900"
+								class="inline-flex size-8 items-center justify-center align-middle text-sm text-neutral-900 outline-none transition-colors hover:bg-neutral-100 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-40 data-[in-range=true]:bg-neutral-100 data-[range-end=true]:bg-neutral-900 data-[range-end=true]:text-white data-[range-start=true]:bg-neutral-900 data-[range-start=true]:text-white dark:text-white dark:hover:bg-neutral-800 dark:data-[in-range=true]:bg-neutral-800 dark:data-[range-end=true]:bg-white dark:data-[range-end=true]:text-neutral-900 dark:data-[range-start=true]:bg-white dark:data-[range-start=true]:text-neutral-900"
 							/>
 						{/snippet}
 					</DateRangePicker.GridBody>

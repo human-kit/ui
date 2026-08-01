@@ -296,11 +296,27 @@
 	background-color: var(--shiki-dark-bg);
 }
 
+/* Inline code text — monospace, no background. Pair with `.shiki` + shiki token
+   output for automatic syntax colours (used by the install snippets); use on its
+   own anywhere you want bare monospace text. */
+.code {
+	font-family: var(--font-mono, ui-monospace, monospace);
+	font-size: 0.8125rem;
+}
+
 .hd-prose pre.shiki {
 	background-color: var(--depth-1);
 }
 
 .hd-prose pre.shiki span {
+	background-color: transparent;
+}
+
+/* `.code.shiki` snippets take their surface from whatever card they sit in, so
+   shiki's own theme background must not paint over it. Declared after the
+   `.dark .shiki span` block: same specificity, later wins. */
+.code.shiki,
+.code.shiki span {
 	background-color: transparent;
 }
 
@@ -311,6 +327,17 @@
 		color: var(--subtle-foreground);
 	}
 
+	/* Vertical rhythm: every paragraph is spaced from whatever precedes it
+	   (including code blocks), except the one right under a heading (below). */
+	.hd-prose p {
+		margin-top: 1rem;
+	}
+
+	/* Emphasis stays semibold (600), not the browser-default bold (700). */
+	.hd-prose :is(strong, b) {
+		font-weight: 600;
+	}
+
 	/* Titles use the serif display face. */
 	.hd-prose :is(h1, h2, h3, h4) {
 		font-family: var(--font-serif);
@@ -318,8 +345,8 @@
 
 	.hd-prose h1 {
 		font-size: 1.875rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
+		font-weight: 500;
+		letter-spacing: -0.03em;
 		color: var(--foreground);
 		scroll-margin-top: 5rem;
 	}
@@ -328,8 +355,8 @@
 		margin-top: 2.5rem;
 		margin-bottom: 0.375rem;
 		font-size: 1.25rem;
-		font-weight: 600;
-		letter-spacing: -0.015em;
+		font-weight: 500;
+		letter-spacing: -0.02em;
 		color: var(--foreground);
 		scroll-margin-top: 5rem;
 	}
@@ -338,7 +365,8 @@
 		margin-top: 1rem;
 		margin-bottom: 0.375rem;
 		font-size: 1.0625rem;
-		font-weight: 600;
+		font-weight: 500;
+		letter-spacing: -0.015em;
 		color: var(--foreground);
 		scroll-margin-top: 5rem;
 	}
@@ -356,7 +384,7 @@
 	}
 
 	.hd-prose ul {
-		list-style-type: disc;
+		list-style-type: circle;
 	}
 
 	.hd-prose ol {
@@ -383,10 +411,17 @@
 		border-radius: 0.375rem;
 	}
 
+	/* Positioning host for the code block's copy button (the wrapper comes from
+	   markdown/rehype-code-copy.js). No border/padding of its own, so the <pre>'s
+	   top margin still collapses through it and the rhythm is unchanged. */
+	.hd-prose .code-block {
+		position: relative;
+	}
+
 	.hd-prose pre.shiki {
 		margin-top: 1rem;
 		border: 1px solid var(--border);
-		border-radius: 0.5rem;
+		border-radius: 0.75rem;
 		padding: 1rem;
 		overflow-x: auto;
 		font-size: 0.8125rem;
@@ -416,4 +451,39 @@
 		padding: 0.5rem 0.75rem;
 		border-bottom: 1px solid var(--border-subtle);
 	}
+}
+
+/*
+ * Install-command package-manager tabs. The active manager is a per-user,
+ * client-only preference, so SSR can't know it and always renders 'pnpm'. The
+ * anti-FOUC script in app.html writes the stored choice to `<html data-pm>` before
+ * the first paint; these rules read that attribute so the right command shows and
+ * the right tab reads pressed on the very first frame — no flash to the stored
+ * choice after hydration — and they still default to pnpm with no JS. The command
+ * bodies are plain always-mounted panels (NOT Tabs.Panel, whose `hidden` attribute
+ * is `display:none !important` at the UA level and so can't be revealed by CSS),
+ * so any one can be shown by the reveal rules below. The tab's pressed look also
+ * lives here (not on Tabs' own `data-selected`, which SSR still puts on 'pnpm').
+ * Kept in sync with package-manager.svelte.ts and the app.html script (same key,
+ * attribute, and managers). Left unlayered so it wins over the button recipe's
+ * utility classes.
+ */
+[data-pm-panel] {
+	display: none;
+}
+
+:where(html:not([data-pm]), html[data-pm='pnpm']) [data-pm-panel='pnpm'],
+:where(html[data-pm='npm']) [data-pm-panel='npm'],
+:where(html[data-pm='yarn']) [data-pm-panel='yarn'],
+:where(html[data-pm='bun']) [data-pm-panel='bun'] {
+	display: block;
+}
+
+:where(html:not([data-pm]), html[data-pm='pnpm']) [data-pm-tab='pnpm'],
+:where(html[data-pm='npm']) [data-pm-tab='npm'],
+:where(html[data-pm='yarn']) [data-pm-tab='yarn'],
+:where(html[data-pm='bun']) [data-pm-tab='bun'] {
+	@apply sunken;
+	background-color: var(--press-bg);
+	border-color: var(--border);
 }

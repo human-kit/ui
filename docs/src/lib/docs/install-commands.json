@@ -1,0 +1,38 @@
+{
+	"@human-kit/ui": {
+		"pnpm": {
+			"cmd": "pnpm add @human-kit/ui",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">pnpm</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> add</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> @human-kit/ui</span></span>"
+		},
+		"npm": {
+			"cmd": "npm install @human-kit/ui",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">npm</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> install</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> @human-kit/ui</span></span>"
+		},
+		"yarn": {
+			"cmd": "yarn add @human-kit/ui",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">yarn</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> add</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> @human-kit/ui</span></span>"
+		},
+		"bun": {
+			"cmd": "bun add @human-kit/ui",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">bun</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> add</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> @human-kit/ui</span></span>"
+		}
+	},
+	"svelte@^5": {
+		"pnpm": {
+			"cmd": "pnpm add svelte@^5",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">pnpm</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> add</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> svelte@^5</span></span>"
+		},
+		"npm": {
+			"cmd": "npm install svelte@^5",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">npm</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> install</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> svelte@^5</span></span>"
+		},
+		"yarn": {
+			"cmd": "yarn add svelte@^5",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">yarn</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> add</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> svelte@^5</span></span>"
+		},
+		"bun": {
+			"cmd": "bun add svelte@^5",
+			"html": "<span class=\"line\"><span style=\"--shiki-light:#6F42C1;--shiki-dark:#B392F0\">bun</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> add</span><span style=\"--shiki-light:#032F62;--shiki-dark:#9ECBFF\"> svelte@^5</span></span>"
+		}
+	}
+}

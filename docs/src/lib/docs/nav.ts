@@ -10,6 +10,15 @@ export interface NavGroup {
 
 export const nav: NavGroup[] = [
 	{
+		label: 'Overview',
+		items: [
+			{ slug: 'quick-start', title: 'Quick Start' },
+			{ slug: 'accessibility', title: 'Accessibility' },
+			{ slug: 'releases', title: 'Releases' },
+			{ slug: 'about', title: 'About' }
+		]
+	},
+	{
 		label: 'Form',
 		items: [
 			{ slug: 'button', title: 'Button' },
@@ -39,6 +48,7 @@ export const nav: NavGroup[] = [
 		label: 'Overlays',
 		items: [
 			{ slug: 'dialog', title: 'Dialog' },
+			{ slug: 'drawer', title: 'Drawer' },
 			{ slug: 'menu', title: 'Menu' },
 			{ slug: 'popover', title: 'Popover' }
 		]

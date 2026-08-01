@@ -18,8 +18,17 @@ export type TabsRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'c
 	keyboardActivation?: TabsKeyboardActivation;
 	orientation?: TabsOrientation;
 	disabled?: boolean;
+	/** Selected tab value. Two-way by default — use `bind:value`. */
 	value?: TabsValue | null;
+	/** Initially selected value, for when `value` is not supplied. */
 	defaultValue?: TabsValue | null;
+	/**
+	 * Opt into fully controlled state: the component stops writing back to `value` and
+	 * only reports through `onChange`, so the parent can reject a change by not flowing
+	 * the new value back down. Off by default, because `bind:value` — the common case —
+	 * needs the write-back to work at all.
+	 */
+	controlledValue?: boolean;
 	disabledKeys?: Iterable<TabsValue>;
 	onChange?: (value: TabsValue | null) => void;
 	children?: Snippet;

@@ -1,11 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { Collapsible } from '../collapsible';
-	import Button from '../button/button.svelte';
+	import CopyButton from '../copy-button/copy-button.svelte';
 	import { buttonVariants } from '../button/recipe';
 	import Surface from '../surface/surface.svelte';
-	import Check from '../icons/check.svelte';
-	import Copy from '../icons/copy.svelte';
 	import Code from '../icons/code.svelte';
 
 	interface Props {
@@ -16,41 +14,18 @@
 	let { source, children }: Props = $props();
 
 	let expanded = $state(false);
-	let copied = $state(false);
-	let copyTimeout: ReturnType<typeof setTimeout>;
-
-	async function copy() {
-		await navigator.clipboard.writeText(source.code);
-		copied = true;
-		clearTimeout(copyTimeout);
-		copyTimeout = setTimeout(() => (copied = false), 1500);
-	}
 </script>
 
-<div class="not-prose my-4 overflow-hidden rounded-lg border border-border">
+<div class="not-prose my-4 overflow-hidden rounded-xl border border-border">
 	<!-- Preview -->
-	<div class="flex min-h-48 items-center justify-center bg-surface p-8">
+	<div class="flex min-h-48 items-center justify-center bg-surface p-4 sm:p-8">
 		{@render children()}
 	</div>
 
 	<Collapsible.Root open={expanded} onOpenChange={(next) => (expanded = next)}>
 		<!-- Toolbar: a Surface so its buttons elevate relative to it (no hand-picked bg). -->
 		<Surface level={1} class="flex items-center justify-end gap-1 border-t p-1">
-			<!-- Icon-only. While the check is shown the button is disabled, so a
-			     copy can't be re-triggered until it flips back to the copy icon. -->
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				onclick={copy}
-				disabled={copied}
-				aria-label={copied ? 'Copied' : 'Copy source code'}
-			>
-				{#if copied}
-					<Check />
-				{:else}
-					<Copy />
-				{/if}
-			</Button>
+			<CopyButton text={source.code} label="Copy source code" />
 			<Collapsible.Trigger class={buttonVariants({ variant: 'ghost', size: 'sm' })}>
 				<Code />
 				{expanded ? 'Hide code' : 'Show code'}

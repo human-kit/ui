@@ -1,0 +1,577 @@
+{
+	"label": "baseline-dev",
+	"createdAt": "2026-07-29T11:23:08.000Z",
+	"mode": "dev",
+	"url": "http://localhost:5199/bench/table?rows=500&columns=8",
+	"throttle": 1,
+	"repeat": 1,
+	"scenarios": {
+		"mount": {
+			"scenario": "mount",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"longTasks": {
+				"count": 1,
+				"totalMs": 1174,
+				"maxMs": 1174,
+				"supported": true
+			},
+			"syncMs": 1168.6000000238419,
+			"renderedRows": 38,
+			"durationMs": 1241.800000011921,
+			"profile": {
+				"totalMs": 2493.01,
+				"top": [
+					{
+						"frame": "get_stack @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 1457.97,
+						"share": 0.5848
+					},
+					{
+						"frame": "get_error @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 471.49,
+						"share": 0.1891
+					},
+					{
+						"frame": "(program) @ ",
+						"selfMs": 145.91,
+						"share": 0.0585
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 104.58,
+						"share": 0.042
+					},
+					{
+						"frame": "(anonymous) @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 21.85,
+						"share": 0.0088
+					},
+					{
+						"frame": "getBoundingClientRect @ ",
+						"selfMs": 20.93,
+						"share": 0.0084
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 19.05,
+						"share": 0.0076
+					},
+					{
+						"frame": "internal_set @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 17.65,
+						"share": 0.0071
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 17.47,
+						"share": 0.007
+					},
+					{
+						"frame": "mark_reactions @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 11.26,
+						"share": 0.0045
+					},
+					{
+						"frame": "update_reaction @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 8.85,
+						"share": 0.0036
+					},
+					{
+						"frame": "(anonymous) @ cell/table-cell.svelte",
+						"selfMs": 8.82,
+						"share": 0.0035
+					},
+					{
+						"frame": "get @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 7.72,
+						"share": 0.0031
+					},
+					{
+						"frame": "set @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 6.13,
+						"share": 0.0025
+					},
+					{
+						"frame": "array_prototype2.includes @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 5.95,
+						"share": 0.0024
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 5.59,
+						"share": 0.0022
+					},
+					{
+						"frame": "execute_derived @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 5.46,
+						"share": 0.0022
+					},
+					{
+						"frame": "findScrollContainer @ body/table-body.svelte",
+						"selfMs": 5.4,
+						"share": 0.0022
+					}
+				]
+			}
+		},
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 150,
+				"mean": 69.69666666666667,
+				"p50": 71.70000000000073,
+				"p95": 102.40000000000146,
+				"p99": 105.90000000000146,
+				"max": 109.39999999999782,
+				"dropped": 145,
+				"droppedRatio": 0.9666666666666667,
+				"jankMs": 7964.76666666665
+			},
+			"coverage": {
+				"samples": 151,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 125,
+				"totalMs": 9453,
+				"maxMs": 108,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 10557.299999982119,
+			"profile": {
+				"totalMs": 15708.23,
+				"top": [
+					{
+						"frame": "get_stack @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 8244.86,
+						"share": 0.5249
+					},
+					{
+						"frame": "get_error @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 3079.6,
+						"share": 0.1961
+					},
+					{
+						"frame": "(program) @ ",
+						"selfMs": 1444.47,
+						"share": 0.092
+					},
+					{
+						"frame": "getBoundingClientRect @ ",
+						"selfMs": 375.66,
+						"share": 0.0239
+					},
+					{
+						"frame": "(anonymous) @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 188.91,
+						"share": 0.012
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 149.05,
+						"share": 0.0095
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 139.25,
+						"share": 0.0089
+					},
+					{
+						"frame": "(anonymous) @ cell/table-cell.svelte",
+						"selfMs": 121.89,
+						"share": 0.0078
+					},
+					{
+						"frame": "internal_set @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 114.76,
+						"share": 0.0073
+					},
+					{
+						"frame": "update_reaction @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 99.78,
+						"share": 0.0064
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 94.68,
+						"share": 0.006
+					},
+					{
+						"frame": "set @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 87,
+						"share": 0.0055
+					},
+					{
+						"frame": "get @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 69.37,
+						"share": 0.0044
+					},
+					{
+						"frame": "mark_reactions @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 61.26,
+						"share": 0.0039
+					},
+					{
+						"frame": "set_attributes @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 55.94,
+						"share": 0.0036
+					},
+					{
+						"frame": "execute_derived @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 50.31,
+						"share": 0.0032
+					},
+					{
+						"frame": "array_prototype2.includes @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 48.79,
+						"share": 0.0031
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 47.03,
+						"share": 0.003
+					}
+				]
+			}
+		},
+		"resize-column": {
+			"scenario": "resize-column",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 120,
+				"mean": 19.022500000000036,
+				"p50": 17.30000000000291,
+				"p95": 35.400000000001455,
+				"p99": 36.30000000000291,
+				"max": 37.60000000000582,
+				"dropped": 21,
+				"droppedRatio": 0.175,
+				"jankMs": 431.9000000000304
+			},
+			"longTasks": {
+				"count": 0,
+				"totalMs": 0,
+				"maxMs": 0,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 2315.399999976158,
+			"profile": {
+				"totalMs": 2915.86,
+				"top": [
+					{
+						"frame": "(program) @ ",
+						"selfMs": 1490.69,
+						"share": 0.5112
+					},
+					{
+						"frame": "getBoundingClientRect @ ",
+						"selfMs": 468.1,
+						"share": 0.1605
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 195.1,
+						"share": 0.0669
+					},
+					{
+						"frame": "get_stack @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 187.59,
+						"share": 0.0643
+					},
+					{
+						"frame": "is_dirty @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 101.4,
+						"share": 0.0348
+					},
+					{
+						"frame": "get_error @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 89.07,
+						"share": 0.0305
+					},
+					{
+						"frame": "mark_reactions @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 66.36,
+						"share": 0.0228
+					},
+					{
+						"frame": "get @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 37.88,
+						"share": 0.013
+					},
+					{
+						"frame": "execute_derived @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 28.93,
+						"share": 0.0099
+					},
+					{
+						"frame": "get @ deps/chunk-VEWFTNLH.js",
+						"selfMs": 25.19,
+						"share": 0.0086
+					},
+					{
+						"frame": "#process @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 19.88,
+						"share": 0.0068
+					},
+					{
+						"frame": "#read_all @ deps/chunk-VEWFTNLH.js",
+						"selfMs": 16.77,
+						"share": 0.0058
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 16.71,
+						"share": 0.0057
+					},
+					{
+						"frame": "(anonymous) @ cell/table-cell.svelte",
+						"selfMs": 12.49,
+						"share": 0.0043
+					},
+					{
+						"frame": "update_reaction @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 12.37,
+						"share": 0.0042
+					},
+					{
+						"frame": "getMeasuredTableWidth @ root/context.svelte.ts",
+						"selfMs": 11.9,
+						"share": 0.0041
+					},
+					{
+						"frame": "(anonymous) @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 10.56,
+						"share": 0.0036
+					},
+					{
+						"frame": "(anonymous) @ root/table-root.svelte",
+						"selfMs": 9.75,
+						"share": 0.0033
+					}
+				]
+			}
+		},
+		"select-all": {
+			"scenario": "select-all",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"longTasks": {
+				"count": 0,
+				"totalMs": 0,
+				"maxMs": 0,
+				"supported": true
+			},
+			"syncMs": 28.400000005960464,
+			"renderedRows": 56,
+			"durationMs": 106.09999999403954,
+			"profile": {
+				"totalMs": 295.82,
+				"top": [
+					{
+						"frame": "(program) @ ",
+						"selfMs": 126.47,
+						"share": 0.4275
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 116.03,
+						"share": 0.3922
+					},
+					{
+						"frame": "set_attributes @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 6.27,
+						"share": 0.0212
+					},
+					{
+						"frame": "(anonymous) @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 6.25,
+						"share": 0.0211
+					},
+					{
+						"frame": "is_dirty @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 5.69,
+						"share": 0.0192
+					},
+					{
+						"frame": "(anonymous) @ cell/table-cell.svelte",
+						"selfMs": 4.33,
+						"share": 0.0146
+					},
+					{
+						"frame": "mark_reactions @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 2.73,
+						"share": 0.0092
+					},
+					{
+						"frame": "get @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 2.45,
+						"share": 0.0083
+					},
+					{
+						"frame": "(anonymous) @ root/checkbox-root.svelte",
+						"selfMs": 1.9,
+						"share": 0.0064
+					},
+					{
+						"frame": "(anonymous) @ body/table-body.svelte",
+						"selfMs": 1.82,
+						"share": 0.0062
+					},
+					{
+						"frame": "hasAttribute @ ",
+						"selfMs": 1.25,
+						"share": 0.0042
+					},
+					{
+						"frame": "_SvelteSet @ deps/chunk-VEWFTNLH.js",
+						"selfMs": 1.23,
+						"share": 0.0042
+					},
+					{
+						"frame": "ownKeys @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 1.22,
+						"share": 0.0041
+					},
+					{
+						"frame": "get_setters @ deps/chunk-VS6RS3SK.js",
+						"selfMs": 1.21,
+						"share": 0.0041
+					},
+					{
+						"frame": "array_prototype2.includes @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 1.19,
+						"share": 0.004
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 1.19,
+						"share": 0.004
+					},
+					{
+						"frame": "(anonymous) @ row/table-row.svelte",
+						"selfMs": 1.15,
+						"share": 0.0039
+					},
+					{
+						"frame": "update_reaction @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 0.91,
+						"share": 0.0031
+					}
+				]
+			}
+		},
+		"sort-toggle": {
+			"scenario": "sort-toggle",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"longTasks": {
+				"count": 0,
+				"totalMs": 0,
+				"maxMs": 0,
+				"supported": true
+			},
+			"syncMs": 0.800000011920929,
+			"renderedRows": 56,
+			"durationMs": 105.30000001192093,
+			"profile": {
+				"totalMs": 303.35,
+				"top": [
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 159.94,
+						"share": 0.5272
+					},
+					{
+						"frame": "(program) @ ",
+						"selfMs": 141.12,
+						"share": 0.4652
+					},
+					{
+						"frame": "is_dirty @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 0.5,
+						"share": 0.0016
+					},
+					{
+						"frame": "querySelectorAll @ ",
+						"selfMs": 0.4,
+						"share": 0.0013
+					},
+					{
+						"frame": "has @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 0.38,
+						"share": 0.0013
+					},
+					{
+						"frame": "innerSerialize @ ",
+						"selfMs": 0.38,
+						"share": 0.0012
+					},
+					{
+						"frame": "runSortToggle @ table/+page.svelte",
+						"selfMs": 0.34,
+						"share": 0.0011
+					},
+					{
+						"frame": "execute_derived @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 0.3,
+						"share": 0.001
+					}
+				]
+			}
+		}
+	}
+}

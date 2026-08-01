@@ -10,14 +10,21 @@
 					"type": "AccordionValue[]",
 					"required": false,
 					"default": null,
-					"description": "Controlled list of open item values."
+					"description": "List of open item values. Two-way by default — use `bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "AccordionValue[]",
 					"required": false,
 					"default": null,
-					"description": "Initially open item values when uncontrolled."
+					"description": "Initially open item values, for when `value` is not supplied."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new value back down. Off by default, because `bind:value` — the common case —\nneeds the write-back to work at all."
 				},
 				{
 					"name": "onChange",
@@ -298,6 +305,13 @@
 					"required": false,
 					"default": "false",
 					"description": "Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation."
+				},
+				{
+					"name": "region",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether the panel is exposed as a `role=\"region\"` landmark (default `true`).\nSet to `false` on accordions with many items: the APG recommends avoiding\n`region` beyond roughly six panels so landmark lists are not flooded."
 				},
 				{
 					"name": "children",

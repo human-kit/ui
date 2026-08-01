@@ -11,6 +11,7 @@
 		disabled = false,
 		value = $bindable(),
 		defaultValue,
+		controlledValue = false,
 		disabledKeys,
 		onChange,
 		children,
@@ -21,7 +22,11 @@
 		...restProps
 	}: TabsRootProps = $props();
 
-	const isValueControlled = untrack(() => value !== undefined);
+	// Controlled-ness is opt-in, not inferred from `value` being defined: `bind:value` and
+	// `value={...}` are indistinguishable at runtime. It used to be inferred here, and the
+	// write-back below then ignored the result — so a genuinely controlled parent could
+	// not reject a change; the tab moved regardless of what `onChange` decided.
+	const isValueControlled = untrack(() => controlledValue);
 	const instanceId = untrack(() => id) ?? generatedId;
 
 	let rootRef: HTMLDivElement | null = $state(null);
@@ -34,14 +39,16 @@
 			orientation: (() => orientation)(),
 			isDisabled: (() => disabled)(),
 			disabledKeys: (() => disabledKeys)(),
-			initialValue: isValueControlled
-				? (untrack(() => value) ?? null)
-				: untrack(() => defaultValue),
+			// `value` seeds the initial selection whenever it is supplied, bound or not.
+			initialValue: untrack(() => value) ?? untrack(() => defaultValue),
 			onValueChange: (nextValue) => {
-				value = nextValue;
+				if (!isValueControlled) {
+					value = nextValue;
+				}
 				onChange?.(nextValue);
 			},
 			onValueSync: (nextValue) => {
+				if (isValueControlled) return;
 				value = nextValue;
 			}
 		})
@@ -69,8 +76,15 @@
 		tabs.setDisabledKeys(disabledKeys);
 	});
 
+	// Whether to adopt an incoming `value` is a separate question from who owns the state,
+	// so it is latched at init off the prop rather than off `controlledValue`: a parent
+	// that supplies `value` drives the selection, bound or not. Latched, not reactive —
+	// re-checking `value !== undefined` would switch this on the moment our own write-back
+	// defines it, and the component would then re-adopt the echo of its own change.
+	const adoptsValueProp = untrack(() => value !== undefined);
+
 	$effect(() => {
-		if (!isValueControlled) return;
+		if (!adoptsValueProp) return;
 		tabs.setSelectedValue(value ?? null);
 	});
 </script>

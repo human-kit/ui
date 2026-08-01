@@ -41,10 +41,20 @@
 	}
 </script>
 
-<!-- Floated so the toolbar sits at the top-right and the page title (the first
-     block of the article) flows to its left. `not-prose`-style anchors carry
-     `hk-button-link` to escape the prose link styling. -->
-<div class="float-right mb-2 ml-6 flex items-center gap-1.5">
+<!-- From `sm` up: pinned to the top-right of the (relative) article, beside the
+     page title. The h1's line box is taller than its text (line-height 1.7 ×
+     1.875rem ≈ 3.19rem); matching that height and centering the buttons aligns
+     them with the title text instead of the top of its line box. `not-prose`-style
+     anchors carry `hk-button-link` to escape the prose link styling.
+
+     Below `sm`: in flow, on its own row above the title. Page names are single
+     unbreakable words ("DateRangePicker" is 269px at 30px type, against a 322px
+     column), so there is no wrap point — reserving a padding gutter would just
+     push the word under the buttons instead of shortening it. Giving the toolbar
+     its own row is the only fix that holds for a title of any length. -->
+<div
+	class="mb-2 flex items-center justify-end gap-1.5 sm:absolute sm:top-0 sm:right-0 sm:mb-0 sm:h-12.75"
+>
 	{#if prev}
 		<a
 			href={resolve(`/docs/${prev.slug}`)}

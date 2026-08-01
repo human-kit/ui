@@ -1,41 +1,57 @@
 <script lang="ts">
 	import { Calendar } from '@human-kit/ui';
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
+	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
 	let value = $state('');
 </script>
 
-<Calendar.Root bind:value selectionMode="single" class="space-y-4">
-	<div class="flex items-center justify-between gap-3">
-		<Calendar.TriggerPrevious
-			class="rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+<div class="flex flex-col items-center gap-3">
+	<!-- Mirrors the DatePicker popover calendar exactly (same nav, grid, and cells),
+	     just standalone inside its own card. -->
+	<Calendar.Root
+		bind:value
+		selectionMode="single"
+		class="w-fit border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+	>
+		<div class="flex items-center justify-between gap-2 p-2 [&_h2]:m-0">
+			<Calendar.TriggerPrevious
+				class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+			>
+				<ChevronLeft class="size-4" />
+			</Calendar.TriggerPrevious>
+			<Calendar.Heading class="text-sm font-medium text-neutral-900 dark:text-white" />
+			<Calendar.TriggerNext
+				class="inline-flex size-8 items-center justify-center text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+			>
+				<ChevronRight class="size-4" />
+			</Calendar.TriggerNext>
+		</div>
+		<!-- Resets what this inline calendar inherits from .hd-prose (the DatePicker
+		     calendar escapes it via its portal): cell padding, which was blowing each
+		     cell up to 56px, and the td/th bottom borders, which drew a rule under
+		     every week. The header's `[&_h2]:m-0` kills the prose h2 margin that was
+		     pushing the month title below the nav buttons. -->
+		<Calendar.Grid
+			class="border-separate border-spacing-1 px-2 pb-2 [&_td]:border-0 [&_td]:p-0 [&_th]:border-0 [&_th]:p-0"
 		>
-			Previous
-		</Calendar.TriggerPrevious>
-		<Calendar.Heading class="text-lg font-semibold text-neutral-900 dark:text-white" />
-		<Calendar.TriggerNext
-			class="rounded border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-		>
-			Next
-		</Calendar.TriggerNext>
-	</div>
-
-	<Calendar.Grid class="text-neutral-900 dark:text-neutral-100">
-		<Calendar.GridHeader>
-			{#snippet children(day)}
-				<Calendar.HeaderCell
-					class="px-2 py-1 text-center text-xs font-medium text-neutral-600 dark:text-neutral-300"
-				>
-					{day}
-				</Calendar.HeaderCell>
-			{/snippet}
-		</Calendar.GridHeader>
-		<Calendar.GridBody>
-			{#snippet children(date)}
-				<Calendar.BodyCell
-					{date}
-					class="p-1 text-center text-neutral-900 data-outside-month:opacity-45 data-selected:rounded data-selected:bg-blue-600 data-selected:text-white dark:text-neutral-100"
-				/>
-			{/snippet}
-		</Calendar.GridBody>
-	</Calendar.Grid>
-</Calendar.Root>
+			<Calendar.GridHeader>
+				{#snippet children(day)}
+					<Calendar.HeaderCell
+						class="size-8 text-center text-xs font-medium text-neutral-500 dark:text-neutral-400"
+					>
+						{day}
+					</Calendar.HeaderCell>
+				{/snippet}
+			</Calendar.GridHeader>
+			<Calendar.GridBody>
+				{#snippet children(date)}
+					<Calendar.BodyCell
+						{date}
+						class="inline-flex size-8 items-center justify-center align-middle text-sm text-neutral-900 outline-none transition-colors hover:bg-neutral-100 data-outside-month:opacity-40 data-selected:bg-neutral-900 data-selected:text-white dark:text-neutral-100 dark:hover:bg-neutral-800 dark:data-selected:bg-white dark:data-selected:text-neutral-900"
+					/>
+				{/snippet}
+			</Calendar.GridBody>
+		</Calendar.Grid>
+	</Calendar.Root>
+</div>

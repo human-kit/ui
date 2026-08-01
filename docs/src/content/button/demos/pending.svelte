@@ -14,7 +14,7 @@
 <Button.Root
 	{pending}
 	onclick={save}
-	class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors data-[hovered=true]:bg-blue-700 data-[pending=true]:opacity-70 data-[pressed=true]:bg-blue-800 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[focus-visible=true]:ring-offset-2 dark:data-[focus-visible=true]:ring-offset-neutral-900"
+	class="inline-flex h-8 items-center justify-center gap-2 bg-black px-3 text-sm font-medium text-white outline-none transition-colors data-hovered:bg-neutral-700 data-pending:opacity-60 data-focus-visible:outline-2 data-focus-visible:outline-offset-2 data-focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-900 dark:data-hovered:bg-neutral-200 dark:data-focus-visible:outline-white"
 >
 	{#snippet children({ pending })}
 		<span class="flex items-center gap-2">

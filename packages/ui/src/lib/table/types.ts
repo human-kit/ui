@@ -81,6 +81,12 @@ export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'ch
 
 export type TableBodyVirtualizer = {
 	rowHeight: number;
+	/**
+	 * Extra rows rendered above and below the viewport, defaulting to 18. It
+	 * buffers against row render cost: while the main thread builds rows, the
+	 * compositor keeps scrolling, and anything past the last rendered row shows
+	 * as blank. Raise it for expensive rows or very fast scrolling.
+	 */
 	overscan?: number;
 };
 

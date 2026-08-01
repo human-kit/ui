@@ -27,10 +27,23 @@
 		value?: string;
 		/** Associates the hidden input with a form by id. */
 		form?: string;
+		/** Checked state. Two-way by default — use `bind:checked`. */
 		checked?: boolean;
+		/** Initial checked state, for when `checked` is not supplied. */
 		defaultChecked?: boolean;
+		/**
+		 * Opt into fully controlled `checked`: the component stops writing back to the prop
+		 * and only reports through `onCheckedChange`, so the parent can reject a change by
+		 * not flowing the new value back down. Off by default, because `bind:checked` —
+		 * the common case — needs the write-back to work at all.
+		 */
+		controlledChecked?: boolean;
+		/** Indeterminate state. Two-way by default — use `bind:indeterminate`. */
 		indeterminate?: boolean;
+		/** Initial indeterminate state, for when `indeterminate` is not supplied. */
 		defaultIndeterminate?: boolean;
+		/** Opt into fully controlled `indeterminate`. See `controlledChecked`. */
+		controlledIndeterminate?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
 		onIndeterminateChange?: (indeterminate: boolean) => void;
 		disabled?: boolean;
@@ -88,8 +101,10 @@
 		form,
 		checked = $bindable(),
 		defaultChecked = false,
+		controlledChecked = false,
 		indeterminate = $bindable(),
 		defaultIndeterminate = false,
+		controlledIndeterminate = false,
 		onCheckedChange,
 		onIndeterminateChange,
 		disabled = false,
@@ -149,23 +164,25 @@
 		}
 	});
 
-	// Controlled-ness is decided once, from whether the prop was provided at init.
-	const isCheckedControlled = untrack(() => checked) !== undefined;
-	const isIndeterminateControlled = untrack(() => indeterminate) !== undefined;
-
-	// In uncontrolled mode, write the initial state back so `bind:` parents see the default.
-	if (!isCheckedControlled) {
+	// Controlled-ness is NOT inferred from the props being defined: `bind:checked={value}`
+	// and `checked={value}` are indistinguishable at runtime, so inferring it silently
+	// broke every `bind:checked` seeded with `false`. It is opt-in per prop instead.
+	// Write the initial state back so `bind:` parents see the resolved default. Read
+	// untracked: this is a deliberate one-time seed at init, not a reactive mirror.
+	if (!untrack(() => controlledChecked)) {
 		checked = initialState === 'checked';
 	}
 
-	if (!isIndeterminateControlled) {
+	if (!untrack(() => controlledIndeterminate)) {
 		indeterminate = initialState === 'indeterminate';
 	}
 
+	// The prop wins whenever it is supplied — that covers both `bind:` and a plain
+	// value — and the internal state only carries the fully uncontrolled case.
 	const currentState = $derived.by(() =>
 		resolveState(
-			isCheckedControlled ? Boolean(checked) : checkedInternal,
-			isIndeterminateControlled ? Boolean(indeterminate) : indeterminateInternal
+			controlledChecked ? Boolean(checked) : (checked ?? checkedInternal),
+			controlledIndeterminate ? Boolean(indeterminate) : (indeterminate ?? indeterminateInternal)
 		)
 	);
 
@@ -184,12 +201,12 @@
 		const previousChecked = currentChecked;
 		const previousIndeterminate = currentIndeterminate;
 
-		if (!isCheckedControlled) {
+		if (!controlledChecked) {
 			checkedInternal = nextChecked;
 			checked = nextChecked;
 		}
 
-		if (!isIndeterminateControlled) {
+		if (!controlledIndeterminate) {
 			indeterminateInternal = nextIndeterminate;
 			indeterminate = nextIndeterminate;
 		}

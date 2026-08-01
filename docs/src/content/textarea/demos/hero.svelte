@@ -4,10 +4,13 @@
 	let value = $state('TextArea renders a native multiline textbox with headless state attributes.');
 
 	const textAreaClass =
-		'min-h-24 w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm leading-6 text-neutral-900 shadow-sm outline-none transition-all placeholder:text-neutral-400 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-blue-500 data-[hovered=true]:border-neutral-400 dark:border-neutral-600 dark:bg-neutral-900 dark:text-white dark:data-[hovered=true]:border-neutral-500';
+		'w-full border border-neutral-300 bg-white p-2 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 data-[focused=true]:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500 dark:data-[focused=true]:border-white';
 </script>
 
-<div class="w-full max-w-md space-y-2">
+<div class="w-full max-w-md">
+	<!-- `resize-none`: an autoResize textarea manages its own height, so leaving the
+	     native drag handle on lets you fight it — drag taller, then the next keystroke
+	     snaps it back to the content height. -->
 	<TextArea
 		bind:value
 		placeholder="Write a detailed note..."
@@ -15,7 +18,6 @@
 		minRows={3}
 		maxRows={8}
 		aria-label="Note"
-		class={textAreaClass}
+		class="{textAreaClass} resize-none"
 	/>
-	<p class="text-xs text-neutral-500 dark:text-neutral-400">Characters: {value.length}</p>
 </div>

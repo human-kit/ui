@@ -21,6 +21,7 @@
 		id?: string;
 		value?: TimePickerTimeValue | null;
 		defaultValue?: TimePickerTimeValue | null;
+		controlledValue?: boolean;
 		onChange?: (value: TimePickerTimeValue | null) => void;
 		minValue?: TimePickerTimeValue;
 		maxValue?: TimePickerTimeValue;
@@ -34,6 +35,7 @@
 		required?: boolean;
 		open?: boolean;
 		defaultOpen?: boolean;
+		controlledOpen?: boolean;
 		onOpenChange?: (open: boolean, details: TimePickerOpenChangeDetails) => void;
 		children?: Snippet;
 		class?: string;
@@ -47,6 +49,7 @@
 		id,
 		value = $bindable(),
 		defaultValue,
+		controlledValue = false,
 		onChange,
 		minValue,
 		maxValue,
@@ -60,6 +63,7 @@
 		required = false,
 		open = $bindable(),
 		defaultOpen = false,
+		controlledOpen = false,
 		onOpenChange,
 		children,
 		class: className = '',
@@ -93,6 +97,9 @@
 		value: () => value,
 		defaultValue: () => defaultValue,
 		writeValue: (next) => {
+			// Fully controlled: report only (via `onChange` below) and let the parent flow
+			// the value back down through the `value` prop.
+			if (controlledValue) return;
 			value = next;
 		},
 		onChange: (next) => onChange?.(next),
@@ -161,6 +168,10 @@
 
 		onOpenChange?.(nextOpen, resolvedDetails);
 		if (resolvedDetails.isCanceled) return;
+
+		// Fully controlled: the parent owns the state and flows it back down through the
+		// `open` prop (the adopt effect above picks it up), so don't write it here.
+		if (controlledOpen) return;
 
 		openInternal = nextOpen;
 		open = nextOpen;

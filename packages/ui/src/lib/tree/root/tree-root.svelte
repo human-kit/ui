@@ -19,8 +19,10 @@
 	let {
 		expandedKeys = $bindable(),
 		defaultExpandedKeys,
+		controlledExpandedKeys = false,
 		selectedKeys = $bindable(),
 		defaultSelectedKeys,
+		controlledSelectedKeys = false,
 		disabledKeys,
 		selectionMode = 'none',
 		selectionBehavior = 'toggle',
@@ -59,12 +61,13 @@
 
 	const isExpandedControlled = $derived(expandedKeys !== undefined);
 	const isSelectionControlled = $derived(selectedKeys !== undefined);
-	const usesExpandedCallbackControl = $derived(
-		expandedKeys !== undefined && onExpandedKeysChange !== undefined
-	);
-	const usesSelectionCallbackControl = $derived(
-		selectedKeys !== undefined && onSelectionChange !== undefined
-	);
+	// These gate the write-back, and are opt-in rather than inferred. The old heuristic —
+	// prop supplied AND a change callback supplied — could not tell `bind:selectedKeys`
+	// plus a listener apart from genuine parent-owned state, so the binding silently
+	// stopped receiving updates. (`is*Controlled` above is a different question: it only
+	// decides whether to adopt an incoming prop, which applies in either mode.)
+	const usesExpandedCallbackControl = $derived(controlledExpandedKeys);
+	const usesSelectionCallbackControl = $derived(controlledSelectedKeys);
 
 	function setsEqual(left: Set<TreeNodeId>, right: Set<TreeNodeId>) {
 		if (left.size !== right.size) return false;

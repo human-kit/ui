@@ -10,28 +10,42 @@
 					"type": "Iterable<TreeNodeId>",
 					"required": false,
 					"default": null,
-					"description": "Controlled set of expanded branch ids. Bindable."
+					"description": "Expanded node keys. Two-way by default — use `bind:expandedKeys`."
 				},
 				{
 					"name": "defaultExpandedKeys",
 					"type": "Iterable<TreeNodeId>",
 					"required": false,
 					"default": null,
-					"description": "Initially expanded branch ids when uncontrolled."
+					"description": "Initially expanded keys, for when `expandedKeys` is not supplied."
+				},
+				{
+					"name": "controlledExpandedKeys",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled expansion: the component stops writing back to\n`expandedKeys` and only reports through `onExpandedKeysChange`, so the parent can\nreject a change by not flowing the new keys back down. Off by default, because\n`bind:expandedKeys` — the common case — needs the write-back to work at all."
 				},
 				{
 					"name": "selectedKeys",
 					"type": "Iterable<TreeNodeId>",
 					"required": false,
 					"default": null,
-					"description": "Controlled set of selected item ids. Bindable."
+					"description": "Selected node keys. Two-way by default — use `bind:selectedKeys`."
 				},
 				{
 					"name": "defaultSelectedKeys",
 					"type": "Iterable<TreeNodeId>",
 					"required": false,
 					"default": null,
-					"description": "Initially selected item ids when uncontrolled."
+					"description": "Initially selected keys, for when `selectedKeys` is not supplied."
+				},
+				{
+					"name": "controlledSelectedKeys",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled selection. See `controlledExpandedKeys`."
 				},
 				{
 					"name": "disabledKeys",

@@ -129,6 +129,10 @@
 				{
 					"name": "data-clock",
 					"description": "Identifies the clock root element."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the entered time is not a valid one."
 				}
 			]
 		},
@@ -171,10 +175,10 @@
 				},
 				{
 					"name": "children",
-					"type": "Snippet<[TimePickerWheelOption]>",
+					"type": "Snippet<[TimePickerWheelOption, boolean]>",
 					"required": false,
 					"default": null,
-					"description": "Renders one item per option; receives the wheel option for the column."
+					"description": "Receives the option and whether it is the column's selected value."
 				},
 				{
 					"name": "class",

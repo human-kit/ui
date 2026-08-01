@@ -1,0 +1,181 @@
+{
+	"label": "quant",
+	"createdAt": "2026-07-29T21:54:13.876Z",
+	"mode": "dev",
+	"url": "http://localhost:5307/bench/table?rows=5000&columns=8",
+	"throttle": 4,
+	"repeat": 4,
+	"scenarios": {
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 81.99266666666665,
+				"p50": 18.599999999998545,
+				"p95": 342.2999999999993,
+				"p99": 377.59999999999854,
+				"max": 413.1999999999971,
+				"dropped": 58,
+				"droppedRatio": 0.38666666666666666,
+				"jankMs": 10087.599999999995
+			},
+			"longTasks": {
+				"count": 42,
+				"totalMs": 10537,
+				"maxMs": 403,
+				"supported": true
+			},
+			"renderedRows": 63,
+			"durationMs": 12523.5,
+			"samples": [18.6, 18.6, 19.8, 20.2],
+			"bestMs": 18.6,
+			"medianMs": 19.8,
+			"spread": 0.086
+		},
+		"scroll-smooth": {
+			"scenario": "scroll-smooth",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 20.041333333333313,
+				"p50": 12.60000000000582,
+				"p95": 30.80000000000291,
+				"p99": 265.1999999999971,
+				"max": 321.29999999998836,
+				"dropped": 8,
+				"droppedRatio": 0.05333333333333334,
+				"jankMs": 1157.533333333316
+			},
+			"longTasks": {
+				"count": 6,
+				"totalMs": 1184,
+				"maxMs": 307,
+				"supported": true
+			},
+			"renderedRows": 63,
+			"durationMs": 3039,
+			"samples": [12.6, 14.1, 15.5, 16.6],
+			"bestMs": 12.6,
+			"medianMs": 15.5,
+			"spread": 0.317
+		},
+		"scroll-wheel": {
+			"scenario": "scroll-wheel",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 294,
+				"mean": 81.30238095238093,
+				"p50": 30.59999999999127,
+				"p95": 387.5,
+				"p99": 616.8000000000029,
+				"max": 648.2000000000116,
+				"dropped": 189,
+				"droppedRatio": 0.6428571428571429,
+				"jankMs": 19437.266666666605
+			},
+			"coverage": {
+				"samples": 295,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 53,
+				"totalMs": 18739,
+				"maxMs": 659,
+				"supported": true
+			},
+			"renderedRows": 63,
+			"durationMs": 23965.79999998212,
+			"blankBand": {
+				"frames": 65,
+				"blankFrameRatio": 0,
+				"maxBlankPx": 3,
+				"meanBlankPx": 1
+			},
+			"samples": [30.6, 30.6, 30.6, 30.7],
+			"bestMs": 30.6,
+			"medianMs": 30.6,
+			"spread": 0.003
+		},
+		"resize-column": {
+			"scenario": "resize-column",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 120,
+				"mean": 120.26833333333343,
+				"p50": 122.60000000000582,
+				"p95": 173.10000000000582,
+				"p99": 187.5,
+				"max": 188.19999999998254,
+				"dropped": 120,
+				"droppedRatio": 1,
+				"jankMs": 12432.200000000023
+			},
+			"longTasks": {
+				"count": 119,
+				"totalMs": 14377,
+				"maxMs": 183,
+				"supported": true
+			},
+			"renderedRows": 63,
+			"durationMs": 14495.300000011921,
+			"samples": [122.6, 124.5, 140.2, 154.8],
+			"bestMs": 122.6,
+			"medianMs": 140.2,
+			"spread": 0.263
+		}
+	}
+}

@@ -238,7 +238,7 @@ describe('Clock.Root', () => {
 		expect(getClockRoot()?.getAttribute('data-invalid')).toBeNull();
 	});
 
-	it('ignores clicks on out-of-range wheel options and keeps the draft valid', async () => {
+	it('offers the boundary hour and clamps the minute onto the max', async () => {
 		render(ClockRootTest, {
 			defaultValue: '16:30',
 			hourCycle: 24,
@@ -248,11 +248,36 @@ describe('Clock.Root', () => {
 
 		await expect.poll(() => getSpinbuttons().length).toBe(2);
 
-		// With minute 30 in the draft, hour 17 (17:30 > max) is disabled: the
-		// click must be ignored, keeping both the value and validity intact.
+		// Hour 17 still has an in-range time (17:00), so it stays selectable even
+		// though the draft's minute (30) would overshoot the max. Committing it
+		// pulls the minute onto the boundary instead of refusing the selection.
+		const hourColumn = getSpinbuttons().item(0);
+		const boundaryHour = hourColumn?.querySelector<HTMLElement>(
+			'[data-wheel-item][data-value="17"]'
+		);
+		expect(boundaryHour?.getAttribute('data-disabled')).toBeNull();
+		boundaryHour?.click();
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="clock-value"]')?.textContent)
+			.toBe('17:00');
+		expect(getClockRoot()?.getAttribute('data-invalid')).toBeNull();
+	});
+
+	it('ignores clicks on hours that have no in-range time at all', async () => {
+		render(ClockRootTest, {
+			defaultValue: '16:30',
+			hourCycle: 24,
+			minValue: '09:00',
+			maxValue: '17:00'
+		});
+
+		await expect.poll(() => getSpinbuttons().length).toBe(2);
+
+		// 18:00–18:59 lies entirely past the max, so no minute can rescue it.
 		const hourColumn = getSpinbuttons().item(0);
 		const outOfRangeHour = hourColumn?.querySelector<HTMLElement>(
-			'[data-wheel-item][data-value="17"]'
+			'[data-wheel-item][data-value="18"]'
 		);
 		expect(outOfRangeHour?.getAttribute('data-disabled')).toBe('true');
 		outOfRangeHour?.click();

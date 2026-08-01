@@ -27,7 +27,12 @@
 	}
 </script>
 
-<ListBox.Root {value} onChange={handleChange} aria-label="Fruits list">
+<!--
+	`controlledValue` states the intent: this parent owns the selection and decides whether
+	to apply a change, so the component must not write back. It has to be explicit now —
+	passing `value` alone reads as an ordinary one-way value and no longer implies it.
+-->
+<ListBox.Root {value} controlledValue onChange={handleChange} aria-label="Fruits list">
 	{#each fruits as fruit (fruit.id)}
 		<ListBox.Item id={fruit.id} textValue={fruit.name}>{fruit.name}</ListBox.Item>
 	{/each}

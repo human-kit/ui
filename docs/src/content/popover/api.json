@@ -10,14 +10,21 @@
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled open state."
+					"description": "Open state. Two-way by default — use `bind:open`."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial open state for uncontrolled mode."
+					"description": "Initial open state, for when `open` is not supplied."
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the\ncommon case — needs the write-back to work at all. For one-off rejections\nprefer `details.cancel()`, which works in either mode."
 				},
 				{
 					"name": "onOpenChange",

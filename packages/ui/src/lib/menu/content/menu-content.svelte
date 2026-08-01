@@ -5,12 +5,13 @@
 	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { clickOutside, isTargetInTopLayerAbove } from '../../primitives/click-outside';
+	import { scrollLock } from '../../primitives/scroll-lock';
 	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
 	import { createPresence } from '../../primitives/presence.svelte';
 	import { Portal } from '../../portal';
 	import { useMenuContext } from '../root/context';
 	import { pushMenuLayer, removeMenuLayer, isTopmostMenu } from '../root/menu-stack';
-	import { getFloatingLayerZIndex } from '../../dialog/root/dialog-stack';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
 
 	/**
 	 * Menu.Content - The floating menu panel (role="menu").
@@ -296,6 +297,7 @@
 				enabled: isOpen && shouldCloseOnInteractOutside,
 				ignore: [triggerRef]
 			}}
+			use:scrollLock={presence.isMounted}
 			use:ctx.keyboardNav.action
 			onpointerenter={() => ctx.parent?.cancelPendingHighlight()}
 			style="position: fixed; z-index: {zIndex};"

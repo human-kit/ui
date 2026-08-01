@@ -7,10 +7,6 @@ description: A headless native multiline text input with modality-aware focus st
 	import { Demo, ApiReference } from '$lib/docs/components/index.js';
 	import Hero from './demos/hero.svelte';
 	import heroSource from './demos/hero.svelte?highlight';
-	import States from './demos/states.svelte';
-	import statesSource from './demos/states.svelte?highlight';
-	import AutoResize from './demos/autoresize.svelte';
-	import autoResizeSource from './demos/autoresize.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -36,13 +32,9 @@ A headless native multiline text input with modality-aware focus state, RAC-styl
 
 Interaction and validation state is exposed through `data-*` attributes — `data-focused`, `data-focus-visible`, `data-hovered`, `data-disabled`, `data-readonly`, `data-invalid`, `data-required`, and `data-autoresize` — so all styling is done with plain CSS or utility classes.
 
-<Demo source={statesSource}><States /></Demo>
-
 ## Auto-resize
 
 Enable `autoResize` when the textarea should grow with content, and bound the height with `minRows` and `maxRows`. Leave it off to keep native `rows` and manual resize behavior.
-
-<Demo source={autoResizeSource}><AutoResize /></Demo>
 
 ## Usage guidelines
 

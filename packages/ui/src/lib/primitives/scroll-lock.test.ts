@@ -111,4 +111,105 @@ describe('scrollLock', () => {
 
 		handle.destroy();
 	});
+
+	// The body-only lock above passes even when real scrolling is NOT prevented:
+	// in a layout whose scroller is an inner pane (not `<body>`), hiding body
+	// overflow does nothing. These exercise the actual scroll event so that
+	// regression is caught — dispatching a real `wheel` and asserting it is (or is
+	// not) cancelled.
+	describe('event blocking', () => {
+		function wheel(deltaY = 40, deltaX = 0) {
+			return new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY, deltaX });
+		}
+
+		function scrollableOverlay() {
+			const overlay = document.createElement('div');
+			overlay.style.cssText = 'overflow: auto; height: 100px; width: 100px;';
+			const content = document.createElement('div');
+			content.style.cssText = 'height: 400px; width: 100px;';
+			overlay.appendChild(content);
+			document.body.appendChild(overlay);
+			return { overlay, content };
+		}
+
+		it('cancels a wheel that targets the background, so an inner scroll pane cannot scroll behind the overlay', () => {
+			const overlay = document.createElement('div');
+			const background = document.createElement('div');
+			document.body.append(overlay, background);
+			const handle = scrollLock(overlay, true);
+
+			try {
+				const event = wheel();
+				background.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(true);
+			} finally {
+				handle.destroy();
+				overlay.remove();
+				background.remove();
+			}
+		});
+
+		it('lets the overlay scroll its own content while it still has room', () => {
+			const { overlay, content } = scrollableOverlay();
+			const handle = scrollLock(overlay, true);
+
+			try {
+				const event = wheel(40);
+				content.dispatchEvent(event);
+				// scrollTop is 0 with room below → the inner scroller takes it.
+				expect(event.defaultPrevented).toBe(false);
+			} finally {
+				handle.destroy();
+				overlay.remove();
+			}
+		});
+
+		it('cancels once the overlay scroller reaches its bound so the scroll does not chain out', () => {
+			const { overlay, content } = scrollableOverlay();
+			overlay.scrollTop = overlay.scrollHeight; // pin to the bottom
+			const handle = scrollLock(overlay, true);
+
+			try {
+				const event = wheel(40); // further down would chain to the background
+				content.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(true);
+			} finally {
+				handle.destroy();
+				overlay.remove();
+			}
+		});
+
+		it('cancels a wheel inside a non-scrollable overlay', () => {
+			const overlay = document.createElement('div');
+			overlay.style.cssText = 'height: 100px; width: 100px;';
+			document.body.appendChild(overlay);
+			const handle = scrollLock(overlay, true);
+
+			try {
+				const event = wheel();
+				overlay.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(true);
+			} finally {
+				handle.destroy();
+				overlay.remove();
+			}
+		});
+
+		it('stops cancelling once unlocked', () => {
+			const overlay = document.createElement('div');
+			const background = document.createElement('div');
+			document.body.append(overlay, background);
+			const handle = scrollLock(overlay, true);
+			handle.destroy();
+
+			try {
+				const event = wheel();
+				background.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(false);
+			} finally {
+				overlay.remove();
+				background.remove();
+			}
+		});
+	});
 });

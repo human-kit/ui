@@ -20,6 +20,14 @@ export type DialogContext = {
 	close: (reason?: DialogCloseReason, event?: Event) => void;
 	/** Called when dialog open state changes */
 	onOpenChange: (open: boolean) => void;
+	/** ids of the `Dialog.Title` parts, for `aria-labelledby`. */
+	readonly labelledBy: string | undefined;
+	/** ids of the `Dialog.Description` parts, for `aria-describedby`. */
+	readonly describedBy: string | undefined;
+	/** Registers a label id; the returned function unregisters it. */
+	registerLabel: (id: string) => () => void;
+	/** Registers a description id; the returned function unregisters it. */
+	registerDescription: (id: string) => () => void;
 	/** Stack level for z-index calculation (set by Content) */
 	stackLevel: number;
 	/** Set the stack level (used by Content component) */

@@ -1,0 +1,97 @@
+{
+	"label": "c-off",
+	"createdAt": "2026-07-29T19:19:37.945Z",
+	"mode": "dev",
+	"url": "http://localhost:5303/bench/table?rows=5000&columns=8",
+	"throttle": 4,
+	"repeat": 4,
+	"scenarios": {
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 150,
+				"mean": 95.52600000000001,
+				"p50": 95.80000000000291,
+				"p95": 173.5,
+				"p99": 206.6999999999971,
+				"max": 210,
+				"dropped": 144,
+				"droppedRatio": 0.96,
+				"jankMs": 11828.90000000002
+			},
+			"longTasks": {
+				"count": 128,
+				"totalMs": 13207,
+				"maxMs": 214,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 14379.700000017881,
+			"samples": [95.8, 105.7, 109.8, 117.7],
+			"bestMs": 95.8,
+			"medianMs": 109.8,
+			"spread": 0.229
+		},
+		"scroll-wheel": {
+			"scenario": "scroll-wheel",
+			"config": {
+				"rows": 5000,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 274,
+				"mean": 63.43540145985403,
+				"p50": 17.60000000000582,
+				"p95": 274.3000000000029,
+				"p99": 350.3999999999942,
+				"max": 381.6000000000058,
+				"dropped": 64,
+				"droppedRatio": 0.23357664233576642,
+				"jankMs": 13156.333333333452
+			},
+			"coverage": {
+				"samples": 275,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 60,
+				"totalMs": 14145,
+				"maxMs": 401,
+				"supported": true
+			},
+			"renderedRows": 56,
+			"durationMs": 17408.399999976158,
+			"blankBand": {
+				"frames": 61,
+				"blankFrameRatio": 0.01639344262295082,
+				"maxBlankPx": 7,
+				"meanBlankPx": 1
+			},
+			"samples": [17.6, 17.6, 17.8, 17.8],
+			"bestMs": 17.6,
+			"medianMs": 17.8,
+			"spread": 0.011
+		}
+	}
+}

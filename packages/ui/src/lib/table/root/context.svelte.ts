@@ -411,6 +411,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let logicalBodyRowIndexCache: Map<TableSelectionKey, number> | null = null;
 	const cells = new SvelteMap<string, TableCellRegistration>();
 	const cellOrderSet = new SvelteSet<string>();
+	// Cell keys grouped by row, so dropping a row does not have to scan every
+	// registered cell. Virtualized scrolling unmounts rows continuously, and a
+	// full scan there costs (rows unmounted x total cells) per frame.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a lookup index, not state: see the note above on the per-frame cost.
+	const cellKeysByRowToken = new Map<string, Set<string>>();
 	let orderedRowTokensCache: { header: string[] | null; body: string[] | null } = {
 		header: null,
 		body: null
@@ -440,7 +445,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let layoutEpoch = $state(0);
 	let selectionEpoch = $state(0);
 	let widthEpoch = $state(0);
-	const instanceCounters = new SvelteMap<string, number>();
+	// Plain Map on purpose. These counters only ever mint unique tokens; nothing
+	// reads them reactively. As a SvelteMap every row and every cell created a
+	// reactive source on mount — hundreds per scroll tick — and in dev each of
+	// those costs a stack capture (`get_stack` was 58% of mount in the profile).
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- see the note above: reactive here cost 58% of mount time.
+	const instanceCounters = new Map<string, number>();
 	const selectionUnavailableDescriptionId = createInstanceToken('selection-unavailable');
 	setSelectedKeys(
 		new SvelteSet(initialSelectedKeys),
@@ -544,8 +554,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		columnWidthsCache = null;
 		visibleColumnWidthsCache = null;
 		resolvedVisibleColumnWidthsCache = null;
-		measuredTableWidthCache = undefined;
-		hasMeasuredTableWidthCache = false;
+		// The measured *container* width is deliberately NOT invalidated here.
+		// It is the stable reference fr/% resolution is built on (see
+		// `getMeasuredTableWidth`), and setting a column width cannot change it —
+		// only a real container/window resize can, which arrives through
+		// `refreshMeasuredLayout`. Clearing it on every width write made each
+		// resize frame re-run `getBoundingClientRect` + `getComputedStyle`
+		// immediately after writing new widths: a forced synchronous layout per
+		// frame, which profiled as ~87% of the column-drag cost.
 		if (!widthNotifyScheduled) {
 			widthNotifyScheduled = true;
 			queueMicrotask(() => {
@@ -864,9 +880,17 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getResolvedBodyCellsForRow(rowToken: string) {
-		return Array.from(cells.values()).filter(
-			(cell): cell is ResolvedCellTarget => cell.section === 'body' && cell.rowToken === rowToken
-		);
+		const rowCellKeys = cellKeysByRowToken.get(rowToken);
+		if (!rowCellKeys) return [];
+
+		const rowCells: ResolvedCellTarget[] = [];
+		for (const key of rowCellKeys) {
+			const cell = cells.get(key);
+			if (cell?.section === 'body') {
+				rowCells.push(cell);
+			}
+		}
+		return rowCells;
 	}
 
 	function registerColumn(column: TableColumnMetadata) {
@@ -1738,11 +1762,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 		headerRowOrderSet.delete(token);
 		bodyRowOrderSet.delete(token);
-		for (const [key, cell] of cells.entries()) {
-			if (cell.rowToken === token) {
+		const rowCellKeys = cellKeysByRowToken.get(token);
+		if (rowCellKeys) {
+			for (const key of rowCellKeys) {
 				cells.delete(key);
 				cellOrderSet.delete(key);
 			}
+			cellKeysByRowToken.delete(token);
 		}
 		if (row && focusedCellKey) {
 			const focusedCell = resolveCellTargetByKey(focusedCellKey);
@@ -1957,6 +1983,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return;
 		}
 		cells.set(cell.key, cell);
+		indexCellByRow(cell);
 		seedDefaultFocusKeyFromCell(cell);
 		if (!alreadyOrdered) {
 			cellOrderSet.add(cell.key);
@@ -1969,9 +1996,30 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 	}
 
+	function indexCellByRow(cell: TableCellRegistration) {
+		const existing = cellKeysByRowToken.get(cell.rowToken);
+		if (existing) {
+			existing.add(cell.key);
+			return;
+		}
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a bucket inside the non-reactive index above.
+		cellKeysByRowToken.set(cell.rowToken, new Set([cell.key]));
+	}
+
+	function unindexCellByRow(cell: TableCellRegistration | undefined) {
+		if (!cell) return;
+		const keys = cellKeysByRowToken.get(cell.rowToken);
+		if (!keys) return;
+		keys.delete(cell.key);
+		if (keys.size === 0) {
+			cellKeysByRowToken.delete(cell.rowToken);
+		}
+	}
+
 	function unregisterCell(key: string) {
 		defaultFocusKeyCache = undefined;
 		const cell = cells.get(key);
+		unindexCellByRow(cell);
 		cells.delete(key);
 		cellOrderSet.delete(key);
 		if (focusedCellKey === key) {

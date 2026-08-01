@@ -9,6 +9,7 @@
 		id,
 		open: openProp = $bindable(),
 		defaultOpen = false,
+		controlledOpen = false,
 		onOpenChange,
 		disabled = false,
 		children,
@@ -18,18 +19,22 @@
 		...restProps
 	}: CollapsibleRootProps = $props();
 
-	const isControlled = untrack(() => openProp !== undefined);
 	const instanceId = untrack(() => id) ?? generatedId;
 
 	let rootRef: HTMLDivElement | null = $state(null);
 	let internalOpen = $state(untrack(() => defaultOpen));
 
-	const isOpen = $derived(isControlled ? Boolean(openProp) : internalOpen);
+	// `open` wins whenever it is supplied — that covers both `bind:open` and a plain
+	// `open={...}` — and the internal state only carries the fully uncontrolled case.
+	// Controlled-ness is NOT inferred from `open` being defined: `bind:open={value}` and
+	// `open={value}` are indistinguishable at runtime, so inferring it silently broke
+	// every `bind:open` seeded with `false`. It is opt-in via `controlledOpen` instead.
+	const isOpen = $derived(controlledOpen ? Boolean(openProp) : (openProp ?? internalOpen));
 
 	function setOpen(next: boolean) {
 		if (disabled || next === isOpen) return;
-		if (!isControlled) {
-			// Uncontrolled: apply the change and keep `bind:open` in sync.
+		if (!controlledOpen) {
+			// Apply the change and keep `bind:open` in sync.
 			internalOpen = next;
 			openProp = next;
 		}

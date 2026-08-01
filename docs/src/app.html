@@ -12,6 +12,15 @@
 			if (theme === 'dark' || (!theme && matchMedia('(prefers-color-scheme: dark)').matches)) {
 				document.documentElement.classList.add('dark');
 			}
+
+			// Anti-FOUC: apply the persisted package-manager choice before paint, so the
+			// install snippets render the right command + pressed tab on the first frame
+			// instead of flashing 'pnpm' → the stored choice after hydration. The rules in
+			// theme.css read <html data-pm>. Must stay in sync with
+			// package-manager.svelte.ts (same key + managers).
+			const pm = localStorage.getItem('docs:pm');
+			document.documentElement.dataset.pm =
+				pm === 'npm' || pm === 'yarn' || pm === 'bun' ? pm : 'pnpm';
 		</script>
 		%sveltekit.head%
 	</head>

@@ -2,6 +2,7 @@
 	import { untrack, type Snippet } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { dev } from '../../internal/environment';
+	import { foldForSearch } from '../../primitives/text';
 	import {
 		setComboBoxContext,
 		type ComboBoxContext,
@@ -25,15 +26,26 @@
 		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
 		value?: string | number | null | (string | number)[];
 		defaultValue?: string | number | null | (string | number)[];
+		/**
+		 * Opt into fully controlled selection: the component stops writing back to `value`
+		 * and only reports through `onChange`, so the parent can reject a change by not
+		 * flowing the new value back down. Off by default, because `bind:value` — the
+		 * common case — needs the write-back to work at all.
+		 */
+		controlledValue?: boolean;
 		/** Current input value. Can be bound with bind:inputValue */
 		inputValue?: string;
 		defaultInputValue?: string;
+		/** Opt into fully controlled input text. See `controlledValue`. */
+		controlledInputValue?: boolean;
 		selectionBehavior?: 'toggle' | 'replace';
 		selectionMode?: 'single' | 'multiple';
 		/** Whether to close popover after selection. Default: true for single, false for multiple */
 		closeOnSelect?: boolean;
 		/** Whether the popover is open. Can be bound with bind:open */
 		open?: boolean;
+		/** Opt into fully controlled open state. See `controlledValue`. */
+		controlledOpen?: boolean;
 		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
 		trigger?: 'focus' | 'input' | 'press';
 		/** Function used to filter items locally. Set to null to disable local filtering. */
@@ -62,12 +74,15 @@
 		readonly = false,
 		value = $bindable(),
 		defaultValue,
+		controlledValue = false,
 		inputValue = $bindable(),
 		defaultInputValue = '',
+		controlledInputValue = false,
 		selectionBehavior,
 		selectionMode = 'single',
 		closeOnSelect,
 		open: openProp = $bindable(),
+		controlledOpen = false,
 		trigger = 'press',
 		filter = defaultComboBoxFilter,
 		filterActionItems = true,
@@ -81,8 +96,16 @@
 		'aria-labelledby': ariaLabelledby
 	}: ComboBoxProps<T> = $props();
 
+	/**
+	 * Substring match, blind to case *and* to accents: typing `tulua` finds `TULUÁ` and
+	 * `medellin` finds `MEDELLÍN`.
+	 *
+	 * Folding the diacritics is not a nicety in a language that has them — a list of Colombian
+	 * municipalities is unusable when the user has to reproduce every accent to find a row,
+	 * and nobody types them into a search box.
+	 */
 	function defaultComboBoxFilter(textValue: string, inputValue: string) {
-		return textValue.toLowerCase().includes(inputValue.trim().toLowerCase());
+		return foldForSearch(textValue).includes(foldForSearch(inputValue.trim()));
 	}
 
 	const instanceId = untrack(() => rootId) ?? generatedInstanceId;
@@ -101,11 +124,21 @@
 	let listboxRef: HTMLElement | null = $state(null);
 
 	let isOpenInternal = $state(false);
+	// Set by ComboBox.List when it virtualizes. Only then is the DOM an incomplete picture of
+	// the list, so only then does navigation switch to the item array.
+	let isListVirtualized = $state(false);
 
-	// Use virtual focus hook for navigation
+	// Use virtual focus hook for navigation.
+	//
+	// `orderedIds` matters for a virtualized list: without it the hook reads the order off
+	// the DOM, and a virtualized listbox only has the rows near the viewport mounted — so
+	// End would land on the last *rendered* option and ArrowDown would stop at the edge of
+	// the window. When `items` is given, the array is the authority on order and length,
+	// mounted or not.
 	const navigation = useVirtualFocus({
 		instanceId,
-		containerRef: () => listboxRef
+		containerRef: () => listboxRef,
+		orderedIds: () => (isListVirtualized && items ? filteredItemIds : undefined)
 	});
 
 	// Persistent label of the selected item (for restore on blur/escape)
@@ -233,26 +266,63 @@
 	let inputValueInternal = $state(getInitialInputValue());
 	let selectedInternal = $state<Set<string | number>>((() => parseSelection(defaultValue))());
 
-	// Reactive controlled mode checks - if prop changes from undefined to defined, behavior updates
-	const isOpenControlled = $derived(openProp !== undefined);
-	const isInputControlled = $derived(inputValue !== undefined);
-	const isSelectionControlled = $derived(value !== undefined);
+	// Controlled-ness is opt-in per prop, not inferred from the prop being defined:
+	// `bind:value` and `value={...}` are indistinguishable at runtime. These used to be
+	// inferred, and every write below ignored the result anyway — so a controlled parent
+	// could not reject anything; the combobox moved regardless of what `onChange` decided.
+	const isOpenControlled = $derived(controlledOpen);
+	const isInputControlled = $derived(controlledInputValue);
+	const isSelectionControlled = $derived(controlledValue);
 
-	const currentIsOpen = $derived(isOpenControlled ? openProp! : isOpenInternal);
-	const currentInputValue = $derived(isInputControlled ? inputValue! : inputValueInternal);
+	// The prop wins whenever it is supplied — that covers both `bind:` and a plain
+	// value — and the internal state only carries the fully uncontrolled case.
+	const currentIsOpen = $derived(
+		isOpenControlled ? Boolean(openProp) : (openProp ?? isOpenInternal)
+	);
+	const currentInputValue = $derived(
+		isInputControlled ? inputValue! : (inputValue ?? inputValueInternal)
+	);
 	const currentSelection = $derived(
-		isSelectionControlled ? parseSelection(value) : selectedInternal
+		isSelectionControlled || value !== undefined ? parseSelection(value) : selectedInternal
 	);
 
 	// Input value used for filtering - empty when shouldFilter is false
 	const filterValue = $derived(shouldFilter ? currentInputValue : '');
 
+	/**
+	 * The items that pass the local filter, in order.
+	 *
+	 * Filtering normally happens per item (each `ComboBox.Item` hides itself), which cannot
+	 * work when the list is virtualized: an item that was never rendered can neither hide nor
+	 * count itself. Resolving it here — the same predicate, applied to the array — gives the
+	 * listbox something to slice and the navigation something to walk.
+	 */
+	const filteredItems = $derived.by(() => {
+		if (!items) return [];
+
+		const search = filterValue.trim();
+		if (!search || filter === null) return items;
+
+		return items.filter((item) => {
+			const textValue = getInternalItemTextValue(item);
+			return textValue === undefined ? true : filter(textValue, filterValue);
+		});
+	});
+
+	const filteredItemIds = $derived(
+		filteredItems
+			.map((item) => getInternalItemValue(item))
+			.filter((id): id is string | number => id !== undefined)
+	);
+
 	function setIsOpen(open: boolean) {
 		// No-op guard: prevents duplicate onOpenChange notifications when close
 		// is requested twice (e.g. Escape closing and then blur handling).
 		if (open === currentIsOpen) return;
-		isOpenInternal = open;
-		openProp = open; // Update bindable prop
+		if (!isOpenControlled) {
+			isOpenInternal = open;
+			openProp = open; // Update bindable prop
+		}
 		onOpenChange?.(open);
 		// Reset focus and pending when closing
 		if (!open) {
@@ -264,8 +334,10 @@
 	function setInputValueHandler(val: string) {
 		// Clear tag virtual focus when typing
 		focusedTagId = null;
-		inputValueInternal = val;
-		inputValue = val; // Update bindable prop
+		if (!isInputControlled) {
+			inputValueInternal = val;
+			inputValue = val; // Update bindable prop
+		}
 		onInputChange?.(val); // Notify parent of input change
 		// Reset focus when filter changes (user typing)
 		navigation.setFocused(null);
@@ -279,21 +351,20 @@
 		// In multiple mode, selections are managed via tags, not input
 		if (selectionMode === 'single' && val.trim() === '' && currentSelection.size > 0) {
 			const emptySelection = new Set<string | number>();
-			selectedInternal = emptySelection;
-			if (isSelectionControlled) {
-				onChange?.(toExternalValue(emptySelection));
-			} else {
+			if (!isSelectionControlled) {
 				selectedInternal = emptySelection;
-				onChange?.(toExternalValue(emptySelection));
+				value = toExternalValue(emptySelection);
 			}
-			value = toExternalValue(emptySelection);
+			onChange?.(toExternalValue(emptySelection));
 			selectedLabel = '';
 		}
 	}
 
 	function syncInputValue(val: string, options?: { notifyInputChange?: boolean }) {
-		inputValueInternal = val;
-		inputValue = val;
+		if (!isInputControlled) {
+			inputValueInternal = val;
+			inputValue = val;
+		}
 
 		if (options?.notifyInputChange ?? true) {
 			onInputChange?.(val);
@@ -381,15 +452,12 @@
 			}
 		}
 
-		selectedInternal = newSelection;
-		if (isSelectionControlled) {
-			onChange?.(toExternalValue(newSelection));
-		} else {
+		if (!isSelectionControlled) {
 			selectedInternal = newSelection;
-			onChange?.(toExternalValue(newSelection));
+			// Update bindable value
+			value = toExternalValue(newSelection);
 		}
-		// Update bindable value
-		value = toExternalValue(newSelection);
+		onChange?.(toExternalValue(newSelection));
 	}
 
 	function removeItem(id: string | number) {
@@ -403,14 +471,11 @@
 		// Remove from persistent labels
 		selectedLabels.delete(id);
 
-		selectedInternal = newSelection;
-		if (isSelectionControlled) {
-			onChange?.(toExternalValue(newSelection));
-		} else {
+		if (!isSelectionControlled) {
 			selectedInternal = newSelection;
-			onChange?.(toExternalValue(newSelection));
+			value = toExternalValue(newSelection);
 		}
-		value = toExternalValue(newSelection);
+		onChange?.(toExternalValue(newSelection));
 
 		// Clear selectedLabel if we removed the last item
 		if (newSelection.size === 0) {
@@ -421,19 +486,18 @@
 	function clearSelection() {
 		const emptySelection = new Set<string | number>();
 
-		selectedInternal = emptySelection;
-		if (isSelectionControlled) {
-			onChange?.(toExternalValue(emptySelection));
-		} else {
+		if (!isSelectionControlled) {
 			selectedInternal = emptySelection;
-			onChange?.(toExternalValue(emptySelection));
+			value = toExternalValue(emptySelection);
 		}
-		value = toExternalValue(emptySelection);
+		onChange?.(toExternalValue(emptySelection));
 		selectedLabel = '';
 
 		// Also clear the input
-		inputValueInternal = '';
-		inputValue = '';
+		if (!isInputControlled) {
+			inputValueInternal = '';
+			inputValue = '';
+		}
 		onInputChange?.('');
 	}
 
@@ -906,6 +970,15 @@
 		},
 		get items() {
 			return items;
+		},
+		get filteredItems() {
+			return filteredItems;
+		},
+		get filteredItemIds() {
+			return filteredItemIds;
+		},
+		setVirtualized: (virtualized) => {
+			isListVirtualized = virtualized;
 		},
 		setInputRef: (el) => {
 			inputRef = el;

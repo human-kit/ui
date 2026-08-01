@@ -6,6 +6,13 @@ export type DatePickerDraftStatus =
 
 export type DatePickerDraftEvaluation = {
 	status: DatePickerDraftStatus;
+	/**
+	 * The date the segments spell, or `null` when they don't spell one yet (empty,
+	 * half-typed, or something like 31/02). A date the bounds reject still lands here —
+	 * it exists, it's just not selectable — so a consumer can choose between publishing
+	 * it as an invalid selection and discarding it. `isCommitable` is the gate for that
+	 * choice; it stays false for a rejected date.
+	 */
 	value: DatePickerDateValue | null;
 	isCommitable: boolean;
 	isInvalid: boolean;
@@ -57,7 +64,7 @@ export function evaluateDatePickerDraft(
 	if (options.isDateOutOfRange(candidate)) {
 		return {
 			status: 'out-of-range',
-			value: null,
+			value: candidate,
 			isCommitable: false,
 			isInvalid: true
 		};
@@ -66,7 +73,7 @@ export function evaluateDatePickerDraft(
 	if (options.isDateUnavailable(candidate)) {
 		return {
 			status: 'unavailable',
-			value: null,
+			value: candidate,
 			isCommitable: false,
 			isInvalid: true
 		};
