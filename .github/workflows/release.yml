@@ -80,3 +80,26 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # `changeset publish` creates the `@human-kit/ui@<version>` tags locally.
+      # `changesets/action` used to push them; nothing else here would, and the
+      # releases timeline below reads its dates from exactly those tags.
+      - name: Push tags
+        run: git push origin --tags
+
+      # The docs "Releases" page is generated from the changelog into a committed
+      # JSON file, and the script has always been a manual "re-run after a
+      # release" — so 1.0.0-beta.1 shipped without appearing on the page. It runs
+      # AFTER publish because it resolves each version's date from its git tag,
+      # which does not exist until then.
+      - name: Refresh the releases timeline
+        run: |
+          node scripts/gen-releases.mjs
+
+          if git diff --quiet; then
+            echo "Releases timeline already current."
+          else
+            git add docs/src/lib/docs/releases-data.json
+            git commit -m "docs: refresh the releases timeline"
+            git push origin HEAD:main
+          fi
