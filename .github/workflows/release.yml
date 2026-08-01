@@ -9,15 +9,21 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+# `contents: write` is the whole permission surface: version, commit, push, publish.
+# There is no `pull-requests: write` because nothing here opens a pull request —
+# see the note on the version step.
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # `changeset version` reads the tags to work out what is already released.
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -28,13 +34,49 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Create Release PR or Publish
-        uses: changesets/action@v1
-        with:
-          version: pnpm exec changeset version
-          publish: pnpm run release
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # Versions and pushes straight to main rather than opening a release PR.
+      #
+      # `changesets/action` opens that PR with the default GITHUB_TOKEN, which
+      # GitHub refuses unless "Allow GitHub Actions to create and approve pull
+      # requests" is enabled — and that single switch also grants approval, letting
+      # a workflow approve its own PR. Publishing directly needs none of it.
+      #
+      # No loop: a push made with GITHUB_TOKEN does not trigger another workflow
+      # run, which is exactly why the publish has to happen in this same run.
+      - name: Version
         env:
+          # Not optional: the changelog generator is `@changesets/changelog-github`,
+          # which calls the API to turn each changeset into a line crediting a PR
+          # and an author. Without a token `changeset version` aborts before
+          # touching anything — which is how the old workflow got one, through the
+          # action's env.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm exec changeset version
+
+          # Counting `.changeset/*.md` would be wrong: in prerelease mode consumed
+          # changesets stay on disk and are tracked in `pre.json` instead. Asking
+          # whether the version command actually changed anything holds in both
+          # modes.
+          if git diff --quiet; then
+            echo "No unreleased changesets — nothing to version."
+          else
+            git add -A
+            git commit -m "chore: version packages"
+            git push origin HEAD:main
+          fi
+
+      # Runs even when nothing was versioned: `changeset publish` skips versions
+      # already on npm, so it is a no-op then — and it recovers a release whose
+      # version commit landed but whose publish did not.
+      - name: Publish
+        run: pnpm run release
+        env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
