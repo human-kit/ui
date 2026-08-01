@@ -317,6 +317,13 @@ describe('DatePicker.Root', () => {
 		await userEvent.keyboard('{Backspace}{Backspace}16');
 		await expect.poll(reportedValue).toBe('2026-02-16');
 
+		// Focus the day segment again rather than assuming where typing left it.
+		// Completing a segment advances to the NEXT one, and which one that is depends
+		// on the locale: day/month/year puts the caret on the month, month/day/year on
+		// the year. Two backspaces empty a two-digit month, but only trim a four-digit
+		// year down to `20` — so the same keystrokes cleared the value on the author's
+		// machine and reported `0020-02-16` on CI.
+		daySegment.element()?.focus();
 		await userEvent.keyboard('{Backspace}{Backspace}');
 
 		await expect.poll(reportedValue).toBe('');
