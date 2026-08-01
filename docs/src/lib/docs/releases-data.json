@@ -1,5 +1,21 @@
 [
 	{
+		"version": "1.0.0-beta.2",
+		"date": "2026-08-01T17:34:05.494Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 64,
+						"prUrl": "https://github.com/human-kit/ui/pull/64",
+						"html": "<p>Export the table cell context, <code>TableRowItem</code> and <code>TableRowFocusEdge</code> from <code>@human-kit/ui/table</code>.</p>\n<p><code>useTableCellContext</code> (and its <code>get</code>/<code>set</code> pair, plus the <code>TableCellContext</code> type) were defined\nalongside the table, row and column contexts but left out of the subpath's barrel. Every other\nlevel of the grid was reachable; the cell was the one that forced consumers to deep-import\n<code>table/root/context.svelte.js</code>, a path outside the package's <code>exports</code> map — so it typechecked\nonly against the source, never against the published package.</p>\n<p>Two type-level gaps of the same kind are closed with it. <code>TableRowItem</code> is the constraint on the\nalready-exported <code>TableBodyProps&lt;T extends TableRowItem&gt;</code>, and <code>TableRowFocusEdge</code> is the second\nparameter of <code>focusRowByToken</code> and <code>setFocusedRow</code> on the already-exported <code>TableContext</code>. Both\nwere unnameable from outside the package, which made the surfaces that use them impossible to\nannotate or wrap.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.1",
 		"date": "2026-08-01T11:46:07-03:00",
 		"sections": [
