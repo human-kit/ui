@@ -1,0 +1,8 @@
+# Uploaded to Vercel only to be built there — none of this is needed for the build.
+node_modules
+.svelte-kit
+docs/.svelte-kit
+docs/.vercel
+packages/ui/dist
+.playwright-mcp
+bench-results
