@@ -1,4 +1,21 @@
 name: Release
+#
+# Two paths, decided by whether there are unreleased changesets:
+#
+#   changesets pending → version, and push the result to `changeset-release/main`
+#                        for review. Merging that branch is what releases.
+#   none pending       → publish to npm, tag, and refresh the docs timeline.
+#
+# Deliberately does NOT open the pull request itself. That call is the one thing
+# GitHub refuses from the default token unless "Allow GitHub Actions to create and
+# approve pull requests" is on, and that single switch also grants approval —
+# letting a workflow approve its own PR. The branch push is allowed, so the job
+# pushes it and links the PR instead: one click, no new permission, no credential
+# to store and rotate.
+#
+# It also cannot push to `main` directly: the `main protection` ruleset requires a
+# reviewed pull request and only bypasses for admins, which the workflow token is
+# not. `changeset-release/main` carries no rules, which is why that push works.
 
 on:
   push:
@@ -9,15 +26,20 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+# The whole permission surface: push the release branch, publish, tag.
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # `changeset version` reads the tags to work out what is already
+          # released, and the docs timeline resolves its dates from them.
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -28,13 +50,66 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Create Release PR or Publish
-        uses: changesets/action@v1
-        with:
-          version: pnpm exec changeset version
-          publish: pnpm run release
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Version
+        id: version
         env:
+          # Not optional: the changelog generator is `@changesets/changelog-github`,
+          # which calls the API to turn each changeset into a line crediting a PR
+          # and an author. Without a token `changeset version` aborts before
+          # touching anything.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm exec changeset version
+
+          # Counting `.changeset/*.md` would be wrong: in prerelease mode consumed
+          # changesets stay on disk and are tracked in `pre.json` instead. Asking
+          # whether the version command actually changed anything holds in both
+          # modes.
+          if git diff --quiet; then
+            echo "versioned=false" >> "$GITHUB_OUTPUT"
+            echo "No unreleased changesets — nothing to version."
+            exit 0
+          fi
+
+          # Regenerated here rather than after publishing, because the release
+          # branch is the only thing this job can write and the timeline has to
+          # travel with the changelog it is built from.
+          node scripts/gen-releases.mjs
+
+          echo "versioned=true" >> "$GITHUB_OUTPUT"
+          git add -A
+          git commit -m "chore: version packages"
+          git push --force origin HEAD:changeset-release/main
+
+          VERSION=$(node -p "require('./packages/ui/package.json').version")
+          {
+            echo "### Release ready: \`$VERSION\`"
+            echo
+            echo "[Open the release pull request](${{ github.server_url }}/${{ github.repository }}/compare/main...changeset-release/main?expand=1)"
+            echo
+            echo "Merging it publishes to npm."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Only when there was nothing left to version — that is, the release branch
+      # has been merged. `changeset publish` skips versions already on npm, so a
+      # rerun is a no-op, and it recovers a release whose version commit landed
+      # but whose publish did not.
+      - name: Publish
+        if: steps.version.outputs.versioned == 'false'
+        run: pnpm run release
+        env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # `changeset publish` creates the `@human-kit/ui@<version>` tags locally and
+      # `changesets/action` used to push them; nothing else here would. Tags are
+      # not covered by the branch ruleset, so this is allowed.
+      - name: Push tags
+        if: steps.version.outputs.versioned == 'false'
+        run: git push origin --tags

@@ -101,9 +101,16 @@ function tagDate(v) {
 	return null;
 }
 
+// The newest version has no tag yet when this runs as part of the release: the
+// version bump is committed first and `changeset publish` only tags once the
+// package is on npm. Falling back to now keeps that entry dated — off by the
+// minutes between the two — instead of rendering without a date. Every earlier
+// version is tagged, so the fallback applies to at most one entry.
+const generatedAt = new Date().toISOString();
+
 const data = versions.map((v) => ({
 	version: v.version,
-	date: tagDate(v.version),
+	date: tagDate(v.version) ?? generatedAt,
 	sections: v.sections.map((s) => ({
 		type: s.type.replace(/ Changes$/, ''), // "Minor Changes" → "Minor"
 		entries: s.entries.map(renderEntry)
