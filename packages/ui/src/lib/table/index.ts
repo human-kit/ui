@@ -54,7 +54,12 @@ export {
 	getTableColumnContext,
 	setTableColumnContext,
 	useTableColumnContext,
+	getTableCellContext,
+	setTableCellContext,
+	useTableCellContext,
 	type TableContext,
+	type TableRowItem,
+	type TableRowFocusEdge,
 	type TableDisabledBehavior,
 	type TableSelectionBehavior,
 	type TableSelectionCheckboxState,
@@ -71,6 +76,7 @@ export {
 	type TableSectionContext,
 	type TableRowContext,
 	type TableColumnContext,
+	type TableCellContext,
 	type CreateTableContextOptions,
 	DEFAULT_TABLE_COLUMN_MIN_WIDTH
 } from './root/context.svelte';
