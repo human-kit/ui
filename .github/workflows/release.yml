@@ -95,6 +95,21 @@ jobs:
             echo "Merging it publishes to npm."
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # `changeset publish` authenticates through an `.npmrc`, and nothing else
+      # here writes one: the repo ships none, and `actions/setup-node` only
+      # generates one when given `registry-url`. `changesets/action` used to do
+      # this itself, which is why it was invisible until that action was dropped —
+      # an unauthenticated publish comes back as `E404 undefined`, because npm
+      # masks "you may not publish here" as "no such package".
+      #
+      # Written to $HOME rather than the workspace so it cannot be committed by a
+      # later step, and only on the branch that actually publishes.
+      - name: Authenticate with npm
+        if: steps.version.outputs.versioned == 'false'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > "$HOME/.npmrc"
+
       # Only when there was nothing left to version — that is, the release branch
       # has been merged. `changeset publish` skips versions already on npm, so a
       # rerun is a no-op, and it recovers a release whose version commit landed
