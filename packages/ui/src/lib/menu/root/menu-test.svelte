@@ -6,6 +6,8 @@
 		closeOnSelect?: boolean;
 		onAction?: (value: string) => void;
 		withSubmenu?: boolean;
+		/** Applied to the submenu panel, so a test can size it against the viewport. */
+		submenuClass?: string;
 		loop?: boolean;
 		typeahead?: boolean;
 		onOpenChange?: (open: boolean, details: MenuOpenChangeDetails) => void;
@@ -16,6 +18,7 @@
 		closeOnSelect = true,
 		onAction,
 		withSubmenu = false,
+		submenuClass,
 		loop = true,
 		typeahead = true,
 		onOpenChange,
@@ -39,7 +42,7 @@
 		{#if withSubmenu}
 			<Menu.SubmenuRoot onOpenChange={onSubmenuOpenChange}>
 				<Menu.SubmenuTrigger value="more">More actions</Menu.SubmenuTrigger>
-				<Menu.Content>
+				<Menu.Content class={submenuClass}>
 					<Menu.Item value="archive" onAction={() => onAction?.('archive')}>Archive</Menu.Item>
 					<Menu.Item value="rename" onAction={() => onAction?.('rename')}>Rename</Menu.Item>
 				</Menu.Content>

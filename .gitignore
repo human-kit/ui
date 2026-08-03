@@ -32,3 +32,6 @@ bun.lock
 bun.lockb
 package-lock.json
 yarn.lock
+
+# Playwright MCP scratch output (snapshots, console logs)
+.playwright-mcp/

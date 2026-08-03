@@ -351,6 +351,38 @@ describe('Menu', () => {
 			await expect.poll(() => queryMenus().length).toBe(0);
 		});
 
+		it('keeps a submenu on screen when it fits on neither side of its trigger', async () => {
+			// Submenus open `right-start` and flip to `left-start`. Both are horizontal
+			// placements, where `shift`'s main axis is vertical — so the middleware that
+			// normally rescues an over-wide dropdown does nothing horizontally, and a
+			// panel too wide for either side was left wherever the placement put it,
+			// which for `left-start` is off the left edge of the screen entirely.
+			// Sized through a class, not a `style` prop: `Menu.Content` spreads its rest
+			// props after its own `style`, so passing one drops `position: fixed` and
+			// takes the panel out of the positioning system entirely — which satisfies
+			// these assertions for the wrong reason. Widening it after mount is no good
+			// either: the panel grows from its existing origin without a reposition, so
+			// the numbers come out identical whatever the middleware does.
+			const style = document.createElement('style');
+			style.textContent = '.hk-wide-submenu { min-width: 90vw; }';
+			document.head.append(style);
+
+			try {
+				const screen = render(MenuTest, { withSubmenu: true, submenuClass: 'hk-wide-submenu' });
+				const { submenu } = await openWithSubmenu(screen);
+
+				await expect
+					.poll(() => submenu.getBoundingClientRect().width)
+					.toBeGreaterThan(window.innerWidth / 2);
+
+				const rect = submenu.getBoundingClientRect();
+				expect(rect.left).toBeGreaterThanOrEqual(0);
+				expect(rect.right).toBeLessThanOrEqual(window.innerWidth);
+			} finally {
+				style.remove();
+			}
+		});
+
 		it('keeps the submenu open while the pointer travels toward it, then closes after the grace period', async () => {
 			const screen = render(MenuTest, { withSubmenu: true });
 			const { root, geo } = await openWithSubmenu(screen);
