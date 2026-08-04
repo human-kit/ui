@@ -5,6 +5,7 @@ import type {
 	TableColumnWidth,
 	TableContext,
 	TableDisabledBehavior,
+	TableKeyboardNavigation,
 	TableRowActionHandler,
 	TableRowItem,
 	TableSelectionBehavior,
@@ -118,6 +119,17 @@ export type TableFooterProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'ch
 
 export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> & {
 	selectionMode?: TableSelectionMode;
+	/**
+	 * How far the roving tab stop reaches into the body, defaulting to `'grid'`.
+	 *
+	 * Cell navigation is not free: every body cell registers itself and derives
+	 * its own focus state, and a virtualized table pays that again on every
+	 * scroll block. `'row'` keeps the body keyboard-reachable at one focus
+	 * target per row; `'none'` drops body focus altogether and should only be
+	 * used when nothing in the body is actionable. The header keeps its own
+	 * navigation — and with it sorting and resizing — in every mode.
+	 */
+	keyboardNavigation?: TableKeyboardNavigation;
 	selectionBehavior?: TableSelectionBehavior;
 	disabledBehavior?: TableDisabledBehavior;
 	disallowEmptySelection?: boolean;

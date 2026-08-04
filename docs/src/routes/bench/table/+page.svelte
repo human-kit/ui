@@ -24,12 +24,15 @@
 		rows: 500,
 		columns: 8,
 		selectionMode: 'multiple',
+		keyboardNavigation: 'grid',
 		resizable: true,
 		pinFirstColumn: false,
 		virtualized: true,
 		rowHeight: 32,
 		overscan: undefined,
 		cellVariant: 'rich',
+		columnWidth: undefined,
+		horizontalWindow: false,
 		viewportHeight: 640
 	};
 
@@ -53,6 +56,8 @@
 		const overscanRaw = params.get('overscan');
 		const selectionMode = params.get('selection');
 		const cellVariant = params.get('cells');
+		const keyboardNavigation = params.get('nav');
+		const columnWidthRaw = params.get('colWidth');
 
 		return {
 			rows: int('rows', DEFAULT_CONFIG.rows),
@@ -61,13 +66,25 @@
 				selectionMode === 'none' || selectionMode === 'single' || selectionMode === 'multiple'
 					? selectionMode
 					: DEFAULT_CONFIG.selectionMode,
+			keyboardNavigation:
+				keyboardNavigation === 'grid' ||
+				keyboardNavigation === 'row' ||
+				keyboardNavigation === 'none'
+					? keyboardNavigation
+					: DEFAULT_CONFIG.keyboardNavigation,
 			resizable: bool('resizable', DEFAULT_CONFIG.resizable),
 			pinFirstColumn: bool('pin', DEFAULT_CONFIG.pinFirstColumn),
 			virtualized: bool('virtualized', DEFAULT_CONFIG.virtualized),
 			rowHeight: int('rowHeight', DEFAULT_CONFIG.rowHeight),
 			overscan:
 				overscanRaw === null ? DEFAULT_CONFIG.overscan : Number.parseInt(overscanRaw, 10) || 0,
-			cellVariant: cellVariant === 'text' || cellVariant === 'rich' ? cellVariant : 'rich',
+			cellVariant:
+				cellVariant === 'text' || cellVariant === 'wrap' || cellVariant === 'rich'
+					? cellVariant
+					: 'rich',
+			columnWidth:
+				columnWidthRaw === null ? DEFAULT_CONFIG.columnWidth : Number.parseInt(columnWidthRaw, 10),
+			horizontalWindow: bool('hvirt', DEFAULT_CONFIG.horizontalWindow),
 			viewportHeight: int('viewportHeight', DEFAULT_CONFIG.viewportHeight)
 		};
 	}
@@ -133,6 +150,45 @@
 	});
 
 	const columnIds = $derived(Array.from({ length: config.columns }, (_, index) => `col${index}`));
+
+	// Horizontal virtualization prototype. Built entirely on the public API: the
+	// columns outside the viewport are replaced by one spacer column per side
+	// holding their combined width, so the table keeps its total width and the
+	// positional cell↔column mapping stays consistent between header and body.
+	let scrollLeft = $state(0);
+
+	$effect(() => {
+		const container = scrollContainer;
+		if (!container) return;
+
+		const onScroll = () => {
+			scrollLeft = container.scrollLeft;
+		};
+		container.addEventListener('scroll', onScroll, { passive: true });
+		return () => container.removeEventListener('scroll', onScroll);
+	});
+
+	const columnWindow = $derived.by(() => {
+		const width = config.columnWidth;
+		if (!config.horizontalWindow || !width) {
+			return { from: 0, to: config.columns, leadWidth: 0, tailWidth: 0 };
+		}
+
+		const selectionWidth = config.selectionMode === 'none' ? 0 : 44;
+		const viewportWidth = scrollContainer?.clientWidth ?? 1440;
+		// One column of buffer per side, same idea as the row overscan.
+		const from = Math.max(0, Math.floor((scrollLeft - selectionWidth) / width) - 1);
+		const to = Math.min(config.columns, Math.ceil((scrollLeft + viewportWidth) / width) + 1);
+
+		return {
+			from,
+			to,
+			leadWidth: from * width,
+			tailWidth: (config.columns - to) * width
+		};
+	});
+
+	const windowColumnIds = $derived(columnIds.slice(columnWindow.from, columnWindow.to));
 	const virtualizer = $derived(
 		config.virtualized ? { rowHeight: config.rowHeight, overscan: config.overscan } : undefined
 	);
@@ -492,6 +548,7 @@
 				aria-label="Benchmark table"
 				class="bench-table"
 				selectionMode={config.selectionMode}
+				keyboardNavigation={config.keyboardNavigation}
 				bind:selectedKeys
 				bind:sortDescriptor
 				bind:context={tableContext}
@@ -508,11 +565,20 @@
 							</Table.Column>
 						{/if}
 
-						{#each columnIds as columnId, index (columnId)}
+						{#if columnWindow.leadWidth > 0}
+							<Table.Column id="spacer-start" textValue="" width={columnWindow.leadWidth}>
+								<Table.ColumnHeaderCell class="bench-header-cell" aria-hidden="true"
+								></Table.ColumnHeaderCell>
+							</Table.Column>
+						{/if}
+
+						{#each windowColumnIds as columnId (columnId)}
+							{@const index = columnWindow.from + windowColumnIds.indexOf(columnId)}
 							<Table.Column
 								id={columnId}
 								textValue={`Column ${index}`}
 								rowHeader={index === 0}
+								width={config.columnWidth}
 								minWidth={120}
 								pin={config.pinFirstColumn && index === 0 ? 'left' : undefined}
 							>
@@ -529,6 +595,13 @@
 								</Table.ColumnHeaderCell>
 							</Table.Column>
 						{/each}
+
+						{#if columnWindow.tailWidth > 0}
+							<Table.Column id="spacer-end" textValue="" width={columnWindow.tailWidth}>
+								<Table.ColumnHeaderCell class="bench-header-cell" aria-hidden="true"
+								></Table.ColumnHeaderCell>
+							</Table.Column>
+						{/if}
 					</Table.Row>
 				</Table.Header>
 
@@ -543,17 +616,29 @@
 								</Table.Cell>
 							{/if}
 
-							{#each columnIds as columnId (columnId)}
+							{#if columnWindow.leadWidth > 0}
+								<Table.Cell class="bench-cell" aria-hidden="true"></Table.Cell>
+							{/if}
+
+							{#each windowColumnIds as columnId (columnId)}
 								<Table.Cell class="bench-cell">
 									{#if config.cellVariant === 'rich'}
 										<div class="bench-cell-inner" title={String(item[columnId])}>
 											<span class="bench-truncate">{item[columnId]}</span>
+										</div>
+									{:else if config.cellVariant === 'wrap'}
+										<div class="bench-cell-inner" title={String(item[columnId])}>
+											{item[columnId]}
 										</div>
 									{:else}
 										{item[columnId]}
 									{/if}
 								</Table.Cell>
 							{/each}
+
+							{#if columnWindow.tailWidth > 0}
+								<Table.Cell class="bench-cell" aria-hidden="true"></Table.Cell>
+							{/if}
 						</Table.Row>
 					{/snippet}
 				</Table.Body>

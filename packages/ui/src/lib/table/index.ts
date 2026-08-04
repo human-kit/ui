@@ -61,6 +61,7 @@ export {
 	type TableRowItem,
 	type TableRowFocusEdge,
 	type TableDisabledBehavior,
+	type TableKeyboardNavigation,
 	type TableSelectionBehavior,
 	type TableSelectionCheckboxState,
 	type TableSelectionKey,

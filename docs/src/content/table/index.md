@@ -55,6 +55,16 @@ Set `selectionMode="multiple"` (or `"single"`) and give every body row an `id`. 
 
 <Demo source={selectionSource}><Selection /></Demo>
 
+## Keyboard navigation
+
+`keyboardNavigation` decides how far the roving tab stop reaches into the body. It defaults to `"grid"`, the full ARIA grid pattern, where every body cell is a focus target — which is also its cost: each cell registers itself and derives its own focus state, and a virtualized table pays that again for every row it mounts while scrolling.
+
+- `"grid"` — arrows move cell by cell. Use it when the body is a working surface, not just a list.
+- `"row"` — the row is the only focus target in the body: arrows walk rows, `Enter` presses one and `Space` toggles its selection. One focus target per row instead of one per cell. Focusable content inside body cells (a `Table.Checkbox`, a link) becomes a regular tab stop, since no roving focus reaches it any more.
+- `"none"` — the body is inert to the keyboard. Only use it when nothing in it is actionable; a row that responds to a click needs a keyboard equivalent.
+
+The header keeps its own cell navigation in every mode, so sorting and column resizing stay reachable — it is a single row, so it costs nothing.
+
 ## Pagination
 
 Pagination stays consumer-owned: slice the dataset before rendering and drive the current page from external controls or app state.
@@ -74,6 +84,7 @@ Pagination stays consumer-owned: slice the dataset before rendering and drive th
 ## Accessibility
 
 - `Table.Root` renders an interactive `grid` over native table markup, and keyboard navigation uses roving `tabindex` across header and body cells.
+- `keyboardNavigation="row"` moves that roving tab stop from the cells to the rows, which is a supported grid focus pattern; `"none"` removes it from the body altogether, so reserve it for tables whose rows do nothing.
 - Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
 - First-column body cells become `rowheader` when their associated column has `rowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.

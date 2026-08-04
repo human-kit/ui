@@ -41,7 +41,12 @@ pnpm bench:table --compare bench-results/baseline.json bench-results/after.json
 
 Useful flags: `--throttle <n>` (CDP CPU throttling, default `4`, keeps results
 stable across machines), `--repeat <n>` (median run wins, default `3`),
-`--rows` / `--columns`, `--scenarios a,b`, `--no-profile`, `--headed`.
+`--rows` / `--columns`, `--nav <grid|row|none>` (the table's
+`keyboardNavigation`), `--scenarios a,b`, `--no-profile`, `--headed`.
+
+Flags that only change the URL — `--rows`, `--columns`, `--overscan`, `--nav` —
+can A/B against a single `--url` server, which is the cleanest comparison there
+is: same build, same process, one variable.
 
 **Do not edit files under `docs/` or `packages/ui/` while a run is in flight** —
 Vite's HMR reloads the page and the run dies with "execution context destroyed".

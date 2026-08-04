@@ -21,6 +21,8 @@
  *   --scenarios <a,b>    Subset of scenarios to run
  *   --rows <n>           Row count (default: 500)
  *   --columns <n>        Column count (default: 8)
+ *   --nav <mode>         Table keyboardNavigation: grid | row | none (default: grid)
+ *   --query <k=v>        Any other page config knob; repeatable
  *   --no-profile         Skip the CPU profile (faster, no attribution)
  *   --headed             Show the browser
  */
@@ -123,6 +125,8 @@ function parseArgs(argv) {
 		rows: 500,
 		columns: 8,
 		overscan: undefined,
+		nav: undefined,
+		query: new Map(),
 		profile: true,
 		headed: false,
 		compare: undefined
@@ -163,6 +167,17 @@ function parseArgs(argv) {
 			case '--overscan':
 				args.overscan = Number(next());
 				break;
+			case '--nav':
+				args.nav = next();
+				break;
+			// Escape hatch for the page config knobs that have no flag of their own
+			// (`cells`, `resizable`, `selection`, `pin`, `virtualized`, `rowHeight`,
+			// `viewportHeight`). Repeatable: --query cells=text --query resizable=0
+			case '--query': {
+				const [key, ...rest] = next().split('=');
+				args.query.set(key, rest.join('='));
+				break;
+			}
 			case '--no-profile':
 				args.profile = false;
 				break;
@@ -323,6 +338,8 @@ async function runBenchmark(args) {
 	const baseUrl = args.url ?? server.baseUrl;
 	const query = new URLSearchParams({ rows: String(args.rows), columns: String(args.columns) });
 	if (args.overscan !== undefined) query.set('overscan', String(args.overscan));
+	if (args.nav !== undefined) query.set('nav', args.nav);
+	for (const [key, value] of args.query) query.set(key, value);
 	const pageUrl = `${baseUrl}/bench/table?${query}`;
 
 	const browser = await chromium.launch({

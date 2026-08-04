@@ -13,6 +13,13 @@
 					"description": "Whether rows can be selected: 'none', 'single', or 'multiple'."
 				},
 				{
+					"name": "keyboardNavigation",
+					"type": "TableKeyboardNavigation",
+					"required": false,
+					"default": "'grid'",
+					"description": "How far the roving tab stop reaches into the body. 'grid' makes every body cell a focus target, which costs a registration plus focus state per cell — a virtualized table pays it again on every scroll block. 'row' keeps the body reachable at one focus target per row; 'none' drops body focus entirely and should only be used when nothing in the body is actionable. The header keeps its own navigation, and with it sorting and resizing, in every mode."
+				},
+				{
 					"name": "selectionBehavior",
 					"type": "TableSelectionBehavior",
 					"required": false,

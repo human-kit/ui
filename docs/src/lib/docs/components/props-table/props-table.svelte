@@ -12,7 +12,18 @@
 
 	// Prop / Type / Default share one grid template across the header and every
 	// row so the columns line up; the trailing `1rem` track holds the chevron.
-	const columns = 'grid grid-cols-[minmax(6rem,1fr)_minmax(8rem,1.4fr)_minmax(4rem,0.7fr)_1rem]';
+	//
+	// The name column's minimum has to clear the longest prop in the library
+	// (`shouldCloseOnInteractOutside`, measured at 185px / 11.6rem in this font),
+	// because these minimums are explicit: a track never grows past them to fit
+	// its content, so anything wider spills into the next column instead. At 6rem
+	// that was every long name on a phone, printed on top of its own type.
+	const columns = 'grid grid-cols-[minmax(12rem,1fr)_minmax(8rem,1.4fr)_minmax(4rem,0.7fr)_1rem]';
+
+	// 12 + 8 + 4 + 1 tracks, three 0.75rem gaps, and 0.75rem of padding a side.
+	// Set on the scroller's track so rows keep their borders and hover fills
+	// across the full scroll width rather than stopping at the viewport.
+	const trackMinWidth = 'min-w-[28.75rem]';
 
 	// Type syntax coloring: TS primitives get one hue, every other identifier
 	// (component types, DOM types, `function`, …) another, and punctuation stays
@@ -75,69 +86,76 @@
 	</span>
 {/snippet}
 
+<!-- The table is wider than a phone, so it scrolls horizontally inside its own
+     container; the page itself must never scroll sideways. Header and rows share
+     one scroller so they stay in step. -->
 <div class="not-prose overflow-hidden rounded-xl border">
-	<div
-		class="{columns} items-center gap-3 border-b bg-(--sink-bg) px-3 py-1.5 text-sm font-medium text-foreground"
-	>
-		<span>Prop</span>
-		<span>Type</span>
-		<span>Default</span>
-		<span></span>
-	</div>
-
-	{#each props as prop (prop.name)}
-		<!-- Each prop is a collapsible row: Prop / Type / Default stay visible, and
-		     the full detail (name, description, boxed type, default) is revealed on
-		     expand with the same height+opacity animation as the nav collapsibles. -->
-		<Collapsible.Root id="{part}-{prop.name}" class="border-b last:border-b-0">
-			<Collapsible.Trigger
-				class="{columns} group w-full items-center gap-3 px-3 py-1 text-left outline-none transition-colors hover:bg-(--press-bg) data-focus-visible:bg-(--press-bg)"
+	<div class="overflow-x-auto">
+		<div class={trackMinWidth}>
+			<div
+				class="{columns} items-center gap-3 border-b bg-(--sink-bg) px-3 py-1.5 text-sm font-medium text-foreground"
 			>
-				<span class="w-fit rounded bg-accent px-1.5 py-0.5 font-mono text-xs text-foreground">
-					{prop.name}{prop.required ? '*' : ''}
-				</span>
-				<!-- Truncate long types/defaults to one line so every row keeps the
-				     same height; the full value is shown in the expanded panel. -->
-				<div class="min-w-0 truncate">{@render coloredType(prop.type)}</div>
-				{#if prop.default !== null}
-					<div class="min-w-0 truncate">{@render coloredType(prop.default)}</div>
-				{:else}
-					<span class="text-muted-foreground">—</span>
-				{/if}
-				<ChevronDown
-					class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-open:rotate-180"
-				/>
-			</Collapsible.Trigger>
+				<span>Prop</span>
+				<span>Type</span>
+				<span>Default</span>
+				<span></span>
+			</div>
 
-			<Collapsible.Panel class="border-t">
-				<!-- Reuse the row grid so labels sit in the first column (under Prop)
-				     and values start in the second (under Type); `dd` margins reset
-				     (the UA default indents them). Description sits last. -->
-				<dl class="{columns} gap-x-3 gap-y-2.5 p-3 py-2 text-sm [&_dd]:m-0">
-					<dt class="text-muted-foreground">Name</dt>
-					<dd class="col-span-3">
-						<span class="font-mono text-xs text-foreground">{prop.name}</span>
-						{#if prop.required}
-							<span class="ml-1 text-xs text-muted-foreground">(required)</span>
-						{/if}
-					</dd>
-
-					<dt class="text-muted-foreground">Type</dt>
-					<dd class="col-span-3 min-w-0 wrap-break-word">{@render coloredType(prop.type)}</dd>
-
-					<dt class="text-muted-foreground">Default</dt>
-					<dd class="col-span-3 min-w-0 wrap-break-word">
+			{#each props as prop (prop.name)}
+				<!-- Each prop is a collapsible row: Prop / Type / Default stay visible, and
+				     the full detail (name, description, boxed type, default) is revealed on
+				     expand with the same height+opacity animation as the nav collapsibles. -->
+				<Collapsible.Root id="{part}-{prop.name}" class="border-b last:border-b-0">
+					<Collapsible.Trigger
+						class="{columns} group w-full items-center gap-3 px-3 py-1 text-left outline-none transition-colors hover:bg-(--press-bg) data-focus-visible:bg-(--press-bg)"
+					>
+						<span class="w-fit rounded bg-accent px-1.5 py-0.5 font-mono text-xs text-foreground">
+							{prop.name}{prop.required ? '*' : ''}
+						</span>
+						<!-- Truncate long types/defaults to one line so every row keeps the
+						     same height; the full value is shown in the expanded panel. -->
+						<div class="min-w-0 truncate">{@render coloredType(prop.type)}</div>
 						{#if prop.default !== null}
-							{@render coloredType(prop.default)}
+							<div class="min-w-0 truncate">{@render coloredType(prop.default)}</div>
 						{:else}
 							<span class="text-muted-foreground">—</span>
 						{/if}
-					</dd>
+						<ChevronDown
+							class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-open:rotate-180"
+						/>
+					</Collapsible.Trigger>
 
-					<dt class="text-muted-foreground">Description</dt>
-					<dd class="col-span-3 text-subtle-foreground">{prop.description}</dd>
-				</dl>
-			</Collapsible.Panel>
-		</Collapsible.Root>
-	{/each}
+					<Collapsible.Panel class="border-t">
+						<!-- Reuse the row grid so labels sit in the first column (under Prop)
+						     and values start in the second (under Type); `dd` margins reset
+						     (the UA default indents them). Description sits last. -->
+						<dl class="{columns} gap-x-3 gap-y-2.5 p-3 py-2 text-sm [&_dd]:m-0">
+							<dt class="text-muted-foreground">Name</dt>
+							<dd class="col-span-3">
+								<span class="font-mono text-xs text-foreground">{prop.name}</span>
+								{#if prop.required}
+									<span class="ml-1 text-xs text-muted-foreground">(required)</span>
+								{/if}
+							</dd>
+
+							<dt class="text-muted-foreground">Type</dt>
+							<dd class="col-span-3 min-w-0 wrap-break-word">{@render coloredType(prop.type)}</dd>
+
+							<dt class="text-muted-foreground">Default</dt>
+							<dd class="col-span-3 min-w-0 wrap-break-word">
+								{#if prop.default !== null}
+									{@render coloredType(prop.default)}
+								{:else}
+									<span class="text-muted-foreground">—</span>
+								{/if}
+							</dd>
+
+							<dt class="text-muted-foreground">Description</dt>
+							<dd class="col-span-3 text-subtle-foreground">{prop.description}</dd>
+						</dl>
+					</Collapsible.Panel>
+				</Collapsible.Root>
+			{/each}
+		</div>
+	</div>
 </div>

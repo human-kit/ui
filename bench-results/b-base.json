@@ -1,0 +1,104 @@
+{
+	"label": "b-base",
+	"createdAt": "2026-08-04T18:37:33.146Z",
+	"mode": "dev",
+	"url": "http://localhost:4183/bench/table?rows=500&columns=8",
+	"throttle": 4,
+	"repeat": 5,
+	"scenarios": {
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "grid",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 93.54133333333334,
+				"p50": 19.5,
+				"p95": 261,
+				"p99": 298.7999999999993,
+				"max": 306.90000000000146,
+				"dropped": 65,
+				"droppedRatio": 0.43333333333333335,
+				"jankMs": 11749.166666666677
+			},
+			"longTasks": {
+				"count": 55,
+				"totalMs": 12327,
+				"maxMs": 299,
+				"supported": true
+			},
+			"renderedRows": 60,
+			"durationMs": 14177.5,
+			"samples": [19.5, 20.6, 20.8, 22, 22.3],
+			"bestMs": 19.5,
+			"medianMs": 20.8,
+			"spread": 0.144
+		},
+		"scroll-wheel": {
+			"scenario": "scroll-wheel",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "grid",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 344,
+				"mean": 61.89767441860466,
+				"p50": 17.60000000000582,
+				"p95": 360.09999999999127,
+				"p99": 452.8000000000029,
+				"max": 505.6999999999971,
+				"dropped": 63,
+				"droppedRatio": 0.18313953488372092,
+				"jankMs": 15869.933333333509
+			},
+			"coverage": {
+				"samples": 345,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 58,
+				"totalMs": 16632,
+				"maxMs": 509,
+				"supported": true
+			},
+			"renderedRows": 40,
+			"durationMs": 21457.79999999702,
+			"blankBand": {
+				"frames": 62,
+				"blankFrameRatio": 0.016129032258064516,
+				"maxBlankPx": 7,
+				"meanBlankPx": 1
+			},
+			"samples": [17.6, 17.7, 17.7, 17.7, 17.8],
+			"bestMs": 17.6,
+			"medianMs": 17.7,
+			"spread": 0.011
+		}
+	}
+}

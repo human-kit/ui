@@ -1,0 +1,555 @@
+{
+	"label": "nav-row",
+	"createdAt": "2026-08-04T18:24:19.087Z",
+	"mode": "dev",
+	"url": "http://localhost:4183/bench/table?rows=500&columns=8&nav=row",
+	"throttle": 4,
+	"repeat": 3,
+	"scenarios": {
+		"mount": {
+			"scenario": "mount",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "row",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"longTasks": {
+				"count": 2,
+				"totalMs": 715,
+				"maxMs": 656,
+				"supported": true
+			},
+			"syncMs": 624.2999999970198,
+			"renderedRows": 40,
+			"durationMs": 781.2999999970198,
+			"samples": [624.3, 680.2, 744.7],
+			"bestMs": 624.3,
+			"medianMs": 680.2,
+			"spread": 0.193,
+			"profile": {
+				"totalMs": 2184.19,
+				"top": [
+					{
+						"frame": "(program) @ ",
+						"selfMs": 792.68,
+						"share": 0.3629
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 120.29,
+						"share": 0.0551
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 112.91,
+						"share": 0.0517
+					},
+					{
+						"frame": "getBoundingClientRect @ ",
+						"selfMs": 111.36,
+						"share": 0.051
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 79.18,
+						"share": 0.0363
+					},
+					{
+						"frame": "K @ chunks/Cm7flRHS.js",
+						"selfMs": 64.34,
+						"share": 0.0295
+					},
+					{
+						"frame": "V @ chunks/BpC51k_-.js",
+						"selfMs": 64.18,
+						"share": 0.0294
+					},
+					{
+						"frame": "(anonymous) @ chunks/Cm7flRHS.js",
+						"selfMs": 52.82,
+						"share": 0.0242
+					},
+					{
+						"frame": "get @ chunks/DYwDLoXz.js",
+						"selfMs": 45.28,
+						"share": 0.0207
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 41.9,
+						"share": 0.0192
+					},
+					{
+						"frame": "vt @ chunks/BpC51k_-.js",
+						"selfMs": 41.21,
+						"share": 0.0189
+					},
+					{
+						"frame": "(anonymous) @ chunks/By5xOg2F.js",
+						"selfMs": 39.66,
+						"share": 0.0182
+					},
+					{
+						"frame": "Br @ chunks/By5xOg2F.js",
+						"selfMs": 37.97,
+						"share": 0.0174
+					},
+					{
+						"frame": "jr @ chunks/By5xOg2F.js",
+						"selfMs": 33.13,
+						"share": 0.0152
+					},
+					{
+						"frame": "st @ chunks/BpC51k_-.js",
+						"selfMs": 26.69,
+						"share": 0.0122
+					},
+					{
+						"frame": "(anonymous) @ chunks/CywRrCbE.js",
+						"selfMs": 22.89,
+						"share": 0.0105
+					},
+					{
+						"frame": "l @ chunks/CywRrCbE.js",
+						"selfMs": 20.65,
+						"share": 0.0095
+					},
+					{
+						"frame": "ut @ chunks/BpC51k_-.js",
+						"selfMs": 18.2,
+						"share": 0.0083
+					}
+				]
+			}
+		},
+		"scroll-smooth": {
+			"scenario": "scroll-smooth",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "row",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 13.881333333333338,
+				"p50": 10,
+				"p95": 31.299999999999272,
+				"p99": 123.70000000000073,
+				"max": 158.1999999999971,
+				"dropped": 10,
+				"droppedRatio": 0.06666666666666667,
+				"jankMs": 542.1000000000039
+			},
+			"longTasks": {
+				"count": 7,
+				"totalMs": 643,
+				"maxMs": 164,
+				"supported": true
+			},
+			"renderedRows": 60,
+			"durationMs": 2108.5,
+			"samples": [10, 11.1, 13.5],
+			"bestMs": 10,
+			"medianMs": 11.1,
+			"spread": 0.35,
+			"profile": {
+				"totalMs": 3779.27,
+				"top": [
+					{
+						"frame": "(program) @ ",
+						"selfMs": 2085.32,
+						"share": 0.5518
+					},
+					{
+						"frame": "(anonymous) @ nodes/4.SWXwPYLz.js",
+						"selfMs": 462.34,
+						"share": 0.1223
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 359.49,
+						"share": 0.0951
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 94.66,
+						"share": 0.025
+					},
+					{
+						"frame": "(anonymous) @ chunks/Cm7flRHS.js",
+						"selfMs": 60.72,
+						"share": 0.0161
+					},
+					{
+						"frame": "vt @ chunks/BpC51k_-.js",
+						"selfMs": 35.38,
+						"share": 0.0094
+					},
+					{
+						"frame": "Br @ chunks/By5xOg2F.js",
+						"selfMs": 34.65,
+						"share": 0.0092
+					},
+					{
+						"frame": "remove @ ",
+						"selfMs": 29.13,
+						"share": 0.0077
+					},
+					{
+						"frame": "(anonymous) @ chunks/By5xOg2F.js",
+						"selfMs": 22.85,
+						"share": 0.006
+					},
+					{
+						"frame": "st @ chunks/BpC51k_-.js",
+						"selfMs": 22.76,
+						"share": 0.006
+					},
+					{
+						"frame": "jr @ chunks/By5xOg2F.js",
+						"selfMs": 21.68,
+						"share": 0.0057
+					},
+					{
+						"frame": "append @ ",
+						"selfMs": 20.57,
+						"share": 0.0054
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 19.82,
+						"share": 0.0052
+					},
+					{
+						"frame": "V @ chunks/BpC51k_-.js",
+						"selfMs": 18.37,
+						"share": 0.0049
+					},
+					{
+						"frame": "cloneNode @ ",
+						"selfMs": 17.31,
+						"share": 0.0046
+					},
+					{
+						"frame": "S @ chunks/BpC51k_-.js",
+						"selfMs": 17.22,
+						"share": 0.0046
+					},
+					{
+						"frame": "#R @ chunks/BpC51k_-.js",
+						"selfMs": 16.14,
+						"share": 0.0043
+					},
+					{
+						"frame": "R @ chunks/By5xOg2F.js",
+						"selfMs": 15.43,
+						"share": 0.0041
+					}
+				]
+			}
+		},
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "row",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 54.11333333333334,
+				"p50": 21.5,
+				"p95": 156.5,
+				"p99": 192,
+				"max": 192,
+				"dropped": 70,
+				"droppedRatio": 0.4666666666666667,
+				"jankMs": 5921.1666666666615
+			},
+			"longTasks": {
+				"count": 55,
+				"totalMs": 6939,
+				"maxMs": 194,
+				"supported": true
+			},
+			"renderedRows": 60,
+			"durationMs": 8172.29999999702,
+			"samples": [21.5, 23.6, 25.2],
+			"bestMs": 21.5,
+			"medianMs": 23.6,
+			"spread": 0.172,
+			"profile": {
+				"totalMs": 11445.32,
+				"top": [
+					{
+						"frame": "(program) @ ",
+						"selfMs": 4663.9,
+						"share": 0.4075
+					},
+					{
+						"frame": "(anonymous) @ nodes/4.SWXwPYLz.js",
+						"selfMs": 1471.52,
+						"share": 0.1286
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 615.79,
+						"share": 0.0538
+					},
+					{
+						"frame": "(anonymous) @ chunks/Cm7flRHS.js",
+						"selfMs": 314.27,
+						"share": 0.0275
+					},
+					{
+						"frame": "vt @ chunks/BpC51k_-.js",
+						"selfMs": 257.27,
+						"share": 0.0225
+					},
+					{
+						"frame": "Br @ chunks/By5xOg2F.js",
+						"selfMs": 242.09,
+						"share": 0.0212
+					},
+					{
+						"frame": "jr @ chunks/By5xOg2F.js",
+						"selfMs": 178.29,
+						"share": 0.0156
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 176.75,
+						"share": 0.0154
+					},
+					{
+						"frame": "(anonymous) @ chunks/By5xOg2F.js",
+						"selfMs": 176.45,
+						"share": 0.0154
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 141.69,
+						"share": 0.0124
+					},
+					{
+						"frame": "append @ ",
+						"selfMs": 138.44,
+						"share": 0.0121
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 126.02,
+						"share": 0.011
+					},
+					{
+						"frame": "cloneNode @ ",
+						"selfMs": 122.49,
+						"share": 0.0107
+					},
+					{
+						"frame": "st @ chunks/BpC51k_-.js",
+						"selfMs": 118.94,
+						"share": 0.0104
+					},
+					{
+						"frame": "V @ chunks/BpC51k_-.js",
+						"selfMs": 117.39,
+						"share": 0.0103
+					},
+					{
+						"frame": "ee @ chunks/BpC51k_-.js",
+						"selfMs": 96.75,
+						"share": 0.0085
+					},
+					{
+						"frame": "remove @ ",
+						"selfMs": 93.85,
+						"share": 0.0082
+					},
+					{
+						"frame": "oe @ chunks/Cm7flRHS.js",
+						"selfMs": 93.51,
+						"share": 0.0082
+					}
+				]
+			}
+		},
+		"scroll-wheel": {
+			"scenario": "scroll-wheel",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "row",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 327,
+				"mean": 48.26330275229355,
+				"p50": 23.39999999999418,
+				"p95": 224.60000000000582,
+				"p99": 297.5,
+				"max": 358.5,
+				"dropped": 134,
+				"droppedRatio": 0.40978593272171254,
+				"jankMs": 10786.933333333407
+			},
+			"coverage": {
+				"samples": 328,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 58,
+				"totalMs": 10832,
+				"maxMs": 370,
+				"supported": true
+			},
+			"renderedRows": 40,
+			"durationMs": 15823.20000000298,
+			"blankBand": {
+				"frames": 60,
+				"blankFrameRatio": 0,
+				"maxBlankPx": 3,
+				"meanBlankPx": 2
+			},
+			"samples": [23.4, 24, 24.9],
+			"bestMs": 23.4,
+			"medianMs": 24,
+			"spread": 0.064,
+			"profile": {
+				"totalMs": 19121.41,
+				"top": [
+					{
+						"frame": "(program) @ ",
+						"selfMs": 4551.59,
+						"share": 0.238
+					},
+					{
+						"frame": "(idle) @ ",
+						"selfMs": 3572.72,
+						"share": 0.1868
+					},
+					{
+						"frame": "Pt @ nodes/4.SWXwPYLz.js",
+						"selfMs": 1856.64,
+						"share": 0.0971
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 999.98,
+						"share": 0.0523
+					},
+					{
+						"frame": "querySelector @ ",
+						"selfMs": 554.95,
+						"share": 0.029
+					},
+					{
+						"frame": "(anonymous) @ chunks/Cm7flRHS.js",
+						"selfMs": 406.75,
+						"share": 0.0213
+					},
+					{
+						"frame": "Br @ chunks/By5xOg2F.js",
+						"selfMs": 382.51,
+						"share": 0.02
+					},
+					{
+						"frame": "vt @ chunks/BpC51k_-.js",
+						"selfMs": 364.71,
+						"share": 0.0191
+					},
+					{
+						"frame": "(anonymous) @ chunks/By5xOg2F.js",
+						"selfMs": 340.58,
+						"share": 0.0178
+					},
+					{
+						"frame": "jr @ chunks/By5xOg2F.js",
+						"selfMs": 294.21,
+						"share": 0.0154
+					},
+					{
+						"frame": "querySelectorAll @ ",
+						"selfMs": 288.81,
+						"share": 0.0151
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 225.76,
+						"share": 0.0118
+					},
+					{
+						"frame": "append @ ",
+						"selfMs": 216.05,
+						"share": 0.0113
+					},
+					{
+						"frame": "st @ chunks/BpC51k_-.js",
+						"selfMs": 197.76,
+						"share": 0.0103
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 184.27,
+						"share": 0.0096
+					},
+					{
+						"frame": "remove @ ",
+						"selfMs": 174.97,
+						"share": 0.0092
+					},
+					{
+						"frame": "S @ chunks/BpC51k_-.js",
+						"selfMs": 168.13,
+						"share": 0.0088
+					},
+					{
+						"frame": "V @ chunks/BpC51k_-.js",
+						"selfMs": 160.33,
+						"share": 0.0084
+					}
+				]
+			}
+		}
+	}
+}

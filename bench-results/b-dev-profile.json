@@ -1,0 +1,148 @@
+{
+	"label": "b-dev-profile",
+	"createdAt": "2026-08-04T18:58:56.748Z",
+	"mode": "dev",
+	"url": "http://localhost:5183/bench/table?rows=500&columns=8",
+	"throttle": 4,
+	"repeat": 3,
+	"scenarios": {
+		"scroll-fast": {
+			"scenario": "scroll-fast",
+			"config": {
+				"rows": 500,
+				"columns": 8,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "grid",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"viewportHeight": 640
+			},
+			"epochs": {
+				"layout": 0,
+				"width": 0,
+				"selection": 0
+			},
+			"frames": {
+				"count": 150,
+				"mean": 448.5686666666666,
+				"p50": 19.5,
+				"p95": 1574.8999999999942,
+				"p99": 1918.8999999999942,
+				"max": 2001.7999999999884,
+				"dropped": 63,
+				"droppedRatio": 0.42,
+				"jankMs": 65188.0333333334
+			},
+			"longTasks": {
+				"count": 55,
+				"totalMs": 66012,
+				"maxMs": 2005,
+				"supported": true
+			},
+			"renderedRows": 60,
+			"durationMs": 68752.5,
+			"samples": [19.5, 20.4, 20.7],
+			"bestMs": 19.5,
+			"medianMs": 20.4,
+			"spread": 0.062,
+			"profile": {
+				"totalMs": 103074.61,
+				"top": [
+					{
+						"frame": "get_stack @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 52470.65,
+						"share": 0.5091
+					},
+					{
+						"frame": "get_error @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 23211.55,
+						"share": 0.2252
+					},
+					{
+						"frame": "(program) @ ",
+						"selfMs": 7031.96,
+						"share": 0.0682
+					},
+					{
+						"frame": "(anonymous) @ table/+page.svelte",
+						"selfMs": 1977.26,
+						"share": 0.0192
+					},
+					{
+						"frame": "internal_set @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 1659.28,
+						"share": 0.0161
+					},
+					{
+						"frame": "(anonymous) @ deps/chunk-A74UMFMH.js",
+						"selfMs": 1405.58,
+						"share": 0.0136
+					},
+					{
+						"frame": "set @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 1159.95,
+						"share": 0.0113
+					},
+					{
+						"frame": "before @ ",
+						"selfMs": 1077.2,
+						"share": 0.0105
+					},
+					{
+						"frame": "(anonymous) @ cell/table-cell.svelte",
+						"selfMs": 754.12,
+						"share": 0.0073
+					},
+					{
+						"frame": "mark_reactions @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 614.25,
+						"share": 0.006
+					},
+					{
+						"frame": "update_reaction @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 577.27,
+						"share": 0.0056
+					},
+					{
+						"frame": "capture @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 461.34,
+						"share": 0.0045
+					},
+					{
+						"frame": "(garbage collector) @ ",
+						"selfMs": 458.67,
+						"share": 0.0044
+					},
+					{
+						"frame": "tag_proxy @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 427.48,
+						"share": 0.0041
+					},
+					{
+						"frame": "get @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 419.95,
+						"share": 0.0041
+					},
+					{
+						"frame": "execute_derived @ deps/chunk-AJHVPTAZ.js",
+						"selfMs": 404.77,
+						"share": 0.0039
+					},
+					{
+						"frame": "setAttribute @ ",
+						"selfMs": 370.3,
+						"share": 0.0036
+					},
+					{
+						"frame": "set_attributes @ deps/chunk-A74UMFMH.js",
+						"selfMs": 354.25,
+						"share": 0.0034
+					}
+				]
+			}
+		}
+	}
+}

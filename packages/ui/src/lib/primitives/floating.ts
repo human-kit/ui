@@ -2,6 +2,7 @@ import {
 	computePosition,
 	flip,
 	shift,
+	limitShift,
 	offset as offsetMiddleware,
 	size,
 	autoUpdate,
@@ -191,7 +192,25 @@ export function floating(
 		return [
 			offsetMiddleware(offset),
 			...(shouldFlip ? [flip({ boundary: boundaryElement || undefined, padding })] : []),
-			shift({ boundary: boundaryElement || undefined, padding }),
+			// `shift`'s main axis is the one running ALONG the placement edge, and its
+			// cross axis is off by default. For `top`/`bottom` that main axis is x, so a
+			// dropdown too wide for the viewport is pulled back into view. For
+			// `left`/`right` it is y — nothing pulls it back horizontally, so a panel
+			// that fits on neither side stays wherever the placement put it, which for
+			// `left-*` means off the left edge entirely.
+			//
+			// Submenus are exactly that case: they open `right-start` and flip to
+			// `left-start`, and on a narrow viewport neither side has room. Enabled only
+			// for the horizontal placements, because on `top`/`bottom` the cross axis is
+			// vertical and shifting there would slide a dropdown over its own trigger —
+			// which `flip` already handles better. `limitShift` keeps the panel from
+			// sliding so far that it detaches from its anchor.
+			shift((state) => ({
+				boundary: boundaryElement || undefined,
+				padding,
+				crossAxis: state.placement.startsWith('left') || state.placement.startsWith('right'),
+				limiter: limitShift()
+			})),
 			size({
 				padding,
 				apply({ rects, availableWidth, availableHeight, elements, placement }) {

@@ -1,0 +1,63 @@
+{
+	"label": "hv2-0",
+	"createdAt": "2026-08-04T20:55:41.773Z",
+	"mode": "dev",
+	"url": "http://localhost:4187/bench/table?rows=500&columns=12&colWidth=250&hvirt=0",
+	"throttle": 4,
+	"repeat": 5,
+	"scenarios": {
+		"scroll-wheel": {
+			"scenario": "scroll-wheel",
+			"config": {
+				"rows": 500,
+				"columns": 12,
+				"selectionMode": "multiple",
+				"keyboardNavigation": "grid",
+				"resizable": true,
+				"pinFirstColumn": false,
+				"virtualized": true,
+				"rowHeight": 32,
+				"cellVariant": "rich",
+				"columnWidth": 250,
+				"horizontalWindow": false,
+				"viewportHeight": 640
+			},
+			"frames": {
+				"count": 327,
+				"mean": 91.93272171253822,
+				"p50": 17.60000000000582,
+				"p95": 521.5999999999985,
+				"p99": 775.5,
+				"max": 912.7999999999993,
+				"dropped": 74,
+				"droppedRatio": 0.22629969418960244,
+				"jankMs": 24834.566666666426
+			},
+			"coverage": {
+				"samples": 328,
+				"blankFrameRatio": 0,
+				"meanRatio": 0,
+				"maxRatio": 0,
+				"maxBlankPx": 0
+			},
+			"longTasks": {
+				"count": 61,
+				"totalMs": 25570,
+				"maxMs": 916,
+				"supported": true
+			},
+			"renderedRows": 40,
+			"durationMs": 30088.60000000894,
+			"blankBand": {
+				"frames": 64,
+				"blankFrameRatio": 0.015625,
+				"maxBlankPx": 8,
+				"meanBlankPx": 1
+			},
+			"samples": [17.6, 17.7, 17.7, 17.7, 17.8],
+			"bestMs": 17.6,
+			"medianMs": 17.7,
+			"spread": 0.011
+		}
+	}
+}

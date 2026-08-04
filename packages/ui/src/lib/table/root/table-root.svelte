@@ -33,6 +33,7 @@
 
 	let {
 		selectionMode = 'none',
+		keyboardNavigation = 'grid',
 		selectionBehavior = 'toggle',
 		disabledBehavior = 'all',
 		disallowEmptySelection = false,
@@ -83,6 +84,7 @@
 	const ctx = setTableContext(
 		createTableContext({
 			selectionMode: (() => selectionMode)(),
+			keyboardNavigation: (() => keyboardNavigation)(),
 			selectionBehavior: (() => selectionBehavior)(),
 			disabledBehavior: (() => disabledBehavior)(),
 			disallowEmptySelection: (() => disallowEmptySelection)(),
@@ -375,6 +377,10 @@
 	});
 
 	$effect(() => {
+		ctx.setKeyboardNavigation(keyboardNavigation);
+	});
+
+	$effect(() => {
 		if (hiddenColumns !== undefined) {
 			const nextHiddenColumns = parseHiddenColumns(hiddenColumns);
 			if (
@@ -547,6 +553,7 @@
 	aria-rowcount={ariaRowCount}
 	aria-multiselectable={selectionMode === 'multiple' ? true : undefined}
 	data-selection-mode={selectionMode}
+	data-keyboard-navigation={keyboardNavigation}
 	data-selection-behavior={selectionBehavior}
 	data-disabled-behavior={disabledBehavior}
 	data-focus-within={focusWithin || undefined}
