@@ -26,6 +26,9 @@
 		void row.cellOrderEpoch;
 		return row.getCellIndex(key);
 	});
+	// See `Table.Cell`: outside `'grid'` navigation a body cell is not a focus
+	// target, so it skips the focus registry and the focus-derived state below.
+	const isFocusTarget = $derived(row.section === 'body' && table.keyboardNavigation === 'grid');
 
 	function syncCellRegistration() {
 		if (row.section !== 'body') return;
@@ -54,12 +57,15 @@
 	});
 
 	$effect(() => {
+		if (!isFocusTarget) return;
 		syncCellRegistration();
 	});
 
 	onDestroy(() => {
 		row.unregisterCellToken(key);
-		if (row.section === 'body') {
+		// Mirrors `isFocusTarget` without reading it: a derived is not safe to
+		// read while the component tears down.
+		if (row.section === 'body' && table.keyboardNavigation === 'grid') {
 			table.unregisterCell(key);
 		}
 	});
@@ -88,8 +94,8 @@
 	});
 	// Focus/selection/disabled state is fine-grained `$state` in the context —
 	// the reads below track it directly, no version counters needed.
-	const isFocused = $derived(row.section === 'body' ? table.isCellFocused(key) : false);
-	const isFocusVisible = $derived(row.section === 'body' ? isFocused && table.focusVisible : false);
+	const isFocused = $derived(isFocusTarget ? table.isCellFocused(key) : false);
+	const isFocusVisible = $derived(isFocusTarget ? isFocused && table.focusVisible : false);
 	const isRowSelected = $derived(row.section === 'body' ? row.rowState.isSelected : false);
 	const isRowDisabled = $derived(
 		row.section === 'body'
@@ -110,7 +116,7 @@
 	);
 	const isCellFocusable = $derived(row.section !== 'body' || !isRowDisabled);
 	const cellTabIndex = $derived.by(() => {
-		if (row.section !== 'body') return undefined;
+		if (!isFocusTarget) return undefined;
 		if (isColumnHidden) return undefined;
 		if (!isCellFocusable) return undefined;
 		if (focusDelegate) return undefined;
@@ -128,11 +134,23 @@
 		table.setFocusVisible(shouldShowFocusVisible(element ?? null));
 	}
 
+	// A pointer press moves focus to whatever the current mode can focus, so the
+	// keyboard carries on from where the pointer left off.
+	function focusPressTarget() {
+		if (isFocusTarget) {
+			table.focusCellByKey(key);
+			return;
+		}
+		if (table.keyboardNavigation === 'row') {
+			table.focusRowByToken(row.rowToken, 'start');
+		}
+	}
+
 	function handleClick(event: MouseEvent) {
 		if (!isCellTarget(event)) return;
 		if (row.section !== 'body') return;
 		if (isRowDisabled) return;
-		table.focusCellByKey(key);
+		focusPressTarget();
 		table.pressRow(
 			row.rowId as TableSelectionKey | undefined,
 			'pointer',
@@ -150,7 +168,7 @@
 		if (!isCellTarget(event)) return;
 		if (row.section !== 'body') return;
 		if (isRowDisabled) return;
-		table.focusCellByKey(key);
+		focusPressTarget();
 		table.pressRow(
 			row.rowId as TableSelectionKey | undefined,
 			'pointer-double',
@@ -235,11 +253,11 @@
 	style:inset-inline-end={pinState?.side === 'right' ? `${pinState.offset}px` : undefined}
 	style:z-index={pinState ? 1 : undefined}
 	style:display={isColumnHidden ? 'none' : 'table-cell'}
-	onfocus={row.section === 'body' ? handleFocus : undefined}
+	onfocus={isFocusTarget ? handleFocus : undefined}
 	onclick={row.section === 'body' ? handleClick : undefined}
 	ondblclick={row.section === 'body' ? handleDoubleClick : undefined}
 	onmousedown={row.section === 'body' ? handleMouseDown : undefined}
-	onkeydown={row.section === 'body' ? handleKeyDown : undefined}
+	onkeydown={isFocusTarget ? handleKeyDown : undefined}
 	{...restProps}
 >
 	{#if children}

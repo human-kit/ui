@@ -3,6 +3,7 @@
 	import type {
 		TableContext,
 		TableDisabledBehavior,
+		TableKeyboardNavigation,
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode,
@@ -26,6 +27,7 @@
 		ariaLabel?: string;
 		ariaLabelledby?: string;
 		selectionMode?: TableSelectionMode;
+		keyboardNavigation?: TableKeyboardNavigation;
 		selectionBehavior?: TableSelectionBehavior;
 		disabledBehavior?: TableDisabledBehavior;
 		disallowEmptySelection?: boolean;
@@ -39,6 +41,7 @@
 		onSortChange?: (descriptor: TableSortDescriptor | undefined) => void;
 		onHiddenColumnsChange?: (columnIds: string[]) => void;
 		showSelectionModeToggle?: boolean;
+		showKeyboardNavigationToggle?: boolean;
 		showSingleSelectionModeToggle?: boolean;
 		showSortClearButton?: boolean;
 		showHiddenColumnsToggle?: boolean;
@@ -50,6 +53,7 @@
 		ariaLabel = 'Users table',
 		ariaLabelledby,
 		selectionMode = $bindable<TableSelectionMode>('multiple'),
+		keyboardNavigation = $bindable<TableKeyboardNavigation>('grid'),
 		selectionBehavior = 'toggle',
 		disabledBehavior = 'all',
 		disallowEmptySelection = false,
@@ -63,6 +67,7 @@
 		onSortChange,
 		onHiddenColumnsChange,
 		showSelectionModeToggle = false,
+		showKeyboardNavigationToggle = false,
 		showSingleSelectionModeToggle = false,
 		showSortClearButton = false,
 		showHiddenColumnsToggle = false,
@@ -121,6 +126,7 @@
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	{selectionMode}
+	{keyboardNavigation}
 	{selectionBehavior}
 	{disabledBehavior}
 	{disallowEmptySelection}
@@ -185,6 +191,23 @@
 		onclick={() => (selectionMode = 'none')}
 	>
 		Selection none
+	</button>
+{/if}
+
+{#if showKeyboardNavigationToggle}
+	<button
+		type="button"
+		data-testid="set-keyboard-navigation-row"
+		onclick={() => (keyboardNavigation = 'row')}
+	>
+		Row navigation
+	</button>
+	<button
+		type="button"
+		data-testid="set-keyboard-navigation-grid"
+		onclick={() => (keyboardNavigation = 'grid')}
+	>
+		Grid navigation
 	</button>
 {/if}
 

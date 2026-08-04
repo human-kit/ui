@@ -75,6 +75,9 @@
 
 	const tabIndex = $derived.by(() => {
 		if (!isVisible || isDisabled) return undefined;
+		// Without cell navigation no roving tab stop ever reaches a body cell, so
+		// the checkbox has to be a tab stop of its own to stay operable.
+		if (section.section === 'body' && table.keyboardNavigation !== 'grid') return 0;
 		return table.isCellTabStop(cell.cellKey) ? 0 : -1;
 	});
 

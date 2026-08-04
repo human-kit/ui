@@ -2,6 +2,7 @@
 	import { Table } from '../index';
 	import type {
 		TableDisabledBehavior,
+		TableKeyboardNavigation,
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode
@@ -28,6 +29,7 @@
 	type CheckboxTestProps = {
 		rows?: DemoRow[];
 		selectionMode?: TableSelectionMode;
+		keyboardNavigation?: TableKeyboardNavigation;
 		selectionBehavior?: TableSelectionBehavior;
 		disabledBehavior?: TableDisabledBehavior;
 		disallowEmptySelection?: boolean;
@@ -41,6 +43,7 @@
 	let {
 		rows = defaultRows,
 		selectionMode = 'multiple',
+		keyboardNavigation = 'grid',
 		selectionBehavior = 'toggle',
 		disabledBehavior = 'all',
 		disallowEmptySelection = false,
@@ -60,6 +63,7 @@
 	<Table.Root
 		aria-label="Users table"
 		{selectionMode}
+		{keyboardNavigation}
 		{selectionBehavior}
 		{disabledBehavior}
 		{disallowEmptySelection}

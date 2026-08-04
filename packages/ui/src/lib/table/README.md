@@ -88,6 +88,7 @@ All public Table part prop types are exported from the table barrel, including `
 ## Usage guidelines
 
 - Use `Table.Root` as the stateful container for focus, selection, and sorting state.
+- Use `keyboardNavigation` to choose how far the roving tab stop reaches into the body: `'grid'` (default) makes every body cell a focus target, `'row'` makes the row the only one, and `'none'` leaves the body inert. Cell navigation costs a focus registration plus focus-derived state per cell, which a virtualized table pays again on every row it mounts; drop to `'row'` when the body is a list rather than a working surface, and to `'none'` only when nothing in it is actionable. The header keeps its own navigation in every mode.
 - Use `selectionBehavior="toggle"` to allow deselecting an already selected row, or `selectionBehavior="replace"` to keep selected rows selected when pressed again.
 - `Table.Column` is a logical-only wrapper for column metadata; it does not render DOM by itself and should wrap a single `Table.ColumnHeaderCell`.
 - Wrap each header cell in `Table.Column` so the table can register stable column metadata.
@@ -132,6 +133,7 @@ All public Table part prop types are exported from the table barrel, including `
 
 - `Table.Root` renders an interactive `grid` over native table markup.
 - Keyboard navigation uses roving `tabindex` across header and body cells.
+- Under `keyboardNavigation="row"` the body's roving tab stop sits on the rows: arrows walk rows, `Enter` presses one and `Space` toggles its selection. Focusable content inside body cells becomes a regular tab stop instead, since no roving focus reaches it there.
 - Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
 - `Table.Checkbox` can receive DOM focus directly while still participating in the table's roving-focus grid.
 - First-column body cells become `rowheader` when their associated column has `rowHeader`.

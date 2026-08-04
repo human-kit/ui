@@ -13,6 +13,20 @@ const IS_BROWSER = typeof window !== 'undefined';
 export type TableSelectionKey = string | number;
 export type TableRowItem = Record<string, unknown> & { id: TableSelectionKey };
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
+/**
+ * How far the roving tab stop reaches into the body.
+ *
+ * `'grid'` is the full ARIA grid pattern: every body cell is a focus target,
+ * which costs a registration plus focus-derived state per cell — with a
+ * virtualizer that is paid again on every scroll block. `'row'` keeps the body
+ * reachable (arrows walk rows, Enter/Space press one) at one focus target per
+ * row instead of one per cell. `'none'` drops body focus entirely; use it only
+ * when nothing in the body is actionable.
+ *
+ * The header keeps its own cell navigation in every mode — it is a single row,
+ * so it costs nothing, and it is where sorting and resizing live.
+ */
+export type TableKeyboardNavigation = 'grid' | 'row' | 'none';
 export type TableSelectionBehavior = 'toggle' | 'replace';
 export type TableDisabledBehavior = 'selection' | 'all';
 export type TableSortDirection = 'ascending' | 'descending';
@@ -166,6 +180,7 @@ type TableCellRegistration = {
 
 export type CreateTableContextOptions = {
 	selectionMode?: TableSelectionMode;
+	keyboardNavigation?: TableKeyboardNavigation;
 	selectionBehavior?: TableSelectionBehavior;
 	disabledBehavior?: TableDisabledBehavior;
 	disallowEmptySelection?: boolean;
@@ -209,6 +224,7 @@ export type TableContext = {
 	widthEpoch: number;
 	createInstanceToken: (prefix: string) => string;
 	selectionMode: TableSelectionMode;
+	keyboardNavigation: TableKeyboardNavigation;
 	selectionBehavior: TableSelectionBehavior;
 	disabledBehavior: TableDisabledBehavior;
 	disallowEmptySelection: boolean;
@@ -304,6 +320,7 @@ export type TableContext = {
 	deselectAllRows: () => void;
 	setSelection: (keys: Iterable<TableSelectionKey>) => void;
 	setSelectionMode: (mode: TableSelectionMode) => void;
+	setKeyboardNavigation: (navigation: TableKeyboardNavigation) => void;
 	setSelectionBehavior: (behavior: TableSelectionBehavior) => void;
 	setDisabledBehavior: (behavior: TableDisabledBehavior) => void;
 	setDisallowEmptySelection: (disallow: boolean) => void;
@@ -367,6 +384,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	// mutated in place), so a plain `Set` inside `$state` is enough; the
 	// in-place-mutated collections use SvelteSet/SvelteMap instead.
 	let selectionMode = $state(options.selectionMode ?? 'none');
+	let keyboardNavigation = $state(options.keyboardNavigation ?? 'grid');
 	let selectionBehavior = $state(options.selectionBehavior ?? 'toggle');
 	let disabledBehavior = $state(options.disabledBehavior ?? 'all');
 	let disallowEmptySelection = $state(options.disallowEmptySelection ?? false);
@@ -2083,7 +2101,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function isRowTabStop(token: string) {
-		return focusedRowTarget?.rowToken === token;
+		if (focusedRowTarget) return focusedRowTarget.rowToken === token;
+		if (keyboardNavigation !== 'row') return false;
+		// Row navigation with nothing focused yet: the body needs its own entry
+		// point, but only when the header does not already provide the grid's
+		// single tab stop.
+		if (focusedCellKey || getDefaultFocusKey()) return false;
+		return getFocusableBodyRowToken('start') === token;
 	}
 
 	function getGlobalRowIndex(rowToken: string) {
@@ -2473,6 +2497,84 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return isRtl(target);
 	}
 
+	function syncSelectionAfterFocusMove(
+		direction: 'up' | 'down' | 'left' | 'right',
+		interaction: TableSelectionInteraction,
+		previousFocusedRowId: TableSelectionKey | null
+	) {
+		if (direction !== 'up' && direction !== 'down') return;
+		if (selectionMode === 'none') return;
+		if (interaction.ctrlKey || interaction.metaKey || interaction.altKey) return;
+
+		const targetRowId = getFocusedRowId();
+		if (targetRowId === null) return;
+
+		if (interaction.shiftKey) {
+			extendSelectionToRow(targetRowId, selectionAnchorKey ?? previousFocusedRowId);
+			return;
+		}
+
+		if (selectionBehavior !== 'replace') return;
+
+		replaceSelectionWithRow(targetRowId);
+	}
+
+	function getOrderedFocusableBodyRowTokens() {
+		return getOrderedRowTokens('body').filter((token) => {
+			const row = rows.get(token);
+			return Boolean(row) && !isRowDisabled(row?.id, row?.disabled);
+		});
+	}
+
+	/**
+	 * Focus movement for `keyboardNavigation: 'row'`, where body cells never
+	 * register and the row itself is the only focus target in the body. Returns
+	 * `false` when the move belongs to the header, which keeps cell navigation.
+	 */
+	function moveRowFocus(
+		direction: 'up' | 'down' | 'left' | 'right',
+		interaction: TableSelectionInteraction
+	) {
+		const tokens = getOrderedFocusableBodyRowTokens();
+		if (tokens.length === 0) return false;
+
+		if (!focusedRowTarget) {
+			// Coming from the header (or from nothing at all): only downwards
+			// enters the body, so anything else stays with the cell path.
+			if (direction !== 'down') return false;
+			const previousFocusedRowId = getFocusedRowId();
+			focusRowByToken(tokens[0], 'start');
+			syncSelectionAfterFocusMove(direction, interaction, previousFocusedRowId);
+			return true;
+		}
+
+		// A row spans every column, so there is nothing to move to sideways.
+		if (direction === 'left' || direction === 'right') return true;
+
+		const previousFocusedRowId = getFocusedRowId();
+		const currentIndex = tokens.indexOf(focusedRowTarget.rowToken);
+		const targetToken = tokens[direction === 'up' ? currentIndex - 1 : currentIndex + 1];
+		if (targetToken) {
+			focusRowByToken(targetToken, focusedRowTarget.edge);
+			syncSelectionAfterFocusMove(direction, interaction, previousFocusedRowId);
+			return true;
+		}
+
+		// Past the first row, focus leaves the body upwards into the header.
+		if (direction === 'up' && currentIndex === 0) {
+			const headerRowIndexes = getOrderedRowTokens('header')
+				.map((token) => getGlobalRowIndex(token))
+				.filter((index) => index >= 0)
+				.sort((left, right) => left - right);
+			const lastHeaderRowIndex = headerRowIndexes.at(-1);
+			if (lastHeaderRowIndex !== undefined) {
+				focusCellByKey(getClosestCellKey(lastHeaderRowIndex, 0));
+			}
+		}
+
+		return true;
+	}
+
 	function moveFocus(
 		direction: 'up' | 'down' | 'left' | 'right',
 		interaction: TableSelectionInteraction = {}
@@ -2483,6 +2585,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			direction = direction === 'left' ? 'right' : 'left';
 		}
 
+		if (keyboardNavigation === 'row' && moveRowFocus(direction, interaction)) return;
+
 		const rowMap = getRowsWithCells();
 		const currentCoord = getFocusedCoord();
 		const rowIndexes = Array.from(rowMap.keys()).sort((a, b) => a - b);
@@ -2490,21 +2594,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const previousFocusedRowId = getFocusedRowId();
 
 		function maybeSyncSelectionAfterFocus() {
-			if (direction !== 'up' && direction !== 'down') return;
-			if (selectionMode === 'none') return;
-			if (interaction.ctrlKey || interaction.metaKey || interaction.altKey) return;
-
-			const targetRowId = getFocusedRowId();
-			if (targetRowId === null) return;
-
-			if (interaction.shiftKey) {
-				extendSelectionToRow(targetRowId, selectionAnchorKey ?? previousFocusedRowId);
-				return;
-			}
-
-			if (selectionBehavior !== 'replace') return;
-
-			replaceSelectionWithRow(targetRowId);
+			syncSelectionAfterFocusMove(direction, interaction, previousFocusedRowId);
 		}
 
 		if (!currentCoord) {
@@ -2622,6 +2712,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function moveToGridStart() {
+		// With row navigation the grid's edges are its first and last body rows;
+		// body cells are not focus targets.
+		if (keyboardNavigation === 'row' && focusedRowTarget) {
+			moveToBodyRowStart();
+			return;
+		}
+
 		const rowIndexes = Array.from(getRowsWithCells().keys()).sort((a, b) => a - b);
 		if (rowIndexes.length === 0) return;
 		focusCellByKey(getClosestCellKey(rowIndexes[0], -1));
@@ -2640,6 +2737,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function moveToGridEnd() {
+		if (keyboardNavigation === 'row' && focusedRowTarget) {
+			moveToBodyRowEnd();
+			return;
+		}
+
 		const rowMap = getRowsWithCells();
 		const bodyGlobalRows = getOrderedRowTokens('body')
 			.map((token) => getGlobalRowIndex(token))
@@ -2721,6 +2823,25 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return;
 		}
 		notifySelection();
+	}
+
+	function setKeyboardNavigation(navigation: TableKeyboardNavigation) {
+		if (keyboardNavigation === navigation) return;
+		keyboardNavigation = navigation;
+		if (navigation === 'grid') {
+			// Body cells re-register on their own: their registration effect
+			// reads this state, so it re-runs for every mounted cell.
+			return;
+		}
+
+		for (const cell of Array.from(cells.values())) {
+			if (cell.section === 'body') {
+				unregisterCell(cell.key);
+			}
+		}
+		if (navigation === 'none') {
+			focusedRowTarget = null;
+		}
 	}
 
 	function setSelectionBehavior(behavior: TableSelectionBehavior) {
@@ -2829,6 +2950,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		get selectionMode() {
 			return selectionMode;
 		},
+		get keyboardNavigation() {
+			return keyboardNavigation;
+		},
 		get selectionBehavior() {
 			return selectionBehavior;
 		},
@@ -2932,6 +3056,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		deselectAllRows: asCommand(deselectAllRows),
 		setSelection: asCommand(setSelection),
 		setSelectionMode: asCommand(setSelectionMode),
+		setKeyboardNavigation: asCommand(setKeyboardNavigation),
 		setSelectionBehavior: asCommand(setSelectionBehavior),
 		setDisabledBehavior: asCommand(setDisabledBehavior),
 		setDisallowEmptySelection: asCommand(setDisallowEmptySelection),

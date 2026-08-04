@@ -156,6 +156,28 @@ describe('Table.Checkbox', () => {
 		expect(headerCell.getAttribute('tabindex')).toBeNull();
 	});
 
+	// Without cell navigation nothing rovingly reaches a body cell, so a row
+	// checkbox that kept `tabindex="-1"` would stop being operable by keyboard.
+	it('makes row checkboxes their own tab stop when cell navigation is off', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple', keyboardNavigation: 'row' });
+
+		await expect
+			.poll(() =>
+				document.querySelector('[data-testid="row-checkbox-danilo"]')?.getAttribute('tabindex')
+			)
+			.toBe('0');
+	});
+
+	it('keeps the roving tab stop on row checkboxes under grid navigation', async () => {
+		render(CheckboxTest, { selectionMode: 'multiple' });
+
+		await expect
+			.poll(() =>
+				document.querySelector('[data-testid="row-checkbox-danilo"]')?.getAttribute('tabindex')
+			)
+			.toBe('-1');
+	});
+
 	it('disables row checkboxes for selection-only disabled rows', async () => {
 		render(CheckboxTest, {
 			selectionMode: 'multiple',

@@ -51,6 +51,7 @@
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (section.section !== 'body') return;
+		if (table.keyboardNavigation === 'none') return;
 		if (event.target !== rowElement) return;
 		handleTableBodyKeydown({
 			event,
@@ -275,6 +276,11 @@
 	const isAriaDisabled = $derived(
 		section.section === 'body' ? table.isRowDisabled(id, disabled) : disabled
 	);
+	// The row is a focus target under `'grid'` (as the row-edge stop) and under
+	// `'row'` (as the only stop in the body); `'none'` leaves the body inert.
+	const isRowFocusTarget = $derived(
+		section.section === 'body' && !isAriaDisabled && table.keyboardNavigation !== 'none'
+	);
 	const isSelectionDisabled = $derived(
 		section.section === 'body' ? table.isRowSelectionDisabled(id, disabled) : disabled
 	);
@@ -286,13 +292,7 @@
 <tr
 	bind:this={rowElement}
 	class={className}
-	tabindex={section.section === 'body'
-		? !isAriaDisabled
-			? table.isRowTabStop(rowToken)
-				? 0
-				: -1
-			: undefined
-		: undefined}
+	tabindex={isRowFocusTarget ? (table.isRowTabStop(rowToken) ? 0 : -1) : undefined}
 	data-focused={isFocused ? 'true' : undefined}
 	data-focus-visible={isFocusVisible ? 'true' : undefined}
 	data-focus-within={isFocusWithin ? 'true' : undefined}
