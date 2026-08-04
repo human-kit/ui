@@ -1,7 +1,33 @@
 [
 	{
+		"version": "1.0.0-beta.3",
+		"date": "2026-08-04T21:12:32.151Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 67,
+						"prUrl": "https://github.com/human-kit/ui/pull/67",
+						"html": "<p>Add <code>keyboardNavigation</code> to <code>Table.Root</code> (<code>'grid' | 'row' | 'none'</code>, defaulting to <code>'grid'</code>), which decides how far the roving tab stop reaches into the body.</p>\n<p>Cell navigation is not free: every body cell registers itself with the focus registry and derives its own focus state, and a virtualized table pays that again for every row it mounts while scrolling. <code>'row'</code> keeps the body keyboard-reachable at one focus target per row — arrows walk rows, <code>Enter</code> presses one, <code>Space</code> toggles its selection — and <code>'none'</code> leaves the body inert. In both, focusable content inside a body cell (<code>Table.Checkbox</code>, links) becomes a regular tab stop, since no roving focus reaches it any more.</p>\n<p>The header keeps its own cell navigation in every mode, so sorting and column resizing stay reachable.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 67,
+						"prUrl": "https://github.com/human-kit/ui/pull/67",
+						"html": "<p>Keep <code>left</code>/<code>right</code>-placed floating panels on screen when they fit on neither side.</p>\n<p><code>shift</code>'s main axis is the one running along the placement edge, and its cross axis is off by\ndefault. For <code>top</code>/<code>bottom</code> placements that main axis is horizontal, so a dropdown too wide for\nthe viewport is pulled back into view. For <code>left</code>/<code>right</code> it is vertical — nothing pulled the\npanel back horizontally, so one that fit on neither side stayed wherever the placement left it.</p>\n<p>Submenus are exactly that case: they open <code>right-start</code> and flip to <code>left-start</code>, and on a phone\nneither side has room, which put the panel off the edge of the screen entirely. The cross axis is\nnow enabled for the horizontal placements only — on <code>top</code>/<code>bottom</code> it is vertical, where shifting\nwould slide a dropdown over its own trigger and <code>flip</code> already does better — with <code>limitShift</code> so\na panel never slides far enough to detach from its anchor.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.2",
-		"date": "2026-08-01T17:34:05.494Z",
+		"date": "2026-08-01T14:47:35-03:00",
 		"sections": [
 			{
 				"type": "Patch",

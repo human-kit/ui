@@ -1,5 +1,30 @@
 # @human-kit/ui
 
+## 1.0.0-beta.3
+
+### Minor Changes
+
+- [#67](https://github.com/human-kit/ui/pull/67) [`96882a7`](https://github.com/human-kit/ui/commit/96882a7afb3677a64c127cc9a56af7b916e6ddb3) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `keyboardNavigation` to `Table.Root` (`'grid' | 'row' | 'none'`, defaulting to `'grid'`), which decides how far the roving tab stop reaches into the body.
+
+  Cell navigation is not free: every body cell registers itself with the focus registry and derives its own focus state, and a virtualized table pays that again for every row it mounts while scrolling. `'row'` keeps the body keyboard-reachable at one focus target per row — arrows walk rows, `Enter` presses one, `Space` toggles its selection — and `'none'` leaves the body inert. In both, focusable content inside a body cell (`Table.Checkbox`, links) becomes a regular tab stop, since no roving focus reaches it any more.
+
+  The header keeps its own cell navigation in every mode, so sorting and column resizing stay reachable.
+
+### Patch Changes
+
+- [#67](https://github.com/human-kit/ui/pull/67) [`96882a7`](https://github.com/human-kit/ui/commit/96882a7afb3677a64c127cc9a56af7b916e6ddb3) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Keep `left`/`right`-placed floating panels on screen when they fit on neither side.
+
+  `shift`'s main axis is the one running along the placement edge, and its cross axis is off by
+  default. For `top`/`bottom` placements that main axis is horizontal, so a dropdown too wide for
+  the viewport is pulled back into view. For `left`/`right` it is vertical — nothing pulled the
+  panel back horizontally, so one that fit on neither side stayed wherever the placement left it.
+
+  Submenus are exactly that case: they open `right-start` and flip to `left-start`, and on a phone
+  neither side has room, which put the panel off the edge of the screen entirely. The cross axis is
+  now enabled for the horizontal placements only — on `top`/`bottom` it is vertical, where shifting
+  would slide a dropdown over its own trigger and `flip` already does better — with `limitShift` so
+  a panel never slides far enough to detach from its anchor.
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
