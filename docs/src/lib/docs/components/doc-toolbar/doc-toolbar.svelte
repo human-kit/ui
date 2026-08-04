@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { ArrowLeft, ArrowRight, ChevronDown } from '@lucide/svelte';
+	import { ChevronDown, ChevronUp, Ellipsis } from '@lucide/svelte';
 	import { buttonVariants } from '../button/recipe';
 	import { Menu } from '../menu';
 	import { nav } from '../../nav.js';
@@ -17,7 +17,7 @@
 	const slug = $derived(page.params.slug ?? '');
 
 	// Flatten the nav (in sidebar order) to find the pages either side of this one
-	// for the ← / → buttons.
+	// for the ↑ / ↓ buttons — the chevrons match the sidebar's vertical order.
 	const flat = nav.flatMap((group) => group.items);
 	const index = $derived(flat.findIndex((item) => item.slug === slug));
 	const prev = $derived(index > 0 ? flat[index - 1] : null);
@@ -62,11 +62,11 @@
 			aria-label="Previous: {prev.title}"
 			title="Previous: {prev.title}"
 		>
-			<ArrowLeft />
+			<ChevronUp />
 		</a>
 	{:else}
 		<span class="{iconButton} pointer-events-none opacity-40" aria-hidden="true">
-			<ArrowLeft />
+			<ChevronUp />
 		</span>
 	{/if}
 
@@ -77,11 +77,11 @@
 			aria-label="Next: {next.title}"
 			title="Next: {next.title}"
 		>
-			<ArrowRight />
+			<ChevronDown />
 		</a>
 	{:else}
 		<span class="{iconButton} pointer-events-none opacity-40" aria-hidden="true">
-			<ArrowRight />
+			<ChevronDown />
 		</span>
 	{/if}
 
@@ -89,7 +89,7 @@
 	     dropdown from a compact toolbar doesn't need the page scrim, so overlay off. -->
 	<Menu.Root>
 		<Menu.Trigger variant="outline" size="icon-sm" aria-label="Page options">
-			<ChevronDown />
+			<Ellipsis />
 		</Menu.Trigger>
 		<Menu.Content placement="bottom-end" overlay={false}>
 			<Menu.Item onAction={openMarkdown}>
