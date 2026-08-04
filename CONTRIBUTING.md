@@ -66,6 +66,20 @@ publishes to npm automatically once merged to `main`.
 - Keep components accessible (keyboard navigation, ARIA, focus management).
 - Formatting is handled by Prettier; do not hand-format.
 
+## TODO files
+
+Every `*TODO.md` in the repo uses one checklist format, validated by
+`pnpm run todo:check` (which `pnpm run lint` also runs, so a malformed line
+fails CI).
+
+Each item carries, in order: status (`[ ]` / `[x]`), MoSCoW priority
+(`[M]` / `[S]` / `[C]` / `[W]`), execution priority (`[P0]`–`[P3]`), area,
+owner, target, and a short English description:
+
+```markdown
+- [ ] [M][P0][Area: Accessibility][Owner: @username][Target: 2026-04-30] Ensure keyboard trap works in nested dialogs.
+```
+
 ## Reporting bugs and requesting features
 
 Open an issue using the provided templates. For security issues, follow

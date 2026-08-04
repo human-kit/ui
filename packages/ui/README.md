@@ -45,7 +45,7 @@ Or import a single component via its subpath for the leanest bundle:
 
 | Category    | Components                                                                    |
 | ----------- | ----------------------------------------------------------------------------- |
-| Overlays    | `Dialog`, `Popover`, `Menu`, `Portal`                                         |
+| Overlays    | `Dialog`, `Drawer`, `Popover`, `Menu`, `Portal`                               |
 | Forms       | `Input`, `TextArea`, `Label`, `Checkbox`, `Switch`, `NumberField`, `Dropzone` |
 | Selection   | `ComboBox`, `Autocomplete`, `ListBox`, `Toggle`, `ToggleGroup`                |
 | Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`            |
@@ -58,11 +58,20 @@ Each component is also available as a subpath export (for example
 
 ## Styling
 
-Components ship class-based styles composed with
-[`tailwind-variants`](https://www.tailwind-variants.org/) and merged with
-[`tailwind-merge`](https://github.com/dcastil/tailwind-merge). A Tailwind CSS
-setup in the consuming app is expected for the default look, and every component
-accepts a `class` prop so you can override or extend styles.
+Components are headless: they ship no CSS and assume no framework. Each part
+takes a `class` and exposes its state as `data-*` attributes — `data-state`,
+`data-disabled`, `data-focus-visible`, `data-pressed` and so on — so you can
+style it with plain CSS, Tailwind, or anything else. Every component page in the
+docs lists its full data-attribute contract.
+
+```svelte
+<Button.Root class="rounded-md bg-black px-3 py-1.5 text-white data-[pressed]:opacity-80">
+	Save
+</Button.Root>
+```
+
+The only runtime dependency is [`@floating-ui/dom`](https://floating-ui.com), and
+only the components that position something against an anchor use it.
 
 ## Requirements
 
