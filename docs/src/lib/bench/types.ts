@@ -1,6 +1,11 @@
 import type { CoverageStats, FrameStats, LongTaskStats } from './metrics';
 
-export type BenchCellVariant = 'text' | 'rich';
+/**
+ * `text` writes the value straight into the cell, `wrap` adds the single
+ * wrapper element apps use to carry `title` and truncation, `rich` nests one
+ * more inside it.
+ */
+export type BenchCellVariant = 'text' | 'wrap' | 'rich';
 
 export type TableBenchConfig = {
 	/** Rows handed to `Table.Body` (the full list, not the rendered window). */
@@ -9,6 +14,8 @@ export type TableBenchConfig = {
 	columns: number;
 	/** `none` skips the selection column entirely. */
 	selectionMode: 'none' | 'single' | 'multiple';
+	/** How far the roving tab stop reaches into the body. */
+	keyboardNavigation: 'grid' | 'row' | 'none';
 	/** Whether every data column renders a `Table.ColumnResizer`. */
 	resizable: boolean;
 	/** Pins the first data column to the left when true. */
@@ -20,6 +27,18 @@ export type TableBenchConfig = {
 	overscan: number | undefined;
 	/** `rich` renders nested elements per cell, like a real app list. */
 	cellVariant: BenchCellVariant;
+	/**
+	 * Fixed px width per data column. Set it above `viewport / columns` to make
+	 * the table overflow horizontally, which is the only case where rendering
+	 * off-screen columns costs anything.
+	 */
+	columnWidth: number | undefined;
+	/**
+	 * Renders only the columns intersecting the horizontal viewport, with a
+	 * spacer column on each side holding the rest of the width. Needs
+	 * `columnWidth`; without it every column is already on screen.
+	 */
+	horizontalWindow: boolean;
 	/** Height of the scroll viewport, in px. */
 	viewportHeight: number;
 };
