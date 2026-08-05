@@ -75,6 +75,22 @@ describe('ListBox range selection over a virtualized list', () => {
 		expect(selectedRows()).toContain('Row 1');
 	});
 
+	it('reports the size of the collection, not the size of the window', async () => {
+		render(ListBoxVirtualRangeTest, { count: 2000 });
+		await expect.poll(() => option('Row 0')).toBeTruthy();
+
+		const rendered = listbox().querySelectorAll('[role="option"]');
+		// Without this a screen reader reads the window — "1 of 8" for a list of two thousand,
+		// since that is all the browser can see in the DOM.
+		expect(rendered.length).toBeLessThan(50);
+		expect(rendered[0]).toHaveAttribute('aria-setsize', '2000');
+		expect(rendered[0]).toHaveAttribute('aria-posinset', '1');
+
+		await scrollTo(200);
+		expect(option('Row 200')).toHaveAttribute('aria-posinset', '201');
+		expect(option('Row 200')).toHaveAttribute('aria-setsize', '2000');
+	});
+
 	it('cannot reach them without a getItemKey to read the collection with', async () => {
 		render(ListBoxVirtualRangeTest, { count: 500, withItemKey: false });
 		await expect.poll(() => option('Row 0')).toBeTruthy();

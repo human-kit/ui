@@ -144,7 +144,9 @@ Every part is unstyled and exposes its state as data attributes:
 
 ## Accessibility
 
+- **Name the Root.** Give it an `aria-label` or `aria-labelledby` and it renders `role="group"`, which is what tells assistive technology that the two lists and the buttons are one control rather than unrelated ones. Without a name the role is left off — an unlabelled group is skipped anyway, so claiming it would only add noise.
 - Each list is a `role="listbox"` with `aria-multiselectable="true"`, named by its `label`.
+- With `virtualizer`, each row carries `aria-setsize` and `aria-posinset` for the whole collection. Only a window of rows is in the DOM, so without them a screen reader announces the size of the window — "1 of 8" for a list of two thousand.
 - The move buttons are named after **where items go** ("Move selected to Selected"), not after a direction: an arrow glyph says nothing on its own, and "move right" is wrong the moment the layout is mirrored. Override with `aria-label`.
 - **`Enter` does not move an item.** In a multi-select listbox Enter and Space toggle the selection, and overriding that would break the contract every other list here keeps. `Ctrl`/`Cmd`+`Enter` is the shortcut instead, and each list advertises it with `aria-keyshortcuts`.
 - Every move, and every reorder, is announced through `TransferList.Status`. A reorder is otherwise completely silent: the rows are all still there, only their order changed.

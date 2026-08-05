@@ -478,6 +478,22 @@ describe('TransferList', () => {
 			expect(list('source')).toHaveAttribute('data-empty', 'true');
 		});
 
+		it('groups the two lists and the buttons once it has a name', async () => {
+			render(TransferListTest, { label: 'Visible columns' });
+
+			const root = document.querySelector('[data-transfer-list]')!;
+			expect(root).toHaveAttribute('role', 'group');
+			expect(root).toHaveAttribute('aria-label', 'Visible columns');
+		});
+
+		it('stays a plain element when there is no name to group under', async () => {
+			render(TransferListTest);
+
+			// An unlabelled group is skipped by assistive technology, so claiming the role
+			// without a name would only add noise.
+			expect(document.querySelector('[data-transfer-list]')).not.toHaveAttribute('role');
+		});
+
 		it('never reports a false focus state', async () => {
 			render(TransferListTest);
 

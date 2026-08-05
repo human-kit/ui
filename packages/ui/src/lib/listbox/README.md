@@ -26,8 +26,17 @@ In `selectionMode="multiple"`, Shift selects a range and Ctrl/Cmd adds a single 
   plain click would clear the rest.
 - Disabled options are never included.
 
-The range is measured over the options that exist in the DOM, so in a **virtualized** list it
-cannot reach rows that were never rendered.
+The range is measured over the options that exist in the DOM. In a **virtualized** list that is
+only the rendered window, so pass `getItemKey` alongside `virtualizer` and the range is measured
+over the whole collection instead — a range then spans rows that were never rendered, and the
+anchor survives being scrolled away.
+
+## Virtualized lists and assistive technology
+
+A virtualized list holds a handful of options, so the position and count a browser computes from
+the DOM describe the window rather than the collection — a screen reader would announce "1 of 8"
+for a list of two thousand. `ListBox` writes `aria-setsize` and `aria-posinset` onto the rendered
+rows with the real numbers.
 
 ## Anatomy
 

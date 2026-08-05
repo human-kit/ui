@@ -22,5 +22,8 @@ Track TransferList work with the repository TODO format.
 - [x] [S][P2][Area: Selection][Owner: Unassigned][Target: Done] Make range selection reach rows a virtualized list never rendered, by giving `ListBox` a `getItemKey` to measure the range over the collection instead of the DOM.
 - [x] [S][P2][Area: Interaction][Owner: Unassigned][Target: Done] Add `Ctrl`/`Cmd`+`Enter` to move the focused list's selection, advertised with `aria-keyshortcuts` and disableable with `moveShortcut`.
 - [x] [C][P2][Area: Performance][Owner: Unassigned][Target: Done] Add a 2000-row demo exercising the `virtualizer` pass-through on both sides.
+- [x] [M][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Render `role="group"` on the Root once it has a name, so the two lists and the buttons are one control rather than unrelated ones.
+- [ ] [S][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Decide between native `disabled` and `aria-disabled` on the move buttons: native removes them from the tab order, so half the actions are undiscoverable and the tab order shifts as the user works.
+- [ ] [S][P2][Area: Accessibility][Owner: Unassigned][Target: TBD] Announce `Cmd+Enter` rather than `Control+Enter` in `aria-keyshortcuts` on Apple platforms, where both are accepted.
 - [ ] [C][P3][Area: Interaction][Owner: Unassigned][Target: TBD] Evaluate drag and drop between the two lists as an alternative to the buttons.
 - [ ] [C][P3][Area: Interaction][Owner: Unassigned][Target: TBD] Evaluate whether a filter should also constrain reordering, which today edits the whole `value`.

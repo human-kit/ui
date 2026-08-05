@@ -58,6 +58,8 @@
 
 	let {
 		items,
+		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledBy,
 		getKey = (item: T) => (item as { id: TransferListKey }).id,
 		value = $bindable(),
 		defaultValue,
@@ -319,7 +321,17 @@
 	setTransferListContext(ctx);
 </script>
 
-<div class={className} data-transfer-list {...restProps}>
+<!-- Two listboxes and a row of buttons otherwise reach assistive technology as unrelated
+	controls. Named, they are one thing — but only when named: an unlabelled group is skipped,
+	so the role is added exactly when there is a name to hang on it. -->
+<div
+	class={className}
+	role={ariaLabel || ariaLabelledBy ? 'group' : undefined}
+	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledBy}
+	data-transfer-list
+	{...restProps}
+>
 	{@render children?.()}
 
 	{#if name}

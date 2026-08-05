@@ -335,6 +335,29 @@
 		});
 	}
 
+	/**
+	 * Tells assistive technology how big the list really is.
+	 *
+	 * A virtualized listbox holds a handful of options, so the position and count a browser
+	 * computes from the DOM describe the window rather than the collection — a screen reader
+	 * announces "1 of 8" for a list of two thousand. ARIA has `aria-setsize` /
+	 * `aria-posinset` for exactly this case, and only the list knows the real numbers.
+	 *
+	 * Written onto the rendered rows rather than passed down because the rows come from the
+	 * consumer's snippet; it is the same set of nodes the measurement above already reads,
+	 * and it re-runs whenever the window moves or the collection changes.
+	 */
+	function labelPositions() {
+		if (!listboxElement || !isVirtual) return;
+		const rows = listboxElement.querySelectorAll<HTMLElement>('[data-listbox-window] > *');
+		const setSize = String(itemsArray.length);
+		const from = listWindow?.from ?? 0;
+		rows.forEach((row, offset) => {
+			row.setAttribute('aria-setsize', setSize);
+			row.setAttribute('aria-posinset', String(from + offset + 1));
+		});
+	}
+
 	$effect(() => {
 		if (!isVirtual || !listboxElement) return;
 
@@ -347,6 +370,7 @@
 		const element = listboxElement;
 
 		measureRows();
+		labelPositions();
 
 		const observer = new ResizeObserver(() => {
 			untrack(() => {
@@ -355,6 +379,7 @@
 				}
 			});
 			measureRows();
+			labelPositions();
 		});
 
 		observer.observe(element);

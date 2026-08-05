@@ -13,6 +13,8 @@
 		moveShortcut?: boolean;
 		/** Applied to the source side, to exercise filtering. */
 		sourceQuery?: string;
+		/** Accessible name for the whole widget. */
+		label?: string;
 		onChange?: (value: TransferListKey[], details: TransferListMoveDetails) => void;
 	};
 
@@ -24,6 +26,7 @@
 		name,
 		moveShortcut,
 		sourceQuery = '',
+		label,
 		onChange
 	}: Props = $props();
 
@@ -48,6 +51,7 @@
 	{name}
 	{moveShortcut}
 	{onChange}
+	aria-label={label}
 >
 	<TransferList.Source label="Available" filter={matches}>
 		{#snippet children(fruit: Fruit)}

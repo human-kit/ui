@@ -70,6 +70,10 @@ falls to the `<body>`:
 
 ## Accessibility
 
+- Give the **Root** an `aria-label` or `aria-labelledby`. It then renders `role="group"`, which
+  is what tells assistive technology that the two lists and the buttons are one control rather
+  than unrelated ones. Without a name the role is left off: an unlabelled group is skipped
+  anyway, so claiming it would only add noise.
 - Each list is a `role="listbox"` with `aria-multiselectable="true"`, named by `label` — or by
   `aria-labelledby` when there is a visible heading.
 - The move buttons are named after where items go ("Move selected to Selected"), not after a
