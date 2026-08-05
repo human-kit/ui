@@ -24,6 +24,9 @@ export type MenuChangeReason = MenuOpenReason | MenuCloseReason;
 /** Where focus should land when the menu content opens. */
 export type MenuOpenFocusIntent = 'first' | 'last';
 
+/** A viewport point (`clientX`/`clientY`) the content can be anchored to instead of an element. */
+export type MenuAnchorPoint = { x: number; y: number };
+
 export type MenuOpenChangeDetails = {
 	reason: MenuChangeReason;
 	event?: Event;
@@ -59,6 +62,16 @@ export type MenuContext = {
 	/** Reference to the content (role="menu") element. */
 	contentRef: HTMLElement | null;
 
+	/**
+	 * Viewport point the content should be anchored to, or `null` to anchor to the
+	 * trigger element. Set by `Menu.ContextTrigger` from the pointer that opened the
+	 * menu; a keyboard open clears it so the panel lands on the surface itself
+	 * rather than wherever the pointer happened to be.
+	 */
+	anchorPoint: MenuAnchorPoint | null;
+	/** Whether this menu is opened as a context menu (right click / long press). */
+	isContextMenu: boolean;
+
 	/** Whether arrow navigation wraps around the ends. */
 	loop: boolean;
 	/** Whether typeahead is enabled. */
@@ -78,6 +91,10 @@ export type MenuContext = {
 	setTriggerRef: (el: HTMLElement | null) => void;
 	/** Set the content ref (used by Content). */
 	setContentRef: (el: HTMLElement | null) => void;
+	/** Anchors the content to a viewport point, or back to the trigger with `null`. */
+	setAnchorPoint: (point: MenuAnchorPoint | null) => void;
+	/** Declares this menu a context menu (used by ContextTrigger on mount/unmount). */
+	setContextMenu: (value: boolean) => void;
 
 	/** Toggle the menu open state. */
 	toggle: (reason?: MenuOpenReason, event?: Event) => void;

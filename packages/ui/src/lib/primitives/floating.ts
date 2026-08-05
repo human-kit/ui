@@ -6,8 +6,48 @@ import {
 	offset as offsetMiddleware,
 	size,
 	autoUpdate,
-	type Placement as FloatingPlacement
+	type Placement as FloatingPlacement,
+	type VirtualElement
 } from '@floating-ui/dom';
+
+/**
+ * What a floating panel can be positioned against: a real element, or a virtual
+ * one — an object that only knows how to report a rect. Floating UI supports
+ * both natively, in `computePosition` and in `autoUpdate` (which checks for a
+ * real element before observing it for resizes, and falls back to the virtual
+ * element's `contextElement` for the ancestor scroll listeners).
+ */
+export type FloatingAnchor = HTMLElement | VirtualElement | null;
+
+/**
+ * A zero-size anchor at a viewport point, for panels that follow the pointer
+ * instead of an element — a context menu at the cursor, a toolbar at a text
+ * selection.
+ *
+ * `contextElement` should be the surface the point was measured on: without it
+ * `autoUpdate` has no node whose scroll ancestors it can watch, so the panel
+ * would not track a scrolling container.
+ *
+ * Coordinates are viewport-relative (`clientX`/`clientY`) and positioning uses
+ * the `fixed` strategy, so the panel stays where the pointer was — which is what
+ * a native context menu does.
+ *
+ * Because the rect has no size, `--trigger-width` / `--trigger-height` resolve to
+ * `0px` on the panel. Everything else (`flip`, `shift`, `size`, the
+ * `--available-*` custom properties and `--transform-origin`) works unchanged,
+ * which is the whole reason to go through Floating UI rather than assigning
+ * `left`/`top` by hand.
+ */
+export function createPointAnchor(
+	x: number,
+	y: number,
+	contextElement?: Element | null
+): VirtualElement {
+	return {
+		getBoundingClientRect: () => new DOMRect(x, y, 0, 0),
+		...(contextElement ? { contextElement } : {})
+	};
+}
 
 /**
  * Placement options for floating elements.
@@ -150,7 +190,7 @@ function getTransformOrigin(placement: FloatingPlacement): string {
  * - `--available-height`: Available height between trigger and viewport edge
  * - `--transform-origin`: Coordinates for animations (e.g., "center top")
  */
-export function createFloating(anchorElement: HTMLElement | null, options: FloatingOptions = {}) {
+export function createFloating(anchorElement: FloatingAnchor, options: FloatingOptions = {}) {
 	// Thin wrapper over `floating` — the previous standalone implementation had
 	// drifted (it was missing `strategy: 'fixed'`, mispositioning portalled content).
 	return function action(floatingElement: HTMLElement) {
@@ -171,7 +211,7 @@ export function createFloating(anchorElement: HTMLElement | null, options: Float
  */
 export function floating(
 	floatingElement: HTMLElement,
-	options: { anchor: HTMLElement | null } & FloatingOptions
+	options: { anchor: FloatingAnchor } & FloatingOptions
 ) {
 	// Kept mutable so `updatePosition` always reads the CURRENT anchor/options.
 	// The previous version closed over the initial values: reactive changes to
@@ -266,7 +306,7 @@ export function floating(
 	start();
 
 	return {
-		update(newOptions: { anchor: HTMLElement | null } & FloatingOptions) {
+		update(newOptions: { anchor: FloatingAnchor } & FloatingOptions) {
 			const anchorChanged = newOptions.anchor !== currentOptions.anchor;
 			currentOptions = newOptions;
 

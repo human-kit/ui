@@ -7,6 +7,7 @@ import {
 	clearTriggerFocusState
 } from './focus-state';
 import type {
+	MenuAnchorPoint,
 	MenuCanonicalCloseReason,
 	MenuChangeReason,
 	MenuCloseReason,
@@ -54,6 +55,8 @@ export type MenuState = {
 export function createMenuState(options: CreateMenuStateOptions): MenuState {
 	let closeReason: MenuCanonicalCloseReason = $state('none');
 	let contentRef: HTMLElement | null = $state(null);
+	let anchorPoint: MenuAnchorPoint | null = $state(null);
+	let isContextMenu = $state(false);
 	let cleanupTriggerBlurListener: (() => void) | undefined;
 	let pendingTriggerCloseFocusFrame: number | undefined;
 
@@ -175,6 +178,9 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		// cancelled by the consumer must leave the menu's interaction state untouched.
 		keyboardNav.setCurrentId(null);
 		submenuIntent.cancel();
+		// Drop the pointer point too, so the next open doesn't reuse a stale cursor
+		// position — a keyboard reopen has to land on the trigger, not where the mouse was.
+		anchorPoint = null;
 		const triggerRef = options.getTriggerRef();
 		if (!triggerRef) return;
 		if (!TRIGGER_REFOCUS_REASONS.includes(reason)) return;
@@ -206,6 +212,14 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 
 	function setContentRef(el: HTMLElement | null) {
 		contentRef = el;
+	}
+
+	function setAnchorPoint(point: MenuAnchorPoint | null) {
+		anchorPoint = point;
+	}
+
+	function setContextMenu(value: boolean) {
+		isContextMenu = value;
 	}
 
 	let openFocusIntent: MenuOpenFocusIntent | null = null;
@@ -291,6 +305,12 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		get contentRef() {
 			return contentRef;
 		},
+		get anchorPoint() {
+			return anchorPoint;
+		},
+		get isContextMenu() {
+			return isContextMenu;
+		},
 		get loop() {
 			return options.getLoop();
 		},
@@ -305,6 +325,8 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		keyboardNav,
 		setTriggerRef,
 		setContentRef,
+		setAnchorPoint,
+		setContextMenu,
 		toggle,
 		open: openMenu,
 		close: closeMenu,

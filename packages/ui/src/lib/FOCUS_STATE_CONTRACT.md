@@ -57,6 +57,7 @@ The following components implement this contract:
 - **Popover** — trigger + content, restore focus on close.
 - **Dialog** — trigger + overlay/content, nested stack support.
 - **Drawer** — trigger + overlay/content, shares the modal layer stack with Dialog. Restore also covers the `swipe` close reason (resolves to `pointer`), and retries the trigger focus after `ariaHideOutside` lifts `inert`.
+- **Menu** — trigger + content, restore focus on close (`menu/root/focus-state.ts`). `Menu.ContextTrigger` is the same contract on a surface instead of a button: it registers as the trigger ref, so Escape and item selection restore focus to it. It is a tab stop by default so there is something to restore focus to.
 - **DatePicker** — segment spinbuttons, trigger, popover (calendar).
 - **TimePicker** — segment spinbuttons, trigger, popover (scrollable columns). Follows the same contract as DatePicker.
 - **Calendar** — grid cells with roving tabindex.

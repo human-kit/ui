@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'svelte';
 import type MenuRootComponent from './root/menu-root.svelte';
 import type MenuTriggerComponent from './trigger/menu-trigger.svelte';
+import type MenuContextTriggerComponent from './context-trigger/menu-context-trigger.svelte';
 import type MenuContentComponent from './content/menu-content.svelte';
 import type MenuOverlayComponent from './overlay/menu-overlay.svelte';
 import type MenuItemComponent from './item/menu-item.svelte';
@@ -16,6 +17,7 @@ export * as Menu from './index.parts.js';
 // Direct named exports for individual imports
 export { default as MenuRoot } from './root/menu-root.svelte';
 export { default as MenuTrigger } from './trigger/menu-trigger.svelte';
+export { default as MenuContextTrigger } from './context-trigger/menu-context-trigger.svelte';
 export { default as MenuContent } from './content/menu-content.svelte';
 export { default as MenuOverlay } from './overlay/menu-overlay.svelte';
 export { default as MenuItem } from './item/menu-item.svelte';
@@ -26,6 +28,7 @@ export { default as MenuSubmenuRoot } from './submenu/menu-submenu-root.svelte';
 export { default as MenuSubmenuTrigger } from './submenu/menu-submenu-trigger.svelte';
 export type MenuRootProps = ComponentProps<typeof MenuRootComponent>;
 export type MenuTriggerProps = ComponentProps<typeof MenuTriggerComponent>;
+export type MenuContextTriggerProps = ComponentProps<typeof MenuContextTriggerComponent>;
 export type MenuContentProps = ComponentProps<typeof MenuContentComponent>;
 export type MenuOverlayProps = ComponentProps<typeof MenuOverlayComponent>;
 export type MenuItemProps = ComponentProps<typeof MenuItemComponent>;
@@ -40,6 +43,7 @@ export {
 	getMenuContext,
 	setMenuContext,
 	useMenuContext,
+	type MenuAnchorPoint,
 	type MenuContext,
 	type MenuItemData,
 	type MenuCanonicalCloseReason,

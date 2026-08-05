@@ -1,6 +1,7 @@
 // Namespace parts for <Menu.Root>, <Menu.Content>, etc.
 export { default as Root } from './root/menu-root.svelte';
 export { default as Trigger } from './trigger/menu-trigger.svelte';
+export { default as ContextTrigger } from './context-trigger/menu-context-trigger.svelte';
 export { default as Content } from './content/menu-content.svelte';
 export { default as Overlay } from './overlay/menu-overlay.svelte';
 export { default as Item } from './item/menu-item.svelte';
