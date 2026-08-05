@@ -13,7 +13,7 @@
 <div class="flex flex-col items-center gap-3">
 	<Menu.Root>
 		<Menu.ContextTrigger
-			class="flex h-40 w-full max-w-sm items-center justify-center border border-dashed border-neutral-300 text-sm text-neutral-500 outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 data-[state=open]:border-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:focus-visible:outline-white dark:data-[state=open]:border-white"
+			class="flex h-40 w-full max-w-sm items-center justify-center border border-dashed border-neutral-300 px-6 text-center text-sm text-neutral-500 outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 data-[state=open]:border-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:focus-visible:outline-white dark:data-[state=open]:border-white"
 		>
 			Right click, long press, or press Shift+F10
 		</Menu.ContextTrigger>
