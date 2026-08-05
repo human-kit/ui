@@ -1,5 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, tick, untrack } from 'svelte';
 	import { createListBoxContext, type ListBoxContext } from './context';
 	import { trackInteractionModality } from '../../primitives/input-modality';
@@ -48,6 +49,9 @@
 		id?: string;
 		/** Accessible label for the listbox. Announced by screen readers. */
 		'aria-label'?: string;
+		/** Id of a visible element that labels the listbox. Use instead of `aria-label`
+		 *  when the list already has a heading on screen. */
+		'aria-labelledby'?: string;
 		/** Callback fired when the selection changes. */
 		onChange?: (value: Set<string | number>) => void;
 		/** Disable DOM focus handling on the root container for virtual-focus compositions. */
@@ -70,7 +74,10 @@
 		 * `overflow-y: auto`, as an unvirtualized long list would need anyway.
 		 */
 		virtualizer?: { rowHeight?: number; overscan?: number };
-	};
+	} & Omit<
+		HTMLAttributes<HTMLDivElement>,
+		'class' | 'children' | 'role' | 'id' | 'aria-label' | 'aria-labelledby' | 'onchange'
+	>;
 
 	let {
 		selectionBehavior = 'toggle',
@@ -86,13 +93,15 @@
 		class: className = '',
 		id,
 		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledBy,
 		onChange,
 		disableFocusHandling = false,
 		loop = false,
 		typeahead = false,
 		virtualizer,
 		context = $bindable(),
-		element = $bindable()
+		element = $bindable(),
+		...restProps
 	}: ListBoxProps & { context?: ListBoxContext; element?: HTMLElement } = $props();
 
 	let listboxElement: HTMLElement;
@@ -449,6 +458,7 @@
 	{id}
 	aria-multiselectable={selectionMode === 'multiple'}
 	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledBy}
 	class={className}
 	tabindex={disableFocusHandling ? undefined : focusWithin ? -1 : 0}
 	data-focus-within={focusWithin || undefined}
@@ -458,6 +468,7 @@
 	onmousedown={handleMouseDown}
 	onkeydown={handleKeyDown}
 	onscroll={handleScroll}
+	{...restProps}
 >
 	{#if header}
 		{@render header()}

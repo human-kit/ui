@@ -2,6 +2,25 @@ import { writable, type Writable } from 'svelte/store';
 
 export type KeyboardNavigationOrientation = 'vertical' | 'horizontal' | 'both';
 
+/**
+ * Why the focus moved, for consumers that do more than move a highlight.
+ *
+ * `extend` is set when the key was pressed with Shift held — the multi-select
+ * listbox pattern, where arrowing extends the selection from an anchor instead of
+ * just walking it. Programmatic moves (`focusNext()`, `focusById()`) carry no
+ * intent at all, so a consumer that ignores this argument behaves exactly as before.
+ */
+export type NavigationIntent = {
+	extend?: boolean;
+	/**
+	 * The item focus moved away from. Reported because the consumer cannot recover it
+	 * afterwards: `focusItem` focuses the element before it notifies, and the focused
+	 * element's own `focus` handler has already overwritten the consumer's idea of where
+	 * focus was by the time this runs.
+	 */
+	from?: string | number | null;
+};
+
 export type KeyboardNavigationOptions = {
 	/**
 	 * Orientation of the navigation
@@ -32,7 +51,11 @@ export type KeyboardNavigationOptions = {
 	/**
 	 * Callback when focused item changes
 	 */
-	onFocusChange?: (id: string | number | null, element: HTMLElement | null) => void;
+	onFocusChange?: (
+		id: string | number | null,
+		element: HTMLElement | null,
+		intent?: NavigationIntent
+	) => void;
 
 	/**
 	 * Callback for Ctrl+A (select all)
@@ -74,10 +97,10 @@ export type KeyboardNavigationReturn = {
 	action: (node: HTMLElement) => { destroy: () => void };
 
 	/** Programmatic navigation methods */
-	focusNext: () => void;
-	focusPrevious: () => void;
-	focusFirst: () => void;
-	focusLast: () => void;
+	focusNext: (intent?: NavigationIntent) => void;
+	focusPrevious: (intent?: NavigationIntent) => void;
+	focusFirst: (intent?: NavigationIntent) => void;
+	focusLast: (intent?: NavigationIntent) => void;
 	focusById: (id: string | number) => void;
 	setCurrentId: (id: string | number | null) => void;
 
@@ -186,11 +209,15 @@ export function createKeyboardNavigation(
 		return rawId;
 	}
 
-	function focusItem(element: HTMLElement | null) {
+	function focusItem(element: HTMLElement | null, intent?: NavigationIntent) {
+		let previousId: string | number | null = null;
+		focusedId.subscribe((value) => (previousId = value))();
+		const resolvedIntent = intent ? { ...intent, from: previousId } : undefined;
+
 		if (!element) {
 			focusedId.set(null);
 			focusedElement.set(null);
-			onFocusChange?.(null, null);
+			onFocusChange?.(null, null, resolvedIntent);
 			return;
 		}
 
@@ -201,7 +228,7 @@ export function createKeyboardNavigation(
 		// Note: tabIndex is controlled by Svelte via isFocused state
 		// We just call focus() and notify - the component will react to onFocusChange
 		element.focus();
-		onFocusChange?.(id, element);
+		onFocusChange?.(id, element, resolvedIntent);
 	}
 
 	function getCurrentIndex(): number {
@@ -221,7 +248,7 @@ export function createKeyboardNavigation(
 		return currentElement ? items.indexOf(currentElement) : -1;
 	}
 
-	function focusNext() {
+	function focusNext(intent?: NavigationIntent) {
 		items = getItems();
 		if (items.length === 0) return;
 
@@ -236,10 +263,10 @@ export function createKeyboardNavigation(
 			nextIdx = Math.min(currentIdx + 1, items.length - 1);
 		}
 
-		focusItem(items[nextIdx]);
+		focusItem(items[nextIdx], intent);
 	}
 
-	function focusPrevious() {
+	function focusPrevious(intent?: NavigationIntent) {
 		items = getItems();
 		if (items.length === 0) return;
 
@@ -254,19 +281,19 @@ export function createKeyboardNavigation(
 			prevIdx = Math.max(currentIdx - 1, 0);
 		}
 
-		focusItem(items[prevIdx]);
+		focusItem(items[prevIdx], intent);
 	}
 
-	function focusFirst() {
+	function focusFirst(intent?: NavigationIntent) {
 		items = getItems();
 		if (items.length === 0) return;
-		focusItem(items[0]);
+		focusItem(items[0], intent);
 	}
 
-	function focusLast() {
+	function focusLast(intent?: NavigationIntent) {
 		items = getItems();
 		if (items.length === 0) return;
-		focusItem(items[items.length - 1]);
+		focusItem(items[items.length - 1], intent);
 	}
 
 	function focusById(id: string | number) {
@@ -365,15 +392,20 @@ export function createKeyboardNavigation(
 					? ['ArrowUp']
 					: ['ArrowUp', 'ArrowLeft'];
 
+		// Shift turns a move into an extension of the selection from the anchor — the
+		// multi-select listbox pattern. The move itself is unchanged; only consumers that
+		// read the intent do anything extra with it.
+		const intent: NavigationIntent | undefined = event.shiftKey ? { extend: true } : undefined;
+
 		if (nextKeys.includes(key)) {
 			event.preventDefault();
-			focusNext();
+			focusNext(intent);
 			return;
 		}
 
 		if (prevKeys.includes(key)) {
 			event.preventDefault();
-			focusPrevious();
+			focusPrevious(intent);
 			return;
 		}
 
@@ -385,13 +417,13 @@ export function createKeyboardNavigation(
 		if (homeEndKeys) {
 			if (key === 'Home') {
 				event.preventDefault();
-				focusFirst();
+				focusFirst(intent);
 				return;
 			}
 
 			if (key === 'End') {
 				event.preventDefault();
-				focusLast();
+				focusLast(intent);
 				return;
 			}
 		}

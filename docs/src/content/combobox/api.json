@@ -483,6 +483,13 @@
 					"description": "Accessible label for the listbox. Announced by screen readers."
 				},
 				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of a visible element that labels the listbox. Use instead of `aria-label`\n when the list already has a heading on screen."
+				},
+				{
 					"name": "disableFocusHandling",
 					"type": "boolean",
 					"required": false,

@@ -234,6 +234,38 @@ const LOCALIZED_STRINGS = {
 		de: '{count} Ergebnisse verfügbar',
 		it: '{count} risultati disponibili'
 	},
+	'transferList.moveSelectedTo': {
+		en: 'Move selected to {label}',
+		es: 'Mover la selección a {label}',
+		pt: 'Mover a seleção para {label}',
+		fr: 'Déplacer la sélection vers {label}',
+		de: 'Auswahl nach {label} verschieben',
+		it: 'Sposta la selezione in {label}'
+	},
+	'transferList.moveAllTo': {
+		en: 'Move all to {label}',
+		es: 'Mover todo a {label}',
+		pt: 'Mover tudo para {label}',
+		fr: 'Tout déplacer vers {label}',
+		de: 'Alle nach {label} verschieben',
+		it: 'Sposta tutto in {label}'
+	},
+	'transferList.itemMoved': {
+		en: '1 item moved to {label}',
+		es: '1 elemento movido a {label}',
+		pt: '1 item movido para {label}',
+		fr: '1 élément déplacé vers {label}',
+		de: '1 Element nach {label} verschoben',
+		it: '1 elemento spostato in {label}'
+	},
+	'transferList.itemsMoved': {
+		en: '{count} items moved to {label}',
+		es: '{count} elementos movidos a {label}',
+		pt: '{count} itens movidos para {label}',
+		fr: '{count} éléments déplacés vers {label}',
+		de: '{count} Elemente nach {label} verschoben',
+		it: '{count} elementi spostati in {label}'
+	},
 	'segment.empty': {
 		en: 'Empty',
 		es: 'Vacío',

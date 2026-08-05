@@ -23,6 +23,7 @@ export { Table } from './table/index.js';
 export { Tabs } from './tabs/index.js';
 export { Toggle } from './toggle/index.js';
 export { ToggleGroup } from './toggle-group/index.js';
+export { TransferList } from './transfer-list/index.js';
 export { Tree } from './tree/index.js';
 
 // Simple components
@@ -60,6 +61,7 @@ export * from './table/index.js';
 export * from './tabs/index.js';
 export * from './toggle/index.js';
 export * from './toggle-group/index.js';
+export * from './transfer-list/index.js';
 export * from './tree/index.js';
 
 // Primitives
