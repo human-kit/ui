@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import ListBoxTest from './listbox-test.svelte';
+import ListBoxVirtualRangeTest from './listbox-virtual-range-test.svelte';
 
 /** Selected option labels, in list order. */
 function selectedLabels() {
@@ -32,6 +33,64 @@ async function clickWith(name: string, modifier: 'Shift' | 'Control') {
 	await userEvent.click(option(name));
 	await userEvent.keyboard(`{/${modifier}}`);
 }
+
+describe('ListBox range selection over a virtualized list', () => {
+	const listbox = () => document.querySelector<HTMLElement>('[role="listbox"]')!;
+
+	/** Scrolls the window onto `row` and waits for it to mount. */
+	async function scrollTo(row: number) {
+		listbox().scrollTop = row * 24;
+		await expect.poll(() => option(`Row ${row}`)).toBeTruthy();
+	}
+
+	function selectedRows() {
+		return Array.from(document.querySelectorAll('[role="option"][aria-selected="true"]')).map(
+			(element) => element.textContent?.trim()
+		);
+	}
+
+	it('spans rows that were unmounted when the range was made', async () => {
+		render(ListBoxVirtualRangeTest, { count: 500 });
+		await expect.poll(() => option('Row 0')).toBeTruthy();
+
+		// Only a window is ever on the page — that is what makes this range impossible to
+		// measure over the DOM.
+		expect(listbox().querySelectorAll('[role="option"]').length).toBeLessThan(50);
+
+		await userEvent.click(option('Row 0'));
+		await scrollTo(200);
+		expect(option('Row 0')).toBeUndefined();
+
+		await userEvent.keyboard('{Shift>}');
+		await userEvent.click(option('Row 200'));
+		await userEvent.keyboard('{/Shift}');
+
+		// The end of the range is selected and the row past it is not.
+		await expect.poll(() => selectedRows()).toContain('Row 200');
+		expect(selectedRows()).not.toContain('Row 201');
+
+		// And so is everything back at the start, none of which existed at click time.
+		await scrollTo(0);
+		await expect.poll(() => selectedRows()).toContain('Row 0');
+		expect(selectedRows()).toContain('Row 1');
+	});
+
+	it('cannot reach them without a getItemKey to read the collection with', async () => {
+		render(ListBoxVirtualRangeTest, { count: 500, withItemKey: false });
+		await expect.poll(() => option('Row 0')).toBeTruthy();
+
+		await userEvent.click(option('Row 0'));
+		await scrollTo(200);
+
+		await userEvent.keyboard('{Shift>}');
+		await userEvent.click(option('Row 200'));
+		await userEvent.keyboard('{/Shift}');
+
+		// The anchor is no longer in the DOM, so there is no range to measure and the click
+		// is left as a plain selection. Documented rather than silently half-working.
+		await expect.poll(() => selectedRows()).toEqual(['Row 200']);
+	});
+});
 
 describe('ListBox range selection', () => {
 	describe('pointer', () => {

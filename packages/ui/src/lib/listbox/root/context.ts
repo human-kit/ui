@@ -64,6 +64,15 @@ export type ListBoxContext = {
 	extendSelectionTo: (id: string | number) => void;
 	/** The item ranges are measured from, or `null` when there isn't one yet. */
 	getAnchorId: () => string | number | null;
+	/**
+	 * Registers the full list of keys, in list order, for a virtualized list.
+	 *
+	 * Ranges are otherwise measured over the options in the DOM, which in a virtualized
+	 * list is only the rendered window — a Shift range then stops at the edge of what
+	 * happens to be on screen. The ListBox supplies this when it has both `items` and a
+	 * `getItemKey` to read their keys with.
+	 */
+	setOrderedKeys: (read: (() => (string | number)[]) | null) => void;
 	/** Selects all enabled items (only works in multiple mode). */
 	selectAll: () => void;
 	/** Sets the selection programmatically (for controlled mode). */
@@ -154,6 +163,8 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	let selectedKeys = new Set<string | number>(options.initialSelection ?? []);
 	/** Where a Shift range starts: the last item selected without modifiers. */
 	let anchorId: string | number | null = null;
+	/** Set by a virtualized ListBox so ranges can reach rows that were never rendered. */
+	let readOrderedKeys: (() => (string | number)[]) | null = null;
 	const itemCallbacks = new Map<string | number, Set<(selected: boolean) => void>>();
 
 	// Item count tracking with subscription
@@ -176,21 +187,31 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		items.delete(id);
 		itemCallbacks.delete(id);
 		// A range measured from an item that no longer exists would silently select nothing.
-		if (anchorId === id) {
+		// In a virtualized list, though, unregistering is just scrolling away — the anchor is
+		// still part of the collection and has to survive, or a range made across a scroll
+		// collapses to the single option that ended it. The `anchorId` check comes first so
+		// the list order is only rebuilt for the one row that could matter.
+		if (anchorId === id && !getOrderedIds().includes(id)) {
 			anchorId = null;
 		}
 		notifyItemCountChange();
 	}
 
 	/**
-	 * Registered ids in list order.
+	 * Ids in list order.
 	 *
-	 * Sorted by DOM position when every item has an element on the page, because
-	 * registration order and render order diverge as soon as a keyed list is reordered.
-	 * Falls back to registration order rather than sorting a partial set, which would
-	 * interleave measured and unmeasured items into an order that matches neither.
+	 * A virtualized list registers the whole collection up front, because only its
+	 * rendered window exists in the DOM and a range measured over that stops wherever the
+	 * user happened to have scrolled.
+	 *
+	 * Otherwise: sorted by DOM position when every item has an element on the page,
+	 * because registration order and render order diverge as soon as a keyed list is
+	 * reordered. Falls back to registration order rather than sorting a partial set, which
+	 * would interleave measured and unmeasured items into an order that matches neither.
 	 */
 	function getOrderedIds(): (string | number)[] {
+		if (readOrderedKeys) return readOrderedKeys();
+
 		const entries = Array.from(items.entries());
 		const positioned = entries.filter(([, meta]) => meta.element?.isConnected);
 		if (positioned.length !== entries.length) {
@@ -507,6 +528,9 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		selectWithModifiers,
 		extendSelectionTo,
 		getAnchorId: () => anchorId,
+		setOrderedKeys: (read) => {
+			readOrderedKeys = read;
+		},
 		selectAll,
 		setSelection,
 		setFocusedId,

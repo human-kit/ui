@@ -13,6 +13,9 @@ unchanged.
 - Give each side a `label`: it names the list, the move buttons and the announcements.
 - Render each row with `TransferList.Item`, from the snippet the list hands you.
 - Use `TransferList.MoveSelected` and `TransferList.MoveAll` with `to="source" | "target"`.
+- Use `TransferList.MoveUp` / `TransferList.MoveDown` to order the right-hand list.
+- Give a side a `filter` predicate to show only part of it; the input driving it is yours.
+- Pass `name` on the Root to submit `value` through hidden inputs.
 - Add `TransferList.Status` so screen reader users hear what a move did.
 - Layout is yours: `TransferList.Root` renders a plain element, so arrange the two lists and
   the buttons with your own grid or flex.
@@ -43,8 +46,16 @@ rather than in `items` order.
   intact.
 - **Double click moves a row.** `Enter` deliberately does not: in a multi-select listbox Enter
   and Space toggle the selection, and overriding that would break the contract every other
-  list in the library keeps. The keyboard route is the buttons, which are in the tab order.
-- Shift+click and Shift+Arrow select a range — see `ListBox`.
+  list in the library keeps. `Ctrl`/`Cmd`+`Enter` is the shortcut instead — each list has one
+  destination, so it needs no direction and survives a mirrored layout. Disable it with
+  `moveShortcut={false}`.
+- Shift+click and Shift+Arrow select a range — see `ListBox`. With `virtualizer`, the range
+  still spans rows that were never rendered: the component hands `ListBox` its `getKey`.
+- A **filter** on a side changes what "move all" means: the rows on screen, not the whole
+  side. Moving items the user cannot see would be invisible work.
+- **Reordering** exists only on the right, where the order is state the user is building; the
+  left is the order `items` were given in. It edits the whole `value`, not what a filter is
+  showing.
 
 ## Focus after a move
 
@@ -99,4 +110,6 @@ falls to the `<body>`:
 - `TransferList.Item`
 - `TransferList.MoveSelected`
 - `TransferList.MoveAll`
+- `TransferList.MoveUp`
+- `TransferList.MoveDown`
 - `TransferList.Status`

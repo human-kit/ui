@@ -120,6 +120,7 @@ describe('TransferList', () => {
 			expect(onChange).toHaveBeenCalledTimes(1);
 			expect(onChange.mock.calls[0][0]).toEqual(['banana', 'grape']);
 			expect(onChange.mock.calls[0][1]).toEqual({
+				type: 'move',
 				keys: ['banana', 'grape'],
 				from: 'source',
 				to: 'target'
@@ -265,6 +266,185 @@ describe('TransferList', () => {
 
 			expect(labels('source')).toEqual([]);
 			expect(list('target').contains(document.activeElement)).toBe(true);
+		});
+	});
+
+	describe('filtering', () => {
+		it('shows only the matching items', async () => {
+			render(TransferListTest, { sourceQuery: 'an' });
+
+			expect(labels('source')).toEqual(['Banana', 'Orange']);
+		});
+
+		it('moves only what the filter is showing, not the whole side', async () => {
+			render(TransferListTest, { sourceQuery: 'an' });
+
+			await userEvent.click(button('Add all'));
+
+			expect(labels('target')).toEqual(['Banana', 'Orange']);
+			expect(labels('source')).toEqual([]);
+		});
+
+		it('disables move-all when the filter matches nothing', async () => {
+			render(TransferListTest, { sourceQuery: 'zzz' });
+
+			expect(labels('source')).toEqual([]);
+			expect(button('Add all')).toBeDisabled();
+		});
+	});
+
+	describe('reordering the target', () => {
+		it('moves the selection one position up and down', async () => {
+			render(TransferListTest, { defaultValue: ['apple', 'banana', 'cherry'] });
+
+			await userEvent.click(option('target', 'Cherry'));
+			await userEvent.click(button('Up'));
+			expect(labels('target')).toEqual(['Apple', 'Cherry', 'Banana']);
+
+			await userEvent.click(button('Down'));
+			expect(labels('target')).toEqual(['Apple', 'Banana', 'Cherry']);
+		});
+
+		it('keeps a selected block together', async () => {
+			render(TransferListTest, { defaultValue: ['apple', 'banana', 'cherry', 'grape'] });
+
+			await userEvent.click(option('target', 'Cherry'));
+			await userEvent.click(option('target', 'Grape'));
+			await userEvent.click(button('Up'));
+
+			expect(labels('target')).toEqual(['Apple', 'Cherry', 'Grape', 'Banana']);
+		});
+
+		it('stops at the ends instead of doing nothing quietly', async () => {
+			render(TransferListTest, { defaultValue: ['apple', 'banana'] });
+
+			await userEvent.click(option('target', 'Apple'));
+			expect(button('Up')).toBeDisabled();
+			expect(button('Down')).toBeEnabled();
+
+			await userEvent.click(button('Down'));
+			expect(labels('target')).toEqual(['Banana', 'Apple']);
+			expect(button('Down')).toBeDisabled();
+		});
+
+		it('is disabled while the right-hand list has no selection', async () => {
+			render(TransferListTest, { defaultValue: ['apple', 'banana'] });
+
+			expect(button('Up')).toBeDisabled();
+			expect(button('Down')).toBeDisabled();
+		});
+
+		it('keeps the selection so the button can be pressed again', async () => {
+			render(TransferListTest, { defaultValue: ['apple', 'banana', 'cherry'] });
+
+			await userEvent.click(option('target', 'Cherry'));
+			await userEvent.click(button('Up'));
+			await userEvent.click(button('Up'));
+
+			expect(labels('target')).toEqual(['Cherry', 'Apple', 'Banana']);
+		});
+
+		it('reports the reorder and announces it', async () => {
+			const onChange = vi.fn();
+			render(TransferListTest, { defaultValue: ['apple', 'banana'], onChange });
+
+			await userEvent.click(option('target', 'Banana'));
+			await userEvent.click(button('Up'));
+
+			expect(onChange.mock.calls[0][0]).toEqual(['banana', 'apple']);
+			expect(onChange.mock.calls[0][1]).toEqual({
+				type: 'reorder',
+				keys: ['banana'],
+				from: 'target',
+				to: 'target',
+				direction: 'up'
+			});
+			await expect.poll(statusText).toBe('1 item moved up');
+		});
+	});
+
+	describe('keyboard shortcut', () => {
+		it('sends the selection to the other list without leaving it', async () => {
+			render(TransferListTest);
+
+			await userEvent.click(option('source', 'Banana'));
+			await userEvent.keyboard('{Control>}{Enter}{/Control}');
+
+			expect(labels('target')).toEqual(['Banana']);
+		});
+
+		it('sends it back from the other side, with no direction to get wrong', async () => {
+			render(TransferListTest, { defaultValue: ['banana'] });
+
+			await userEvent.click(option('target', 'Banana'));
+			await userEvent.keyboard('{Control>}{Enter}{/Control}');
+
+			expect(labels('source')).toEqual(['Apple', 'Banana', 'Cherry', 'Grape', 'Orange']);
+			expect(labels('target')).toEqual([]);
+		});
+
+		it('leaves focus on the row that took the moved one place', async () => {
+			render(TransferListTest);
+
+			await userEvent.click(option('source', 'Banana'));
+			await userEvent.keyboard('{Control>}{Enter}{/Control}');
+
+			expect(document.activeElement).toBe(option('source', 'Cherry'));
+		});
+
+		it('does not toggle the option it fires on', async () => {
+			render(TransferListTest);
+
+			await userEvent.click(option('source', 'Banana'));
+			await userEvent.keyboard('{Control>}{Enter}{/Control}');
+
+			// Plain Enter still belongs to selection; the shortcut must not reach it.
+			expect(document.querySelectorAll('[role="option"][aria-selected="true"]')).toHaveLength(0);
+		});
+
+		it('does nothing while disabled', async () => {
+			render(TransferListTest, { moveShortcut: false });
+
+			await userEvent.click(option('source', 'Banana'));
+			await userEvent.keyboard('{Control>}{Enter}{/Control}');
+
+			expect(labels('target')).toEqual([]);
+		});
+
+		it('announces itself on each list', async () => {
+			render(TransferListTest);
+
+			expect(list('source')).toHaveAttribute('aria-keyshortcuts', 'Control+Enter');
+			expect(list('target')).toHaveAttribute('aria-keyshortcuts', 'Control+Enter');
+		});
+	});
+
+	describe('form integration', () => {
+		it('renders one hidden input per key, in order', async () => {
+			render(TransferListTest, { name: 'columns', defaultValue: ['cherry', 'apple'] });
+
+			const inputs = Array.from(
+				document.querySelectorAll<HTMLInputElement>('input[type="hidden"][name="columns"]')
+			);
+			expect(inputs.map((input) => input.value)).toEqual(['cherry', 'apple']);
+		});
+
+		it('keeps the inputs in step with the moves', async () => {
+			render(TransferListTest, { name: 'columns' });
+
+			await userEvent.click(option('source', 'Banana'));
+			await userEvent.click(button('Add'));
+
+			const inputs = Array.from(
+				document.querySelectorAll<HTMLInputElement>('input[type="hidden"][name="columns"]')
+			);
+			expect(inputs.map((input) => input.value)).toEqual(['banana']);
+		});
+
+		it('renders nothing without a name', async () => {
+			render(TransferListTest, { defaultValue: ['apple'] });
+
+			expect(document.querySelectorAll('input[type="hidden"]')).toHaveLength(0);
 		});
 	});
 

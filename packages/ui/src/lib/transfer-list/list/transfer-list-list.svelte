@@ -1,9 +1,9 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
-	import { untrack } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox';
 	import { setTransferListSide, useTransferListContext } from '../root/context';
-	import type { TransferListSide } from '../root/types';
+	import { oppositeSide, type TransferListSide } from '../root/types';
 
 	/**
 	 * The list behind TransferList.Source and TransferList.Target.
@@ -23,6 +23,14 @@
 		label: string;
 		/** Id of a visible heading, when the list already has one on screen. */
 		'aria-labelledby'?: string;
+		/**
+		 * Shows only the items this returns `true` for. The input that drives it is the
+		 * consumer's — this only decides what the list renders.
+		 *
+		 * "Move all" then means the rows on screen rather than the whole side, which is what
+		 * the button appears to promise while a filter is applied.
+		 */
+		filter?: (item: T, index: number) => boolean;
 		/** Rendered for each item on this side. */
 		children?: Snippet<[T]>;
 		/** Shown when the side has no items. Nothing is rendered when omitted. */
@@ -37,6 +45,7 @@
 		side,
 		label,
 		'aria-labelledby': ariaLabelledBy,
+		filter,
 		children,
 		emptyPlaceholder,
 		virtualizer,
@@ -52,8 +61,58 @@
 	let listContext = $state<ListBoxContext | undefined>();
 	let listElement = $state<HTMLElement | undefined>();
 
-	const items = $derived(ctx.getItems(side));
+	const allItems = $derived(ctx.getItems(side));
+	const items = $derived(filter ? allItems.filter(filter) : allItems);
 	const selection = $derived(ctx.getSelection(side));
+
+	// Reported so "move all" and the shortcut act on the rows the user can see. Registered at
+	// init too, because effects do not run on the server and the buttons would otherwise
+	// render disabled in the markup.
+	untrack(() => ctx.setVisibleKeys(side, items.map(ctx.getKey)));
+
+	$effect(() => {
+		ctx.setVisibleKeys(
+			side,
+			items.map((item) => ctx.getKey(item))
+		);
+		return () => ctx.setVisibleKeys(side, null);
+	});
+
+	/**
+	 * Sends this list's selection to the other one.
+	 *
+	 * Captured on the list rather than handed to `ListBox` as an `onkeydown`: the listbox
+	 * treats Enter as "toggle this option" in its own bubble-phase handler, so the shortcut
+	 * has to claim the event before it gets there.
+	 */
+	function handleShortcut(event: KeyboardEvent) {
+		if (!ctx.moveShortcut) return;
+		if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) return;
+
+		const keys = ctx.getMovableSelection(side);
+		if (keys.length === 0) return;
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		const destination = oppositeSide(side);
+		const index = items.findIndex((item) => ctx.getKey(item) === keys[0]);
+
+		ctx.move(keys, destination);
+
+		// Same rule as a double click: the rows the user was on are gone, so focus goes to
+		// whatever took their place, or follows them when this side empties.
+		void tick().then(() => {
+			if (!ctx.focusItemAt(side, index)) ctx.focusList(destination);
+		});
+	}
+
+	$effect(() => {
+		const element = listElement;
+		if (!element) return;
+		element.addEventListener('keydown', handleShortcut, true);
+		return () => element.removeEventListener('keydown', handleShortcut, true);
+	});
 
 	// Registered at init as well as reactively: effects do not run on the server, and the
 	// move buttons build their accessible name from this. Without the init call the markup
@@ -83,12 +142,14 @@
 	{items}
 	{virtualizer}
 	{children}
+	getItemKey={ctx.getKey}
 	selectionMode="multiple"
 	loop={false}
 	value={selection}
 	onChange={(next) => ctx.setSelection(side, Array.from(next))}
 	aria-label={ariaLabelledBy ? undefined : label}
 	aria-labelledby={ariaLabelledBy}
+	aria-keyshortcuts={ctx.moveShortcut ? 'Control+Enter' : undefined}
 	emptyPlaceholder={emptyPlaceholder ?? nothing}
 	class={className}
 	data-side={side}

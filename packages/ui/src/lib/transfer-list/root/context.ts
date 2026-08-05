@@ -52,6 +52,14 @@ export type TransferListContext<T = unknown> = {
 	 * side, are dropped rather than moved.
 	 */
 	move: (keys: Iterable<TransferListKey>, to: TransferListSide) => void;
+	/** Registers the keys a list is showing once its `filter` has run. */
+	setVisibleKeys: (side: TransferListSide, keys: TransferListKey[] | null) => void;
+	/** Shifts the right-hand selection one position within `value`. */
+	reorder: (direction: 'up' | 'down') => void;
+	/** Whether a reorder in that direction would change anything. */
+	canReorder: (direction: 'up' | 'down') => boolean;
+	/** Whether Ctrl/Cmd+Enter inside a list sends its selection to the other one. */
+	moveShortcut: boolean;
 	/** The last completed move, or `null` before the first one. Drives the live region. */
 	lastMove: TransferListMoveDetails | null;
 

@@ -55,6 +55,20 @@
 					"description": "Keys that cannot be moved off the side they are on."
 				},
 				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Name for the hidden inputs that carry `value`, so the field submits with the form\nwithout any wiring. One input per key, in order; nothing is rendered when the right\nis empty, which is how a multi-value field behaves natively."
+				},
+				{
+					"name": "moveShortcut",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether `Ctrl`/`Cmd`+`Enter` inside a list sends its selection to the other one.\n\nEach list has exactly one destination, so the shortcut needs no direction — which\nalso means it stays correct when the layout is mirrored. Turn it off if it collides\nwith something in the surrounding app."
+				},
+				{
 					"name": "class",
 					"type": "string",
 					"required": false,
@@ -93,6 +107,13 @@
 					"required": false,
 					"default": null,
 					"description": "Id of a visible heading, when the list already has one on screen."
+				},
+				{
+					"name": "filter",
+					"type": "(item: T, index: number) => boolean",
+					"required": false,
+					"default": null,
+					"description": "Shows only the items this returns `true` for. The input that drives it is the\nconsumer's — this only decides what the list renders.\n\n\"Move all\" then means the rows on screen rather than the whole side, which is what\nthe button appears to promise while a filter is applied."
 				},
 				{
 					"name": "children",
@@ -142,6 +163,13 @@
 					"required": false,
 					"default": null,
 					"description": "Id of a visible heading, when the list already has one on screen."
+				},
+				{
+					"name": "filter",
+					"type": "(item: T, index: number) => boolean",
+					"required": false,
+					"default": null,
+					"description": "Shows only the items this returns `true` for. The input that drives it is the\nconsumer's — this only decides what the list renders.\n\n\"Move all\" then means the rows on screen rather than the whole side, which is what\nthe button appears to promise while a filter is applied."
 				},
 				{
 					"name": "children",
@@ -255,6 +283,62 @@
 					"default": null,
 					"description": "Which list the items go to."
 				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button content — an arrow, a label, whatever the layout calls for."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "MoveUp",
+			"description": "Shifts the right-hand selection one position earlier in `value`. Disabled while nothing is selected there, or while the selection already starts the list.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Button content — an arrow, a label, whatever the layout calls for."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "CSS class for the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "Bindable reference to the rendered button element."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "MoveDown",
+			"description": "Shifts the right-hand selection one position later in `value`. Disabled while nothing is selected there, or while the selection already ends the list.",
+			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",

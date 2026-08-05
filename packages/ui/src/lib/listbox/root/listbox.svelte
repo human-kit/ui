@@ -17,6 +17,14 @@
 		emptyPlaceholder?: string | Snippet;
 		/** Iterable of items for dynamic rendering. Used with a snippet that receives each item. */
 		items?: Iterable<T>;
+		/**
+		 * Reads an item's key — the same value passed as `ListBox.Item`'s `id`.
+		 *
+		 * Only needed together with `virtualizer`: a Shift range is otherwise measured over
+		 * the options in the DOM, which for a virtualized list is just the rendered window,
+		 * so the range stops wherever the user happened to have scrolled.
+		 */
+		getItemKey?: (item: T) => string | number;
 		/** Keys of items that should be disabled and non-selectable. */
 		disabledKeys?: Iterable<string | number>;
 		/** Selection mode: 'single' allows one selection, 'multiple' allows many. */
@@ -83,6 +91,7 @@
 		selectionBehavior = 'toggle',
 		emptyPlaceholder = 'No items selected',
 		items,
+		getItemKey,
 		disabledKeys,
 		selectionMode = 'single',
 		value = $bindable(),
@@ -101,6 +110,11 @@
 		virtualizer,
 		context = $bindable(),
 		element = $bindable(),
+		onkeydown: onKeyDownExternal,
+		onmousedown: onMouseDownExternal,
+		onfocusin: onFocusInExternal,
+		onfocusout: onFocusOutExternal,
+		onscroll: onScrollExternal,
 		...restProps
 	}: ListBoxProps & { context?: ListBoxContext; element?: HTMLElement } = $props();
 
@@ -409,6 +423,16 @@
 	// on its input) can reach a row the window hasn't rendered yet.
 	ctx.setScrollIndexIntoView(scrollIndexIntoView);
 	ctx.setVirtualized(() => isVirtual);
+
+	// Only for a virtualized list: an unvirtualized one has every row on the page, and DOM
+	// order is the more truthful source there — it survives a keyed reorder that the items
+	// array has not caught up with.
+	$effect(() => {
+		const read = getItemKey;
+		if (!isVirtual || !read) return;
+		ctx.setOrderedKeys(() => itemsArray.map(read));
+		return () => ctx.setOrderedKeys(null);
+	});
 	let hasMounted = $state(false);
 	const registeredItemCount = $derived(hasMounted ? itemCount : ctx.getItemCount());
 	const shouldShowEmptyPlaceholder = $derived(
@@ -450,6 +474,24 @@
 			ctx.setFocusVisible(true);
 		}
 	}
+
+	/**
+	 * Runs the listbox's own handler and then the consumer's.
+	 *
+	 * The rest props are spread last so a consumer can reach the element, but that also
+	 * means an `onkeydown` of theirs would replace the one driving focus modality and
+	 * keyboard navigation. Composing keeps both, with the consumer able to opt out of the
+	 * rest by calling `stopImmediatePropagation`.
+	 */
+	function compose<E extends Event>(
+		internal: (event: E) => void,
+		external: ((event: E) => void) | null | undefined
+	) {
+		return (event: E) => {
+			internal(event);
+			external?.(event);
+		};
+	}
 </script>
 
 <div
@@ -463,11 +505,11 @@
 	tabindex={disableFocusHandling ? undefined : focusWithin ? -1 : 0}
 	data-focus-within={focusWithin || undefined}
 	use:keyboardAction
-	onfocusin={handleFocusIn}
-	onfocusout={handleFocusOut}
-	onmousedown={handleMouseDown}
-	onkeydown={handleKeyDown}
-	onscroll={handleScroll}
+	onfocusin={compose(handleFocusIn, onFocusInExternal)}
+	onfocusout={compose(handleFocusOut, onFocusOutExternal)}
+	onmousedown={compose(handleMouseDown, onMouseDownExternal)}
+	onkeydown={compose(handleKeyDown, onKeyDownExternal)}
+	onscroll={compose(handleScroll, onScrollExternal)}
 	{...restProps}
 >
 	{#if header}

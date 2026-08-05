@@ -9,6 +9,10 @@
 		defaultValue?: TransferListKey[];
 		controlledValue?: boolean;
 		disabledKeys?: TransferListKey[];
+		name?: string;
+		moveShortcut?: boolean;
+		/** Applied to the source side, to exercise filtering. */
+		sourceQuery?: string;
 		onChange?: (value: TransferListKey[], details: TransferListMoveDetails) => void;
 	};
 
@@ -17,6 +21,9 @@
 		defaultValue,
 		controlledValue,
 		disabledKeys,
+		name,
+		moveShortcut,
+		sourceQuery = '',
 		onChange
 	}: Props = $props();
 
@@ -27,6 +34,9 @@
 		{ id: 'grape', name: 'Grape' },
 		{ id: 'orange', name: 'Orange' }
 	];
+
+	const matches = (fruit: Fruit) =>
+		sourceQuery === '' || fruit.name.toLowerCase().includes(sourceQuery.toLowerCase());
 </script>
 
 <TransferList.Root
@@ -35,9 +45,11 @@
 	{defaultValue}
 	{controlledValue}
 	{disabledKeys}
+	{name}
+	{moveShortcut}
 	{onChange}
 >
-	<TransferList.Source label="Available">
+	<TransferList.Source label="Available" filter={matches}>
 		{#snippet children(fruit: Fruit)}
 			<TransferList.Item item={fruit} textValue={fruit.name}>{fruit.name}</TransferList.Item>
 		{/snippet}
@@ -53,6 +65,9 @@
 			<TransferList.Item item={fruit} textValue={fruit.name}>{fruit.name}</TransferList.Item>
 		{/snippet}
 	</TransferList.Target>
+
+	<TransferList.MoveUp>Up</TransferList.MoveUp>
+	<TransferList.MoveDown>Down</TransferList.MoveDown>
 
 	<TransferList.Status />
 </TransferList.Root>

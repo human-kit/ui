@@ -179,6 +179,13 @@
 					"description": "How selection behaves: 'toggle' allows deselection, 'replace' always selects."
 				},
 				{
+					"name": "getItemKey",
+					"type": "(item: T) => string | number",
+					"required": false,
+					"default": null,
+					"description": "Reads an item's key — the same value passed as `ListBox.Item`'s `id`.\n\nOnly needed together with `virtualizer`: a Shift range is otherwise measured over\nthe options in the DOM, which for a virtualized list is just the rendered window,\nso the range stops wherever the user happened to have scrolled."
+				},
+				{
 					"name": "disabledKeys",
 					"type": "Iterable<string | number>",
 					"required": false,

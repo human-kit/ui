@@ -36,6 +36,21 @@
 		if (formatMessage) return formatMessage(move, label);
 
 		const count = move.keys.length;
+
+		// A reorder is silent otherwise: the rows are still there, only their order changed,
+		// and nothing about that reaches a screen reader on its own.
+		if (move.type === 'reorder') {
+			const key =
+				move.direction === 'up'
+					? count === 1
+						? 'transferList.itemMovedUp'
+						: 'transferList.itemsMovedUp'
+					: count === 1
+						? 'transferList.itemMovedDown'
+						: 'transferList.itemsMovedDown';
+			return resolveLocalizedString($localeStore, key, { count });
+		}
+
 		return count === 1
 			? resolveLocalizedString($localeStore, 'transferList.itemMoved', { label })
 			: resolveLocalizedString($localeStore, 'transferList.itemsMoved', { count, label });
