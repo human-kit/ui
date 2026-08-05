@@ -16,6 +16,16 @@ function option(name: string) {
 	)!;
 }
 
+/**
+ * Moves the real pointer off the list before a keyboard sequence.
+ *
+ * A ListBox hands focus to whatever option the pointer is over, so a cursor left on a row by
+ * an earlier test silently moves the anchor out from under the keys being pressed.
+ */
+async function parkPointer() {
+	await userEvent.hover(document.querySelector<HTMLElement>('[data-testid="outside-input"]')!);
+}
+
 /** Clicks an option with modifier keys held, the way a real range selection is made. */
 async function clickWith(name: string, modifier: 'Shift' | 'Control') {
 	await userEvent.keyboard(`{${modifier}>}`);
@@ -99,6 +109,7 @@ describe('ListBox range selection', () => {
 	describe('keyboard', () => {
 		it('extends the selection with shift and the arrow keys', async () => {
 			render(ListBoxTest, { selectionMode: 'multiple' });
+			await parkPointer();
 
 			await userEvent.click(option('Banana'));
 			await userEvent.keyboard('{Shift>}{ArrowDown}{ArrowDown}{/Shift}');
@@ -108,6 +119,7 @@ describe('ListBox range selection', () => {
 
 		it('shrinks again when the arrows come back toward the anchor', async () => {
 			render(ListBoxTest, { selectionMode: 'multiple' });
+			await parkPointer();
 
 			await userEvent.click(option('Banana'));
 			await userEvent.keyboard('{Shift>}{ArrowDown}{ArrowDown}{ArrowUp}{/Shift}');
@@ -117,6 +129,7 @@ describe('ListBox range selection', () => {
 
 		it('extends to the ends with shift and Home / End', async () => {
 			render(ListBoxTest, { selectionMode: 'multiple' });
+			await parkPointer();
 
 			await userEvent.click(option('Cherry'));
 			await userEvent.keyboard('{Shift>}{End}{/Shift}');
@@ -128,6 +141,7 @@ describe('ListBox range selection', () => {
 
 		it('starts the range at the focused option when nothing was selected yet', async () => {
 			render(ListBoxTest, { selectionMode: 'multiple' });
+			await parkPointer();
 
 			// Focused rather than clicked: a click on the list lands on whichever option is
 			// under it and selects that one, which is the state this test is about not having.
@@ -141,6 +155,7 @@ describe('ListBox range selection', () => {
 
 		it('moves without selecting when shift is not held', async () => {
 			render(ListBoxTest, { selectionMode: 'multiple' });
+			await parkPointer();
 
 			// Focused rather than clicked: a click on the list lands on whichever option is
 			// under it and selects that one, which is the state this test is about not having.
