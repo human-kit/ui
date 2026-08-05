@@ -44,8 +44,8 @@
 
 	const buttonClass =
 		'inline-flex h-8 w-8 items-center justify-center border border-neutral-200 text-sm ' +
-		'text-neutral-700 transition-colors hover:bg-neutral-100 disabled:opacity-40 ' +
-		'disabled:hover:bg-transparent outline-none focus-visible:outline-solid ' +
+		'text-neutral-700 transition-colors hover:bg-neutral-100 aria-disabled:cursor-not-allowed ' +
+		'aria-disabled:opacity-40 aria-disabled:hover:bg-transparent outline-none focus-visible:outline-solid ' +
 		'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 ' +
 		'dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-800 ' +
 		'dark:focus-visible:outline-white';

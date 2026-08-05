@@ -32,6 +32,23 @@ function statusText() {
 	return document.querySelector('[data-transfer-list-status]')?.textContent?.trim();
 }
 
+/**
+ * A button with nothing to do says so with `aria-disabled` and stays in the tab order —
+ * natively disabling it would hide half the actions from anyone exploring with a keyboard.
+ */
+function expectUnavailable(element: HTMLButtonElement) {
+	expect(element).toHaveAttribute('aria-disabled', 'true');
+	expect(element).toHaveAttribute('data-disabled', 'true');
+	// The native attribute is what removes an element from the tab order, so its absence is
+	// the whole point — `toBeDisabled` would not tell them apart, since it reads either.
+	expect(element).not.toHaveAttribute('disabled');
+}
+
+function expectAvailable(element: HTMLButtonElement) {
+	expect(element).not.toHaveAttribute('aria-disabled');
+	expect(element).not.toHaveAttribute('disabled');
+}
+
 /** Clicks an option with Shift held, to select a range. */
 async function shiftClick(side: 'source' | 'target', name: string) {
 	await userEvent.keyboard('{Shift>}');
@@ -106,7 +123,7 @@ describe('TransferList', () => {
 			await userEvent.click(button('Add'));
 
 			expect(document.querySelectorAll('[role="option"][aria-selected="true"]')).toHaveLength(0);
-			expect(button('Remove')).toBeDisabled();
+			expectUnavailable(button('Remove'));
 		});
 
 		it('reports the new value and what moved', async () => {
@@ -182,20 +199,20 @@ describe('TransferList', () => {
 		it('disables move-selected until something movable is selected', async () => {
 			render(TransferListTest);
 
-			expect(button('Add')).toBeDisabled();
+			expectUnavailable(button('Add'));
 
 			await userEvent.click(option('source', 'Banana'));
-			expect(button('Add')).toBeEnabled();
+			expectAvailable(button('Add'));
 		});
 
 		it('disables move-all when the side it drains is empty', async () => {
 			render(TransferListTest);
 
-			expect(button('Remove all')).toBeDisabled();
+			expectUnavailable(button('Remove all'));
 
 			await userEvent.click(button('Add all'));
-			expect(button('Add all')).toBeDisabled();
-			expect(button('Remove all')).toBeEnabled();
+			expectUnavailable(button('Add all'));
+			expectAvailable(button('Remove all'));
 		});
 
 		it('disables move-all when every remaining item is pinned', async () => {
@@ -205,7 +222,7 @@ describe('TransferList', () => {
 
 			// Only the disabled Cherry is left, so there is nothing more to move.
 			expect(labels('source')).toEqual(['Cherry']);
-			expect(button('Add all')).toBeDisabled();
+			expectUnavailable(button('Add all'));
 		});
 
 		it('names the buttons after the list items go to', async () => {
@@ -219,16 +236,17 @@ describe('TransferList', () => {
 	});
 
 	describe('focus after a move', () => {
-		it('follows the items when the button it was on goes disabled', async () => {
+		it('stays on the button, which keeps holding focus after it runs out of work', async () => {
 			render(TransferListTest);
 
 			await userEvent.click(option('source', 'Banana'));
 			await userEvent.click(button('Add'));
 
-			// Clearing the selection leaves the button with nothing to move, and a disabled
-			// button cannot hold focus — without the hand-off it would land on <body>.
-			expect(button('Add')).toBeDisabled();
-			expect(list('target').contains(document.activeElement)).toBe(true);
+			// The move clears the selection, so this button has nothing left to do — but
+			// `aria-disabled` keeps it focusable, so focus simply stays where the press was
+			// instead of having to be handed elsewhere to keep it off the <body>.
+			expectUnavailable(button('Add'));
+			expect(document.activeElement).toBe(button('Add'));
 		});
 
 		it('stays on the button when a controlled parent rejects the move', async () => {
@@ -237,10 +255,18 @@ describe('TransferList', () => {
 			await userEvent.click(option('source', 'Banana'));
 			await userEvent.click(button('Add'));
 
-			// Nothing moved and the selection still stands, so the button is still live and
-			// there is no reason to take focus away from it.
-			expect(button('Add')).toBeEnabled();
+			expectAvailable(button('Add'));
 			expect(document.activeElement).toBe(button('Add'));
+		});
+
+		it('keeps every action reachable by keyboard, available or not', async () => {
+			render(TransferListTest);
+
+			// Nothing is selected, so most of these have no work — and would be gone from the
+			// tab order entirely if they were natively disabled.
+			for (const name of ['Add', 'Add all', 'Remove all', 'Remove', 'Up', 'Down']) {
+				expect(button(name)).not.toHaveAttribute('disabled');
+			}
 		});
 
 		it('lands on the row that took the place of a double-clicked item', async () => {
@@ -289,7 +315,7 @@ describe('TransferList', () => {
 			render(TransferListTest, { sourceQuery: 'zzz' });
 
 			expect(labels('source')).toEqual([]);
-			expect(button('Add all')).toBeDisabled();
+			expectUnavailable(button('Add all'));
 		});
 	});
 
@@ -319,19 +345,19 @@ describe('TransferList', () => {
 			render(TransferListTest, { defaultValue: ['apple', 'banana'] });
 
 			await userEvent.click(option('target', 'Apple'));
-			expect(button('Up')).toBeDisabled();
-			expect(button('Down')).toBeEnabled();
+			expectUnavailable(button('Up'));
+			expectAvailable(button('Down'));
 
 			await userEvent.click(button('Down'));
 			expect(labels('target')).toEqual(['Banana', 'Apple']);
-			expect(button('Down')).toBeDisabled();
+			expectUnavailable(button('Down'));
 		});
 
 		it('is disabled while the right-hand list has no selection', async () => {
 			render(TransferListTest, { defaultValue: ['apple', 'banana'] });
 
-			expect(button('Up')).toBeDisabled();
-			expect(button('Down')).toBeDisabled();
+			expectUnavailable(button('Up'));
+			expectUnavailable(button('Down'));
 		});
 
 		it('keeps the selection so the button can be pressed again', async () => {

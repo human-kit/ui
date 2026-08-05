@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
-	import { tick } from 'svelte';
 	import { readable } from 'svelte/store';
 	import { ButtonRoot } from '../../button';
 	import { resolveLocalizedString } from '../../internal/localized-strings';
@@ -74,20 +73,10 @@
 
 	let buttonRef = $state<HTMLButtonElement | null>(null);
 
-	async function handleClick(
-		event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }
-	) {
-		if (!disabled) {
-			ctx.move(keys, to);
-			await tick();
-
-			// Focus stays on the button — the user is likely to press it again. Unless it just
-			// ran out of items, in which case a disabled button cannot hold focus and it would
-			// be dropped on the <body>; then it follows the items to where they landed.
-			if (buttonRef?.disabled) {
-				ctx.focusList(to);
-			}
-		}
+	function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+		// Focus stays on the button, as it does for any button press. Nothing has to be handed
+		// off, because `aria-disabled` leaves it focusable.
+		if (!disabled) ctx.move(keys, to);
 		onClickExternal?.(event);
 	}
 
@@ -96,9 +85,14 @@
 	});
 </script>
 
+<!-- `aria-disabled` rather than the native attribute: a move button spends most of its life
+	unavailable, and a natively disabled one leaves the tab order entirely. Half the actions
+	would be undiscoverable to someone exploring with a keyboard, and the tab order would
+	shift under them as they work. -->
 <ButtonRoot
 	bind:element={buttonRef}
 	{disabled}
+	focusableWhenDisabled
 	aria-label={ariaLabelExternal ?? defaultLabel}
 	data-transfer-move={scope}
 	data-direction={to === 'target' ? 'to-target' : 'to-source'}

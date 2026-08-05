@@ -59,14 +59,12 @@ rather than in `items` order.
 
 ## Focus after a move
 
-The rows the user was working with disappear, so focus has to be placed deliberately or it
-falls to the `<body>`:
-
-- From a button, focus stays on the button while it still has something to move. Since a move
-  clears the selection, that button usually goes disabled — and then focus follows the items
-  to the destination list.
-- From a double click, focus lands on the row that took the moved one's place (or the last
-  row, if it was the last). When the side empties, it follows the items instead.
+- From a button, focus stays on the button, as it does for any button press. The buttons are
+  `aria-disabled` rather than natively disabled, so one that has just run out of work can
+  still hold it.
+- From a double click or the keyboard shortcut, the row the user was on is gone, so focus
+  lands on whichever row took its place (or the last row, if it was the last). When the side
+  empties, it follows the items to the destination list rather than falling to the `<body>`.
 
 ## Accessibility
 
@@ -76,6 +74,10 @@ falls to the `<body>`:
   anyway, so claiming it would only add noise.
 - Each list is a `role="listbox"` with `aria-multiselectable="true"`, named by `label` — or by
   `aria-labelledby` when there is a visible heading.
+- The move buttons carry `aria-disabled` rather than the native attribute, so they stay in the
+  tab order when they have nothing to do. These controls are unavailable more often than not,
+  and natively disabling them would hide half the actions from a keyboard user and shift the
+  tab order underfoot. Style them with `data-disabled` — `:disabled` will never match.
 - The move buttons are named after where items go ("Move selected to Selected"), not after a
   direction: an arrow glyph says nothing on its own, and "move right" is wrong the moment the
   layout is mirrored. Override with `aria-label`.

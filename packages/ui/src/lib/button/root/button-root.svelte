@@ -27,6 +27,16 @@
 		pending?: boolean | null;
 		/** Disables the button natively. */
 		disabled?: boolean | null;
+		/**
+		 * Keeps a disabled button in the tab order, marking it `aria-disabled` instead of
+		 * using the native attribute. Activation is still blocked.
+		 *
+		 * For controls that are unavailable more often than not — the move buttons of a
+		 * transfer list, a toolbar that reacts to a selection. Natively disabling those hides
+		 * them from anyone exploring with a keyboard, and shifts the tab order underfoot as
+		 * the user works. Unlike `pending`, this says "not applicable", not "busy".
+		 */
+		focusableWhenDisabled?: boolean | null;
 		/** Bindable reference to the rendered button element. */
 		element?: HTMLButtonElement | null;
 		/** Overrides the internally tracked pressed state. */
@@ -69,6 +79,7 @@
 		class: className = '',
 		pending: pendingProp = false,
 		disabled: disabledProp = false,
+		focusableWhenDisabled: focusableWhenDisabledProp = false,
 		element = $bindable<HTMLButtonElement | null>(null),
 		pressed: pressedOverride,
 		onclick: onClickExternal,
@@ -96,6 +107,8 @@
 
 	const disabled = $derived(Boolean(disabledProp));
 	const pending = $derived(Boolean(pendingProp));
+	const focusableWhenDisabled = $derived(Boolean(focusableWhenDisabledProp));
+	const nativelyDisabled = $derived(disabled && !focusableWhenDisabled);
 
 	let buttonRef: HTMLButtonElement | null = $state(null);
 	let hovered = $state(false);
@@ -341,7 +354,10 @@
 			trackInteractionModality(event, buttonRef);
 		}
 
-		if (pending) {
+		// `disabled` matters here only in the focusable case: a natively disabled button never
+		// dispatches a click at all. Preventing default also stops the consumer's handler,
+		// which is what `skipExternalOnDefaultPrevented` is for.
+		if (pending || disabled) {
 			event.preventDefault();
 			clearInteractionState();
 		}
@@ -353,10 +369,10 @@
 	bind:this={buttonRef}
 	id={resolvedId}
 	type={renderedType}
-	{disabled}
+	disabled={nativelyDisabled}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
-	aria-disabled={pending ? 'true' : undefined}
+	aria-disabled={pending || (disabled && focusableWhenDisabled) ? 'true' : undefined}
 	aria-busy={pending ? 'true' : undefined}
 	data-button-root="true"
 	data-disabled={disabled || undefined}

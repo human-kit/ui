@@ -67,9 +67,13 @@
 	});
 </script>
 
+<!-- `aria-disabled` rather than the native attribute, for the same reason as the move buttons:
+	these are unavailable more often than not, and dropping out of the tab order each time
+	would move the ground under a keyboard user. -->
 <ButtonRoot
 	bind:element={buttonRef}
 	{disabled}
+	focusableWhenDisabled
 	aria-label={ariaLabelExternal ?? defaultLabel}
 	data-transfer-reorder={direction}
 	onclick={handleClick}

@@ -138,12 +138,15 @@ Every part is unstyled and exposes its state as data attributes:
 | `Item`             | `data-selected`, `data-disabled`, `data-focused`, `data-focus-visible`, `data-hovered`, `data-pressed`    |
 | `MoveSelected` `MoveAll` | `data-transfer-move="selected \| all"`, `data-direction="to-target \| to-source"`, `data-disabled`  |
 | `MoveUp` `MoveDown` | `data-transfer-reorder="up \| down"`, `data-disabled`                                                   |
+
+The move buttons are **`aria-disabled`, not natively disabled**, so style them with `data-disabled` or `aria-disabled:` rather than `:disabled` — a `disabled:opacity-40` will never match.
 | `Status`           | `data-transfer-list-status`                                                                              |
 
 `data-side` is what lets one class style both lists and still tell them apart.
 
 ## Accessibility
 
+- **The move buttons stay in the tab order even with nothing to do.** They carry `aria-disabled` rather than the native attribute: these controls are unavailable more often than not, and natively disabling them would hide half the actions from anyone exploring with a keyboard while shifting the tab order underfoot. Activation is still blocked, and focus stays on the button after a press, as it does for any button.
 - **Name the Root.** Give it an `aria-label` or `aria-labelledby` and it renders `role="group"`, which is what tells assistive technology that the two lists and the buttons are one control rather than unrelated ones. Without a name the role is left off — an unlabelled group is skipped anyway, so claiming it would only add noise.
 - Each list is a `role="listbox"` with `aria-multiselectable="true"`, named by its `label`.
 - With `virtualizer`, each row carries `aria-setsize` and `aria-posinset` for the whole collection. Only a window of rows is in the DOM, so without them a screen reader announces the size of the window — "1 of 8" for a list of two thousand.

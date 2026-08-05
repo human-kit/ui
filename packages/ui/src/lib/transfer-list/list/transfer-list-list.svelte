@@ -1,6 +1,7 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
 	import { tick, untrack } from 'svelte';
+	import { isApplePlatform } from '../../internal/environment';
 	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox';
 	import { setTransferListSide, useTransferListContext } from '../root/context';
 	import { oppositeSide, type TransferListSide } from '../root/types';
@@ -78,6 +79,10 @@
 		return () => ctx.setVisibleKeys(side, null);
 	});
 
+	// Both keys work everywhere — only the name changes, so an Apple user is not told to press
+	// a modifier their keyboard uses for something else.
+	const shortcutName = isApplePlatform ? 'Meta+Enter' : 'Control+Enter';
+
 	/**
 	 * Sends this list's selection to the other one.
 	 *
@@ -149,7 +154,7 @@
 	onChange={(next) => ctx.setSelection(side, Array.from(next))}
 	aria-label={ariaLabelledBy ? undefined : label}
 	aria-labelledby={ariaLabelledBy}
-	aria-keyshortcuts={ctx.moveShortcut ? 'Control+Enter' : undefined}
+	aria-keyshortcuts={ctx.moveShortcut ? shortcutName : undefined}
 	emptyPlaceholder={emptyPlaceholder ?? nothing}
 	class={className}
 	data-side={side}

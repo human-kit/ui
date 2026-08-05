@@ -34,6 +34,13 @@
 					"description": "Disables the button natively."
 				},
 				{
+					"name": "focusableWhenDisabled",
+					"type": "boolean | null",
+					"required": false,
+					"default": "false",
+					"description": "Keeps a disabled button in the tab order, marking it `aria-disabled` instead of\nusing the native attribute. Activation is still blocked.\n\nFor controls that are unavailable more often than not — the move buttons of a\ntransfer list, a toolbar that reacts to a selection. Natively disabling those hides\nthem from anyone exploring with a keyboard, and shifts the tab order underfoot as\nthe user works. Unlike `pending`, this says \"not applicable\", not \"busy\"."
+				},
+				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
