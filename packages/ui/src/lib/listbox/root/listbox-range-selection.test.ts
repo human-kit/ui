@@ -153,6 +153,22 @@ describe('ListBox range selection', () => {
 			expect(selectedLabels()).toEqual(['Banana', 'Cherry']);
 		});
 
+		it('marks the row it lands on as focus-visible, so a ring can be drawn', async () => {
+			render(ListBoxTest, { selectionMode: 'multiple' });
+			await parkPointer();
+
+			document.querySelector<HTMLElement>('[role="listbox"]')!.focus();
+			await userEvent.keyboard('{Home}{ArrowDown}');
+
+			const focused = document.querySelector('[role="option"][data-focus-visible]');
+			expect(focused?.textContent?.trim()).toBe('Banana');
+
+			await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}');
+			expect(
+				document.querySelector('[role="option"][data-focus-visible]')?.textContent?.trim()
+			).toBe('Cherry');
+		});
+
 		it('moves without selecting when shift is not held', async () => {
 			render(ListBoxTest, { selectionMode: 'multiple' });
 			await parkPointer();
