@@ -98,6 +98,86 @@
 			]
 		},
 		{
+			"name": "ContextTrigger",
+			"description": "A surface that opens the menu on right click, long press, or Shift+F10 — anchored at the pointer. Renders a plain element rather than a button, so it can wrap arbitrary content.",
+			"props": [
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Whether the surface is disabled. The browser's own context menu is left alone."
+				},
+				{
+					"name": "longPress",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether a long press opens the menu on touch and pen."
+				},
+				{
+					"name": "longPressDelay",
+					"type": "number",
+					"required": false,
+					"default": "LONG_PRESS_DELAY_MS",
+					"description": "How long a touch has to be held, in ms."
+				},
+				{
+					"name": "preventTouchCallout",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Whether to suppress the iOS text callout / selection on the surface. Long press\nis unusable there without it; turn it off if the surface contains text the user\nis meant to select."
+				},
+				{
+					"name": "tabindex",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "Tab order position. Defaults to `0` so keyboard users can reach the surface and\nopen the menu with Shift+F10. Pass `-1` when the surface lives inside a composite\nthat already manages focus with a roving tabindex (a table, a tree)."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": ""
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-context-trigger",
+					"description": "Present on every context-menu surface."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the surface is disabled, leaving the browser's own menu in place."
+				},
+				{
+					"name": "data-menu-trigger",
+					"description": "Present on any element that opens a menu, context or not."
+				},
+				{
+					"name": "data-state",
+					"description": "`open` or `closed`."
+				}
+			]
+		},
+		{
 			"name": "Content",
 			"description": "The floating role=\"menu\" panel. Renders in a portal and positions itself against the trigger; also used as the panel of a submenu.",
 			"props": [
@@ -105,8 +185,8 @@
 					"name": "offset",
 					"type": "number",
 					"required": false,
-					"default": "4",
-					"description": "Offset along the main axis from the trigger element."
+					"default": null,
+					"description": "Offset along the main axis from the trigger element. Defaults to `4`, or to `0`\n for a context menu, which sits at the pointer like a native one."
 				},
 				{
 					"name": "placement",

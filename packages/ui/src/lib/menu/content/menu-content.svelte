@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onDestroy, tick } from 'svelte';
 	import { browser } from '../../internal/environment';
-	import { floating, type ExtendedPlacement } from '../../primitives/floating';
+	import { createPointAnchor, floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { clickOutside, isTargetInTopLayerAbove } from '../../primitives/click-outside';
 	import { scrollLock } from '../../primitives/scroll-lock';
 	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
@@ -18,7 +18,8 @@
 	 * Rendered in a Portal, positioned against the trigger.
 	 */
 	type MenuContentProps = {
-		/** Offset along the main axis from the trigger element. */
+		/** Offset along the main axis from the trigger element. Defaults to `4`, or to `0`
+		 *  for a context menu, which sits at the pointer like a native one. */
 		offset?: number;
 		/** Placement relative to the trigger element. Defaults to `bottom-start`
 		 *  for a root menu and `right-start` for a submenu. */
@@ -38,7 +39,7 @@
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children' | 'role'>;
 
 	let {
-		offset = 4,
+		offset,
 		placement,
 		shouldFlip = true,
 		boundaryElement = null,
@@ -55,6 +56,16 @@
 	const triggerRef = $derived(ctx.triggerRef);
 	const resolvedPlacementProp = $derived(
 		placement ?? (ctx.parent ? 'right-start' : 'bottom-start')
+	);
+	// A context menu opens AT the pointer, so the anchor is a zero-size point rather than
+	// the surface, and it sits flush against it — the 4px gap a dropdown keeps from its
+	// button would read as the panel drifting away from the cursor. The default placement
+	// (`bottom-start`) already matches how a native context menu unfolds down and to the
+	// right, and `flip`/`shift` handle the viewport edges.
+	const resolvedOffset = $derived(offset ?? (ctx.isContextMenu ? 0 : 4));
+	const anchorPoint = $derived(ctx.anchorPoint);
+	const resolvedAnchor = $derived(
+		anchorPoint ? createPointAnchor(anchorPoint.x, anchorPoint.y, triggerRef) : triggerRef
 	);
 
 	let menuRef: HTMLElement | undefined = $state();
@@ -261,8 +272,8 @@
 			data-exiting={presence.isExiting || undefined}
 			data-placement={resolvedPlacement}
 			use:floating={{
-				anchor: triggerRef,
-				offset,
+				anchor: resolvedAnchor,
+				offset: resolvedOffset,
 				placement: resolvedPlacementProp,
 				shouldFlip,
 				boundaryElement,

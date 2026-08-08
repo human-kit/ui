@@ -1,6 +1,6 @@
 ---
 title: Menu
-description: An accessible dropdown / action menu with arrow-key navigation, typeahead, groups, separators, and submenus.
+description: An accessible dropdown / action menu with arrow-key navigation, typeahead, groups, separators, submenus, and a context-menu trigger.
 ---
 
 <script>
@@ -11,6 +11,8 @@ description: An accessible dropdown / action menu with arrow-key navigation, typ
 	import groupsSource from './demos/groups.svelte?highlight';
 	import Submenu from './demos/submenu.svelte';
 	import submenuSource from './demos/submenu.svelte?highlight';
+	import Context from './demos/context.svelte';
+	import contextSource from './demos/context.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -55,6 +57,22 @@ Nest a `Menu.SubmenuRoot` containing a `Menu.SubmenuTrigger` and its own `Menu.C
 
 <Demo source={submenuSource}><Submenu /></Demo>
 
+## Context menu
+
+Swap `Menu.Trigger` for `Menu.ContextTrigger` to open the menu from a surface instead of a button. Everything below the trigger — items, groups, submenus, keyboard navigation — is unchanged.
+
+<Demo source={contextSource}><Context /></Demo>
+
+`Menu.ContextTrigger` renders a plain element, not a button, so it can wrap arbitrary content. It opens three ways, and each anchors the panel differently:
+
+- **Right click** — at the pointer, flush against it: `Menu.Content` drops its default `offset` to `0` for a context menu, and unfolds down and to the right like a native one. Right clicking again re-anchors the open menu instead of closing and reopening it.
+- **Long press** on touch or pen — at the finger. This is what makes the menu reachable on a phone, where `contextmenu` is unreliable. The surface sets `-webkit-touch-callout: none; user-select: none` inline so iOS raises the menu rather than the text callout; opt out with `preventTouchCallout={false}`, or turn the gesture off entirely with `longPress={false}`.
+- **`Shift+F10` or the `ContextMenu` key** — anchored to the surface itself, with the first item focused. There is no pointer, so reusing the last cursor position would put the panel somewhere the keyboard user never pointed at.
+
+A left press anywhere — including on the surface itself — dismisses it, like a native menu.
+
+For a list where every row has the same menu, give each row its own `Menu.Root`: state is per-root, so the row that was right-clicked is the one the menu belongs to.
+
 ## Usage guidelines
 
 - Use `Menu.Root` to share open state and the trigger reference, and place `Menu.Trigger` and `Menu.Content` inside it.
@@ -70,6 +88,8 @@ Nest a `Menu.SubmenuRoot` containing a `Menu.SubmenuTrigger` and its own `Menu.C
 - `Menu.Content` renders `role="menu"` and items render `role="menuitem"`; arrow keys move the highlight, and typeahead focuses items by typed text.
 - Escape closes the current (topmost) menu and returns focus to its trigger; `Tab` and outside interaction close the whole menu chain.
 - Within a submenu, `ArrowLeft` closes just that level; `ArrowRight` on a submenu trigger opens it.
+- `Menu.ContextTrigger` is a tab stop by default (`tabindex={0}`) so a keyboard user can reach it and press `Shift+F10`; pass `tabindex={-1}` when it sits inside a composite that already manages focus with a roving tabindex, such as a table or a tree.
+- The surface carries `aria-keyshortcuts="Shift+F10"` and nothing else: `aria-haspopup` and `aria-expanded` are not global ARIA properties, so on a generic element they would be invalid. That is a real limit — **a context menu must never be the only route to an action.** Give the same `Menu.Root` a visible `Menu.Trigger`, or expose the same actions elsewhere.
 
 ## API reference
 

@@ -7,4 +7,5 @@ export * from './scroll-lock.js';
 export * from './aria-hide-outside.js';
 export * from './click-outside.js';
 export * from './input-modality.js';
+export * from './long-press.js';
 export * from './swipe-gesture.js';
