@@ -37,6 +37,7 @@ export const nav: NavGroup[] = [
 			{ slug: 'autocomplete', title: 'Autocomplete' },
 			{ slug: 'combobox', title: 'ComboBox' },
 			{ slug: 'listbox', title: 'ListBox' },
+			{ slug: 'transfer-list', title: 'TransferList' },
 			{ slug: 'calendar', title: 'Calendar' },
 			{ slug: 'clock', title: 'Clock' },
 			{ slug: 'datepicker', title: 'DatePicker' },

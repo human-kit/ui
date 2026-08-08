@@ -48,6 +48,31 @@ export type ListBoxContext = {
 
 	/** Selects or toggles an item based on current mode and behavior. */
 	select: (id: string | number) => void;
+	/**
+	 * Selects an item honouring the modifier keys that were held.
+	 *
+	 * `shift` extends the selection from the anchor — the last item selected without
+	 * modifiers — to this one, replacing whatever was selected, which is what the APG
+	 * multi-select listbox pattern does. `ctrlOrMeta` forces a toggle even when
+	 * `selectionBehavior` is `'replace'`. Both are ignored in single-selection mode.
+	 */
+	selectWithModifiers: (
+		id: string | number,
+		modifiers?: { shift?: boolean; ctrlOrMeta?: boolean }
+	) => void;
+	/** Selects every enabled item between the anchor and `id`, in list order. */
+	extendSelectionTo: (id: string | number) => void;
+	/** The item ranges are measured from, or `null` when there isn't one yet. */
+	getAnchorId: () => string | number | null;
+	/**
+	 * Registers the full list of keys, in list order, for a virtualized list.
+	 *
+	 * Ranges are otherwise measured over the options in the DOM, which in a virtualized
+	 * list is only the rendered window — a Shift range then stops at the edge of what
+	 * happens to be on screen. The ListBox supplies this when it has both `items` and a
+	 * `getItemKey` to read their keys with.
+	 */
+	setOrderedKeys: (read: (() => (string | number)[]) | null) => void;
 	/** Selects all enabled items (only works in multiple mode). */
 	selectAll: () => void;
 	/** Sets the selection programmatically (for controlled mode). */
@@ -136,6 +161,10 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	const items = new Map<string | number, { textValue?: string; element?: HTMLElement }>();
 
 	let selectedKeys = new Set<string | number>(options.initialSelection ?? []);
+	/** Where a Shift range starts: the last item selected without modifiers. */
+	let anchorId: string | number | null = null;
+	/** Set by a virtualized ListBox so ranges can reach rows that were never rendered. */
+	let readOrderedKeys: (() => (string | number)[]) | null = null;
 	const itemCallbacks = new Map<string | number, Set<(selected: boolean) => void>>();
 
 	// Item count tracking with subscription
@@ -157,7 +186,45 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	function unregisterItem(id: string | number) {
 		items.delete(id);
 		itemCallbacks.delete(id);
+		// A range measured from an item that no longer exists would silently select nothing.
+		// In a virtualized list, though, unregistering is just scrolling away — the anchor is
+		// still part of the collection and has to survive, or a range made across a scroll
+		// collapses to the single option that ended it. The `anchorId` check comes first so
+		// the list order is only rebuilt for the one row that could matter.
+		if (anchorId === id && !getOrderedIds().includes(id)) {
+			anchorId = null;
+		}
 		notifyItemCountChange();
+	}
+
+	/**
+	 * Ids in list order.
+	 *
+	 * A virtualized list registers the whole collection up front, because only its
+	 * rendered window exists in the DOM and a range measured over that stops wherever the
+	 * user happened to have scrolled.
+	 *
+	 * Otherwise: sorted by DOM position when every item has an element on the page,
+	 * because registration order and render order diverge as soon as a keyed list is
+	 * reordered. Falls back to registration order rather than sorting a partial set, which
+	 * would interleave measured and unmeasured items into an order that matches neither.
+	 */
+	function getOrderedIds(): (string | number)[] {
+		if (readOrderedKeys) return readOrderedKeys();
+
+		const entries = Array.from(items.entries());
+		const positioned = entries.filter(([, meta]) => meta.element?.isConnected);
+		if (positioned.length !== entries.length) {
+			return entries.map(([id]) => id);
+		}
+
+		positioned.sort(([, a], [, b]) => {
+			const position = a.element!.compareDocumentPosition(b.element!);
+			if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+			if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+			return 0;
+		});
+		return positioned.map(([id]) => id);
 	}
 
 	function getItemCount(): number {
@@ -334,7 +401,63 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 	function select(id: string | number) {
 		if (isDisabled(id)) return;
 
+		// Any unmodified selection re-anchors: the next Shift range is measured from here.
+		anchorId = id;
 		commitSelection(computeNextSelection(id));
+	}
+
+	function extendSelectionTo(id: string | number) {
+		if (getSelectionMode() !== 'multiple') return;
+
+		const ordered = getOrderedIds();
+		const from = ordered.indexOf(anchorId ?? id);
+		const to = ordered.indexOf(id);
+		if (from === -1 || to === -1) return;
+
+		const [start, end] = from <= to ? [from, to] : [to, from];
+		const next = new Set<string | number>();
+		for (let index = start; index <= end; index += 1) {
+			const key = ordered[index];
+			if (!isDisabled(key)) next.add(key);
+		}
+
+		// The range REPLACES the selection rather than adding to it: dragging a Shift range
+		// back and forth has to shrink it again, which only works if each extension is
+		// recomputed from the anchor.
+		commitSelection(next);
+	}
+
+	function selectWithModifiers(
+		id: string | number,
+		modifiers?: { shift?: boolean; ctrlOrMeta?: boolean }
+	) {
+		if (isDisabled(id)) return;
+
+		if (modifiers?.shift && getSelectionMode() === 'multiple') {
+			// First Shift press with nothing anchored yet: the item the user was on is the
+			// start of the range.
+			if (anchorId === null) {
+				anchorId = focusedId ?? id;
+			}
+			extendSelectionTo(id);
+			return;
+		}
+
+		if (modifiers?.ctrlOrMeta && getSelectionMode() === 'multiple') {
+			// Toggle regardless of `selectionBehavior`: with `'replace'` a plain click clears
+			// the rest, and Ctrl/Cmd+click is how you add one item without losing them.
+			anchorId = id;
+			const next = new Set(selectedKeys);
+			if (next.has(id)) {
+				next.delete(id);
+			} else {
+				next.add(id);
+			}
+			commitSelection(next);
+			return;
+		}
+
+		select(id);
 	}
 
 	function selectAll() {
@@ -363,8 +486,16 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		onSelect: (id) => {
 			select(id);
 		},
-		onFocusChange: (id) => {
+		onFocusChange: (id, _element, intent) => {
 			setFocusedId(id);
+			if (!intent?.extend || id === null) return;
+			// With nothing anchored, a Shift+Arrow starts its range at the item the user was
+			// standing on — which only `intent.from` still knows, since focusing the new item
+			// already moved `focusedId`.
+			if (anchorId === null) {
+				anchorId = intent.from ?? id;
+			}
+			extendSelectionTo(id);
 		},
 		// `selectAll` checks the selection mode at call time so runtime mode
 		// changes are respected.
@@ -394,6 +525,12 @@ export function createListBoxContext(options: CreateListBoxContextOptions = {}):
 		getItemCount,
 		subscribeToItemCount,
 		select,
+		selectWithModifiers,
+		extendSelectionTo,
+		getAnchorId: () => anchorId,
+		setOrderedKeys: (read) => {
+			readOrderedKeys = read;
+		},
 		selectAll,
 		setSelection,
 		setFocusedId,

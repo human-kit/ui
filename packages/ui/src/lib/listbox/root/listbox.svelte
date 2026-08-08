@@ -1,5 +1,6 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, tick, untrack } from 'svelte';
 	import { createListBoxContext, type ListBoxContext } from './context';
 	import { trackInteractionModality } from '../../primitives/input-modality';
@@ -16,6 +17,14 @@
 		emptyPlaceholder?: string | Snippet;
 		/** Iterable of items for dynamic rendering. Used with a snippet that receives each item. */
 		items?: Iterable<T>;
+		/**
+		 * Reads an item's key — the same value passed as `ListBox.Item`'s `id`.
+		 *
+		 * Only needed together with `virtualizer`: a Shift range is otherwise measured over
+		 * the options in the DOM, which for a virtualized list is just the rendered window,
+		 * so the range stops wherever the user happened to have scrolled.
+		 */
+		getItemKey?: (item: T) => string | number;
 		/** Keys of items that should be disabled and non-selectable. */
 		disabledKeys?: Iterable<string | number>;
 		/** Selection mode: 'single' allows one selection, 'multiple' allows many. */
@@ -48,6 +57,9 @@
 		id?: string;
 		/** Accessible label for the listbox. Announced by screen readers. */
 		'aria-label'?: string;
+		/** Id of a visible element that labels the listbox. Use instead of `aria-label`
+		 *  when the list already has a heading on screen. */
+		'aria-labelledby'?: string;
 		/** Callback fired when the selection changes. */
 		onChange?: (value: Set<string | number>) => void;
 		/** Disable DOM focus handling on the root container for virtual-focus compositions. */
@@ -70,12 +82,16 @@
 		 * `overflow-y: auto`, as an unvirtualized long list would need anyway.
 		 */
 		virtualizer?: { rowHeight?: number; overscan?: number };
-	};
+	} & Omit<
+		HTMLAttributes<HTMLDivElement>,
+		'class' | 'children' | 'role' | 'id' | 'aria-label' | 'aria-labelledby' | 'onchange'
+	>;
 
 	let {
 		selectionBehavior = 'toggle',
 		emptyPlaceholder = 'No items selected',
 		items,
+		getItemKey,
 		disabledKeys,
 		selectionMode = 'single',
 		value = $bindable(),
@@ -86,13 +102,20 @@
 		class: className = '',
 		id,
 		'aria-label': ariaLabel,
+		'aria-labelledby': ariaLabelledBy,
 		onChange,
 		disableFocusHandling = false,
 		loop = false,
 		typeahead = false,
 		virtualizer,
 		context = $bindable(),
-		element = $bindable()
+		element = $bindable(),
+		onkeydown: onKeyDownExternal,
+		onmousedown: onMouseDownExternal,
+		onfocusin: onFocusInExternal,
+		onfocusout: onFocusOutExternal,
+		onscroll: onScrollExternal,
+		...restProps
 	}: ListBoxProps & { context?: ListBoxContext; element?: HTMLElement } = $props();
 
 	let listboxElement: HTMLElement;
@@ -312,6 +335,29 @@
 		});
 	}
 
+	/**
+	 * Tells assistive technology how big the list really is.
+	 *
+	 * A virtualized listbox holds a handful of options, so the position and count a browser
+	 * computes from the DOM describe the window rather than the collection — a screen reader
+	 * announces "1 of 8" for a list of two thousand. ARIA has `aria-setsize` /
+	 * `aria-posinset` for exactly this case, and only the list knows the real numbers.
+	 *
+	 * Written onto the rendered rows rather than passed down because the rows come from the
+	 * consumer's snippet; it is the same set of nodes the measurement above already reads,
+	 * and it re-runs whenever the window moves or the collection changes.
+	 */
+	function labelPositions() {
+		if (!listboxElement || !isVirtual) return;
+		const rows = listboxElement.querySelectorAll<HTMLElement>('[data-listbox-window] > *');
+		const setSize = String(itemsArray.length);
+		const from = listWindow?.from ?? 0;
+		rows.forEach((row, offset) => {
+			row.setAttribute('aria-setsize', setSize);
+			row.setAttribute('aria-posinset', String(from + offset + 1));
+		});
+	}
+
 	$effect(() => {
 		if (!isVirtual || !listboxElement) return;
 
@@ -324,6 +370,7 @@
 		const element = listboxElement;
 
 		measureRows();
+		labelPositions();
 
 		const observer = new ResizeObserver(() => {
 			untrack(() => {
@@ -332,6 +379,7 @@
 				}
 			});
 			measureRows();
+			labelPositions();
 		});
 
 		observer.observe(element);
@@ -400,6 +448,16 @@
 	// on its input) can reach a row the window hasn't rendered yet.
 	ctx.setScrollIndexIntoView(scrollIndexIntoView);
 	ctx.setVirtualized(() => isVirtual);
+
+	// Only for a virtualized list: an unvirtualized one has every row on the page, and DOM
+	// order is the more truthful source there — it survives a keyed reorder that the items
+	// array has not caught up with.
+	$effect(() => {
+		const read = getItemKey;
+		if (!isVirtual || !read) return;
+		ctx.setOrderedKeys(() => itemsArray.map(read));
+		return () => ctx.setOrderedKeys(null);
+	});
 	let hasMounted = $state(false);
 	const registeredItemCount = $derived(hasMounted ? itemCount : ctx.getItemCount());
 	const shouldShowEmptyPlaceholder = $derived(
@@ -441,6 +499,24 @@
 			ctx.setFocusVisible(true);
 		}
 	}
+
+	/**
+	 * Runs the listbox's own handler and then the consumer's.
+	 *
+	 * The rest props are spread last so a consumer can reach the element, but that also
+	 * means an `onkeydown` of theirs would replace the one driving focus modality and
+	 * keyboard navigation. Composing keeps both, with the consumer able to opt out of the
+	 * rest by calling `stopImmediatePropagation`.
+	 */
+	function compose<E extends Event>(
+		internal: (event: E) => void,
+		external: ((event: E) => void) | null | undefined
+	) {
+		return (event: E) => {
+			internal(event);
+			external?.(event);
+		};
+	}
 </script>
 
 <div
@@ -449,15 +525,17 @@
 	{id}
 	aria-multiselectable={selectionMode === 'multiple'}
 	aria-label={ariaLabel}
+	aria-labelledby={ariaLabelledBy}
 	class={className}
 	tabindex={disableFocusHandling ? undefined : focusWithin ? -1 : 0}
 	data-focus-within={focusWithin || undefined}
 	use:keyboardAction
-	onfocusin={handleFocusIn}
-	onfocusout={handleFocusOut}
-	onmousedown={handleMouseDown}
-	onkeydown={handleKeyDown}
-	onscroll={handleScroll}
+	onfocusin={compose(handleFocusIn, onFocusInExternal)}
+	onfocusout={compose(handleFocusOut, onFocusOutExternal)}
+	onmousedown={compose(handleMouseDown, onMouseDownExternal)}
+	onkeydown={compose(handleKeyDown, onKeyDownExternal)}
+	onscroll={compose(handleScroll, onScrollExternal)}
+	{...restProps}
 >
 	{#if header}
 		{@render header()}

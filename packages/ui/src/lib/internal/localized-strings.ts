@@ -234,6 +234,86 @@ const LOCALIZED_STRINGS = {
 		de: '{count} Ergebnisse verfügbar',
 		it: '{count} risultati disponibili'
 	},
+	'transferList.moveSelectedTo': {
+		en: 'Move selected to {label}',
+		es: 'Mover la selección a {label}',
+		pt: 'Mover a seleção para {label}',
+		fr: 'Déplacer la sélection vers {label}',
+		de: 'Auswahl nach {label} verschieben',
+		it: 'Sposta la selezione in {label}'
+	},
+	'transferList.moveAllTo': {
+		en: 'Move all to {label}',
+		es: 'Mover todo a {label}',
+		pt: 'Mover tudo para {label}',
+		fr: 'Tout déplacer vers {label}',
+		de: 'Alle nach {label} verschieben',
+		it: 'Sposta tutto in {label}'
+	},
+	'transferList.moveUp': {
+		en: 'Move selected up',
+		es: 'Subir la selección',
+		pt: 'Mover a seleção para cima',
+		fr: 'Déplacer la sélection vers le haut',
+		de: 'Auswahl nach oben verschieben',
+		it: 'Sposta la selezione in alto'
+	},
+	'transferList.moveDown': {
+		en: 'Move selected down',
+		es: 'Bajar la selección',
+		pt: 'Mover a seleção para baixo',
+		fr: 'Déplacer la sélection vers le bas',
+		de: 'Auswahl nach unten verschieben',
+		it: 'Sposta la selezione in basso'
+	},
+	'transferList.itemMovedUp': {
+		en: '1 item moved up',
+		es: '1 elemento subido',
+		pt: '1 item movido para cima',
+		fr: '1 élément déplacé vers le haut',
+		de: '1 Element nach oben verschoben',
+		it: '1 elemento spostato in alto'
+	},
+	'transferList.itemsMovedUp': {
+		en: '{count} items moved up',
+		es: '{count} elementos subidos',
+		pt: '{count} itens movidos para cima',
+		fr: '{count} éléments déplacés vers le haut',
+		de: '{count} Elemente nach oben verschoben',
+		it: '{count} elementi spostati in alto'
+	},
+	'transferList.itemMovedDown': {
+		en: '1 item moved down',
+		es: '1 elemento bajado',
+		pt: '1 item movido para baixo',
+		fr: '1 élément déplacé vers le bas',
+		de: '1 Element nach unten verschoben',
+		it: '1 elemento spostato in basso'
+	},
+	'transferList.itemsMovedDown': {
+		en: '{count} items moved down',
+		es: '{count} elementos bajados',
+		pt: '{count} itens movidos para baixo',
+		fr: '{count} éléments déplacés vers le bas',
+		de: '{count} Elemente nach unten verschoben',
+		it: '{count} elementi spostati in basso'
+	},
+	'transferList.itemMoved': {
+		en: '1 item moved to {label}',
+		es: '1 elemento movido a {label}',
+		pt: '1 item movido para {label}',
+		fr: '1 élément déplacé vers {label}',
+		de: '1 Element nach {label} verschoben',
+		it: '1 elemento spostato in {label}'
+	},
+	'transferList.itemsMoved': {
+		en: '{count} items moved to {label}',
+		es: '{count} elementos movidos a {label}',
+		pt: '{count} itens movidos para {label}',
+		fr: '{count} éléments déplacés vers {label}',
+		de: '{count} Elemente nach {label} verschoben',
+		it: '{count} elementi spostati in {label}'
+	},
 	'segment.empty': {
 		en: 'Empty',
 		es: 'Vacío',

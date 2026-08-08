@@ -27,6 +27,13 @@
 					"description": "Iterable of items for dynamic rendering. Used with a snippet that receives each item."
 				},
 				{
+					"name": "getItemKey",
+					"type": "(item: T) => string | number",
+					"required": false,
+					"default": null,
+					"description": "Reads an item's key — the same value passed as `ListBox.Item`'s `id`.\n\nOnly needed together with `virtualizer`: a Shift range is otherwise measured over\nthe options in the DOM, which for a virtualized list is just the rendered window,\nso the range stops wherever the user happened to have scrolled."
+				},
+				{
 					"name": "disabledKeys",
 					"type": "Iterable<string | number>",
 					"required": false,
@@ -95,6 +102,13 @@
 					"required": false,
 					"default": null,
 					"description": "Accessible label for the listbox. Announced by screen readers."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "Id of a visible element that labels the listbox. Use instead of `aria-label`\n when the list already has a heading on screen."
 				},
 				{
 					"name": "onChange",

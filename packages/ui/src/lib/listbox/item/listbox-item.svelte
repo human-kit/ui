@@ -279,10 +279,16 @@
 		}
 	}
 
-	function handleClick() {
+	function handleClick(event: MouseEvent) {
 		if (isDisabledComputed) return;
 
 		const label = getResolvedTextValue();
+
+		// Shift+click also drags the browser's own text selection across the rows it spans,
+		// which paints the whole range blue on top of the widget's own selection styling.
+		if (event.shiftKey) {
+			window.getSelection()?.removeAllRanges();
+		}
 
 		if (!disableFocusHandling && elementRef) {
 			suppressNextFocusVisible = true;
@@ -297,7 +303,10 @@
 		if (onItemSelect) {
 			onItemSelect(id, label);
 		} else {
-			listboxCtx.select(id);
+			listboxCtx.selectWithModifiers(id, {
+				shift: event.shiftKey,
+				ctrlOrMeta: event.ctrlKey || event.metaKey
+			});
 		}
 
 		if (!disableFocusHandling) {

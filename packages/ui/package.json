@@ -128,6 +128,11 @@
 			"svelte": "./dist/listbox/index.js",
 			"default": "./dist/listbox/index.js"
 		},
+		"./transfer-list": {
+			"types": "./dist/transfer-list/index.d.ts",
+			"svelte": "./dist/transfer-list/index.js",
+			"default": "./dist/transfer-list/index.js"
+		},
 		"./menu": {
 			"types": "./dist/menu/index.d.ts",
 			"svelte": "./dist/menu/index.js",
