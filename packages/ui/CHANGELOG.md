@@ -1,5 +1,40 @@
 # @human-kit/ui
 
+## 1.0.0-beta.4
+
+### Minor Changes
+
+- [#73](https://github.com/human-kit/ui/pull/73) [`d969f94`](https://github.com/human-kit/ui/commit/d969f94d5e0df3e64c17b3f45b198fb4dc36a29e) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `Menu.ContextTrigger`, a surface that opens the menu on right click, on long press for touch and pen, and with `Shift+F10` or the `ContextMenu` key. Everything below the trigger — items, groups, submenus, keyboard navigation — is unchanged, so a context menu is the same menu with a different opener.
+
+  The panel is anchored at the pointer (and `Menu.Content` drops its default `offset` to `0` for a context menu), or to the surface itself when opened from the keyboard, where no pointer position exists.
+
+  Two new primitives back it and are exported for reuse: `createPointAnchor`, which lets any floating panel anchor to a viewport point instead of an element, and the `longPress` action.
+
+- [#74](https://github.com/human-kit/ui/pull/74) [`9926296`](https://github.com/human-kit/ui/commit/9926296ea03970beed79184b33014c6bcab9d839) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - `TransferList` gains filtering, ordering, form submission and a keyboard shortcut:
+
+  - **`filter` per side.** A predicate decides what each list shows; the input driving it stays yours. With a filter applied, "move all" means the rows on screen rather than the whole side — moving items the user cannot see would be invisible work.
+  - **`TransferList.MoveUp` / `MoveDown`.** They shift the right-hand selection one position within `value`, keeping a contiguous block together and disabling at the ends instead of doing nothing quietly. Reordering exists only on the right, where the order is state the user is building.
+  - **`name` on the Root** renders one hidden input per key, in order, so `value` submits with a form without any wiring.
+  - **`Ctrl`/`Cmd`+`Enter`** sends the focused list's selection to the other one. Each list has exactly one destination, so the shortcut carries no direction and stays correct in a mirrored layout; each list advertises it with `aria-keyshortcuts`, and `moveShortcut={false}` turns it off.
+
+  `onChange` details now carry a `type` of `'move'` or `'reorder'`, plus the `direction` of a reorder, and reorders are announced too — otherwise they are completely silent, since the rows are all still there and only their order changed.
+
+  Two accessibility fixes came out of auditing it. The Root renders `role="group"` once it has an `aria-label` or `aria-labelledby`, so the two lists and the buttons reach assistive technology as one control rather than unrelated ones. And a **virtualized `ListBox` now carries `aria-setsize` and `aria-posinset`** on its rows: only a window of options exists in the DOM, so a screen reader was announcing the size of the window — "1 of 8" for a list of two thousand.
+
+  `ListBox` also gains `getItemKey`, which lets a Shift range be measured over the whole collection rather than over the options in the DOM: with `virtualizer`, a range now spans rows that were never rendered, and the anchor survives scrolling away. It composes `onkeydown`, `onmousedown`, `onfocusin`, `onfocusout` and `onscroll` with its own handlers instead of letting a consumer's replace them.
+
+- [#74](https://github.com/human-kit/ui/pull/74) [`f6630f7`](https://github.com/human-kit/ui/commit/f6630f7f8a2ec98b1f7866281752f53a1fc315b8) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `TransferList`: two selectable lists with buttons that move items between them. There is one source of truth — `items` is the whole collection and `value` is the ordered list of keys on the right — so `value` is exactly what a form submits, and the right-hand list keeps the order things were moved in.
+
+  Both sides are `ListBox`es, so selection, arrow-key navigation, typeahead and virtualization come from there unchanged. Double click moves a row; `Enter` deliberately does not, because in a multi-select listbox it toggles selection. Focus is placed explicitly after every move rather than left to fall on the `<body>`, and `TransferList.Status` announces what moved.
+
+  `ListBox` gains **range selection** in `selectionMode="multiple"`: Shift+click, Shift+Arrow and Shift+Home/End select a range from an anchor, and Ctrl/Cmd+click toggles a single option even under `selectionBehavior="replace"`. It also accepts `aria-labelledby`, and now forwards unknown props to its element like every other component.
+
+### Patch Changes
+
+- [#75](https://github.com/human-kit/ui/pull/75) [`03d5428`](https://github.com/human-kit/ui/commit/03d5428678052781be4f286a78645314dc203413) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix non-modal popovers refusing to scroll when opened from inside a modal. A `ComboBox` listbox, a `Select` menu or any `Popover.Content` with `modal={false}` is portalled to the body, so it sits outside the dialog that holds the scroll lock — and that lock cancels wheel and touch events everywhere but its own node. The list rendered with a scrollbar that would not move.
+
+  Non-modal popover content now registers itself as a live scroll region for as long as it is open, through a new `allowScrollWithin` action. It never takes the lock, so it cannot keep the page frozen on its own.
+
 ## 1.0.0-beta.3
 
 ### Minor Changes

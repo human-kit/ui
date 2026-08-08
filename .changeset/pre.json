@@ -24,7 +24,9 @@
     "input-reliable-autofocus",
     "kind-paths-judge",
     "late-dingos-splash",
+    "lazy-popovers-scroll",
     "loud-maps-sigh",
+    "menu-context-trigger",
     "menu-v1",
     "numberfield-v1",
     "olive-tips-promise",
@@ -49,6 +51,8 @@
     "textarea-v1",
     "thin-turtles-allow",
     "tidy-planes-repair",
+    "transfer-list-filter-reorder-form",
+    "transfer-list",
     "tree-v1"
   ]
 }
