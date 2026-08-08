@@ -1,6 +1,7 @@
 <script lang="ts">
 	import releases from '$lib/docs/releases-data.json';
 	import { buttonVariants } from '$lib/docs/components/button/recipe';
+	import DocToolbar from '$lib/docs/components/doc-toolbar/doc-toolbar.svelte';
 	import { releaseAnchor } from '$lib/docs/releases.js';
 
 	interface Entry {
@@ -42,7 +43,12 @@
 	/>
 </svelte:head>
 
-<article class="mx-auto max-w-3xl">
+<article class="relative mx-auto max-w-3xl">
+	<!-- Same prev/next chevrons every markdown page gets. This route has no `slug`
+	     param, and no markdown or component source behind it, so it passes the slug
+	     by hand and drops the "View as Markdown / View source" menu. -->
+	<DocToolbar slug="releases" menu={false} />
+
 	<header class="hd-prose mb-10">
 		<h1>Releases</h1>
 		<p>
