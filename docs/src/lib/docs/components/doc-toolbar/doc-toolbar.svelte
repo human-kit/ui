@@ -14,7 +14,14 @@
 	const SOURCE_BRANCH = 'main';
 	const SOURCE_DIR = 'packages/ui/src/lib';
 
-	const slug = $derived(page.params.slug ?? '');
+	// `slug` defaults to the route param, which covers every markdown page. Pages
+	// with their own route (Releases) have no param, so they pass it explicitly —
+	// without it the prev/next lookup would miss and both chevrons would be dead.
+	// Those pages have neither a markdown source nor a component folder, so they
+	// also turn the menu off rather than link to two 404s.
+	let { slug: slugProp, menu = true }: { slug?: string; menu?: boolean } = $props();
+
+	const slug = $derived(slugProp ?? page.params.slug ?? '');
 
 	// Flatten the nav (in sidebar order) to find the pages either side of this one
 	// for the ↑ / ↓ buttons — the chevrons match the sidebar's vertical order.
@@ -87,19 +94,21 @@
 
 	<!-- Reusable docs Menu (styled parts + presence animation live in ./menu). A
 	     dropdown from a compact toolbar doesn't need the page scrim, so overlay off. -->
-	<Menu.Root>
-		<Menu.Trigger variant="outline" size="icon-sm" aria-label="Page options">
-			<Ellipsis />
-		</Menu.Trigger>
-		<Menu.Content placement="bottom-end" overlay={false}>
-			<Menu.Item onAction={openMarkdown}>
-				<Markdown />
-				View as Markdown
-			</Menu.Item>
-			<Menu.Item onAction={openSource}>
-				<Github />
-				View source
-			</Menu.Item>
-		</Menu.Content>
-	</Menu.Root>
+	{#if menu}
+		<Menu.Root>
+			<Menu.Trigger variant="outline" size="icon-sm" aria-label="Page options">
+				<Ellipsis />
+			</Menu.Trigger>
+			<Menu.Content placement="bottom-end" overlay={false}>
+				<Menu.Item onAction={openMarkdown}>
+					<Markdown />
+					View as Markdown
+				</Menu.Item>
+				<Menu.Item onAction={openSource}>
+					<Github />
+					View source
+				</Menu.Item>
+			</Menu.Content>
+		</Menu.Root>
+	{/if}
 </div>
