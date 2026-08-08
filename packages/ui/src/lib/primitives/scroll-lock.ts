@@ -225,3 +225,45 @@ export function scrollLock(node: HTMLElement, enabled: boolean = true) {
 		}
 	};
 }
+
+/**
+ * Svelte action that keeps a node scrollable while *someone else* holds the lock, without
+ * locking anything itself.
+ *
+ * A non-modal overlay — a combobox listbox, a select menu — locks nothing, so it never
+ * registers as a live scroll region. That is fine on its own, and broken inside a modal:
+ * the dialog's lock cancels every wheel event outside its own node, and the listbox is
+ * portalled to the body rather than nested in the dialog. The list then renders with a
+ * scrollbar it refuses to move.
+ *
+ * Registering the node makes the existing "is this scroll inside an overlay?" check say
+ * yes for it too. The lock count is untouched, so this can never keep the page frozen.
+ *
+ * @example
+ * ```svelte
+ * <div use:allowScrollWithin={isOpen}>
+ *   Listbox portalled out of the dialog
+ * </div>
+ * ```
+ */
+export function allowScrollWithin(node: HTMLElement, enabled: boolean = true) {
+	const register = (on: boolean) => {
+		if (on) {
+			overlayNodes.add(node);
+		} else {
+			overlayNodes.delete(node);
+		}
+	};
+
+	register(enabled);
+
+	return {
+		update(newEnabled: boolean) {
+			register(newEnabled);
+			enabled = newEnabled;
+		},
+		destroy() {
+			register(false);
+		}
+	};
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { scrollLock } from './scroll-lock';
+import { allowScrollWithin, scrollLock } from './scroll-lock';
 
 function resetBodyStyles() {
 	document.body.style.overflow = '';
@@ -161,6 +161,49 @@ describe('scrollLock', () => {
 			} finally {
 				handle.destroy();
 				overlay.remove();
+			}
+		});
+
+		it('lets a registered non-modal overlay scroll while a modal holds the lock', () => {
+			// Un listbox de combobox se portalea fuera del diálogo: sin registrarlo, el
+			// bloqueo del diálogo le cancela la rueda y la lista no scrollea.
+			const modal = document.createElement('div');
+			document.body.appendChild(modal);
+			const { overlay, content } = scrollableOverlay();
+
+			const lock = scrollLock(modal, true);
+			const allowed = allowScrollWithin(overlay, true);
+
+			try {
+				const event = wheel(40);
+				content.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(false);
+			} finally {
+				allowed.destroy();
+				lock.destroy();
+				overlay.remove();
+				modal.remove();
+			}
+		});
+
+		it('stops allowing it once the non-modal overlay closes', () => {
+			const modal = document.createElement('div');
+			document.body.appendChild(modal);
+			const { overlay, content } = scrollableOverlay();
+
+			const lock = scrollLock(modal, true);
+			const allowed = allowScrollWithin(overlay, true);
+			allowed.update(false);
+
+			try {
+				const event = wheel(40);
+				content.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(true);
+			} finally {
+				allowed.destroy();
+				lock.destroy();
+				overlay.remove();
+				modal.remove();
 			}
 		});
 

@@ -5,7 +5,7 @@
 	import { browser } from '../../internal/environment';
 	import { floating, type ExtendedPlacement } from '../../primitives/floating';
 	import { focusTrap, type FocusTrapOptions } from '../../primitives/focus-trap';
-	import { scrollLock } from '../../primitives/scroll-lock';
+	import { allowScrollWithin, scrollLock } from '../../primitives/scroll-lock';
 	import { clickOutside } from '../../primitives/click-outside';
 	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
 	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
@@ -350,6 +350,7 @@
 			}}
 			use:focusTrap={{ enabled: isOpen && isModal, restoreFocus: false, initialFocus }}
 			use:scrollLock={(isOpen || presence.isExiting) && isModal}
+			use:allowScrollWithin={isOpen && !isModal}
 			use:ariaHideOutside={isOpen && isModal}
 			style="position: fixed; z-index: {zIndex};"
 			{...restProps}
