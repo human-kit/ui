@@ -10,12 +10,6 @@
 	type Props = {
 		value?: ToggleGroupValue[];
 		defaultValue?: ToggleGroupValue[];
-		/**
-		 * Opt into fully controlled state. Separate from merely passing `value`: the
-		 * harness always binds, and most tests here exercise that binding, while a couple
-		 * exercise a parent that owns the state and rejects changes.
-		 */
-		controlledValue?: boolean;
 		selectionMode?: ToggleGroupSelectionMode;
 		orientation?: ToggleGroupOrientation;
 		disabled?: boolean;
@@ -36,7 +30,6 @@
 	let {
 		value = $bindable(),
 		defaultValue,
-		controlledValue = false,
 		selectionMode = 'single',
 		orientation = 'horizontal',
 		disabled = false,
@@ -71,7 +64,6 @@
 
 <ToggleGroup.Root
 	bind:value
-	{controlledValue}
 	{defaultValue}
 	selectionMode={renderedSelectionMode}
 	{orientation}
