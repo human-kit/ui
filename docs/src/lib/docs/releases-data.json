@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.0.0-beta.5",
+		"date": "2026-08-11T15:55:38.693Z",
+		"sections": [
+			{
+				"type": "Major",
+				"entries": [
+					{
+						"pr": 79,
+						"prUrl": "https://github.com/human-kit/ui/pull/79",
+						"html": "<p><strong>Breaking:</strong> remove <code>ToggleGroup.Root</code>'s <code>controlledValue</code> prop, and stop the group from reporting a selection change while it is unmounting.</p>\n<ul>\n<li><code>value</code> is the source of truth whenever it is supplied, with <code>bind:value</code> or without — there is no longer a flag to declare which. <code>onChange</code> always fires on a real interaction, and the write-back still reaches a binding.</li>\n<li>A parent that owns <code>value</code> and rejects a change still sees the group move; the supplied <code>value</code> takes the selection back on the parent's next render.</li>\n<li>Unmounting the whole group no longer fires <code>onChange</code>. Previously the selected toggle unregistered during teardown, <code>disallowEmptySelection</code> picked a fallback, and the consumer heard a press the user never made — enough to navigate a URL-backed group straight back to the screen being left. Removing a single <code>Toggle.Root</code> from a group that stays mounted still falls back and reports.</li>\n</ul>\n<p>Migration: delete <code>controlledValue</code>. <code>value</code> + <code>onChange</code> without a binding already is the controlled case.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.4",
-		"date": "2026-08-08T18:33:42.779Z",
+		"date": "2026-08-08T15:41:31-03:00",
 		"sections": [
 			{
 				"type": "Minor",
