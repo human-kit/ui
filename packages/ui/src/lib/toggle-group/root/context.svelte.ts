@@ -15,7 +15,6 @@ type ToggleRegistration = {
 
 export type CreateToggleGroupContextOptions = {
 	initialValue?: ToggleGroupValue[];
-	isControlled?: boolean;
 	selectionMode?: ToggleGroupSelectionMode;
 	isDisabled?: boolean;
 	orientation?: ToggleGroupOrientation;
@@ -35,6 +34,7 @@ export type ToggleGroupContext = {
 		options: { isDisabled?: boolean; element?: HTMLButtonElement | null; owner?: symbol }
 	) => void;
 	unregisterToggle: (value: ToggleGroupValue) => void;
+	setLive: (live: boolean) => void;
 	setSelectionMode: (mode: ToggleGroupSelectionMode) => void;
 	setDisabled: (disabled: boolean) => void;
 	setOrientation: (orientation: ToggleGroupOrientation) => void;
@@ -109,7 +109,6 @@ export function valuesToArray(
 export function createToggleGroupContext(
 	options: CreateToggleGroupContextOptions
 ): ToggleGroupContext {
-	const isControlled = options.isControlled ?? false;
 	let selectionMode = $state(options.selectionMode ?? 'single');
 	let isDisabled = $state(options.isDisabled ?? false);
 	let orientation = $state(options.orientation ?? 'horizontal');
@@ -121,6 +120,10 @@ export function createToggleGroupContext(
 	);
 	let focusedValue = $state<ToggleGroupValue | null>(null);
 	let focusVisible = $state(false);
+	// Whether the group is mounted and interactive. Plain `let`, not `$state`: nothing renders
+	// from it, and the reads happen while toggles register and unregister, where a reactive
+	// read would only add a dependency.
+	let isLive = false;
 
 	const toggles = new SvelteMap<ToggleGroupValue, ToggleRegistration>();
 	const toggleOrder = $state<ToggleGroupValue[]>([]);
@@ -217,14 +220,6 @@ export function createToggleGroupContext(
 
 		if (!didChange) return false;
 
-		if (isControlled && changeOptions?.notify !== false) {
-			// Controlled mode: request the change and let the parent apply it via props.
-			// Mirrors Accordion's identical `setOpen`, which had this guard while this one
-			// silently fell through and applied the change the parent might have rejected.
-			options.onValueChange?.(nextValue);
-			return true;
-		}
-
 		selectedValues = normalizedValues;
 
 		if (changeOptions?.notify !== false) {
@@ -238,8 +233,6 @@ export function createToggleGroupContext(
 		changedValue?: ToggleGroupValue,
 		changeOptions?: { notify?: boolean }
 	) {
-		if (isControlled) return;
-
 		const nextValues = new SvelteSet(selectedValues);
 		let removedSelectedValue: ToggleGroupValue | undefined;
 
@@ -301,6 +294,14 @@ export function createToggleGroupContext(
 		reconcileSelection(value, { notify: isExisting });
 	}
 
+	// Turned on by the root as it renders and off as it goes away, which is the only way to
+	// tell the two unregistrations apart: a toggle removed from a live group leaves a group
+	// behind that still has to show something, while a group on its way out has no one left
+	// to show anything to.
+	function setLive(live: boolean) {
+		isLive = live;
+	}
+
 	function unregisterToggle(value: ToggleGroupValue) {
 		if (!toggles.has(value)) return;
 		toggles.delete(value);
@@ -314,13 +315,20 @@ export function createToggleGroupContext(
 			focusedValue = null;
 		}
 
+		// Only a live group can lose a toggle from under it. Outside that window the toggle is
+		// leaving because the group is — on the client while it unmounts, on the server as the
+		// markup closes — and picking a fallback would report a selection the user never made,
+		// to a consumer already on its way out. Bound to a URL, that fake change navigated
+		// straight back to the screen being left.
+		if (!isLive) return;
+
 		reconcileSelection(value);
 	}
 
 	function setSelectionMode(mode: ToggleGroupSelectionMode) {
 		if (selectionMode === mode) return;
 		selectionMode = mode;
-		setSelection(selectedValues, { notify: !isControlled });
+		setSelection(selectedValues);
 		reconcileSelection();
 	}
 
@@ -443,6 +451,7 @@ export function createToggleGroupContext(
 		},
 		registerToggle: asCommand(registerToggle),
 		unregisterToggle: asCommand(unregisterToggle),
+		setLive: asCommand(setLive),
 		setSelectionMode: asCommand(setSelectionMode),
 		setDisabled: asCommand(setDisabled),
 		setOrientation: asCommand(setOrientation),

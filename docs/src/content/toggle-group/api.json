@@ -10,7 +10,7 @@
 					"type": "ToggleGroupValue[]",
 					"required": false,
 					"default": null,
-					"description": "Selected values. Two-way by default — use `bind:value`."
+					"description": "Selected values, and the source of truth whenever it is supplied — with `bind:value`\nor without. Every change is written back here and reported through `onChange`; without\na binding that write only lands locally, so a parent that hears `onChange` and refuses\nthe change (never flowing a new `value` down) sees the group move anyway, and snap back\nto the supplied `value` the next time the parent renders."
 				},
 				{
 					"name": "defaultValue",
@@ -18,13 +18,6 @@
 					"required": false,
 					"default": null,
 					"description": "Initially selected values, for when `value` is not supplied."
-				},
-				{
-					"name": "controlledValue",
-					"type": "boolean",
-					"required": false,
-					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new value back down. Off by default, because `bind:value` — the common case —\nneeds the write-back to work at all."
 				},
 				{
 					"name": "onChange",

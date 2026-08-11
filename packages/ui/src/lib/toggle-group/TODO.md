@@ -9,3 +9,5 @@
 - [x] [M][P0][Area: Interaction][Owner: Unassigned][Target: Done] Scope group keyboard handling to registered toggle buttons only.
 - [x] [M][P0][Area: Interaction][Owner: Unassigned][Target: Done] Clear grouped focus state when the focused toggle becomes disabled.
 - [x] [M][P0][Area: Testing][Owner: Unassigned][Target: Done] Add regression coverage for mount reconciliation, controlled sync, duplicates, dynamic mode changes, nested controls, and disabled focused toggles.
+- [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Stop reporting a selection change while the group is being torn down.
+- [x] [M][P0][Area: API][Owner: Unassigned][Target: Done] Drop `controlledValue`: `value` is the source of truth whenever it is supplied, bound or not.
