@@ -35,13 +35,8 @@
      don't go through SvelteKit's resolve() (which is for internal routes). -->
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
 
-<svelte:head>
-	<title>Releases · @human-kit/ui</title>
-	<meta
-		name="description"
-		content="Release history for @human-kit/ui — every version, what changed, and when."
-	/>
-</svelte:head>
+<!-- This page declares no head tags on purpose: they are rendered once, in the
+     root layout, from the `seo` this page's load returns. -->
 
 <article class="relative mx-auto max-w-3xl">
 	<!-- Same prev/next chevrons every markdown page gets. This route has no `slug`

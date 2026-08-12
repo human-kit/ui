@@ -14,6 +14,7 @@
 		"docs:api": "pnpm --filter docs run api",
 		"docs:releases": "node scripts/gen-releases.mjs",
 		"docs:install": "node scripts/gen-install.mjs",
+		"docs:og": "node scripts/gen-og.mjs",
 		"test": "pnpm --filter @human-kit/ui test",
 		"bench:table": "node scripts/bench-table.mjs",
 		"typecheck": "pnpm --filter @human-kit/ui check && pnpm --filter docs check",

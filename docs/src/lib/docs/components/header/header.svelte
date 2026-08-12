@@ -11,6 +11,13 @@
 		badge?: string;
 		githubUrl?: string;
 		homeHref?: string;
+		/**
+		 * Elevation of the header bar. Defaults to the frame chrome's level, which
+		 * is what the docs want. A page that is not the frame — the landing — sits
+		 * at level 0, and passes 0 so the bar doesn't read as a lighter strip
+		 * floating on top of it.
+		 */
+		level?: number;
 		/** Replaces the default title + badge brand block (e.g. a logo). */
 		brand?: Snippet;
 		/** Rendered before the GitHub link and theme toggle. */
@@ -26,6 +33,7 @@
 		badge,
 		githubUrl,
 		homeHref,
+		level,
 		brand,
 		actions,
 		navTrigger,
@@ -36,7 +44,7 @@
 <!-- `githubUrl` is an external URL and `homeHref` is a caller-supplied override,
      so neither goes through SvelteKit's resolve() (which is for internal routes). -->
 <!-- eslint-disable svelte/no-navigation-without-resolve -->
-<Frame.Header>
+<Frame.Header {level}>
 	{#if navTrigger}
 		<!-- `-ml-1.5` cancels the row's left padding down to the same 6px the right
 		     cluster sits at, so the two triggers are equidistant from their edges. -->

@@ -24,13 +24,24 @@ function toPlainMarkdown(source: string): string {
 		.trimStart();
 }
 
+// Kept out of the prerender pass so the `X-Robots-Tag` below survives: a
+// prerendered endpoint is written to disk as a plain file and serves without
+// response headers.
+export const prerender = false;
+
 // Serves `/docs/<slug>.md` — the page's raw markdown, opened in the browser
 // (like the "View as Markdown" links point to). `text/markdown` renders inline.
+//
+// `noindex` because this is the same text as `/docs/<slug>`, in a form no reader
+// searches for. Indexed, it would be a duplicate of every page on the site.
 export const GET: RequestHandler = ({ params }) => {
 	const source = sources[`/src/content/${params.slug}/index.md`];
 	if (!source) error(404, 'Not found');
 
 	return new Response(toPlainMarkdown(source), {
-		headers: { 'content-type': 'text/markdown; charset=utf-8' }
+		headers: {
+			'content-type': 'text/markdown; charset=utf-8',
+			'x-robots-tag': 'noindex'
+		}
 	});
 };

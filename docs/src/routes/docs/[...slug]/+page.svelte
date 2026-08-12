@@ -5,12 +5,8 @@
 	let { data } = $props();
 </script>
 
-<svelte:head>
-	<title>{data.meta.title} · @human-kit/ui</title>
-	{#if data.meta.description}
-		<meta name="description" content={data.meta.description} />
-	{/if}
-</svelte:head>
+<!-- This page declares no head tags on purpose: they are rendered once, in the
+     root layout, from the `seo` this page's load returns. -->
 
 <article class="hd-prose relative mx-auto">
 	<!-- Pinned top-right so it sits beside the page title (the first block the
