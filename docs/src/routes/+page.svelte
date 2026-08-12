@@ -44,7 +44,9 @@
 
 <Surface level={0} class="min-h-dvh [--frame-max:1536px]">
 	<div class="px-3 py-2 sm:px-8">
-		<Header title={packageName} githubUrl={GITHUB_URL}>
+		<!-- `level={0}`: this page is a level-0 surface, not the docs frame, so the
+		     bar has to sit at the page's own shade instead of one step above it. -->
+		<Header level={0} title={packageName} githubUrl={GITHUB_URL}>
 			{#snippet brand()}
 				<Logo class="h-4 w-auto" />
 			{/snippet}
@@ -68,7 +70,9 @@
 		     reader would search for. The wordmark is already in the header, so it
 		     does not repeat here. -->
 		<section class="pt-16 pb-14 sm:pt-24">
-			<h1 class="text-3xl leading-tight font-semibold text-balance text-foreground sm:text-4xl">
+			<!-- `hd-title-1` is the same serif face the docs pages give their h1 (see
+			     theme.css); the hero only scales it up on wider screens. -->
+			<h1 class="hd-title-1 leading-tight text-balance sm:text-4xl">
 				Headless, accessible UI components for Svelte 5
 			</h1>
 			<p class="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
@@ -93,7 +97,7 @@
 		</section>
 
 		<section aria-labelledby="why" class="border-t pt-12">
-			<h2 id="why" class="text-xl font-semibold text-foreground">Why another component library</h2>
+			<h2 id="why" class="hd-title-2">Why another component library</h2>
 			<dl class="mt-6 grid gap-x-8 gap-y-7 sm:grid-cols-2">
 				{#each pitch as item (item.title)}
 					<div>
@@ -105,7 +109,7 @@
 		</section>
 
 		<section aria-labelledby="components" class="mt-14 border-t pt-12">
-			<h2 id="components" class="text-xl font-semibold text-foreground">Documentation</h2>
+			<h2 id="components" class="hd-title-2">Documentation</h2>
 			<p class="mt-2 text-sm text-muted-foreground">
 				Every component, with live demos, a props table and the data attributes it exposes.
 			</p>

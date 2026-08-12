@@ -29,12 +29,14 @@ const logo = readFileSync(resolve(root, 'docs/src/lib/docs/components/icons/logo
 const svg = logo.match(/<svg[\s\S]*<\/svg>/)?.[0];
 if (!svg) throw new Error('Could not find the wordmark <svg> in logo.svelte');
 
-// Resolved from the docs workspace, which is what depends on the font — pnpm
-// does not hoist it to the repo root.
+// Resolved from the docs workspace, which is what depends on the fonts — pnpm
+// does not hoist them to the repo root. Both faces are here because the card
+// follows the site's split: serif for the title, sans for everything else.
 const requireFromDocs = createRequire(resolve(root, 'docs/package.json'));
-const font = readFileSync(
-	requireFromDocs.resolve('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2')
-).toString('base64');
+const embed = (specifier) => readFileSync(requireFromDocs.resolve(specifier)).toString('base64');
+
+const sans = embed('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2');
+const serif = embed('@fontsource-variable/roboto-serif/files/roboto-serif-latin-wght-normal.woff2');
 
 const html = `<!doctype html>
 <html>
@@ -43,7 +45,12 @@ const html = `<!doctype html>
 <style>
   @font-face {
     font-family: 'Geist';
-    src: url(data:font/woff2;base64,${font}) format('woff2-variations');
+    src: url(data:font/woff2;base64,${sans}) format('woff2-variations');
+    font-weight: 100 900;
+  }
+  @font-face {
+    font-family: 'Roboto Serif';
+    src: url(data:font/woff2;base64,${serif}) format('woff2-variations');
     font-weight: 100 900;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,12 +70,17 @@ const html = `<!doctype html>
   }
   .mark { width: 300px; color: #fafafa; }
   .mark svg { width: 100%; height: auto; display: block; }
+  /* Serif, like every title on the site (see .hd-prose h1 in theme.css). */
   h1 {
+    font-family: 'Roboto Serif', serif;
     font-size: 60px;
     font-weight: 500;
     line-height: 1.15;
-    letter-spacing: -0.02em;
-    max-width: 15ch;
+    letter-spacing: -0.03em;
+    /* Balanced rather than a hand-picked width: it evens the lines out instead
+       of leaving "Svelte 5" — or worse, "5" — stranded on the last one. */
+    max-width: 22ch;
+    text-wrap: balance;
   }
   .foot {
     display: flex;
