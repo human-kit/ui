@@ -33,8 +33,14 @@
 	--subtle-foreground: var(--color-neutral-700);
 	--link: var(--color-blue-600);
 
-	--primary: oklch(0.59 0.2 277);
-	--primary-foreground: oklch(0.985 0 0);
+	/* Neutral by design: the site has exactly one accent (--link), and a coloured
+	   primary competed with it on every page. Primary is the foreground shade
+	   inverted, so a solid button reads as ink on paper and flips with the theme. */
+	--primary: var(--color-neutral-900);
+	--primary-foreground: var(--color-neutral-50);
+	/* Top-edge highlight on a solid button. Light: white over near-black ink.
+	   Dark: a dark edge over white, because a white highlight on white is nothing. */
+	--primary-highlight: oklch(1 0 0 / 0.2);
 	--depth-0: oklch(0.99 0 0);
 	--depth-1: oklch(0.98 0 0);
 	--depth-2: oklch(0.97 0 0);
@@ -74,8 +80,10 @@
 	--subtle-foreground: var(--color-neutral-300);
 	--link: var(--color-blue-400);
 
-	--primary: oklch(0.64 0.19 277);
-	--primary-foreground: oklch(0.985 0 0);
+	/* Inverted from light (see the note there): white ink on a dark page. */
+	--primary: var(--color-neutral-50);
+	--primary-foreground: var(--color-neutral-900);
+	--primary-highlight: oklch(0 0 0 / 0.1);
 	/* Dark elevation: depth-0 sits just off pure black, higher steps get lighter.
 	   Steps are BIGGER than light's 0.01 because near black a given lightness delta
 	   reads as less contrast than the same delta near white. */
@@ -482,28 +490,58 @@
  * choice after hydration — and they still default to pnpm with no JS. The command
  * bodies are plain always-mounted panels (NOT Tabs.Panel, whose `hidden` attribute
  * is `display:none !important` at the UA level and so can't be revealed by CSS),
- * so any one can be shown by the reveal rules below. The tab's pressed look also
+ * so any one can be shown by the rules below. The tab's pressed look also
  * lives here (not on Tabs' own `data-selected`, which SSR still puts on 'pnpm').
  * Kept in sync with package-manager.svelte.ts and the app.html script (same key,
  * attribute, and managers). Left unlayered so it wins over the button recipe's
  * utility classes.
  */
-[data-pm-panel] {
+/*
+ * pnpm is the baseline: it is what shows when `data-pm` is absent (no JS) AND
+ * when it holds anything unexpected. Phrasing the default as "hide the others"
+ * rather than "hide everything, then reveal one" is deliberate — every state,
+ * including one this file does not enumerate, still leaves exactly one command
+ * on screen. The earlier hide-all form could leave the card showing only its
+ * header row, which reads as a broken widget with no manager selected.
+ */
+[data-pm-panel]:not([data-pm-panel='pnpm']) {
 	display: none;
 }
 
-:where(html:not([data-pm]), html[data-pm='pnpm']) [data-pm-panel='pnpm'],
-:where(html[data-pm='npm']) [data-pm-panel='npm'],
-:where(html[data-pm='yarn']) [data-pm-panel='yarn'],
-:where(html[data-pm='bun']) [data-pm-panel='bun'] {
+html[data-pm='npm'] [data-pm-panel='pnpm'],
+html[data-pm='yarn'] [data-pm-panel='pnpm'],
+html[data-pm='bun'] [data-pm-panel='pnpm'] {
+	display: none;
+}
+
+html[data-pm='npm'] [data-pm-panel='npm'],
+html[data-pm='yarn'] [data-pm-panel='yarn'],
+html[data-pm='bun'] [data-pm-panel='bun'] {
 	display: block;
 }
 
-:where(html:not([data-pm]), html[data-pm='pnpm']) [data-pm-tab='pnpm'],
-:where(html[data-pm='npm']) [data-pm-tab='npm'],
-:where(html[data-pm='yarn']) [data-pm-tab='yarn'],
-:where(html[data-pm='bun']) [data-pm-tab='bun'] {
+/* The pressed tab, on the same "pnpm unless told otherwise" footing. */
+[data-pm-tab='pnpm'] {
 	@apply sunken;
 	background-color: var(--press-bg);
 	border-color: var(--border);
+	color: var(--foreground);
+}
+
+html[data-pm='npm'] [data-pm-tab='pnpm'],
+html[data-pm='yarn'] [data-pm-tab='pnpm'],
+html[data-pm='bun'] [data-pm-tab='pnpm'] {
+	@apply flat;
+	background-color: transparent;
+	border-color: transparent;
+	color: var(--muted-foreground);
+}
+
+html[data-pm='npm'] [data-pm-tab='npm'],
+html[data-pm='yarn'] [data-pm-tab='yarn'],
+html[data-pm='bun'] [data-pm-tab='bun'] {
+	@apply sunken;
+	background-color: var(--press-bg);
+	border-color: var(--border);
+	color: var(--foreground);
 }

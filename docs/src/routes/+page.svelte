@@ -86,9 +86,7 @@
 					Get started
 					<ArrowRight />
 				</a>
-				<a href={resolve('/docs/accessibility')} class={buttonVariants({ variant: 'outline' })}>
-					How accessibility works
-				</a>
+				<a href={resolve('/docs/about')} class={buttonVariants({ variant: 'ghost' })}>About</a>
 			</div>
 
 			<div class="mt-8">

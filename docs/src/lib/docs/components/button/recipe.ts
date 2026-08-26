@@ -9,7 +9,7 @@ export const buttonRecipeConfig = {
 	variants: {
 		variant: {
 			default:
-				"focus-visible:ring-offset-1 bg-primary text-primary-foreground border border-primary/10 shadow-2xs shadow-primary/20 inset-shadow-2xs inset-shadow-white/20 hover:bg-primary/90 data-[pressed=true]:bg-primary data-[pressed=true]:shadow-white data-[pressed=true]:inset-shadow-black/5 data-[pressed=true]:after:content-[''] data-[pressed=true]:after:absolute data-[pressed=true]:after:inset-0 data-[pressed=true]:after:bg-black/5 data-[pressed=true]:after:rounded-none",
+				"focus-visible:ring-offset-1 bg-primary text-primary-foreground border border-primary/10 shadow-2xs shadow-primary/20 inset-shadow-2xs inset-shadow-(color:--primary-highlight) hover:bg-primary/90 data-[pressed=true]:bg-primary data-[pressed=true]:shadow-transparent data-[pressed=true]:inset-shadow-black/5 data-[pressed=true]:after:content-[''] data-[pressed=true]:after:absolute data-[pressed=true]:after:inset-0 data-[pressed=true]:after:bg-primary-foreground/10 data-[pressed=true]:after:rounded-none",
 			outline:
 				'text-muted-foreground border bg-(--raise-bg) raised hover:text-subtle-foreground data-[pressed=true]:sunken data-[pressed=true]:bg-(--press-bg)',
 			ghost:
