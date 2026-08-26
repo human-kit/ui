@@ -25,24 +25,26 @@
 		element?: HTMLSpanElement | null;
 		name?: string;
 		value?: string;
-		/** Associates the hidden input with a form by id. */
+		/** The id of the form of the hidden input. */
 		form?: string;
-		/** Checked state. Two-way by default — use `bind:checked`. */
+		/** The checked state. By default it goes in the two directions: use `bind:checked`. */
 		checked?: boolean;
-		/** Initial checked state, for when `checked` is not supplied. */
+		/** The checked state at the start, for when you give no `checked`. */
 		defaultChecked?: boolean;
 		/**
-		 * Opt into fully controlled `checked`: the component stops writing back to the prop
-		 * and only reports through `onCheckedChange`, so the parent can reject a change by
-		 * not flowing the new value back down. Off by default, because `bind:checked` —
-		 * the common case — needs the write-back to work at all.
+		 * Give your own code full control of `checked`. The component stops to write back to the prop,
+		 * and it reports only through `onCheckedChange`. Thus the parent can refuse a change: the parent
+		 * does not send the new value down. The default is off, because `bind:checked` is the usual case
+		 * and it needs the write-back.
 		 */
 		controlledChecked?: boolean;
-		/** Indeterminate state. Two-way by default — use `bind:indeterminate`. */
+		/**
+		 * The indeterminate state. By default it goes in the two directions: use `bind:indeterminate`.
+		 */
 		indeterminate?: boolean;
-		/** Initial indeterminate state, for when `indeterminate` is not supplied. */
+		/** The indeterminate state at the start, for when you give no `indeterminate`. */
 		defaultIndeterminate?: boolean;
-		/** Opt into fully controlled `indeterminate`. See `controlledChecked`. */
+		/** Give your own code full control of `indeterminate`. Read `controlledChecked`. */
 		controlledIndeterminate?: boolean;
 		onCheckedChange?: (checked: boolean) => void;
 		onIndeterminateChange?: (indeterminate: boolean) => void;

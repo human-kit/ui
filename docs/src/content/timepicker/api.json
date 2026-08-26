@@ -3,28 +3,28 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The stateful container. Owns the committed time value, the popover open state, and the granularity/hour-cycle configuration shared by the input and clock.",
+			"description": "The container with the state. It holds the time value, the open state of the popover, and the granularity and hour-cycle settings. The input and the clock share them.",
 			"props": [
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the root element. Auto-generated when omitted."
+					"description": "The id of the root element. If you give none, the component makes one."
 				},
 				{
 					"name": "value",
 					"type": "TimePickerTimeValue | null",
 					"required": false,
 					"default": null,
-					"description": "Controlled time value ('HH:mm' or 'HH:mm:ss'). Bindable. null represents the empty state."
+					"description": "The time value ('HH:mm' or 'HH:mm:ss'). You can bind it. The empty state is null."
 				},
 				{
 					"name": "defaultValue",
 					"type": "TimePickerTimeValue | null",
 					"required": false,
 					"default": null,
-					"description": "Initial time value when uncontrolled."
+					"description": "The time value at the start, for when the component controls the state."
 				},
 				{
 					"name": "controlledValue",
@@ -38,91 +38,91 @@
 					"type": "(value: TimePickerTimeValue | null) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the committed time value changes. Wheel selection commits immediately on snap."
+					"description": "The component calls it when the time value changes. When a wheel stops on a value, the component immediately makes that value the new value."
 				},
 				{
 					"name": "minValue",
 					"type": "TimePickerTimeValue",
 					"required": false,
 					"default": null,
-					"description": "Earliest selectable time. Out-of-range wheel items are disabled; typed values mark the input invalid. Midnight-wrapping ranges are not supported."
+					"description": "The first time that the user can select. A wheel item out of the range is disabled. If the user types a time out of the range, the input becomes invalid. A range that goes through midnight is not possible."
 				},
 				{
 					"name": "maxValue",
 					"type": "TimePickerTimeValue",
 					"required": false,
 					"default": null,
-					"description": "Latest selectable time. Out-of-range wheel items are disabled; typed values mark the input invalid."
+					"description": "The last time that the user can select. A wheel item out of the range is disabled. If the user types a time out of the range, the input becomes invalid."
 				},
 				{
 					"name": "hourCycle",
 					"type": "TimePickerHourCycle",
 					"required": false,
 					"default": null,
-					"description": "Forces 12- or 24-hour rendering. Defaults to the active locale. 12-hour mode adds an AM/PM segment and day-period column; values stay normalized to 24-hour."
+					"description": "Sets the 12-hour cycle or the 24-hour cycle. The default comes from the active locale. The 12-hour cycle adds an AM/PM segment and a day-period column, but each value stays a 24-hour value."
 				},
 				{
 					"name": "granularity",
 					"type": "TimePickerGranularity",
 					"required": false,
 					"default": "'minute'",
-					"description": "Smallest editable unit: 'hour', 'minute', or 'second'. 'hour' emits HH:00 values."
+					"description": "The smallest unit that the user can edit: 'hour', 'minute', or 'second'. With 'hour', the value is HH:00."
 				},
 				{
 					"name": "hourStep",
 					"type": "number",
 					"required": false,
 					"default": "1",
-					"description": "Increment between selectable hours."
+					"description": "The step between the hours that the user can select."
 				},
 				{
 					"name": "minuteStep",
 					"type": "number",
 					"required": false,
 					"default": "1",
-					"description": "Increment between selectable minutes."
+					"description": "The step between the minutes that the user can select."
 				},
 				{
 					"name": "secondStep",
 					"type": "number",
 					"required": false,
 					"default": "1",
-					"description": "Increment between selectable seconds."
+					"description": "The step between the seconds that the user can select."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Disables the input segments, trigger, and wheels."
+					"description": "Disables the input segments, the trigger, and the wheels."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the input focusable while preventing edits."
+					"description": "Keeps the input focusable, but stops the changes."
 				},
 				{
 					"name": "required",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the time picker as required for form validation."
+					"description": "Makes the time picker required for the form validation."
 				},
 				{
 					"name": "open",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled popover open state. Bindable."
+					"description": "The open state of the popover. You can bind it."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial popover open state when uncontrolled."
+					"description": "The open state of the popover at the start, for when the component controls the state."
 				},
 				{
 					"name": "controlledOpen",
@@ -136,14 +136,14 @@
 					"type": "(open: boolean, details: TimePickerOpenChangeDetails) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the popover opens or closes; details include the reason and a cancel() escape hatch."
+					"description": "The component calls it when the popover opens or closes. The details give the cause and a `cancel()` function that stops the change."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "TimePicker parts to compose inside the root."
+					"description": "The TimePicker parts that you assemble in the root."
 				},
 				{
 					"name": "class",
@@ -157,28 +157,28 @@
 					"type": "HTMLDivElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered root element."
+					"description": "A bindable reference to the root element."
 				},
 				{
 					"name": "aria-label",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label for the time picker when no visible label is associated."
+					"description": "The accessible name of the time picker, for when the user sees no name."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Input",
-			"description": "The segmented time input. Iterates the locale-resolved segments and passes each to the children snippet.",
+			"description": "The time input with segments. It goes through the segments of the locale and gives each one to the children snippet.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet<[TimePickerSegmentPart]>",
 					"required": false,
 					"default": null,
-					"description": "Renders one segment per part; receives the segment descriptor. Defaults to plain segments."
+					"description": "Makes one segment for each part. It receives the data of the segment. The default is a plain segment."
 				},
 				{
 					"name": "class",
@@ -192,7 +192,7 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label for the segmented input."
+					"description": "The accessible name of the input with segments."
 				}
 			],
 			"dataAttributes": [
@@ -202,7 +202,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focus-within",
@@ -210,7 +210,7 @@
 				},
 				{
 					"name": "data-invalid",
-					"description": "Present while the current segment draft is not committable."
+					"description": "Present while the text in the segments does not make a valid value."
 				},
 				{
 					"name": "data-open",
@@ -224,14 +224,14 @@
 		},
 		{
 			"name": "Segment",
-			"description": "One editable or literal segment of the time (hour, minute, second, day period, or separator). Supports typing and arrow-key stepping.",
+			"description": "One segment of the time: the hour, the minute, the second, the day period, or a separator. The user can type in it, and the arrow keys change its value.",
 			"props": [
 				{
 					"name": "segment",
 					"type": "TimePickerSegmentPart",
 					"required": true,
 					"default": null,
-					"description": "The segment descriptor, as received from the Input children snippet."
+					"description": "The data of the segment, from the children snippet of the Input."
 				},
 				{
 					"name": "class",
@@ -244,7 +244,7 @@
 			"dataAttributes": [
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -252,7 +252,7 @@
 				},
 				{
 					"name": "data-placeholder",
-					"description": "Present while the segment shows its placeholder instead of a value."
+					"description": "Present while the segment shows its placeholder and not a value."
 				},
 				{
 					"name": "data-time-picker-segment",
@@ -260,20 +260,20 @@
 				},
 				{
 					"name": "data-type",
-					"description": "The segment type, e.g. 'hour', 'minute', 'second', 'dayPeriod', or 'literal'."
+					"description": "The segment type, for example 'hour', 'minute', 'second', 'dayPeriod', or 'literal'."
 				}
 			]
 		},
 		{
 			"name": "Trigger",
-			"description": "Button that opens and closes the clock popover.",
+			"description": "The button that opens and closes the clock popover.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the button, e.g. a clock icon."
+					"description": "The content of the button, for example a clock icon."
 				},
 				{
 					"name": "class",
@@ -286,7 +286,7 @@
 			"dataAttributes": [
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -296,119 +296,119 @@
 		},
 		{
 			"name": "Popover",
-			"description": "The floating panel that hosts the clock. Forwards Popover.Content props (placement, offset, shouldFlip, …); open state, trigger wiring, and id are controlled internally. Placement defaults to bottom and initial focus lands on the first wheel column.",
+			"description": "The panel that floats and contains the clock. It accepts Popover.Content props, for example placement, offset, and shouldFlip. The component controls the open state, the reference to the trigger, and the id. The default placement is bottom, and the focus goes first to the first wheel column.",
 			"props": [
 				{
 					"name": "offset",
 					"type": "number",
 					"required": false,
 					"default": "4",
-					"description": "Offset along the main axis from the anchor element."
+					"description": "The distance from the anchor element, on the main axis."
 				},
 				{
 					"name": "placement",
 					"type": "ExtendedPlacement",
 					"required": false,
 					"default": "'bottom'",
-					"description": "Placement relative to the anchor element."
+					"description": "The position against the anchor element."
 				},
 				{
 					"name": "shouldFlip",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether to flip when there's insufficient space."
+					"description": "Moves the panel to the opposite side when the space is not sufficient."
 				},
 				{
 					"name": "boundaryElement",
 					"type": "Element | null",
 					"required": false,
 					"default": "null",
-					"description": "Boundary element for positioning constraints."
+					"description": "The element that gives the limits of the position."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content of the popover."
+					"description": "The content of the popover."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the popover container."
+					"description": "The CSS class names of the popover container."
 				},
 				{
 					"name": "nonModal",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+					"description": "Makes the popover non-modal. The user can then operate the page, the focus does not stay in\nthe panel, and the page scrolls."
 				},
 				{
 					"name": "shouldCloseOnInteractOutside",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether clicking outside the popover should close it."
+					"description": "Closes the popover when the user clicks outside it."
 				},
 				{
 					"name": "shouldCloseOnEscape",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether pressing Escape should close the popover."
+					"description": "Closes the popover when the user pushes the `Escape` key."
 				},
 				{
 					"name": "shouldCloseOnBlur",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+					"description": "Closes the popover when the focus goes out of it. The default is true for a non-modal popover."
 				},
 				{
 					"name": "initialFocus",
 					"type": "FocusTrapOptions['initialFocus']",
 					"required": false,
 					"default": null,
-					"description": "Element or selector to focus first when modal trap activates."
+					"description": "The element, or the selector of the element, that gets the focus first in the modal mode."
 				},
 				{
 					"name": "open",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled open state (standalone mode)."
+					"description": "The open state, when you use the part alone."
 				},
 				{
 					"name": "triggerRef",
 					"type": "HTMLElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Reference to the trigger element (standalone mode)."
+					"description": "The reference to the trigger element, when you use the part alone."
 				},
 				{
 					"name": "onOpenChange",
 					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback when open state changes (standalone mode)."
+					"description": "The component calls it when the open state changes, when you use the part alone."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Clock",
-			"description": "The wheel surface inside the popover. Resolves visible columns from root state (granularity, hourCycle) in stable order: hour → minute? → second? → dayPeriod?.",
+			"description": "The wheels in the popover. It calculates the columns from the state of the root: granularity and hourCycle. The sequence is always the same: the hour, then the minute, then the second, then the day period.",
 			"props": [
 				{
 					"name": "column",
 					"type": "Snippet<[ClockColumnInfo]>",
 					"required": false,
 					"default": null,
-					"description": "Custom per-column rendering; receives { type, label? } for each visible column. Defaults to auto-rendered columns."
+					"description": "Your own content for each column. It receives { type, label? } for each column. If you give none, the component makes the default columns."
 				},
 				{
 					"name": "class",
@@ -427,21 +427,21 @@
 		},
 		{
 			"name": "WheelColumn",
-			"description": "One scrollable wheel (role=\"spinbutton\") for one editable segment: hour, minute, second, or dayPeriod.",
+			"description": "One wheel that scrolls, with role=\"spinbutton\", for one segment: the hour, the minute, the second, or the day period.",
 			"props": [
 				{
 					"name": "type",
 					"type": "ClockEditableSegmentType",
 					"required": true,
 					"default": null,
-					"description": "Which segment this wheel edits: 'hour', 'minute', 'second', or 'dayPeriod'."
+					"description": "The segment that this wheel changes: 'hour', 'minute', 'second', or 'dayPeriod'."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[TimePickerWheelOption, boolean]>",
 					"required": false,
 					"default": null,
-					"description": "Receives the option and whether it is the column's selected value."
+					"description": "It receives the option, and a boolean that is true for the selected value of the column."
 				},
 				{
 					"name": "class",
@@ -455,13 +455,13 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible name for the column. Defaults to the localized segment label."
+					"description": "The accessible name of the column. The default is the localized name of the segment."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focus-within",
@@ -473,41 +473,41 @@
 				},
 				{
 					"name": "data-wheel-spacer",
-					"description": "Identifies the padding spacers that let edge items reach the center."
+					"description": "Identifies the spacers that let an item at an end reach the center."
 				}
 			]
 		},
 		{
 			"name": "WheelItem",
-			"description": "Headless item inside a wheel column. Renders one option and exposes its state through data attributes, leaving all visual styling to consumers.",
+			"description": "An item in a wheel column, with no styles. It makes one option and shows its state in data attributes. You write all of the styles.",
 			"props": [
 				{
 					"name": "type",
 					"type": "ClockEditableSegmentType",
 					"required": true,
 					"default": null,
-					"description": "The segment type of the column this item belongs to."
+					"description": "The segment type of the column of this item."
 				},
 				{
 					"name": "option",
 					"type": "TimePickerWheelOption",
 					"required": true,
 					"default": null,
-					"description": "The wheel option to render, as received from the column's children snippet."
+					"description": "The wheel option, from the children snippet of the column."
 				},
 				{
 					"name": "selected",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the item as selected. Resolved from root state when rendered via the column snippet."
+					"description": "Marks the item as selected. In the column snippet, the component takes this value from the state of the root."
 				},
 				{
 					"name": "onRequestCenter",
 					"type": "() => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the item requests to be scrolled to the center of the wheel."
+					"description": "The component calls it when the item must go to the center of the wheel."
 				},
 				{
 					"name": "class",
@@ -520,15 +520,15 @@
 			"dataAttributes": [
 				{
 					"name": "data-centered",
-					"description": "Present while the item sits in the center of the wheel."
+					"description": "Present while the item is at the center of the wheel."
 				},
 				{
 					"name": "data-disabled",
-					"description": "Present when the item cannot be selected (out of range or stepped out)."
+					"description": "Present when the user cannot select the item, because it is out of the range or not on a step."
 				},
 				{
 					"name": "data-selected",
-					"description": "Present when the item is the committed value for its column."
+					"description": "Present when the item is the value of its column."
 				},
 				{
 					"name": "data-type",

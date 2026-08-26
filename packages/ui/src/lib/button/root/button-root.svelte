@@ -20,26 +20,31 @@
 		HTMLButtonAttributes,
 		'children' | 'class' | 'disabled' | 'aria-disabled'
 	> & {
-		/** Content. Receives the live render state (hovered, pressed, focused, pending…) when used as a one-argument snippet. */
+		/**
+		 * The content. As a snippet with one argument, it receives the live render state: hovered,
+		 * pressed, focused, and pending.
+		 */
 		children?: Snippet<[ButtonRenderState]> | Snippet;
 		class?: string;
-		/** Keeps the button focusable while blocking activation, and announces the pending state politely. */
+		/**
+		 * Keeps the button focusable, but stops the activation. It announces the pending state politely.
+		 */
 		pending?: boolean | null;
 		/** Disables the button natively. */
 		disabled?: boolean | null;
 		/**
-		 * Keeps a disabled button in the tab order, marking it `aria-disabled` instead of
-		 * using the native attribute. Activation is still blocked.
+		 * Keeps a disabled button in the tab order. The button gets `aria-disabled` and not the native
+		 * attribute. The component still stops the activation.
 		 *
-		 * For controls that are unavailable more often than not — the move buttons of a
-		 * transfer list, a toolbar that reacts to a selection. Natively disabling those hides
-		 * them from anyone exploring with a keyboard, and shifts the tab order underfoot as
-		 * the user works. Unlike `pending`, this says "not applicable", not "busy".
+		 * Use it for a control that is unavailable more often than available. The move buttons of a
+		 * transfer list are one example, and a toolbar that obeys a selection is another. If you disable
+		 * those natively, a keyboard user does not find them, and the tab order changes while the user
+		 * works. `pending` says "busy". This says "not applicable".
 		 */
 		focusableWhenDisabled?: boolean | null;
-		/** Bindable reference to the rendered button element. */
+		/** A bindable reference to the button element. */
 		element?: HTMLButtonElement | null;
-		/** Overrides the internally tracked pressed state. */
+		/** Replaces the pressed state that the component holds. */
 		pressed?: boolean;
 	};
 

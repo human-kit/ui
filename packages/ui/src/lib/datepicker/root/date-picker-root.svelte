@@ -78,7 +78,7 @@
 		isDateUnavailable,
 		open = $bindable(),
 		defaultOpen = false,
-		/** Opt into fully controlled open state. See `controlledValue`. */
+		/** Give your own code full control of the open state. Read `controlledValue`. */
 		controlledOpen = false,
 		onOpenChange,
 		closeOnSelect = true,

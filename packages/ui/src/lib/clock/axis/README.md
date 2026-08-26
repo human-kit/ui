@@ -17,7 +17,7 @@ Description: Visual overlay band for `Clock.Root`; it is presentational (`aria-h
 ### Context utilities
 
 Name: `useClockContext`  
-Description: Ensures `Clock.Axis` is used within `Clock.Root`.
+Description: Makes sure that `Clock.Axis` is in a `Clock.Root`.
 
 | Prop              | Type                 | Default | Description                                      |
 | ----------------- | -------------------- | ------- | ------------------------------------------------ |

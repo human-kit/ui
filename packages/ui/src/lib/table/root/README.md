@@ -37,7 +37,7 @@ Public prop type: `TableRootProps`
 | `aria-labelledby`        | `string`                                                     | `undefined` | Id reference for an external label.                                                                                                                  |
 | `class`                  | `string`                                                     | `''`        | Class names for the root table element.                                                                                                              |
 | `context`                | `TableContext`                                               | `undefined` | Bindable reference to the active internal table context instance.                                                                                    |
-| `element`                | `HTMLTableElement`                                           | `undefined` | Bindable reference to the rendered table element.                                                                                                    |
+| `element`                | `HTMLTableElement`                                           | `undefined` | A bindable reference to the table element.                                                                                                           |
 | `children`               | `Snippet`                                                    | `undefined` | Composed table parts.                                                                                                                                |
 
 ### Behavior notes

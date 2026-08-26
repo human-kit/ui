@@ -31,7 +31,7 @@
 		| 'onclick'
 	> & {
 		type: ClockEditableSegmentType;
-		/** Receives the option and whether it is the column's selected value. */
+		/** It receives the option, and a boolean that is true for the selected value of the column. */
 		children?: Snippet<[TimePickerWheelOption, boolean]>;
 		class?: string;
 		'aria-label'?: string;

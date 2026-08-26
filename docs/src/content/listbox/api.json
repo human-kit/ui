@@ -3,153 +3,153 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The listbox container. Manages option registration, selection state, focus, and keyboard navigation.",
+			"description": "The listbox container. It controls the registration of the options, the selection state, the focus, and the keyboard operation.",
 			"props": [
 				{
 					"name": "selectionBehavior",
 					"type": "'toggle' | 'replace'",
 					"required": false,
 					"default": "'toggle'",
-					"description": "How selection behaves: 'toggle' allows deselection, 'replace' always selects."
+					"description": "The behavior of the selection: 'toggle' lets the user remove a selection, and 'replace' always\nselects."
 				},
 				{
 					"name": "emptyPlaceholder",
 					"type": "string | Snippet",
 					"required": false,
 					"default": "'No items selected'",
-					"description": "Content shown when the list is empty. Can be a string or a Snippet."
+					"description": "The content while the list is empty. It can be a string or a Snippet."
 				},
 				{
 					"name": "items",
 					"type": "Iterable<T>",
 					"required": false,
 					"default": null,
-					"description": "Iterable of items for dynamic rendering. Used with a snippet that receives each item."
+					"description": "The items, for a list that the component makes from an array. Use it with a snippet that\nreceives one item."
 				},
 				{
 					"name": "getItemKey",
 					"type": "(item: T) => string | number",
 					"required": false,
 					"default": null,
-					"description": "Reads an item's key — the same value passed as `ListBox.Item`'s `id`.\n\nOnly needed together with `virtualizer`: a Shift range is otherwise measured over\nthe options in the DOM, which for a virtualized list is just the rendered window,\nso the range stops wherever the user happened to have scrolled."
+					"description": "Reads the key of an item. This is the same value as the `id` of `ListBox.Item`.\n\nYou need it only with `virtualizer`. Without it, a Shift range is measured over the options in\nthe DOM. In a virtualized list, those are only the rows near the viewport, thus the range\nstops at the scroll position of the user."
 				},
 				{
 					"name": "disabledKeys",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Keys of items that should be disabled and non-selectable."
+					"description": "The keys of the items that must be disabled. The user cannot select them."
 				},
 				{
 					"name": "selectionMode",
 					"type": "'single' | 'multiple'",
 					"required": false,
 					"default": "'single'",
-					"description": "Selection mode: 'single' allows one selection, 'multiple' allows many."
+					"description": "The selection mode: 'single' permits one selection, and 'multiple' permits more than one."
 				},
 				{
 					"name": "value",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Selected keys. Two-way by default — use `bind:value`."
+					"description": "The selected keys. By default it goes in the two directions: use `bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Initial selection, for when `value` is not supplied."
+					"description": "The selection at the start, for when you give no `value`."
 				},
 				{
 					"name": "controlledValue",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new selection back down. Off by default, because `bind:value` — the common\ncase — needs the write-back to work at all."
+					"description": "Give your own code full control of the selection. The component stops to write back to\n`value`, and it reports only through `onChange`. Thus the parent can refuse a change: the\nparent does not send the new selection down. The default is off, because `bind:value` is the\nusual case and it needs the write-back."
 				},
 				{
 					"name": "children",
 					"type": "Snippet | Snippet<[T]>",
 					"required": false,
 					"default": null,
-					"description": "Content of the listbox. Can be static children or a snippet receiving items."
+					"description": "The content of the listbox. It can be static children, or a snippet that receives one item."
 				},
 				{
 					"name": "header",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Rows rendered inside the listbox above the items — an action row such as\n\"Create …\". Kept out of `children` because in dynamic mode that snippet is called\nonce per item.\n\nA virtualized list does not navigate into it: navigation there walks the item\narray, which this is not part of."
+					"description": "The rows in the listbox above the items, for example an action row such as \"Create …\". They\nare not in `children`, because from an array of items the component calls that snippet one\ntime for each item.\n\nIn a virtualized list, the keyboard does not go into these rows. There, the keys move through\nthe array of the items, and these rows are not in it."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class to apply to the listbox container."
+					"description": "The CSS class names of the listbox container."
 				},
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "HTML id attribute for the listbox element."
+					"description": "The id of the listbox element."
 				},
 				{
 					"name": "aria-label",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label for the listbox. Announced by screen readers."
+					"description": "The accessible name of the listbox. A screen reader announces it."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of a visible element that labels the listbox. Use instead of `aria-label`\n when the list already has a heading on screen."
+					"description": "The id of an element that the user sees, and that gives the listbox its name. Use it in place\nof `aria-label` when the list already has a heading."
 				},
 				{
 					"name": "onChange",
 					"type": "(value: Set<string | number>) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback fired when the selection changes."
+					"description": "The component calls it when the selection changes."
 				},
 				{
 					"name": "disableFocusHandling",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Disable DOM focus handling on the root container for virtual-focus compositions."
+					"description": "Stops the DOM focus control on the root container, for a composition with a virtual focus."
 				},
 				{
 					"name": "loop",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether arrow-key navigation wraps from the last item to the first (and back)."
+					"description": "At the last item, the arrow keys move the focus to the first item, and at the first item, to\nthe last one."
 				},
 				{
 					"name": "typeahead",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether typing characters moves focus to the option whose text matches."
+					"description": "When the user types a character, the focus moves to the option whose text agrees with it."
 				},
 				{
 					"name": "virtualizer",
 					"type": "{ rowHeight?: number; overscan?: number }",
 					"required": false,
 					"default": null,
-					"description": "Renders only the rows near the viewport instead of all of them.\n\nOnly honoured together with `items`: the listbox has to own the loop to be able to\nslice it, so a list written as static children is never virtualized.\n\nRows must all be the same height — that assumption is what lets the scrollbar be\nsized without measuring every row. The height is measured from the first rendered\nrow unless `rowHeight` says otherwise, so a themed list needs no magic number.\n\nThe listbox element itself is the scroller: give it a max height and\n`overflow-y: auto`, as an unvirtualized long list would need anyway."
+					"description": "Makes only the rows near the viewport, and not all of the rows.\n\nThe component obeys it only with `items`. The listbox must control the loop to cut it, thus a\nlist written as static children is never virtualized.\n\nAll of the rows must have the same height. This is what lets the component calculate the\nscrollbar without a measurement of each row. The component measures the height from the first\nrow, but `rowHeight` replaces that measurement. Thus a list with your own styles needs no\nfixed number.\n\nThe listbox element is the element that scrolls. Give it a maximum height and `overflow-y:\nauto`. A long list without a virtualizer needs the same."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-empty-placeholder",
-					"description": "Identifies the placeholder option rendered when the list has no items."
+					"description": "Identifies the option that the component shows when the list has no items."
 				},
 				{
 					"name": "data-focus-within",
@@ -157,122 +157,122 @@
 				},
 				{
 					"name": "data-listbox-spacer",
-					"description": "Identifies the element holding the full scroll height while virtualised."
+					"description": "Identifies the element that holds the full scroll height while the list is virtualized."
 				},
 				{
 					"name": "data-listbox-window",
-					"description": "Identifies the element holding the rows currently rendered by the virtualiser."
+					"description": "Identifies the element that holds the rows that the virtualizer makes."
 				}
 			]
 		},
 		{
 			"name": "Item",
-			"description": "A selectable option. Registers itself with the root and exposes selected, focused, hovered, pressed, and disabled states through data attributes.",
+			"description": "An option that the user can select. It registers itself with the root. It shows its selected, focused, hovered, pressed, and disabled states in data attributes.",
 			"props": [
 				{
 					"name": "id",
 					"type": "string | number",
 					"required": true,
 					"default": null,
-					"description": "Unique identifier for this item. Used for selection tracking."
+					"description": "The unique identifier of this item. The component uses it for the selection."
 				},
 				{
 					"name": "textValue",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Text value for typeahead search. If not provided, extracted from content."
+					"description": "The text for the typeahead. If you give none, the component reads it from the content."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether this item is disabled and non-selectable."
+					"description": "Disables this item. The user cannot select it."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class to apply to the item element."
+					"description": "The CSS class names of the item element."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content to render inside the item."
+					"description": "The content of the item."
 				},
 				{
 					"name": "customId",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Override the generated ID. Useful for components with custom ID requirements."
+					"description": "Replaces the id that the component makes. Use it when your component needs its own id."
 				},
 				{
 					"name": "disableFocusHandling",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Disable real DOM focus handling. When true, no tabindex is set and focus events are skipped."
+					"description": "Stops the DOM focus control. With `true`, the component sets no tabindex and it ignores the\nfocus events."
 				},
 				{
 					"name": "isFocusedOverride",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Override the focused state. When provided, this value is used instead of internal focus tracking."
+					"description": "Replaces the focused state. With this prop, the component uses your value and not its own."
 				},
 				{
 					"name": "isFocusVisibleOverride",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Override the focus-visible presentation state."
+					"description": "Replaces the focus-visible state."
 				},
 				{
 					"name": "onItemSelect",
 					"type": "(id: string | number, label: string) => void",
 					"required": false,
 					"default": null,
-					"description": "Override the select behavior. When provided, called instead of default listbox selection."
+					"description": "Replaces the selection behavior. With this prop, the component calls it and does not do its\nown selection."
 				},
 				{
 					"name": "onResolvedTextValue",
 					"type": "(label: string) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback with resolved text value when mounted (from prop or rendered content)."
+					"description": "The component calls it with the text value when the item goes into the DOM. That text comes\nfrom the prop or from the content."
 				},
 				{
 					"name": "onItemHoverStart",
 					"type": "(id: string | number, label: string) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback when pointer hover should move logical focus to this item."
+					"description": "The component calls it when the pointer must move the logical focus to this item."
 				},
 				{
 					"name": "scrollOnFocus",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether to scroll this item into view when focused. Useful for virtual focus patterns."
+					"description": "Scrolls this item into the viewport when it gets the focus. Use it with a virtual focus."
 				},
 				{
 					"name": "isParentDisabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Additional disabled state from parent."
+					"description": "A second disabled state, from the parent."
 				},
 				{
 					"name": "pressed",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Override the visual pressed state. When provided, this value is used instead of internal press tracking."
+					"description": "Replaces the pressed state. With this prop, the component uses your value and not its own."
 				}
 			],
 			"dataAttributes": [
@@ -282,7 +282,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -298,7 +298,7 @@
 				},
 				{
 					"name": "data-item-id-type",
-					"description": "Whether the item id is a \"string\" or a \"number\"."
+					"description": "The type of the item id: \"string\" or \"number\"."
 				},
 				{
 					"name": "data-navigation-item",

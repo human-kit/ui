@@ -22,9 +22,9 @@
 		| 'children'
 		| 'emptyPlaceholder'
 	> & {
-		/** Optional items for dynamic rendering. */
+		/** The items, for a list that the component makes from an array. */
 		items?: Iterable<T>;
-		/** Content of the list. Receives item in dynamic mode. */
+		/** The content of the list. From an array of items, it receives one item. */
 		children?: Snippet<[T]> | Snippet;
 	};
 

@@ -24,9 +24,9 @@ CSS.
   prop. If you must hold the state in your own code, use the `controlled*`
   props.
 - **Accessibility is the primary function.** The components keep the focus in
-  the correct element, move the focus back by input modality, set the `aria-*`
-  attributes, and do the typeahead and the roving tabindex. The tests compare
-  this behavior to a written contract.
+  the correct element and move the focus back by input modality. They set the
+  `aria-*` attributes, and they do the typeahead and the roving tabindex. The
+  tests compare this behavior to a written contract.
 - **The library has one dependency at run time:** `@floating-ui/dom`. Only the
   components that float use it.
 - **The package is native ESM, and each component has a subpath export.** Your

@@ -22,25 +22,25 @@
 	 * component only adapts it to the combobox (selection -> items, per-tag context).
 	 */
 	type ComboBoxTagsProps = {
-		/** Snippet to render each tag. Receives { item: { value, label } } */
+		/** The snippet that makes each tag. It receives { item: { value, label } }. */
 		children: Snippet<[{ item: TagItem }]>;
 		/**
-		 * Optional overflow indicator. When provided, the tag row is constrained to
-		 * a single line: tags that don't fit are not rendered, and this snippet
-		 * renders at the end with how many are hidden (plus `visible`/`total`, so the
-		 * consumer can e.g. show a summary when nothing fits). Expected to render a
-		 * single element. Without `overflow`, every tag renders and wrapping is left
-		 * to the consumer's styles (the previous behaviour).
+		 * An optional indicator for the tags that do not fit. With it, the tag row stays on one line.
+		 * The component makes no tag that does not fit, and it puts this snippet at the end with the
+		 * number of the hidden tags. The snippet also receives `visible` and `total`, thus you can show
+		 * a summary when no tag fits. Make one element in it.
+		 *
+		 * Without `overflow`, the component makes each tag, and your styles decide how the row wraps.
 		 */
 		overflow?: Snippet<[TagsOverflow]>;
 		/**
-		 * Horizontal space (px) to keep free inside the parent for siblings such as
-		 * the search input, so the overflow calc doesn't claim the whole row. Only
-		 * used in overflow mode.
+		 * The horizontal space to keep free in the parent, in px, for an element beside the tags such as
+		 * the search input. Thus the calculation does not take the full row. The component uses it only
+		 * with `overflow`.
 		 */
 		reserve?: number;
 		class?: string;
-		/** Accessible name of the tag row. Defaults to `Selected values`. */
+		/** The accessible name of the tag row. The default is `Selected values`. */
 		'aria-label'?: string;
 	};
 

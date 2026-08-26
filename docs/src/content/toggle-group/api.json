@@ -3,63 +3,63 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The group container. Renders a div with role=\"group\", coordinates selection across nested Toggle.Root buttons, and manages roving focus.",
+			"description": "The group container. It makes a div with role=\"group\". It controls the selection across the Toggle.Root buttons in it, and it controls the roving focus.",
 			"props": [
 				{
 					"name": "value",
 					"type": "ToggleGroupValue[]",
 					"required": false,
 					"default": null,
-					"description": "Selected values, and the source of truth whenever it is supplied — with `bind:value`\nor without. Every change is written back here and reported through `onChange`; without\na binding that write only lands locally, so a parent that hears `onChange` and refuses\nthe change (never flowing a new `value` down) sees the group move anyway, and snap back\nto the supplied `value` the next time the parent renders."
+					"description": "The selected values. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
 				},
 				{
 					"name": "defaultValue",
 					"type": "ToggleGroupValue[]",
 					"required": false,
 					"default": null,
-					"description": "Initially selected values, for when `value` is not supplied."
+					"description": "The selected values at the start, for when you give no `value`."
 				},
 				{
 					"name": "onChange",
 					"type": "(value: ToggleGroupValue[]) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the user changes the selection."
+					"description": "The component calls it when the user changes the selection."
 				},
 				{
 					"name": "selectionMode",
 					"type": "ToggleGroupSelectionMode",
 					"required": false,
 					"default": "'single'",
-					"description": "Whether at most one (`'single'`) or several (`'multiple'`) toggles can be selected."
+					"description": "The number of the toggles that can be selected: one with `'single'`, or more than one with `'multiple'`."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Disables every toggle in the group."
+					"description": "Disables each toggle in the group."
 				},
 				{
 					"name": "orientation",
 					"type": "ToggleGroupOrientation",
 					"required": false,
 					"default": "'horizontal'",
-					"description": "Layout orientation. Controls which arrow keys move roving focus."
+					"description": "The orientation of the layout. It sets the arrow keys that move the roving focus."
 				},
 				{
 					"name": "disallowEmptySelection",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps at least one enabled toggle selected."
+					"description": "Keeps one enabled toggle selected."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the group, typically `Toggle.Root` buttons."
+					"description": "The content of the group, usually `Toggle.Root` buttons."
 				},
 				{
 					"name": "class",
@@ -73,21 +73,21 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the group element. Auto-generated when omitted."
+					"description": "The id of the group element. If you give none, the component makes one."
 				},
 				{
 					"name": "element",
 					"type": "HTMLDivElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered group element."
+					"description": "A bindable reference to the group element."
 				},
 				{
 					"name": "context",
 					"type": "ToggleGroupContext",
 					"required": false,
 					"default": null,
-					"description": "Bindable reference to the internal group context, for advanced composition."
+					"description": "A bindable reference to the internal group context, for a complex composition."
 				}
 			],
 			"dataAttributes": [

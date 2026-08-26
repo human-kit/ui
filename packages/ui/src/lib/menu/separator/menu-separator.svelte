@@ -5,7 +5,7 @@
 	 * Menu.Separator - A visual divider between menu items (role="separator").
 	 */
 	type MenuSeparatorProps = {
-		/** Orientation of the separator. */
+		/** The orientation of the separator. */
 		orientation?: 'horizontal' | 'vertical';
 		class?: string;
 		element?: HTMLElement | null;

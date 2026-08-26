@@ -53,7 +53,7 @@ Put the items that go together in a `Menu.Group` with a `Menu.GroupLabel`. The g
 
 ## Submenus
 
-Put a `Menu.SubmenuRoot` in the menu. It contains a `Menu.SubmenuTrigger` and its own `Menu.Content`. The default placement is `right-start`. A submenu uses a safe triangle for the pointer: while the pointer moves at an angle to the open submenu, the items that the pointer goes over do not close it.
+Put a `Menu.SubmenuRoot` in the menu. It contains a `Menu.SubmenuTrigger` and its own `Menu.Content`. The default placement is `right-start`. A submenu uses a safe triangle for the pointer. While the pointer moves at an angle to the open submenu, the items that the pointer goes over do not close it.
 
 <Demo source={submenuSource}><Submenu /></Demo>
 

@@ -29,7 +29,7 @@ Description: State container for tree focus, expansion, selection, typeahead, an
 | `onAction`               | `(id: string \| number) => void`        | `undefined` | Called when the focused item is activated with `Enter`.                               |
 | `aria-label`             | `string`                                | `undefined` | Accessible label for the tree.                                                        |
 | `aria-labelledby`        | `string`                                | `undefined` | Id reference to an external label.                                                    |
-| `class`                  | `string`                                | `''`        | CSS class names for the root element.                                                 |
+| `class`                  | `string`                                | `''`        | The CSS class names of the root element.                                              |
 | `context`                | `TreeContext`                           | `bindable`  | Exposes the internal tree context for advanced compositions and tests.                |
 | `element`                | `HTMLElement`                           | `bindable`  | Exposes the rendered root element.                                                    |
 

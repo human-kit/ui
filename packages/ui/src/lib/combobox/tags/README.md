@@ -10,7 +10,7 @@ Description: Container that renders selected values as tags in multiple mode.
 | Prop       | Type                           | Default    | Description                                                                       |
 | ---------- | ------------------------------ | ---------- | --------------------------------------------------------------------------------- |
 | `children` | `Snippet<[{ item: TagItem }]>` | `required` | Render function that receives each selected item as `{ item: { value, label } }`. |
-| `class`    | `string`                       | `''`       | CSS class names for the tags container.                                           |
+| `class`    | `string`                       | `''`       | The CSS class names of the tags container.                                        |
 
 ### TagItem type
 

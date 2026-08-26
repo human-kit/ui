@@ -18,50 +18,59 @@
 	} from '../../primitives/input-modality';
 
 	type ComboBoxProps<T> = {
-		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
+		/** A stable id, from which the component makes its internal ARIA ids. Give one on a server. */
 		id?: string;
 		disabled?: boolean;
 		pending?: boolean;
 		readonly?: boolean;
-		/** Selected value(s). Single value for single mode, array for multiple mode. Can be bound with bind:value */
+		/**
+		 * The selected value or values: one value in the single mode, and an array in the multiple mode.
+		 * You can bind it with `bind:value`.
+		 */
 		value?: string | number | null | (string | number)[];
 		defaultValue?: string | number | null | (string | number)[];
 		/**
-		 * Opt into fully controlled selection: the component stops writing back to `value`
-		 * and only reports through `onChange`, so the parent can reject a change by not
-		 * flowing the new value back down. Off by default, because `bind:value` — the
-		 * common case — needs the write-back to work at all.
+		 * Give your own code full control of the selection. The component stops to write back to
+		 * `value`, and it reports only through `onChange`. Thus the parent can refuse a change: the
+		 * parent does not send the new value down. The default is off, because `bind:value` is the usual
+		 * case and it needs the write-back.
 		 */
 		controlledValue?: boolean;
-		/** Current input value. Can be bound with bind:inputValue */
+		/** The text in the input. You can bind it with `bind:inputValue`. */
 		inputValue?: string;
 		defaultInputValue?: string;
-		/** Opt into fully controlled input text. See `controlledValue`. */
+		/** Give your own code full control of the input text. Read `controlledValue`. */
 		controlledInputValue?: boolean;
 		selectionBehavior?: 'toggle' | 'replace';
 		selectionMode?: 'single' | 'multiple';
-		/** Whether to close popover after selection. Default: true for single, false for multiple */
+		/**
+		 * Closes the popover after a selection. The default is true in the single mode, and false in the
+		 * multiple mode.
+		 */
 		closeOnSelect?: boolean;
-		/** Whether the popover is open. Can be bound with bind:open */
+		/** The open state of the popover. You can bind it with `bind:open`. */
 		open?: boolean;
-		/** Opt into fully controlled open state. See `controlledValue`. */
+		/** Give your own code full control of the open state. Read `controlledValue`. */
 		controlledOpen?: boolean;
-		/** How the popover opens: 'focus' | 'input' | 'press'. Default: 'press' */
+		/** What opens the popover: 'focus', 'input', or 'press'. The default is 'press'. */
 		trigger?: 'focus' | 'input' | 'press';
-		/** Function used to filter items locally. Set to null to disable local filtering. */
+		/** The function that filters the items locally. Set it to null to stop the local filter. */
 		filter?: ComboBoxFilter | null;
-		/** Whether items with onAction should participate in local filtering. */
+		/** Puts the items that have an `onAction` function into the local filter. */
 		filterActionItems?: boolean;
 		onInputChange?: (value: string) => void;
 		onOpenChange?: (open: boolean) => void;
 		onChange?: (value: string | number | null | (string | number)[]) => void;
-		/** Optional: Array of items. Used internally to resolve selected labels before options mount. */
+		/**
+		 * The array of the items. The component uses it to find the names of the selected values before
+		 * the options go into the DOM.
+		 */
 		items?: T[];
 		children?: Snippet;
 		class?: string;
-		/** Accessible label for the combobox group */
+		/** The accessible name of the combobox group. */
 		'aria-label'?: string;
-		/** ID of element that labels this combobox group */
+		/** The id of the element that gives this combobox group its name. */
 		'aria-labelledby'?: string;
 	};
 

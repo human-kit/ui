@@ -68,7 +68,7 @@ Put the calendar in a `LocaleProvider` to localize the month heading, the weekda
 - Each grid has an accessible name. The name comes from the month heading that the user sees. The day of today has `aria-current="date"`.
 - An unavailable cell has `aria-disabled="true"`, but it keeps the focus. Thus a screen reader user can move to it and read it.
 - The `ArrowRight` key and the `ArrowLeft` key move the focus by one day. The `ArrowDown` key and the `ArrowUp` key move the focus by one week.
-- The `Home` key and the `End` key move the focus to the first day and to the last day of the month. The `PageUp` key and the `PageDown` key move the focus to the previous month and to the next month, and the day number stays the same.
+- The `Home` key and the `End` key move the focus to the first day and to the last day of the month. The `PageUp` key and the `PageDown` key move the focus to the previous month and to the next month. The day number stays the same.
 - The `Enter` key and the `Space` key select the date with the focus. In the range mode, they complete the range.
 
 ## API reference

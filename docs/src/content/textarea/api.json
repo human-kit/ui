@@ -3,7 +3,7 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The textarea control. Renders a native <textarea> and forwards all native attributes while exposing state through data attributes.",
+			"description": "The textarea control. It makes a native <textarea> element and puts each native attribute on it. It shows its state in data attributes.",
 			"props": [
 				{
 					"name": "class",
@@ -17,63 +17,63 @@
 					"type": "boolean | null",
 					"required": false,
 					"default": "false",
-					"description": "Removes the textarea from interaction and focus order."
+					"description": "Stops the interaction with the textarea and removes it from the focus order."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean | null",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the textarea focusable while preventing edits. Maps to `readonly` and `aria-readonly`."
+					"description": "Keeps the textarea focusable, but stops the changes. The component sets `readonly` and `aria-readonly`."
 				},
 				{
 					"name": "invalid",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the textarea as invalid. Maps to `aria-invalid` and `data-invalid`."
+					"description": "Marks the textarea as not valid. The component sets `aria-invalid` and `data-invalid`."
 				},
 				{
 					"name": "required",
 					"type": "boolean | null",
 					"required": false,
 					"default": "false",
-					"description": "Marks the textarea as required. Maps to `required` and `aria-required`."
+					"description": "Makes the textarea required. The component sets `required` and `aria-required`."
 				},
 				{
 					"name": "value",
 					"type": "TextAreaValue",
 					"required": false,
 					"default": null,
-					"description": "The text content. Bindable with `bind:value`."
+					"description": "The text. You can bind it with `bind:value`."
 				},
 				{
 					"name": "element",
 					"type": "HTMLTextAreaElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered textarea element."
+					"description": "A bindable reference to the textarea element."
 				},
 				{
 					"name": "autoResize",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Grows the textarea height with its content."
+					"description": "Makes the textarea taller with its content."
 				},
 				{
 					"name": "minRows",
 					"type": "number",
 					"required": false,
 					"default": null,
-					"description": "Minimum number of visible rows while auto-resizing."
+					"description": "The smallest number of the rows that the user sees, with an automatic height."
 				},
 				{
 					"name": "maxRows",
 					"type": "number",
 					"required": false,
 					"default": null,
-					"description": "Maximum number of visible rows while auto-resizing."
+					"description": "The largest number of the rows that the user sees, with an automatic height."
 				}
 			],
 			"dataAttributes": [
@@ -87,7 +87,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",

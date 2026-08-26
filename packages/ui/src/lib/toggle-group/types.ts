@@ -16,14 +16,15 @@ export type {
 
 export type ToggleGroupRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	/**
-	 * Selected values, and the source of truth whenever it is supplied — with `bind:value`
-	 * or without. Every change is written back here and reported through `onChange`; without
-	 * a binding that write only lands locally, so a parent that hears `onChange` and refuses
-	 * the change (never flowing a new `value` down) sees the group move anyway, and snap back
-	 * to the supplied `value` the next time the parent renders.
+	 * The selected values. When you give this prop, it is the source of truth, with `bind:value` or
+	 * without it. The component writes each change here and reports it through `onChange`.
+	 *
+	 * Without a binding, that write stays local. Thus a parent that hears `onChange` and refuses the
+	 * change — it sends no new `value` down — sees the group move. The group then goes back to the
+	 * value of the parent at the next render.
 	 */
 	value?: ToggleGroupValue[];
-	/** Initially selected values, for when `value` is not supplied. */
+	/** The selected values at the start, for when you give no `value`. */
 	defaultValue?: ToggleGroupValue[];
 	onChange?: (value: ToggleGroupValue[]) => void;
 	selectionMode?: ToggleGroupSelectionMode;

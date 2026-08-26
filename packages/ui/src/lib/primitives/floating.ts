@@ -93,11 +93,11 @@ export type ExtendedPlacement =
 export type FloatingOptions = {
 	/** Offset along the main axis from the anchor. */
 	offset?: number;
-	/** Placement relative to the anchor element. */
+	/** The position against the anchor element. */
 	placement?: ExtendedPlacement;
-	/** Whether to flip when there's insufficient space. */
+	/** Moves the panel to the opposite side when the space is not sufficient. */
 	shouldFlip?: boolean;
-	/** Boundary element for positioning constraints. */
+	/** The element that gives the limits of the position. */
 	boundaryElement?: Element | null;
 	/**
 	 * Minimum gap kept between the floating element and the boundary edges, in

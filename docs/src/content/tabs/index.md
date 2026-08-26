@@ -45,7 +45,7 @@ By default, the arrow keys activate each tab as the focus moves. With `keyboardA
 
 ## Vertical orientation and disabled tabs
 
-Set `orientation="vertical"` to put the tab list in a column and to move the keyboard operation to the Up arrow key and the Down arrow key. Use `disabledKeys` on `Tabs.Root`, or `disabled` on one `Tabs.Tab`, to stop the activation of specified tabs.
+Set `orientation="vertical"` to put the tab list in a column. The keyboard operation then moves to the Up arrow key and the Down arrow key. Use `disabledKeys` on `Tabs.Root`, or `disabled` on one `Tabs.Tab`, to stop the activation of specified tabs.
 
 <Demo source={verticalSource}><Vertical /></Demo>
 

@@ -3,77 +3,77 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "State container for the dialog. Holds open state and the trigger reference, and passes state helpers ({ close, open, toggle, isOpen }) to its children snippet.",
+			"description": "The container with the state. It holds the open state and the reference to the trigger. It gives the state functions ({ close, open, toggle, isOpen }) to its children snippet.",
 			"props": [
 				{
 					"name": "open",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Open state. Two-way by default — use `bind:open`."
+					"description": "The open state. By default it goes in the two directions: use `bind:open`."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial open state, for when `open` is not supplied."
+					"description": "The open state at the start, for when you give no `open`."
 				},
 				{
 					"name": "controlledOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the\ncommon case — needs the write-back to work at all."
+					"description": "Give your own code full control of the open state. The component stops to write back to\n`open`, and it reports only through `onOpenChange`. Thus the parent can refuse a change: the\nparent does not send the new value down. The default is off, because `bind:open` is the usual\ncase and it needs the write-back."
 				},
 				{
 					"name": "onOpenChange",
 					"type": "(open: boolean) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback when open state changes."
+					"description": "The component calls it when the open state changes."
 				},
 				{
 					"name": "triggerRef",
 					"type": "HTMLElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Reference to the trigger element. Can be set manually or via Dialog.Trigger."
+					"description": "The reference to the trigger element. Set it in your own code, or let Dialog.Trigger set it."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[DialogStateHelpers]>",
 					"required": false,
 					"default": null,
-					"description": "Children snippet receives state helpers: { close, open, toggle, isOpen }"
+					"description": "The children snippet. It receives the state functions: { close, open, toggle, isOpen }."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Trigger",
-			"description": "Button that registers itself as the dialog trigger and toggles the dialog on click.",
+			"description": "The button that registers itself as the trigger of the dialog. A click opens and closes the dialog.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button content."
+					"description": "The content of the button."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": [
@@ -85,28 +85,28 @@
 		},
 		{
 			"name": "Portal",
-			"description": "Portal wrapper that renders the dialog layers into the document body only while the dialog is open (staying mounted through exit animations).",
+			"description": "The portal that puts the dialog layers in the document body. They are there only while the dialog is open, and they stay until the exit animation is complete.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content to render in portal (Overlay and Content)"
+					"description": "The content of the portal: the Overlay and the Content."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Overlay",
-			"description": "Backdrop layer rendered behind the dialog content. Its z-index is derived from the dialog's position in the stack.",
+			"description": "The backdrop behind the dialog content. Its z-index comes from the position of the dialog in the stack.",
 			"props": [
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the overlay."
+					"description": "The CSS class names of the overlay."
 				}
 			],
 			"dataAttributes": [
@@ -116,11 +116,11 @@
 				},
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-state",
@@ -130,35 +130,35 @@
 		},
 		{
 			"name": "Content",
-			"description": "The modal panel (role=\"dialog\", aria-modal). Applies focus trapping, outside-interaction handling, scroll lock, and aria-hiding of outside content; close interactions only apply to the topmost dialog in a stack.",
+			"description": "The modal panel, with role=\"dialog\" and aria-modal. It keeps the focus inside, it obeys an interaction outside it, it stops the page scroll, and it hides the outside content from assistive technology. In a stack, only the top dialog obeys the close interactions.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content of the dialog."
+					"description": "The content of the dialog."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the dialog container."
+					"description": "The CSS class names of the dialog container."
 				},
 				{
 					"name": "shouldCloseOnInteractOutside",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether clicking outside the dialog should close it."
+					"description": "Closes the dialog when the user clicks outside it."
 				},
 				{
 					"name": "shouldCloseOnEscape",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether pressing Escape should close the dialog."
+					"description": "Closes the dialog when the user pushes the `Escape` key."
 				}
 			],
 			"dataAttributes": [
@@ -168,15 +168,15 @@
 				},
 				{
 					"name": "data-dialog-positioner",
-					"description": "Identifies the fixed positioning wrapper that centers the panel."
+					"description": "Identifies the fixed element that puts the panel at the center."
 				},
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-state",
@@ -193,21 +193,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The dialog's name."
+					"description": "The name of the dialog."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the heading."
+					"description": "The CSS class names of the heading."
 				},
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Overrides the generated id."
+					"description": "Replaces the id that the component makes."
 				}
 			],
 			"dataAttributes": [
@@ -226,21 +226,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Supporting text announced after the title."
+					"description": "The text that a screen reader announces after the title."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the paragraph."
+					"description": "The CSS class names of the paragraph."
 				},
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Overrides the generated id."
+					"description": "Replaces the id that the component makes."
 				}
 			],
 			"dataAttributes": [
@@ -259,21 +259,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button label."
+					"description": "The name on the button."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": [

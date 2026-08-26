@@ -61,7 +61,7 @@ The default is the modal mode. The focus stays in the panel, the page does not s
 ## Accessibility
 
 - `Popover.Content` has `role="dialog"`. `Popover.Trigger` is a button with `aria-haspopup="dialog"` and `aria-expanded`.
-- In the modal mode, the focus stays in the panel, the body does not scroll, and assistive technology does not read the content outside the panel. Use `initialFocus` to select the first element that gets the focus.
+- In the modal mode, the focus stays in the panel and the body does not scroll. Assistive technology does not read the content outside the panel. Use `initialFocus` to select the first element that gets the focus.
 - The `Escape` key closes the popover and moves the focus back to the trigger. An interaction outside the popover also closes it, but not with `shouldCloseOnInteractOutside={false}`.
 - In the non-modal mode, the user can operate the page. The popover closes when the focus goes out of the trigger and the panel.
 

@@ -57,10 +57,10 @@ Set `selectionMode="multiple"` or `selectionMode="single"`, and give each body r
 
 ## Keyboard navigation
 
-The `keyboardNavigation` prop sets how far the roving tab stop goes into the body. The default is `"grid"`, the full ARIA grid pattern, where each body cell can take the focus. This has a cost: each cell registers itself and calculates its own focus state, and a virtualized table does this again for each row that it makes while the user scrolls.
+The `keyboardNavigation` prop sets how far the roving tab stop goes into the body. The default is `"grid"`, the full ARIA grid pattern, where each body cell can take the focus. This has a cost. Each cell registers itself and calculates its own focus state. A virtualized table does this again for each row that it makes while the user scrolls.
 
 - `"grid"` — the arrow keys move from cell to cell. Use this mode when the user works in the body, and does not only read it.
-- `"row"` — the row is the only element in the body that takes the focus. The arrow keys move from row to row, the `Enter` key presses a row, and the `Space` key selects a row. There is one focus target for each row, not one for each cell. An element in a body cell that can take the focus, for example a `Table.Checkbox` or a link, becomes a usual tab stop, because the roving focus does not go to it.
+- `"row"` — the row is the only element in the body that takes the focus. The arrow keys move from row to row, the `Enter` key presses a row, and the `Space` key selects a row. There is one focus target for each row, not one for each cell. An element in a body cell that can take the focus becomes a usual tab stop, for example a `Table.Checkbox` or a link. The roving focus does not go to it.
 - `"none"` — the keyboard does not go into the body. Use this mode only when nothing in the body does an action. A row that obeys a click needs an equivalent keyboard operation.
 
 In each mode, the header keeps its own cell navigation. Thus the sort control and the resize control stay available. The header is one row, thus its cost is very small.
@@ -95,4 +95,4 @@ The table does not do the pagination. Cut the data before you make the table, an
 
 <ApiReference api={api} />
 
-The same parts also give you the more complex patterns: the visibility of a column, fixed and pinned columns, a header that stays at the top, a column resize, and row actions. The API reference above has the props for them.
+The same parts also give you the more complex patterns. These are the visibility of a column, fixed and pinned columns, a header that stays at the top, a column resize, and row actions. The API reference above has the props for them.

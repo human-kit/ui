@@ -3,84 +3,84 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "Owns the collection and the split between the two sides. `items` is everything; `value` is the ordered list of keys on the right, and the left is the rest.",
+			"description": "Holds the collection and the division between the two sides. The `items` prop is the full collection. The `value` prop is the ordered list of the keys at the right side. The left side has the other items.",
 			"props": [
 				{
 					"name": "items",
 					"type": "Iterable<T>",
 					"required": false,
 					"default": null,
-					"description": "The whole collection, in the order the left-hand list shows it."
+					"description": "The full collection, in the sequence of the left list."
 				},
 				{
 					"name": "getKey",
 					"type": "(item: T) => TransferListKey",
 					"required": false,
 					"default": "(item: T) => (item as { id: TransferListKey }).id",
-					"description": "Identity of an item. Defaults to its `id` field."
+					"description": "The identity of an item. The default is its `id` field."
 				},
 				{
 					"name": "value",
 					"type": "TransferListKey[]",
 					"required": false,
 					"default": null,
-					"description": "Keys on the right, in order. Two-way by default — use `bind:value`."
+					"description": "The keys at the right side, in their sequence. By default it goes in the two directions: use\n`bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "TransferListKey[]",
 					"required": false,
 					"default": null,
-					"description": "Initial right-hand keys, for when `value` is not supplied."
+					"description": "The keys at the right side at the start, for when you give no `value`."
 				},
 				{
 					"name": "controlledValue",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a move by not flowing\nthe new value back down. Off by default, because `bind:value` — the common case —\nneeds the write-back to work at all."
+					"description": "Give your own code full control of the state. The component stops to write back to `value`,\nand it reports only through `onChange`. Thus the parent can refuse a move: the parent does not\nsend the new value down. The default is off, because `bind:value` is the usual case and it\nneeds the write-back."
 				},
 				{
 					"name": "onChange",
 					"type": "(value: TransferListKey[], details: TransferListMoveDetails) => void",
 					"required": false,
 					"default": null,
-					"description": "Called after a move, with the new value and what moved."
+					"description": "The component calls it after a move, with the new value and with the items that moved."
 				},
 				{
 					"name": "disabledKeys",
 					"type": "Iterable<TransferListKey>",
 					"required": false,
 					"default": null,
-					"description": "Keys that cannot be moved off the side they are on."
+					"description": "The keys of the items that stay at their side."
 				},
 				{
 					"name": "name",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Name for the hidden inputs that carry `value`, so the field submits with the form\nwithout any wiring. One input per key, in order; nothing is rendered when the right\nis empty, which is how a multi-value field behaves natively."
+					"description": "The name of the hidden inputs that hold `value`. Thus the field submits with the form and\nneeds no other code. The component makes one input for each key, in their sequence. If the\nright list is empty, it makes no input, and this is the behavior of a native field with more\nthan one value."
 				},
 				{
 					"name": "moveShortcut",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether `Ctrl`/`Cmd`+`Enter` inside a list sends its selection to the other one.\n\nEach list has exactly one destination, so the shortcut needs no direction — which\nalso means it stays correct when the layout is mirrored. Turn it off if it collides\nwith something in the surrounding app."
+					"description": "Lets `Ctrl`+`Enter` or `Cmd`+`Enter` in a list move its selection to the other list. Each list\nhas one destination, thus the shortcut needs no direction. It also stays correct when the\nlayout is a mirror image. Set it to `false` when it is the same as a shortcut of your\napplication."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the wrapper element."
+					"description": "The CSS class names of the container element."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The two lists, the move buttons, and anything else the layout needs."
+					"description": "The two lists, the move buttons, and each other element of the layout."
 				}
 			],
 			"dataAttributes": [
@@ -92,293 +92,293 @@
 		},
 		{
 			"name": "Source",
-			"description": "The left-hand list: every item that is not in `value`. A `role=\"listbox\"` with multiple selection, named by `label`.",
+			"description": "The left list: each item that is not in `value`. It has `role=\"listbox\"` with more than one selection, and `label` gives it its name.",
 			"props": [
 				{
 					"name": "label",
 					"type": "string",
 					"required": true,
 					"default": null,
-					"description": "Accessible name of the list. Also the name the move buttons and the live region use,\nwhich is why it is a string rather than only an `aria-label` pass-through: \"Move\nselected to Selected\" reads far better than \"move right\", and survives RTL."
+					"description": "The accessible name of the list. The move buttons and the live region also use it. This is why\nit is a string, and not only an `aria-label` value: \"Move selected to Selected\" is clearer\nthan \"move right\", and it stays correct in a right-to-left layout."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of a visible heading, when the list already has one on screen."
+					"description": "The id of a heading that the user sees, for when the list already has one."
 				},
 				{
 					"name": "filter",
 					"type": "(item: T, index: number) => boolean",
 					"required": false,
 					"default": null,
-					"description": "Shows only the items this returns `true` for. The input that drives it is the\nconsumer's — this only decides what the list renders.\n\n\"Move all\" then means the rows on screen rather than the whole side, which is what\nthe button appears to promise while a filter is applied."
+					"description": "Shows only the items for which this function returns `true`. The input that controls it is\nyours, and this prop decides only which items the list shows.\n\nWith a filter, \"move all\" means the rows that the user sees, and not all of the items at that\nside. This is what the button appears to promise while a filter is on."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[T]>",
 					"required": false,
 					"default": null,
-					"description": "Rendered for each item on this side."
+					"description": "The content for each item at this side."
 				},
 				{
 					"name": "emptyPlaceholder",
 					"type": "string | Snippet",
 					"required": false,
 					"default": null,
-					"description": "Shown when the side has no items. Nothing is rendered when omitted."
+					"description": "The content while the side has no items. If you give none, the component makes nothing."
 				},
 				{
 					"name": "virtualizer",
 					"type": "{ rowHeight?: number; overscan?: number }",
 					"required": false,
 					"default": null,
-					"description": "Renders only the rows near the viewport. See `ListBox`'s own `virtualizer`."
+					"description": "Makes only the rows near the viewport. Read the `virtualizer` prop of `ListBox`."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the list element."
+					"description": "The CSS class names of the list element."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Target",
-			"description": "The right-hand list, rendered in `value` order so items keep the sequence they were moved in.",
+			"description": "The right list, in the sequence of `value`. Thus each item keeps the position where the user moved it.",
 			"props": [
 				{
 					"name": "label",
 					"type": "string",
 					"required": true,
 					"default": null,
-					"description": "Accessible name of the list. Also the name the move buttons and the live region use,\nwhich is why it is a string rather than only an `aria-label` pass-through: \"Move\nselected to Selected\" reads far better than \"move right\", and survives RTL."
+					"description": "The accessible name of the list. The move buttons and the live region also use it. This is why\nit is a string, and not only an `aria-label` value: \"Move selected to Selected\" is clearer\nthan \"move right\", and it stays correct in a right-to-left layout."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of a visible heading, when the list already has one on screen."
+					"description": "The id of a heading that the user sees, for when the list already has one."
 				},
 				{
 					"name": "filter",
 					"type": "(item: T, index: number) => boolean",
 					"required": false,
 					"default": null,
-					"description": "Shows only the items this returns `true` for. The input that drives it is the\nconsumer's — this only decides what the list renders.\n\n\"Move all\" then means the rows on screen rather than the whole side, which is what\nthe button appears to promise while a filter is applied."
+					"description": "Shows only the items for which this function returns `true`. The input that controls it is\nyours, and this prop decides only which items the list shows.\n\nWith a filter, \"move all\" means the rows that the user sees, and not all of the items at that\nside. This is what the button appears to promise while a filter is on."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[T]>",
 					"required": false,
 					"default": null,
-					"description": "Rendered for each item on this side."
+					"description": "The content for each item at this side."
 				},
 				{
 					"name": "emptyPlaceholder",
 					"type": "string | Snippet",
 					"required": false,
 					"default": null,
-					"description": "Shown when the side has no items. Nothing is rendered when omitted."
+					"description": "The content while the side has no items. If you give none, the component makes nothing."
 				},
 				{
 					"name": "virtualizer",
 					"type": "{ rowHeight?: number; overscan?: number }",
 					"required": false,
 					"default": null,
-					"description": "Renders only the rows near the viewport. See `ListBox`'s own `virtualizer`."
+					"description": "Makes only the rows near the viewport. Read the `virtualizer` prop of `ListBox`."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the list element."
+					"description": "The CSS class names of the list element."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Item",
-			"description": "One row, on whichever side it currently lives. Double clicking sends it to the other list; Enter toggles selection, as in any multi-select listbox.",
+			"description": "One row, at the side where it is now. A double click moves it to the other list. The Enter key changes the selection, as in each listbox with more than one selection.",
 			"props": [
 				{
 					"name": "item",
 					"type": "T",
 					"required": true,
 					"default": null,
-					"description": "The item this row renders. Its key comes from the Root's `getKey`."
+					"description": "The item of this row. The `getKey` function of the Root gives its key."
 				},
 				{
 					"name": "textValue",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Text used for typeahead. Falls back to the row's text content."
+					"description": "The text for the typeahead. Without it, the component uses the text content of the row."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the row."
+					"description": "The CSS class names of the row."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Row content."
+					"description": "The content of the row."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "MoveSelected",
-			"description": "Moves the selected items of the opposite list to `to`. Disabled while that list has nothing movable selected.",
+			"description": "Moves the selected items of the opposite list to `to`. It is disabled while that list has no selected item that can move.",
 			"props": [
 				{
 					"name": "to",
 					"type": "TransferListSide",
 					"required": true,
 					"default": null,
-					"description": "Which list the items go to."
+					"description": "The list that the items go to."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button content — an arrow, a label, whatever the layout calls for."
+					"description": "The content of the button: an arrow, a name, or a different element of your layout."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "MoveAll",
-			"description": "Moves every movable item of the opposite list to `to`, selected or not. Items in `disabledKeys` stay where they are.",
+			"description": "Moves each item of the opposite list to `to`, selected or not selected. An item in `disabledKeys` does not move.",
 			"props": [
 				{
 					"name": "to",
 					"type": "TransferListSide",
 					"required": true,
 					"default": null,
-					"description": "Which list the items go to."
+					"description": "The list that the items go to."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button content — an arrow, a label, whatever the layout calls for."
+					"description": "The content of the button: an arrow, a name, or a different element of your layout."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "MoveUp",
-			"description": "Shifts the right-hand selection one position earlier in `value`. Disabled while nothing is selected there, or while the selection already starts the list.",
+			"description": "Moves the selection of the right list one position toward the start of `value`. It is disabled while nothing is selected there, and while the selection is already at the start.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button content — an arrow, a label, whatever the layout calls for."
+					"description": "The content of the button: an arrow, a name, or a different element of your layout."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "MoveDown",
-			"description": "Shifts the right-hand selection one position later in `value`. Disabled while nothing is selected there, or while the selection already ends the list.",
+			"description": "Moves the selection of the right list one position toward the end of `value`. It is disabled while nothing is selected there, and while the selection is already at the end.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button content — an arrow, a label, whatever the layout calls for."
+					"description": "The content of the button: an arrow, a name, or a different element of your layout."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Status",
-			"description": "Visually-hidden live region that announces each move. Without it a move is silent to a screen reader.",
+			"description": "A hidden live region that announces each move. Without it, a move is silent to a screen reader.",
 			"props": [
 				{
 					"name": "formatMessage",
 					"type": "(details: TransferListMoveDetails, label: string) => string",
 					"required": false,
 					"default": null,
-					"description": "Build the announced message from the completed move."
+					"description": "Makes the announced message from the move."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-transfer-list-status",
-					"description": "Identifies this live region — every Button ships one of its own."
+					"description": "Identifies this live region. Each Button has its own."
 				}
 			]
 		}

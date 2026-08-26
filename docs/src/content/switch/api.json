@@ -3,91 +3,91 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The switch control. Renders a span with role=\"switch\" and keeps a hidden checkbox input in sync for form integration.",
+			"description": "The switch control. It makes a span with role=\"switch\", and it keeps a hidden checkbox input correct for the form.",
 			"props": [
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the hidden input so `label[for]` can target the switch. Auto-generated when omitted."
+					"description": "The id of the hidden input, thus a `label[for]` element can point at the switch. If you give\nnone, the component makes one."
 				},
 				{
 					"name": "element",
 					"type": "HTMLSpanElement | null",
 					"required": false,
 					"default": null,
-					"description": "Bindable reference to the rendered root element."
+					"description": "A bindable reference to the root element."
 				},
 				{
 					"name": "name",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Name submitted with the form when the switch is checked."
+					"description": "The name that the form submits while the switch is on."
 				},
 				{
 					"name": "value",
 					"type": "string",
 					"required": false,
 					"default": "'on'",
-					"description": "Value submitted with the form when the switch is checked. Does not affect the visual state."
+					"description": "The value that the form submits while the switch is on. It does not change the visual state."
 				},
 				{
 					"name": "form",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Associates the hidden input with a form by id."
+					"description": "The id of the form of the hidden input."
 				},
 				{
 					"name": "checked",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Checked state. Two-way by default — use `bind:checked`."
+					"description": "The checked state. By default it goes in the two directions: use `bind:checked`."
 				},
 				{
 					"name": "defaultChecked",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial checked state, for when `checked` is not supplied."
+					"description": "The checked state at the start, for when you give no `checked`."
 				},
 				{
 					"name": "controlledChecked",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `checked`\nand only reports through `onCheckedChange`, so the parent can reject a change by\nnot flowing the new value back down. Off by default, because `bind:checked` —\nthe common case — needs the write-back to work at all."
+					"description": "Give your own code full control of the state. The component stops to write back to `checked`,\nand it reports only through `onCheckedChange`. Thus the parent can refuse a change: the parent\ndoes not send the new value down. The default is off, because `bind:checked` is the usual case\nand it needs the write-back."
 				},
 				{
 					"name": "onCheckedChange",
 					"type": "(checked: boolean) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the user toggles the switch."
+					"description": "The component calls it when the user changes the switch."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Removes the switch from interaction and focus order."
+					"description": "Stops the interaction with the switch and removes it from the focus order."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the switch focusable while preventing state changes."
+					"description": "Keeps the switch focusable, but stops the changes of the state."
 				},
 				{
 					"name": "required",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the hidden input as required for form validation."
+					"description": "Makes the hidden input required for the form validation."
 				},
 				{
 					"name": "children",
@@ -108,21 +108,21 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label when no visible label is associated."
+					"description": "The accessible name, for when the user sees no name."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of the element that labels the switch."
+					"description": "The id of the element that gives the switch its name."
 				},
 				{
 					"name": "tabindex",
 					"type": "number",
 					"required": false,
 					"default": null,
-					"description": "Overrides the default tab order."
+					"description": "Replaces the default position in the tab order."
 				}
 			],
 			"dataAttributes": [
@@ -136,7 +136,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -144,7 +144,7 @@
 				},
 				{
 					"name": "data-pressed",
-					"description": "Present while the switch is actively pressed via pointer or keyboard."
+					"description": "Present while a pointer or the keyboard presses the switch."
 				},
 				{
 					"name": "data-readonly",
@@ -170,14 +170,14 @@
 		},
 		{
 			"name": "Thumb",
-			"description": "The moving indicator. Mirrors the root state through data attributes for styling.",
+			"description": "The indicator that moves. It shows the state of the root in data attributes, for the styles.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Optional content rendered inside the thumb."
+					"description": "The content of the thumb."
 				},
 				{
 					"name": "class",
@@ -198,7 +198,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -206,7 +206,7 @@
 				},
 				{
 					"name": "data-pressed",
-					"description": "Present while the switch is actively pressed via pointer or keyboard."
+					"description": "Present while a pointer or the keyboard presses the switch."
 				},
 				{
 					"name": "data-readonly",

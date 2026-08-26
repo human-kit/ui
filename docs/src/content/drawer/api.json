@@ -10,21 +10,21 @@
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Open state. Two-way by default — use `bind:open`."
+					"description": "The open state. By default it goes in the two directions: use `bind:open`."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial open state, for when `open` is not supplied."
+					"description": "The open state at the start, for when you give no `open`."
 				},
 				{
 					"name": "controlledOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the\ncommon case — needs the write-back to work at all."
+					"description": "Give your own code full control of the open state. The component stops to write back to\n`open`, and it reports only through `onOpenChange`. Thus the parent can refuse a change: the\nparent does not send the new value down. The default is off, because `bind:open` is the usual\ncase and it needs the write-back."
 				},
 				{
 					"name": "onOpenChange",
@@ -38,91 +38,91 @@
 					"type": "DrawerSide",
 					"required": false,
 					"default": "'bottom'",
-					"description": "Edge the panel is anchored to."
+					"description": "The edge of the panel."
 				},
 				{
 					"name": "modal",
 					"type": "DrawerModal",
 					"required": false,
 					"default": "true",
-					"description": "Focus trap / scroll lock behaviour. See `DrawerModal`."
+					"description": "How the drawer holds the focus and stops the page scroll. Read `DrawerModal`."
 				},
 				{
 					"name": "dismissible",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether a swipe toward the anchored edge may dismiss the drawer."
+					"description": "Lets a swipe toward the anchored edge dismiss the drawer."
 				},
 				{
 					"name": "shouldCloseOnEscape",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether pressing Escape closes the drawer."
+					"description": "Closes the drawer when the user pushes the `Escape` key."
 				},
 				{
 					"name": "shouldCloseOnInteractOutside",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether pressing outside the panel closes it."
+					"description": "Closes the panel when the user presses outside it."
 				},
 				{
 					"name": "snapPoints",
 					"type": "readonly DrawerSnapPoint[]",
 					"required": false,
 					"default": null,
-					"description": "Resting positions the panel may settle on, smallest offset first is not\nrequired — they are sorted internally. See `DrawerSnapPoint` for the accepted\nvalue forms. Without this the drawer is either fully open or closed."
+					"description": "The rest positions of the panel. They can be in any sequence, because the component sorts\nthem. `DrawerSnapPoint` gives the value forms that the prop accepts. Without this prop, the\ndrawer is open or closed, and nothing between."
 				},
 				{
 					"name": "snapPoint",
 					"type": "DrawerSnapPoint | null",
 					"required": false,
 					"default": null,
-					"description": "Active snap point. Two-way by default — use `bind:snapPoint`."
+					"description": "The current snap point. By default it goes in the two directions: use `bind:snapPoint`."
 				},
 				{
 					"name": "defaultSnapPoint",
 					"type": "DrawerSnapPoint | null",
 					"required": false,
 					"default": "null",
-					"description": "Initial snap point, for when `snapPoint` is not supplied."
+					"description": "The snap point at the start, for when you give no `snapPoint`."
 				},
 				{
 					"name": "onSnapPointChange",
 					"type": "(snapPoint: DrawerSnapPoint | null, event?: Event) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback when the active snap point changes."
+					"description": "The component calls it when the current snap point changes."
 				},
 				{
 					"name": "snapToSequentialPoints",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Stops a fast flick from skipping past the neighbouring snap point. Use it when\nevery step is meaningful and jumping two at once would disorient."
+					"description": "Stops a fast flick at the next snap point. Use it when each step has a meaning, and a jump of\ntwo steps would confuse the user."
 				},
 				{
 					"name": "handle",
 					"type": "DrawerHandle<Payload>",
 					"required": false,
 					"default": null,
-					"description": "Drives the drawer from a detached handle instead of the `open` prop, so\ntriggers can live anywhere in the tree. See `createDrawerHandle`."
+					"description": "Controls the drawer from a separate object, and not from the `open` prop. Thus a trigger can\nbe at any position in the tree. Read `createDrawerHandle`."
 				},
 				{
 					"name": "triggerRef",
 					"type": "HTMLElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Reference to the trigger element. Set manually or via Drawer.Trigger."
+					"description": "The reference to the trigger element. Set it in your own code, or let Drawer.Trigger set it."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[DrawerStateHelpers<Payload>]>",
 					"required": false,
 					"default": null,
-					"description": "Children snippet, receiving state helpers."
+					"description": "The children snippet. It receives the state functions."
 				}
 			],
 			"dataAttributes": []
@@ -136,35 +136,35 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button label."
+					"description": "The name on the button."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button."
+					"description": "A bindable reference to the button element."
 				},
 				{
 					"name": "handle",
 					"type": "DrawerHandle<Payload>",
 					"required": false,
 					"default": null,
-					"description": "Opens the drawer through a detached handle instead of context, so the trigger\ncan live anywhere in the tree. See `createDrawerHandle`."
+					"description": "Opens the drawer through a separate object, and not through the context. Thus the trigger can\nbe at any position in the tree. Read `createDrawerHandle`."
 				},
 				{
 					"name": "payload",
 					"type": "Payload",
 					"required": false,
 					"default": null,
-					"description": "Value handed to the drawer's `children` snippet when this trigger opens it."
+					"description": "The value that goes to the `children` snippet of the drawer when this trigger opens it."
 				}
 			],
 			"dataAttributes": [
@@ -183,7 +183,7 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The layers to portal (Overlay, Viewport/Content)."
+					"description": "The layers for the portal: the Overlay, and the Viewport or the Content."
 				}
 			],
 			"dataAttributes": []
@@ -197,7 +197,7 @@
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the overlay."
+					"description": "The CSS class names of the overlay."
 				}
 			],
 			"dataAttributes": [
@@ -207,15 +207,15 @@
 				},
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-nested",
-					"description": "Present when a drawer is already open behind this one, in which case this backdrop stands down and the one at the back of the stack is the only one painted."
+					"description": "Present when a drawer is already open behind this one. This backdrop then paints nothing. Only the backdrop at the back of the stack paints."
 				},
 				{
 					"name": "data-side",
@@ -223,15 +223,15 @@
 				},
 				{
 					"name": "data-starting-style",
-					"description": "Present for the first painted frame after mounting, so a CSS transition has a value to animate from."
+					"description": "Present for the first painted frame after the element goes into the DOM. Thus a CSS transition has a start value."
 				},
 				{
 					"name": "data-state",
-					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+					"description": "Either `\"open\"` or `\"closed\"`. It becomes closed when the exit starts."
 				},
 				{
 					"name": "data-swiping",
-					"description": "Present while a drag is in flight. Drop your transitions under it."
+					"description": "Present while the user drags the panel. Remove your transitions under it."
 				}
 			]
 		},
@@ -244,14 +244,14 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The panel this viewport places."
+					"description": "The panel that this viewport puts in position."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the viewport."
+					"description": "The CSS class names of the viewport."
 				}
 			],
 			"dataAttributes": [
@@ -261,11 +261,11 @@
 				},
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-side",
@@ -273,7 +273,7 @@
 				},
 				{
 					"name": "data-state",
-					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+					"description": "Either `\"open\"` or `\"closed\"`. It becomes closed when the exit starts."
 				}
 			]
 		},
@@ -286,34 +286,34 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content of the panel."
+					"description": "The content of the panel."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the panel."
+					"description": "The CSS class names of the panel."
 				},
 				{
 					"name": "initialFocus",
 					"type": "HTMLElement | string | (() => HTMLElement | null | undefined)",
 					"required": false,
 					"default": null,
-					"description": "Where focus lands when the drawer opens. Defaults to the first focusable\nelement inside the panel."
+					"description": "The element that gets the focus when the drawer opens. The default is the first element in the\npanel that can take the focus."
 				},
 				{
 					"name": "touchAction",
 					"type": "string | null",
 					"required": false,
 					"default": null,
-					"description": "`touch-action` for the panel. Defaults to `pan-y` for left/right drawers —\nchildren keep scrolling vertically while the horizontal axis is reserved for\nthe drag — and to nothing for top/bottom ones, where reserving the vertical\naxis would break every scrollable region inside (`touch-action` intersects\ndown the ancestor chain, so a child cannot opt back in)."
+					"description": "The `touch-action` value of the panel.\n\nFor a left drawer or a right drawer, the default is `pan-y`. The children still scroll on the\nvertical axis, and the horizontal axis belongs to the drag.\n\nFor a top drawer or a bottom drawer, there is no default. A reservation of the vertical axis\nwould break each region in the panel that scrolls. `touch-action` applies down the chain of\nthe parents, and a child cannot cancel it."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-drawer-bleed",
-					"description": "Identifies the strip painted just outside the anchored edge, which covers the page while the panel is stretched past fully open."
+					"description": "Identifies the strip outside the anchored edge. It covers the page while the panel goes past the open position."
 				},
 				{
 					"name": "data-drawer-content",
@@ -321,23 +321,23 @@
 				},
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-expanded",
-					"description": "Present at the most open snap point."
+					"description": "Present at the snap point that is the most open."
 				},
 				{
 					"name": "data-nested-drawer-open",
-					"description": "Present while a drawer opened after this one is open."
+					"description": "Present while a drawer that opened after this one is open."
 				},
 				{
 					"name": "data-nested-drawer-swiping",
-					"description": "Present while that nested drawer is being dragged."
+					"description": "Present while the user drags that nested drawer."
 				},
 				{
 					"name": "data-side",
@@ -345,11 +345,11 @@
 				},
 				{
 					"name": "data-starting-style",
-					"description": "Present for the first painted frame after mounting, so a CSS transition has a value to animate from."
+					"description": "Present for the first painted frame after the element goes into the DOM. Thus a CSS transition has a start value."
 				},
 				{
 					"name": "data-state",
-					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+					"description": "Either `\"open\"` or `\"closed\"`. It becomes closed when the exit starts."
 				},
 				{
 					"name": "data-swipe-direction",
@@ -357,11 +357,11 @@
 				},
 				{
 					"name": "data-swipe-dismiss",
-					"description": "Present once a swipe has dismissed the drawer, through its exit."
+					"description": "Present from the moment a swipe dismisses the drawer, until the exit is complete."
 				},
 				{
 					"name": "data-swiping",
-					"description": "Present while a drag is in flight. Drop your transitions under it."
+					"description": "Present while the user drags the panel. Remove your transitions under it."
 				}
 			]
 		},
@@ -374,20 +374,20 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content of the body region."
+					"description": "The content of the body region."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the body."
+					"description": "The CSS class names of the body."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-drawer-body",
-					"description": "Identifies the content region. The drawer cannot be dragged from inside it."
+					"description": "Identifies the content region. The user cannot drag the drawer from inside it."
 				}
 			]
 		},
@@ -400,21 +400,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The drawer's name."
+					"description": "The name of the drawer."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the heading."
+					"description": "The CSS class names of the heading."
 				},
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Overrides the generated id."
+					"description": "Replaces the id that the component makes."
 				}
 			],
 			"dataAttributes": [
@@ -433,21 +433,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Supporting text announced after the title."
+					"description": "The text that a screen reader announces after the title."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the paragraph."
+					"description": "The CSS class names of the paragraph."
 				},
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Overrides the generated id."
+					"description": "Replaces the id that the component makes."
 				}
 			],
 			"dataAttributes": [
@@ -466,21 +466,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button label."
+					"description": "The name on the button."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": [
@@ -499,31 +499,31 @@
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the strip."
+					"description": "The CSS class names of the strip."
 				},
 				{
 					"name": "size",
 					"type": "string",
 					"required": false,
 					"default": "'24px'",
-					"description": "Thickness of the strip, as a CSS length."
+					"description": "The thickness of the strip, as a CSS length."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Turns the gesture off without unmounting the strip."
+					"description": "Stops the gesture, but keeps the strip in the DOM."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-axis",
-					"description": "Axis the open gesture travels along: `x` or `y`."
+					"description": "The axis of the open gesture: `x` or `y`."
 				},
 				{
 					"name": "data-disabled",
-					"description": "Present when the open gesture is turned off."
+					"description": "Present when the open gesture is off."
 				},
 				{
 					"name": "data-drawer-swipe-area",
@@ -531,7 +531,7 @@
 				},
 				{
 					"name": "data-state",
-					"description": "Either `\"open\"` or `\"closed\"`; flips to closed as the exit begins."
+					"description": "Either `\"open\"` or `\"closed\"`. It becomes closed when the exit starts."
 				},
 				{
 					"name": "data-swipe-direction",
@@ -539,7 +539,7 @@
 				},
 				{
 					"name": "data-swiping",
-					"description": "Present while a drag is in flight. Drop your transitions under it."
+					"description": "Present while the user drags the panel. Remove your transitions under it."
 				}
 			]
 		},
@@ -552,14 +552,14 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The app UI that pulls back while a drawer is open."
+					"description": "The application UI that moves back while a drawer is open."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the wrapper."
+					"description": "The CSS class names of the container element."
 				}
 			],
 			"dataAttributes": [
@@ -573,7 +573,7 @@
 				},
 				{
 					"name": "data-swiping",
-					"description": "Present while any drawer is being dragged. Drop your transitions under it."
+					"description": "Present while the user drags a drawer. Remove your transitions under it."
 				}
 			]
 		},
@@ -586,13 +586,13 @@
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the layer."
+					"description": "The CSS class names of the layer."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-drawer-indent-background",
-					"description": "Identifies the surface revealed behind an indented app."
+					"description": "Identifies the surface behind the application UI when that UI moves back."
 				},
 				{
 					"name": "data-state",
@@ -609,7 +609,7 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The subtree the keyboard inset is published to."
+					"description": "The elements below it, which receive the keyboard inset."
 				}
 			],
 			"dataAttributes": []

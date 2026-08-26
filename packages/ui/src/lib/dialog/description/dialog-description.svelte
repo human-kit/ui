@@ -11,11 +11,11 @@
 	 * than only when the user happens to arrow onto it.
 	 */
 	type DialogDescriptionProps = {
-		/** Supporting text announced after the title. */
+		/** The text that a screen reader announces after the title. */
 		children?: Snippet;
-		/** CSS class for the paragraph. */
+		/** The CSS class names of the paragraph. */
 		class?: string;
-		/** Overrides the generated id. */
+		/** Replaces the id that the component makes. */
 		id?: string;
 	} & Omit<HTMLAttributes<HTMLParagraphElement>, 'class' | 'children' | 'id'>;
 

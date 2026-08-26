@@ -23,5 +23,5 @@ Description: Floating container for combobox options. Internally composes `Popov
 
 ## Notes
 
-- `ComboBox.Popover` forwards all `Popover.Content` configuration props except the controlled open-state wiring (`open`, `triggerRef`, and `onOpenChange`).
+- `ComboBox.Popover` accepts each `Popover.Content` prop. It does not accept the props of the controlled open state: `open`, `triggerRef`, and `onOpenChange`.
 - The default placement is `bottom-start` to match the combobox input.

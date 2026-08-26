@@ -21,7 +21,7 @@
 	 * Supports keyboard navigation: ArrowLeft/Right to navigate, Delete/Backspace to remove, ArrowDown to focus input.
 	 */
 	type ComboBoxTagProps = {
-		/** Content of the tag - use ComboBox.TagRemove for remove button */
+		/** The content of the tag. For the remove button, use ComboBox.TagRemove. */
 		children: Snippet;
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'>;

@@ -87,7 +87,7 @@ While a filter is on, **"move all" means the rows that the user sees**, not all 
 
 The right list is `value` in its sequence. Thus you change the sequence when you change that array. `TransferList.MoveUp` and `TransferList.MoveDown` move the selection of the right list by one position. A group of adjoining items moves together. If the selection is already at an end, the button becomes disabled and does nothing without a signal.
 
-Only the right list has this function. The sequence of the left list is the sequence of `items`. The sequence of the right list is state that the user makes. The buttons change the full `value`, not only the items that a filter shows, because the sequence that the user edits is the sequence that the form submits.
+Only the right list has this function. The sequence of the left list is the sequence of `items`. The sequence of the right list is state that the user makes. The buttons change the full `value`, and not only the items that a filter shows. The sequence that the user edits is the sequence that the form submits.
 
 <Demo source={reorderSource}><Reorder /></Demo>
 
@@ -146,7 +146,7 @@ The `data-side` attribute lets one class style both lists and still make a diffe
 
 ## Accessibility
 
-- **The move buttons stay in the tab order, also when they have nothing to do.** They have `aria-disabled`, not the native attribute. These controls are unavailable more often than available. If the component disabled them natively, a keyboard user would not find half of the actions, and the tab order would change while the user works. The component still stops the activation, and the focus stays on the button after a press, like on any button.
+- **The move buttons stay in the tab order, also when they have nothing to do.** They have `aria-disabled`, not the native attribute. These controls are unavailable more often than available. If the component disabled them natively, a keyboard user would not find half of the actions. The tab order would also change while the user works. The component still stops the activation, and the focus stays on the button after a press, like on any button.
 - **Give the Root a name.** Give it an `aria-label` or an `aria-labelledby` attribute. The Root then has `role="group"`, which tells assistive technology that the two lists and the buttons are one control. Without a name, the component does not set the role. Assistive technology ignores a group with no name, thus the role would only add noise.
 - Each list has `role="listbox"` with `aria-multiselectable="true"`, and its `label` gives it its name.
 - With `virtualizer`, each row has `aria-setsize` and `aria-posinset` for the full collection. Only a window of the rows is in the DOM. Without these attributes, a screen reader announces the size of that window — for example "1 of 8" in a list of two thousand items.

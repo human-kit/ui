@@ -7,7 +7,7 @@
 	 * Autocomplete.Empty - Rendered when no items match the current query.
 	 */
 	type AutocompleteEmptyProps = {
-		/** Content to show when empty (defaults to "No results"). */
+		/** The content while the list is empty. The default is "No results". */
 		children?: Snippet;
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;

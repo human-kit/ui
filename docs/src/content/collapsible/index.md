@@ -33,7 +33,7 @@ The collapsible has three parts. `Collapsible.Root` gives the shared context. `C
 
 ## Controlled state
 
-Bind `open`, or use `open` with `onOpenChange`, to control the panel from your own code — for example from a button in a different part of the page. Use `defaultOpen` when the component controls its own state.
+Bind `open`, or use `open` with `onOpenChange`, to control the panel from your own code. That control can be in a different part of the page. Use `defaultOpen` when the component controls its own state.
 
 ## Usage guidelines
 

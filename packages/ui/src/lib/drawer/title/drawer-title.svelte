@@ -12,11 +12,11 @@
 	 * from the text inside it.
 	 */
 	type DrawerTitleProps = {
-		/** The drawer's name. */
+		/** The name of the drawer. */
 		children?: Snippet;
-		/** CSS class for the heading. */
+		/** The CSS class names of the heading. */
 		class?: string;
-		/** Overrides the generated id. */
+		/** Replaces the id that the component makes. */
 		id?: string;
 	} & Omit<HTMLAttributes<HTMLHeadingElement>, 'class' | 'children' | 'id'>;
 

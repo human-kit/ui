@@ -14,7 +14,7 @@ description: A composable date range picker pairing two segmented date inputs wi
 
 # DateRangePicker
 
-This is a date range picker that you assemble from parts. It puts two date inputs with segments — one for the start and one for the end — together with a range calendar in a popover. The value is a `{ start, end }` pair of `YYYY-MM-DD` strings. While the range is empty or incomplete, the value is `null`.
+This is a date range picker that you assemble from parts. It has two date inputs with segments: one for the start and one for the end. A range calendar goes with them, in a popover. The value is a `{ start, end }` pair of `YYYY-MM-DD` strings. While the range is empty or incomplete, the value is `null`.
 
 <Demo source={heroSource}><Hero /></Demo>
 

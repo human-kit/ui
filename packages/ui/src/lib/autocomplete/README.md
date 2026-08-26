@@ -2,14 +2,13 @@
 
 ## Description
 
-`Autocomplete` is an always-visible, filterable list: a search input on top of a
-`ListBox`. As the user types, items are filtered locally; arrow keys move a
-virtual focus through the list (via `aria-activedescendant`) while DOM focus stays
-in the input. Unlike `ComboBox`, there is **no popover and no open/closed state**.
+`Autocomplete` is a list that the user always sees and can filter: a search input above a
+`ListBox`. When the user types, the component filters the items locally. The arrow keys
+move a virtual focus through the list with `aria-activedescendant`, and the DOM focus
+stays in the input. A `ComboBox` has a popover and an open state. An `Autocomplete` has
+**neither**.
 
-Selection lives in the inner list — pass `selectionMode`, `value`/`defaultValue`
-and `onChange` to `Autocomplete.List`, exactly like a plain `ListBox`. The
-Autocomplete only owns the search query, filtering and virtual focus.
+The inner list holds the selection. Put `selectionMode`, `value`, `defaultValue`, and `onChange` on `Autocomplete.List`, like a plain `ListBox`. The Autocomplete controls only the search text, the filter, and the virtual focus.
 
 ## Usage guidelines
 

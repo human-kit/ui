@@ -19,23 +19,16 @@ In `selectionMode="multiple"`, Shift selects a range and Ctrl/Cmd adds a single 
 - **Shift+click** selects everything between the anchor and the clicked option. The anchor is
   the last option selected without modifiers.
 - **Shift+Arrow**, **Shift+Home** and **Shift+End** extend the same range with the keyboard.
-- A range **replaces** the selection rather than adding to it, following the APG multi-select
-  listbox pattern — that is what lets a range shrink again when you drag it back toward the
-  anchor.
+- A range replaces the selection, and does not add to it. This is the APG pattern for a listbox with more than one selection. It is also what lets a range become smaller when the user drags back toward the anchor.
 - **Ctrl/Cmd+click** toggles one option even under `selectionBehavior="replace"`, where a
   plain click would clear the rest.
 - Disabled options are never included.
 
-The range is measured over the options that exist in the DOM. In a **virtualized** list that is
-only the rendered window, so pass `getItemKey` alongside `virtualizer` and the range is measured
-over the whole collection instead — a range then spans rows that were never rendered, and the
-anchor survives being scrolled away.
+The range is measured over the options that exist in the DOM. In a virtualized list, those are only the rows near the viewport. Give `getItemKey` with `virtualizer`, and the component measures the range over the full collection. A range then includes the rows that are not in the DOM, and the anchor stays correct when the user scrolls it away.
 
 ## Virtualized lists and assistive technology
 
-A virtualized list holds a handful of options, so the position and count a browser computes from
-the DOM describe the window rather than the collection — a screen reader would announce "1 of 8"
-for a list of two thousand. `ListBox` writes `aria-setsize` and `aria-posinset` onto the rendered
+A virtualized list holds few options. Thus the position and the count that a browser calculates from the DOM describe that window, and not the collection. For a list of two thousand items, a screen reader would announce "1 of 8". `ListBox` writes `aria-setsize` and `aria-posinset` onto the rendered
 rows with the real numbers.
 
 ## Anatomy

@@ -11,12 +11,12 @@
 - In controlled mode, use `value` with `onChange`; in uncontrolled mode, use `defaultValue`.
 - In `single` mode, `value/defaultValue` is `YYYY-MM-DD`.
 - In `range` mode, `value/defaultValue` is `{ start?: 'YYYY-MM-DD', end?: 'YYYY-MM-DD' }`.
-- `visibleMonths` controls how many months are rendered and how paging behaves.
+- `visibleMonths` sets the number of the months, and it changes how far the triggers move.
 - `showOutsideDays` controls whether days outside the current month are shown; default is `false`.
 - `isDateUnavailable` marks specific days as non-focusable and non-selectable.
 - Use `LocaleProvider` to localize month/day labels and first day of week.
 - Use `firstDayOfWeek` to override the locale-specified first day of the week.
-- Use `monthHeadingStyle="month-year"` on `Calendar.Root` to render headings as separate month and year parts, e.g. `May 2026` instead of locale-composed strings.
+- Use `monthHeadingStyle="month-year"` on `Calendar.Root` to make the heading in two parts: the month and the year. An example is `May 2026`, in place of one string from the locale.
 - Use `weekdayStyle="narrow" | "short" | "long"` on `Calendar.Grid` to control weekday header labels.
 - Keyboard navigation uses `Arrow` keys for day/week movement and `Home/End` for month edges.
 
@@ -38,7 +38,7 @@
 
 ## Internal Notes
 
-- `PageUp/PageDown` try to preserve the day when crossing months; if no focusable target exists in the destination month and a range is pending, focus falls back to the reachable edge in the current month (aligned with `Home/End` behavior).
+- The `PageUp` key and the `PageDown` key keep the day number when they cross a month. The new month can have no day that takes the focus, while a range is not complete. The focus then goes to the last available day of the current month. The `Home` key and the `End` key do the same.
 - In `selectionMode="range"`, the first click starts the range (`start`) and the second click confirms it (`end`), with automatic normalization for reversed selection order.
 - In `selectionMode="range"`, hover updates a live preview before confirmation.
 

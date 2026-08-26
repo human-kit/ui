@@ -12,7 +12,7 @@
 	 * normally the same colour as the app.
 	 */
 	type DrawerIndentBackgroundProps = {
-		/** CSS class for the layer. */
+		/** The CSS class names of the layer. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class'>;
 

@@ -7,12 +7,12 @@
 Name: `ComboBox.Button`  
 Description: Compatibility alias for `ComboBox.Trigger`.
 
-| Prop           | Type                   | Default     | Description                                                     |
-| -------------- | ---------------------- | ----------- | --------------------------------------------------------------- |
-| `class`        | `string`               | `undefined` | CSS class names for the trigger element.                        |
-| `children`     | `Snippet`              | `undefined` | Custom trigger content. If omitted, a chevron icon is rendered. |
-| `tabindex`     | `number`               | `-1`        | Tab index applied to the trigger button.                        |
-| `...restProps` | `HTMLButtonAttributes` | `-`         | Additional native button attributes.                            |
+| Prop           | Type                   | Default     | Description                                                                             |
+| -------------- | ---------------------- | ----------- | --------------------------------------------------------------------------------------- |
+| `class`        | `string`               | `undefined` | The CSS class names of the trigger element.                                             |
+| `children`     | `Snippet`              | `undefined` | Your own content for the trigger. If you give none, the component makes a chevron icon. |
+| `tabindex`     | `number`               | `-1`        | Tab index applied to the trigger button.                                                |
+| `...restProps` | `HTMLButtonAttributes` | `-`         | Additional native button attributes.                                                    |
 
 ## Notes
 

@@ -24,7 +24,7 @@ description: A panel anchored to an edge of the viewport, dismissed by swiping i
 
 # Drawer
 
-This is a panel at an edge of the viewport. It behaves like a modal dialog: the focus stays in the panel, the page does not scroll, and the `Escape` key and a press outside it close it. It also has what a sheet needs on a telephone: a drag that follows the finger, snap points, a stack, and knowledge of the software keyboard.
+This is a panel at an edge of the viewport. It behaves like a modal dialog: the focus stays in the panel and the page does not scroll. The `Escape` key and a press outside it close it. It also has what a sheet needs on a telephone. It has a drag that follows the finger, snap points, a stack, and a knowledge of the keyboard.
 
 <Demo source={heroSource}><Hero /></Demo>
 
@@ -87,13 +87,13 @@ The `data-swiping` rule removes the transition. This is what makes the panel fol
 
 ### Dismissal, not movement
 
-`--drawer-swipe-progress` stays at `0` while the panel moves between the snap points. It becomes larger only when the panel goes past the last snap point and is truly on its way out. A backdrop that faded for each drag looked incorrect in the exact case that it must help: a drag from one snap point to a different snap point made the page brighter, and then made it dark again at the release, for a drawer that did not go away.
+`--drawer-swipe-progress` stays at `0` while the panel moves between the snap points. It becomes larger only when the panel goes past the last snap point and is truly on its way out. A backdrop that faded for each drag looked incorrect in the exact case that it must help. A drag from one snap point to a different snap point made the page brighter. At the release, the page became dark again, for a drawer that did not go away.
 
 ### What can start a drag
 
 The user can drag all of the panel, with two exceptions:
 
-- **`Drawer.Body`, with a mouse.** With a pointer that can select text, a drag and a text selection are the same gesture. Thus, in the content region, the mouse selects the text and the drawer does not move. The drawer does not move and come back — it ignores the drag. A finger still drags the panel: on a touch screen there is no drag to select text, and on a telephone the user must not lose the gesture on most of the sheet.
+- **`Drawer.Body`, with a mouse.** With a pointer that can select text, a drag and a text selection are the same gesture. Thus, in the content region, the mouse selects the text and the drawer does not move. The drawer does not move and come back — it ignores the drag. A finger still drags the panel. On a touch screen there is no drag to select text. On a telephone, the user must not lose the gesture on most of the sheet.
 
   Put your content in `Drawer.Body`, and keep the grab bar outside it. Thus a mouse still has an obvious surface to drag the panel by, and the drawer does what that surface promises.
 - **An element with `data-hk-swipe-ignore`.** Put this attribute on a slider, a carousel, or a color picker — on any control with a drag of its own. With no value, the attribute stops the drag for each input type. With `data-hk-swipe-ignore="mouse"`, it stops the drag for a mouse only, and this is what `Drawer.Body` uses.
@@ -116,7 +116,7 @@ The `side` prop sets the edge of the panel. With it, the prop also sets the axis
 
 The `snapPoints` prop gives the panel rest positions between the open position and the closed position. A value from `0` to `1` is a fraction of the viewport. A number more than `1` is a number of pixels. A string is any CSS length or percentage.
 
-At the release, the panel goes to the point that the flick moved toward, and not to the nearest point at the moment of the release. A short fast drag means "go further". The `snapToSequentialPoints` prop holds the panel to one step at a time, for the cases where a jump would confuse the user.
+At the release, the panel goes to the point that the flick moved toward. It does not go to the nearest point at the moment of the release. A short fast drag means "go further". The `snapToSequentialPoints` prop holds the panel to one step at a time, for the cases where a jump would confuse the user.
 
 <Demo source={snapPointsSource}><SnapPoints /></Demo>
 
@@ -128,7 +128,7 @@ Put a `Drawer.Root` in the content of a different drawer. The drawer behind gets
 
 <Demo source={nestedSource}><Nested /></Demo>
 
-Only the drawer at the back of the stack paints a backdrop. The overlay of each drawer above it gets `data-nested` and paints nothing. Each root has its own overlay, and one backdrop for each layer made the page darker one time for each layer — and made the drawer below dark with the rest of the page.
+Only the drawer at the back of the stack paints a backdrop. The overlay of each drawer above it gets `data-nested` and paints nothing. Each root has its own overlay. One backdrop for each layer made the page darker one time for each layer. It also made the drawer below dark.
 
 `Drawer.Indent` contains the UI of your application, and it publishes `--drawer-indent-progress`. That number goes back toward `0` while the user drags the front drawer away. Thus the page comes forward with the gesture, and it does not move suddenly when the drawer closes. `Drawer.IndentBackground` paints the surface behind it.
 
@@ -160,7 +160,7 @@ Keep the header and the footer outside `Drawer.Body`, and move the footer by `va
 
 ## Triggers in other positions
 
-Sometimes the buttons that open the drawer are in many positions — for example one button in each row of a table, and each button opens the same drawer with a different record. Then `createDrawerHandle()` makes the object between them. Each trigger writes into the object, one root reads from it, and the value of the trigger arrives as the `payload` of the root.
+Sometimes the buttons that open the drawer are in many positions. For example, each row of a table has one button, and each button opens the same drawer with a different record. Then `createDrawerHandle()` makes the object between them. Each trigger writes into the object, one root reads from it, and the value of the trigger arrives as the `payload` of the root.
 
 ```svelte
 <script>

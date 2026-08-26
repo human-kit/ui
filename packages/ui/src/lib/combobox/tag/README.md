@@ -5,7 +5,7 @@
 ### ComboBox.Tag
 
 Name: `ComboBox.Tag`  
-Description: Visual token representing one selected value in multiple selection mode.
+Description: One tag, for one selected value, in the multiple selection mode.
 
 | Prop           | Type                              | Default     | Description                          |
 | -------------- | --------------------------------- | ----------- | ------------------------------------ |

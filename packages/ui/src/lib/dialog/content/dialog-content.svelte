@@ -23,13 +23,13 @@
 	 * Must be used inside a Dialog.Portal.
 	 */
 	type DialogContentProps = {
-		/** Content of the dialog. */
+		/** The content of the dialog. */
 		children?: Snippet;
-		/** CSS class for the dialog container. */
+		/** The CSS class names of the dialog container. */
 		class?: string;
-		/** Whether clicking outside the dialog should close it. */
+		/** Closes the dialog when the user clicks outside it. */
 		shouldCloseOnInteractOutside?: boolean;
-		/** Whether pressing Escape should close the dialog. */
+		/** Closes the dialog when the user pushes the `Escape` key. */
 		shouldCloseOnEscape?: boolean;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 

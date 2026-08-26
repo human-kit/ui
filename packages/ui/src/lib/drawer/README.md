@@ -2,7 +2,7 @@
 
 ## Description
 
-`Drawer` is a panel anchored to an edge of the viewport that can be dismissed by swiping it away. It is a modal dialog by behaviour — focus trap, scroll lock, Escape, outside press — with the gesture, snap points, stacking and software-keyboard handling a sheet needs on a phone.
+`Drawer` is a panel anchored to an edge of the viewport that can be dismissed by swiping it away. It behaves like a modal dialog: the focus stays in the panel and the page does not scroll. The `Escape` key and a press outside it close it. It adds what a sheet needs on a telephone: the drag, the snap points, the stack, and a knowledge of the keyboard.
 
 ## Usage guidelines
 
@@ -10,7 +10,7 @@
 - Render `Drawer.Overlay` and the panel inside `Drawer.Portal`.
 - Always give the drawer a `Drawer.Title`. A `role="dialog"` takes its name from `aria-labelledby`, not from the text inside it.
 - Always give a dismissible drawer a `Drawer.Close`. A swipe has no keyboard or screen-reader equivalent, so a drawer that can only be swiped away is unreachable for some users.
-- Wrap the content in `Drawer.Body` so a scroll that reaches its end does not chain out to the page behind, and so a mouse drag inside it selects text instead of throwing the panel across the screen. Leave the grab bar outside it, as the surface a mouse can still drag by.
+- Put the content in `Drawer.Body`. Thus a scroll that gets to its end does not continue on the page behind. A mouse drag in it also selects the text, and does not move the panel. Leave the grab bar outside it, as the surface a mouse can still drag by.
 - Mark any control with a drag of its own — a slider, a carousel — with `data-hk-swipe-ignore`. Valueless opts it out for every input type; `="mouse"` opts it out for a mouse only.
 - Put `Drawer.SwipeArea` OUTSIDE `Drawer.Portal` — it has to exist while the drawer is closed.
 - Wrap `Drawer.Root` in `Drawer.VirtualKeyboardProvider` when the panel contains form fields.
@@ -107,5 +107,5 @@ The resting transform is the sum of the snap point and the drag:
 
 This drawer is modelled on Base UI's, with two deliberate differences:
 
-- The panel part is `Drawer.Content` (Base UI calls it `Popup`) and the scrolling region is `Drawer.Body` (Base UI calls that one `Content`), so the naming matches `Dialog` and `Popover` in this library.
+- The panel part is `Drawer.Content`, and Base UI calls it `Popup`. The region that scrolls is `Drawer.Body`, and Base UI calls that one `Content`. Thus the names agree with `Dialog` and `Popover` in this library.
 - There is no `Drawer.Provider`. The drawer stack is module-global here, so a provider would have nothing left to coordinate; `Drawer.Indent` reads the stack directly.

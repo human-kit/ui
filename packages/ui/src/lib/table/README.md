@@ -6,7 +6,12 @@
 
 `Table` is a headless interactive table primitive with grid-style keyboard navigation, row selection, explicit sortable header triggers, and a composable part-based API.
 
-All public Table part prop types are exported from the table barrel, including `TableRootProps`, `TableColumnProps`, `TableHeaderProps`, `TableBodyProps`, `TableFooterProps`, `TableRowProps`, `TableColumnHeaderCellProps`, `TableSortTriggerProps`, `TableColumnResizerProps`, `TableCellProps`, `TableEmptyStateProps`, `TableCheckboxProps`, and `TableCheckboxIndicatorProps`.
+The table barrel exports the prop types of each public Table part.
+
+These are `TableRootProps`, `TableColumnProps`, `TableHeaderProps`, `TableBodyProps`,
+`TableFooterProps`, `TableRowProps`, `TableColumnHeaderCellProps`, `TableSortTriggerProps`,
+`TableColumnResizerProps`, `TableCellProps`, `TableEmptyStateProps`, `TableCheckboxProps`,
+and `TableCheckboxIndicatorProps`.
 
 ## Anatomy
 
@@ -88,8 +93,8 @@ All public Table part prop types are exported from the table barrel, including `
 ## Usage guidelines
 
 - Use `Table.Root` as the stateful container for focus, selection, and sorting state.
-- Use `keyboardNavigation` to choose how far the roving tab stop reaches into the body: `'grid'` (default) makes every body cell a focus target, `'row'` makes the row the only one, and `'none'` leaves the body inert. Cell navigation costs a focus registration plus focus-derived state per cell, which a virtualized table pays again on every row it mounts; drop to `'row'` when the body is a list rather than a working surface, and to `'none'` only when nothing in it is actionable. The header keeps its own navigation in every mode.
-- Use `selectionBehavior="toggle"` to allow deselecting an already selected row, or `selectionBehavior="replace"` to keep selected rows selected when pressed again.
+- Use `keyboardNavigation` to choose how far the roving tab stop reaches into the body: `'grid'` (default) makes every body cell a focus target, `'row'` makes the row the only one, and `'none'` leaves the body inert. The cell navigation has a cost: one focus registration and one focus state for each cell. A virtualized table does this again for each row that it makes. Use `'row'` when the body is a list, and not a surface where the user works. Use `'none'` only when nothing in the body does an action. The header keeps its own navigation in every mode.
+- Use `selectionBehavior="toggle"` to let the user remove the selection of a selected row. Use `selectionBehavior="replace"` to keep a selected row selected when the user presses it again.
 - `Table.Column` is a logical-only wrapper for column metadata; it does not render DOM by itself and should wrap a single `Table.ColumnHeaderCell`.
 - Wrap each header cell in `Table.Column` so the table can register stable column metadata.
 - Add `Table.ColumnResizer` inside `Table.ColumnHeaderCell` to make the owning `Table.Column` resizable.
@@ -102,16 +107,16 @@ All public Table part prop types are exported from the table barrel, including `
 - Use `defaultHiddenColumns` for uncontrolled initial column visibility.
 - Use `columnWidths` / `onColumnWidthsChange` for controlled column width state. Width specs can be px, `%`, or `fr`.
 - Use `defaultColumnWidths` and `Table.Column.defaultWidth` to seed uncontrolled initial widths that can still be resized by the user.
-- Use `Table.Column.width` when a column should stay fixed at an explicit width. Fixed-width columns ignore resize attempts even if a `Table.ColumnResizer` is composed.
-- In resizable tables, unspecified columns behave like an implicit `1fr` width before interaction. On the first real resize, visible columns are materialized to px; the trailing column absorbs the delta until its minimum width, and further growth overflows the table horizontally.
+- Use `Table.Column.width` when a column must keep an exact width. A column with a fixed width does not change its width, also with a `Table.ColumnResizer` in it.
+- In resizable tables, unspecified columns behave like an implicit `1fr` width before interaction. At the first width change, the component sets each visible column in px. The last column takes the difference, down to its minimum width. After that, the table becomes wider than its container.
 - Setting `sortDescriptor` back to `undefined` clears the controlled sort state, matching React Aria Table semantics.
 - Set `Table.Column.textValue` when the spoken column label should differ from the column id; `Table.Root` uses it for polite sort announcements.
 - Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
 - Use `Table.Checkbox` when you need explicit selection UI inside cells instead of relying only on row or cell presses.
-- Use `Table.CheckboxIndicator` to compose your own visual affordance for checked and indeterminate states.
-- Use `Table.InteractiveCell` for body cells that contain their own focusable controls. When focus is on the cell itself it keeps the same grid keyboard navigation as `Table.Cell`; when focus is inside a descendant control, the descendant owns its keyboard and pointer interactions.
+- Use `Table.CheckboxIndicator` to make your own marks for the checked state and the indeterminate state.
+- Use `Table.InteractiveCell` for a body cell that has its own controls. While the focus is on the cell, the grid keyboard operation is the same as in `Table.Cell`. While the focus is on a control in the cell, that control gets the keys and the pointer.
 - `Table.Checkbox` auto-hides in header cells unless `selectionMode="multiple"`, and auto-hides everywhere when `selectionMode="none"`.
-- Hidden columns are excluded from grid navigation, visible column counts, and active resize behavior, but their registered widths are preserved so they can be restored when shown again.
+- A hidden column is not in the grid navigation, not in the column count, and not in the width changes. It keeps its width, thus you can show it again with that width.
 - Dedicated utility columns like selection checkboxes should usually set an explicit `width`, `minWidth`, and `maxWidth` on `Table.Column` so sibling resizes do not redistribute their space.
 - When `selectionMode` changes to `none`, the component clears any existing row selection internally.
 - v1 leaves text selection and `Ctrl+C` behavior browser-native; the table does not implement custom copy handling or force a text-selection policy.
@@ -134,10 +139,10 @@ All public Table part prop types are exported from the table barrel, including `
 - `Table.Root` renders an interactive `grid` over native table markup.
 - Keyboard navigation uses roving `tabindex` across header and body cells.
 - Under `keyboardNavigation="row"` the body's roving tab stop sits on the rows: arrows walk rows, `Enter` presses one and `Space` toggles its selection. Focusable content inside body cells becomes a regular tab stop instead, since no roving focus reaches it there.
-- Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
+- A body row can also take the focus when the horizontal navigation goes past the start or the end of the row. If the user continues to push the left key or the right key, the focus goes to the cell at the opposite edge.
 - `Table.Checkbox` can receive DOM focus directly while still participating in the table's roving-focus grid.
 - First-column body cells become `rowheader` when their associated column has `rowHeader`.
 - Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
 - `Table.SortTrigger` renders the trigger button, while the header cell remains the roving-focus target for arrow-key grid navigation.
 - Sort changes are mirrored into a polite live region so screen readers announce direction changes more reliably than `aria-sort` alone.
-- Column resize handles are keyboard accessible separators. Press `Enter` to enter resize mode, use the horizontal arrow keys to resize, `Home` to jump to the minimum width, `End` to auto-fit to content width, and press `Enter` again to exit resize mode while keeping focus on the handle.
+- Column resize handles are keyboard accessible separators. Push `Enter` to start the resize mode. Use the horizontal arrow keys to change the width. Push `Home` for the minimum width, and `End` for the width of the content. Push `Enter` again to leave the resize mode. The focus stays on the handle.
