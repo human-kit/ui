@@ -125,6 +125,10 @@ export function pageMarkdown(slug: string): string | null {
 
 	return (
 		source
+			// Every pattern below anchors on \n. A Windows checkout hands this module
+			// CRLF sources, and then the frontmatter and the script block survive
+			// into the served text as if they were page content.
+			.replace(/\r\n/g, '\n')
 			.replace(/^---\n[\s\S]*?\n---\n/, '') // frontmatter — the title is already an h1
 			.replace(/<script[\s\S]*?<\/script>\s*/, '')
 			.replace(/^[ \t]*<PageActions\s*\/>[ \t]*\n?/m, '') // renders only these very links

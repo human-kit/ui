@@ -14,13 +14,13 @@ description: A composable tri-state checkbox with separate checked and indetermi
 
 # Checkbox
 
-A composable tri-state checkbox with separate checked and indeterminate bindings, hidden input form support, and headless indicator rendering.
+This is a checkbox with three states. The checked state and the indeterminate state have separate bindings. A hidden input gives the form support, and you write the indicator yourself.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-The checkbox is assembled from two parts. `Checkbox.Root` renders the control (and a hidden checkbox input for form integration); `Checkbox.Indicator` renders the check or mixed mark and only mounts while the checkbox is checked or indeterminate.
+The checkbox has two parts. `Checkbox.Root` makes the control and a hidden checkbox input for the form. `Checkbox.Indicator` makes the check mark or the mixed mark. It is in the DOM only while the checkbox is checked or indeterminate.
 
 ```svelte
 <script>
@@ -36,30 +36,30 @@ The checkbox is assembled from two parts. `Checkbox.Root` renders the control (a
 
 ## States
 
-Every visual state is exposed through `data-*` attributes on both parts, so all styling — including `disabled`, `readonly`, and `indeterminate` — is done with plain CSS or utility classes.
+Both parts show each visual state in `data-*` attributes. Thus you write all of the styles in plain CSS or in utility classes. This includes the styles for the `disabled` state, the `readonly` state, and the `indeterminate` state.
 
 ## Indeterminate
 
-The mixed state has its own `indeterminate` / `defaultIndeterminate` binding and takes precedence over `checked`. The first user toggle from the indeterminate state resolves to checked.
+The mixed state has its own `indeterminate` and `defaultIndeterminate` bindings. The mixed state has more importance than the `checked` state. From the indeterminate state, the first user action makes the checkbox checked.
 
 <Demo source={indeterminateSource}><Indeterminate /></Demo>
 
 ## Forms
 
-`Checkbox.Root` keeps a hidden checkbox input in sync: give it a `name` and `value` and the pair is submitted when the checkbox is checked. Unchecked and indeterminate states submit no entry.
+`Checkbox.Root` keeps a hidden checkbox input correct. Give the root a `name` and a `value`. If the checkbox is checked, the form submits the pair. If the checkbox is not checked, or if the checkbox is indeterminate, the form submits nothing.
 
 ## Usage guidelines
 
-- Use `checked` / `defaultChecked` for the checked state and `indeterminate` / `defaultIndeterminate` for the mixed state.
-- `indeterminate` takes precedence over `checked`. When both are `true`, the checkbox is exposed as indeterminate.
-- Use `value` only for form submission through the hidden native input; it does not represent the visual state.
-- Wrap the checkbox in a native `<label>` for the simplest accessible labeling pattern, or point a sibling `label[for]` at the checkbox `id`.
+- Use `checked` and `defaultChecked` for the checked state. Use `indeterminate` and `defaultIndeterminate` for the mixed state.
+- The `indeterminate` prop has more importance than the `checked` prop. If both props are `true`, the checkbox is indeterminate.
+- Use `value` only for the form submission through the hidden native input. The `value` prop does not show the visual state.
+- Put the checkbox in a native `<label>` element. This is the most simple label pattern. As an alternative, point a `label[for]` element at the `id` of the checkbox.
 
 ## Accessibility
 
-- `Checkbox.Root` exposes `role="checkbox"` with `aria-checked="true" | "false" | "mixed"`.
-- Press `Space` to toggle the checkbox.
-- `readonly` keeps the checkbox focusable while preventing state changes.
+- `Checkbox.Root` has `role="checkbox"` with `aria-checked="true" | "false" | "mixed"`.
+- Push the `Space` key to change the checkbox.
+- The `readonly` prop keeps the checkbox focusable, but it stops the state changes.
 
 ## API reference
 

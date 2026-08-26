@@ -16,13 +16,13 @@ description: An accessible combination of text input, popover, and listbox with 
 
 # ComboBox
 
-ComboBox combines text input, popover, and listbox behavior into a single accessible selection pattern. It supports single and multiple selection, controlled and uncontrolled state, keyboard-first interaction, and async pending states.
+A ComboBox puts a text input, a popover, and a listbox together in one accessible selection pattern. It permits one selection or more than one selection. You can control its state, or you can let the component control it. The keyboard operates all of it, and the component has a pending state for asynchronous data.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`ComboBox.Root` owns the open state, input value, selection logic, and filtering; the remaining parts compose freely inside it. `ComboBox.Clear` and `ComboBox.Trigger` are optional affordances that never steal focus from the input.
+`ComboBox.Root` holds the open state, the input text, the selection, and the filter. You assemble the other parts inside it as you want. `ComboBox.Clear` and `ComboBox.Trigger` are optional, and they never take the focus from the input.
 
 ```svelte
 <script>
@@ -41,40 +41,40 @@ ComboBox combines text input, popover, and listbox behavior into a single access
 </ComboBox.Root>
 ```
 
-## Multiple selection with tags
+## Tags for more than one selection
 
-Set `selectionMode="multiple"` and render the selected values with `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove`. The popover stays open after each selection, and `Backspace` in an empty input removes the last tag.
+Set `selectionMode="multiple"`, and show the selected values with `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove`. The popover stays open after each selection. If the input is empty, the `Backspace` key removes the last tag.
 
 <Demo source={tagsSource}><Tags /></Demo>
 
-## Opening modes
+## Open modes
 
-`trigger` controls when the popover opens: `"focus"` opens as soon as the input is focused, `"input"` opens once the user starts typing, and `"press"` opens only when `ComboBox.Trigger` is pressed. Switch the mode below and reopen the field to feel the difference.
+The `trigger` prop controls when the popover opens. With `"focus"`, the popover opens when the input gets the focus. With `"input"`, the popover opens when the user starts to type. With `"press"`, the popover opens only when the user pushes `ComboBox.Trigger`. Change the mode below, then open the field again to see the difference.
 
 <Demo source={modesSource}><Modes /></Demo>
 
 ## Pending state
 
-Set `pending` on `ComboBox.Root` to expose async loading state: the root gets `data-pending`, while the trigger and clear buttons become non-interactive. The input stays editable so the user can keep refining the query.
+Set `pending` on `ComboBox.Root` to show the state of an asynchronous request. The root gets `data-pending`, and the trigger button and the clear button stop their operation. The input stays editable, thus the user can change the query.
 
 ## Usage guidelines
 
-- Wrap all parts in `ComboBox.Root`.
-- Use controlled props (`value`, `inputValue`, `open`) only when external state management is needed.
-- Use `pending` on `ComboBox.Root` to expose async loading state on the root while keeping the rest of the composition under your control.
-- Prefer `ComboBox.Trigger` in new code. `ComboBox.Button` remains available as a compatibility alias.
-- Use `ComboBox.Clear` when you want a built-in clear affordance that resets both the input and selected value.
-- Render `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove` in multiple mode to expose selected values.
-- Choose `trigger="focus"`, `trigger="input"`, or `trigger="press"` based on your opening behavior requirements.
-- Provide a stable `id` in SSR environments to keep ARIA ids deterministic.
+- Put all of the parts in `ComboBox.Root`.
+- Use the controlled props (`value`, `inputValue`, and `open`) only when your own code must hold the state.
+- Use `pending` on `ComboBox.Root` to show the state of an asynchronous request on the root. The other parts stay under your control.
+- In new code, use `ComboBox.Trigger`. `ComboBox.Button` is still available, but only for compatibility.
+- Use `ComboBox.Clear` when you want a control that removes the input text and the selected value together.
+- In the multiple mode, use `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove` to show the selected values.
+- Select `trigger="focus"`, `trigger="input"`, or `trigger="press"` for the open behavior that you want.
+- On a server, give the root a stable `id`. Thus the ARIA ids stay the same.
 
 ## Accessibility
 
-- `ComboBox.Input` renders `role="combobox"` with `aria-autocomplete="list"`, `aria-haspopup="listbox"`, `aria-expanded`, and `aria-controls` pointing at the list.
-- DOM focus stays in the input while arrow keys move a virtual focus through the options via `aria-activedescendant`.
-- The list renders `role="listbox"`; options render `role="option"` with `aria-selected`.
-- `Enter` selects the highlighted option, `Escape` closes the popover, and typing filters the list.
-- Provide `aria-label` or `aria-labelledby` on `ComboBox.Root` or `ComboBox.Input` when there is no visible label.
+- `ComboBox.Input` has `role="combobox"` with `aria-autocomplete="list"`, `aria-haspopup="listbox"`, and `aria-expanded`. Its `aria-controls` attribute points at the list.
+- The DOM focus stays in the input. The arrow keys move a virtual focus through the options with `aria-activedescendant`.
+- The list has `role="listbox"`. Each option has `role="option"` with `aria-selected`.
+- The `Enter` key selects the option with the virtual focus. The `Escape` key closes the popover. When the user types, the component filters the list.
+- If there is no label that the user sees, give `ComboBox.Root` or `ComboBox.Input` an `aria-label` or an `aria-labelledby` attribute.
 
 ## API reference
 

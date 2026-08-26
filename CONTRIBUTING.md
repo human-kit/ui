@@ -66,6 +66,24 @@ publishes to npm automatically once merged to `main`.
 - Keep components accessible (keyboard navigation, ARIA, focus management).
 - Formatting is handled by Prettier; do not hand-format.
 
+## Documentation style
+
+The prose in `docs/src/content/**`, the landing page copy and both READMEs is
+written in **ASD-STE100** (Simplified Technical English). A new page follows the
+same rules:
+
+- Active voice, simple tenses (present, past, future), no `-ing` forms unless
+  the word is a technical name.
+- One idea per sentence. At most 20 words in an instruction, 25 in a
+  description, and 6 sentences in a paragraph.
+- Keep the articles. `Put the items in the group`, never `Put items in group`.
+- The same word for the same thing every time — no synonyms for variety.
+- Vertical lists for anything with more than two conditions.
+- No metaphors, no idioms, no jargon that the page does not define.
+
+Two things are deliberately **not** in STE: the frontmatter `description`, which
+is the page's meta description in search results, and the code samples.
+
 ## TODO files
 
 Every `*TODO.md` in the repo uses one checklist format, validated by

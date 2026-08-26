@@ -16,13 +16,13 @@ description: A composable calendar with single-date and range selection, keyboar
 
 # Calendar
 
-A composable calendar providing single-date and range selection (ISO `YYYY-MM-DD`) with keyboard navigation, controlled/uncontrolled state, and part-based composition.
+This is a calendar that you assemble from parts. The user can select one date or a range of dates, in the ISO format `YYYY-MM-DD`. The keyboard operates the grid. You can control the state, or you can let the component control it.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`Calendar.Root` is the stateful container. The triggers and heading page through months, while `Calendar.Grid` renders one month as an accessible grid built from header and body cells.
+`Calendar.Root` is the container with the state. The triggers and the heading move the calendar from one month to the next month. `Calendar.Grid` makes one month as an accessible grid of header cells and body cells.
 
 ```svelte
 <script>
@@ -44,32 +44,32 @@ A composable calendar providing single-date and range selection (ISO `YYYY-MM-DD
 
 ## Range selection
 
-Set `selectionMode="range"` to select a `{ start, end }` pair: the first click starts the range, hover previews it, and the second click confirms it (reversed order is normalized automatically). `isDateUnavailable` marks specific days — weekends here — as non-selectable.
+Set `selectionMode="range"` to select a `{ start, end }` pair. The first click starts the range. While the pointer moves, the calendar shows the range. The second click completes the range. If the user selects the two dates in the opposite sequence, the component corrects them. The `isDateUnavailable` prop makes specified days unavailable — in this example, the weekend days.
 
 <Demo source={rangeSource}><Range /></Demo>
 
 ## Locale
 
-Wrap the calendar in a `LocaleProvider` to localize the month heading, weekday labels, and first day of the week. Use `firstDayOfWeek` on `Calendar.Root` to override the locale default, and `weekdayStyle` on `Calendar.Grid` to switch between narrow, short, and long weekday labels.
+Put the calendar in a `LocaleProvider` to localize the month heading, the weekday names, and the first day of the week. Use `firstDayOfWeek` on `Calendar.Root` to replace the default of the locale. Use `weekdayStyle` on `Calendar.Grid` to select narrow, short, or long weekday names.
 
 <Demo source={localeSource}><Locale /></Demo>
 
 ## Usage guidelines
 
-- Use `Calendar.Root` as the stateful container; `selectionMode` supports `'single'` (default) and `'range'`.
-- In controlled mode use `value` with `onChange`; in uncontrolled mode use `defaultValue`. Single mode uses `YYYY-MM-DD`, range mode uses `{ start?, end? }`.
-- `visibleMonths` controls how many months are rendered and how paging behaves.
-- `showOutsideDays` controls whether days outside the current month are shown (default `false`).
-- `isDateUnavailable` marks specific days as non-focusable and non-selectable.
-- Use `monthHeadingStyle="month-year"` on `Calendar.Root` to render headings as separate month and year parts.
+- Use `Calendar.Root` as the container with the state. The `selectionMode` prop accepts `'single'` (the default) and `'range'`.
+- When your own code controls the state, use `value` with `onChange`. When the component controls the state, use `defaultValue`. The single mode uses `YYYY-MM-DD`. The range mode uses `{ start?, end? }`.
+- The `visibleMonths` prop sets the number of the months in the calendar, and it changes how the triggers move between the months.
+- The `showOutsideDays` prop controls the days that are not in the current month. The default is `false`, and the calendar does not show them.
+- The `isDateUnavailable` prop makes specified days unavailable. The user cannot select them and the focus does not go to them.
+- Use `monthHeadingStyle="month-year"` on `Calendar.Root` to make the heading in two parts: the month and the year.
 
 ## Accessibility
 
-- Each grid exposes an accessible name using the visible month heading, and today exposes `aria-current="date"`.
-- Unavailable cells expose `aria-disabled="true"` but remain focusable, so screen reader users can spatially navigate and discover them.
-- `ArrowRight`/`ArrowLeft` move focus by one day; `ArrowDown`/`ArrowUp` move by one week.
-- `Home`/`End` jump to the first/last day of the month; `PageUp`/`PageDown` move to the previous/next month while preserving the day number.
-- `Enter` or `Space` selects the focused date; in range mode they confirm the pending preview range.
+- Each grid has an accessible name. The name comes from the month heading that the user sees. The day of today has `aria-current="date"`.
+- An unavailable cell has `aria-disabled="true"`, but it keeps the focus. Thus a screen reader user can move to it and read it.
+- The `ArrowRight` key and the `ArrowLeft` key move the focus by one day. The `ArrowDown` key and the `ArrowUp` key move the focus by one week.
+- The `Home` key and the `End` key move the focus to the first day and to the last day of the month. The `PageUp` key and the `PageDown` key move the focus to the previous month and to the next month, and the day number stays the same.
+- The `Enter` key and the `Space` key select the date with the focus. In the range mode, they complete the range.
 
 ## API reference
 

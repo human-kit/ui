@@ -14,13 +14,13 @@ description: A composable date picker pairing a segmented date input with a cale
 
 # DatePicker
 
-A composable date picker that pairs a segmented date input with a calendar popover for selecting `YYYY-MM-DD` dates.
+This is a date picker that you assemble from parts. It puts a date input with segments together with a calendar in a popover. The user selects a date in the format `YYYY-MM-DD`.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`DatePicker.Root` owns the value and open state. `DatePicker.Input` renders locale-resolved segments, `DatePicker.Trigger` opens the popover, and `DatePicker.Popover` hosts a full calendar built from the same parts as the standalone `Calendar`.
+`DatePicker.Root` holds the value and the open state. `DatePicker.Input` makes the segments for the locale. `DatePicker.Trigger` opens the popover. `DatePicker.Popover` contains a full calendar, and that calendar uses the same parts as the standalone `Calendar`.
 
 ```svelte
 <script>
@@ -51,28 +51,28 @@ A composable date picker that pairs a segmented date input with a calendar popov
 </DatePicker.Root>
 ```
 
-## Min and max bounds
+## Minimum and maximum
 
-`minValue` and `maxValue` constrain both the calendar and typed input. Out-of-range dates are never auto-corrected: the input exposes `aria-invalid` and `data-invalid` while the committed value stays `null`, so users can see exactly what they typed.
+The `minValue` and `maxValue` props set the limits for the calendar and for the text that the user types. The component never corrects a date that is out of the limits. The input gets `aria-invalid` and `data-invalid`, and the value stays `null`. Thus the user sees the exact text that the user typed.
 
 <Demo source={boundsSource}><Bounds /></Demo>
 
 ## Usage guidelines
 
-- Use `value` with `onChange` for controlled state and `defaultValue` for uncontrolled state; the empty state is `null`.
-- Use `open` / `defaultOpen` / `onOpenChange` to control the popover, and `closeOnSelect` to keep it open after selection.
-- `isDateUnavailable` marks specific days as non-selectable in both the input and the calendar.
-- `DatePicker.Popover` forwards `Popover.Content` props such as `placement` (default `bottom-start`), `offset`, and `shouldFlip`.
-- `DatePicker.Calendar` forwards `Calendar.Root` props except those controlled by the root (`value`, `selectionMode`, `disabled`, …).
-- Wrap in a `LocaleProvider` to localize segment order, placeholders, and calendar labels.
+- When your own code controls the state, use `value` with `onChange`. When the component controls the state, use `defaultValue`. The empty state is `null`.
+- Use `open`, `defaultOpen`, and `onOpenChange` to control the popover. Use `closeOnSelect` to keep the popover open after a selection.
+- The `isDateUnavailable` prop makes specified days unavailable in the input and in the calendar.
+- `DatePicker.Popover` accepts the props of `Popover.Content`, for example `placement` (the default is `bottom-start`), `offset`, and `shouldFlip`.
+- `DatePicker.Calendar` accepts the props of `Calendar.Root`. It does not accept the props that the root controls, for example `value`, `selectionMode`, and `disabled`.
+- Put the picker in a `LocaleProvider` to localize the sequence of the segments, the placeholders, and the names in the calendar.
 
 ## Accessibility
 
-- Segment accessible names are resolved automatically from the active locale.
-- `DatePicker.Input` exposes `aria-invalid` and `data-invalid` when the current segment draft is not committable; invalid input is shown, never auto-corrected.
-- Disabled calendar dates remain focusable via keyboard navigation so screen readers can discover and announce them as disabled.
-- Popover focus defaults to the current active day cell; closing with the keyboard restores visible focus to the trigger.
-- In read-only mode, the calendar trigger is hidden.
+- The accessible name of each segment comes from the active locale.
+- `DatePicker.Input` gets `aria-invalid` and `data-invalid` when the segments do not make a valid date. The component shows the text of the user, and it never corrects the text.
+- A disabled date in the calendar keeps the focus. Thus a screen reader can find it and announce it as disabled.
+- When the popover opens, the focus goes to the day cell of the current date. If the user closes the popover with the keyboard, the focus goes back to the trigger.
+- In the read-only mode, the calendar trigger is not in the DOM.
 
 ## API reference
 

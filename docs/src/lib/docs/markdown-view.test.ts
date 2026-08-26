@@ -38,6 +38,16 @@ describe('pageMarkdown', () => {
 		expect(prose(markdown)).not.toContain('<script');
 	});
 
+	// A Windows checkout carries CRLF, and every pattern in the module anchors on
+	// \n — without normalisation the frontmatter is served as page content.
+	it('leaves no CRLF and no frontmatter on any page', () => {
+		for (const slug of slugs) {
+			const markdown = pageMarkdown(slug) as string;
+			expect(markdown, slug).not.toContain('\r');
+			expect(markdown.startsWith('---'), slug).toBe(false);
+		}
+	});
+
 	it('expands a demo into its source, fenced', () => {
 		const markdown = pageMarkdown('button') as string;
 		expect(markdown).toContain('```svelte');

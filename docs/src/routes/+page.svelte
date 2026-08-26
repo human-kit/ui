@@ -17,23 +17,25 @@
 	 * prose rather than a feature matrix: this is the only page on the site that
 	 * describes the whole package, so it is also the only page that can rank for
 	 * anything broader than one component's name.
+	 *
+	 * Written in ASD-STE100, like every other page (see CONTRIBUTING.md).
 	 */
 	const pitch = [
 		{
-			title: 'Headless, not unstyled by accident',
-			body: 'Each component owns behavior and semantics and exposes its state as data attributes — data-state, data-disabled, data-focus-visible. There is no theme to override and no CSS to reset.'
+			title: 'The components have no styles, and this is correct',
+			body: 'Each component controls its behavior and its semantics. Each component shows its state in data attributes: data-state, data-disabled, data-focus-visible. There is no theme to replace and no CSS to remove.'
 		},
 		{
-			title: 'Accessibility is the product',
-			body: 'Focus trapping, focus restore by input modality, ARIA wiring, typeahead and roving tabindex, tested against a written contract rather than by hand.'
+			title: 'Accessibility is the primary function',
+			body: 'The components keep the focus in the correct element, move the focus back by input modality, set the ARIA attributes, and do the typeahead and the roving tabindex. The tests compare this behavior to a written contract.'
 		},
 		{
-			title: 'Svelte 5 native',
-			body: 'Runes throughout, bind: on every stateful prop, and an opt-in controlled escape hatch for when you want to own the state yourself.'
+			title: 'The components use Svelte 5',
+			body: 'The components use runes. You can use bind: on each stateful prop. If you must hold the state in your own code, use the controlled props.'
 		},
 		{
-			title: 'One runtime dependency',
-			body: 'Floating UI, and only where things float. Ships as ESM with per-component subpath exports, so a bundler pulls in the one component you imported.'
+			title: 'One dependency at run time',
+			body: 'Only the components that float use Floating UI. The package is native ESM, and each component has a subpath export. Your bundler includes only the components that you import.'
 		}
 	];
 </script>
@@ -76,9 +78,9 @@
 				Headless, accessible UI components for Svelte 5
 			</h1>
 			<p class="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-				<code class="font-mono text-subtle-foreground">{packageName}</code> ships the hard parts — semantics,
-				keyboard interaction, focus management and positioning — as unstyled building blocks. You bring
-				the design; nothing here fights it.
+				<code class="font-mono text-subtle-foreground">{packageName}</code> gives you the difficult parts:
+				the semantics, the keyboard operation, the focus control, and the position calculation. The components
+				have no styles. You write the design, and no component changes it.
 			</p>
 
 			<div class="mt-7 flex flex-wrap items-center gap-2">
@@ -95,7 +97,7 @@
 		</section>
 
 		<section aria-labelledby="why" class="border-t pt-12">
-			<h2 id="why" class="hd-title-2">Why another component library</h2>
+			<h2 id="why" class="hd-title-2">Why this library</h2>
 			<dl class="mt-6 grid gap-x-8 gap-y-7 sm:grid-cols-2">
 				{#each pitch as item (item.title)}
 					<div>
@@ -109,7 +111,7 @@
 		<section aria-labelledby="components" class="mt-14 border-t pt-12">
 			<h2 id="components" class="hd-title-2">Documentation</h2>
 			<p class="mt-2 text-sm text-muted-foreground">
-				Every component, with live demos, a props table and the data attributes it exposes.
+				Each page has the live demos, the props table, and the list of the data attributes.
 			</p>
 
 			{#each data.groups as group (group.label)}
@@ -147,7 +149,7 @@
 		<footer
 			class="mt-16 flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-6 text-xs text-muted-foreground"
 		>
-			<span>MIT licensed.</span>
+			<span>The license is MIT.</span>
 			<a href={GITHUB_URL} target="_blank" rel="noreferrer" class="hover:text-foreground">
 				Source on GitHub
 			</a>

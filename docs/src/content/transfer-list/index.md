@@ -20,15 +20,15 @@ description: Two selectable lists with buttons that move items between them — 
 
 # TransferList
 
-Two selectable lists side by side, with buttons that move items between them: picking visible columns, granting permissions, building a shortlist. Both sides are `ListBox`es, so selection, arrow-key navigation, typeahead and virtualization come from there unchanged.
+This component has two lists, one at each side, and buttons that move the items from one list to the other list. Use it to select the columns that a table shows, to give permissions, or to make a short list. Each side is a `ListBox`. Thus the selection, the arrow keys, the typeahead, and the virtualization come from `ListBox`, and they do not change.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## State
 
-There is one source of truth. `items` is the whole collection and `value` is the ordered list of keys on the right; the left is everything else.
+There is one source of truth. The `items` prop is the full collection. The `value` prop is the ordered list of the keys at the right side. The left side has all of the other items.
 
-That makes `value` exactly what a form submits, and it gives the right-hand list its order for free — items land in the sequence they were moved, and the list renders in `value` order rather than in `items` order.
+Thus `value` is exactly what a form submits, and `value` also gives the sequence of the right list. An item goes to the position where the user moved it, because the list obeys the sequence of `value` and not the sequence of `items`.
 
 ```svelte
 <script>
@@ -64,36 +64,36 @@ That makes `value` exactly what a form submits, and it gives the right-hand list
 </TransferList.Root>
 ```
 
-`getKey` identifies an item and defaults to its `id` field. Layout is yours: `TransferList.Root` renders a plain element, so arrange the two lists and the buttons with your own grid or flex.
+The `getKey` prop identifies an item. Its default is the `id` field. The layout is yours: `TransferList.Root` makes a plain element, thus you put the two lists and the buttons in your own grid or flex container.
 
-## Moving items
+## How to move an item
 
-- **Select and press a button.** `TransferList.MoveSelected` moves the selection of the opposite list; `TransferList.MoveAll` moves everything movable. Both disable themselves when there is nothing to move.
-- **Double click a row** to send it across on its own.
-- **`Ctrl`/`Cmd`+`Enter`** sends the focused list's selection to the other one without leaving the keyboard. Each list has exactly one destination, so the shortcut needs no direction — which also keeps it correct when the layout is mirrored. Turn it off with `moveShortcut={false}` on the Root.
-- **Shift+click** or **Shift+Arrow** selects a range, so moving twenty items is one gesture rather than twenty. See [ListBox](/docs/listbox) for the full range-selection contract.
+- **Select the items and push a button.** `TransferList.MoveSelected` moves the selection of the opposite list. `TransferList.MoveAll` moves each item that can move. If there is nothing to move, each button disables itself.
+- **Double click a row** to move that row alone.
+- **Push `Ctrl`+`Enter` or `Cmd`+`Enter`** to move the selection of the list with the focus to the other list, with the keyboard only. Each list has one destination, thus the shortcut needs no direction. This also keeps the shortcut correct when the layout is a mirror image. To stop the shortcut, set `moveShortcut={false}` on the Root.
+- **Push `Shift` and click, or push `Shift` and an arrow key**, to select a range. Thus the user moves twenty items with one action, not with twenty actions. The [ListBox](/docs/listbox) page has the full contract for a range selection.
 
-Items that move arrive **deselected**, so the next click on the opposite button is never an accidental undo.
+An item that moves arrives **without a selection**. Thus the next click on the opposite button never moves the item back by accident.
 
-## Filtering
+## Filters
 
-Give a side a `filter` predicate and it renders only the items it returns `true` for. The input that drives it is yours — the component only decides what the list shows.
+Give a side a `filter` function. The side then shows only the items for which the function returns `true`. The input that controls the filter is yours. The component decides only which items the list shows.
 
 <Demo source={filterSource}><Filter /></Demo>
 
-With a filter applied, **"move all" means the rows on screen**, not the whole side. That is what the button appears to promise while a filter is on, and moving items the user cannot see would be invisible work.
+While a filter is on, **"move all" means the rows that the user sees**, not all of the items at that side. This is what the button appears to promise while a filter is on. If the component moved the items that the user cannot see, that work would be invisible.
 
-## Ordering the result
+## Sequence of the result
 
-The right-hand list is `value` in order, so ordering it is just editing that array. `TransferList.MoveUp` and `TransferList.MoveDown` shift the right-hand selection one position; a contiguous block travels together, and a selection already flush against an end disables the button rather than doing nothing quietly.
+The right list is `value` in its sequence. Thus you change the sequence when you change that array. `TransferList.MoveUp` and `TransferList.MoveDown` move the selection of the right list by one position. A group of adjoining items moves together. If the selection is already at an end, the button becomes disabled and does nothing without a signal.
 
-Reordering only exists on the right: the left-hand order is the order `items` were given in, while the right-hand one is state the user is building. It works on the whole `value` rather than on what a filter happens to be showing — the order being edited is the one that gets submitted.
+Only the right list has this function. The sequence of the left list is the sequence of `items`. The sequence of the right list is state that the user makes. The buttons change the full `value`, not only the items that a filter shows, because the sequence that the user edits is the sequence that the form submits.
 
 <Demo source={reorderSource}><Reorder /></Demo>
 
-## Submitting with a form
+## Submit with a form
 
-Pass a `name` to the Root and it renders one hidden input per key, in `value` order, so the field submits with no wiring at all. Nothing is rendered when the right-hand list is empty, which is how a multi-value field behaves natively.
+Give the Root a `name`. The component then makes one hidden input for each key, in the sequence of `value`. Thus the field submits with no other code. If the right list is empty, the component makes no input. This is the behavior of a native field with more than one value.
 
 ```svelte
 <TransferList.Root {items} bind:value name="columns">…</TransferList.Root>
@@ -101,58 +101,58 @@ Pass a `name` to the Root and it renders one hidden input per key, in `value` or
 
 ## Long lists
 
-Both sides take `ListBox`'s `virtualizer`, so only the rows near the viewport are in the DOM. Rows must all be the same height, and the list is the scroller.
+Each side accepts the `virtualizer` prop of `ListBox`. Thus only the rows near the viewport are in the DOM. All of the rows must have the same height, and the list is the element that scrolls.
 
 <Demo source={virtualizedSource}><Virtualized /></Demo>
 
-Range selection still spans rows that were never rendered: the component hands `ListBox` its `getKey`, which lets a range be measured over the whole collection instead of over the handful of options on the page.
+A range selection still includes the rows that are not in the DOM. The component gives its `getKey` function to `ListBox`. Thus `ListBox` measures the range over the full collection, and not over the small number of options on the page.
 
-## Pinned items
+## Items that cannot move
 
-`disabledKeys` pins items to the side they are on: "move all" skips them, ranges leave them out, and double click does nothing.
+The `disabledKeys` prop keeps an item at its side. The "move all" button does not move it, a range does not include it, and a double click does nothing.
 
 <Demo source={disabledSource}><Disabled /></Demo>
 
 ## Focus after a move
 
-The rows the user was working with disappear, so focus has to be placed deliberately or it falls to the `<body>`:
+The rows that the user worked with go away. Thus the component must put the focus at a specified position, or the focus goes to the `<body>` element:
 
-- From a button, focus stays on the button while it still has something to move. Since a move clears the selection, that button usually goes disabled — and then focus follows the items to the destination list.
-- From a double click, focus lands on the row that took the moved one's place, or on the last row if it was the last. When the side empties, it follows the items instead.
+- After the user pushes a button, the focus stays on the button while the button still has something to move. A move removes the selection, thus that button usually becomes disabled. Then the focus goes with the items to the destination list.
+- After a double click, the focus goes to the row that takes the position of the moved row. If the moved row was the last row, the focus goes to the new last row. If the side becomes empty, the focus goes with the items.
 
 ## Usage guidelines
 
-- Give each side a `label`. It names the list, the move buttons and the announcements — pass `aria-labelledby` as well when the list already has a visible heading.
-- Add `TransferList.Status` so screen reader users hear what a move did. Without it a move is silent: items simply stop existing in one list and appear in another.
-- `controlledValue` is opt-in. `bind:value={keys}` and `value={keys}` are indistinguishable at runtime, so controlled-ness is never inferred; with it on, nothing moves until the parent flows a new `value` back down.
-- `onChange(value, details)` reports the new value along with which keys moved and in which direction.
+- Give each side a `label`. The label names the list, the move buttons, and the announcements. If the list already has a heading that the user sees, also give the side an `aria-labelledby` attribute.
+- Add a `TransferList.Status` part. Thus a screen reader user hears the result of a move. Without it, a move is silent: the items stop to exist in one list and appear in the other list.
+- The `controlledValue` prop is an option that you must set. At run time, `bind:value={keys}` and `value={keys}` are the same, thus the component cannot know which one you wrote. With `controlledValue`, nothing moves until the parent sends a new `value` down.
+- The `onChange(value, details)` function reports the new value, the keys that moved, and their direction.
 
-## Styling hooks
+## Data attributes for the styles
 
-Every part is unstyled and exposes its state as data attributes:
+Each part has no styles, and each part shows its state in data attributes:
 
-| Part               | Attributes                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------------ |
-| `Root`             | `data-transfer-list`                                                                                     |
-| `Source` `Target`  | `data-side="source \| target"`, `data-empty` while the list has no items                                  |
-| `Item`             | `data-selected`, `data-disabled`, `data-focused`, `data-focus-visible`, `data-hovered`, `data-pressed`    |
-| `MoveSelected` `MoveAll` | `data-transfer-move="selected \| all"`, `data-direction="to-target \| to-source"`, `data-disabled`  |
-| `MoveUp` `MoveDown` | `data-transfer-reorder="up \| down"`, `data-disabled`                                                   |
+| Part                     | Attributes                                                                                            |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `Root`                   | `data-transfer-list`                                                                                  |
+| `Source` `Target`        | `data-side="source \| target"`, and `data-empty` while the list has no items                           |
+| `Item`                   | `data-selected`, `data-disabled`, `data-focused`, `data-focus-visible`, `data-hovered`, `data-pressed` |
+| `MoveSelected` `MoveAll` | `data-transfer-move="selected \| all"`, `data-direction="to-target \| to-source"`, `data-disabled`     |
+| `MoveUp` `MoveDown`      | `data-transfer-reorder="up \| down"`, `data-disabled`                                                  |
+| `Status`                 | `data-transfer-list-status`                                                                           |
 
-The move buttons are **`aria-disabled`, not natively disabled**, so style them with `data-disabled` or `aria-disabled:` rather than `:disabled` — a `disabled:opacity-40` will never match.
-| `Status`           | `data-transfer-list-status`                                                                              |
+The move buttons have `aria-disabled`. They do not have the native `disabled` attribute. Thus write their styles with `data-disabled` or with `aria-disabled:`, and not with `:disabled`. A `disabled:opacity-40` class never applies.
 
-`data-side` is what lets one class style both lists and still tell them apart.
+The `data-side` attribute lets one class style both lists and still make a difference between them.
 
 ## Accessibility
 
-- **The move buttons stay in the tab order even with nothing to do.** They carry `aria-disabled` rather than the native attribute: these controls are unavailable more often than not, and natively disabling them would hide half the actions from anyone exploring with a keyboard while shifting the tab order underfoot. Activation is still blocked, and focus stays on the button after a press, as it does for any button.
-- **Name the Root.** Give it an `aria-label` or `aria-labelledby` and it renders `role="group"`, which is what tells assistive technology that the two lists and the buttons are one control rather than unrelated ones. Without a name the role is left off — an unlabelled group is skipped anyway, so claiming it would only add noise.
-- Each list is a `role="listbox"` with `aria-multiselectable="true"`, named by its `label`.
-- With `virtualizer`, each row carries `aria-setsize` and `aria-posinset` for the whole collection. Only a window of rows is in the DOM, so without them a screen reader announces the size of the window — "1 of 8" for a list of two thousand.
-- The move buttons are named after **where items go** ("Move selected to Selected"), not after a direction: an arrow glyph says nothing on its own, and "move right" is wrong the moment the layout is mirrored. Override with `aria-label`.
-- **`Enter` does not move an item.** In a multi-select listbox Enter and Space toggle the selection, and overriding that would break the contract every other list here keeps. `Ctrl`/`Cmd`+`Enter` is the shortcut instead, and each list advertises it with `aria-keyshortcuts`.
-- Every move, and every reorder, is announced through `TransferList.Status`. A reorder is otherwise completely silent: the rows are all still there, only their order changed.
+- **The move buttons stay in the tab order, also when they have nothing to do.** They have `aria-disabled`, not the native attribute. These controls are unavailable more often than available. If the component disabled them natively, a keyboard user would not find half of the actions, and the tab order would change while the user works. The component still stops the activation, and the focus stays on the button after a press, like on any button.
+- **Give the Root a name.** Give it an `aria-label` or an `aria-labelledby` attribute. The Root then has `role="group"`, which tells assistive technology that the two lists and the buttons are one control. Without a name, the component does not set the role. Assistive technology ignores a group with no name, thus the role would only add noise.
+- Each list has `role="listbox"` with `aria-multiselectable="true"`, and its `label` gives it its name.
+- With `virtualizer`, each row has `aria-setsize` and `aria-posinset` for the full collection. Only a window of the rows is in the DOM. Without these attributes, a screen reader announces the size of that window — for example "1 of 8" in a list of two thousand items.
+- The name of a move button says **where the items go** ("Move selected to Selected"). The name does not say a direction. An arrow symbol alone says nothing, and "move right" is wrong when the layout is a mirror image. To change a name, give the button an `aria-label` attribute.
+- **The `Enter` key does not move an item.** In a listbox with more than one selection, the `Enter` key and the `Space` key change the selection. A different behavior would break the contract of each other list in this library. The shortcut is `Ctrl`+`Enter` or `Cmd`+`Enter`, and each list gives it in `aria-keyshortcuts`.
+- `TransferList.Status` announces each move and each change of the sequence. Without it, a change of the sequence is fully silent, because all of the rows are still there and only their sequence is different.
 
 ## API reference
 

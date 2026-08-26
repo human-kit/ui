@@ -14,13 +14,13 @@ description: An always-visible, filterable list — a search input on top of a L
 
 # Autocomplete
 
-An always-visible, filterable list: a search input on top of a ListBox. As the user types, items are filtered locally; arrow keys move a virtual focus through the list while DOM focus stays in the input. Unlike ComboBox, there is no popover and no open/closed state.
+This is a list that the user always sees and can filter. It is a search input above a ListBox. When the user types, the component filters the items locally. The arrow keys move a virtual focus through the list, but the DOM focus stays in the input. A ComboBox has a popover and an open state. An Autocomplete has neither.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-Selection lives in the inner list — pass `selectionMode`, `value` / `defaultValue` and `onChange` to `Autocomplete.List`, exactly like a plain ListBox. The Autocomplete only owns the search query, filtering and virtual focus.
+The inner list holds the selection. Put `selectionMode`, `value`, `defaultValue`, and `onChange` on `Autocomplete.List`, like a plain ListBox. The Autocomplete controls only the search text, the filter, and the virtual focus.
 
 ```svelte
 <script>
@@ -40,31 +40,31 @@ Selection lives in the inner list — pass `selectionMode`, `value` / `defaultVa
 </Autocomplete.Root>
 ```
 
-## Multiple selection
+## More than one selection
 
-Pass `selectionMode="multiple"` to `Autocomplete.List`. Selected items show an indicator and stay selected as you keep filtering.
+Put `selectionMode="multiple"` on `Autocomplete.List`. A selected item shows an indicator, and it stays selected while the user continues to filter.
 
 <Demo source={multipleSource}><Multiple /></Demo>
 
-## External filtering
+## External filter
 
-Set `filter={null}` on `Autocomplete.Root` to disable local filtering and compute the list yourself (e.g. from a backend) using `bind:inputValue`.
+Set `filter={null}` on `Autocomplete.Root` to stop the local filter. Then calculate the list in your own code, for example from a server, and use `bind:inputValue`.
 
 ## Usage guidelines
 
-- Wrap all parts in `Autocomplete.Root`.
-- Put selection props (`selectionMode`, `value`, `defaultValue`, `onChange`) on `Autocomplete.List`.
-- Use controlled `inputValue` + `onInputChange` on `Autocomplete.Root` only when you need external state (e.g. server-side/async filtering). Set `filter={null}` to disable local filtering when results come pre-filtered from a backend.
-- Provide an accessible label on `Autocomplete.Input` (`aria-label` or `aria-labelledby`).
-- Render `Autocomplete.Empty` for the "no results" state and `Autocomplete.Status` to announce the result count to screen readers.
-- Provide a stable `id` on `Autocomplete.Root` in SSR environments to keep ARIA ids deterministic.
+- Put all of the parts in `Autocomplete.Root`.
+- Put the selection props (`selectionMode`, `value`, `defaultValue`, and `onChange`) on `Autocomplete.List`.
+- Use `inputValue` and `onInputChange` on `Autocomplete.Root` only when you need external state, for example an asynchronous filter on a server. If the server sends the filtered results, set `filter={null}` to stop the local filter.
+- Give `Autocomplete.Input` an accessible label with `aria-label` or `aria-labelledby`.
+- Use `Autocomplete.Empty` for the "no results" state. Use `Autocomplete.Status` to announce the number of the results to a screen reader.
+- On a server, give `Autocomplete.Root` a stable `id`. Thus the ARIA ids stay the same.
 
 ## Accessibility
 
-- The input is a `role="searchbox"` with `aria-controls` pointing to the list and `aria-activedescendant` pointing to the highlighted item. There is no `aria-expanded` / `aria-haspopup` because there is no popup.
-- The list is a `role="listbox"`; items are `role="option"`.
-- `ArrowDown` / `ArrowUp` move the virtual focus through results, `PageDown` / `PageUp` jump by a page, `Enter` selects the highlighted item, and `Escape` clears the query.
-- `Autocomplete.Status` is a visually-hidden `aria-live="polite"` region that announces the result count.
+- The input has `role="searchbox"`. Its `aria-controls` attribute points at the list, and its `aria-activedescendant` attribute points at the item with the virtual focus. There is no popup, thus there is no `aria-expanded` attribute and no `aria-haspopup` attribute.
+- The list has `role="listbox"`, and each item has `role="option"`.
+- The `ArrowDown` key and the `ArrowUp` key move the virtual focus through the results. The `PageDown` key and the `PageUp` key move it by one page. The `Enter` key selects the item with the virtual focus. The `Escape` key removes the search text.
+- `Autocomplete.Status` is a hidden `aria-live="polite"` region. It announces the number of the results.
 
 ## API reference
 

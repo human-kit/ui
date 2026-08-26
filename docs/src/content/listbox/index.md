@@ -14,13 +14,13 @@ description: A headless selectable list primitive with keyboard navigation, sing
 
 # ListBox
 
-A headless selectable list primitive with keyboard navigation, single and multiple selection, and controlled or uncontrolled state.
+This is a headless list of items that the user can select. The keyboard operates the list. The list permits one selection or more than one selection. You can control the state, or you can let the component control it.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`ListBox.Root` is the container that owns selection state and keyboard interactions; each option is a `ListBox.Item` with a unique `id`.
+`ListBox.Root` is the container. It holds the selection state and it controls the keyboard operation. Each option is a `ListBox.Item` with a unique `id`.
 
 ```svelte
 <script>
@@ -32,30 +32,30 @@ A headless selectable list primitive with keyboard navigation, single and multip
 </ListBox.Root>
 ```
 
-## Multiple selection
+## More than one selection
 
-Set `selectionMode="multiple"` to allow more than one selected item. `selectionBehavior` controls what happens on repeat selection: `"toggle"` (default) deselects, `"replace"` always replaces the selection. Press `Ctrl+A` to select everything.
+Set `selectionMode="multiple"` to let the user select more than one item. The `selectionBehavior` prop controls the result when the user selects the same item again. The default is `"toggle"`, and it removes the selection. With `"replace"`, the new item always replaces the selection. Push `Ctrl+A` to select all of the items.
 
 <Demo source={multipleSource}><Multiple /></Demo>
 
 ## Disabled items
 
-Use `disabled` on `ListBox.Item` (or `disabledKeys` on the root) to make individual options non-interactive. Disabled items are skipped by keyboard navigation and styled through `data-disabled`.
+Use `disabled` on a `ListBox.Item`, or `disabledKeys` on the root, to stop the operation of an option. The keyboard focus does not stop on a disabled item, and the item shows `data-disabled` for the styles.
 
 ## Usage guidelines
 
-- Use `ListBox.Root` as the container for selection state and keyboard interactions, and render each option with `ListBox.Item`.
-- Use `value` / `onChange` for controlled selection and `defaultValue` for uncontrolled initial selection. Values are sets of item ids.
-- Use `selectionBehavior="replace"` when picking an option should always replace the current selection instead of toggling it.
-- Use `disabled` on individual items or `disabledKeys` on the root to make options non-selectable.
-- Provide `aria-label` on the root when there is no visible label.
+- Use `ListBox.Root` as the container for the selection state and the keyboard operation. Make each option with `ListBox.Item`.
+- Use `value` and `onChange` when your own code controls the selection. Use `defaultValue` for the initial selection when the component controls it. Each value is a set of item ids.
+- Use `selectionBehavior="replace"` when a new option must always replace the selection.
+- Use `disabled` on an item, or `disabledKeys` on the root, to stop the selection of an option.
+- If there is no label that the user sees, give the root an `aria-label` attribute.
 
 ## Accessibility
 
-- `ListBox.Root` renders `role="listbox"` with `aria-multiselectable` in multiple mode; each `ListBox.Item` renders `role="option"` with `aria-selected`.
-- Arrow keys move focus between items; `Home` / `End` jump to the first or last item.
-- `Space` / `Enter` select the focused item; `Ctrl+A` selects all items in multiple mode.
-- Every visual state (`data-selected`, `data-focused`, `data-focus-visible`, `data-hovered`, `data-pressed`, `data-disabled`) is exposed as a data attribute for styling.
+- `ListBox.Root` has `role="listbox"`. In the multiple mode, it also has `aria-multiselectable`. Each `ListBox.Item` has `role="option"` with `aria-selected`.
+- The arrow keys move the focus between the items. The `Home` key and the `End` key move the focus to the first item and to the last item.
+- The `Space` key and the `Enter` key select the item with the focus. In the multiple mode, `Ctrl+A` selects all of the items.
+- The component shows each visual state in a data attribute for the styles: `data-selected`, `data-focused`, `data-focus-visible`, `data-hovered`, `data-pressed`, and `data-disabled`.
 
 ## API reference
 

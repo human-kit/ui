@@ -9,21 +9,21 @@ description: Install @human-kit/ui and render your first accessible component in
 
 # Quick Start
 
-`@human-kit/ui` is a set of headless, accessible UI primitives for **Svelte 5**. Components ship the behavior, semantics, and keyboard/focus handling — you bring the styles.
+`@human-kit/ui` is a set of headless UI components for **Svelte 5**. The components give you the behavior, the semantics, and the keyboard and focus control. You write the styles.
 
 ## Installation
 
 <InstallCommand pkg="@human-kit/ui" />
 
-Svelte 5 is a peer dependency, so make sure your project is on it:
+Svelte 5 is a peer dependency. Install it in your project:
 
 <InstallCommand pkg="svelte@^5" />
 
-The package is published as native ESM with per-component subpath exports, so bundlers only include what you import.
+The package is native ESM, and each component has a subpath export. Thus your bundler includes only the components that you import.
 
 ## Your first component
 
-Every primitive is a set of composable parts under a namespace. Import from the barrel or a per-component subpath:
+Each component is a set of parts in a namespace. Import the component from the root of the package, or from its subpath:
 
 ```svelte
 <script lang="ts">
@@ -38,11 +38,11 @@ Every primitive is a set of composable parts under a namespace. Import from the 
 </Button.Root>
 ```
 
-That renders a real native `<button>` with correct semantics, focus behavior, and modality-aware focus data attributes — no styling assumptions baked in.
+This code makes a true `<button>` element. The element has the correct semantics, the correct focus behavior, and the modality-aware focus data attributes. The component adds no styles.
 
-## Styling
+## Styles
 
-Components are **headless**: they expose state through `data-*` attributes and leave the visuals to you. Style them with plain CSS, Tailwind, or anything else:
+The components are **headless**. Each component shows its state in `data-*` attributes, and each component lets you write all of the styles. Write the styles in plain CSS, in Tailwind, or in a different tool:
 
 ```svelte
 <Button.Root class="rounded-md bg-black px-3 py-1.5 text-white data-[pressed]:opacity-80">
@@ -50,10 +50,10 @@ Components are **headless**: they expose state through `data-*` attributes and l
 </Button.Root>
 ```
 
-Common state hooks you can target: `data-pressed`, `data-disabled`, `data-focus-visible`, and `data-pending`. Each component's page lists its full data-attribute contract.
+These data attributes are common: `data-pressed`, `data-disabled`, `data-focus-visible`, and `data-pending`. The page for each component gives the full list of its data attributes.
 
 ## Next steps
 
-- Browse the components in the sidebar — each has a live demo, an anatomy breakdown, and a full API reference.
-- Read [Accessibility](/docs/accessibility) to see the standards every component follows.
-- Follow the [Releases](/docs/releases) timeline to track what's new.
+- Look at the components in the side bar. Each component has a live demo, an anatomy section, and a full API reference.
+- Read [Accessibility](/docs/accessibility) for the standards that each component obeys.
+- Read the [Releases](/docs/releases) page for the changes in each version.

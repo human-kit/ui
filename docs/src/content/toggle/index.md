@@ -12,13 +12,13 @@ description: A headless two-state button with controlled and uncontrolled select
 
 # Toggle
 
-A headless two-state button with controlled and uncontrolled selected state, native button semantics, and modality-aware styling hooks.
+This is a headless button with two states. You can control the selected state, or you can let the component control it. The component has native button semantics and modality-aware data attributes for the styles.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`Toggle.Root` is the only part: a native `<button type="button">` with `aria-pressed`. Its children can optionally be a snippet that receives the current render state.
+`Toggle.Root` is the only part. It makes a native `<button type="button">` element with `aria-pressed`. Its children can be a snippet that receives the current render state.
 
 ```svelte
 <script>
@@ -30,27 +30,27 @@ A headless two-state button with controlled and uncontrolled selected state, nat
 
 ## Standalone buttons
 
-Every visual state is exposed through `data-*` attributes — `data-selected`, `data-pressed`, `data-hovered`, `data-focus-visible`, `data-disabled` — so all styling is done with plain CSS or utility classes. Use `defaultSelected` for uncontrolled state.
+The component shows each visual state in `data-*` attributes: `data-selected`, `data-pressed`, `data-hovered`, `data-focus-visible`, and `data-disabled`. Thus you write all of the styles in plain CSS or in utility classes. Use `defaultSelected` when the component controls the state.
 
 ## Controlled state
 
-Bind `selected` to drive the toggle externally, and use `onChange` to react to user-driven changes.
+Bind `selected` when your own code controls the toggle. Use `onChange` to react when the user changes the state.
 
 ## Usage guidelines
 
-- Use `selected` / `defaultSelected` for the toggle state.
-- In controlled or bound usage, `selected={undefined}` syncs as `false`; omit `selected` to use `defaultSelected`.
-- Use `onChange` to react to user-driven state changes.
-- Use `value` as a stable identifier for composition with `ToggleGroup`; it is forwarded to the button and does not represent the selected state.
-- Icon-only toggles must provide an accessible name through `aria-label` or `aria-labelledby`.
-- If the visible label changes with state, keep the accessible name stable and let `aria-pressed` announce the state.
+- Use `selected` and `defaultSelected` for the state of the toggle.
+- If you control or bind the state, `selected={undefined}` becomes `false`. To use `defaultSelected`, do not give a `selected` prop.
+- Use `onChange` to react when the user changes the state.
+- Use `value` as a stable identifier inside a `ToggleGroup`. The component puts `value` on the button, but `value` does not show the selected state.
+- A toggle with only an icon must have an accessible name. Give it an `aria-label` or an `aria-labelledby` attribute.
+- If the label changes with the state, keep the accessible name the same. Let `aria-pressed` announce the state.
 
 ## Accessibility
 
-- `Toggle.Root` renders a native `<button type="button">`.
-- The selected state is exposed to assistive technology with `aria-pressed="true" | "false"`.
-- Native keyboard activation is supported with `Enter` and `Space`.
-- `data-focus-visible` follows the shared modality contract and is only exposed for keyboard or virtual focus.
+- `Toggle.Root` makes a native `<button type="button">` element.
+- The component gives the selected state to assistive technology with `aria-pressed="true" | "false"`.
+- The `Enter` key and the `Space` key activate the button, like a native button.
+- `data-focus-visible` obeys the shared modality contract. The component shows it only for a keyboard focus or a virtual focus.
 
 ## API reference
 

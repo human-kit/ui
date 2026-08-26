@@ -14,13 +14,13 @@ description: A headless interactive table primitive with grid-style keyboard nav
 
 # Table
 
-A headless interactive table primitive with grid-style keyboard navigation, row selection, explicit sortable header triggers, and a composable part-based API.
+This is a headless table that the user can operate. The keyboard moves through it like a grid. The user can select rows and can sort a column with a trigger in its header. You assemble the table from parts.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`Table.Root` renders an interactive `grid` over native table markup. Wrap each header cell in a `Table.Column` — a metadata-only part that registers the column — and opt into sorting or resizing per column by composing `Table.SortTrigger` or `Table.ColumnResizer` inside its `Table.ColumnHeaderCell`.
+`Table.Root` makes an interactive `grid` above native table markup. Put each header cell in a `Table.Column`. That part has no DOM of its own — it only registers the column. To make a column sortable or resizable, put a `Table.SortTrigger` or a `Table.ColumnResizer` in its `Table.ColumnHeaderCell`.
 
 ```svelte
 <script>
@@ -51,48 +51,48 @@ A headless interactive table primitive with grid-style keyboard navigation, row 
 
 ## Row selection
 
-Set `selectionMode="multiple"` (or `"single"`) and give every body row an `id`. `Table.Checkbox` and `Table.CheckboxIndicator` compose explicit selection UI inside cells — the header checkbox selects all rows and shows an indeterminate state, while `disabledKeys` keeps specific rows rendered but non-selectable.
+Set `selectionMode="multiple"` or `selectionMode="single"`, and give each body row an `id`. Put `Table.Checkbox` and `Table.CheckboxIndicator` in a cell to make the control that the user sees. The checkbox in the header selects all of the rows, and it shows an indeterminate state. The `disabledKeys` prop keeps a row in the table, but the user cannot select it.
 
 <Demo source={selectionSource}><Selection /></Demo>
 
 ## Keyboard navigation
 
-`keyboardNavigation` decides how far the roving tab stop reaches into the body. It defaults to `"grid"`, the full ARIA grid pattern, where every body cell is a focus target — which is also its cost: each cell registers itself and derives its own focus state, and a virtualized table pays that again for every row it mounts while scrolling.
+The `keyboardNavigation` prop sets how far the roving tab stop goes into the body. The default is `"grid"`, the full ARIA grid pattern, where each body cell can take the focus. This has a cost: each cell registers itself and calculates its own focus state, and a virtualized table does this again for each row that it makes while the user scrolls.
 
-- `"grid"` — arrows move cell by cell. Use it when the body is a working surface, not just a list.
-- `"row"` — the row is the only focus target in the body: arrows walk rows, `Enter` presses one and `Space` toggles its selection. One focus target per row instead of one per cell. Focusable content inside body cells (a `Table.Checkbox`, a link) becomes a regular tab stop, since no roving focus reaches it any more.
-- `"none"` — the body is inert to the keyboard. Only use it when nothing in it is actionable; a row that responds to a click needs a keyboard equivalent.
+- `"grid"` — the arrow keys move from cell to cell. Use this mode when the user works in the body, and does not only read it.
+- `"row"` — the row is the only element in the body that takes the focus. The arrow keys move from row to row, the `Enter` key presses a row, and the `Space` key selects a row. There is one focus target for each row, not one for each cell. An element in a body cell that can take the focus, for example a `Table.Checkbox` or a link, becomes a usual tab stop, because the roving focus does not go to it.
+- `"none"` — the keyboard does not go into the body. Use this mode only when nothing in the body does an action. A row that obeys a click needs an equivalent keyboard operation.
 
-The header keeps its own cell navigation in every mode, so sorting and column resizing stay reachable — it is a single row, so it costs nothing.
+In each mode, the header keeps its own cell navigation. Thus the sort control and the resize control stay available. The header is one row, thus its cost is very small.
 
 ## Pagination
 
-Pagination stays consumer-owned: slice the dataset before rendering and drive the current page from external controls or app state.
+The table does not do the pagination. Cut the data before you make the table, and control the current page from your own controls or from the state of your application.
 
 ## Usage guidelines
 
-- Use `Table.Root` as the stateful container for focus, selection, and sorting state, and give it `aria-label` or `aria-labelledby`.
-- Wrap each header cell in `Table.Column` so the table can register stable column metadata; `Table.Column` renders no DOM by itself.
-- Use `selectedKeys` / `onSelectionChange` for controlled row selection and `defaultSelectedKeys` for uncontrolled initial selection.
-- Use `selectionBehavior="toggle"` to allow deselecting an already selected row, or `"replace"` to keep selected rows selected when pressed again.
-- Use `sortDescriptor` / `onSortChange` for controlled sorting and `defaultSortDescriptor` for uncontrolled initial sort state; `Table.SortTrigger` inside a header cell makes the owning column sortable.
-- Use `columnWidths` / `onColumnWidthsChange` for controlled column widths (px, `%`, or `fr`), and add `Table.ColumnResizer` inside `Table.ColumnHeaderCell` to make a column resizable.
-- Dedicated utility columns like selection checkboxes should usually set an explicit `width`, `minWidth`, and `maxWidth` on `Table.Column` so sibling resizes do not redistribute their space.
-- Use `Table.EmptyState` inside `Table.Body` instead of conditionally rendering freeform body content.
-- Use `Table.InteractiveCell` for body cells that contain their own focusable controls.
+- Use `Table.Root` as the container with the state for the focus, the selection, and the sort. Give it an `aria-label` or an `aria-labelledby` attribute.
+- Put each header cell in a `Table.Column`, thus the table can register stable data about the column. `Table.Column` makes no DOM of its own.
+- Use `selectedKeys` and `onSelectionChange` when your own code controls the selection. Use `defaultSelectedKeys` for the initial selection when the component controls it.
+- Use `selectionBehavior="toggle"` to let the user remove the selection of a selected row. Use `"replace"` to keep a selected row selected when the user presses it again.
+- Use `sortDescriptor` and `onSortChange` when your own code controls the sort. Use `defaultSortDescriptor` for the initial sort when the component controls it. A `Table.SortTrigger` in a header cell makes that column sortable.
+- Use `columnWidths` and `onColumnWidthsChange` when your own code controls the widths of the columns. A width can be in px, in `%`, or in `fr`. Put a `Table.ColumnResizer` in a `Table.ColumnHeaderCell` to make that column resizable.
+- Give a utility column, for example a column of selection checkboxes, an explicit `width`, `minWidth`, and `maxWidth` on its `Table.Column`. Thus a resize of a different column does not change its space.
+- Use `Table.EmptyState` in `Table.Body`. Do not make your own body content with a condition.
+- Use `Table.InteractiveCell` for a body cell that contains its own controls that take the focus.
 
 ## Accessibility
 
-- `Table.Root` renders an interactive `grid` over native table markup, and keyboard navigation uses roving `tabindex` across header and body cells.
-- `keyboardNavigation="row"` moves that roving tab stop from the cells to the rows, which is a supported grid focus pattern; `"none"` removes it from the body altogether, so reserve it for tables whose rows do nothing.
-- Body rows can also become the active focus target when horizontal navigation moves past the start or end of a row, and repeated left/right navigation loops back into the opposite edge cell.
-- First-column body cells become `rowheader` when their associated column has `rowHeader`.
-- Disabled rows remain rendered and non-selectable, but are skipped by focus navigation.
-- `Table.SortTrigger` renders the trigger button, while the header cell remains the roving-focus target; sort changes are mirrored into a polite live region for screen readers.
-- Column resize handles are keyboard accessible separators: press `Enter` to enter resize mode, use the horizontal arrow keys to resize, `Home` to jump to the minimum width, `End` to auto-fit, and `Enter` again to exit.
+- `Table.Root` makes an interactive `grid` above native table markup. The keyboard operation uses a roving `tabindex` across the header cells and the body cells.
+- `keyboardNavigation="row"` moves that roving tab stop from the cells to the rows. This is a permitted grid focus pattern. `"none"` removes the tab stop from the body, thus use it only for a table where the rows do nothing.
+- A body row can also take the focus when the horizontal navigation goes past the start or the end of the row. If the user continues to push the left key or the right key, the focus goes to the cell at the opposite edge.
+- A body cell in the first column becomes a `rowheader` when its column has `rowHeader`.
+- A disabled row stays in the table and the user cannot select it. The focus does not stop on it.
+- `Table.SortTrigger` makes the trigger button, but the header cell stays the roving focus target. The component writes each sort change into a polite live region for a screen reader.
+- A column resize handle is a keyboard-accessible separator. Push `Enter` to start the resize mode. Use the horizontal arrow keys to change the width. Push `Home` for the minimum width. Push `End` for the automatic width. Push `Enter` again to leave the resize mode.
 
 ## API reference
 
 <ApiReference api={api} />
 
-More advanced patterns — column visibility, fixed and pinned columns, sticky headers, column resizing, and row actions — are supported by the same parts; see the API reference above for the corresponding props.
+The same parts also give you the more complex patterns: the visibility of a column, fixed and pinned columns, a header that stays at the top, a column resize, and row actions. The API reference above has the props for them.

@@ -24,13 +24,13 @@ description: A panel anchored to an edge of the viewport, dismissed by swiping i
 
 # Drawer
 
-A panel anchored to an edge of the viewport. It behaves like a modal dialog — focus trap, scroll lock, Escape, outside press — and adds what a sheet needs on a phone: a drag that follows the finger, snap points, stacking, and awareness of the software keyboard.
+This is a panel at an edge of the viewport. It behaves like a modal dialog: the focus stays in the panel, the page does not scroll, and the `Escape` key and a press outside it close it. It also has what a sheet needs on a telephone: a drag that follows the finger, snap points, a stack, and knowledge of the software keyboard.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-All parts live inside `Drawer.Root`. The backdrop and the panel render inside `Drawer.Portal`.
+All of the parts are in `Drawer.Root`. The backdrop and the panel are in `Drawer.Portal`.
 
 ```svelte
 <script>
@@ -51,25 +51,25 @@ All parts live inside `Drawer.Root`. The backdrop and the panel render inside `D
 </Drawer.Root>
 ```
 
-`Drawer.Viewport` is an optional positioning layer between the portal and the panel. Without it the panel pins itself to its edge, which is what the examples here rely on; add one when you need to align the panel on the cross axis.
+`Drawer.Viewport` is an optional layer for the position, between the portal and the panel. Without it, the panel goes to its own edge, and the examples on this page use that behavior. Add a viewport when you must align the panel on the other axis.
 
-## Styling the movement
+## Styles for the movement
 
-The drawer never writes a transform of its own. It publishes the numbers and your CSS decides what to do with them, the same way every other component in this library leaves appearance to the page.
+The drawer never writes a transform of its own. It publishes the numbers, and your CSS decides what to do with them. Each other component in this library also leaves the appearance to the page.
 
 | Property                             | Meaning                                                                     |
 | ------------------------------------ | --------------------------------------------------------------------------- |
-| `--drawer-swipe-movement-x` / `-y`   | Signed drag distance in px. Apply it directly in a translation.              |
-| `--drawer-swipe-progress`            | `0`–`1` toward **dismissal**. Also published on `Drawer.Overlay`.            |
-| `--drawer-swipe-strength`            | `1` for a still release down to `0.1` for a hard flick.                      |
-| `--drawer-overdrag`                  | Resisted pull past fully open, in px. Zero the rest of the time.             |
-| `--drawer-snap-point-offset`         | Translation of the current snap point, in px.                                |
-| `--drawer-width` / `--drawer-height` | The panel's measured size.                                                   |
-| `--drawer-frontmost-height`          | Extent of the drawer on top of the stack.                                    |
-| `--nested-drawers`                   | Distance from the front of the stack; `0` is frontmost.                      |
-| `--drawer-keyboard-inset`            | Height covered by the software keyboard, and only set while it is up.        |
+| `--drawer-swipe-movement-x` / `-y`   | The drag distance in px, with a sign. Use it directly in a translation.      |
+| `--drawer-swipe-progress`            | From `0` to `1`, toward **dismissal**. Also on `Drawer.Overlay`.             |
+| `--drawer-swipe-strength`            | `1` for a release without speed, down to `0.1` for a fast flick.             |
+| `--drawer-overdrag`                  | The pull past the open position, in px, with resistance. At other times, 0.  |
+| `--drawer-snap-point-offset`         | The translation of the current snap point, in px.                            |
+| `--drawer-width` / `--drawer-height` | The measured size of the panel.                                              |
+| `--drawer-frontmost-height`          | The extent of the drawer at the front of the stack.                          |
+| `--nested-drawers`                   | The distance from the front of the stack. `0` is the front.                  |
+| `--drawer-keyboard-inset`            | The height that the software keyboard covers. Set only while the keyboard is up. |
 
-The resting position is the snap point plus the live drag. Keeping the closed offset in a third variable lets one rule cover open, closed and dragging:
+The rest position is the snap point plus the live drag. Keep the closed offset in a third variable. Thus one rule covers the open state, the closed state, and the drag:
 
 ```svelte
 <Drawer.Content
@@ -81,86 +81,86 @@ The resting position is the snap point plus the live drag. Keeping the closed of
 />
 ```
 
-`data-starting-style` is on the panel for the first painted frame after it mounts, and only then. A transition needs a value to start from, and a node inserted straight into its final position has none — without this rule the drawer has an exit animation and no entrance. Give it the same value as the closed state.
+The panel has `data-starting-style` for the first painted frame after it goes into the DOM, and for no other frame. A transition needs a start value, and a node that goes directly to its final position has none. Without this rule, the drawer has an exit animation but no entrance animation. Give it the same value as the closed state.
 
-Dropping the transition under `data-swiping` is what makes the panel track the finger instead of lagging a frame behind it.
+The `data-swiping` rule removes the transition. This is what makes the panel follow the finger, and not stay one frame behind it.
 
-### Progress means dismissal, not movement
+### Dismissal, not movement
 
-`--drawer-swipe-progress` stays at `0` while the panel moves between snap points and only rises once it is past the last one and genuinely on its way out. Fading the backdrop for every drag looked wrong in exactly the case it was meant to help: dragging a sheet from one snap point to another brightened the page and then snapped it dark again on release, for a drawer that never left.
+`--drawer-swipe-progress` stays at `0` while the panel moves between the snap points. It becomes larger only when the panel goes past the last snap point and is truly on its way out. A backdrop that faded for each drag looked incorrect in the exact case that it must help: a drag from one snap point to a different snap point made the page brighter, and then made it dark again at the release, for a drawer that did not go away.
 
 ### What can start a drag
 
-The whole panel is draggable, with two exceptions:
+The user can drag all of the panel, with two exceptions:
 
-- **`Drawer.Body`, under a mouse.** A drag and a text selection are the same gesture on a pointer that can select, so inside the content region the mouse selects and the drawer stays put — it does not budge and spring back, it simply ignores the drag. A finger still drags it: there is no drag-to-select on touch, and losing the gesture over most of a sheet is exactly what you do not want on a phone.
+- **`Drawer.Body`, with a mouse.** With a pointer that can select text, a drag and a text selection are the same gesture. Thus, in the content region, the mouse selects the text and the drawer does not move. The drawer does not move and come back — it ignores the drag. A finger still drags the panel: on a touch screen there is no drag to select text, and on a telephone the user must not lose the gesture on most of the sheet.
 
-  Wrap your content in `Drawer.Body` and leave the grab bar outside it. That leaves an obvious surface a mouse can still drag the panel by, and matches what the affordance is promising.
-- **Anything marked `data-hk-swipe-ignore`.** Put it on a slider, a carousel, a colour picker — any control with a drag of its own. Valueless opts the subtree out for every input type; `data-hk-swipe-ignore="mouse"` opts it out for a mouse only, which is what `Drawer.Body` uses.
+  Put your content in `Drawer.Body`, and keep the grab bar outside it. Thus a mouse still has an obvious surface to drag the panel by, and the drawer does what that surface promises.
+- **An element with `data-hk-swipe-ignore`.** Put this attribute on a slider, a carousel, or a color picker — on any control with a drag of its own. With no value, the attribute stops the drag for each input type. With `data-hk-swipe-ignore="mouse"`, it stops the drag for a mouse only, and this is what `Drawer.Body` uses.
 
-A drag that starts inside a scrollable region is left to that region until it reaches its bound, so a bottom sheet with a scrolling body only starts moving once the body is scrolled to the top.
+A drag that starts in a region that scrolls belongs to that region until the region gets to its limit. Thus a bottom sheet with a body that scrolls starts to move only when the body is at the top.
 
-### Pulling past open
+### Pull past the open position
 
-Dragging a drawer further open than it can go stretches it: the panel follows with heavy resistance, capped at 40px no matter how far the finger travels. The resisted distance is also published as `--drawer-overdrag`, in px.
+If the user drags a drawer more open than its limit, the panel becomes longer. It follows the finger with much resistance, and it stops at 40 px, whatever the distance of the finger. The component publishes this distance in `--drawer-overdrag`, in px.
 
-Moving the panel off its anchored edge would normally show the page through the strip behind it, so the drawer paints that strip in its own background while the pull is in flight. You get this for free — nothing to wire up — but it does assume the panel has a background of its own to borrow.
+A panel that moves off its edge would usually show the page in the strip behind it. Thus, during the pull, the drawer paints that strip with its own background. You get this with no other code, but the panel must have a background of its own.
 
 ## Sides
 
-`side` sets the edge the panel is anchored to and, with it, the axis it travels along and the direction that dismisses it.
+The `side` prop sets the edge of the panel. With it, the prop also sets the axis of the movement and the direction that dismisses the panel.
 
 <Demo source={sidesSource}><Sides /></Demo>
 
 ## Snap points
 
-`snapPoints` gives the panel resting positions between open and closed. Values from `0` to `1` are fractions of the viewport, numbers above `1` are pixels, and strings are any CSS length or percentage.
+The `snapPoints` prop gives the panel rest positions between the open position and the closed position. A value from `0` to `1` is a fraction of the viewport. A number more than `1` is a number of pixels. A string is any CSS length or percentage.
 
-A release settles on the point the flick was *heading for*, not the one it happened to be nearest when the finger lifted — a short fast drag means "go further". `snapToSequentialPoints` holds it to one step at a time when skipping ahead would be disorienting.
+At the release, the panel goes to the point that the flick moved toward, and not to the nearest point at the moment of the release. A short fast drag means "go further". The `snapToSequentialPoints` prop holds the panel to one step at a time, for the cases where a jump would confuse the user.
 
 <Demo source={snapPointsSource}><SnapPoints /></Demo>
 
-Size the panel to the largest snap point; the smaller ones translate it down from there.
+Make the panel as large as the largest snap point. The smaller snap points then move it down from there.
 
 ## Nested drawers
 
-Nest a `Drawer.Root` inside another drawer's content. The drawer behind gets `data-nested-drawer-open` and `--nested-drawers` so it can step back, and Escape unwinds the stack one layer at a time.
+Put a `Drawer.Root` in the content of a different drawer. The drawer behind gets `data-nested-drawer-open` and `--nested-drawers`, thus it can move back. The `Escape` key removes one layer of the stack at a time.
 
 <Demo source={nestedSource}><Nested /></Demo>
 
-Only the drawer at the back of the stack paints a backdrop; the ones above it get `data-nested` on their overlay and stand down. Every root brings its own, and stacking them dimmed the page once per layer — darkening the drawer underneath along with everything else.
+Only the drawer at the back of the stack paints a backdrop. The overlay of each drawer above it gets `data-nested` and paints nothing. Each root has its own overlay, and one backdrop for each layer made the page darker one time for each layer — and made the drawer below dark with the rest of the page.
 
-`Drawer.Indent` wraps your app UI and exposes `--drawer-indent-progress`, which falls back toward `0` as the frontmost drawer is dragged away — so the page comes forward with the gesture rather than jumping when the drawer finally closes. `Drawer.IndentBackground` paints the surface revealed behind it.
+`Drawer.Indent` contains the UI of your application, and it publishes `--drawer-indent-progress`. That number goes back toward `0` while the user drags the front drawer away. Thus the page comes forward with the gesture, and it does not move suddenly when the drawer closes. `Drawer.IndentBackground` paints the surface behind it.
 
-## Non-modal
+## Non-modal mode
 
-`modal={false}` drops the focus trap, the scroll lock and the hiding of everything else from assistive technology. The page behind keeps working — scroll it, click it, tab through it — while the panel stays up. For a persistent player, a filter rail, an inspector.
+With `modal={false}`, the focus does not stay in the panel, the page scrolls, and assistive technology reads the rest of the page. The user can scroll the page behind, click it, and go through it with the `Tab` key while the panel stays open. Use this mode for a music player, a rail of filters, or an inspector.
 
 <Demo source={nonModalSource}><NonModal /></Demo>
 
-Skip `Drawer.Overlay` entirely for these: a scrim says "deal with me first", which is the opposite of what a non-modal panel is for. Pair it with `shouldCloseOnInteractOutside={false}` so using the page does not dismiss the thing you opened to use alongside it.
+In this mode, do not use `Drawer.Overlay`. A backdrop says "obey me first", and this is the opposite of the function of a non-modal panel. Use `shouldCloseOnInteractOutside={false}` with it. Thus the page that the user operates does not close the panel that the user opened for that work.
 
-`modal="trap-focus"` sits in between: the keyboard stays captured, but the page keeps scrolling and stays readable to assistive technology.
+`modal="trap-focus"` is between the two modes. The focus stays in the panel, but the page scrolls and assistive technology reads it.
 
 ## Swipe to open
 
-`Drawer.SwipeArea` is a strip along the viewport edge that opens the drawer when dragged inward, with the panel following the finger. Render it outside `Drawer.Portal` — it has to exist while the drawer is closed.
+`Drawer.SwipeArea` is a strip at the edge of the viewport. A drag from the edge to the center opens the drawer, and the panel follows the finger. Put this part outside `Drawer.Portal`, because the part must exist while the drawer is closed.
 
 <Demo source={swipeToOpenSource}><SwipeToOpen /></Demo>
 
-Pair it with a `Drawer.Trigger`. A swipe has no keyboard or screen-reader equivalent, so a drawer that can only be swiped open is unreachable for some people.
+Use a `Drawer.Trigger` with it. A swipe has no keyboard equivalent and no screen reader equivalent. Thus some people cannot open a drawer that only a swipe opens.
 
 ## Forms and the software keyboard
 
-Wrap `Drawer.Root` in `Drawer.VirtualKeyboardProvider` when the panel contains fields. The keyboard shrinks the *visual* viewport and leaves the layout viewport untouched, so nothing in CSS notices it and a bottom sheet ends up underneath the keys.
+Put `Drawer.Root` in a `Drawer.VirtualKeyboardProvider` when the panel contains fields. The keyboard makes the *visual* viewport smaller, but it does not change the layout viewport. Thus CSS does not know about the keyboard, and a bottom sheet goes below the keys.
 
 <Demo source={formSource}><Form /></Demo>
 
-Keep the header and footer outside `Drawer.Body` and offset the footer by `var(--drawer-keyboard-inset, 0px)`. The fallback matters: the variable only exists while the keyboard is up.
+Keep the header and the footer outside `Drawer.Body`, and move the footer by `var(--drawer-keyboard-inset, 0px)`. The default value is necessary: the variable exists only while the keyboard is up.
 
-## Detached triggers
+## Triggers in other positions
 
-When the openers are scattered — a row action in every line of a table, each opening the same drawer with a different record — `createDrawerHandle()` is the shared object in between. Triggers push into it, one root reads from it, and the value the trigger carried arrives as the root's `payload`.
+Sometimes the buttons that open the drawer are in many positions — for example one button in each row of a table, and each button opens the same drawer with a different record. Then `createDrawerHandle()` makes the object between them. Each trigger writes into the object, one root reads from it, and the value of the trigger arrives as the `payload` of the root.
 
 ```svelte
 <script>
@@ -178,28 +178,28 @@ When the openers are scattered — a row action in every line of a table, each o
 </Drawer.Root>
 ```
 
-Closing returns focus to the trigger that actually opened the drawer, not to whichever one mounted last.
+At the close, the focus goes back to the trigger that opened the drawer, and not to the trigger that went into the DOM last.
 
 ## Controlled state
 
-Bind `open` to drive the drawer from outside; a trigger is optional. `defaultOpen` covers the uncontrolled case, and `onOpenChange` reports every change. Set `controlledOpen` to stop the component writing back, so the parent can reject a change by not flowing the new value down. `snapPoint` follows the same shape.
+Bind `open` to control the drawer from your own code. Then a trigger is optional. Use `defaultOpen` when the component controls the state. The `onOpenChange` prop reports each change. Set `controlledOpen` to stop the component from writing the value back. Thus the parent can refuse a change: the parent does not send the new value down. The `snapPoint` prop has the same behavior.
 
 ## Usage guidelines
 
-- Always give the drawer a `Drawer.Title`. A `role="dialog"` takes its name from `aria-labelledby`, not from the text inside it.
-- Always give a dismissible drawer a `Drawer.Close`, so it can be dismissed without a gesture.
-- Wrap the scrolling region in `Drawer.Body` so a scroll that reaches its end does not chain out to the page behind.
-- `modal="trap-focus"` keeps the focus trap but leaves the page scrollable; `modal={false}` drops both, for a panel the rest of the page keeps working around.
-- Set `dismissible={false}` for a drawer that must be closed deliberately. The panel still moves under the finger — a dead gesture reads as a broken one — it just springs back.
+- Always give the drawer a `Drawer.Title`. A `role="dialog"` element gets its name from `aria-labelledby`, and not from the text in it.
+- Always give a dismissible drawer a `Drawer.Close`. Thus the user can close it without a gesture.
+- Put the region that scrolls in `Drawer.Body`. Thus a scroll that gets to its end does not continue on the page behind.
+- `modal="trap-focus"` keeps the focus in the panel, but the page still scrolls. `modal={false}` stops the two behaviors, for a panel that the user operates with the rest of the page.
+- Set `dismissible={false}` for a drawer that the user must close deliberately. The panel still moves with the finger, and then it comes back. A gesture that does nothing looks like a fault.
 
 ## Accessibility
 
-- `Drawer.Content` renders `role="dialog"`, with `aria-modal="true"` while open and `modal` is `true`.
-- `Drawer.Title` and `Drawer.Description` wire `aria-labelledby` / `aria-describedby` automatically.
-- Focus is trapped inside the open drawer, and content outside it is hidden from assistive technology.
-- Escape closes the topmost dismissable layer, so a popover opened inside the drawer closes first, and the drawer on the next press.
-- Page scroll is locked while a modal drawer is open, using the body pin that also stops iOS Safari touch scrolling.
-- Under `prefers-reduced-motion` the enter and exit collapse to a single frame, because presence is measured from your CSS rather than a fixed duration.
+- `Drawer.Content` has `role="dialog"`. While the drawer is open and `modal` is `true`, it also has `aria-modal="true"`.
+- `Drawer.Title` and `Drawer.Description` set `aria-labelledby` and `aria-describedby` automatically.
+- The focus stays in the open drawer. Assistive technology does not read the content outside the drawer.
+- The `Escape` key closes the top layer that is dismissible. Thus a popover that opened in the drawer closes first, and the next press closes the drawer.
+- While a modal drawer is open, the page does not scroll. The component pins the body, which also stops the touch scroll in iOS Safari.
+- With `prefers-reduced-motion`, the entrance and the exit become one frame, because the component measures the presence from your CSS and not from a fixed time.
 
 ## API reference
 

@@ -14,13 +14,13 @@ description: A headless native button with pending semantics, pressed-state expo
 
 # Button
 
-A headless native button with RAC-aligned pending semantics, pressed-state exposure, and modality-aware focus data attributes.
+This is a headless native button. It shows its pressed state and its modality-aware focus state in data attributes. Its pending semantics agree with React Aria Components.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-A single part that renders a native `<button>`. The `children` snippet optionally receives the live render state.
+The component has one part. The part makes a native `<button>` element. The `children` snippet can receive the live render state.
 
 ```svelte
 <script>
@@ -40,22 +40,22 @@ A single part that renders a native `<button>`. The `children` snippet optionall
 
 ## Pending state
 
-`pending` keeps the button focusable while blocking activation and hover state, and announces the pending state through an internal polite live region. When `type="submit"` and `pending` is true, the rendered type switches to `button` to prevent form submission.
+The `pending` prop keeps the button focusable, but it stops the activation and the hover state. An internal polite live region announces the pending state. If the type is `submit` and `pending` is `true`, the component makes the element with the type `button`. Thus the form does not submit.
 
 <Demo source={pendingSource}><Pending /></Demo>
 
 ## Usage guidelines
 
-- Use native button props such as `type`, `name`, `value`, and form attributes directly on `Button.Root`.
-- Use `pending` to keep the button focusable while blocking activation and hover state.
-- Style interaction states with `data-hovered`, `data-pressed`, `data-focused`, `data-focus-visible`, `data-disabled`, and `data-pending`.
-- Pending does not serialize `data-disabled`; it is represented by `data-pending`.
+- Put the native button props (`type`, `name`, `value`, and the form attributes) directly on `Button.Root`.
+- Use `pending` to keep the button focusable, but to stop the activation and the hover state.
+- Write the styles for the interaction states with `data-hovered`, `data-pressed`, `data-focused`, `data-focus-visible`, `data-disabled`, and `data-pending`.
+- The `pending` state does not write `data-disabled`. It writes `data-pending`.
 
 ## Accessibility
 
-- `Button.Root` renders a native `<button>`.
-- `pending` applies `aria-disabled="true"`, preserves focusability, blocks press behavior, and announces the pending state politely.
-- `data-focus-visible` follows the shared modality contract and is only exposed for keyboard or virtual focus.
+- `Button.Root` makes a native `<button>` element.
+- The `pending` prop sets `aria-disabled="true"`, keeps the element focusable, stops the press behavior, and announces the pending state politely.
+- `data-focus-visible` obeys the shared modality contract. The component shows it only for a keyboard focus or a virtual focus.
 
 ## API reference
 

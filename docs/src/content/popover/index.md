@@ -16,13 +16,13 @@ description: Floating content anchored to a trigger, with modal and non-modal in
 
 # Popover
 
-Floating content anchored to a trigger element. It supports modal and non-modal interaction patterns, outside interaction handling, and configurable positioning.
+This is content that floats against a trigger element. It has a modal mode and a non-modal mode, it obeys an interaction outside it, and you can set its position.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`Popover.Root` shares open state and the trigger reference between `Popover.Trigger` and `Popover.Content`. The content renders in a portal and positions itself against the trigger.
+`Popover.Root` shares the open state and the reference to the trigger between `Popover.Trigger` and `Popover.Content`. The content goes in a portal, and it calculates its position against the trigger.
 
 ```svelte
 <script>
@@ -39,31 +39,31 @@ Floating content anchored to a trigger element. It supports modal and non-modal 
 
 ## Placement
 
-Use `placement` on `Popover.Content` to pick the preferred side and alignment (12 options, e.g. `top`, `bottom-start`, `right-end`; default `bottom`), and `offset` to control the gap from the trigger. With `shouldFlip` (default `true`), the panel falls back to the opposite side when space runs out; the resolved side is exposed as `data-placement`.
+Use `placement` on `Popover.Content` to select the side and the alignment that you prefer. There are 12 values, for example `top`, `bottom-start`, and `right-end`. The default is `bottom`. Use `offset` to set the distance from the trigger. The default of `shouldFlip` is `true`. If there is not sufficient space, the panel moves to the opposite side. The component shows the final side in `data-placement`.
 
 <Demo source={placementSource}><Placement /></Demo>
 
 ## Modal and non-modal
 
-By default the popover is modal: focus is trapped, scroll is locked, and outside content is aria-hidden. Set `nonModal` to allow interaction with the rest of the page — non-modal popovers close when focus leaves them (`shouldCloseOnBlur` defaults to `true` in that mode).
+The default is the modal mode. The focus stays in the panel, the page does not scroll, and assistive technology does not read the content outside the panel. Set `nonModal` to let the user operate the rest of the page. In the non-modal mode, the popover closes when the focus goes out of it, because the default of `shouldCloseOnBlur` is `true`.
 
 <Demo source={nonmodalSource}><NonModal /></Demo>
 
 ## Usage guidelines
 
-- Use `Popover.Root` to share open state and trigger reference.
-- Use `Popover.Trigger` as the opener button.
-- Use `Popover.Content` inside `Popover.Root`, or in standalone mode with `open`, `triggerRef`, and `onOpenChange`.
-- Configure `nonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` to match your interaction model.
-- `onOpenChange(open, details)` reports why the state changed (`details.reason`) and supports `details.cancel()` to prevent the transition.
-- Style enter/exit motion via the `data-state` / `data-entering` / `data-exiting` attributes; exit animations keep the panel mounted until its CSS transition or animation finishes.
+- Use `Popover.Root` to share the open state and the reference to the trigger.
+- Use `Popover.Trigger` as the button that opens the popover.
+- Put `Popover.Content` in `Popover.Root`. As an alternative, use it alone with `open`, `triggerRef`, and `onOpenChange`.
+- Set `nonModal`, `shouldCloseOnInteractOutside`, and `shouldCloseOnBlur` for the interaction model that you want.
+- The `onOpenChange(open, details)` function reports the cause of the change in `details.reason`. Call `details.cancel()` to stop the change.
+- Write the styles of the enter motion and the exit motion with the `data-state`, `data-entering`, and `data-exiting` attributes. During an exit animation, the panel stays in the DOM until the CSS transition or the CSS animation is complete.
 
 ## Accessibility
 
-- `Popover.Content` renders `role="dialog"`; `Popover.Trigger` renders a button with `aria-haspopup="dialog"` and `aria-expanded`.
-- Modal popovers trap focus, lock body scroll, and hide outside content from assistive technology; use `initialFocus` to pick the first focused element.
-- Escape closes the popover and returns focus to the trigger; outside interaction closes it unless `shouldCloseOnInteractOutside={false}`.
-- Non-modal popovers keep the page interactive and close when focus moves outside the trigger and panel.
+- `Popover.Content` has `role="dialog"`. `Popover.Trigger` is a button with `aria-haspopup="dialog"` and `aria-expanded`.
+- In the modal mode, the focus stays in the panel, the body does not scroll, and assistive technology does not read the content outside the panel. Use `initialFocus` to select the first element that gets the focus.
+- The `Escape` key closes the popover and moves the focus back to the trigger. An interaction outside the popover also closes it, but not with `shouldCloseOnInteractOutside={false}`.
+- In the non-modal mode, the user can operate the page. The popover closes when the focus goes out of the trigger and the panel.
 
 ## API reference
 
