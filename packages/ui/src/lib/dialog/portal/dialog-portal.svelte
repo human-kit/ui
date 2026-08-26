@@ -11,7 +11,7 @@
 	 * Must be used inside a Dialog.Root.
 	 */
 	type DialogPortalProps = {
-		/** Content to render in portal (Overlay and Content) */
+		/** The content of the portal: the Overlay and the Content. */
 		children?: Snippet;
 	};
 

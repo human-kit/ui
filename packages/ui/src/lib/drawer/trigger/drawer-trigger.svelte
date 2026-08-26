@@ -13,18 +13,18 @@
 		HTMLButtonAttributes,
 		'type' | 'class' | 'children' | 'aria-haspopup' | 'aria-expanded'
 	> & {
-		/** Button label. */
+		/** The name on the button. */
 		children?: Snippet;
-		/** CSS class for the button. */
+		/** The CSS class names of the button. */
 		class?: string;
-		/** Bindable reference to the rendered button. */
+		/** A bindable reference to the button element. */
 		element?: HTMLButtonElement | null;
 		/**
-		 * Opens the drawer through a detached handle instead of context, so the trigger
-		 * can live anywhere in the tree. See `createDrawerHandle`.
+		 * Opens the drawer through a separate object, and not through the context. Thus the trigger can
+		 * be at any position in the tree. Read `createDrawerHandle`.
 		 */
 		handle?: DrawerHandle<Payload>;
-		/** Value handed to the drawer's `children` snippet when this trigger opens it. */
+		/** The value that goes to the `children` snippet of the drawer when this trigger opens it. */
 		payload?: Payload;
 	};
 

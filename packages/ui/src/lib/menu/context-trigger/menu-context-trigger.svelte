@@ -14,22 +14,21 @@
 	 * semantics.
 	 */
 	export type MenuContextTriggerProps = {
-		/** Whether the surface is disabled. The browser's own context menu is left alone. */
+		/** Disables the surface. The browser then shows its own context menu. */
 		disabled?: boolean;
-		/** Whether a long press opens the menu on touch and pen. */
+		/** Opens the menu from a long press with a finger or a pen. */
 		longPress?: boolean;
-		/** How long a touch has to be held, in ms. */
+		/** The time of the long press, in ms. */
 		longPressDelay?: number;
 		/**
-		 * Whether to suppress the iOS text callout / selection on the surface. Long press
-		 * is unusable there without it; turn it off if the surface contains text the user
-		 * is meant to select.
+		 * Stops the iOS text callout and the text selection on the surface. Without it, the long press
+		 * does not work there. Set it to `false` when the surface has text that the user must select.
 		 */
 		preventTouchCallout?: boolean;
 		/**
-		 * Tab order position. Defaults to `0` so keyboard users can reach the surface and
-		 * open the menu with Shift+F10. Pass `-1` when the surface lives inside a composite
-		 * that already manages focus with a roving tabindex (a table, a tree).
+		 * The position in the tab order. The default is `0`, thus a keyboard user can go to the surface
+		 * and open the menu with the Shift+F10 keys. Give `-1` when the surface is in a component that
+		 * already controls the focus with a roving tabindex, for example a table or a tree.
 		 */
 		tabindex?: number;
 		children?: Snippet;

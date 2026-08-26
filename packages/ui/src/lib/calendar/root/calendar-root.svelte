@@ -42,9 +42,15 @@
 		showOutsideDays?: boolean;
 		firstDayOfWeek?: CalendarFirstDayOfWeek;
 		monthHeadingStyle?: CalendarMonthHeadingStyle;
-		/** Earliest selectable date (`YYYY-MM-DD`). Earlier dates report unavailable and page/focus navigation clamps at this bound. */
+		/**
+		 * The first date that the user can select (`YYYY-MM-DD`). A date before it is unavailable, and
+		 * the triggers and the focus stop at this limit.
+		 */
 		minValue?: CalendarDateValue;
-		/** Latest selectable date (`YYYY-MM-DD`). Later dates report unavailable and page/focus navigation clamps at this bound. */
+		/**
+		 * The last date that the user can select (`YYYY-MM-DD`). A date after it is unavailable, and the
+		 * triggers and the focus stop at this limit.
+		 */
 		maxValue?: CalendarDateValue;
 		isDateUnavailable?: (date: string) => boolean;
 		disabled?: boolean;

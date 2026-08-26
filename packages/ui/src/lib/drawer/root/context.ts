@@ -11,7 +11,7 @@ import type { DrawerModal, DrawerSide, DrawerCloseReason, DrawerSnapPoint } from
 export type DrawerContext = {
 	/** Whether the drawer is open. */
 	readonly isOpen: boolean;
-	/** Edge the panel is anchored to. */
+	/** The edge of the panel. */
 	readonly side: DrawerSide;
 	/** Focus/scroll behaviour: `true`, `'trap-focus'`, or `false`. */
 	readonly modal: DrawerModal;

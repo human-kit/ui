@@ -10,17 +10,17 @@
 
 	type InputProps = HTMLInputAttributes & {
 		class?: ClassValue;
-		/** Disables the input natively. */
+		/** Disables the input, with the native attribute. */
 		disabled?: boolean | null;
-		/** Native readonly, also exposed as `aria-readonly`. */
+		/** The native `readonly` attribute. The component also sets `aria-readonly`. */
 		readonly?: boolean | null;
-		/** Marks the value as invalid: maps to `aria-invalid` and `data-invalid`. */
+		/** Marks the value as not valid. The component sets `aria-invalid` and `data-invalid`. */
 		invalid?: boolean;
-		/** Native required, also exposed as `aria-required`. */
+		/** The native `required` attribute. The component also sets `aria-required`. */
 		required?: boolean | null;
-		/** Current value. Bindable. */
+		/** The value. You can bind it. */
 		value?: HTMLInputAttributes['value'];
-		/** Bindable reference to the rendered input element. */
+		/** A bindable reference to the input element. */
 		element?: HTMLInputElement | null;
 	};
 

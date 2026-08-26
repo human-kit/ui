@@ -12,13 +12,13 @@ description: A headless single disclosure primitive with controlled or uncontrol
 
 # Collapsible
 
-A headless single disclosure primitive: a button that shows and hides an associated panel, with controlled or uncontrolled open state and a disabled state.
+This is a headless disclosure component: a button that shows and hides one panel. You can control the open state, or you can let the component control it. The component also has a disabled state.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-The collapsible is assembled from three parts. `Collapsible.Root` provides the shared context, `Collapsible.Trigger` renders the toggle button, and `Collapsible.Panel` holds the content that is shown and hidden.
+The collapsible has three parts. `Collapsible.Root` gives the shared context. `Collapsible.Trigger` makes the button. `Collapsible.Panel` contains the content that the trigger shows and hides.
 
 ```svelte
 <script>
@@ -33,20 +33,20 @@ The collapsible is assembled from three parts. `Collapsible.Root` provides the s
 
 ## Controlled state
 
-Bind `open` (or pair `open` with `onOpenChange`) to drive the panel from outside — for example from buttons elsewhere in the UI. Use `defaultOpen` instead when the collapsible should manage its own state.
+Bind `open`, or use `open` with `onOpenChange`, to control the panel from your own code. That control can be in a different part of the page. Use `defaultOpen` when the component controls its own state.
 
 ## Usage guidelines
 
-- Use `open` / `onOpenChange` for controlled state and `defaultOpen` for uncontrolled state.
-- Use `disabled` to prevent the trigger from toggling the panel.
-- Use `forceMount` on `Collapsible.Panel` when collapsed content must stay in the DOM.
-- For grouped disclosures where only one section opens at a time, use `Accordion` instead.
+- Use `open` and `onOpenChange` when your own code controls the state. Use `defaultOpen` when the component controls the state.
+- Use `disabled` to stop the trigger.
+- Use `forceMount` on `Collapsible.Panel` when the content must stay in the DOM while the panel is closed.
+- For a set of sections where only one section opens at a time, use `Accordion`.
 
 ## Accessibility
 
-- `Collapsible.Trigger` renders button semantics with `aria-expanded` and `aria-controls` pointing at the panel, following the WAI-ARIA disclosure pattern.
-- `Collapsible.Panel` is `hidden` + `inert` while collapsed and carries the `id` referenced by the trigger.
-- Enter/Space toggle the panel via native button activation.
+- `Collapsible.Trigger` has button semantics with `aria-expanded`. Its `aria-controls` attribute points at the panel. This obeys the WAI-ARIA disclosure pattern.
+- While the panel is closed, `Collapsible.Panel` is `hidden` and `inert`. The panel has the `id` that the trigger points at.
+- The `Enter` key and the `Space` key open and close the panel, like a native button.
 
 ## API reference
 

@@ -18,7 +18,7 @@
 - `onOpenChange(open, details)`
 - `details.reason`: `trigger-press | imperative-action | none | escape-key | outside-press | focus-out | close-press`
 - `details.event?`: native event that triggered the change when available
-- `details.cancel()`: prevents the open-state transition
+- `details.cancel()`: stops the change of the open state
 - `details.isCanceled`: reflects cancellation state inside the callback
 
 ## Anatomy

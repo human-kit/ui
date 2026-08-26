@@ -22,7 +22,7 @@ Description: Standalone wheel-based time state container that resolves visible c
 | `disabled`     | `boolean`                         | `false`     | Disables wheel interaction and value updates.              |
 | `column`       | `Snippet<[ClockColumnInfo]>`      | `undefined` | Optional custom renderer for each resolved column.         |
 | `children`     | `Snippet`                         | `undefined` | Optional additional content rendered inside the root.      |
-| `class`        | `string`                          | `''`        | CSS class names for the root element.                      |
+| `class`        | `string`                          | `''`        | The CSS class names of the root element.                   |
 | `element`      | `HTMLDivElement \| null`          | `bindable`  | Reference to the root DOM element.                         |
 | `aria-label`   | `string`                          | `undefined` | Accessible label for the root group.                       |
 

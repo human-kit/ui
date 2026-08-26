@@ -5,7 +5,7 @@
 ### Checkbox.Root
 
 Name: `Checkbox.Root`  
-Description: Interactive tri-state checkbox root that owns checked, indeterminate, focus, and hidden input synchronization.
+Description: The root of a checkbox with three states. It holds the checked state, the indeterminate state, and the focus, and it keeps the hidden input correct.
 
 | Prop                    | Type                               | Default       | Description                                                     |
 | ----------------------- | ---------------------------------- | ------------- | --------------------------------------------------------------- |
@@ -23,7 +23,7 @@ Description: Interactive tri-state checkbox root that owns checked, indeterminat
 | `readonly`              | `boolean`                          | `false`       | Allows focus but blocks user-driven state changes.              |
 | `required`              | `boolean`                          | `false`       | Marks the hidden input as required and exposes `data-required`. |
 | `children`              | `Snippet`                          | `undefined`   | Composed checkbox parts such as `Checkbox.Indicator`.           |
-| `class`                 | `string`                           | `''`          | CSS class names for the root element.                           |
+| `class`                 | `string`                           | `''`          | The CSS class names of the root element.                        |
 | `...restProps`          | `HTMLAttributes<HTMLSpanElement>`  | `-`           | Additional attributes forwarded to the checkbox root span.      |
 
 ### Context utilities

@@ -14,13 +14,13 @@ description: A headless tab primitive with roving focus, automatic or manual key
 
 # Tabs
 
-A headless tab primitive with roving focus, automatic or manual keyboard activation, disabled tabs, and panel composition.
+This is a headless tab component with roving focus and disabled tabs. The keyboard can activate a tab automatically or manually. You assemble the panels yourself.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-Give every `Tabs.Tab` a unique `value` and pair it with a `Tabs.Panel` carrying the same value. The optional `Tabs.Indicator` tracks the active tab through CSS variables (`--active-tab-left`, `--active-tab-top`, `--active-tab-width`, `--active-tab-height`) so it can animate between tabs.
+Give each `Tabs.Tab` a unique `value`, and give the same value to its `Tabs.Panel`. `Tabs.Indicator` is optional. It follows the active tab through four CSS variables (`--active-tab-left`, `--active-tab-top`, `--active-tab-width`, and `--active-tab-height`). Thus it can move from one tab to the next tab with an animation.
 
 ```svelte
 <script>
@@ -41,29 +41,29 @@ Give every `Tabs.Tab` a unique `value` and pair it with a `Tabs.Panel` carrying 
 
 ## Manual activation
 
-By default arrow keys activate tabs as focus moves. With `keyboardActivation="manual"`, arrow keys only move focus and the focused tab activates on Enter or Space — useful when switching panels is expensive.
+By default, the arrow keys activate each tab as the focus moves. With `keyboardActivation="manual"`, the arrow keys move only the focus. Then the `Enter` key or the `Space` key activates the tab with the focus. Use this mode when a panel is expensive.
 
 ## Vertical orientation and disabled tabs
 
-Set `orientation="vertical"` to stack the tab list and switch arrow-key navigation to Up/Down. Pass `disabledKeys` on `Tabs.Root` (or `disabled` on a single `Tabs.Tab`) to keep specific tabs from being activated.
+Set `orientation="vertical"` to put the tab list in a column. The keyboard operation then moves to the Up arrow key and the Down arrow key. Use `disabledKeys` on `Tabs.Root`, or `disabled` on one `Tabs.Tab`, to stop the activation of specified tabs.
 
 <Demo source={verticalSource}><Vertical /></Demo>
 
 ## Usage guidelines
 
-- Provide a unique `value` for every `Tabs.Tab` and matching `Tabs.Panel`.
-- Use `value` / `onChange` for controlled state and `defaultValue` for uncontrolled state.
-- Set `defaultValue={null}` when no tab should be active initially.
-- Use `keyboardActivation="manual"` when panel activation is expensive or should wait for Enter/Space.
-- Use `orientation="vertical"` for vertical tab lists.
-- Use `forceMount` on `Tabs.Panel` when inactive panel state must be preserved in the DOM.
+- Give a unique `value` to each `Tabs.Tab` and to its `Tabs.Panel`.
+- Use `value` and `onChange` when your own code controls the state. Use `defaultValue` when the component controls the state.
+- Set `defaultValue={null}` when no tab must be active at the start.
+- Use `keyboardActivation="manual"` when a panel is expensive, or when the activation must wait for the `Enter` key or the `Space` key.
+- Use `orientation="vertical"` for a tab list in a column.
+- Use `forceMount` on `Tabs.Panel` when the state of an inactive panel must stay in the DOM.
 
 ## Accessibility
 
-- `Tabs.List` renders `role="tablist"` and mirrors the configured orientation.
-- `Tabs.Tab` renders button semantics with `role="tab"`, `aria-selected`, and `aria-controls`.
-- `Tabs.Panel` renders `role="tabpanel"` and `aria-labelledby`.
-- Arrow keys move focus within the tab list, Home/End jump to the first or last enabled tab, and focus wraps at the ends.
+- `Tabs.List` has `role="tablist"`, and it shows the orientation that you set.
+- `Tabs.Tab` has button semantics with `role="tab"`, `aria-selected`, and `aria-controls`.
+- `Tabs.Panel` has `role="tabpanel"` and `aria-labelledby`.
+- The arrow keys move the focus in the tab list. The `Home` key and the `End` key move the focus to the first enabled tab and to the last enabled tab. At the ends, the focus goes to the opposite end.
 
 ## API reference
 

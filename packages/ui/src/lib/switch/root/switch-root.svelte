@@ -21,42 +21,47 @@
 		| 'onkeydown'
 		| 'value'
 	> & {
-		/** Id applied to the hidden input so `label[for]` can target the switch. Auto-generated when omitted. */
+		/**
+		 * The id of the hidden input, thus a `label[for]` element can point at the switch. If you give
+		 * none, the component makes one.
+		 */
 		id?: string;
-		/** Bindable reference to the rendered root element. */
+		/** A bindable reference to the root element. */
 		element?: HTMLSpanElement | null;
-		/** Name submitted with the form when the switch is checked. */
+		/** The name that the form submits while the switch is on. */
 		name?: string;
-		/** Value submitted with the form when the switch is checked. Does not affect the visual state. */
+		/**
+		 * The value that the form submits while the switch is on. It does not change the visual state.
+		 */
 		value?: string;
-		/** Associates the hidden input with a form by id. */
+		/** The id of the form of the hidden input. */
 		form?: string;
-		/** Checked state. Two-way by default — use `bind:checked`. */
+		/** The checked state. By default it goes in the two directions: use `bind:checked`. */
 		checked?: boolean;
-		/** Initial checked state, for when `checked` is not supplied. */
+		/** The checked state at the start, for when you give no `checked`. */
 		defaultChecked?: boolean;
 		/**
-		 * Opt into fully controlled state: the component stops writing back to `checked`
-		 * and only reports through `onCheckedChange`, so the parent can reject a change by
-		 * not flowing the new value back down. Off by default, because `bind:checked` —
-		 * the common case — needs the write-back to work at all.
+		 * Give your own code full control of the state. The component stops to write back to `checked`,
+		 * and it reports only through `onCheckedChange`. Thus the parent can refuse a change: the parent
+		 * does not send the new value down. The default is off, because `bind:checked` is the usual case
+		 * and it needs the write-back.
 		 */
 		controlledChecked?: boolean;
-		/** Called when the user toggles the switch. */
+		/** The component calls it when the user changes the switch. */
 		onCheckedChange?: (checked: boolean) => void;
-		/** Removes the switch from interaction and focus order. */
+		/** Stops the interaction with the switch and removes it from the focus order. */
 		disabled?: boolean;
-		/** Keeps the switch focusable while preventing state changes. */
+		/** Keeps the switch focusable, but stops the changes of the state. */
 		readonly?: boolean;
-		/** Marks the hidden input as required for form validation. */
+		/** Makes the hidden input required for the form validation. */
 		required?: boolean;
 		children?: Snippet;
 		class?: string;
-		/** Accessible label when no visible label is associated. */
+		/** The accessible name, for when the user sees no name. */
 		'aria-label'?: string;
-		/** Id of the element that labels the switch. */
+		/** The id of the element that gives the switch its name. */
 		'aria-labelledby'?: string;
-		/** Overrides the default tab order. */
+		/** Replaces the default position in the tab order. */
 		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];

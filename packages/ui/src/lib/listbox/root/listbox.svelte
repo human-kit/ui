@@ -11,75 +11,87 @@
 	 * @template T - The type of items when using dynamic rendering with the `items` prop.
 	 */
 	type ListBoxProps = {
-		/** How selection behaves: 'toggle' allows deselection, 'replace' always selects. */
+		/**
+		 * The behavior of the selection: 'toggle' lets the user remove a selection, and 'replace' always
+		 * selects.
+		 */
 		selectionBehavior?: 'toggle' | 'replace';
-		/** Content shown when the list is empty. Can be a string or a Snippet. */
+		/** The content while the list is empty. It can be a string or a Snippet. */
 		emptyPlaceholder?: string | Snippet;
-		/** Iterable of items for dynamic rendering. Used with a snippet that receives each item. */
+		/**
+		 * The items, for a list that the component makes from an array. Use it with a snippet that
+		 * receives one item.
+		 */
 		items?: Iterable<T>;
 		/**
-		 * Reads an item's key — the same value passed as `ListBox.Item`'s `id`.
+		 * Reads the key of an item. This is the same value as the `id` of `ListBox.Item`.
 		 *
-		 * Only needed together with `virtualizer`: a Shift range is otherwise measured over
-		 * the options in the DOM, which for a virtualized list is just the rendered window,
-		 * so the range stops wherever the user happened to have scrolled.
+		 * You need it only with `virtualizer`. Without it, a Shift range is measured over the options in
+		 * the DOM. In a virtualized list, those are only the rows near the viewport, thus the range
+		 * stops at the scroll position of the user.
 		 */
 		getItemKey?: (item: T) => string | number;
-		/** Keys of items that should be disabled and non-selectable. */
+		/** The keys of the items that must be disabled. The user cannot select them. */
 		disabledKeys?: Iterable<string | number>;
-		/** Selection mode: 'single' allows one selection, 'multiple' allows many. */
+		/** The selection mode: 'single' permits one selection, and 'multiple' permits more than one. */
 		selectionMode?: 'single' | 'multiple';
-		/** Selected keys. Two-way by default — use `bind:value`. */
+		/** The selected keys. By default it goes in the two directions: use `bind:value`. */
 		value?: Iterable<string | number>;
-		/** Initial selection, for when `value` is not supplied. */
+		/** The selection at the start, for when you give no `value`. */
 		defaultValue?: Iterable<string | number>;
 		/**
-		 * Opt into fully controlled state: the component stops writing back to `value` and
-		 * only reports through `onChange`, so the parent can reject a change by not flowing
-		 * the new selection back down. Off by default, because `bind:value` — the common
-		 * case — needs the write-back to work at all.
+		 * Give your own code full control of the selection. The component stops to write back to
+		 * `value`, and it reports only through `onChange`. Thus the parent can refuse a change: the
+		 * parent does not send the new selection down. The default is off, because `bind:value` is the
+		 * usual case and it needs the write-back.
 		 */
 		controlledValue?: boolean;
-		/** Content of the listbox. Can be static children or a snippet receiving items. */
+		/** The content of the listbox. It can be static children, or a snippet that receives one item. */
 		children?: Snippet | Snippet<[T]>;
 		/**
-		 * Rows rendered inside the listbox above the items — an action row such as
-		 * "Create …". Kept out of `children` because in dynamic mode that snippet is called
-		 * once per item.
+		 * The rows in the listbox above the items, for example an action row such as "Create …". They
+		 * are not in `children`, because from an array of items the component calls that snippet one
+		 * time for each item.
 		 *
-		 * A virtualized list does not navigate into it: navigation there walks the item
-		 * array, which this is not part of.
+		 * In a virtualized list, the keyboard does not go into these rows. There, the keys move through
+		 * the array of the items, and these rows are not in it.
 		 */
 		header?: Snippet;
-		/** CSS class to apply to the listbox container. */
+		/** The CSS class names of the listbox container. */
 		class?: string;
-		/** HTML id attribute for the listbox element. */
+		/** The id of the listbox element. */
 		id?: string;
-		/** Accessible label for the listbox. Announced by screen readers. */
+		/** The accessible name of the listbox. A screen reader announces it. */
 		'aria-label'?: string;
-		/** Id of a visible element that labels the listbox. Use instead of `aria-label`
-		 *  when the list already has a heading on screen. */
+		/**
+		 * The id of an element that the user sees, and that gives the listbox its name. Use it in place
+		 * of `aria-label` when the list already has a heading.
+		 */
 		'aria-labelledby'?: string;
-		/** Callback fired when the selection changes. */
+		/** The component calls it when the selection changes. */
 		onChange?: (value: Set<string | number>) => void;
-		/** Disable DOM focus handling on the root container for virtual-focus compositions. */
+		/** Stops the DOM focus control on the root container, for a composition with a virtual focus. */
 		disableFocusHandling?: boolean;
-		/** Whether arrow-key navigation wraps from the last item to the first (and back). */
+		/**
+		 * At the last item, the arrow keys move the focus to the first item, and at the first item, to
+		 * the last one.
+		 */
 		loop?: boolean;
-		/** Whether typing characters moves focus to the option whose text matches. */
+		/** When the user types a character, the focus moves to the option whose text agrees with it. */
 		typeahead?: boolean;
 		/**
-		 * Renders only the rows near the viewport instead of all of them.
+		 * Makes only the rows near the viewport, and not all of the rows.
 		 *
-		 * Only honoured together with `items`: the listbox has to own the loop to be able to
-		 * slice it, so a list written as static children is never virtualized.
+		 * The component obeys it only with `items`. The listbox must control the loop to cut it, thus a
+		 * list written as static children is never virtualized.
 		 *
-		 * Rows must all be the same height — that assumption is what lets the scrollbar be
-		 * sized without measuring every row. The height is measured from the first rendered
-		 * row unless `rowHeight` says otherwise, so a themed list needs no magic number.
+		 * All of the rows must have the same height. This is what lets the component calculate the
+		 * scrollbar without a measurement of each row. The component measures the height from the first
+		 * row, but `rowHeight` replaces that measurement. Thus a list with your own styles needs no
+		 * fixed number.
 		 *
-		 * The listbox element itself is the scroller: give it a max height and
-		 * `overflow-y: auto`, as an unvirtualized long list would need anyway.
+		 * The listbox element is the element that scrolls. Give it a maximum height and `overflow-y:
+		 * auto`. A long list without a virtualizer needs the same.
 		 */
 		virtualizer?: { rowHeight?: number; overscan?: number };
 	} & Omit<

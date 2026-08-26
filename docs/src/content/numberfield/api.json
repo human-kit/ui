@@ -3,7 +3,7 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The number field container. Owns the numeric state, formatting, and validation, provides context to all parts, and renders a hidden input that submits the raw number when `name` is set.",
+			"description": "The container of the number field. It holds the numeric state, the format, and the validation, and it gives the context to all of the parts. With a `name`, it also makes a hidden input that submits the raw number.",
 			"props": [
 				{
 					"name": "children",
@@ -24,147 +24,147 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the root element. Auto-generated when omitted."
+					"description": "The id of the root element. If you give none, the component makes one."
 				},
 				{
 					"name": "value",
 					"type": "number | null",
 					"required": false,
 					"default": "undefined",
-					"description": "Controlled numeric value. Bindable. Always a raw number; the visible text is formatted separately."
+					"description": "The numeric value. You can bind it. It is always a raw number, and the component makes the text separately."
 				},
 				{
 					"name": "defaultValue",
 					"type": "number | null",
 					"required": false,
 					"default": "null",
-					"description": "Initial value when uncontrolled."
+					"description": "The value at the start, for when the component controls the state."
 				},
 				{
 					"name": "onChange",
 					"type": "(value: number | null) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the committed numeric value changes."
+					"description": "The component calls it when the numeric value changes."
 				},
 				{
 					"name": "formatOptions",
 					"type": "Intl.NumberFormatOptions",
 					"required": false,
 					"default": null,
-					"description": "Intl.NumberFormat options used to format the visible input text (currency, percent, unit, fraction digits, ...)."
+					"description": "The `Intl.NumberFormat` options that make the text in the input: the currency, the percent, the unit, and the number of the decimals."
 				},
 				{
 					"name": "min",
 					"type": "number",
 					"required": false,
 					"default": null,
-					"description": "Minimum allowed value."
+					"description": "The smallest value that the field accepts."
 				},
 				{
 					"name": "max",
 					"type": "number",
 					"required": false,
 					"default": null,
-					"description": "Maximum allowed value."
+					"description": "The largest value that the field accepts."
 				},
 				{
 					"name": "step",
 					"type": "NumberFieldStep",
 					"required": false,
 					"default": "1",
-					"description": "Amount applied by arrow keys, stepper buttons, wheel, and scrubbing. `'any'` steps by 1 without step-based validation."
+					"description": "The change from the arrow keys, the step buttons, the mouse wheel, and the pointer drag. With `'any'`, the change is 1 and the component does not validate against the step."
 				},
 				{
 					"name": "smallStep",
 					"type": "number",
 					"required": false,
 					"default": "0.1",
-					"description": "Step applied while holding `Ctrl`/`Cmd` with the arrow keys."
+					"description": "The change from the arrow keys while the user holds `Ctrl` or `Cmd`."
 				},
 				{
 					"name": "largeStep",
 					"type": "number",
 					"required": false,
 					"default": "10",
-					"description": "Step applied while holding `Shift` with the arrow keys."
+					"description": "The change from the arrow keys while the user holds `Shift`."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Removes the field from interaction and focus order."
+					"description": "Stops the interaction with the field and removes it from the focus order."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the input focusable while preventing value changes."
+					"description": "Keeps the input focusable, but stops the changes of the value."
 				},
 				{
 					"name": "required",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the input as required for form validation."
+					"description": "Makes the input required for the form validation."
 				},
 				{
 					"name": "invalid",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the field as invalid and exposes `aria-invalid` and `data-invalid`."
+					"description": "Marks the field as not valid. The component sets `aria-invalid` and `data-invalid`."
 				},
 				{
 					"name": "aria-invalid",
 					"type": "HTMLAttributes<HTMLDivElement>['aria-invalid']",
 					"required": false,
 					"default": null,
-					"description": "Overrides the computed `aria-invalid` value."
+					"description": "Replaces the `aria-invalid` value that the component calculates."
 				},
 				{
 					"name": "allowWheelScrub",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Lets the mouse wheel step the value while the input is focused."
+					"description": "Lets the mouse wheel change the value while the input has the focus."
 				},
 				{
 					"name": "allowOutOfRange",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Allows typed values outside `min`/`max` to be committed. When `false`, out-of-range drafts stay editable while focused and clamp on commit."
+					"description": "Lets the field accept a value that the user types below `min` or above `max`. With `false`, the user can still edit that value while the input has the focus. When the input loses the focus, the value goes to `min` or to `max`."
 				},
 				{
 					"name": "snapOnStep",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Snaps stepped values to the nearest multiple of `step`."
+					"description": "Moves a stepped value to the nearest multiple of `step`."
 				},
 				{
 					"name": "name",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Name of the hidden input that submits the raw numeric value with a form."
+					"description": "The name of the hidden input that submits the raw number with a form."
 				},
 				{
 					"name": "incrementAriaLabel",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Overrides the localized accessible label of the increment button."
+					"description": "Replaces the localized accessible name of the increment button."
 				},
 				{
 					"name": "decrementAriaLabel",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Overrides the localized accessible label of the decrement button."
+					"description": "Replaces the localized accessible name of the decrement button."
 				}
 			],
 			"dataAttributes": [
@@ -182,7 +182,7 @@
 				},
 				{
 					"name": "data-number-field-hidden-input",
-					"description": "Identifies the hidden native input used for form submission."
+					"description": "Identifies the hidden native input for the form submission."
 				},
 				{
 					"name": "data-number-field-root",
@@ -198,13 +198,13 @@
 				},
 				{
 					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
+					"description": "Present while the user drags the value with a pointer."
 				}
 			]
 		},
 		{
 			"name": "Group",
-			"description": "Groups the visible controls (input and stepper buttons) and mirrors the field state through data attributes.",
+			"description": "Contains the controls that the user sees: the input and the step buttons. It shows the state of the field in data attributes.",
 			"props": [
 				{
 					"name": "children",
@@ -248,13 +248,13 @@
 				},
 				{
 					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
+					"description": "Present while the user drags the value with a pointer."
 				}
 			]
 		},
 		{
 			"name": "Input",
-			"description": "The visible text input with role=\"spinbutton\". Handles formatted text entry, keyboard stepping, and native validity.",
+			"description": "The text input that the user sees, with role=\"spinbutton\". It controls the text with its format, the keyboard steps, and the native validity.",
 			"props": [
 				{
 					"name": "class",
@@ -268,7 +268,7 @@
 					"type": "HTMLInputElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered input element."
+					"description": "A bindable reference to the input element."
 				}
 			],
 			"dataAttributes": [
@@ -278,7 +278,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -286,7 +286,7 @@
 				},
 				{
 					"name": "data-input-state",
-					"description": "Relation between the draft text and the committed value: \"synced\", \"partial\", \"invalid\", or \"out-of-range\"."
+					"description": "The relation between the text in the input and the value: \"synced\", \"partial\", \"invalid\", or \"out-of-range\"."
 				},
 				{
 					"name": "data-invalid",
@@ -298,7 +298,7 @@
 				},
 				{
 					"name": "data-out-of-range",
-					"description": "Present while the current value is outside `min`/`max`."
+					"description": "Present while the value is less than `min` or more than `max`."
 				},
 				{
 					"name": "data-readonly",
@@ -310,13 +310,13 @@
 				},
 				{
 					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
+					"description": "Present while the user drags the value with a pointer."
 				}
 			]
 		},
 		{
 			"name": "Increment",
-			"description": "Stepper button that increases the value by `step`. Excluded from the tab order and labeled with a localized default.",
+			"description": "The button that makes the value larger by `step`. It is not in the tab order, and it has a localized default name.",
 			"props": [
 				{
 					"name": "class",
@@ -330,14 +330,14 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the button, typically an icon or symbol."
+					"description": "The content of the button, usually an icon or a symbol."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Decrement",
-			"description": "Stepper button that decreases the value by `step`. Excluded from the tab order and labeled with a localized default.",
+			"description": "The button that makes the value smaller by `step`. It is not in the tab order, and it has a localized default name.",
 			"props": [
 				{
 					"name": "class",
@@ -351,21 +351,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the button, typically an icon or symbol."
+					"description": "The content of the button, usually an icon or a symbol."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "ScrubArea",
-			"description": "Turns its content into a pointer-drag control that steps the value while dragging.",
+			"description": "Makes its content into a drag control. While the user drags the pointer, the value changes.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the scrub area, such as a label and `NumberField.ScrubAreaCursor`."
+					"description": "The content of the drag area, for example a name and a `NumberField.ScrubAreaCursor`."
 				},
 				{
 					"name": "class",
@@ -379,14 +379,14 @@
 					"type": "NumberFieldScrubDirection",
 					"required": false,
 					"default": "'horizontal'",
-					"description": "Axis of pointer movement that changes the value."
+					"description": "The axis of the pointer movement that changes the value."
 				},
 				{
 					"name": "pixelSensitivity",
 					"type": "number",
 					"required": false,
 					"default": "2",
-					"description": "Pixels of pointer movement required per step."
+					"description": "The pointer movement for one step, in pixels."
 				}
 			],
 			"dataAttributes": [
@@ -412,20 +412,20 @@
 				},
 				{
 					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
+					"description": "Present while the user drags the value with a pointer."
 				}
 			]
 		},
 		{
 			"name": "ScrubAreaCursor",
-			"description": "Optional virtual cursor rendered while scrubbing, following the pointer inside the scrub area.",
+			"description": "An optional cursor, in the DOM while the user drags. It follows the pointer in the drag area.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered as the virtual cursor."
+					"description": "The content of the cursor."
 				},
 				{
 					"name": "class",
@@ -454,7 +454,7 @@
 				},
 				{
 					"name": "data-scrubbing",
-					"description": "Present while a pointer scrub is in progress."
+					"description": "Present while the user drags the value with a pointer."
 				}
 			]
 		}

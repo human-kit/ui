@@ -17,28 +17,28 @@
 		/** Which side this list shows. Set by Source and Target, never by a consumer. */
 		side: TransferListSide;
 		/**
-		 * Accessible name of the list. Also the name the move buttons and the live region use,
-		 * which is why it is a string rather than only an `aria-label` pass-through: "Move
-		 * selected to Selected" reads far better than "move right", and survives RTL.
+		 * The accessible name of the list. The move buttons and the live region also use it. This is why
+		 * it is a string, and not only an `aria-label` value: "Move selected to Selected" is clearer
+		 * than "move right", and it stays correct in a right-to-left layout.
 		 */
 		label: string;
-		/** Id of a visible heading, when the list already has one on screen. */
+		/** The id of a heading that the user sees, for when the list already has one. */
 		'aria-labelledby'?: string;
 		/**
-		 * Shows only the items this returns `true` for. The input that drives it is the
-		 * consumer's — this only decides what the list renders.
+		 * Shows only the items for which this function returns `true`. The input that controls it is
+		 * yours, and this prop decides only which items the list shows.
 		 *
-		 * "Move all" then means the rows on screen rather than the whole side, which is what
-		 * the button appears to promise while a filter is applied.
+		 * With a filter, "move all" means the rows that the user sees, and not all of the items at that
+		 * side. This is what the button appears to promise while a filter is on.
 		 */
 		filter?: (item: T, index: number) => boolean;
-		/** Rendered for each item on this side. */
+		/** The content for each item at this side. */
 		children?: Snippet<[T]>;
-		/** Shown when the side has no items. Nothing is rendered when omitted. */
+		/** The content while the side has no items. If you give none, the component makes nothing. */
 		emptyPlaceholder?: string | Snippet;
-		/** Renders only the rows near the viewport. See `ListBox`'s own `virtualizer`. */
+		/** Makes only the rows near the viewport. Read the `virtualizer` prop of `ListBox`. */
 		virtualizer?: { rowHeight?: number; overscan?: number };
-		/** CSS class for the list element. */
+		/** The CSS class names of the list element. */
 		class?: string;
 	};
 

@@ -25,9 +25,9 @@
 	 * module-global, so there is nothing left for one to coordinate.
 	 */
 	type DrawerIndentProps = {
-		/** The app UI that pulls back while a drawer is open. */
+		/** The application UI that moves back while a drawer is open. */
 		children?: Snippet;
-		/** CSS class for the wrapper. */
+		/** The CSS class names of the container element. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 

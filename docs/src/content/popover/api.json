@@ -3,164 +3,164 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "State container for the popover. Shares open state, the trigger reference, and open/close/toggle actions with the trigger and content parts.",
+			"description": "The container with the state. It shares the open state, the reference to the trigger, and the open, close, and toggle functions with the trigger and the content.",
 			"props": [
 				{
 					"name": "open",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Open state. Two-way by default — use `bind:open`."
+					"description": "The open state. By default it goes in the two directions: use `bind:open`."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial open state, for when `open` is not supplied."
+					"description": "The open state at the start, for when you give no `open`."
 				},
 				{
 					"name": "controlledOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the\ncommon case — needs the write-back to work at all. For one-off rejections\nprefer `details.cancel()`, which works in either mode."
+					"description": "Give your own code full control of the open state. The component stops to write back to\n`open`, and it reports only through `onOpenChange`. Thus the parent can refuse a change: the\nparent does not send the new value down. The default is off, because `bind:open` is the usual\ncase and it needs the write-back.\n\nTo refuse one change, use `details.cancel()`. That function works in the two modes."
 				},
 				{
 					"name": "onOpenChange",
 					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback when open state changes."
+					"description": "The component calls it when the open state changes."
 				},
 				{
 					"name": "triggerRef",
 					"type": "HTMLElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Reference to the trigger element. Can be set manually or via Popover.Trigger."
+					"description": "The reference to the trigger element. Set it in your own code, or let Popover.Trigger set it."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Children (Trigger and Content)"
+					"description": "The children: the Trigger and the Content."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Content",
-			"description": "The floating role=\"dialog\" panel, rendered in a portal and positioned against the trigger. Works inside Popover.Root or in standalone controlled mode via `open`, `triggerRef`, and `onOpenChange`.",
+			"description": "The role=\"dialog\" panel that floats. It goes in a portal and takes its position against the trigger. Use it in Popover.Root, or alone with `open`, `triggerRef`, and `onOpenChange`.",
 			"props": [
 				{
 					"name": "offset",
 					"type": "number",
 					"required": false,
 					"default": "4",
-					"description": "Offset along the main axis from the anchor element."
+					"description": "The distance from the anchor element, on the main axis."
 				},
 				{
 					"name": "placement",
 					"type": "ExtendedPlacement",
 					"required": false,
 					"default": "'bottom'",
-					"description": "Placement relative to the anchor element."
+					"description": "The position against the anchor element."
 				},
 				{
 					"name": "shouldFlip",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether to flip when there's insufficient space."
+					"description": "Moves the panel to the opposite side when the space is not sufficient."
 				},
 				{
 					"name": "boundaryElement",
 					"type": "Element | null",
 					"required": false,
 					"default": "null",
-					"description": "Boundary element for positioning constraints."
+					"description": "The element that gives the limits of the position."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content of the popover."
+					"description": "The content of the popover."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the popover container."
+					"description": "The CSS class names of the popover container."
 				},
 				{
 					"name": "nonModal",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock)."
+					"description": "Makes the popover non-modal. The user can then operate the page, the focus does not stay in\nthe panel, and the page scrolls."
 				},
 				{
 					"name": "shouldCloseOnInteractOutside",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether clicking outside the popover should close it."
+					"description": "Closes the popover when the user clicks outside it."
 				},
 				{
 					"name": "shouldCloseOnEscape",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Whether pressing Escape should close the popover."
+					"description": "Closes the popover when the user pushes the `Escape` key."
 				},
 				{
 					"name": "shouldCloseOnBlur",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers."
+					"description": "Closes the popover when the focus goes out of it. The default is true for a non-modal popover."
 				},
 				{
 					"name": "initialFocus",
 					"type": "FocusTrapOptions['initialFocus']",
 					"required": false,
 					"default": null,
-					"description": "Element or selector to focus first when modal trap activates."
+					"description": "The element, or the selector of the element, that gets the focus first in the modal mode."
 				},
 				{
 					"name": "open",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Controlled open state (standalone mode)."
+					"description": "The open state, when you use the part alone."
 				},
 				{
 					"name": "triggerRef",
 					"type": "HTMLElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Reference to the trigger element (standalone mode)."
+					"description": "The reference to the trigger element, when you use the part alone."
 				},
 				{
 					"name": "onOpenChange",
 					"type": "(open: boolean, details: PopoverOpenChangeDetails) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback when open state changes (standalone mode)."
+					"description": "The component calls it when the open state changes, when you use the part alone."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-placement",
@@ -174,28 +174,28 @@
 		},
 		{
 			"name": "Trigger",
-			"description": "Button that registers itself as the popover trigger and toggles the popover on click (aria-haspopup=\"dialog\", aria-expanded).",
+			"description": "The button that registers itself as the trigger of the popover. A click opens and closes the popover. It has aria-haspopup=\"dialog\" and aria-expanded.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Button content."
+					"description": "The content of the button."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the button."
+					"description": "The CSS class names of the button."
 				},
 				{
 					"name": "element",
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": [
@@ -207,24 +207,24 @@
 		},
 		{
 			"name": "Overlay",
-			"description": "Optional backdrop rendered behind the popover. Place it as a sibling of Popover.Content inside Popover.Root; it runs its own enter/exit presence so it fades in step with the panel.",
+			"description": "An optional backdrop behind the popover. Put it beside Popover.Content, in Popover.Root. It has its own enter and exit, thus it fades with the panel.",
 			"props": [
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class for the overlay."
+					"description": "The CSS class names of the overlay."
 				}
 			],
 			"dataAttributes": [
 				{
 					"name": "data-entering",
-					"description": "Present while the enter animation is running."
+					"description": "Present while the enter animation operates."
 				},
 				{
 					"name": "data-exiting",
-					"description": "Present while the exit animation is running."
+					"description": "Present while the exit animation operates."
 				},
 				{
 					"name": "data-popover-overlay",

@@ -15,7 +15,7 @@
 	 * a nested overlay would just stack a second dim layer, so callers place it at the root level.
 	 */
 	type MenuOverlayProps = {
-		/** CSS class for the overlay. */
+		/** The CSS class names of the overlay. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class'>;
 

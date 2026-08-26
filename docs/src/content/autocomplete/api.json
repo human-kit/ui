@@ -3,91 +3,91 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "State container for the autocomplete. Owns the search query, local filtering, and virtual focus, and wires the ARIA relationship between the input and the list.",
+			"description": "The container with the state. It holds the search text, the local filter, and the virtual focus. It also sets the ARIA relation between the input and the list.",
 			"props": [
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Stable ID used to generate internal ARIA IDs (recommended for SSR)."
+					"description": "A stable id, from which the component makes its internal ARIA ids. Give one on a server."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Disables all user interaction."
+					"description": "Stops all of the user interaction."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the input focusable while preventing query and selection changes."
+					"description": "Keeps the input focusable, but stops the changes of the search text and of the selection."
 				},
 				{
 					"name": "inputValue",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Current search query. Can be bound with bind:inputValue."
+					"description": "The search text. You can bind it with `bind:inputValue`."
 				},
 				{
 					"name": "defaultInputValue",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "Initial query for uncontrolled mode."
+					"description": "The search text at the start, for when the component controls the state."
 				},
 				{
 					"name": "filter",
 					"type": "AutocompleteFilter | null",
 					"required": false,
 					"default": "defaultAutocompleteFilter",
-					"description": "Local filter function. Defaults to a case-insensitive \"contains\" match.\nSet to `null` to disable local filtering (e.g. when filtering server-side)."
+					"description": "The local filter function. The default compares the text and ignores the letter case. Set it\nto `null` to stop the local filter, for example when a server sends the filtered results."
 				},
 				{
 					"name": "autoHighlight",
 					"type": "boolean",
 					"required": false,
 					"default": "true",
-					"description": "Automatically highlight the first matching item as the query changes."
+					"description": "Highlights the first item that agrees with the search text, each time that text changes."
 				},
 				{
 					"name": "onInputChange",
 					"type": "(value: string) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the search query changes."
+					"description": "The component calls it when the search text changes."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Composed autocomplete parts."
+					"description": "The autocomplete parts that you assemble."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class names for the root element."
+					"description": "The CSS class names of the root element."
 				},
 				{
 					"name": "aria-label",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label for the autocomplete group."
+					"description": "The accessible name of the autocomplete group."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of the element that labels the autocomplete group."
+					"description": "The id of the element that gives the autocomplete group its name."
 				}
 			],
 			"dataAttributes": [
@@ -99,35 +99,35 @@
 		},
 		{
 			"name": "Input",
-			"description": "Search input with role=\"searchbox\". Keeps DOM focus while arrow keys move a virtual focus through the list via aria-activedescendant.",
+			"description": "The search input, with role=\"searchbox\". It keeps the DOM focus while the arrow keys move a virtual focus through the list with aria-activedescendant.",
 			"props": [
 				{
 					"name": "aria-label",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label for the input."
+					"description": "The accessible name of the input."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "ID of element that labels this input."
+					"description": "The id of the element that gives this input its name."
 				},
 				{
 					"name": "aria-describedby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "ID of element that describes this input (e.g. usage instructions)."
+					"description": "The id of the element that describes this input, for example the instructions."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class names for the input element."
+					"description": "The CSS class names of the input element."
 				}
 			],
 			"dataAttributes": [
@@ -137,7 +137,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -155,203 +155,203 @@
 		},
 		{
 			"name": "List",
-			"description": "The always-visible listbox of filtered options. Accepts the same selection props as ListBox.Root (selectionMode, value, defaultValue, onChange).",
+			"description": "The listbox of filtered options, which the user always sees. It accepts the same selection props as ListBox.Root: selectionMode, value, defaultValue, and onChange.",
 			"props": [
 				{
 					"name": "items",
 					"type": "Iterable<T>",
 					"required": false,
 					"default": null,
-					"description": "Optional items for dynamic rendering."
+					"description": "The items, for a list that the component makes from an array."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[T]> | Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content of the list. Receives item in dynamic mode."
+					"description": "The content of the list. From an array of items, it receives one item."
 				},
 				{
 					"name": "selectionBehavior",
 					"type": "'toggle' | 'replace'",
 					"required": false,
 					"default": "'toggle'",
-					"description": "How selection behaves: 'toggle' allows deselection, 'replace' always selects."
+					"description": "The behavior of the selection: 'toggle' lets the user remove a selection, and 'replace' always\nselects."
 				},
 				{
 					"name": "getItemKey",
 					"type": "(item: T) => string | number",
 					"required": false,
 					"default": null,
-					"description": "Reads an item's key — the same value passed as `ListBox.Item`'s `id`.\n\nOnly needed together with `virtualizer`: a Shift range is otherwise measured over\nthe options in the DOM, which for a virtualized list is just the rendered window,\nso the range stops wherever the user happened to have scrolled."
+					"description": "Reads the key of an item. This is the same value as the `id` of `ListBox.Item`.\n\nYou need it only with `virtualizer`. Without it, a Shift range is measured over the options in\nthe DOM. In a virtualized list, those are only the rows near the viewport, thus the range\nstops at the scroll position of the user."
 				},
 				{
 					"name": "disabledKeys",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Keys of items that should be disabled and non-selectable."
+					"description": "The keys of the items that must be disabled. The user cannot select them."
 				},
 				{
 					"name": "selectionMode",
 					"type": "'single' | 'multiple'",
 					"required": false,
 					"default": "'single'",
-					"description": "Selection mode: 'single' allows one selection, 'multiple' allows many."
+					"description": "The selection mode: 'single' permits one selection, and 'multiple' permits more than one."
 				},
 				{
 					"name": "value",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Selected keys. Two-way by default — use `bind:value`."
+					"description": "The selected keys. By default it goes in the two directions: use `bind:value`."
 				},
 				{
 					"name": "defaultValue",
 					"type": "Iterable<string | number>",
 					"required": false,
 					"default": null,
-					"description": "Initial selection, for when `value` is not supplied."
+					"description": "The selection at the start, for when you give no `value`."
 				},
 				{
 					"name": "controlledValue",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `value` and\nonly reports through `onChange`, so the parent can reject a change by not flowing\nthe new selection back down. Off by default, because `bind:value` — the common\ncase — needs the write-back to work at all."
+					"description": "Give your own code full control of the selection. The component stops to write back to\n`value`, and it reports only through `onChange`. Thus the parent can refuse a change: the\nparent does not send the new selection down. The default is off, because `bind:value` is the\nusual case and it needs the write-back."
 				},
 				{
 					"name": "header",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Rows rendered inside the listbox above the items — an action row such as\n\"Create …\". Kept out of `children` because in dynamic mode that snippet is called\nonce per item.\n\nA virtualized list does not navigate into it: navigation there walks the item\narray, which this is not part of."
+					"description": "The rows in the listbox above the items, for example an action row such as \"Create …\". They\nare not in `children`, because from an array of items the component calls that snippet one\ntime for each item.\n\nIn a virtualized list, the keyboard does not go into these rows. There, the keys move through\nthe array of the items, and these rows are not in it."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class to apply to the listbox container."
+					"description": "The CSS class names of the listbox container."
 				},
 				{
 					"name": "aria-label",
 					"type": "string",
 					"required": false,
 					"default": "'Options'",
-					"description": "Accessible label for the listbox. Announced by screen readers."
+					"description": "The accessible name of the listbox. A screen reader announces it."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of a visible element that labels the listbox. Use instead of `aria-label`\n when the list already has a heading on screen."
+					"description": "The id of an element that the user sees, and that gives the listbox its name. Use it in place\nof `aria-label` when the list already has a heading."
 				},
 				{
 					"name": "onChange",
 					"type": "(value: Set<string | number>) => void",
 					"required": false,
 					"default": null,
-					"description": "Callback fired when the selection changes."
+					"description": "The component calls it when the selection changes."
 				},
 				{
 					"name": "loop",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether arrow-key navigation wraps from the last item to the first (and back)."
+					"description": "At the last item, the arrow keys move the focus to the first item, and at the first item, to\nthe last one."
 				},
 				{
 					"name": "typeahead",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether typing characters moves focus to the option whose text matches."
+					"description": "When the user types a character, the focus moves to the option whose text agrees with it."
 				},
 				{
 					"name": "virtualizer",
 					"type": "{ rowHeight?: number; overscan?: number }",
 					"required": false,
 					"default": null,
-					"description": "Renders only the rows near the viewport instead of all of them.\n\nOnly honoured together with `items`: the listbox has to own the loop to be able to\nslice it, so a list written as static children is never virtualized.\n\nRows must all be the same height — that assumption is what lets the scrollbar be\nsized without measuring every row. The height is measured from the first rendered\nrow unless `rowHeight` says otherwise, so a themed list needs no magic number.\n\nThe listbox element itself is the scroller: give it a max height and\n`overflow-y: auto`, as an unvirtualized long list would need anyway."
+					"description": "Makes only the rows near the viewport, and not all of the rows.\n\nThe component obeys it only with `items`. The listbox must control the loop to cut it, thus a\nlist written as static children is never virtualized.\n\nAll of the rows must have the same height. This is what lets the component calculate the\nscrollbar without a measurement of each row. The component measures the height from the first\nrow, but `rowHeight` replaces that measurement. Thus a list with your own styles needs no\nfixed number.\n\nThe listbox element is the element that scrolls. Give it a maximum height and `overflow-y:\nauto`. A long list without a virtualizer needs the same."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Item",
-			"description": "A selectable option inside the list. Matched against the query through its textValue and exposes selection and focus state through data attributes.",
+			"description": "An option in the list that the user can select. The filter compares its textValue with the search text. It shows its selection state and its focus state in data attributes.",
 			"props": [
 				{
 					"name": "id",
 					"type": "string | number",
 					"required": true,
 					"default": null,
-					"description": "Unique identifier for this item. Used for selection tracking."
+					"description": "The unique identifier of this item. The component uses it for the selection."
 				},
 				{
 					"name": "textValue",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Text value for typeahead search. If not provided, extracted from content."
+					"description": "The text for the typeahead. If you give none, the component reads it from the content."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether this item is disabled and non-selectable."
+					"description": "Disables this item. The user cannot select it."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": "''",
-					"description": "CSS class to apply to the item element."
+					"description": "The CSS class names of the item element."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content to render inside the item."
+					"description": "The content of the item."
 				},
 				{
 					"name": "pressed",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Override the visual pressed state. When provided, this value is used instead of internal press tracking."
+					"description": "Replaces the pressed state. With this prop, the component uses your value and not its own."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "ItemIndicator",
-			"description": "Visual indicator rendered inside an item while it is selected. Defaults to a checkmark icon.",
+			"description": "The mark in an item while the item is selected. The default is a check mark icon.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content to render when selected (defaults to a checkmark icon)."
+					"description": "The content while the item is selected. The default is a check mark icon."
 				},
 				{
 					"name": "forceMount",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Force the indicator to render regardless of selection state."
+					"description": "Keeps the indicator in the DOM, for each selection state."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class names for the indicator element."
+					"description": "The CSS class names of the indicator element."
 				}
 			],
 			"dataAttributes": [
@@ -363,21 +363,21 @@
 		},
 		{
 			"name": "Empty",
-			"description": "Empty state shown when no options match the current query.",
+			"description": "What the list shows when no option agrees with the search text.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content to show when empty (defaults to \"No results\")."
+					"description": "The content while the list is empty. The default is \"No results\"."
 				},
 				{
 					"name": "class",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "CSS class names for the empty-state element."
+					"description": "The CSS class names of the empty-state element."
 				}
 			],
 			"dataAttributes": [
@@ -389,14 +389,14 @@
 		},
 		{
 			"name": "Status",
-			"description": "Visually hidden aria-live=\"polite\" region that announces the number of visible results to screen readers.",
+			"description": "A hidden aria-live=\"polite\" region. It announces the number of the results to a screen reader.",
 			"props": [
 				{
 					"name": "formatMessage",
 					"type": "(count: number) => string",
 					"required": false,
 					"default": "(count: number) =>\n\t\t\tcount === 0 ? 'No results available' : `${count} result${count === 1 ? '' : 's'} available`",
-					"description": "Build the announced message from the visible item count."
+					"description": "Makes the announced message from the number of the items that the user sees."
 				}
 			],
 			"dataAttributes": []

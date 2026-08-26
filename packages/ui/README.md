@@ -1,9 +1,10 @@
 # @human-kit/ui
 
-Accessible, reusable UI components for **Svelte 5**.
+Accessible UI components for **Svelte 5**.
 
-Built with Svelte 5 runes, typed end to end, and shipped as native ESM with
-per-component subpath exports so bundlers only include what you import.
+The components use Svelte 5 runes and have full types. The package is native
+ESM, and each component has a subpath export, thus your bundler includes only
+the components that you import.
 
 **[Documentation and live demos → ui.human-kit.com](https://ui.human-kit.com)**
 
@@ -25,7 +26,7 @@ Svelte 5 is a peer dependency:
 
 ## Usage
 
-Import from the package root:
+Import from the root of the package:
 
 ```svelte
 <script lang="ts">
@@ -33,7 +34,7 @@ Import from the package root:
 </script>
 ```
 
-Or import a single component via its subpath for the leanest bundle:
+For the smallest bundle, import one component from its subpath:
 
 ```svelte
 <script lang="ts">
@@ -51,18 +52,18 @@ Or import a single component via its subpath for the leanest bundle:
 | Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`            |
 | Layout      | `Accordion`, `Collapsible`, `Tabs`, `Table`, `Tree`, `OverflowRow`            |
 | Actions     | `Button`                                                                      |
-| Utilities   | `LocaleProvider`, primitives, and the `cn` class helper                       |
+| Utilities   | `LocaleProvider`, primitives, and the `cn` class function                     |
 
-Each component is also available as a subpath export (for example
-`@human-kit/ui/calendar`).
+Each component also has a subpath export, for example `@human-kit/ui/calendar`.
 
-## Styling
+## Styles
 
-Components are headless: they ship no CSS and assume no framework. Each part
-takes a `class` and exposes its state as `data-*` attributes — `data-state`,
-`data-disabled`, `data-focus-visible`, `data-pressed` and so on — so you can
-style it with plain CSS, Tailwind, or anything else. Every component page in the
-docs lists its full data-attribute contract.
+The components are headless: they have no CSS, and they do not need a CSS
+framework. Each part accepts a `class` attribute. Each part also shows its state
+in `data-*` attributes, for example `data-state`, `data-disabled`,
+`data-focus-visible`, and `data-pressed`. Thus you can write the styles in plain
+CSS, in Tailwind, or in a different tool. Each component page in the
+documentation gives the full list of the data attributes.
 
 ```svelte
 <Button.Root class="rounded-md bg-black px-3 py-1.5 text-white data-[pressed]:opacity-80">
@@ -70,13 +71,14 @@ docs lists its full data-attribute contract.
 </Button.Root>
 ```
 
-The only runtime dependency is [`@floating-ui/dom`](https://floating-ui.com), and
-only the components that position something against an anchor use it.
+The library has one dependency at run time:
+[`@floating-ui/dom`](https://floating-ui.com). Only the components that put an
+element against an anchor use it.
 
 ## Requirements
 
 - Svelte `^5.0.0`
-- Node.js 20+
+- Node.js version 20 or later
 
 ## License
 

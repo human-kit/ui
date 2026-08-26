@@ -13,7 +13,7 @@
 	 * closed combobox would otherwise incorrectly announce "no results".
 	 */
 	type ComboBoxStatusProps = {
-		/** Build the announced message from the visible item count. */
+		/** Makes the announced message from the number of the items that the user sees. */
 		formatMessage?: (count: number) => string;
 	};
 

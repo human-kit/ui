@@ -26,10 +26,10 @@ export type TableColumnProps = {
 	minWidth?: number;
 	maxWidth?: number;
 	/**
-	 * Freezes the column against the horizontal scroll edge: `'left'` sticks it to
-	 * the start, `'right'` to the end. Multiple columns can pin to the same side —
-	 * they stack in document order and the table computes each one's offset from
-	 * the resolved widths of the columns already pinned ahead of it.
+	 * Keeps the column at an edge of the horizontal scroll: `'left'` at the start, and `'right'` at
+	 * the end. More than one column can go to the same side. They go in the sequence of the document.
+	 * The table calculates the position of each one from the widths of the columns already at that
+	 * side.
 	 */
 	pin?: TableColumnPin;
 	children?: Snippet;
@@ -120,14 +120,16 @@ export type TableFooterProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'ch
 export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> & {
 	selectionMode?: TableSelectionMode;
 	/**
-	 * How far the roving tab stop reaches into the body, defaulting to `'grid'`.
+	 * How far the roving tab stop goes into the body. The default is `'grid'`.
 	 *
-	 * Cell navigation is not free: every body cell registers itself and derives
-	 * its own focus state, and a virtualized table pays that again on every
-	 * scroll block. `'row'` keeps the body keyboard-reachable at one focus
-	 * target per row; `'none'` drops body focus altogether and should only be
-	 * used when nothing in the body is actionable. The header keeps its own
-	 * navigation — and with it sorting and resizing — in every mode.
+	 * The cell navigation has a cost. Each body cell registers itself and calculates its own focus
+	 * state. A virtualized table does this again for each block of rows that it makes while the user
+	 * scrolls.
+	 *
+	 * With `'row'`, the keyboard still reaches the body, at one focus target for each row. With
+	 * `'none'`, the body takes no focus. Use `'none'` only when nothing in the body does an action.
+	 * In each mode, the header keeps its own navigation, and with it the sort control and the width
+	 * control.
 	 */
 	keyboardNavigation?: TableKeyboardNavigation;
 	selectionBehavior?: TableSelectionBehavior;
@@ -142,16 +144,15 @@ export type TableRootProps = Omit<HTMLAttributes<HTMLTableElement>, 'children'> 
 	columnWidths?: Map<string, TableColumnWidth>;
 	defaultColumnWidths?: Iterable<readonly [string, TableColumnWidth]>;
 	/**
-	 * Width (in px) the table reserves through `min-width` during server
-	 * rendering, before its columns have registered their own widths.
+	 * The width that the table keeps with `min-width` on the server, in px, before the columns
+	 * register their own widths.
 	 *
-	 * On the server the `<table>` element is serialized before the column
-	 * children run their registration, so the table cannot know its own
-	 * minimum width yet and renders at the container width. On hydration the
-	 * resolved column widths can push the table wider, producing a layout
-	 * shift. Set this to the sum of the columns' resolved widths to reserve
-	 * that space up-front and avoid the jump. Ignored once the real columns
-	 * register on the client.
+	 * On the server, the `<table>` element goes to the output before the column children register.
+	 * Thus the table does not know its own minimum width, and it takes the width of its container. At
+	 * the hydration, the column widths can make the table wider, and the layout moves.
+	 *
+	 * Set this prop to the sum of the column widths to keep that space from the start. On the client,
+	 * the component ignores it after the columns register.
 	 */
 	ssrMinTableWidth?: number;
 	disabledKeys?: Iterable<TableSelectionKey>;

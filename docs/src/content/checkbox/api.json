@@ -3,119 +3,119 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The checkbox control. Renders a span with role=\"checkbox\" and keeps a hidden checkbox input in sync for form integration.",
+			"description": "The checkbox control. It makes a span with role=\"checkbox\", and it keeps a hidden checkbox input correct for the form.",
 			"props": [
 				{
 					"name": "id",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the hidden input so `label[for]` can target the checkbox. Auto-generated when omitted."
+					"description": "The id of the hidden input, thus a `label[for]` element can point at the checkbox. If you give none, the component makes one."
 				},
 				{
 					"name": "element",
 					"type": "HTMLSpanElement | null",
 					"required": false,
 					"default": null,
-					"description": "Bindable reference to the rendered root element."
+					"description": "A bindable reference to the root element."
 				},
 				{
 					"name": "name",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Name submitted with the form when the checkbox is checked."
+					"description": "The name that the form submits while the checkbox is checked."
 				},
 				{
 					"name": "value",
 					"type": "string",
 					"required": false,
 					"default": "'on'",
-					"description": "Value submitted with the form when the checkbox is checked. Does not affect the visual state."
+					"description": "The value that the form submits while the checkbox is checked. It does not change the visual state."
 				},
 				{
 					"name": "form",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Associates the hidden input with a form by id."
+					"description": "The id of the form of the hidden input."
 				},
 				{
 					"name": "checked",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Checked state. Two-way by default — use `bind:checked`."
+					"description": "The checked state. By default it goes in the two directions: use `bind:checked`."
 				},
 				{
 					"name": "defaultChecked",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial checked state, for when `checked` is not supplied."
+					"description": "The checked state at the start, for when you give no `checked`."
 				},
 				{
 					"name": "controlledChecked",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled `checked`: the component stops writing back to the prop\nand only reports through `onCheckedChange`, so the parent can reject a change by\nnot flowing the new value back down. Off by default, because `bind:checked` —\nthe common case — needs the write-back to work at all."
+					"description": "Give your own code full control of `checked`. The component stops to write back to the prop,\nand it reports only through `onCheckedChange`. Thus the parent can refuse a change: the parent\ndoes not send the new value down. The default is off, because `bind:checked` is the usual case\nand it needs the write-back."
 				},
 				{
 					"name": "indeterminate",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Indeterminate state. Two-way by default — use `bind:indeterminate`."
+					"description": "The indeterminate state. By default it goes in the two directions: use `bind:indeterminate`."
 				},
 				{
 					"name": "defaultIndeterminate",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial indeterminate state, for when `indeterminate` is not supplied."
+					"description": "The indeterminate state at the start, for when you give no `indeterminate`."
 				},
 				{
 					"name": "controlledIndeterminate",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled `indeterminate`. See `controlledChecked`."
+					"description": "Give your own code full control of `indeterminate`. Read `controlledChecked`."
 				},
 				{
 					"name": "onCheckedChange",
 					"type": "(checked: boolean) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the user changes the checked state."
+					"description": "The component calls it when the user changes the checked state."
 				},
 				{
 					"name": "onIndeterminateChange",
 					"type": "(indeterminate: boolean) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the indeterminate state changes through user interaction. The first toggle from indeterminate resolves to checked."
+					"description": "The component calls it when the user changes the indeterminate state. From the indeterminate state, the first user action makes the checkbox checked."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Removes the checkbox from interaction and focus order."
+					"description": "Stops the interaction with the checkbox and removes it from the focus order."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the checkbox focusable while preventing state changes."
+					"description": "Keeps the checkbox focusable, but stops the changes of the state."
 				},
 				{
 					"name": "required",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the hidden input as required for form validation."
+					"description": "Makes the hidden input required for the form validation."
 				},
 				{
 					"name": "children",
@@ -136,21 +136,21 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label when no visible label is associated."
+					"description": "The accessible name, for when the user sees no name."
 				},
 				{
 					"name": "aria-labelledby",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id of the element that labels the checkbox."
+					"description": "The id of the element that gives the checkbox its name."
 				},
 				{
 					"name": "tabindex",
 					"type": "number",
 					"required": false,
 					"default": null,
-					"description": "Overrides the default tab order."
+					"description": "Replaces the default position in the tab order."
 				}
 			],
 			"dataAttributes": [
@@ -172,7 +172,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -180,11 +180,11 @@
 				},
 				{
 					"name": "data-indeterminate",
-					"description": "Present while the checkbox is indeterminate (mixed)."
+					"description": "Present while the checkbox is indeterminate."
 				},
 				{
 					"name": "data-pressed",
-					"description": "Present while the checkbox is actively pressed via pointer or keyboard."
+					"description": "Present while a pointer or the keyboard presses the checkbox."
 				},
 				{
 					"name": "data-readonly",
@@ -202,7 +202,7 @@
 		},
 		{
 			"name": "Indicator",
-			"description": "The visual check or mixed mark. Only mounted while the checkbox is checked or indeterminate unless `forceMount` is set.",
+			"description": "The check mark or the mixed mark. It is in the DOM only while the checkbox is checked or indeterminate, but `forceMount` keeps it there.",
 			"props": [
 				{
 					"name": "forceMount",
@@ -216,7 +216,7 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the indicator, typically an icon."
+					"description": "The content of the indicator, usually an icon."
 				},
 				{
 					"name": "class",
@@ -241,7 +241,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -249,11 +249,11 @@
 				},
 				{
 					"name": "data-indeterminate",
-					"description": "Present while the checkbox is indeterminate (mixed)."
+					"description": "Present while the checkbox is indeterminate."
 				},
 				{
 					"name": "data-pressed",
-					"description": "Present while the checkbox is actively pressed via pointer or keyboard."
+					"description": "Present while a pointer or the keyboard presses the checkbox."
 				},
 				{
 					"name": "data-readonly",

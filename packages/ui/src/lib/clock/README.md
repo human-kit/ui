@@ -2,7 +2,7 @@
 
 ## Description
 
-`Clock` provides a standalone wheel-based time picker with spinbutton columns for hour, minute, second, and day-period selection. It can be used independently or composed inside `TimePicker` via `TimePicker.Clock`.
+`Clock` is a time picker with wheels. Each wheel is a spinbutton column for the hour, the minute, the second, or the day period. Use it alone, or put it in a `TimePicker` with `TimePicker.Clock`.
 
 ## Anatomy
 
@@ -24,7 +24,7 @@
 </Clock.Root>
 ```
 
-Default columns are rendered automatically when no `column` snippet is provided:
+If you give no `column` snippet, the component makes the default columns:
 
 ```svelte
 <Clock.Root value="09:00" granularity="minute" hourCycle={24} />
@@ -69,7 +69,7 @@ Visible columns are resolved automatically in stable order: `hour → minute? �
 
 ## Notes
 
-- `Clock.WheelColumn` needs an explicit height (it is an `overflow-y: auto` scroll container). Without a height class it falls back to the Tailwind utility `h-55` (`13.75rem`), which only takes effect in Tailwind projects — non-Tailwind consumers must set the height themselves (see the WheelColumn README).
+- `Clock.WheelColumn` needs an explicit height (it is an `overflow-y: auto` scroll container). Without a height class, it uses the Tailwind utility `h-55` (`13.75rem`). That class works only in a Tailwind project. Without Tailwind, set the height yourself. Read the WheelColumn README.
 - Locale is read from `LocaleProvider` when available.
 - Internally, values are normalized to 24-hour representation; 12-hour rendering only affects UI segments.
 - `granularity='hour'` emits `HH:00` values.

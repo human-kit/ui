@@ -25,7 +25,7 @@
 	 * every desktop where this does not apply anyway) the provider is inert.
 	 */
 	type DrawerVirtualKeyboardProviderProps = {
-		/** The subtree the keyboard inset is published to. */
+		/** The elements below it, which receive the keyboard inset. */
 		children?: Snippet;
 	};
 

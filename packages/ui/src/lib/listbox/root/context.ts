@@ -138,7 +138,7 @@ export type CreateListBoxContextOptions = {
 	loop?: boolean;
 	/** Whether typing characters moves focus to a matching item. Default false. */
 	typeahead?: boolean;
-	/** Initial selection for uncontrolled mode. */
+	/** The selection at the start, for when the component controls the state. */
 	initialSelection?: Set<string | number>;
 	/** Callback fired when selection changes. */
 	onSelectionChange?: (selection: Set<string | number>) => void;

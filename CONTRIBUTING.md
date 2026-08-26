@@ -66,6 +66,52 @@ publishes to npm automatically once merged to `main`.
 - Keep components accessible (keyboard navigation, ARIA, focus management).
 - Formatting is handled by Prettier; do not hand-format.
 
+## Documentation style
+
+Every sentence a reader sees is written in **ASD-STE100** (Simplified Technical
+English). That is the docs site (`docs/src/content/**`), the landing page copy,
+both top-level READMEs, all 107 part READMEs under `packages/ui/src/lib/**`, and
+the JSDoc on every prop — the JSDoc ships in the `.d.ts` files, so it is what an
+editor shows on hover. It also covers the prose you write **about** the work: PR
+titles and bodies, and comments on issues and PRs.
+
+The rules:
+
+- Active voice, simple tenses (present, past, future), no `-ing` forms unless
+  the word is a technical name.
+- One idea per sentence. At most 20 words in an instruction, 25 in a
+  description, and 6 sentences in a paragraph.
+- Keep the articles. `Put the items in the group`, never `Put items in group`.
+- The same word for the same thing every time — no synonyms for variety. One
+  verb per concept: a component **makes** an element, **holds** state,
+  **controls** behaviour, **shows** state in a data attribute, **sets** an
+  attribute. Not renders/owns/manages/exposes/wires.
+- Vertical lists for anything with more than two conditions.
+- No metaphors, no idioms, no jargon that the page does not define.
+- No contractions.
+
+`pnpm run lint` runs `scripts/check-ste.mjs`, and CI runs `pnpm run lint`, so
+prose that breaks the mechanical rules cannot merge. The check is not a proof of
+conformance: the ASD-STE100 dictionary is licensed and is not in this repo, so
+the script guards sentence length and a deny-list of words that were in these
+files before the rewrite. Read the header of that file before you add or remove
+an entry.
+
+Three things are deliberately **not** in STE:
+
+- The frontmatter `description` of a docs page. It is the meta description in
+  search results, and STE forbids most of what makes a snippet read well.
+- Code samples, and the demo sources under `docs/src/content/*/demos`.
+- Commit messages, which stay as they are — they are written for the history,
+  not for a reader of the product.
+
+Two files hold the tools for a bulk rewrite: `scripts/ste-api-dump.mjs` prints
+every distinct description with where it is written, and
+`scripts/ste-api-apply.mjs` applies a `[{ from, to }]` list to both the JSDoc and
+`api.json`. A description of a data attribute or of a part lives **only** in
+`docs/src/content/<component>/api.json`; `hk-extract-api` keeps it and fills in
+only an empty one.
+
 ## TODO files
 
 Every `*TODO.md` in the repo uses one checklist format, validated by

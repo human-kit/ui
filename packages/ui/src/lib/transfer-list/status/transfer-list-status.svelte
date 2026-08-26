@@ -13,7 +13,7 @@
 	 * many went or where.
 	 */
 	type TransferListStatusProps = {
-		/** Build the announced message from the completed move. */
+		/** Makes the announced message from the move. */
 		formatMessage?: (details: TransferListMoveDetails, label: string) => string;
 	};
 

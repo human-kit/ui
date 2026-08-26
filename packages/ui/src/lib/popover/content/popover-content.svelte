@@ -29,34 +29,39 @@
 	 * Can be used inside Popover.Root (reads context) or standalone (props required).
 	 */
 	type PopoverContentProps = {
-		/** Offset along the main axis from the anchor element. */
+		/** The distance from the anchor element, on the main axis. */
 		offset?: number;
-		/** Placement relative to the anchor element. */
+		/** The position against the anchor element. */
 		placement?: ExtendedPlacement;
-		/** Whether to flip when there's insufficient space. */
+		/** Moves the panel to the opposite side when the space is not sufficient. */
 		shouldFlip?: boolean;
-		/** Boundary element for positioning constraints. */
+		/** The element that gives the limits of the position. */
 		boundaryElement?: Element | null;
-		/** Content of the popover. */
+		/** The content of the popover. */
 		children?: Snippet;
-		/** CSS class for the popover container. */
+		/** The CSS class names of the popover container. */
 		class?: string;
-		/** Whether the popover is non-modal (allows outside interaction, no focus trap, no scroll lock). */
+		/**
+		 * Makes the popover non-modal. The user can then operate the page, the focus does not stay in
+		 * the panel, and the page scrolls.
+		 */
 		nonModal?: boolean;
-		/** Whether clicking outside the popover should close it. */
+		/** Closes the popover when the user clicks outside it. */
 		shouldCloseOnInteractOutside?: boolean;
-		/** Whether pressing Escape should close the popover. */
+		/** Closes the popover when the user pushes the `Escape` key. */
 		shouldCloseOnEscape?: boolean;
-		/** Whether losing focus (blur) should close the popover. Defaults to true for non-modal popovers. */
+		/**
+		 * Closes the popover when the focus goes out of it. The default is true for a non-modal popover.
+		 */
 		shouldCloseOnBlur?: boolean;
-		/** Element or selector to focus first when modal trap activates. */
+		/** The element, or the selector of the element, that gets the focus first in the modal mode. */
 		initialFocus?: FocusTrapOptions['initialFocus'];
 		// Standalone mode props (used when not inside Popover.Root)
-		/** Controlled open state (standalone mode). */
+		/** The open state, when you use the part alone. */
 		open?: boolean;
-		/** Reference to the trigger element (standalone mode). */
+		/** The reference to the trigger element, when you use the part alone. */
 		triggerRef?: HTMLElement | null;
-		/** Callback when open state changes (standalone mode). */
+		/** The component calls it when the open state changes, when you use the part alone. */
 		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 

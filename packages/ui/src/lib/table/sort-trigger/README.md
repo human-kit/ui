@@ -13,7 +13,7 @@ Public prop type: `TableSortTriggerProps`
 
 | Prop           | Type                                                | Default     | Description                                                                       |
 | -------------- | --------------------------------------------------- | ----------- | --------------------------------------------------------------------------------- |
-| `children`     | `Snippet<[TableSortTriggerRenderState]> \| Snippet` | `undefined` | Button content. The snippet receives the current `sortDirection`.                 |
+| `children`     | `Snippet<[TableSortTriggerRenderState]> \| Snippet` | `undefined` | The content of the button. The snippet receives the current `sortDirection`.      |
 | `class`        | `string`                                            | `''`        | CSS class names for the button.                                                   |
 | `...restProps` | `HTMLButtonAttributes`                              | `-`         | Additional native button attributes, excluding reserved trigger button semantics. |
 

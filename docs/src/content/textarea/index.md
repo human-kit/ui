@@ -12,13 +12,13 @@ description: A headless native multiline text input with modality-aware focus st
 
 # TextArea
 
-A headless native multiline text input with modality-aware focus state, RAC-style disabled and read-only booleans, validation data attributes, and optional auto-resize behavior.
+This is a headless native text input with more than one line. It has a modality-aware focus state, the `disabled` and `readonly` booleans of React Aria Components, validation data attributes, and an optional automatic height.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`TextArea` is a single-part component that renders a native `<textarea>`. All native textarea attributes pass straight through.
+`TextArea` has one part. The part makes a native `<textarea>` element. Each native textarea attribute goes directly to that element.
 
 ```svelte
 <script>
@@ -30,25 +30,25 @@ A headless native multiline text input with modality-aware focus state, RAC-styl
 
 ## States
 
-Interaction and validation state is exposed through `data-*` attributes — `data-focused`, `data-focus-visible`, `data-hovered`, `data-disabled`, `data-readonly`, `data-invalid`, `data-required`, and `data-autoresize` — so all styling is done with plain CSS or utility classes.
+The component shows the interaction state and the validation state in `data-*` attributes: `data-focused`, `data-focus-visible`, `data-hovered`, `data-disabled`, `data-readonly`, `data-invalid`, `data-required`, and `data-autoresize`. Thus you write all of the styles in plain CSS or in utility classes.
 
-## Auto-resize
+## Automatic height
 
-Enable `autoResize` when the textarea should grow with content, and bound the height with `minRows` and `maxRows`. Leave it off to keep native `rows` and manual resize behavior.
+Set `autoResize` when the textarea must become larger with the content. Use `minRows` and `maxRows` to set the limits of the height. If you do not set `autoResize`, the native `rows` attribute and the manual resize control stay in operation.
 
 ## Usage guidelines
 
-- Use native textarea props like `name`, `value`, `placeholder`, `rows`, `cols`, `maxlength`, and `wrap` directly on `TextArea`.
-- Use `disabled`, `readonly`, `invalid`, and `required` to control validation and interaction state while keeping native behavior.
-- Enable `autoResize` when the textarea should grow with content. Use `minRows` and `maxRows` to bound the height.
-- Style state with `data-focused`, `data-focus-visible`, `data-hovered`, `data-disabled`, `data-readonly`, `data-invalid`, `data-required`, and `data-autoresize`.
+- Put the native textarea props (`name`, `value`, `placeholder`, `rows`, `cols`, `maxlength`, and `wrap`) directly on `TextArea`.
+- Use `disabled`, `readonly`, `invalid`, and `required` to control the validation state and the interaction state. The native behavior stays correct.
+- Set `autoResize` when the textarea must become larger with the content. Use `minRows` and `maxRows` to set the limits of the height.
+- Write the styles for the state with `data-focused`, `data-focus-visible`, `data-hovered`, `data-disabled`, `data-readonly`, `data-invalid`, `data-required`, and `data-autoresize`.
 
 ## Accessibility
 
-- `TextArea` renders a native `<textarea>` and supports `bind:value`.
-- `data-focus-visible` follows the shared modality contract and only appears for keyboard or virtual focus.
-- `invalid` maps to `aria-invalid`, `readonly` maps to `readonly` and `aria-readonly`, and `required` maps to `required` and `aria-required`.
-- Native textarea semantics already expose multiline textbox behavior, so no manual `aria-multiline` is needed.
+- `TextArea` makes a native `<textarea>` element, and it accepts `bind:value`.
+- `data-focus-visible` obeys the shared modality contract. The component shows it only for a keyboard focus or a virtual focus.
+- The `invalid` prop sets `aria-invalid`. The `readonly` prop sets `readonly` and `aria-readonly`. The `required` prop sets `required` and `aria-required`.
+- The native textarea semantics already give the multiline textbox behavior. Thus you do not set `aria-multiline`.
 
 ## API reference
 

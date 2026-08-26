@@ -10,14 +10,13 @@
 	 * Must be used inside ComboBox.Tag.
 	 */
 	type ComboBoxTagRemoveProps = {
-		/** Content of the button (defaults to X icon) */
+		/** The content of the button. The default is an X icon. */
 		children?: Snippet;
 		class?: string;
 		/**
-		 * Accessible name of the button. Defaults to `Remove <tag label>`; override it to
-		 * translate the verb, or to name the tag by something other than its combobox
-		 * label (which falls back to the raw value when the selection was set
-		 * programmatically and the option never rendered).
+		 * The accessible name of the button. The default is `Remove <tag label>`. Replace it to
+		 * translate the verb, or to name the tag with a different text. The default label is the raw
+		 * value when your code sets the selection and the option never goes into the DOM.
 		 */
 		'aria-label'?: string;
 	} & Omit<HTMLButtonAttributes, 'class' | 'children' | 'type' | 'onclick' | 'aria-label'>;

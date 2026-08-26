@@ -10,10 +10,10 @@
 - Use controlled props (`value`, `inputValue`, `open`) only when external state management is needed.
 - Use `pending` on `ComboBox.Root` to expose async loading state on the root while keeping the rest of the composition under your control.
 - Prefer `ComboBox.Trigger` in new code. `ComboBox.Button` remains available as a compatibility alias.
-- Use `ComboBox.Clear` when you want a built-in clear affordance that resets both the input and selected value.
+- Use `ComboBox.Clear` when you want a control that removes the input text and the selected value together.
 - Provide a stable `id` in SSR environments to keep ARIA ids deterministic.
 - Render `ComboBox.Tags`, `ComboBox.Tag`, and `ComboBox.TagRemove` in multiple mode to expose selected values.
-- Render `ComboBox.Status` to announce the number of visible results to screen readers as the filter changes. It is a visually-hidden `aria-live="polite"` region; the default message is localized (via `LocaleProvider`) and can be replaced with the `formatMessage` prop. It only announces while the popover is open.
+- Use `ComboBox.Status` to announce the number of the results to a screen reader when the filter changes. It is a hidden `aria-live="polite"` region. `LocaleProvider` localizes the default message, and the `formatMessage` prop replaces it. The region announces only while the popover is open.
 - Choose `trigger="focus"`, `trigger="input"`, or `trigger="press"` based on your opening behavior requirements.
 
 ## Anatomy

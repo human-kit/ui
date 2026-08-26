@@ -22,37 +22,46 @@
 	 * Props for the ListBox.Item component.
 	 */
 	type ListBoxItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'id' | 'children'> & {
-		/** Unique identifier for this item. Used for selection tracking. */
+		/** The unique identifier of this item. The component uses it for the selection. */
 		id: string | number;
-		/** Text value for typeahead search. If not provided, extracted from content. */
+		/** The text for the typeahead. If you give none, the component reads it from the content. */
 		textValue?: string;
-		/** Whether this item is disabled and non-selectable. */
+		/** Disables this item. The user cannot select it. */
 		disabled?: boolean;
-		/** CSS class to apply to the item element. */
+		/** The CSS class names of the item element. */
 		class?: string;
-		/** Content to render inside the item. */
+		/** The content of the item. */
 		children?: Snippet;
 
 		// Override props for composition (e.g., ComboBox.Item wrapping ListBox.Item)
-		/** Override the generated ID. Useful for components with custom ID requirements. */
+		/** Replaces the id that the component makes. Use it when your component needs its own id. */
 		customId?: string;
-		/** Disable real DOM focus handling. When true, no tabindex is set and focus events are skipped. */
+		/**
+		 * Stops the DOM focus control. With `true`, the component sets no tabindex and it ignores the
+		 * focus events.
+		 */
 		disableFocusHandling?: boolean;
-		/** Override the focused state. When provided, this value is used instead of internal focus tracking. */
+		/** Replaces the focused state. With this prop, the component uses your value and not its own. */
 		isFocusedOverride?: boolean;
-		/** Override the focus-visible presentation state. */
+		/** Replaces the focus-visible state. */
 		isFocusVisibleOverride?: boolean;
-		/** Override the select behavior. When provided, called instead of default listbox selection. */
+		/**
+		 * Replaces the selection behavior. With this prop, the component calls it and does not do its
+		 * own selection.
+		 */
 		onItemSelect?: (id: string | number, label: string) => void;
-		/** Callback with resolved text value when mounted (from prop or rendered content). */
+		/**
+		 * The component calls it with the text value when the item goes into the DOM. That text comes
+		 * from the prop or from the content.
+		 */
 		onResolvedTextValue?: (label: string) => void;
-		/** Callback when pointer hover should move logical focus to this item. */
+		/** The component calls it when the pointer must move the logical focus to this item. */
 		onItemHoverStart?: (id: string | number, label: string) => void;
-		/** Whether to scroll this item into view when focused. Useful for virtual focus patterns. */
+		/** Scrolls this item into the viewport when it gets the focus. Use it with a virtual focus. */
 		scrollOnFocus?: boolean;
-		/** Additional disabled state from parent. */
+		/** A second disabled state, from the parent. */
 		isParentDisabled?: boolean;
-		/** Override the visual pressed state. When provided, this value is used instead of internal press tracking. */
+		/** Replaces the pressed state. With this prop, the component uses your value and not its own. */
 		pressed?: boolean;
 	};
 

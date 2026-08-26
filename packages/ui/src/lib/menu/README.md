@@ -12,8 +12,7 @@ primitives as `Popover`.
 - Use `Menu.Root` to share open state and the trigger reference.
 - Use `Menu.Trigger` as the opener button. `ArrowDown`/`Enter`/`Space` open the menu and focus the
   first item; `ArrowUp` opens and focuses the last item.
-- Use `Menu.ContextTrigger` instead of `Menu.Trigger` to open the menu from a surface rather than
-  a button: right click, long press on touch, or `Shift+F10` / the `ContextMenu` key.
+- Use `Menu.ContextTrigger` in place of `Menu.Trigger` to open the menu from a surface, and not from a button. It opens from a right click, a long press, the `Shift+F10` keys, or the `ContextMenu` key.
 - Use `Menu.Content` inside `Menu.Root`. It renders the `role="menu"` panel in a portal and
   positions it against the trigger (default placement `bottom-start`).
 - Use `Menu.Item` for actions. Provide `onAction`, and optionally `disabled`, `closeOnSelect`, or
@@ -31,9 +30,7 @@ primitives as `Popover`.
   typed text.
 - Escape closes the current (topmost) menu and returns focus to its trigger. `Tab` and outside
   interaction close the whole menu chain. Within a submenu, `ArrowLeft` closes just that level.
-- Submenus use a "safe triangle" pointer intent: while the pointer is moving diagonally toward an
-  open submenu, hovering the sibling items it passes over does not close the submenu for a short
-  grace period, so the user can reach it without the submenu collapsing mid-path.
+- A submenu uses a safe triangle for the pointer. While the pointer moves at an angle to the open submenu, the items that the pointer goes over do not close it. This continues for a short time. Thus the user gets to the submenu, and the submenu stays open.
 
 ## Context menus
 
@@ -41,14 +38,10 @@ primitives as `Popover`.
 arbitrary — sometimes interactive — content. It opens the menu three ways, and each anchors the
 panel differently:
 
-- **Right click** — anchored at the pointer, flush against it (`Menu.Content` drops its default
-  `offset` to `0` for a context menu), unfolding down and to the right like a native one. Right
+- A right click puts the menu at the pointer, against it. For a context menu, `Menu.Content` makes its default `offset` `0`. The panel opens down and to the right, like a native menu. Right
   clicking again re-anchors the open menu instead of closing and reopening it.
 - **Long press** on touch or pen — anchored at the finger. It is what makes the menu reachable at
-  all on a phone, where `contextmenu` is unreliable. The action suppresses the `click` and
-  `contextmenu` the platform emits for the same gesture, and the surface sets
-  `-webkit-touch-callout: none; user-select: none` inline so iOS raises the menu instead of the
-  text callout. Turn either off with `longPress={false}` / `preventTouchCallout={false}`.
+  all on a phone, where `contextmenu` is unreliable. The action stops the `click` event and the `contextmenu` event of the same gesture. The surface also sets `-webkit-touch-callout: none; user-select: none` in its style attribute. Thus iOS shows the menu and not the text callout. Turn either off with `longPress={false}` / `preventTouchCallout={false}`.
 - **`Shift+F10` or the `ContextMenu` key** — anchored to the surface itself, with the first item
   focused. There is no pointer involved, so reusing the last cursor position would put the panel
   somewhere the keyboard user never pointed at.
@@ -57,9 +50,7 @@ A left press anywhere — including on the surface itself — dismisses it, like
 
 ### Accessibility
 
-The surface is a tab stop by default (`tabindex={0}`) so a keyboard user can reach it; pass
-`tabindex={-1}` when it lives inside a composite that already manages focus with a roving
-tabindex, such as a table or a tree.
+By default, the surface is a tab stop (`tabindex={0}`), thus a keyboard user can go to it. Give `tabindex={-1}` when the surface is in a component that already controls the focus with a roving tabindex, for example a table or a tree.
 
 It carries `aria-keyshortcuts="Shift+F10"` and nothing else. `aria-haspopup` and `aria-expanded`
 are **not** global ARIA properties: on a generic element they would be invalid, so the component
@@ -74,7 +65,7 @@ actions elsewhere in the UI.
 - `onOpenChange(open, details)`
 - `details.reason`: `trigger-press | imperative-action | none | escape-key | outside-press | focus-out | item-select`
 - `details.event?`: native event that triggered the change when available
-- `details.cancel()`: prevents the open-state transition
+- `details.cancel()`: stops the change of the open state
 - `details.isCanceled`: reflects cancellation state inside the callback
 
 ## Anatomy

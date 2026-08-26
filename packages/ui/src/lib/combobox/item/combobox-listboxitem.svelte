@@ -31,9 +31,11 @@
 		| 'scrollOnFocus'
 		| 'isParentDisabled'
 	> & {
-		/** Called when this item is activated as an action instead of selected. */
+		/**
+		 * The component calls it when the user activates this item as an action, and does not select it.
+		 */
 		onAction?: ComboBoxItemActionHandler;
-		/** Whether to close the popover after running onAction. */
+		/** Closes the popover after the `onAction` function runs. */
 		closeOnAction?: boolean;
 	};
 

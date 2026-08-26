@@ -46,14 +46,14 @@ All public Tree part prop types are exported from the tree barrel, including `Tr
 - Use `defaultExpandedKeys` for uncontrolled initial expansion.
 - Use `selectedKeys` / `onSelectionChange` for controlled selection.
 - Use `defaultSelectedKeys` for uncontrolled initial selection.
-- Keys are normalized to strings internally: numeric item ids and string keys (or vice versa) refer to the same node, and the key sets emitted by `onExpandedKeysChange` / `onSelectionChange` contain the string form.
+- In the component, each key is a string. Thus a numeric item id and a string key point at the same node. The key sets of `onExpandedKeysChange` and `onSelectionChange` hold the string form.
 - Use `selectionPropagation="none"` for flat RAC-style selection where ancestors stay unchecked unless explicitly selected, or `selectionPropagation="descendants"` to propagate selection through a subtree.
 - Use `Tree.Section` and `Tree.Header` to group related top-level items; when a section does not render a header, provide `aria-label` on the section.
 - Use `Tree.Item` for every node, regardless of whether it is currently a branch or a leaf.
 - Place nested descendants inside `Tree.Children`; the presence of `Tree.Children` is what makes the parent expandible on the first render and during SSR.
 - Put the interactive parts (`Tree.Trigger`, `Tree.Checkbox`, `Tree.Label`, and any custom content) directly inside `Tree.Item`.
-- Use `Tree.Trigger` for explicit branch expansion affordances and `Tree.Checkbox` / `Tree.CheckboxIndicator` for explicit selection affordances.
-- `Tree.Item` is the real `treeitem` surface. Focus, hover, selection, and pressed states are exposed on the item itself.
+- Use `Tree.Trigger` as the control that expands a node. Use `Tree.Checkbox` and `Tree.CheckboxIndicator` as the controls that select a node.
+- `Tree.Item` is the true `treeitem` element. It shows the focus, hover, selection, and pressed states on the item.
 - Collapsed descendants are omitted from the rendered tree DOM while their structural state remains in the internal collection.
 
 ## Accessibility

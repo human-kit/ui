@@ -17,42 +17,45 @@
 	 * free — items land in the order they were moved.
 	 */
 	type TransferListRootProps = {
-		/** The whole collection, in the order the left-hand list shows it. */
+		/** The full collection, in the sequence of the left list. */
 		items?: Iterable<T>;
-		/** Identity of an item. Defaults to its `id` field. */
+		/** The identity of an item. The default is its `id` field. */
 		getKey?: (item: T) => TransferListKey;
-		/** Keys on the right, in order. Two-way by default — use `bind:value`. */
+		/**
+		 * The keys at the right side, in their sequence. By default it goes in the two directions: use
+		 * `bind:value`.
+		 */
 		value?: TransferListKey[];
-		/** Initial right-hand keys, for when `value` is not supplied. */
+		/** The keys at the right side at the start, for when you give no `value`. */
 		defaultValue?: TransferListKey[];
 		/**
-		 * Opt into fully controlled state: the component stops writing back to `value` and
-		 * only reports through `onChange`, so the parent can reject a move by not flowing
-		 * the new value back down. Off by default, because `bind:value` — the common case —
-		 * needs the write-back to work at all.
+		 * Give your own code full control of the state. The component stops to write back to `value`,
+		 * and it reports only through `onChange`. Thus the parent can refuse a move: the parent does not
+		 * send the new value down. The default is off, because `bind:value` is the usual case and it
+		 * needs the write-back.
 		 */
 		controlledValue?: boolean;
-		/** Called after a move, with the new value and what moved. */
+		/** The component calls it after a move, with the new value and with the items that moved. */
 		onChange?: (value: TransferListKey[], details: TransferListMoveDetails) => void;
-		/** Keys that cannot be moved off the side they are on. */
+		/** The keys of the items that stay at their side. */
 		disabledKeys?: Iterable<TransferListKey>;
 		/**
-		 * Name for the hidden inputs that carry `value`, so the field submits with the form
-		 * without any wiring. One input per key, in order; nothing is rendered when the right
-		 * is empty, which is how a multi-value field behaves natively.
+		 * The name of the hidden inputs that hold `value`. Thus the field submits with the form and
+		 * needs no other code. The component makes one input for each key, in their sequence. If the
+		 * right list is empty, it makes no input, and this is the behavior of a native field with more
+		 * than one value.
 		 */
 		name?: string;
 		/**
-		 * Whether `Ctrl`/`Cmd`+`Enter` inside a list sends its selection to the other one.
-		 *
-		 * Each list has exactly one destination, so the shortcut needs no direction — which
-		 * also means it stays correct when the layout is mirrored. Turn it off if it collides
-		 * with something in the surrounding app.
+		 * Lets `Ctrl`+`Enter` or `Cmd`+`Enter` in a list move its selection to the other list. Each list
+		 * has one destination, thus the shortcut needs no direction. It also stays correct when the
+		 * layout is a mirror image. Set it to `false` when it is the same as a shortcut of your
+		 * application.
 		 */
 		moveShortcut?: boolean;
-		/** CSS class for the wrapper element. */
+		/** The CSS class names of the container element. */
 		class?: string;
-		/** The two lists, the move buttons, and anything else the layout needs. */
+		/** The two lists, the move buttons, and each other element of the layout. */
 		children?: Snippet;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 

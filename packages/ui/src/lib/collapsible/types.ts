@@ -5,15 +5,15 @@ import type { CollapsibleContext } from './root/context.js';
 export type { CollapsibleContext } from './root/context.js';
 
 export type CollapsibleRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
-	/** Open state. Two-way by default — use `bind:open`. */
+	/** The open state. By default it goes in the two directions: use `bind:open`. */
 	open?: boolean;
-	/** Initial open state, for when `open` is not supplied. */
+	/** The open state at the start, for when you give no `open`. */
 	defaultOpen?: boolean;
 	/**
-	 * Opt into fully controlled state: the component stops writing back to `open` and
-	 * only reports through `onOpenChange`, so the parent can reject a change by not
-	 * flowing the new value back down. Off by default, because `bind:open` — the common
-	 * case — needs the write-back to work at all.
+	 * Give your own code full control of the open state. The component stops to write back to `open`,
+	 * and it reports only through `onOpenChange`. Thus the parent can refuse a change: the parent
+	 * does not send the new value down. The default is off, because `bind:open` is the usual case and
+	 * it needs the write-back.
 	 */
 	controlledOpen?: boolean;
 	onOpenChange?: (open: boolean) => void;
@@ -38,7 +38,10 @@ export type CollapsiblePanelProps = Omit<
 	HTMLAttributes<HTMLDivElement>,
 	'children' | 'class' | 'hidden'
 > & {
-	/** Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation. */
+	/**
+	 * Keep the closed panel in the DOM, and hidden. Without it, the panel leaves the DOM after the
+	 * exit animation.
+	 */
 	forceMount?: boolean;
 	children?: Snippet;
 	class?: string;

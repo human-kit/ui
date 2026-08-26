@@ -26,7 +26,7 @@ Description: State container for segmented time input, popover lifecycle, wheel 
 | `readonly`     | `boolean`                          | `false`     | Prevents value changes while keeping focus/navigation.       |
 | `required`     | `boolean`                          | `false`     | Propagates required state to input accessibility attributes. |
 | `children`     | `Snippet`                          | `undefined` | Composed `TimePicker` parts.                                 |
-| `class`        | `string`                           | `''`        | CSS class names for the root element.                        |
+| `class`        | `string`                           | `''`        | The CSS class names of the root element.                     |
 | `element`      | `HTMLDivElement \| null`           | `bindable`  | Reference to the root DOM element.                           |
 | `aria-label`   | `string`                           | `undefined` | Accessible label for the root wrapper.                       |
 

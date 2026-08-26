@@ -11,7 +11,7 @@
 	 * it can play before they leave.
 	 */
 	type DrawerPortalProps = {
-		/** The layers to portal (Overlay, Viewport/Content). */
+		/** The layers for the portal: the Overlay, and the Viewport or the Content. */
 		children?: Snippet;
 	};
 
