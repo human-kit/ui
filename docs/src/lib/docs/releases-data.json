@@ -1,7 +1,43 @@
 [
 	{
+		"version": "1.0.0-beta.6",
+		"date": "2026-09-04T15:17:20.929Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 78,
+						"prUrl": "https://github.com/human-kit/ui/pull/78",
+						"html": "<p><code>TimePicker.Input</code> accepts <code>id</code> and <code>name</code>, matching <code>DatePicker.Input</code>.</p>\n<p>Either one renders a visually hidden, focusable proxy input that carries them, so a <code>&lt;label for&gt;</code> reaches the segments and a native form submit reads the committed value. The segment group keeps an id of its own (<code>${id}-group</code>). An <code>aria-invalid</code> passed by the consumer is now combined with the invalid segment draft instead of being dropped.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 83,
+						"prUrl": "https://github.com/human-kit/ui/pull/83",
+						"html": "<p>Fix the focus return of <code>Dialog</code> when the panel has an exit animation.</p>\n<p>The animation keeps the content mounted after the close. The <code>inert</code> attribute that hides the page from the open dialog is thus still on the trigger, and <code>focus()</code> on an inert element does nothing. The focus stayed on the <code>&lt;body&gt;</code>, which sent the keyboard user back to the top of the page. <code>Dialog</code> now tries again after the update, in the same way as <code>Drawer</code>.</p>"
+					},
+					{
+						"pr": 83,
+						"prUrl": "https://github.com/human-kit/ui/pull/83",
+						"html": "<p>Fix the wheel inside a modal popover, and let the browser zoom again.</p>\n<p><code>Popover.Content</code> puts two actions on one element: <code>scrollLock</code> while it is modal, and <code>allowScrollWithin</code> while it is not. The disabled action removed the registration that the enabled one had just made. The panel thus held the scroll lock with no live scroll region of its own, and every wheel event inside it was cancelled. The <code>TimePicker</code> wheels did not turn, and no list in a modal popover could scroll. The registry now counts the registrations, so an action releases only what it took.</p>\n<p>A wheel with the <code>Ctrl</code> key also goes through now. That gesture is the browser zoom, not a scroll, and cancelling it took page zoom away from the user for as long as an overlay was open.</p>"
+					},
+					{
+						"pr": 82,
+						"prUrl": "https://github.com/human-kit/ui/pull/82",
+						"html": "<p>Rewrite every prop description in ASD-STE100 (Simplified Technical English), the\nwriting standard the rest of the documentation now follows. The text ships in the\n<code>.d.ts</code> files, so it is what an editor shows on hover — the wording changes, the\nAPI does not. No prop, type, default or behaviour was touched.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.5",
-		"date": "2026-08-11T15:55:38.693Z",
+		"date": "2026-08-11T12:58:46-03:00",
 		"sections": [
 			{
 				"type": "Major",
