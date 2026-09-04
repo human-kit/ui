@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DialogTest from './dialog-test.svelte';
 import DialogBindTest from './dialog-bind-test.svelte';
+import DialogExitAnimationTest from './dialog-exit-animation-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Dialog', () => {
@@ -131,6 +132,24 @@ describe('Dialog', () => {
 
 			// Focus should return to trigger
 			await expect.poll(() => document.activeElement?.textContent).toContain('Open Dialog');
+			expectNoFalseFocusAttributes(document);
+		});
+
+		it('returns focus to the trigger even when the panel animates out', async () => {
+			// The exit animation keeps the content mounted past the close, so the
+			// `inert` that hides the rest of the page from the open dialog is still on
+			// the trigger when the focus lands. It used to stay on the `<body>`.
+			const screen = render(DialogExitAnimationTest);
+			const trigger = screen.getByRole('button', { name: 'Open Dialog' });
+
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+			await userEvent.keyboard('{Escape}');
+
+			await expect
+				.poll(() => document.activeElement?.getAttribute('data-dialog-trigger'))
+				.toBe('true');
 			expectNoFalseFocusAttributes(document);
 		});
 	});

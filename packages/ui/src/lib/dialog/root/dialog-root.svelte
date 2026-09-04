@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack, type Snippet } from 'svelte';
+	import { tick, untrack, type Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
 	import {
@@ -83,6 +83,29 @@
 		setOpen(true);
 	}
 
+	/**
+	 * Focuses `target`, and tries once more after the update this close kicks off.
+	 *
+	 * While a modal dialog is open, `ariaHideOutside` marks everything outside the
+	 * panel `inert` — the trigger included — and `focus()` on an inert element is a
+	 * no-op. The attribute is only lifted during that update, so the first attempt
+	 * can silently land on `<body>`. It does exactly that whenever the panel has an
+	 * exit animation, which keeps the content (and the `inert` with it) alive past
+	 * the state change. The retry costs nothing when the first attempt worked.
+	 */
+	function restoreFocusTo(
+		target: HTMLElement,
+		modality: ReturnType<typeof resolveCloseInteractionModality>
+	) {
+		focusWithModality(target, modality);
+		if (document.activeElement === target) return;
+
+		void tick().then(() => {
+			if (!target.isConnected || document.activeElement === target) return;
+			focusWithModality(target, modality);
+		});
+	}
+
 	function closeDialog(reason: DialogCloseReason = 'imperative-action', event?: Event) {
 		const wasOpen = isOpen;
 		setOpen(false);
@@ -90,7 +113,7 @@
 		// back down) — don't steal focus while the dialog is still open.
 		if (!wasOpen || isOpen) return;
 		if (triggerRef) {
-			focusWithModality(triggerRef, resolveCloseInteractionModality(reason, event));
+			restoreFocusTo(triggerRef, resolveCloseInteractionModality(reason, event));
 		}
 	}
 

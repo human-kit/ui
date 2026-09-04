@@ -38,7 +38,7 @@
 <!-- This page declares no head tags on purpose: they are rendered once, in the
      root layout, from the `seo` this page's load returns. -->
 
-<article class="relative mx-auto max-w-3xl">
+<article class="relative mx-auto">
 	<!-- Same prev/next chevrons every markdown page gets. This route has no `slug`
 	     param, and no markdown or component source behind it, so it passes the slug
 	     by hand and drops the "View as Markdown / View source" menu. -->
@@ -193,11 +193,16 @@
 	.entry-body :global(li) {
 		margin-top: 0.15rem;
 	}
+	/* `overflow-wrap` because entries name components, so they are full of long
+	   unbreakable tokens (`TimePicker.ColumnCell`), sometimes two of them joined by
+	   a slash with no space to break at. Without it the widest line sets the column
+	   width and the whole reading pane scrolls sideways on a phone. */
 	.entry-body :global(code) {
 		font-size: 0.85em;
 		background: var(--accent);
 		padding: 0.05rem 0.3rem;
 		border-radius: 0.3rem;
+		overflow-wrap: anywhere;
 	}
 	.entry-body :global(a) {
 		color: var(--link);

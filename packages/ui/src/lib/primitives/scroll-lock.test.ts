@@ -186,6 +186,50 @@ describe('scrollLock', () => {
 			}
 		});
 
+		it('keeps a modal overlay scrollable when the same node also carries a disabled allowScrollWithin', () => {
+			// `Popover.Content` puts both actions on one node: `scrollLock` while it is
+			// modal, `allowScrollWithin` while it is not. The disabled one used to
+			// unregister the node the enabled one had just registered, so a modal panel
+			// held the lock with no live scroll region of its own and cancelled every
+			// wheel inside itself — the TimePicker wheels would not turn.
+			const { overlay, content } = scrollableOverlay();
+
+			const lock = scrollLock(overlay, true);
+			const allowed = allowScrollWithin(overlay, false);
+
+			try {
+				const event = wheel(40);
+				content.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(false);
+			} finally {
+				allowed.destroy();
+				lock.destroy();
+				overlay.remove();
+			}
+		});
+
+		it('lets a Ctrl+wheel through, because that is the browser zoom gesture', () => {
+			const overlay = document.createElement('div');
+			const background = document.createElement('div');
+			document.body.append(overlay, background);
+			const handle = scrollLock(overlay, true);
+
+			try {
+				const event = new WheelEvent('wheel', {
+					bubbles: true,
+					cancelable: true,
+					deltaY: -40,
+					ctrlKey: true
+				});
+				background.dispatchEvent(event);
+				expect(event.defaultPrevented).toBe(false);
+			} finally {
+				handle.destroy();
+				overlay.remove();
+				background.remove();
+			}
+		});
+
 		it('stops allowing it once the non-modal overlay closes', () => {
 			const modal = document.createElement('div');
 			document.body.appendChild(modal);

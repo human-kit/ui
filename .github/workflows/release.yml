@@ -4,7 +4,8 @@ name: Release
 #
 #   changesets pending → version, and push the result to `changeset-release/main`
 #                        for review. Merging that branch is what releases.
-#   none pending       → publish to npm, tag, and refresh the docs timeline.
+#   none pending       → publish to npm, tag, create the GitHub Releases, and
+#                        refresh the docs timeline.
 #
 # Deliberately does NOT open the pull request itself. That call is the one thing
 # GitHub refuses from the default token unless "Allow GitHub Actions to create and
@@ -128,3 +129,13 @@ jobs:
       - name: Push tags
         if: steps.version.outputs.versioned == 'false'
         run: git push origin --tags
+
+      # A tag is not a Release. `changesets/action` used to create both, and when
+      # it was dropped only the tagging survived: the Releases page sat at
+      # `1.0.0-beta.1` while four more versions shipped. The script is idempotent,
+      # so it also backfills anything an earlier run missed.
+      - name: Create GitHub releases
+        if: steps.version.outputs.versioned == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/gh-releases.mjs
