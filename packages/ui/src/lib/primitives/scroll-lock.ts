@@ -33,9 +33,29 @@ let savedScrollX = 0;
 let savedScrollY = 0;
 
 // The overlay nodes whose inner scroll regions stay live while the background is
-// frozen. A Set (rather than just the lock count) so the event handlers can tell
-// an overlay-targeted scroll from a background one.
-const overlayNodes = new Set<HTMLElement>();
+// frozen, each with the number of registrations holding it there. The handlers
+// need this list (rather than just the lock count) to tell an overlay-targeted
+// scroll from a background one.
+//
+// Counted, not a plain Set, because one node can be registered twice: a modal
+// `Popover.Content` carries `scrollLock` AND `allowScrollWithin`, and the second
+// action's "off" state used to delete the entry the first one had just added —
+// leaving the lock on with no live scroll region, so every wheel inside the
+// panel was cancelled as if it were the background.
+const overlayNodes = new Map<HTMLElement, number>();
+
+function retainOverlay(node: HTMLElement): void {
+	overlayNodes.set(node, (overlayNodes.get(node) ?? 0) + 1);
+}
+
+function releaseOverlay(node: HTMLElement): void {
+	const remaining = (overlayNodes.get(node) ?? 0) - 1;
+	if (remaining > 0) {
+		overlayNodes.set(node, remaining);
+		return;
+	}
+	overlayNodes.delete(node);
+}
 
 function getScrollbarWidth(): number {
 	return window.innerWidth - document.documentElement.clientWidth;
@@ -55,7 +75,7 @@ function reservesStableGutter(): boolean {
 /** The registered overlay node that contains `target`, if any. */
 function overlayContaining(target: EventTarget | null): HTMLElement | null {
 	if (!(target instanceof Node)) return null;
-	for (const node of overlayNodes) {
+	for (const node of overlayNodes.keys()) {
 		if (node.contains(target)) return node;
 	}
 	return null;
@@ -85,6 +105,9 @@ function scrollableWithin(target: Element, root: HTMLElement): HTMLElement | nul
 
 function onWheel(event: WheelEvent) {
 	if (!event.cancelable) return;
+	// A wheel with Ctrl held is the browser's zoom gesture, not a scroll. Cancelling
+	// it took page zoom away from the user for as long as any overlay was open.
+	if (event.ctrlKey) return;
 	const overlay = overlayContaining(event.target);
 	if (!overlay) {
 		// Background scroll — freeze it.
@@ -137,7 +160,7 @@ function removeEventBlockers() {
 }
 
 function lock(node: HTMLElement) {
-	overlayNodes.add(node);
+	retainOverlay(node);
 	if (lockCount === 0) {
 		const body = document.body;
 
@@ -172,7 +195,7 @@ function lock(node: HTMLElement) {
 }
 
 function unlock(node: HTMLElement) {
-	overlayNodes.delete(node);
+	releaseOverlay(node);
 	lockCount--;
 	if (lockCount === 0) {
 		const body = document.body;
@@ -247,11 +270,18 @@ export function scrollLock(node: HTMLElement, enabled: boolean = true) {
  * ```
  */
 export function allowScrollWithin(node: HTMLElement, enabled: boolean = true) {
+	// Only ever releases what it took. Registering is counted, so an action that
+	// is off must not release a registration it never made — on a modal popover
+	// that entry belongs to `scrollLock`, on the very same node.
+	let registered = false;
+
 	const register = (on: boolean) => {
+		if (on === registered) return;
+		registered = on;
 		if (on) {
-			overlayNodes.add(node);
+			retainOverlay(node);
 		} else {
-			overlayNodes.delete(node);
+			releaseOverlay(node);
 		}
 	};
 
