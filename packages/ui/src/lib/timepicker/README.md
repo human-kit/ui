@@ -64,7 +64,7 @@
 - `onOpenChange?: (open: boolean, details: { reason, event?, cancel(), isCanceled }) => void`
 - Null-first empty contract: when `value` and `defaultValue` are omitted, the empty state is `null`.
 - `TimePicker.Input` exposes `aria-invalid` and `data-invalid` when the current segment draft is not committeable, or when the consumer passes `aria-invalid`.
-- `TimePicker.Input` accepts `id` and `name`. Either one renders a visually hidden, focusable proxy input carrying them, so a `<label for>` reaches the segments and a native form submit reads the committed value. The group keeps `${id}-group`. Autofill is not supported on the proxy (`autocomplete="off"`).
+- `TimePicker.Input` accepts `id` and `name`. Either one renders a hidden but focusable proxy input that carries them. Thus a `<label for>` reaches the segments, and a native form submit reads the committed value. The group keeps `${id}-group`. Autofill is not supported on the proxy (`autocomplete="off"`).
 
 ## Popover API
 
