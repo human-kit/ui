@@ -44,5 +44,5 @@
 
 ## Notes
 
-- When `type="submit"` and `pending` is true, the rendered button type switches to `button` to prevent implicit and explicit form submission.
+- If the type is `submit` and `pending` is true, the component makes the element with the type `button`. Thus the form does not submit.
 - Pending does not serialize `data-disabled`; it is represented by `data-pending`.

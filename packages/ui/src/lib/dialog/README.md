@@ -10,7 +10,7 @@
 - Use `Dialog.Trigger` as the opener button.
 - Render modal layers inside `Dialog.Portal`.
 - Use `Dialog.Overlay` and `Dialog.Content` together for standard modal behavior.
-- Use nested `Dialog.Root` instances when you need modal stacks; topmost behavior is handled internally.
+- Use nested `Dialog.Root` parts when you need a stack. The component controls which dialog is on top.
 - Always give the dialog a `Dialog.Title`. A `role="dialog"` takes its name from `aria-labelledby`, not from the text inside it, so a bare heading leaves the dialog unnamed.
 
 ## Anatomy

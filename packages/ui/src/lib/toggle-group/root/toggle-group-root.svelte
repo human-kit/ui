@@ -18,7 +18,6 @@
 		id,
 		value = $bindable(),
 		defaultValue,
-		controlledValue = false,
 		onChange,
 		selectionMode = 'single',
 		disabled: disabledProp = false,
@@ -33,18 +32,12 @@
 		...restProps
 	}: ToggleGroupRootProps = $props();
 
-	// Controlled-ness is opt-in, not inferred from `value` being defined: `bind:value` and
-	// `value={...}` are indistinguishable at runtime. It used to be inferred here, and the
-	// write-back below ignored the result anyway, so a controlled parent could not reject
-	// a change — the selection moved regardless of what `onChange` decided.
-	const isControlled = untrack(() => controlledValue);
 	const instanceId = untrack(() => id) ?? generatedId;
 
 	let rootRef: HTMLDivElement | null = $state(null);
 
 	const toggleGroup = setToggleGroupContext(
 		createToggleGroupContext({
-			isControlled,
 			// `value` seeds the initial selection whenever it is supplied, bound or not.
 			initialValue: untrack(() => value) ?? untrack(() => defaultValue),
 			selectionMode: (() => selectionMode)(),
@@ -52,15 +45,28 @@
 			orientation: (() => orientation)(),
 			disallowEmptySelection: (() => disallowEmptySelection)(),
 			onValueChange: (nextValue) => {
-				if (!isControlled) {
-					value = nextValue;
-				}
+				// One path for both usages: with `bind:value` this reaches the parent, and
+				// without a binding the write stays local, so nothing here has to know
+				// which one the caller chose.
+				value = nextValue;
 				onChange?.(nextValue);
 			}
 		})
 	);
 
 	context = toggleGroup;
+
+	// Marks the window in which a toggle disappearing is a real change rather than the group
+	// itself coming or going. `$effect.pre` because Svelte destroys an effect's children
+	// before running that effect's own teardown, so an `onDestroy` here would fire *after*
+	// every toggle had already unregistered: this one is created while the script runs,
+	// before the children exist, so it is first in destroy order and its cleanup lands ahead
+	// of theirs. On the server it never runs, which is right too — there the toggles
+	// unregister as the markup closes and nobody is listening any more.
+	$effect.pre(() => {
+		toggleGroup.setLive(true);
+		return () => toggleGroup.setLive(false);
+	});
 
 	const disabled = $derived(toggleGroup.isDisabled);
 	const multiple = $derived(toggleGroup.selectionMode === 'multiple');
@@ -86,11 +92,10 @@
 		toggleGroup.setDisallowEmptySelection(disallowEmptySelection);
 	});
 
-	// Whether to adopt an incoming `value` is a separate question from who owns the state,
-	// so it is latched at init off the prop rather than off `controlledValue`: a parent
-	// that supplies `value` drives the selection, bound or not. Latched, not reactive —
-	// re-checking `value !== undefined` would switch this on the moment our own write-back
-	// defines it, and the component would then re-adopt the echo of its own change.
+	// A parent that supplies `value` drives the selection, bound or not. Latched at init,
+	// not reactive — re-checking `value !== undefined` would switch this on the moment our
+	// own write-back defines it, and a `defaultValue`-only group would start following the
+	// echo of its own changes.
 	const adoptsValueProp = untrack(() => value !== undefined);
 
 	$effect(() => {

@@ -524,10 +524,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Table benchmark</title>
-</svelte:head>
-
 <div class="bench">
 	<header class="bench-header">
 		<h1>Table benchmark</h1>

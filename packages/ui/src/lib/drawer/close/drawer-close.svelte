@@ -12,11 +12,11 @@
 	 * unreachable for some users. Every dismissible drawer wants one of these.
 	 */
 	export type DrawerCloseProps = Omit<HTMLButtonAttributes, 'type' | 'class' | 'children'> & {
-		/** Button label. */
+		/** The name on the button. */
 		children?: Snippet;
-		/** CSS class for the button. */
+		/** The CSS class names of the button. */
 		class?: string;
-		/** Bindable reference to the rendered button. */
+		/** A bindable reference to the button element. */
 		element?: HTMLButtonElement | null;
 	};
 

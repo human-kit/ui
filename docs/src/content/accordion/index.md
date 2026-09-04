@@ -14,13 +14,13 @@ description: A headless disclosure primitive with roving focus, single or multip
 
 # Accordion
 
-A headless disclosure primitive: a vertical (or horizontal) stack of collapsible sections with roving focus, single or multiple expansion, disabled items, and controlled/uncontrolled open state.
+This is a headless disclosure component: a vertical or horizontal stack of sections that open and close. It has roving focus and disabled items. One section can be open, or more than one section can be open. You can control the open state, or you can let the component control it.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-Provide a unique `value` on every `Accordion.Item` — the matching `Header`, `Trigger` and `Panel` read it from the item context, so you only declare it once.
+Give each `Accordion.Item` a unique `value`. The `Header`, the `Trigger`, and the `Panel` of that item read the `value` from the context of the item. Thus you write it one time only.
 
 ```svelte
 <script>
@@ -37,28 +37,28 @@ Provide a unique `value` on every `Accordion.Item` — the matching `Header`, `T
 </Accordion.Root>
 ```
 
-## Multiple expansion and disabled items
+## Many open panels, and disabled items
 
-Set `selectionMode="multiple"` to allow more than one panel open at a time (default is `"single"`). Use `disabled` on `Accordion.Item` to disable a single item, or on `Accordion.Root` to disable the whole accordion.
+Set `selectionMode="multiple"` to let more than one panel stay open. The default is `"single"`. Use `disabled` on an `Accordion.Item` to stop one item, or on `Accordion.Root` to stop the full accordion.
 
 <Demo source={multipleSource}><Multiple /></Demo>
 
 ## Usage guidelines
 
-- Use `value` / `onChange` for controlled state and `defaultValue` for uncontrolled state. Both are arrays of open item values.
-- Use `disallowEmptySelection` to keep at least one panel open.
-- Use `orientation="horizontal"` to switch the arrow-key navigation axis.
-- Use `loop={false}` to stop focus from wrapping at the first and last triggers.
-- Use `forceMount` on `Accordion.Panel` when collapsed panel content must stay in the DOM.
-- Set `level` on `Accordion.Header` (1–6, default `3`) to match the surrounding document outline.
+- Use `value` and `onChange` when your own code controls the state. Use `defaultValue` when the component controls the state. Both props are arrays of the values of the open items.
+- Use `disallowEmptySelection` to keep one panel open.
+- Use `orientation="horizontal"` to change the axis of the arrow keys.
+- Use `loop={false}` to stop the focus at the first trigger and at the last trigger.
+- Use `forceMount` on `Accordion.Panel` when the content must stay in the DOM while the panel is closed.
+- Set `level` on `Accordion.Header` (from 1 to 6, the default is `3`) to agree with the headings around the accordion.
 
 ## Accessibility
 
-- `Accordion.Header` renders a real heading element (`<h3>` by default) that wraps the trigger button, following the WAI-ARIA accordion pattern.
-- `Accordion.Trigger` renders button semantics with `aria-expanded` and `aria-controls`.
-- `Accordion.Panel` renders `role="region"` and `aria-labelledby` pointing at its trigger, and is `hidden` + `inert` while collapsed.
-- Arrow keys move focus between triggers, Home/End jump to the first or last enabled trigger, and focus wraps at the ends unless `loop={false}`.
-- Enter/Space toggle the focused panel via native button activation.
+- `Accordion.Header` makes a true heading element. The default is `<h3>`. The heading contains the trigger button. This obeys the WAI-ARIA accordion pattern.
+- `Accordion.Trigger` has button semantics with `aria-expanded` and `aria-controls`.
+- `Accordion.Panel` has `role="region"`, and its `aria-labelledby` attribute points at its trigger. While the panel is closed, the panel is `hidden` and `inert`.
+- The arrow keys move the focus between the triggers. The `Home` key and the `End` key move the focus to the first enabled trigger and to the last enabled trigger. At the ends, the focus goes to the opposite end, but not with `loop={false}`.
+- The `Enter` key and the `Space` key open and close the panel with the focus, like a native button.
 
 ## API reference
 

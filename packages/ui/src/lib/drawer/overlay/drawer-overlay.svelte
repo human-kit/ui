@@ -10,7 +10,7 @@
 	 * Belongs inside a Drawer.Portal.
 	 */
 	type DrawerOverlayProps = {
-		/** CSS class for the overlay. */
+		/** The CSS class names of the overlay. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class'>;
 

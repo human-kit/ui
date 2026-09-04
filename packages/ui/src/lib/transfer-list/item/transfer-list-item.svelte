@@ -15,13 +15,13 @@
 	 * is the move buttons, which are in the tab order.
 	 */
 	type TransferListItemProps = {
-		/** The item this row renders. Its key comes from the Root's `getKey`. */
+		/** The item of this row. The `getKey` function of the Root gives its key. */
 		item: T;
-		/** Text used for typeahead. Falls back to the row's text content. */
+		/** The text for the typeahead. Without it, the component uses the text content of the row. */
 		textValue?: string;
-		/** CSS class for the row. */
+		/** The CSS class names of the row. */
 		class?: string;
-		/** Row content. */
+		/** The content of the row. */
 		children?: Snippet;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'id' | 'class' | 'children'>;
 

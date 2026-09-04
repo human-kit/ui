@@ -30,12 +30,7 @@ renders no markup of its own.
 
 ## SSR and hydration
 
-In server-rendered apps an explicit `locale` is effectively **required**. Without it, the
-server formats with the Node process locale while the client formats with the visitor's
-`navigator.language`; when they differ, the server HTML and the first client render
-disagree — date segment order (`dd/MM` vs `MM/dd`), hour cycle (12h vs 24h) and number
-formats (decimal/group separators) all shift — which produces hydration mismatches and
-visible content flicker.
+In server-rendered apps an explicit `locale` is effectively **required**. Without it, the server uses the locale of the Node process and the client uses `navigator.language`. When the two are different, the HTML of the server and the first render of the client do not agree. The sequence of the date segments changes (`dd/MM` or `MM/dd`), and so do the hour cycle (12h or 24h) and the number format. The result is a hydration error and a flash of different content.
 
 Resolve the locale on the server (typically from the `Accept-Language` request header, or
 the user's saved preference) and pass it explicitly so both passes agree:

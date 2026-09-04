@@ -4,7 +4,7 @@
 	import { useSwitchContext } from '../root/context';
 
 	type SwitchThumbProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
-		/** Optional content rendered inside the thumb. */
+		/** The content of the thumb. */
 		children?: Snippet;
 		class?: string;
 	};

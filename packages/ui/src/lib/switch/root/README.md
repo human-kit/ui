@@ -5,7 +5,7 @@
 ### Switch.Root
 
 Name: `Switch.Root`  
-Description: Interactive boolean switch root that owns checked, focus, and hidden input synchronization.
+Description: The root of a boolean switch. It holds the checked state and the focus, and it keeps the hidden input correct.
 
 | Prop              | Type                              | Default       | Description                                                |
 | ----------------- | --------------------------------- | ------------- | ---------------------------------------------------------- |
@@ -20,7 +20,7 @@ Description: Interactive boolean switch root that owns checked, focus, and hidde
 | `readonly`        | `boolean`                         | `false`       | Allows focus but blocks user-driven state changes.         |
 | `required`        | `boolean`                         | `false`       | Marks the hidden input as required and exposes data state. |
 | `children`        | `Snippet`                         | `undefined`   | Composed switch parts such as `Switch.Thumb`.              |
-| `class`           | `string`                          | `''`          | CSS class names for the root element.                      |
+| `class`           | `string`                          | `''`          | The CSS class names of the root element.                   |
 | `...restProps`    | `HTMLAttributes<HTMLSpanElement>` | `-`           | Additional attributes forwarded to the switch root span.   |
 
 ### Context utilities

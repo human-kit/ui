@@ -18,3 +18,5 @@
 - [ ] `pnpm run test` passes
 - [ ] I added or updated tests where relevant
 - [ ] I updated documentation where relevant
+- [ ] Prose I wrote — docs, READMEs, prop JSDoc, and this PR body — is in
+      ASD-STE100 (see [Documentation style](../CONTRIBUTING.md#documentation-style))

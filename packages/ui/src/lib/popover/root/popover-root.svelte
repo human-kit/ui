@@ -21,23 +21,26 @@
 	 * Provides context for Trigger and Content children.
 	 */
 	type PopoverRootProps = {
-		/** Open state. Two-way by default — use `bind:open`. */
+		/** The open state. By default it goes in the two directions: use `bind:open`. */
 		open?: boolean;
-		/** Initial open state, for when `open` is not supplied. */
+		/** The open state at the start, for when you give no `open`. */
 		defaultOpen?: boolean;
 		/**
-		 * Opt into fully controlled state: the component stops writing back to `open` and
-		 * only reports through `onOpenChange`, so the parent can reject a change by not
-		 * flowing the new value back down. Off by default, because `bind:open` — the
-		 * common case — needs the write-back to work at all. For one-off rejections
-		 * prefer `details.cancel()`, which works in either mode.
+		 * Give your own code full control of the open state. The component stops to write back to
+		 * `open`, and it reports only through `onOpenChange`. Thus the parent can refuse a change: the
+		 * parent does not send the new value down. The default is off, because `bind:open` is the usual
+		 * case and it needs the write-back.
+		 *
+		 * To refuse one change, use `details.cancel()`. That function works in the two modes.
 		 */
 		controlledOpen?: boolean;
-		/** Callback when open state changes. */
+		/** The component calls it when the open state changes. */
 		onOpenChange?: (open: boolean, details: PopoverOpenChangeDetails) => void;
-		/** Reference to the trigger element. Can be set manually or via Popover.Trigger. */
+		/**
+		 * The reference to the trigger element. Set it in your own code, or let Popover.Trigger set it.
+		 */
 		triggerRef?: HTMLElement | null;
-		/** Children (Trigger and Content) */
+		/** The children: the Trigger and the Content. */
 		children?: Snippet;
 	};
 

@@ -12,13 +12,13 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 
 # ToggleGroup
 
-`ToggleGroup` coordinates multiple `Toggle.Root` buttons with single or multiple selection, roving focus, disabled handling, and array-based controlled or uncontrolled value.
+`ToggleGroup` controls a set of `Toggle.Root` buttons. The group permits one selection or more than one selection. It has roving focus, it obeys the disabled state, and its value is an array.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`ToggleGroup.Root` wraps regular `Toggle.Root` buttons. Every grouped toggle must provide a unique `value`, which is how the group tracks selection.
+`ToggleGroup.Root` contains usual `Toggle.Root` buttons. Each toggle in the group must have a unique `value`. The group uses the `value` to record the selection.
 
 ```svelte
 <script>
@@ -33,27 +33,27 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 
 ## Single selection
 
-`selectionMode="single"` (the default) keeps at most one value selected while preserving the array model. Add `disallowEmptySelection` when one enabled toggle must always remain selected.
+`selectionMode="single"` is the default. It keeps one value selected, or none. The value stays an array. Add `disallowEmptySelection` when one enabled toggle must stay selected.
 
 ## Vertical orientation
 
-`orientation="vertical"` switches roving focus to the Up and Down arrow keys. Disabled toggles are skipped by keyboard navigation.
+`orientation="vertical"` moves the roving focus to the Up arrow key and the Down arrow key. The keyboard focus does not stop on a disabled toggle.
 
 ## Usage guidelines
 
-- Use `value` / `defaultValue` arrays for both single and multiple selection.
+- Use `value` and `defaultValue` arrays for a single selection and for more than one selection.
 - Use `selectionMode="single"` when only one toggle can be selected.
-- Use `selectionMode="multiple"` when several toggles can be selected.
-- Use `disallowEmptySelection` when at least one enabled toggle must remain selected.
-- Every grouped `Toggle.Root` must provide a unique `value`.
-- Grouped toggles ignore their standalone `selected` and `defaultSelected` props.
+- Use `selectionMode="multiple"` when more than one toggle can be selected.
+- Use `disallowEmptySelection` when one enabled toggle must stay selected.
+- Each `Toggle.Root` in the group must have a unique `value`.
+- A toggle in a group ignores its own `selected` and `defaultSelected` props.
 
 ## Accessibility
 
-- `ToggleGroup.Root` renders `role="group"`.
-- Provide an accessible group name with `aria-label` or `aria-labelledby`.
-- Each `Toggle.Root` remains a native toggle button with `aria-pressed`.
-- Arrow keys move focus through enabled toggles; `Home` and `End` jump to the bounds.
+- `ToggleGroup.Root` has `role="group"`.
+- Give the group an accessible name with `aria-label` or `aria-labelledby`.
+- Each `Toggle.Root` stays a native toggle button with `aria-pressed`.
+- The arrow keys move the focus through the enabled toggles. The `Home` key and the `End` key move the focus to the first toggle and to the last toggle.
 
 ## API reference
 

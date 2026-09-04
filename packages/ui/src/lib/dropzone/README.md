@@ -2,9 +2,7 @@
 
 ## Description
 
-`Dropzone` is a headless file-drop surface. It renders a focusable `<button>` plus a
-visually-hidden `<input type="file">`, so files can be selected by click/keyboard, by
-drag-and-drop, or by pasting from the clipboard, and emits the accepted native `File`s.
+`Dropzone` is a headless file-drop surface. It makes a `<button>` element that takes the focus, and a hidden `<input type="file">` element. Thus the user selects the files with a click, with the keyboard, with a drag, or from the clipboard. The component then sends the native `File` objects that it accepts.
 It is encoding-agnostic — consumers own how files are stored or rendered.
 
 ## Anatomy
@@ -33,7 +31,7 @@ It is encoding-agnostic — consumers own how files are stored or rendered.
   tokens (`.ext`), so include the extensions you care about alongside MIME types.
 - Directory drops are excluded when the browser exposes `webkitGetAsEntry`; otherwise the
   drop falls back to `dataTransfer.files` as before.
-- `multiple` allows selecting/dropping more than one file; when false only the first is emitted.
+- `multiple` lets the user give more than one file. With `false`, the component sends only the first file.
 - Style interaction state with `data-drop-target`, `data-focus-visible`, `data-hovered`, and
   `data-disabled`. The `children` snippet also receives `{ dragging, hovered, focused,
 focusVisible, disabled }`.
@@ -58,9 +56,9 @@ focusVisible, disabled }`.
 - The drop surface is a native `<button type="button">`, so it is reachable by Tab and
   activatable with Enter/Space, which opens the file picker. This is the keyboard path that
   drag-and-drop alone cannot provide.
-- `aria-label` (or `aria-labelledby`/`aria-describedby` via rest props) names the zone.
+- `aria-label` gives the zone its name. The `aria-labelledby` and `aria-describedby` attributes also go through the other props.
 - `data-focus-visible` follows the shared modality contract and only appears for keyboard or
   virtual focus.
-- `announcement` is rendered into a visually-hidden `role="status" aria-live="polite"` region.
+- The component puts `announcement` in a hidden `role="status" aria-live="polite"` region.
 - The hidden file input is removed from the tab order (`tabindex="-1"`, `aria-hidden`) so the
   button is the single focus stop.

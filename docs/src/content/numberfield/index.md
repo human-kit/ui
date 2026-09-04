@@ -16,13 +16,13 @@ description: Composable numeric input with formatted text entry, spinbutton sema
 
 # NumberField
 
-Composable numeric input with formatted text entry, spinbutton semantics, stepper buttons, optional wheel scrubbing, and pointer scrubbing.
+This is a numeric input. The text has a locale format, the input has spinbutton semantics, and the field has step buttons. The value can also change when the user drags a pointer or turns the mouse wheel.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`NumberField.Root` provides state to every part. `Group` wraps the visible controls, `Input` is the spinbutton text input, and `Decrement` / `Increment` are the stepper buttons. `ScrubArea` (with an optional `ScrubAreaCursor`) adds pointer scrubbing.
+`NumberField.Root` gives the state to each part. `Group` contains the controls that the user sees. `Input` is the spinbutton text input. `Decrement` and `Increment` are the step buttons. `ScrubArea` adds the pointer drag control, and it can contain a `ScrubAreaCursor`.
 
 ```svelte
 <script>
@@ -41,34 +41,34 @@ Composable numeric input with formatted text entry, spinbutton semantics, steppe
 </NumberField.Root>
 ```
 
-## Formatting
+## Format
 
-The visible text is formatted with `Intl.NumberFormat` via `formatOptions`, while `bind:value` always stays a raw `number | null`. Wrap the component in `LocaleProvider` to control locale-aware parsing and formatting.
+`Intl.NumberFormat` makes the text that the user sees, and `formatOptions` controls it. The value in `bind:value` is always a `number` or `null`. Put the component in a `LocaleProvider` to control the locale of the format and of the text that the component reads.
 
 <Demo source={formattingSource}><Formatting /></Demo>
 
-## Scrubbing
+## Pointer drag
 
-`NumberField.ScrubArea` turns any element into a pointer-drag control for the value, and `allowWheelScrub` lets the mouse wheel step the value while the input is focused. Both expose `data-scrubbing` for styling.
+`NumberField.ScrubArea` makes any element into a drag control for the value. The `allowWheelScrub` prop lets the mouse wheel change the value while the input has the focus. Both parts show `data-scrubbing` for the styles.
 
 <Demo source={scrubSource}><Scrub /></Demo>
 
 ## Usage guidelines
 
-- Provide an accessible name for `NumberField.Input` with `aria-label`, `aria-labelledby`, or a visible `<label for>`.
-- Use `bind:value` for two-way state. The value is always `number | null`; the visible input text is formatted separately.
-- Wrap the component in `LocaleProvider` to control locale-aware parsing and formatting.
-- With `allowOutOfRange={false}`, out-of-range drafts remain editable while focused and clamp to `min` or `max` on commit.
-- Percent formatting treats `%` as a localized display suffix: typing `50` publishes `50`, not `0.5`.
-- Use `name` on `Root` only when the component should submit a raw numeric value in an HTML form.
-- `incrementAriaLabel` and `decrementAriaLabel` override the localized defaults when custom control names are needed.
+- Give `NumberField.Input` an accessible name with `aria-label`, with `aria-labelledby`, or with a `<label for>` element that the user sees.
+- Use `bind:value` for the state in the two directions. The value is always a `number` or `null`. The component makes the text separately.
+- Put the component in a `LocaleProvider` to control the locale of the format and of the text that the component reads.
+- With `allowOutOfRange={false}`, the user can edit a value that is out of the range while the input has the focus. When the input loses the focus, the value goes to `min` or to `max`.
+- In a percent format, the `%` character is a localized suffix. If the user types `50`, the value becomes `50`, not `0.5`.
+- Use `name` on `Root` only when the component must submit a raw numeric value in an HTML form.
+- Use `incrementAriaLabel` and `decrementAriaLabel` to replace the localized default names of the two buttons.
 
 ## Accessibility
 
-- `NumberField.Input` renders a text input with `role="spinbutton"` and exposes `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-valuetext` when applicable.
-- Arrow keys step by `step`, `Shift` + arrows step by `largeStep`, `Ctrl`/`Cmd` + arrows step by `smallStep`, and `PageUp` / `PageDown` and `Home` / `End` are supported.
-- Pointer scrub has equivalent input, keyboard, and button controls.
-- Invalid drafts and out-of-range values set native custom validity on the visible input so form submission is blocked while the field is invalid.
+- `NumberField.Input` makes a text input with `role="spinbutton"`. When they apply, the component sets `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-valuetext`.
+- The arrow keys change the value by `step`. `Shift` and the arrow keys change it by `largeStep`. `Ctrl` or `Cmd` and the arrow keys change it by `smallStep`. The `PageUp`, `PageDown`, `Home`, and `End` keys also change the value.
+- The keyboard and the buttons do the same operations as the pointer drag.
+- A bad value or a value out of the range sets the native custom validity on the input. Thus the form does not submit while the field is not valid.
 
 ## API reference
 

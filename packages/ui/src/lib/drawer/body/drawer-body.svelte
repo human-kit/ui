@@ -25,9 +25,9 @@
 	 * forcing it here would fight consumers whose panel sizes to its content.
 	 */
 	type DrawerBodyProps = {
-		/** Content of the body region. */
+		/** The content of the body region. */
 		children?: Snippet;
-		/** CSS class for the body. */
+		/** The CSS class names of the body. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 

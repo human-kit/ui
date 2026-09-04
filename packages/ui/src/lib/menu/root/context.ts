@@ -40,9 +40,9 @@ export type MenuItemData = {
 	textValue?: string;
 	/** The item's DOM element. */
 	element?: HTMLElement;
-	/** Whether the item is disabled. */
+	/** Disables the item. */
 	disabled?: boolean;
-	/** Handler invoked when the item is activated. */
+	/** The component calls it when the user activates the item. */
 	onSelect?: (event?: Event) => void;
 	/** Per-item override for the Root `closeOnSelect` default. */
 	closeOnSelect?: boolean;
@@ -72,7 +72,10 @@ export type MenuContext = {
 	/** Whether this menu is opened as a context menu (right click / long press). */
 	isContextMenu: boolean;
 
-	/** Whether arrow navigation wraps around the ends. */
+	/**
+	 * At the last item, the arrow keys move the focus to the first item, and at the first item, to
+	 * the last one.
+	 */
 	loop: boolean;
 	/** Whether typeahead is enabled. */
 	typeahead: boolean;

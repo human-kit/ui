@@ -15,17 +15,17 @@ export type {
 } from './root/context.svelte';
 
 export type ToggleGroupRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
-	/** Selected values. Two-way by default — use `bind:value`. */
-	value?: ToggleGroupValue[];
-	/** Initially selected values, for when `value` is not supplied. */
-	defaultValue?: ToggleGroupValue[];
 	/**
-	 * Opt into fully controlled state: the component stops writing back to `value` and
-	 * only reports through `onChange`, so the parent can reject a change by not flowing
-	 * the new value back down. Off by default, because `bind:value` — the common case —
-	 * needs the write-back to work at all.
+	 * The selected values. When you give this prop, it is the source of truth, with `bind:value` or
+	 * without it. The component writes each change here and reports it through `onChange`.
+	 *
+	 * Without a binding, that write stays local. Thus a parent that hears `onChange` and refuses the
+	 * change — it sends no new `value` down — sees the group move. The group then goes back to the
+	 * value of the parent at the next render.
 	 */
-	controlledValue?: boolean;
+	value?: ToggleGroupValue[];
+	/** The selected values at the start, for when you give no `value`. */
+	defaultValue?: ToggleGroupValue[];
 	onChange?: (value: ToggleGroupValue[]) => void;
 	selectionMode?: ToggleGroupSelectionMode;
 	disabled?: boolean;

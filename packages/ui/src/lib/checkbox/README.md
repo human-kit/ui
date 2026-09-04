@@ -20,7 +20,7 @@
 ## Usage guidelines
 
 - Use `checked` / `defaultChecked` for the checked state and `indeterminate` / `defaultIndeterminate` for the mixed state.
-- `indeterminate` takes precedence over `checked`. When both are `true`, the checkbox is exposed as indeterminate.
+- `indeterminate` has more importance than `checked`. If both are `true`, the checkbox is indeterminate.
 - Use `value` only for form submission through the hidden native input; it does not represent the visual state.
 - Wrap the checkbox in a native `<label>` for the simplest accessible labeling pattern.
 

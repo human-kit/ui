@@ -1,6 +1,6 @@
 # NumberField.Root
 
-Owns the numeric value, formatted input text, locale-aware parsing, stepping, validation state, and shared context for all NumberField parts.
+Holds the numeric value, the text in the input, the locale, the steps, and the validation state. It gives the shared context to each NumberField part.
 
 Use `bind:value` for two-way state. When `name` is provided, Root renders a hidden form input containing the raw numeric value.
 

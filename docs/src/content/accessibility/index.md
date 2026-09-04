@@ -5,31 +5,33 @@ description: How @human-kit/ui builds accessibility into every primitive — ARI
 
 # Accessibility
 
-Accessibility is not a feature you opt into here — it's the reason these primitives exist. Every component implements an established interaction pattern so you don't have to wire up ARIA, keyboard handling, and focus management yourself.
+Accessibility is not an option that you enable. It is the reason for this library. Each component obeys a known interaction pattern, thus you do not write the ARIA attributes, the keyboard operation, and the focus control yourself.
 
 ## WAI-ARIA patterns
 
-Components follow the [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) for their role: menus use the menu button pattern, tabs use the tabs pattern, listboxes and comboboxes follow the combobox pattern, and so on. Roles, states, and relationships (`aria-expanded`, `aria-selected`, `aria-controls`, `aria-labelledby`, …) are wired for you and kept in sync with the component's state.
+Each component obeys the [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) for its role. The menu components obey the menu button pattern. The tabs components obey the tabs pattern. The listbox and the combobox components obey the combobox pattern.
+
+The components set the roles, the states, and the relations (`aria-expanded`, `aria-selected`, `aria-controls`, `aria-labelledby`). The components keep these attributes correct when the state changes.
 
 ## Keyboard support
 
-Full keyboard operation is built in:
+Each component has full keyboard operation:
 
-- **Roving focus** for composite widgets (tabs, toggle groups, menus, trees, grids) — arrow keys move between items, `Home`/`End` jump to the ends.
-- **Typeahead** in list-style components, so typing focuses the matching option.
-- **Activation semantics** that match the platform: `Enter`/`Space` where expected, `Escape` to dismiss overlays, `Tab` to move on.
-- **Directional open/close** for nested structures like submenus (`ArrowRight`/`ArrowLeft`).
+- **Roving focus** in the composite components (the tabs, the toggle groups, the menus, the trees, and the grids). The arrow keys move the focus between the items. The `Home` key and the `End` key move the focus to the first item and to the last item.
+- **Typeahead** in the list components. When you type a character, the focus moves to the item that agrees with it.
+- **Activation keys** that agree with the platform. The `Enter` key and the `Space` key activate the item. The `Escape` key closes an overlay. The `Tab` key moves the focus out.
+- **Direction keys** for the nested structures. In a submenu, the `ArrowRight` key opens and the `ArrowLeft` key closes.
 
 ## Focus management
 
-- Overlays (dialog, popover, menu) manage focus on open and **return focus to the trigger** on close.
-- A layer stack ensures only the topmost overlay responds to `Escape` and outside interaction, so nested overlays close in the right order.
-- Focus is **modality-aware**: components expose `data-focus-visible` so you can show focus rings for keyboard users without lighting them up on mouse clicks.
+- The overlay components (the dialog, the popover, and the menu) move the focus when they open. When they close, they **move the focus back to the trigger**.
+- A layer stack makes sure that only the top overlay obeys the `Escape` key and an interaction outside it. Thus the nested overlays close in the correct sequence.
+- The focus is **modality-aware**. Each component shows `data-focus-visible`, thus you can show a focus ring for a keyboard user, but not for a mouse user.
 
-## SSR-safe by default
+## Correct on the server
 
-Default selection, expansion, and open states are resolved on the server, so the first paint is correct and there's no flash or focus jump during hydration.
+The components calculate the initial selection state, expansion state, and open state on the server. Thus the first paint is correct, and there is no flash and no focus movement during the hydration.
 
-## Verify it yourself
+## How to check it
 
-Every component ships with tests that exercise its accessibility contract in a real browser. Each component page also documents the exact roles and data attributes it emits, so you can audit the output against your own requirements.
+Each component has tests that examine its accessibility contract in a true browser. The page for each component also gives the exact roles and data attributes that the component writes. Thus you can compare the output with your own requirements.

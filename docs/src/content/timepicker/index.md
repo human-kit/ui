@@ -16,13 +16,13 @@ description: A composable time picker pairing a segmented time input with a popo
 
 # TimePicker
 
-A composable time picker that pairs a segmented time input with a popover containing wheel-based spinbutton columns. Values are `HH:mm` or `HH:mm:ss` strings, with `null` as the empty state.
+This is a time picker that you assemble from parts. It puts a time input with segments together with a popover of wheel columns. Each value is an `HH:mm` string or an `HH:mm:ss` string. The empty state is `null`.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-`TimePicker.Root` owns the value and open state. `TimePicker.Input` renders locale-resolved segments, `TimePicker.Trigger` opens the popover, and `TimePicker.Clock` resolves the visible wheel columns from root state (`granularity`, `hourCycle`) in stable order: `hour → minute? → second? → dayPeriod?`. The `column` snippet customizes each wheel; omit it for default rendering.
+`TimePicker.Root` holds the value and the open state. `TimePicker.Input` makes the segments for the locale. `TimePicker.Trigger` opens the popover. `TimePicker.Clock` calculates the wheel columns from the state of the root (`granularity` and `hourCycle`). The sequence is always the same: the hour, then the minute, then the second, then the day period. The `column` snippet changes each wheel. If you give no `column` snippet, the component makes the default columns.
 
 ```svelte
 <script>
@@ -43,34 +43,34 @@ A composable time picker that pairs a segmented time input with a popover contai
 </TimePicker.Root>
 ```
 
-## Min and max bounds
+## Minimum and maximum
 
-`minValue` and `maxValue` constrain both the typed input and the wheels. Out-of-range wheel items are rendered with `data-disabled`; typed out-of-range values mark the input invalid instead of being auto-corrected. Midnight-wrapping ranges are not supported.
+The `minValue` and `maxValue` props set the limits for the text that the user types and for the wheels. The component shows a wheel item that is out of the limits with `data-disabled`. If the user types a time that is out of the limits, the input becomes invalid. The component does not correct the time. A range that goes through midnight is not possible.
 
 <Demo source={boundsSource}><Bounds /></Demo>
 
 ## 12-hour cycle
 
-Set `hourCycle={12}` to render an AM/PM segment and a day-period wheel column. Values are always normalized to 24-hour strings internally — the 12-hour rendering only affects the UI.
+Set `hourCycle={12}` to add an AM/PM segment and a day-period wheel column. In the code, the value is always a 24-hour string. The 12-hour cycle changes only the parts that the user sees.
 
 <Demo source={twelveHourSource}><TwelveHour /></Demo>
 
 ## Usage guidelines
 
-- Use `value` with `onChange` for controlled state and `defaultValue` for uncontrolled state; the empty state is `null`.
-- `granularity` controls the editable units: `'hour'`, `'minute'` (default), or `'second'`. `granularity="hour"` emits `HH:00` values.
-- Use `hourStep`, `minuteStep`, and `secondStep` to restrict selectable values to increments.
-- Use `open` / `defaultOpen` / `onOpenChange` to control the popover; wheel selection commits immediately on snap.
-- `TimePicker.Popover` forwards `Popover.Content` props such as `placement` (default `bottom`), `offset`, and `shouldFlip`.
-- Wrap in a `LocaleProvider` to localize segment order, day-period labels, and the default hour cycle.
+- When your own code controls the state, use `value` with `onChange`. When the component controls the state, use `defaultValue`. The empty state is `null`.
+- The `granularity` prop sets the units that the user can edit: `'hour'`, `'minute'` (the default), or `'second'`. With `granularity="hour"`, the value is `HH:00`.
+- Use `hourStep`, `minuteStep`, and `secondStep` to limit the values to given increments.
+- Use `open`, `defaultOpen`, and `onOpenChange` to control the popover. When a wheel stops on a value, the component immediately makes that value the new value.
+- `TimePicker.Popover` accepts the props of `Popover.Content`, for example `placement` (the default is `bottom`), `offset`, and `shouldFlip`.
+- Put the picker in a `LocaleProvider` to localize the sequence of the segments, the day-period names, and the default hour cycle.
 
 ## Accessibility
 
-- Segment accessible names are resolved automatically from the active locale.
-- `TimePicker.Input` exposes `aria-invalid` and `data-invalid` when the current segment draft is not committable.
-- Each wheel column exposes `role="spinbutton"` with `aria-valuenow`, `aria-valuetext`, `aria-valuemin`, and `aria-valuemax`.
-- Inside the popover, `ArrowUp`/`ArrowDown` step the focused column, `ArrowLeft`/`ArrowRight` move between columns, and `Home`/`End` jump to the column edges.
-- Popover focus defaults to the first wheel column; `Escape` and outside presses close it.
+- The accessible name of each segment comes from the active locale.
+- `TimePicker.Input` gets `aria-invalid` and `data-invalid` when the segments do not make a valid time.
+- Each wheel column has `role="spinbutton"` with `aria-valuenow`, `aria-valuetext`, `aria-valuemin`, and `aria-valuemax`.
+- In the popover, the `ArrowUp` key and the `ArrowDown` key change the column with the focus. The `ArrowLeft` key and the `ArrowRight` key move the focus between the columns. The `Home` key and the `End` key move to the first value and to the last value of the column.
+- When the popover opens, the focus goes to the first wheel column. The `Escape` key and a press outside the popover close it.
 
 ## API reference
 

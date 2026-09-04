@@ -9,7 +9,7 @@ Description: Dialog state container for open state, trigger ref, and root-level 
 
 | Prop           | Type                            | Default     | Description                                             |
 | -------------- | ------------------------------- | ----------- | ------------------------------------------------------- |
-| `open`         | `boolean`                       | `undefined` | Controlled open state. Supports `bind:open`.            |
+| `open`         | `boolean`                       | `undefined` | The open state. Supports `bind:open`.                   |
 | `defaultOpen`  | `boolean`                       | `false`     | Initial open state in uncontrolled mode.                |
 | `onOpenChange` | `(open: boolean) => void`       | `undefined` | Called whenever open state changes.                     |
 | `triggerRef`   | `HTMLElement \| null`           | `null`      | Trigger reference. Supports `bind:triggerRef`.          |

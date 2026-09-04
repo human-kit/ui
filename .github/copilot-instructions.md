@@ -16,6 +16,23 @@
 - Run formatting/lint checks: `pnpm run format`, `pnpm run lint`.
 - Browser tests use Playwright Chromium (`packages/ui/vitest.config.ts`); if missing locally run `cd packages/ui && pnpm exec playwright install chromium`.
 
+## Writing Style (applies to every sentence you write)
+
+- All reader-facing prose is **ASD-STE100** (Simplified Technical English): docs
+  pages, both top-level READMEs, the 107 part READMEs under `packages/ui/src/lib/**`,
+  and the JSDoc on every prop. It also covers PR titles, PR bodies, and comments
+  on issues and PRs.
+- Active voice, simple tenses, no `-ing` forms, keep the articles, one idea per
+  sentence, at most 25 words in a sentence, no metaphors, no contractions.
+- One verb per concept: a component **makes** an element, **holds** state,
+  **controls** behaviour, **shows** state in a data attribute, **sets** an
+  attribute. Never renders/owns/manages/exposes/wires.
+- Not in STE: the frontmatter `description` of a docs page (it is the search-result
+  meta description), code samples, and commit messages.
+- `pnpm run lint` runs `scripts/check-ste.mjs` and CI runs `pnpm run lint`, so
+  prose that breaks the mechanical rules cannot merge. Full rules in
+  `CONTRIBUTING.md`, section "Documentation style".
+
 ## Component Architecture Patterns
 
 - Components are part-based and namespaced: `index.parts.ts` + `index.ts` pattern (example: `packages/ui/src/lib/popover/index.ts`).

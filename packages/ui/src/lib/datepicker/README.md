@@ -86,9 +86,9 @@
 
 ## UX Decisions
 
-- **No Date Auto-Correction:** When users manually type dates out of the configured bounds (`minValue`/`maxValue`) or dates that are unavailable, the DatePicker **does not auto-correct** the typed value, and does not snap it back. It exposes `aria-invalid="true"` and `data-invalid` on the input, so the user sees what they typed and that it is refused. Auto-correcting input without explicit user consent is an inaccessible anti-pattern.
-- **A Rejected Date Is Still Committed:** the typed date is published through `onChange`/`value` even when the bounds refuse it. Publishing `null` instead would leave the input showing a date the consumer reads as an empty field — which is how a form ends up printing "required" underneath a filled-in control. Rejection travels as an invalid state, not as absence, so the layer that owns the rule (a form schema, usually) is the one that phrases the error. Typing bypasses the bounds this way; the Calendar does not — a disabled day is never selectable by pointer or keyboard.
-- **Navigable Disabled Dates:** When using the Calendar, disabled dates remain focusable via keyboard navigation. This ensures ARIA Grid spatial navigation parity so that screen readers can consistently announce all calendar cells and report them as "disabled", rather than skipping over them and disorienting the user.
+- **No Date Auto-Correction:** The user can type a date out of the limits of `minValue` and `maxValue`, or an unavailable date. The DatePicker does not correct that date, and it does not remove it. It exposes `aria-invalid="true"` and `data-invalid` on the input, so the user sees what they typed and that it is refused. Auto-correcting input without explicit user consent is an inaccessible anti-pattern.
+- A refused date is still a value: the component sends the date through `onChange` and `value`, also when the limits refuse it. With `null`, the input would show a date and your code would read an empty field. That is how a form prints "required" below a control that has a value. A refusal travels as an invalid state, and not as an absent value. Thus the layer with the rule, usually a form schema, writes the error text. Typing bypasses the bounds this way; the Calendar does not — a disabled day is never selectable by pointer or keyboard.
+- Disabled dates keep the focus: in the Calendar, the keyboard still goes to a disabled date. Thus the ARIA grid navigation stays complete. A screen reader announces each cell and says "disabled". Without this, the focus would go past those cells and confuse the user.
 
 ## Focus behavior decisions
 
@@ -97,5 +97,5 @@
 - Trigger focus restore after calendar close is modality-aware:
   - keyboard close paths keep visible focus,
   - pointer outside close restores focus without visible focus.
-- The component keeps explicit `trackInteractionModality(...)` calls in local handlers to ensure deterministic modality updates before local focus-state logic runs.
+- The component calls `trackInteractionModality(...)` in its own handlers. Thus the modality is correct before the focus-state code runs.
 - Cross-component focus contract and invariants are documented in `FOCUS_STATE_CONTRACT.md`.

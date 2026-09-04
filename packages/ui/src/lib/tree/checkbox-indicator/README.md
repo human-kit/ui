@@ -11,7 +11,7 @@ Description: Indicator wrapper for `Tree.Checkbox`. It only renders when the che
 | ------------ | --------- | ----------- | ----------------------------------------------------------- |
 | `forceMount` | `boolean` | `false`     | Keeps the indicator mounted when the checkbox is unchecked. |
 | `children`   | `Snippet` | `undefined` | Indicator content, typically an icon.                       |
-| `class`      | `string`  | `''`        | CSS class names for the indicator wrapper.                  |
+| `class`      | `string`  | `''`        | The CSS class names of the indicator container.             |
 
 ## Usage notes
 

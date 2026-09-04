@@ -32,6 +32,23 @@ describe('ToggleGroup SSR', () => {
 		expect(underline).toContain('aria-pressed="true"');
 	});
 
+	it('reports nothing while rendering', () => {
+		const changes: unknown[] = [];
+
+		render(ToggleGroupTest, {
+			props: {
+				value: ['bold'],
+				disallowEmptySelection: true,
+				onChange: (value) => changes.push(value)
+			}
+		});
+
+		// The toggles unregister as the markup closes, and a fallback picked there would reach
+		// a consumer whose HTML is already written — in SvelteKit, one whose `onChange`
+		// navigates, which fails the request outright.
+		expect(changes).toEqual([]);
+	});
+
 	it('renders empty default state before hydration', () => {
 		const { body } = render(ToggleGroupTest);
 		const bold = getTag(body, 'data-testid="toggle-bold"');

@@ -7,7 +7,7 @@
 ### Table.ColumnResizer
 
 Name: `Table.ColumnResizer`
-Description: Interactive resize handle for the current `Table.Column`. It must be composed inside `Table.ColumnHeaderCell`, and it resizes the column that owns the surrounding `Table.Column` context.
+Description: The handle that changes the width of the current `Table.Column`. Put it in a `Table.ColumnHeaderCell`. It changes the width of the column of the `Table.Column` context around it.
 
 Public prop type: `TableColumnResizerProps`
 
@@ -25,7 +25,7 @@ Public prop type: `TableColumnResizerProps`
 - The handle resolves the active column from `Table.Column` context. It does not accept a separate `columnId` prop.
 - Width state lives in `Table.Root` through `columnWidths` / `defaultColumnWidths`.
 - Pointer resizing uses Pointer Events, so mouse, touch, and pen interactions share the same behavior.
-- Keyboard resizing uses an explicit resize mode: focus the handle, press `Enter` to capture resize, use `ArrowLeft` / `ArrowRight` (plus `Shift`) to adjust the width, `Home` to jump to the minimum width, and `End` to auto-fit the column to its content width, then press `Enter` again to commit the width and keep focus on the handle.
+- The keyboard changes the width in a resize mode. Move the focus to the handle and push `Enter` to start that mode. Use the `ArrowLeft` key and the `ArrowRight` key, with `Shift` for a larger step, to change the width. Push `Home` for the minimum width, and `End` for the width of the content. Push `Enter` again to keep the width. The focus stays on the handle.
 - While keyboard resize mode is active, pressing `Escape` restores the starting width, exits resize mode, and returns focus to the owning header cell.
 - Keyboard resizing uses the same resize lifecycle callbacks as pointer resizing and announces committed widths through a polite live region.
 - During pointer drag, pressing `Escape` restores the starting width and cancels the resize interaction.

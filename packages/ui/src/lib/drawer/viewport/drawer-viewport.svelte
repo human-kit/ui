@@ -12,9 +12,9 @@
 	 * Belongs inside a Drawer.Portal, wrapping a Drawer.Content.
 	 */
 	type DrawerViewportProps = {
-		/** The panel this viewport places. */
+		/** The panel that this viewport puts in position. */
 		children?: Snippet;
-		/** CSS class for the viewport. */
+		/** The CSS class names of the viewport. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;
 

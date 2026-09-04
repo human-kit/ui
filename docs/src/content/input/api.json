@@ -3,7 +3,7 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "A native input element with modality-aware focus state and validation data attributes.",
+			"description": "A native input element. It has a modality-aware focus state, and it shows its validation state in data attributes.",
 			"props": [
 				{
 					"name": "class",
@@ -17,42 +17,42 @@
 					"type": "boolean | null",
 					"required": false,
 					"default": "false",
-					"description": "Disables the input natively."
+					"description": "Disables the input, with the native attribute."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean | null",
 					"required": false,
 					"default": "false",
-					"description": "Native readonly, also exposed as `aria-readonly`."
+					"description": "The native `readonly` attribute. The component also sets `aria-readonly`."
 				},
 				{
 					"name": "invalid",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Marks the value as invalid: maps to `aria-invalid` and `data-invalid`."
+					"description": "Marks the value as not valid. The component sets `aria-invalid` and `data-invalid`."
 				},
 				{
 					"name": "required",
 					"type": "boolean | null",
 					"required": false,
 					"default": "false",
-					"description": "Native required, also exposed as `aria-required`."
+					"description": "The native `required` attribute. The component also sets `aria-required`."
 				},
 				{
 					"name": "value",
 					"type": "HTMLInputAttributes['value']",
 					"required": false,
 					"default": null,
-					"description": "Current value. Bindable."
+					"description": "The value. You can bind it."
 				},
 				{
 					"name": "element",
 					"type": "HTMLInputElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered input element."
+					"description": "A bindable reference to the input element."
 				}
 			],
 			"dataAttributes": [
@@ -62,7 +62,7 @@
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",

@@ -15,46 +15,57 @@ export type {
 } from './root/context.svelte';
 
 export type AccordionRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
-	/** List of open item values. Two-way by default — use `bind:value`. */
+	/**
+	 * The list of the values of the open items. By default it goes in the two directions: use
+	 * `bind:value`.
+	 */
 	value?: AccordionValue[];
-	/** Initially open item values, for when `value` is not supplied. */
+	/** The values of the items that are open at the start, for when you give no `value`. */
 	defaultValue?: AccordionValue[];
 	/**
-	 * Opt into fully controlled state: the component stops writing back to `value` and
-	 * only reports through `onChange`, so the parent can reject a change by not flowing
-	 * the new value back down. Off by default, because `bind:value` — the common case —
-	 * needs the write-back to work at all.
+	 * Give your own code full control of the state. The component stops to write back to `value`, and
+	 * it reports only through `onChange`. Thus the parent can refuse a change: the parent does not
+	 * send the new value down. The default is off, because `bind:value` is the usual case and it
+	 * needs the write-back.
 	 */
 	controlledValue?: boolean;
-	/** Called with the new list of open item values after a user toggle. */
+	/**
+	 * The component calls it with the new list of the open item values, after the user opens or
+	 * closes a panel.
+	 */
 	onChange?: (value: AccordionValue[]) => void;
-	/** Whether one (`'single'`) or several (`'multiple'`) panels can be open at once. */
+	/**
+	 * The number of panels that can be open together: one with `'single'`, or more than one with
+	 * `'multiple'`.
+	 */
 	selectionMode?: AccordionSelectionMode;
 	/** Disables every item in the accordion. */
 	disabled?: boolean;
-	/** Axis used for arrow-key navigation between triggers. */
+	/** The axis of the arrow keys between the triggers. */
 	orientation?: AccordionOrientation;
-	/** Keeps at least one panel open at all times. */
+	/** Keeps one panel open at all times. */
 	disallowEmptySelection?: boolean;
-	/** Whether trigger focus wraps at the first and last items. */
+	/** At the first trigger and at the last trigger, the focus goes to the opposite end. */
 	loop?: boolean;
 	children?: Snippet;
 	class?: string;
 	id?: string;
-	/** Bindable reference to the rendered root element. */
+	/** A bindable reference to the root element. */
 	element?: HTMLDivElement | null;
-	/** Externally created accordion context, for advanced composition. */
+	/** An accordion context that your own code makes, for a complex composition. */
 	context?: AccordionContext;
 };
 
 export type AccordionItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
-	/** Unique value identifying the item. Header, Trigger and Panel read it from context. */
+	/**
+	 * The unique value of the item. The Header, the Trigger, and the Panel read it from the context.
+	 */
 	value: AccordionValue;
 	/** Disables this item only. */
 	disabled?: boolean;
 	children?: Snippet;
 	class?: string;
-	/** Bindable reference to the rendered item element. */
+	/** A bindable reference to the item element. */
 	element?: HTMLDivElement | null;
 };
 
@@ -62,11 +73,11 @@ export type AccordionHeaderProps = Omit<
 	HTMLAttributes<HTMLHeadingElement>,
 	'children' | 'class'
 > & {
-	/** Heading level of the rendered element, to match the surrounding document outline. */
+	/** The heading level of the element, to agree with the headings around it. */
 	level?: 1 | 2 | 3 | 4 | 5 | 6;
 	children?: Snippet;
 	class?: string;
-	/** Bindable reference to the rendered heading element. */
+	/** A bindable reference to the heading element. */
 	element?: HTMLHeadingElement | null;
 };
 
@@ -76,7 +87,7 @@ export type AccordionTriggerProps = Omit<
 > & {
 	children?: Snippet;
 	class?: string;
-	/** Bindable reference to the rendered trigger button. */
+	/** A bindable reference to the trigger button. */
 	element?: HTMLButtonElement | null;
 };
 
@@ -84,16 +95,19 @@ export type AccordionPanelProps = Omit<
 	HTMLAttributes<HTMLDivElement>,
 	'children' | 'class' | 'role' | 'hidden' | 'aria-labelledby'
 > & {
-	/** Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation. */
+	/**
+	 * Keep the closed panel in the DOM, and hidden. Without it, the panel leaves the DOM after the
+	 * exit animation.
+	 */
 	forceMount?: boolean;
 	/**
-	 * Whether the panel is exposed as a `role="region"` landmark (default `true`).
-	 * Set to `false` on accordions with many items: the APG recommends avoiding
-	 * `region` beyond roughly six panels so landmark lists are not flooded.
+	 * Makes the panel a `role="region"` landmark. The default is `true`. In an accordion with many
+	 * items, set it to `false`. Above approximately six panels, the APG recommends no `region`,
+	 * because too many landmarks make the landmark list difficult to use.
 	 */
 	region?: boolean;
 	children?: Snippet;
 	class?: string;
-	/** Bindable reference to the rendered panel element. */
+	/** A bindable reference to the panel element. */
 	element?: HTMLDivElement | null;
 };

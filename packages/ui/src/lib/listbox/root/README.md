@@ -17,7 +17,7 @@ Description: Main listbox state container that manages registration, selection, 
 | `value`             | `Iterable<string \| number>`             | `undefined`           | Controlled selection values.                                 |
 | `defaultValue`      | `Iterable<string \| number>`             | `undefined`           | Initial uncontrolled selection values.                       |
 | `children`          | `Snippet \| Snippet<[T]>`                | `undefined`           | Static or dynamic option rendering.                          |
-| `class`             | `string`                                 | `''`                  | CSS class names for the root element.                        |
+| `class`             | `string`                                 | `''`                  | The CSS class names of the root element.                     |
 | `id`                | `string`                                 | `undefined`           | DOM id for the listbox element.                              |
 | `aria-label`        | `string`                                 | `undefined`           | Accessible label for the listbox.                            |
 | `onChange`          | `(value: Set<string \| number>) => void` | `undefined`           | Called when selection changes.                               |

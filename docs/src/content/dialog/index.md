@@ -14,13 +14,13 @@ description: An accessible modal dialog with trigger, portal, overlay, and conte
 
 # Dialog
 
-An accessible modal pattern with trigger, portal, overlay, and content parts. It includes nested dialog stacking so only the topmost dialog handles global close interactions.
+This is an accessible modal pattern with a trigger part, a portal part, an overlay part, and a content part. A dialog can contain a second dialog. In a stack of dialogs, only the top dialog obeys the global close interactions.
 
 <Demo source={heroSource}><Hero /></Demo>
 
 ## Anatomy
 
-All parts live inside `Dialog.Root`. `Dialog.Trigger` opens the dialog, and the modal layers — `Dialog.Overlay` and `Dialog.Content` — render inside `Dialog.Portal`. The root `children` snippet receives state helpers (`close`, `open`, `toggle`, `isOpen`).
+All of the parts are in `Dialog.Root`. `Dialog.Trigger` opens the dialog. The modal layers, `Dialog.Overlay` and `Dialog.Content`, are in `Dialog.Portal`. The `children` snippet of the root receives the state functions: `close`, `open`, `toggle`, and `isOpen`.
 
 ```svelte
 <script>
@@ -40,29 +40,29 @@ All parts live inside `Dialog.Root`. `Dialog.Trigger` opens the dialog, and the 
 
 ## Controlled state
 
-Bind `open` on `Dialog.Root` to drive the dialog from outside — a trigger is optional. `defaultOpen` covers the uncontrolled case, and `onOpenChange` reports every change.
+Bind `open` on `Dialog.Root` to control the dialog from your own code. Then a trigger is optional. Use `defaultOpen` when the component controls the state. The `onOpenChange` prop reports each change.
 
 ## Nested dialogs
 
-Nest a `Dialog.Root` inside another dialog's content to build modal stacks. The stack is managed internally: overlays and panels get increasing z-indexes, and Escape or outside clicks only close the topmost dialog.
+Put a `Dialog.Root` in the content of a different dialog to make a stack. The component controls the stack. Each overlay and each panel gets a higher z-index. The `Escape` key and a click outside close only the top dialog.
 
 <Demo source={nestedSource}><Nested /></Demo>
 
 ## Usage guidelines
 
-- Place all dialog parts inside `Dialog.Root`.
-- Use `Dialog.Trigger` as the opener button.
-- Render modal layers inside `Dialog.Portal`.
-- Use `Dialog.Overlay` and `Dialog.Content` together for standard modal behavior.
-- Use nested `Dialog.Root` instances when you need modal stacks; topmost behavior is handled internally.
-- Use `shouldCloseOnEscape` / `shouldCloseOnInteractOutside` on `Dialog.Content` to opt out of the default close interactions.
+- Put all of the dialog parts in `Dialog.Root`.
+- Use `Dialog.Trigger` as the button that opens the dialog.
+- Put the modal layers in `Dialog.Portal`.
+- Use `Dialog.Overlay` and `Dialog.Content` together for the usual modal behavior.
+- Use nested `Dialog.Root` parts when you need a stack. The component controls which dialog is on top.
+- Use `shouldCloseOnEscape` and `shouldCloseOnInteractOutside` on `Dialog.Content` to stop the default close interactions.
 
 ## Accessibility
 
-- `Dialog.Content` renders `role="dialog"` with `aria-modal="true"` while open.
-- Focus is trapped inside the open dialog, and content outside it is hidden from assistive technology.
-- Body scroll is locked while a modal dialog is open.
-- Escape closes the topmost dialog; closing returns focus to the trigger.
+- While the dialog is open, `Dialog.Content` has `role="dialog"` with `aria-modal="true"`.
+- The focus stays in the open dialog. Assistive technology does not read the content outside the dialog.
+- While a modal dialog is open, the body does not scroll.
+- The `Escape` key closes the top dialog. When a dialog closes, the focus goes back to the trigger.
 
 ## API reference
 

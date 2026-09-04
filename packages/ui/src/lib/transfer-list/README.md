@@ -25,9 +25,7 @@ unchanged.
 There is one source of truth. `items` is the whole collection; `value` is the ordered list of
 keys that sit on the right. The left is everything else.
 
-That makes `value` exactly what a form submits, and it gives the right-hand list an order for
-free — items land in the sequence they were moved, and the list renders in `value` order
-rather than in `items` order.
+Thus `value` is exactly what a form submits, and `value` also gives the sequence of the right list. An item goes to the position where the user moved it, because the list obeys the sequence of `value` and not the sequence of `items`.
 
 - `getKey` identifies an item. Defaults to its `id` field.
 - `value` / `defaultValue` / `onChange` behave like every other component here.
@@ -41,12 +39,8 @@ rather than in `items` order.
 - A move takes the keys off one side and appends them to the other, in the order the
   originating list showed them.
 - Items that move arrive **deselected**, so the next click on the opposite button is never an
-  accidental undo. The selection is pruned against what is actually on each side rather than
-  cleared outright, so a controlled parent that rejects a move leaves the user's selection
-  intact.
-- **Double click moves a row.** `Enter` deliberately does not: in a multi-select listbox Enter
-  and Space toggle the selection, and overriding that would break the contract every other
-  list in the library keeps. `Ctrl`/`Cmd`+`Enter` is the shortcut instead — each list has one
+  accidental undo. The component removes from the selection only the items that are not at that side. It does not remove the full selection. Thus a parent that refuses a move keeps the selection of the user.
+- **Double click moves a row.** The `Enter` key does not move an item. In a listbox with more than one selection, the `Enter` key and the `Space` key change the selection. A different behavior would break the contract of each other list in this library. `Ctrl`/`Cmd`+`Enter` is the shortcut instead — each list has one
   destination, so it needs no direction and survives a mirrored layout. Disable it with
   `moveShortcut={false}`.
 - Shift+click and Shift+Arrow select a range — see `ListBox`. With `virtualizer`, the range
@@ -62,8 +56,7 @@ rather than in `items` order.
 - From a button, focus stays on the button, as it does for any button press. The buttons are
   `aria-disabled` rather than natively disabled, so one that has just run out of work can
   still hold it.
-- From a double click or the keyboard shortcut, the row the user was on is gone, so focus
-  lands on whichever row took its place (or the last row, if it was the last). When the side
+- After a double click or the keyboard shortcut, the row of the user is gone. The focus goes to the row that takes its position. If that row was the last row, the focus goes to the new last row. When the side
   empties, it follows the items to the destination list rather than falling to the `<body>`.
 
 ## Accessibility
@@ -75,12 +68,8 @@ rather than in `items` order.
 - Each list is a `role="listbox"` with `aria-multiselectable="true"`, named by `label` — or by
   `aria-labelledby` when there is a visible heading.
 - The move buttons carry `aria-disabled` rather than the native attribute, so they stay in the
-  tab order when they have nothing to do. These controls are unavailable more often than not,
-  and natively disabling them would hide half the actions from a keyboard user and shift the
-  tab order underfoot. Style them with `data-disabled` — `:disabled` will never match.
-- The move buttons are named after where items go ("Move selected to Selected"), not after a
-  direction: an arrow glyph says nothing on its own, and "move right" is wrong the moment the
-  layout is mirrored. Override with `aria-label`.
+  tab order when they have nothing to do. These controls are unavailable more often than available. If the component disabled them natively, a keyboard user would not find half of the actions. The tab order would also change while the user works. Style them with `data-disabled` — `:disabled` will never match.
+- The name of a move button says where the items go ("Move selected to Selected"), and not a direction. An arrow symbol alone says nothing, and "move right" is wrong when the layout is a mirror image. Override with `aria-label`.
 - `TransferList.Status` announces each move in a polite live region.
 
 ## Anatomy

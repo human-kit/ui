@@ -19,11 +19,11 @@
 	> & {
 		/** Which way the selection moves. */
 		direction: 'up' | 'down';
-		/** Button content — an arrow, a label, whatever the layout calls for. */
+		/** The content of the button: an arrow, a name, or a different element of your layout. */
 		children?: Snippet;
-		/** CSS class for the button. */
+		/** The CSS class names of the button. */
 		class?: string;
-		/** Bindable reference to the rendered button element. */
+		/** A bindable reference to the button element. */
 		element?: HTMLButtonElement | null;
 	};
 

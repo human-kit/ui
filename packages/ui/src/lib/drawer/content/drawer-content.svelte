@@ -51,21 +51,24 @@
 	 * Belongs inside a Drawer.Portal, optionally wrapped in a Drawer.Viewport.
 	 */
 	type DrawerContentProps = {
-		/** Content of the panel. */
+		/** The content of the panel. */
 		children?: Snippet;
-		/** CSS class for the panel. */
+		/** The CSS class names of the panel. */
 		class?: string;
 		/**
-		 * Where focus lands when the drawer opens. Defaults to the first focusable
-		 * element inside the panel.
+		 * The element that gets the focus when the drawer opens. The default is the first element in the
+		 * panel that can take the focus.
 		 */
 		initialFocus?: HTMLElement | string | (() => HTMLElement | null | undefined);
 		/**
-		 * `touch-action` for the panel. Defaults to `pan-y` for left/right drawers —
-		 * children keep scrolling vertically while the horizontal axis is reserved for
-		 * the drag — and to nothing for top/bottom ones, where reserving the vertical
-		 * axis would break every scrollable region inside (`touch-action` intersects
-		 * down the ancestor chain, so a child cannot opt back in).
+		 * The `touch-action` value of the panel.
+		 *
+		 * For a left drawer or a right drawer, the default is `pan-y`. The children still scroll on the
+		 * vertical axis, and the horizontal axis belongs to the drag.
+		 *
+		 * For a top drawer or a bottom drawer, there is no default. A reservation of the vertical axis
+		 * would break each region in the panel that scrolls. `touch-action` applies down the chain of
+		 * the parents, and a child cannot cancel it.
 		 */
 		touchAction?: string | null;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'>;

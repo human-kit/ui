@@ -32,22 +32,28 @@ export type TreeRootProps<T extends object = object> = Omit<
 	HTMLAttributes<HTMLDivElement>,
 	'children'
 > & {
-	/** Expanded node keys. Two-way by default — use `bind:expandedKeys`. */
+	/**
+	 * The keys of the expanded nodes. By default it goes in the two directions: use
+	 * `bind:expandedKeys`.
+	 */
 	expandedKeys?: Iterable<TreeNodeId>;
-	/** Initially expanded keys, for when `expandedKeys` is not supplied. */
+	/** The expanded keys at the start, for when you give no `expandedKeys`. */
 	defaultExpandedKeys?: Iterable<TreeNodeId>;
 	/**
-	 * Opt into fully controlled expansion: the component stops writing back to
-	 * `expandedKeys` and only reports through `onExpandedKeysChange`, so the parent can
-	 * reject a change by not flowing the new keys back down. Off by default, because
-	 * `bind:expandedKeys` — the common case — needs the write-back to work at all.
+	 * Give your own code full control of the expansion. The component stops to write back to
+	 * `expandedKeys`, and it reports only through `onExpandedKeysChange`. Thus the parent can refuse
+	 * a change: the parent does not send the new keys down. The default is off, because
+	 * `bind:expandedKeys` is the usual case and it needs the write-back.
 	 */
 	controlledExpandedKeys?: boolean;
-	/** Selected node keys. Two-way by default — use `bind:selectedKeys`. */
+	/**
+	 * The keys of the selected nodes. By default it goes in the two directions: use
+	 * `bind:selectedKeys`.
+	 */
 	selectedKeys?: Iterable<TreeNodeId>;
-	/** Initially selected keys, for when `selectedKeys` is not supplied. */
+	/** The selected keys at the start, for when you give no `selectedKeys`. */
 	defaultSelectedKeys?: Iterable<TreeNodeId>;
-	/** Opt into fully controlled selection. See `controlledExpandedKeys`. */
+	/** Give your own code full control of the selection. Read `controlledExpandedKeys`. */
 	controlledSelectedKeys?: boolean;
 	disabledKeys?: Iterable<TreeNodeId>;
 	selectionMode?: TreeSelectionMode;
@@ -61,7 +67,10 @@ export type TreeRootProps<T extends object = object> = Omit<
 	onExpandedKeysChange?: (keys: Set<TreeNodeId>) => void;
 	onSelectionChange?: (keys: Set<TreeNodeId>) => void;
 	onAction?: TreeActionHandler;
-	/** Enter/exit transition applied to each item row on expand/collapse. Defaults to none. */
+	/**
+	 * The enter transition and the exit transition of each item row, when a node expands or closes.
+	 * The default is none.
+	 */
 	itemTransition?: TreeItemTransition;
 	class?: string;
 	context?: TreeContext;

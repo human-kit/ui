@@ -3,84 +3,84 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The stateful container. Holds the selection state, visible months, and paging logic shared by all calendar parts.",
+			"description": "The container with the state. It holds the selection state, the months that the user sees, and the code that moves between the months. All of the calendar parts share it.",
 			"props": [
 				{
 					"name": "selectionMode",
 					"type": "CalendarSelectionMode",
 					"required": false,
 					"default": "'single'",
-					"description": "Selection behavior: 'single' selects one YYYY-MM-DD date, 'range' selects a { start, end } pair."
+					"description": "The selection behavior: 'single' selects one YYYY-MM-DD date, and 'range' selects a { start, end } pair."
 				},
 				{
 					"name": "visibleMonths",
 					"type": "number",
 					"required": false,
 					"default": "1",
-					"description": "How many months are rendered at once and how paging advances."
+					"description": "The number of the months that the calendar shows together. It also sets how far the triggers move."
 				},
 				{
 					"name": "showOutsideDays",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Whether days outside the current month are shown in the grid."
+					"description": "Shows the days that are not in the current month."
 				},
 				{
 					"name": "firstDayOfWeek",
 					"type": "CalendarFirstDayOfWeek",
 					"required": false,
 					"default": null,
-					"description": "Overrides the first day of the week specified by the active locale."
+					"description": "Replaces the first day of the week of the active locale."
 				},
 				{
 					"name": "monthHeadingStyle",
 					"type": "CalendarMonthHeadingStyle",
 					"required": false,
 					"default": "'composed'",
-					"description": "How the heading is rendered: 'composed' uses a locale-composed string, 'month-year' renders separate month and year parts."
+					"description": "The format of the heading: 'composed' uses one string from the locale, and 'month-year' makes a month part and a year part."
 				},
 				{
 					"name": "minValue",
 					"type": "CalendarDateValue",
 					"required": false,
 					"default": null,
-					"description": "Earliest selectable date (`YYYY-MM-DD`). Earlier dates report unavailable and page/focus navigation clamps at this bound."
+					"description": "The first date that the user can select (`YYYY-MM-DD`). A date before it is unavailable, and\nthe triggers and the focus stop at this limit."
 				},
 				{
 					"name": "maxValue",
 					"type": "CalendarDateValue",
 					"required": false,
 					"default": null,
-					"description": "Latest selectable date (`YYYY-MM-DD`). Later dates report unavailable and page/focus navigation clamps at this bound."
+					"description": "The last date that the user can select (`YYYY-MM-DD`). A date after it is unavailable, and the\ntriggers and the focus stop at this limit."
 				},
 				{
 					"name": "isDateUnavailable",
 					"type": "(date: string) => boolean",
 					"required": false,
 					"default": null,
-					"description": "Marks specific days as non-selectable. Unavailable cells stay focusable but expose aria-disabled."
+					"description": "Makes specified days unavailable. The user cannot select them. Those cells keep the focus, and they have aria-disabled."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Disables the whole calendar, including paging triggers and day selection."
+					"description": "Disables the full calendar, with the triggers and the day selection."
 				},
 				{
 					"name": "readonly",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keeps the calendar navigable while preventing selection changes."
+					"description": "Keeps the keyboard operation of the calendar, but stops the changes of the selection."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Calendar parts to compose inside the root."
+					"description": "The calendar parts that you assemble in the root."
 				},
 				{
 					"name": "class",
@@ -94,42 +94,42 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the root element. Auto-generated when omitted."
+					"description": "The id of the root element. If you give none, the component makes one."
 				},
 				{
 					"name": "element",
 					"type": "HTMLDivElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered root element."
+					"description": "A bindable reference to the root element."
 				},
 				{
 					"name": "aria-label",
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Accessible label for the calendar when no visible label is associated."
+					"description": "The accessible name of the calendar, for when the user sees no name."
 				},
 				{
 					"name": "value",
 					"type": "CalendarDateValue | null",
 					"required": false,
 					"default": null,
-					"description": "Controlled selected date (single mode) or range (range mode). Bindable."
+					"description": "The selected date in the single mode, or the range in the range mode. You can bind it."
 				},
 				{
 					"name": "defaultValue",
 					"type": "CalendarDateValue",
 					"required": false,
 					"default": null,
-					"description": "Initially selected date or range when uncontrolled."
+					"description": "The date or the range at the start, for when the component controls the state."
 				},
 				{
 					"name": "onChange",
 					"type": "(value: CalendarDateValue) => void",
 					"required": false,
 					"default": null,
-					"description": "Called with the new date or range after a user selection."
+					"description": "The component calls it with the new date or the new range, after the user selects."
 				}
 			],
 			"dataAttributes": [
@@ -145,7 +145,7 @@
 		},
 		{
 			"name": "TriggerPrevious",
-			"description": "Button that pages the calendar to the previous month (or set of visible months).",
+			"description": "The button that moves the calendar to the previous month, or to the previous set of months.",
 			"props": [
 				{
 					"name": "class",
@@ -159,20 +159,20 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the button, e.g. an icon or label."
+					"description": "The content of the button, for example an icon or a name."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Heading",
-			"description": "Displays the visible month heading, localized through the active locale and formatted per monthHeadingStyle.",
+			"description": "Shows the heading of the month. The active locale gives its language, and monthHeadingStyle gives its format.",
 			"props": [],
 			"dataAttributes": []
 		},
 		{
 			"name": "TriggerNext",
-			"description": "Button that pages the calendar to the next month (or set of visible months).",
+			"description": "The button that moves the calendar to the next month, or to the next set of months.",
 			"props": [
 				{
 					"name": "class",
@@ -186,21 +186,21 @@
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Content rendered inside the button, e.g. an icon or label."
+					"description": "The content of the button, for example an icon or a name."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "Grid",
-			"description": "Renders the visible month(s) as accessible grids named after the month heading.",
+			"description": "Makes each month that the user sees into an accessible grid. The month heading gives the grid its name.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "Grid content, typically Calendar.GridHeader and Calendar.GridBody."
+					"description": "The content of the grid, usually Calendar.GridHeader and Calendar.GridBody."
 				},
 				{
 					"name": "class",
@@ -214,7 +214,7 @@
 					"type": "CalendarWeekdayStyle",
 					"required": false,
 					"default": "'short'",
-					"description": "Width of the weekday header labels: 'narrow', 'short', or 'long'."
+					"description": "The length of the weekday names in the header: 'narrow', 'short', or 'long'."
 				}
 			],
 			"dataAttributes": [
@@ -230,14 +230,14 @@
 		},
 		{
 			"name": "GridHeader",
-			"description": "The weekday header row. Iterates the localized weekday labels and passes each to the children snippet.",
+			"description": "The header row of the weekdays. It goes through the localized weekday names and gives each one to the children snippet.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet<[string, string]>",
 					"required": false,
 					"default": null,
-					"description": "Custom header cell rendering. Receives the styled weekday label (per\n`weekdayStyle`) and the long weekday name, useful as an accessible\nlabel when the styled label is narrow (e.g. \"M\" for both Monday and\nWednesday in some locales)."
+					"description": "Your own content for a header cell. It receives the weekday name in the length of\n`weekdayStyle`, and also the long weekday name. Use the long name as the accessible name when\nthe short one is narrow. In some locales, \"M\" is the narrow name of Monday and of Wednesday."
 				},
 				{
 					"name": "class",
@@ -251,28 +251,28 @@
 		},
 		{
 			"name": "HeaderCell",
-			"description": "One weekday label cell inside the grid header row.",
+			"description": "One cell with a weekday name, in the header row of the grid.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The weekday label content."
+					"description": "The content of the weekday name."
 				}
 			],
 			"dataAttributes": []
 		},
 		{
 			"name": "GridBody",
-			"description": "The day cells area. Iterates the visible days and passes each ISO date to the children snippet.",
+			"description": "The area of the day cells. It goes through the days that the user sees and gives each ISO date to the children snippet.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet<[string]>",
 					"required": false,
 					"default": null,
-					"description": "Renders one body cell per day; receives the ISO YYYY-MM-DD date."
+					"description": "Makes one body cell for each day. It receives the ISO YYYY-MM-DD date."
 				},
 				{
 					"name": "class",
@@ -291,21 +291,21 @@
 		},
 		{
 			"name": "BodyCell",
-			"description": "One focusable day cell. Handles selection, keyboard navigation, and exposes its full state through data attributes.",
+			"description": "One day cell that can take the focus. It controls the selection and the keyboard operation, and it shows its full state in data attributes.",
 			"props": [
 				{
 					"name": "date",
 					"type": "string",
 					"required": true,
 					"default": null,
-					"description": "The ISO YYYY-MM-DD date this cell represents, as received from GridBody's snippet."
+					"description": "The ISO YYYY-MM-DD date of this cell, from the snippet of GridBody."
 				},
 				{
 					"name": "children",
 					"type": "Snippet<[string]>",
 					"required": false,
 					"default": null,
-					"description": "Custom cell content; receives the day number label. Defaults to the day number."
+					"description": "Your own content for the cell. It receives the day number. The default is the day number."
 				}
 			],
 			"dataAttributes": [
@@ -315,11 +315,11 @@
 				},
 				{
 					"name": "data-disabled",
-					"description": "Present when the day cannot be selected (calendar disabled or date unavailable)."
+					"description": "Present when the user cannot select the day, because the calendar is disabled or the date is unavailable."
 				},
 				{
 					"name": "data-focus-visible",
-					"description": "Present while focus should be visibly indicated (keyboard modality)."
+					"description": "Present while the focus must be visible (keyboard modality)."
 				},
 				{
 					"name": "data-focused",
@@ -335,7 +335,7 @@
 				},
 				{
 					"name": "data-outside-month",
-					"description": "Present when the day belongs to an adjacent month."
+					"description": "Present when the day is in the month before or the month after."
 				},
 				{
 					"name": "data-pressed",
@@ -359,7 +359,7 @@
 				},
 				{
 					"name": "data-unavailable",
-					"description": "Present when isDateUnavailable marks the day as unavailable."
+					"description": "Present when `isDateUnavailable` makes the day unavailable."
 				}
 			]
 		}

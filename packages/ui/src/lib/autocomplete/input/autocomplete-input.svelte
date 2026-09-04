@@ -8,11 +8,11 @@
 	} from '../../primitives/input-modality';
 
 	type AutocompleteInputProps = HTMLInputAttributes & {
-		/** Accessible label for the input. */
+		/** The accessible name of the input. */
 		'aria-label'?: string;
-		/** ID of element that labels this input. */
+		/** The id of the element that gives this input its name. */
 		'aria-labelledby'?: string;
-		/** ID of element that describes this input (e.g. usage instructions). */
+		/** The id of the element that describes this input, for example the instructions. */
 		'aria-describedby'?: string;
 		class?: string;
 	};

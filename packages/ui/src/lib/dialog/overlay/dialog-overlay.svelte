@@ -9,7 +9,7 @@
 	 * Must be used inside a Dialog.Portal.
 	 */
 	type DialogOverlayProps = {
-		/** CSS class for the overlay. */
+		/** The CSS class names of the overlay. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class'>;
 

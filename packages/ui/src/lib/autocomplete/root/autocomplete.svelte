@@ -11,22 +11,22 @@
 	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
 
 	type AutocompleteProps = {
-		/** Stable ID used to generate internal ARIA IDs (recommended for SSR). */
+		/** A stable id, from which the component makes its internal ARIA ids. Give one on a server. */
 		id?: string;
 		disabled?: boolean;
 		readonly?: boolean;
-		/** Current search query. Can be bound with bind:inputValue. */
+		/** The search text. You can bind it with `bind:inputValue`. */
 		inputValue?: string;
-		/** Initial query for uncontrolled mode. */
+		/** The search text at the start, for when the component controls the state. */
 		defaultInputValue?: string;
 		/**
-		 * Local filter function. Defaults to a case-insensitive "contains" match.
-		 * Set to `null` to disable local filtering (e.g. when filtering server-side).
+		 * The local filter function. The default compares the text and ignores the letter case. Set it
+		 * to `null` to stop the local filter, for example when a server sends the filtered results.
 		 */
 		filter?: AutocompleteFilter | null;
-		/** Automatically highlight the first matching item as the query changes. */
+		/** Highlights the first item that agrees with the search text, each time that text changes. */
 		autoHighlight?: boolean;
-		/** Called when the search query changes. */
+		/** The component calls it when the search text changes. */
 		onInputChange?: (value: string) => void;
 		children?: Snippet;
 		class?: string;

@@ -2,7 +2,7 @@
 
 ## Description
 
-`Collapsible` is a headless single disclosure primitive: a button that shows and hides an associated panel, with controlled or uncontrolled open state and a disabled state.
+`Collapsible` is a headless disclosure component: a button that shows and hides one panel. You can control the open state, or the component can control it. It also has a disabled state.
 
 ## Anatomy
 
@@ -20,7 +20,7 @@
 ## Usage Guidelines
 
 - Use `open` / `onOpenChange` for controlled state and `defaultOpen` for uncontrolled state.
-- Use `disabled` to prevent the trigger from toggling the panel.
+- Use `disabled` to stop the trigger. It cannot open or close the panel.
 - Use `forceMount` on `Collapsible.Panel` when collapsed content must stay in the DOM.
 - For grouped disclosures where only one section opens at a time, use `Accordion` instead.
 
@@ -28,4 +28,4 @@
 
 - `Collapsible.Trigger` renders button semantics with `aria-expanded` and `aria-controls` pointing at the panel, following the WAI-ARIA disclosure pattern.
 - `Collapsible.Panel` is `hidden` + `inert` while collapsed and carries the `id` referenced by the trigger.
-- Enter/Space toggle the panel via native button activation.
+- The `Enter` key and the `Space` key open and close the panel, like a native button.

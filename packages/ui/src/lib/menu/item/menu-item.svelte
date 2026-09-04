@@ -51,21 +51,24 @@
 	 * Menu.Item - An interactive menu item (role="menuitem").
 	 */
 	type MenuItemProps = {
-		/** Stable identifier (used for typeahead/navigation). Auto-generated if omitted. */
+		/**
+		 * The stable identifier, for the typeahead and the keyboard. If you give none, the component
+		 * makes one.
+		 */
 		value?: string | number;
-		/** Handler invoked when the item is activated. */
+		/** The component calls it when the user activates the item. */
 		onAction?: (event?: Event) => void;
-		/** Whether the item is disabled. */
+		/** Disables the item. */
 		disabled?: boolean;
-		/** Override the Root `closeOnSelect` default for this item. */
+		/** Replaces the `closeOnSelect` value of the Root, for this item. */
 		closeOnSelect?: boolean;
-		/** Text used for typeahead matching. Falls back to the item's text content. */
+		/** The text for the typeahead. Without it, the component uses the text content of the item. */
 		textValue?: string;
-		/** Item content. */
+		/** The content of the item. */
 		children?: Snippet;
-		/** CSS class for the item. */
+		/** The CSS class names of the item. */
 		class?: string;
-		/** Bindable reference to the item element. */
+		/** A bindable reference to the item element. */
 		element?: HTMLElement | null;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children' | 'role'>;
 

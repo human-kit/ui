@@ -3,49 +3,49 @@
 	"parts": [
 		{
 			"name": "Root",
-			"description": "The disclosure container. Holds the open state and provides context to the trigger and panel.",
+			"description": "The disclosure container. It holds the open state and gives the context to the trigger and to the panel.",
 			"props": [
 				{
 					"name": "open",
 					"type": "boolean",
 					"required": false,
 					"default": null,
-					"description": "Open state. Two-way by default — use `bind:open`."
+					"description": "The open state. By default it goes in the two directions: use `bind:open`."
 				},
 				{
 					"name": "defaultOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Initial open state, for when `open` is not supplied."
+					"description": "The open state at the start, for when you give no `open`."
 				},
 				{
 					"name": "controlledOpen",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Opt into fully controlled state: the component stops writing back to `open` and\nonly reports through `onOpenChange`, so the parent can reject a change by not\nflowing the new value back down. Off by default, because `bind:open` — the common\ncase — needs the write-back to work at all."
+					"description": "Give your own code full control of the open state. The component stops to write back to `open`,\nand it reports only through `onOpenChange`. Thus the parent can refuse a change: the parent\ndoes not send the new value down. The default is off, because `bind:open` is the usual case and\nit needs the write-back."
 				},
 				{
 					"name": "onOpenChange",
 					"type": "(open: boolean) => void",
 					"required": false,
 					"default": null,
-					"description": "Called when the user toggles the panel."
+					"description": "The component calls it when the user opens or closes the panel."
 				},
 				{
 					"name": "disabled",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Prevents the trigger from toggling the panel."
+					"description": "Stops the trigger. It cannot open or close the panel."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The trigger and panel parts."
+					"description": "The trigger part and the panel part."
 				},
 				{
 					"name": "class",
@@ -59,21 +59,21 @@
 					"type": "string",
 					"required": false,
 					"default": null,
-					"description": "Id applied to the root element and used to derive the trigger and panel ids. Auto-generated when omitted."
+					"description": "The id of the root element. The component makes the ids of the trigger and of the panel from it. If you give none, the component makes one."
 				},
 				{
 					"name": "element",
 					"type": "HTMLDivElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered root element."
+					"description": "A bindable reference to the root element."
 				},
 				{
 					"name": "context",
 					"type": "CollapsibleContext",
 					"required": false,
 					"default": null,
-					"description": "Bindable handle exposing the collapsible state (`isOpen`, `isDisabled`) and the `setOpen` / `toggle` actions."
+					"description": "A bindable object with the state of the collapsible (`isOpen` and `isDisabled`) and with the `setOpen` and `toggle` functions."
 				}
 			],
 			"dataAttributes": [
@@ -93,14 +93,14 @@
 		},
 		{
 			"name": "Trigger",
-			"description": "The toggle button. Shows and hides the panel via native button activation.",
+			"description": "The button. It shows and hides the panel, with native button activation.",
 			"props": [
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The trigger label content."
+					"description": "The content of the trigger."
 				},
 				{
 					"name": "class",
@@ -114,7 +114,7 @@
 					"type": "HTMLButtonElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered button element."
+					"description": "A bindable reference to the button element."
 				}
 			],
 			"dataAttributes": [
@@ -134,21 +134,21 @@
 		},
 		{
 			"name": "Panel",
-			"description": "The content shown and hidden by the trigger. Hidden and inert while collapsed.",
+			"description": "The content that the trigger shows and hides. While it is closed, it is hidden and inert.",
 			"props": [
 				{
 					"name": "forceMount",
 					"type": "boolean",
 					"required": false,
 					"default": "false",
-					"description": "Keep the closed panel mounted (hidden) instead of unmounting it after the exit animation."
+					"description": "Keep the closed panel in the DOM, and hidden. Without it, the panel leaves the DOM after the\nexit animation."
 				},
 				{
 					"name": "children",
 					"type": "Snippet",
 					"required": false,
 					"default": null,
-					"description": "The panel content."
+					"description": "The content of the panel."
 				},
 				{
 					"name": "class",
@@ -162,7 +162,7 @@
 					"type": "HTMLDivElement | null",
 					"required": false,
 					"default": "null",
-					"description": "Bindable reference to the rendered panel element."
+					"description": "A bindable reference to the panel element."
 				}
 			],
 			"dataAttributes": [
@@ -176,11 +176,11 @@
 				},
 				{
 					"name": "data-collapsible-panel-content",
-					"description": "Identifies the inner content wrapper used for height measurement."
+					"description": "Identifies the inner content element for the height measurement."
 				},
 				{
 					"name": "data-ending-style",
-					"description": "Present for one frame as the panel starts closing, for exit transitions."
+					"description": "Present for one frame when the panel starts to close, for the exit transition."
 				},
 				{
 					"name": "data-open",
@@ -188,7 +188,7 @@
 				},
 				{
 					"name": "data-starting-style",
-					"description": "Present for one frame as the panel starts opening, for enter transitions."
+					"description": "Present for one frame when the panel starts to open, for the enter transition."
 				}
 			]
 		}

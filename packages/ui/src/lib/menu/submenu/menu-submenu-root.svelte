@@ -9,19 +9,22 @@
 	 * Must be used inside a parent Menu.Content.
 	 */
 	type MenuSubmenuRootProps = {
-		/** Controlled open state. */
+		/** The open state. */
 		open?: boolean;
-		/** Initial open state for uncontrolled mode. */
+		/** The open state at the start, for when the component controls the state. */
 		defaultOpen?: boolean;
-		/** Callback when open state changes. */
+		/** The component calls it when the open state changes. */
 		onOpenChange?: (open: boolean, details: MenuOpenChangeDetails) => void;
-		/** Whether arrow navigation wraps. Inherits from the parent menu by default. */
+		/**
+		 * At the last item, the arrow keys move the focus to the first item. The default comes from the
+		 * menu above it.
+		 */
 		loop?: boolean;
-		/** Whether typeahead is enabled. Inherits from the parent menu by default. */
+		/** Starts the typeahead. The default comes from the menu above it. */
 		typeahead?: boolean;
-		/** Whether selecting an item closes the menu. Inherits from the parent by default. */
+		/** Closes the menu when the user selects an item. The default comes from the menu above it. */
 		closeOnSelect?: boolean;
-		/** Reference to the submenu trigger element. */
+		/** The reference to the submenu trigger element. */
 		triggerRef?: HTMLElement | null;
 		children?: Snippet;
 	};

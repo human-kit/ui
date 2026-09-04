@@ -29,10 +29,9 @@
 		part: DateRangePickerRangePart;
 		id?: string;
 		/**
-		 * Name of the hidden proxy input used for form submission. The proxy only
-		 * mirrors the committed value: autofill is NOT supported (it renders with
-		 * `autocomplete="off"` so browsers and password managers do not write
-		 * into it) — dates are entered through the editable segments.
+		 * The name of the hidden input for the form submission. That input only holds the value. It does
+		 * not accept an autofill: it has `autocomplete="off"`, thus a browser and a password manager do
+		 * not write in it. The user types the date in the segments.
 		 */
 		name?: string;
 		children?: Snippet<[DatePickerSegmentPart]>;

@@ -4,7 +4,10 @@ import { render } from 'vitest-browser-svelte';
 import ToggleGroupDuplicateTest from './toggle-group-duplicate-test.svelte';
 import ToggleGroupNumericStringTest from './toggle-group-numeric-string-test.svelte';
 import ToggleGroupOrderTest from './toggle-group-order-test.svelte';
+import ToggleGroupRejectingParentTest from './toggle-group-rejecting-parent-test.svelte';
+import ToggleGroupTeardownOrderTest from './toggle-group-teardown-order-test.svelte';
 import ToggleGroupTest from './toggle-group-test.svelte';
+import ToggleGroupUnmountTest from './toggle-group-unmount-test.svelte';
 
 function getToggle(testId: string) {
 	const toggle = document.querySelector<HTMLButtonElement>(`[data-testid="${testId}"]`);
@@ -121,37 +124,25 @@ describe('ToggleGroup.Root', () => {
 		expect(changes).toEqual([]);
 	});
 
-	it('allows controlled empty value even with disallowEmptySelection', async () => {
+	it('honours disallowEmptySelection over an empty supplied value', async () => {
 		const changes: unknown[] = [];
 		render(ToggleGroupTest, {
 			value: [],
-			controlledValue: true,
 			disallowEmptySelection: true,
 			onChange: (value) => changes.push(value)
 		});
 		const bold = getToggle('toggle-bold');
 
-		// The parent owns an empty selection, and `disallowEmptySelection` must not
-		// override it by picking a fallback on the component's own initiative.
-		expect(bold.getAttribute('aria-pressed')).toBe('false');
-
-		await userEvent.click(bold);
-
-		// The press is reported, but this parent never flows it back down — so nothing
-		// moves. Previously the component suppressed the fallback (acting controlled) yet
-		// applied the click anyway (acting uncontrolled); that split is now gone, and
-		// "controlled" means the same thing on both paths.
-		expect(changes).toEqual([['bold']]);
-		expect(bold.getAttribute('aria-pressed')).toBe('false');
+		// Same resolution as `defaultValue: []`: an empty selection is not one of the states
+		// this group can be in, so it settles on the first toggle without announcing it.
+		expect(bold.getAttribute('aria-pressed')).toBe('true');
+		expect(changes).toEqual([]);
 	});
 
-	it('applies the press itself when an empty value is merely bound', async () => {
+	it('applies and reports a press when value is supplied', async () => {
 		const changes: unknown[] = [];
 		render(ToggleGroupTest, {
 			value: [],
-			// No `controlledValue`: an ordinary two-way binding, so the component owns the
-			// change and writes it back. This is the half of the old hybrid behaviour that
-			// consumers actually relied on.
 			onChange: (value) => changes.push(value)
 		});
 		const bold = getToggle('toggle-bold');
@@ -160,6 +151,28 @@ describe('ToggleGroup.Root', () => {
 
 		expect(bold.getAttribute('aria-pressed')).toBe('true');
 		expect(changes).toEqual([['bold']]);
+	});
+
+	it('takes the selection back when a parent that rejected a change renders again', async () => {
+		const changes: unknown[] = [];
+		render(ToggleGroupRejectingParentTest, { onChange: (value) => changes.push(value) });
+		const bold = getToggle('toggle-bold');
+		const italic = getToggle('toggle-italic');
+		const rerenderParent = document.querySelector<HTMLButtonElement>('[data-rerender-parent]');
+
+		await userEvent.click(italic);
+
+		// The press is reported and applied: without a binding the write-back stays local,
+		// so the group cannot know the parent disagreed.
+		expect(changes).toEqual([['italic']]);
+		expect(italic.getAttribute('aria-pressed')).toBe('true');
+
+		await userEvent.click(rerenderParent as HTMLButtonElement);
+
+		// The supplied `value` is the source of truth, so the parent's next render wins.
+		expect(bold.getAttribute('aria-pressed')).toBe('true');
+		expect(italic.getAttribute('aria-pressed')).toBe('false');
+		expect(changes).toEqual([['italic']]);
 	});
 
 	it('does not fire onChange for external controlled value updates', async () => {
@@ -210,13 +223,11 @@ describe('ToggleGroup.Root', () => {
 		expect(italic.getAttribute('aria-pressed')).toBe('true');
 	});
 
-	it('keeps a controlled selection when the selected toggle becomes disabled', async () => {
+	it('reports the fallback when a supplied selection becomes disabled', async () => {
 		const changes: unknown[] = [];
 		render(ToggleGroupTest, {
 			value: ['bold'],
-			// Parent-owned: disabling the selected toggle must not make the component
-			// publish a different selection by itself.
-			controlledValue: true,
+			disallowEmptySelection: true,
 			onChange: (value) => changes.push(value)
 		});
 		const bold = getToggle('toggle-bold');
@@ -224,23 +235,83 @@ describe('ToggleGroup.Root', () => {
 
 		await userEvent.click(disableBold as HTMLButtonElement);
 
+		// A disabled toggle cannot stay pressed, so the group moves — and says so, instead of
+		// leaving the parent's `value` quietly disagreeing with what is on screen.
 		expect(bold.hasAttribute('disabled')).toBe(true);
-		expect(bold.getAttribute('aria-pressed')).toBe('true');
-		expect(document.querySelector('[data-current-value]')?.textContent).toBe('["bold"]');
-		expect(changes).toEqual([]);
+		expect(bold.getAttribute('aria-pressed')).toBe('false');
+		expect(getToggle('toggle-italic').getAttribute('aria-pressed')).toBe('true');
+		expect(changes).toEqual([['italic']]);
 	});
 
 	it('falls back when a selected toggle is removed with disallowEmptySelection', async () => {
+		const changes: unknown[] = [];
 		render(ToggleGroupTest, {
 			defaultValue: ['bold'],
-			disallowEmptySelection: true
+			disallowEmptySelection: true,
+			onChange: (value) => changes.push(value)
 		});
 		const removeBold = document.querySelector<HTMLButtonElement>('[data-remove-bold]');
 
 		await userEvent.click(removeBold as HTMLButtonElement);
 
+		// The group stays mounted, so the selection really did move and the consumer has to
+		// hear about it — the opposite of the same toggle disappearing with the whole group.
 		expect(document.querySelector('[data-testid="toggle-bold"]')).toBeNull();
 		expect(getToggle('toggle-italic').getAttribute('aria-pressed')).toBe('true');
+		expect(changes).toEqual([['italic']]);
+	});
+
+	it('tears the root down before its toggles, which is what makes the two tellable apart', async () => {
+		const steps: string[] = [];
+		const screen = render(ToggleGroupTeardownOrderTest, { record: (step) => steps.push(step) });
+
+		await screen.unmount();
+
+		expect(steps).toEqual(['root-pre-cleanup', 'child-destroy', 'root-destroy']);
+	});
+
+	it('reports nothing when the whole group unmounts', async () => {
+		const changes: unknown[] = [];
+		const screen = render(ToggleGroupUnmountTest, {
+			value: ['underline'],
+			onChange: (value) => changes.push(value)
+		});
+
+		expect(getToggle('toggle-underline').getAttribute('aria-pressed')).toBe('true');
+
+		await screen.unmount();
+
+		expect(changes).toEqual([]);
+	});
+
+	it('reports nothing when the group is removed while the page stays', async () => {
+		const changes: unknown[] = [];
+		render(ToggleGroupUnmountTest, {
+			value: ['underline'],
+			onChange: (value) => changes.push(value)
+		});
+		const unmountGroup = document.querySelector<HTMLButtonElement>('[data-unmount-group]');
+
+		await userEvent.click(unmountGroup as HTMLButtonElement);
+
+		expect(document.querySelector('[data-testid="toggle-underline"]')).toBeNull();
+		expect(changes).toEqual([]);
+		expect(document.querySelector('[data-current-value]')?.textContent).toBe('["underline"]');
+	});
+
+	it('falls back and reports when one toggle is removed from a mounted group', async () => {
+		const changes: unknown[] = [];
+		render(ToggleGroupUnmountTest, {
+			value: ['underline'],
+			onChange: (value) => changes.push(value)
+		});
+		const removeUnderline = document.querySelector<HTMLButtonElement>('[data-remove-underline]');
+
+		await userEvent.click(removeUnderline as HTMLButtonElement);
+
+		expect(document.querySelector('[data-testid="toggle-underline"]')).toBeNull();
+		expect(getToggle('toggle-bold').getAttribute('aria-pressed')).toBe('true');
+		expect(changes).toEqual([['bold']]);
 	});
 
 	it('moves focus horizontally with arrow keys, Home, and End', async () => {

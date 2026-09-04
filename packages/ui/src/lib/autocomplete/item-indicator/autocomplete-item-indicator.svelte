@@ -13,9 +13,9 @@
 	 * Must be used inside Autocomplete.Item. Only renders when the item is selected.
 	 */
 	type AutocompleteItemIndicatorProps = {
-		/** Content to render when selected (defaults to a checkmark icon). */
+		/** The content while the item is selected. The default is a check mark icon. */
 		children?: Snippet;
-		/** Force the indicator to render regardless of selection state. */
+		/** Keeps the indicator in the DOM, for each selection state. */
 		forceMount?: boolean;
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'>;

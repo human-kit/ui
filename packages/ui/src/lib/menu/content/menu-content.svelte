@@ -18,23 +18,27 @@
 	 * Rendered in a Portal, positioned against the trigger.
 	 */
 	type MenuContentProps = {
-		/** Offset along the main axis from the trigger element. Defaults to `4`, or to `0`
-		 *  for a context menu, which sits at the pointer like a native one. */
+		/**
+		 * The distance from the trigger element, on the main axis. The default is `4`. For a context
+		 * menu it is `0`, because that menu goes at the pointer, like a native one.
+		 */
 		offset?: number;
-		/** Placement relative to the trigger element. Defaults to `bottom-start`
-		 *  for a root menu and `right-start` for a submenu. */
+		/**
+		 * The position against the trigger element. The default is `bottom-start` for a root menu, and
+		 * `right-start` for a submenu.
+		 */
 		placement?: ExtendedPlacement;
-		/** Whether to flip when there's insufficient space. */
+		/** Moves the panel to the opposite side when the space is not sufficient. */
 		shouldFlip?: boolean;
-		/** Boundary element for positioning constraints. */
+		/** The element that gives the limits of the position. */
 		boundaryElement?: Element | null;
-		/** Whether pressing Escape should close the menu. */
+		/** Closes the menu when the user pushes the `Escape` key. */
 		shouldCloseOnEscape?: boolean;
-		/** Whether interacting outside the menu should close it. */
+		/** Closes the menu when the user interacts outside it. */
 		shouldCloseOnInteractOutside?: boolean;
-		/** Content of the menu. */
+		/** The content of the menu. */
 		children?: Snippet;
-		/** CSS class for the menu container. */
+		/** The CSS class names of the menu container. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children' | 'role'>;
 

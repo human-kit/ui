@@ -14,7 +14,7 @@
 	 * keeping it mounted through its exit animation so it fades in step with the panel.
 	 */
 	type PopoverOverlayProps = {
-		/** CSS class for the overlay. */
+		/** The CSS class names of the overlay. */
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class'>;
 

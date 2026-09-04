@@ -24,54 +24,56 @@
 	 * Renders no element of its own; it provides the context every other part reads.
 	 */
 	type DrawerRootProps = {
-		/** Open state. Two-way by default — use `bind:open`. */
+		/** The open state. By default it goes in the two directions: use `bind:open`. */
 		open?: boolean;
-		/** Initial open state, for when `open` is not supplied. */
+		/** The open state at the start, for when you give no `open`. */
 		defaultOpen?: boolean;
 		/**
-		 * Opt into fully controlled state: the component stops writing back to `open` and
-		 * only reports through `onOpenChange`, so the parent can reject a change by not
-		 * flowing the new value back down. Off by default, because `bind:open` — the
-		 * common case — needs the write-back to work at all.
+		 * Give your own code full control of the open state. The component stops to write back to
+		 * `open`, and it reports only through `onOpenChange`. Thus the parent can refuse a change: the
+		 * parent does not send the new value down. The default is off, because `bind:open` is the usual
+		 * case and it needs the write-back.
 		 */
 		controlledOpen?: boolean;
 		/** Callback when the open state changes. */
 		onOpenChange?: (open: boolean) => void;
-		/** Edge the panel is anchored to. */
+		/** The edge of the panel. */
 		side?: DrawerSide;
-		/** Focus trap / scroll lock behaviour. See `DrawerModal`. */
+		/** How the drawer holds the focus and stops the page scroll. Read `DrawerModal`. */
 		modal?: DrawerModal;
-		/** Whether a swipe toward the anchored edge may dismiss the drawer. */
+		/** Lets a swipe toward the anchored edge dismiss the drawer. */
 		dismissible?: boolean;
-		/** Whether pressing Escape closes the drawer. */
+		/** Closes the drawer when the user pushes the `Escape` key. */
 		shouldCloseOnEscape?: boolean;
-		/** Whether pressing outside the panel closes it. */
+		/** Closes the panel when the user presses outside it. */
 		shouldCloseOnInteractOutside?: boolean;
 		/**
-		 * Resting positions the panel may settle on, smallest offset first is not
-		 * required — they are sorted internally. See `DrawerSnapPoint` for the accepted
-		 * value forms. Without this the drawer is either fully open or closed.
+		 * The rest positions of the panel. They can be in any sequence, because the component sorts
+		 * them. `DrawerSnapPoint` gives the value forms that the prop accepts. Without this prop, the
+		 * drawer is open or closed, and nothing between.
 		 */
 		snapPoints?: readonly DrawerSnapPoint[];
-		/** Active snap point. Two-way by default — use `bind:snapPoint`. */
+		/** The current snap point. By default it goes in the two directions: use `bind:snapPoint`. */
 		snapPoint?: DrawerSnapPoint | null;
-		/** Initial snap point, for when `snapPoint` is not supplied. */
+		/** The snap point at the start, for when you give no `snapPoint`. */
 		defaultSnapPoint?: DrawerSnapPoint | null;
-		/** Callback when the active snap point changes. */
+		/** The component calls it when the current snap point changes. */
 		onSnapPointChange?: (snapPoint: DrawerSnapPoint | null, event?: Event) => void;
 		/**
-		 * Stops a fast flick from skipping past the neighbouring snap point. Use it when
-		 * every step is meaningful and jumping two at once would disorient.
+		 * Stops a fast flick at the next snap point. Use it when each step has a meaning, and a jump of
+		 * two steps would confuse the user.
 		 */
 		snapToSequentialPoints?: boolean;
 		/**
-		 * Drives the drawer from a detached handle instead of the `open` prop, so
-		 * triggers can live anywhere in the tree. See `createDrawerHandle`.
+		 * Controls the drawer from a separate object, and not from the `open` prop. Thus a trigger can
+		 * be at any position in the tree. Read `createDrawerHandle`.
 		 */
 		handle?: DrawerHandle<Payload>;
-		/** Reference to the trigger element. Set manually or via Drawer.Trigger. */
+		/**
+		 * The reference to the trigger element. Set it in your own code, or let Drawer.Trigger set it.
+		 */
 		triggerRef?: HTMLElement | null;
-		/** Children snippet, receiving state helpers. */
+		/** The children snippet. It receives the state functions. */
 		children?: Snippet<[DrawerStateHelpers<Payload>]>;
 	};
 

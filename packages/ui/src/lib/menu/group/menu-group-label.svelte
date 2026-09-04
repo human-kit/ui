@@ -7,7 +7,7 @@
 	 * Menu.GroupLabel - Accessible label for a Menu.Group. Non-interactive.
 	 */
 	type MenuGroupLabelProps = {
-		/** Optional explicit id (auto-generated otherwise). */
+		/** The id. If you give none, the component makes one. */
 		id?: string;
 		children?: Snippet;
 		class?: string;

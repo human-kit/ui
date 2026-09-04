@@ -9,21 +9,27 @@
 	 * Provides context for Trigger and Content children.
 	 */
 	type MenuRootProps = {
-		/** Controlled open state. */
+		/** The open state. */
 		open?: boolean;
-		/** Initial open state for uncontrolled mode. */
+		/** The open state at the start, for when the component controls the state. */
 		defaultOpen?: boolean;
-		/** Callback when open state changes. */
+		/** The component calls it when the open state changes. */
 		onOpenChange?: (open: boolean, details: MenuOpenChangeDetails) => void;
-		/** Whether arrow navigation wraps around the ends. */
+		/**
+		 * At the last item, the arrow keys move the focus to the first item, and at the first item, to
+		 * the last one.
+		 */
 		loop?: boolean;
-		/** Whether typeahead (type to focus a matching item) is enabled. */
+		/**
+		 * Starts the typeahead. When the user types, the focus moves to an item that agrees with the
+		 * text.
+		 */
 		typeahead?: boolean;
-		/** Whether selecting an item closes the menu. Items can override this. */
+		/** Closes the menu when the user selects an item. An item can replace this value. */
 		closeOnSelect?: boolean;
-		/** Reference to the trigger element. Can be set manually or via Menu.Trigger. */
+		/** The reference to the trigger element. Set it in your own code, or let Menu.Trigger set it. */
 		triggerRef?: HTMLElement | null;
-		/** Children (Trigger and Content). */
+		/** The children: the Trigger and the Content. */
 		children?: Snippet;
 	};
 

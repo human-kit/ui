@@ -53,7 +53,7 @@
 
 ## Usage guidelines
 
-- Use `value` / `onChange` for controlled state and `defaultValue` for uncontrolled state; the value is a `{ start, end }` pair and the empty state is `null` (null-first empty contract, matching `DatePicker`).
+- Use `value` and `onChange` when your own code controls the state. Use `defaultValue` when the component controls it. The value is a `{ start, end }` pair, and the empty state is `null`. `DatePicker` uses the same contract.
 - Always render one input with `part="start"` and one with `part="end"`, and pass the same `part` to their segments.
 - Use `open` / `defaultOpen` / `onOpenChange` to control the popover, and `closeOnSelect` to keep it open after the range is confirmed.
 - Use `minValue` / `maxValue` (`YYYY-MM-DD`) to constrain both the calendar and the typed inputs, and `isDateUnavailable` to mark specific days as non-selectable.
@@ -65,8 +65,8 @@
 
 - Give each input its own accessible name (for example `aria-label="Start date"` and `aria-label="End date"`).
 - Segment accessible names are resolved automatically from the active locale.
-- Validity is per part: when an input's own segment draft is invalid (empty drafts are never invalid), its segments expose `aria-invalid` (so assistive technology announces it on the spinbuttons) and the input group exposes `data-invalid` for styling; invalid input is shown, never auto-corrected (see UX decisions in the DatePicker README — the same contract applies).
-- Disabled calendar dates remain focusable via keyboard navigation so screen readers can discover and announce them as disabled.
+- Each input has its own validity. The text in the segments of one input can be an invalid date. Those segments then get `aria-invalid`, and assistive technology announces it on the spinbuttons. The input group gets `data-invalid`, for the styles. Empty text is never invalid. The component shows the text of the user and never corrects it. The DatePicker README has the same contract.
+- A disabled date in the calendar keeps the focus. Thus a screen reader can find it and announce it as disabled.
 - In the range calendar, the first selection starts the range, arrow keys extend the preview, and `Enter` or `Space` confirms it.
 
 ## Notes

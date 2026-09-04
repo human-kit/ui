@@ -23,20 +23,23 @@
 		| 'items'
 		| 'id'
 	> & {
-		/** Optional items for dynamic rendering - overrides items from ComboBox context */
+		/**
+		 * The items, for a list that the component makes from an array. They replace the items of the
+		 * ComboBox context.
+		 */
 		items?: Iterable<T>;
-		/** Content of the listbox. Receives item in dynamic mode. */
+		/** The content of the listbox. From an array of items, it receives one item. */
 		children?: Snippet<[T]> | Snippet;
 		/**
-		 * Renders only the options near the viewport. See `ListBox`'s own `virtualizer` for
-		 * the constraints (uniform row height, the list is the scroller).
+		 * Makes only the options near the viewport. The `virtualizer` prop of `ListBox` gives the two
+		 * conditions: all of the rows have the same height, and the list is the element that scrolls.
 		 *
-		 * With no `items` of its own it virtualizes the ComboBox's, already filtered: the
-		 * per-item filtering an unvirtualized list relies on cannot work when most items were
-		 * never rendered.
+		 * Without its own `items`, it uses the filtered items of the ComboBox. A list without a
+		 * virtualizer filters one item at a time, and that cannot work when most of the items are not in
+		 * the DOM.
 		 */
 		virtualizer?: { rowHeight?: number; overscan?: number };
-		/** Rows rendered above the options, inside the listbox (e.g. a "Create …" action). */
+		/** The rows in the listbox above the options, for example a "Create …" action. */
 		header?: Snippet;
 	};
 

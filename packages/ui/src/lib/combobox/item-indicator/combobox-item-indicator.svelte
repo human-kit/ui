@@ -14,9 +14,9 @@
 	 * Only renders when the parent item is selected.
 	 */
 	type ComboBoxItemIndicatorProps = {
-		/** Content to render when selected (defaults to checkmark icon) */
+		/** The content while the item is selected. The default is a check mark icon. */
 		children?: Snippet;
-		/** Force show the indicator regardless of selection state */
+		/** Keeps the indicator in the DOM, for each selection state. */
 		forceMount?: boolean;
 		class?: string;
 	} & Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'>;

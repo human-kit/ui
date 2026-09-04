@@ -11,7 +11,7 @@ Description: Headless presence wrapper for checkbox indicator content. It render
 | -------------- | --------------------------------- | ----------- | ------------------------------------------------------------------------ |
 | `forceMount`   | `boolean`                         | `false`     | Keeps the indicator mounted while hidden when the checkbox is unchecked. |
 | `children`     | `Snippet`                         | `undefined` | Rendered indicator content, such as a check or dash icon.                |
-| `class`        | `string`                          | `''`        | CSS class names for the indicator wrapper.                               |
+| `class`        | `string`                          | `''`        | The CSS class names of the indicator container.                          |
 | `...restProps` | `HTMLAttributes<HTMLSpanElement>` | `-`         | Additional attributes forwarded to the indicator span.                   |
 
 ```svelte

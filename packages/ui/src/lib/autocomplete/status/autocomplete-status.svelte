@@ -6,7 +6,7 @@
 	 * of available results to screen readers as the query changes.
 	 */
 	type AutocompleteStatusProps = {
-		/** Build the announced message from the visible item count. */
+		/** Makes the announced message from the number of the items that the user sees. */
 		formatMessage?: (count: number) => string;
 	};
 

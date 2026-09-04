@@ -84,7 +84,7 @@
 
 - `TimePicker.Clock` resolves visible wheel columns from root state (`granularity`, `hourCycle`) in stable order: `hour → minute? → second? → dayPeriod?`.
 - `class?: string` uses default layout (`flex gap-2`) when omitted.
-- `column?: Snippet<[ClockColumnInfo]>` allows custom per-column rendering.
+- `column?: Snippet<[ClockColumnInfo]>` lets you make your own content for each column.
 - `ClockColumnInfo` shape:
   - `type: 'hour' | 'minute' | 'second' | 'dayPeriod'`
   - `label?: string`

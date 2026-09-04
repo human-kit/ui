@@ -36,7 +36,7 @@
 ## Accessibility
 
 - `Toggle.Root` renders a native `<button type="button">`.
-- The selected state is exposed to assistive technology with `aria-pressed="true" | "false"`.
+- The component gives the selected state to assistive technology with `aria-pressed="true" | "false"`.
 - Native keyboard activation is supported with `Enter` and `Space`.
 - `data-focus-visible` follows the shared modality contract and is only exposed for keyboard or virtual focus.
 

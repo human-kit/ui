@@ -20,11 +20,11 @@
 	 * drawer is unreachable by keyboard and to anyone who cannot perform the gesture.
 	 */
 	type DrawerSwipeAreaProps = {
-		/** CSS class for the strip. */
+		/** The CSS class names of the strip. */
 		class?: string;
-		/** Thickness of the strip, as a CSS length. */
+		/** The thickness of the strip, as a CSS length. */
 		size?: string;
-		/** Turns the gesture off without unmounting the strip. */
+		/** Stops the gesture, but keeps the strip in the DOM. */
 		disabled?: boolean;
 	} & Omit<HTMLAttributes<HTMLDivElement>, 'class'>;
 

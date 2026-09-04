@@ -6,10 +6,9 @@
 
 	type CalendarGridHeaderProps = {
 		/**
-		 * Custom header cell rendering. Receives the styled weekday label (per
-		 * `weekdayStyle`) and the long weekday name, useful as an accessible
-		 * label when the styled label is narrow (e.g. "M" for both Monday and
-		 * Wednesday in some locales).
+		 * Your own content for a header cell. It receives the weekday name in the length of
+		 * `weekdayStyle`, and also the long weekday name. Use the long name as the accessible name when
+		 * the short one is narrow. In some locales, "M" is the narrow name of Monday and of Wednesday.
 		 */
 		children?: Snippet<[string, string]>;
 		class?: string;

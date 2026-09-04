@@ -24,7 +24,7 @@ export type CreateMenuStateOptions = {
 	getOpen: () => boolean | undefined;
 	/** Writes the open value back to the bindable prop. */
 	setOpen: (value: boolean) => void;
-	/** Initial open state for uncontrolled mode. */
+	/** The open state at the start, for when the component controls the state. */
 	defaultOpen: boolean;
 	/** Reads the current open-change callback. */
 	getOnOpenChange?: () => ((open: boolean, details: MenuOpenChangeDetails) => void) | undefined;
