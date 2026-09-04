@@ -13,6 +13,10 @@
 		maxValue?: string;
 		popoverAriaLabel?: string;
 		rootAriaLabel?: string;
+		inputId?: string;
+		inputName?: string;
+		inputLabel?: string;
+		inputAriaInvalid?: boolean;
 	};
 
 	let {
@@ -26,7 +30,11 @@
 		minValue,
 		maxValue,
 		popoverAriaLabel = 'Time picker',
-		rootAriaLabel
+		rootAriaLabel,
+		inputId,
+		inputName,
+		inputLabel,
+		inputAriaInvalid
 	}: Props = $props();
 
 	let selectedValue = $state<string | null>('');
@@ -53,7 +61,17 @@
 		openReason = details.reason;
 	}}
 >
-	<TimePicker.Input class="time-picker-input" aria-label="Time input">
+	{#if inputLabel && inputId}
+		<label for={inputId}>{inputLabel}</label>
+	{/if}
+
+	<TimePicker.Input
+		id={inputId}
+		name={inputName}
+		aria-invalid={inputAriaInvalid}
+		class="time-picker-input"
+		aria-label="Time input"
+	>
 		{#snippet children(segment)}
 			<TimePicker.Segment class="time-picker-segment" {segment} />
 		{/snippet}

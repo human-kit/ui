@@ -12,17 +12,29 @@
 
 	type TimePickerInputProps = Omit<
 		HTMLAttributes<HTMLDivElement>,
-		'children' | 'class' | 'id' | 'role' | 'tabindex'
+		'children' | 'class' | 'id' | 'role' | 'tabindex' | 'aria-invalid'
 	> & {
+		id?: string;
+		/**
+		 * Name of the hidden proxy input used for form submission. The proxy only
+		 * mirrors the committed value: autofill is NOT supported (it renders with
+		 * `autocomplete="off"` so browsers and password managers do not write
+		 * into it) — times are entered through the editable segments.
+		 */
+		name?: string;
 		children?: Snippet<[TimePickerSegmentPart]>;
 		class?: string;
 		'aria-label'?: string;
+		'aria-invalid'?: HTMLAttributes<HTMLDivElement>['aria-invalid'];
 	};
 
 	let {
+		id,
+		name,
 		children,
 		class: className = '',
 		'aria-label': ariaLabel,
+		'aria-invalid': ariaInvalid,
 		onmousedown: onMouseDownExternal,
 		onfocus: onFocusExternal,
 		onblur: onBlurExternal,
@@ -32,7 +44,28 @@
 
 	const timePicker = useTimePickerContext();
 	const segments = $derived(timePicker.getSegments());
-	const inputId = $derived(`${timePicker.id}-input`);
+	// With an `id` the group keeps a derived one: the id itself belongs to the proxy input, so
+	// a `<label for>` points at something focusable. Mirrors `DatePicker.Input`.
+	const groupId = $derived(id ? `${id}-group` : `${timePicker.id}-input`);
+	const proxyValue = $derived(timePicker.value ?? '');
+	// Invalid is either half: the consumer's (a form rule) or an uncommittable segment draft.
+	const isInvalid = $derived(
+		ariaInvalid === true || ariaInvalid === 'true' || timePicker.isInvalidDraft
+	);
+	const shouldRenderProxyInput = $derived(Boolean(id || name));
+	const proxyInputStyle =
+		'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
+
+	function handleProxyFocus(event: FocusEvent) {
+		if (timePicker.isDisabled) {
+			(event.currentTarget as HTMLElement | null)?.blur();
+			timePicker.syncFocusWithin();
+			timePicker.setFocusVisible(false);
+			return;
+		}
+		timePicker.setFocusVisible(shouldShowFocusVisible(event.currentTarget as HTMLElement));
+		timePicker.focusNextPlaceholderOrLastSegment();
+	}
 
 	function handleMouseDown(event: MouseEvent) {
 		if (timePicker.isDisabled) return;
@@ -83,15 +116,35 @@
 	}
 </script>
 
+{#if shouldRenderProxyInput}
+	<!--
+		A focusable stand-in for the segmented group: it carries the `id` a `<label for>` points
+		at and the `name` a native form submit reads, and hands focus straight to the segments.
+	-->
+	<input
+		{id}
+		{name}
+		value={proxyValue}
+		readonly
+		tabindex="-1"
+		autocomplete="off"
+		disabled={timePicker.isDisabled || undefined}
+		aria-hidden="true"
+		aria-invalid={ariaInvalid}
+		style={proxyInputStyle}
+		onfocus={handleProxyFocus}
+	/>
+{/if}
+
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <!-- svelte-ignore a11y_role_supports_aria_props -->
 <div
-	id={inputId}
+	id={groupId}
 	class={className}
 	{...restProps}
 	role="group"
 	aria-label={ariaLabel}
-	aria-invalid={timePicker.isInvalidDraft || undefined}
+	aria-invalid={isInvalid || undefined}
 	aria-required={timePicker.isRequired || undefined}
 	tabindex={timePicker.isDisabled || timePicker.focusWithin ? -1 : 0}
 	data-disabled={timePicker.isDisabled || undefined}
@@ -99,7 +152,7 @@
 	data-open={timePicker.open || undefined}
 	data-focus-visible={timePicker.focusVisible || undefined}
 	data-focus-within={timePicker.focusWithin || undefined}
-	data-invalid={timePicker.isInvalidDraft || undefined}
+	data-invalid={isInvalid || undefined}
 	onmousedown={composeEventHandlers(handleMouseDown, onMouseDownExternal ?? undefined)}
 	onfocus={composeEventHandlers(handleFocus, onFocusExternal ?? undefined)}
 	onblur={composeEventHandlers(handleBlur, onBlurExternal ?? undefined)}
