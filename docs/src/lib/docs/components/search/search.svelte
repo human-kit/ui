@@ -117,7 +117,9 @@
 		})}
 		aria-label="Search the documentation"
 	>
-		<SearchIcon />
+		<!-- The icon is the whole trigger on a phone, where the word does not fit;
+		     with the word there it says nothing the word does not. -->
+		<SearchIcon class="sm:hidden" />
 		<span class="hidden sm:inline">Search</span>
 		<kbd
 			class="hidden rounded border border-border px-1 font-sans text-[10px] text-muted-foreground sm:inline"
@@ -188,12 +190,8 @@
 									     chrome: the row under the pointer and the row the arrow keys are
 									     on take one fill, and `sunken` is only the press.
 
-									     Only ONE row is ever filled. `data-hovered` and `data-focused`
-									     live on different rows at the same time — the keys move one, the
-									     pointer the other — and the item cannot see that from its own
-									     attributes, so the keyboard fill asks the list whether anything is
-									     hovered. The pointer wins while it is over the list, because it is
-									     the thing the reader is moving.
+									     One fill is enough for both: the pointer takes the virtual focus
+									     as it moves, so the hovered row IS the focused row.
 
 									     `data-focused`, not `data-focus-visible`: the DOM focus stays in
 									     the input, so no row ever takes it; the row the arrow keys are on
@@ -201,7 +199,7 @@
 									<Autocomplete.Item
 										id={hit.id}
 										textValue={path.join(' ')}
-										class="flat flex cursor-default items-center gap-1 rounded-md border border-transparent px-2.5 py-1 text-sm outline-none transition-[background-color,box-shadow,border-color] ease-out [[role=listbox]:not(:has([data-hovered]))_&]:data-[focused=true]:bg-(--sink-bg) data-[hovered=true]:bg-(--sink-bg) data-[pressed=true]:sunken data-[pressed=true]:border-border data-[pressed=true]:bg-(--press-bg) data-[selected=true]:sunken data-[selected=true]:border-border data-[selected=true]:bg-(--press-bg)"
+										class="flat flex cursor-default items-center gap-1 rounded-md border border-transparent px-2.5 py-1 text-sm outline-none transition-[background-color,box-shadow,border-color] ease-out data-[focused=true]:bg-(--sink-bg) data-[pressed=true]:sunken data-[pressed=true]:border-border data-[pressed=true]:bg-(--press-bg) data-[selected=true]:sunken data-[selected=true]:border-border data-[selected=true]:bg-(--press-bg)"
 									>
 										<!-- Keyed by the position: a section whose heading repeats the
 										     page title would give two steps the same key. -->

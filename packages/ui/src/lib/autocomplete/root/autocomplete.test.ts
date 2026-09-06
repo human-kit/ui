@@ -183,17 +183,31 @@ describe('Autocomplete', () => {
 			return screen.getByText(text).element().closest('[role="option"]') as HTMLElement;
 		}
 
-		it('hovering a non-active option marks it data-hovered, never data-focused', async () => {
-			const screen = render(AutocompleteTest, { autoHighlight: false });
+		it('moves the virtual focus to the hovered option, and off the one the keys left', async () => {
+			const screen = render(AutocompleteTest);
 			const input = screen.getByRole('searchbox');
 
 			await input.click();
 			await input.fill('a');
+			await userEvent.keyboard('{ArrowDown}');
+
+			const banana = optionFor(screen, 'Banana');
+			await expect.poll(() => banana.getAttribute('data-focused')).toBe('true');
+
 			await screen.getByText('Mango').hover();
 
+			// One option is current at a time. The pointer and the keys each move the
+			// same virtual focus, so a row the keys left behind cannot stay marked
+			// while the pointer marks another one.
 			const mango = optionFor(screen, 'Mango');
 			await expect.poll(() => mango.getAttribute('data-hovered')).toBe('true');
-			expect(mango.hasAttribute('data-focused')).toBe(false);
+			await expect.poll(() => mango.getAttribute('data-focused')).toBe('true');
+			await expect.poll(() => banana.hasAttribute('data-focused')).toBe(false);
+			// A pointer never draws the keyboard ring.
+			expect(mango.hasAttribute('data-focus-visible')).toBe(false);
+			await expect
+				.poll(() => (input.element() as HTMLElement).getAttribute('aria-activedescendant'))
+				.toBe(mango.id);
 		});
 
 		it('clicking an option leaves the input without focus markers (the option is focused)', async () => {
