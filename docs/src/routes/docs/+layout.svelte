@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DocsShell } from '$lib/docs/components/index.js';
+	import { DocsShell, Search } from '$lib/docs/components/index.js';
 	import Logo from '$lib/docs/components/icons/logo.svelte';
 	import Npm from '$lib/docs/components/icons/npm.svelte';
 	import { buttonVariants } from '$lib/docs/components/button/recipe';
@@ -16,6 +16,9 @@
 <!-- `title` is no longer painted — with a brand snippet it becomes the home
      link's accessible name. -->
 <DocsShell {nav} title="@human-kit/ui" githubUrl="https://github.com/human-kit/ui">
+	{#snippet search()}
+		<Search />
+	{/snippet}
 	{#snippet brand()}
 		<Logo class="h-4 w-auto" />
 	{/snippet}

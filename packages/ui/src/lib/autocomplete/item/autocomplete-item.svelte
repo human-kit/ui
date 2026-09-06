@@ -112,6 +112,15 @@
 		if (isVisibleRegistered) ctx.unregisterVisibleItem(id);
 	});
 
+	function handleHoverStart(itemId: string | number) {
+		// The pointer takes the virtual focus, the same as in a ComboBox. Without
+		// this the keys move one row and the pointer marks another, and both read
+		// as the current one at the same time — which the item cannot correct on
+		// its own, because it only sees its own attributes.
+		ctx.setFocusVisible(false);
+		ctx.setFocusedItemId(itemId);
+	}
+
 	function handleSelect(itemId: string | number) {
 		if (ctx.isReadOnly) return;
 		// Selection here is pointer-driven (click); clear the keyboard focus ring.
@@ -136,6 +145,7 @@
 		isFocusVisibleOverride={isFocusVisible}
 		onItemSelect={handleSelect}
 		onResolvedTextValue={handleResolvedTextValue}
+		onItemHoverStart={handleHoverStart}
 		scrollOnFocus={true}
 		isParentDisabled={ctx.isDisabled}
 	/>

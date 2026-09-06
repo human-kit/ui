@@ -22,6 +22,12 @@
 		brand?: Snippet;
 		/** Rendered before the GitHub link and theme toggle. */
 		actions?: Snippet;
+		/**
+		 * Opens the site search. It sits in the middle of the row, and on a phone at
+		 * the head of the right-hand cluster: search replaces reading the navigation,
+		 * so it must not move into the drawer that navigation lives in.
+		 */
+		search?: Snippet;
 		/** Leftmost slot, before the brand — the mobile navigation opener. */
 		navTrigger?: Snippet;
 		/** Rendered at the start of the right-hand cluster — the mobile outline opener. */
@@ -36,6 +42,7 @@
 		level,
 		brand,
 		actions,
+		search,
 		navTrigger,
 		tocTrigger
 	}: Props = $props();
@@ -75,6 +82,16 @@
 	</a>
 
 	<div class="ml-auto flex items-center gap-1">
+		{#if search}
+			<!-- Centred against the row from `md` up, where the brand is on the left and
+			     the middle of the row is empty. Below that the middle already holds the
+			     logo, so it stays in the flow at the head of this cluster. -->
+			<div
+				class="md:absolute md:top-0 md:bottom-0 md:left-1/2 md:flex md:-translate-x-1/2 md:items-center"
+			>
+				{@render search()}
+			</div>
+		{/if}
 		{#if tocTrigger}
 			{@render tocTrigger()}
 		{/if}
