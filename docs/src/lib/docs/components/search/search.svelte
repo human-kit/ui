@@ -112,7 +112,7 @@
 	     middle of the header stays as empty as it can. -->
 	<Dialog.Trigger
 		class={buttonVariants({
-			variant: 'outline',
+			variant: 'ghost',
 			class: 'gap-1.5 pr-1 text-sm max-sm:size-6.5 max-sm:px-0'
 		})}
 		aria-label="Search the documentation"
@@ -149,7 +149,9 @@
 				aria-label="Search the documentation"
 				class="flex min-h-0 flex-1 flex-col"
 			>
-				<div class="flex shrink-0 items-center gap-2 border-b border-border px-3">
+				<!-- The two chrome rows sit one step deeper than the panel, so the
+				     results read as the surface and the box and the hints frame them. -->
+				<div class="flex shrink-0 items-center gap-2 border-b border-border bg-depth-1 px-3">
 					<SearchIcon class="size-4 shrink-0 text-muted-foreground" />
 					<Autocomplete.Input
 						placeholder="Search documentation…"
@@ -218,7 +220,7 @@
 			</Autocomplete.Root>
 
 			<div
-				class="flex shrink-0 items-center gap-3 border-t border-border px-3 py-2 text-xs text-muted-foreground"
+				class="flex shrink-0 items-center gap-3 border-t border-border bg-depth-1 px-3 py-2 text-xs text-muted-foreground"
 			>
 				<span class="flex items-center gap-1.5">
 					<kbd class="rounded border border-border px-1 font-sans">↵</kbd>
