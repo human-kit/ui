@@ -133,7 +133,7 @@
 		     edges on every keystroke, and a full list of results takes over the
 		     screen. This one only ever grows downwards, and past the cap it scrolls. -->
 		<Dialog.Content
-			class="flex max-h-[min(26rem,70vh)] w-[36rem] max-w-[92vw] flex-col self-start overflow-hidden rounded-lg border border-border bg-background shadow-lg mt-[12vh]"
+			class="flex max-h-[min(26rem,70vh)] w-[36rem] max-w-[92vw] flex-col self-start overflow-hidden rounded-xl border border-border bg-background shadow-lg mt-[12vh]"
 		>
 			<!-- The dialog takes its name from the title; the search box is not it. -->
 			<Dialog.Title class="sr-only">Search the documentation</Dialog.Title>
@@ -156,7 +156,7 @@
 					<Autocomplete.Input
 						placeholder="Search documentation…"
 						aria-label="Search the documentation"
-						class="h-11 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+						class="h-9 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
 					/>
 				</div>
 
@@ -177,31 +177,49 @@
 							<div id={labelId} class="px-2.5 pt-2 pb-1 text-xs text-muted-foreground">
 								{group.label}
 							</div>
-							{#each group.hits as hit (hit.id)}
-								{@const path = hitLabel(hit)}
-								<!-- `data-focused`, not `data-focus-visible`: the DOM focus stays in the
-								     input, and the row the arrow keys are on is the virtually focused one. -->
-								<Autocomplete.Item
-									id={hit.id}
-									textValue={path.join(' ')}
-									class="flex cursor-default items-center gap-1 rounded-md px-2.5 py-1.5 text-sm outline-none data-[focused=true]:bg-accent data-[hovered=true]:bg-accent"
-								>
-									<!-- Keyed by the position: a section whose heading repeats the page
-									     title would give two steps the same key. -->
-									{#each path as step, depth (depth)}
-										{#if depth > 0}
-											<ChevronRight class="size-3.5 shrink-0 text-muted-foreground" />
-										{/if}
-										<span
-											class="truncate {depth === path.length - 1
-												? 'text-foreground'
-												: 'text-muted-foreground'}"
-										>
-											{step}
-										</span>
-									{/each}
-								</Autocomplete.Item>
-							{/each}
+							<!-- Same indent the sidebar gives the items of a group: the inset is
+							     padding on the container, never a margin on the rows, which are
+							     `w-full` and would overflow their rounded right edge. `pl-4` plus
+							     the row's own `px-2.5` puts the label 1rem right of the heading. -->
+							<div class="space-y-0.5 pl-4">
+								{#each group.hits as hit (hit.id)}
+									{@const path = hitLabel(hit)}
+									<!-- Same states as a ComboBox item, painted with the tokens of the
+									     chrome: the row under the pointer and the row the arrow keys are
+									     on take one fill, and `sunken` is only the press.
+
+									     Only ONE row is ever filled. `data-hovered` and `data-focused`
+									     live on different rows at the same time — the keys move one, the
+									     pointer the other — and the item cannot see that from its own
+									     attributes, so the keyboard fill asks the list whether anything is
+									     hovered. The pointer wins while it is over the list, because it is
+									     the thing the reader is moving.
+
+									     `data-focused`, not `data-focus-visible`: the DOM focus stays in
+									     the input, so no row ever takes it; the row the arrow keys are on
+									     is the virtually focused one. -->
+									<Autocomplete.Item
+										id={hit.id}
+										textValue={path.join(' ')}
+										class="flat flex cursor-default items-center gap-1 rounded-md border border-transparent px-2.5 py-1 text-sm outline-none transition-[background-color,box-shadow,border-color] ease-out [[role=listbox]:not(:has([data-hovered]))_&]:data-[focused=true]:bg-(--sink-bg) data-[hovered=true]:bg-(--sink-bg) data-[pressed=true]:sunken data-[pressed=true]:border-border data-[pressed=true]:bg-(--press-bg) data-[selected=true]:sunken data-[selected=true]:border-border data-[selected=true]:bg-(--press-bg)"
+									>
+										<!-- Keyed by the position: a section whose heading repeats the
+										     page title would give two steps the same key. -->
+										{#each path as step, depth (depth)}
+											{#if depth > 0}
+												<ChevronRight class="size-3.5 shrink-0 text-muted-foreground" />
+											{/if}
+											<span
+												class="truncate {depth === path.length - 1
+													? 'text-foreground'
+													: 'text-muted-foreground'}"
+											>
+												{step}
+											</span>
+										{/each}
+									</Autocomplete.Item>
+								{/each}
+							</div>
 						</div>
 					{/each}
 
@@ -220,7 +238,7 @@
 			</Autocomplete.Root>
 
 			<div
-				class="flex shrink-0 items-center gap-3 border-t border-border bg-depth-1 px-3 py-2 text-xs text-muted-foreground"
+				class="flex shrink-0 items-center gap-3 border-t border-border bg-depth-1 p-2 text-xs text-muted-foreground"
 			>
 				<span class="flex items-center gap-1.5">
 					<kbd class="rounded border border-border px-1 font-sans">↵</kbd>
