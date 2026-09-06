@@ -108,17 +108,17 @@
 <svelte:window onkeydown={onWindowKeydown} />
 
 <Dialog.Root bind:open>
+	<!-- No width of its own: the trigger is as wide as the words in it, so the
+	     middle of the header stays as empty as it can. -->
 	<Dialog.Trigger
 		class={buttonVariants({
 			variant: 'outline',
-			class: 'gap-2 sm:w-56 sm:justify-between sm:pr-1 max-sm:size-6.5 max-sm:px-0'
+			class: 'gap-1.5 pr-1 text-sm max-sm:size-6.5 max-sm:px-0'
 		})}
 		aria-label="Search the documentation"
 	>
-		<span class="flex items-center gap-1.5">
-			<SearchIcon />
-			<span class="hidden sm:inline">Search</span>
-		</span>
+		<SearchIcon />
+		<span class="hidden sm:inline">Search</span>
 		<kbd
 			class="hidden rounded border border-border px-1 font-sans text-[10px] text-muted-foreground sm:inline"
 		>
@@ -128,8 +128,12 @@
 
 	<Dialog.Portal>
 		<Dialog.Overlay class="fixed inset-0 bg-black/50" />
+		<!-- Near the top of the viewport rather than in the middle of it, and capped:
+		     a panel that is centred and grows with the result count moves both of its
+		     edges on every keystroke, and a full list of results takes over the
+		     screen. This one only ever grows downwards, and past the cap it scrolls. -->
 		<Dialog.Content
-			class="flex max-h-[70vh] w-[36rem] max-w-[92vw] flex-col overflow-hidden rounded-lg border border-border bg-background shadow-lg"
+			class="flex max-h-[min(26rem,70vh)] w-[36rem] max-w-[92vw] flex-col self-start overflow-hidden rounded-lg border border-border bg-background shadow-lg mt-[12vh]"
 		>
 			<!-- The dialog takes its name from the title; the search box is not it. -->
 			<Dialog.Title class="sr-only">Search the documentation</Dialog.Title>

@@ -36,7 +36,7 @@
 		brand?: Snippet;
 		/** Rendered in the header before the GitHub link and theme toggle. */
 		actions?: Snippet;
-		/** Opens the site search. Sits at the start of the header's right cluster. */
+		/** Opens the site search. Sits in the middle of the header. */
 		search?: Snippet;
 		/** Replace the whole header region. */
 		header?: Snippet;
