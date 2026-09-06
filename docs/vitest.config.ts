@@ -14,10 +14,14 @@ export default defineConfig({
 		globals: true,
 		alias: {
 			'@human-kit/ui': resolve(__dirname, '../packages/ui/src/lib'),
+			// SvelteKit's own alias, which the docs content uses to reach the
+			// components a page renders (<Demo>, <ApiReference>).
+			$lib: resolve(__dirname, 'src/lib'),
 			// SvelteKit isn't loaded under vitest, so `$app/*` is stubbed (see
 			// src/lib/docs/test-stubs). Lets components that read the route/theme render.
 			'$app/environment': resolve(__dirname, 'src/lib/docs/test-stubs/app-environment.ts'),
 			'$app/paths': resolve(__dirname, 'src/lib/docs/test-stubs/app-paths.ts'),
+			'$app/navigation': resolve(__dirname, 'src/lib/docs/test-stubs/app-navigation.ts'),
 			'$app/state': resolve(__dirname, 'src/lib/docs/test-stubs/app-state.svelte.ts')
 		},
 		browser: {

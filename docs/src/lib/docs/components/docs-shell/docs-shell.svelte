@@ -36,6 +36,8 @@
 		brand?: Snippet;
 		/** Rendered in the header before the GitHub link and theme toggle. */
 		actions?: Snippet;
+		/** Opens the site search. Sits at the start of the header's right cluster. */
+		search?: Snippet;
 		/** Replace the whole header region. */
 		header?: Snippet;
 		/** Replace the sidebar region. */
@@ -55,6 +57,7 @@
 		headings,
 		brand,
 		actions,
+		search,
 		header,
 		sidebar,
 		toc,
@@ -71,7 +74,7 @@
 		<!-- Both rails collapse on narrow screens (the sidebar below `md`, the outline
 		     below `xl`), so each gets a drawer standing in for it at exactly the width
 		     where it disappears. The triggers carry their own breakpoint classes. -->
-		<Header {title} {badge} {githubUrl} {homeHref} {brand} {actions}>
+		<Header {title} {badge} {githubUrl} {homeHref} {brand} {actions} {search}>
 			{#snippet navTrigger()}
 				<MobileNav {nav} {basePath} {actions} {githubUrl} />
 			{/snippet}

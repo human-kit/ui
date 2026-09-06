@@ -8,6 +8,7 @@ export { default as Header } from './header/header.svelte';
 export { default as DocToolbar } from './doc-toolbar/doc-toolbar.svelte';
 export { Menu, menuRecipe } from './menu/index.js';
 export { default as PropsTable } from './props-table/props-table.svelte';
+export { Search } from './search/index.js';
 export { default as Sidebar } from './sidebar/sidebar.svelte';
 export { Tabs, tabsRecipe } from './tabs/index.js';
 export { default as InstallCommand } from './install-command/install-command.svelte';

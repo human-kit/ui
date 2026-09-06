@@ -16,6 +16,7 @@
  * no filesystem access.
  */
 import type { ApiPart, ApiProp, ComponentApi } from './api-types.js';
+import { parsePageSource } from './markdown/page-source.js';
 
 const pages = import.meta.glob('/src/content/**/index.md', {
 	query: '?raw',
@@ -123,16 +124,12 @@ export function pageMarkdown(slug: string): string | null {
 
 	const imports = importMap(source, slug);
 
+	// parsePageSource drops the frontmatter (the title is already an h1), the
+	// script block and <PageActions />, and normalises the line endings every
+	// pattern below anchors on.
 	return (
-		source
-			// Every pattern below anchors on \n. A Windows checkout hands this module
-			// CRLF sources, and then the frontmatter and the script block survive
-			// into the served text as if they were page content.
-			.replace(/\r\n/g, '\n')
-			.replace(/^---\n[\s\S]*?\n---\n/, '') // frontmatter — the title is already an h1
-			.replace(/<script[\s\S]*?<\/script>\s*/, '')
-			.replace(/^[ \t]*<PageActions\s*\/>[ \t]*\n?/m, '') // renders only these very links
-			// A demo is a live example plus its source; in markdown only the source
+		parsePageSource(source)
+			.body // A demo is a live example plus its source; in markdown only the source
 			// survives, which is also the part a reader would copy.
 			.replace(/<Demo\s+source=\{([\w$]+)\}[\s\S]*?<\/Demo>/g, (whole, name: string) => {
 				const code = demos[imports[name]];
