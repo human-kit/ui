@@ -13,6 +13,21 @@ let lastInputEventTime = Number.NEGATIVE_INFINITY;
 
 const listenedWindows = new WeakSet<Window>();
 
+/**
+ * Notified whenever the modality changes. `data-focus-visible` is otherwise a snapshot taken
+ * when the element took focus, so a pointer press followed by a key press left the ring off
+ * while the browser had already flipped `:focus-visible` back on.
+ */
+const modalityListeners = new Set<(modality: InputModality) => void>();
+
+function setModality(next: InputModality) {
+	if (currentModality === next) return;
+	currentModality = next;
+	for (const listener of [...modalityListeners]) {
+		listener(next);
+	}
+}
+
 let forcedFocusTarget: HTMLElement | null = null;
 let forcedFocusModality: InputModality | null = null;
 
@@ -35,12 +50,12 @@ function ensureWindowListeners(win: Window | null | undefined) {
 	const onKeyDown = (event: KeyboardEvent) => {
 		lastInputEventTime = Date.now();
 		if (!isKeyboardModalityKey(event)) return;
-		currentModality = 'keyboard';
+		setModality('keyboard');
 	};
 
 	const onPointerDown = () => {
 		lastInputEventTime = Date.now();
-		currentModality = 'pointer';
+		setModality('pointer');
 	};
 
 	const onFocusIn = (event: FocusEvent) => {
@@ -51,7 +66,7 @@ function ensureWindowListeners(win: Window | null | undefined) {
 		if (Date.now() - lastInputEventTime <= RECENT_INPUT_WINDOW_MS) return;
 		// No recent keyboard/pointer input: this focus move came from an assistive technology
 		// (or a script), so focus rings must show again.
-		currentModality = 'virtual';
+		setModality('virtual');
 	};
 
 	win.addEventListener('keydown', onKeyDown, true);
@@ -103,12 +118,26 @@ export function trackInteractionModality(event?: Event, target?: HTMLElement | n
 
 	const inferred = inferModalityFromEvent(event);
 	if (inferred) {
-		currentModality = inferred;
+		setModality(inferred);
 	}
 }
 
 export function getInteractionModality(): InputModality {
 	return currentModality;
+}
+
+/**
+ * Calls `listener` whenever the interaction modality changes, and returns the unsubscribe
+ * function. Components use it to re-read `shouldShowFocusVisible` for an element that already
+ * holds focus: the browser re-evaluates `:focus-visible` on its own, and this is what lets a
+ * component notice.
+ */
+export function subscribeInputModality(listener: (modality: InputModality) => void): () => void {
+	initInputModality();
+	modalityListeners.add(listener);
+	return () => {
+		modalityListeners.delete(listener);
+	};
 }
 
 export function shouldShowFocusVisible(target: HTMLElement | null): boolean {
@@ -131,7 +160,7 @@ export function focusWithModality(
 	// If it is consumed later, currentModality still preserves the same modality as fallback.
 	forcedFocusTarget = target;
 	forcedFocusModality = modality;
-	currentModality = modality;
+	setModality(modality);
 
 	if (modality === 'pointer') {
 		const pointerFocusOptions = {
