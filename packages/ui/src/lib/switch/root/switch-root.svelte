@@ -5,6 +5,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 	import { setSwitchContext, type SwitchContext } from './context';
 
 	type SwitchRootProps = Omit<
@@ -136,6 +137,14 @@
 	let pressedKey: 'Enter' | 'Space' | null = $state(null);
 	let focused = $state(false);
 	let focusVisible = $state(false);
+
+	// The focus ring must appear when a pointer press is followed by a key press, and the
+	// modality alone changes there — no focus event fires to re-read it.
+	watchFocusVisible({
+		isFocused: () => focused,
+		element: () => rootRef,
+		set: (visible) => (focusVisible = visible)
+	});
 	let rootRef: HTMLSpanElement | null = $state(null);
 	let inputRef: HTMLInputElement | null = $state(null);
 

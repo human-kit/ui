@@ -244,4 +244,16 @@ describe('Toggle.Root', () => {
 		expect(toggle.element()?.getAttribute('aria-pressed')).toBe('false');
 		expect(changes).toEqual([]);
 	});
+	// The modality can change while the element already holds focus, and no focus event fires
+	// there. React Aria and Base UI both bring the ring back on that key press.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		const screen = render(ToggleTest);
+		const element = screen.getByRole('button', { name: 'Favorite' }).element() as HTMLElement;
+		element.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		element.focus();
+		await expect.poll(() => element.getAttribute('data-focused')).toBe('true');
+		expect(element.hasAttribute('data-focus-visible')).toBe(false);
+		await userEvent.keyboard('a');
+		await expect.poll(() => element.getAttribute('data-focus-visible')).toBe('true');
+	});
 });
