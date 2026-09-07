@@ -4,6 +4,7 @@
 	import { useCheckboxContext } from '../root/context';
 
 	type CheckboxIndicatorProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
+		/** Keeps the indicator in the DOM even while the checkbox is unchecked. */
 		forceMount?: boolean;
 		children?: Snippet;
 		class?: string;

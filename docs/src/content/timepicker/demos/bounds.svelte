@@ -51,6 +51,6 @@
 	</TimePicker.Root>
 
 	<p class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-		Time constrained between {minValue} and {maxValue} — value: {value ?? 'null'}
+		Time constrained between {minValue} and {maxValue}
 	</p>
 </div>

@@ -23,6 +23,7 @@ export const nav: NavGroup[] = [
 		items: [
 			{ slug: 'button', title: 'Button' },
 			{ slug: 'checkbox', title: 'Checkbox' },
+			{ slug: 'checkbox-group', title: 'CheckboxGroup' },
 			{ slug: 'input', title: 'Input' },
 			{ slug: 'numberfield', title: 'NumberField' },
 			{ slug: 'switch', title: 'Switch' },

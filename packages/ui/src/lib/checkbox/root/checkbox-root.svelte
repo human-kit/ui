@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { untrack, type Snippet } from 'svelte';
+	import { onDestroy, untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { getCheckboxGroupContext } from '../../checkbox-group/root/context.svelte';
 	import { setCheckboxContext, type CheckboxContext, type CheckboxState } from './context';
 
 	type CheckboxRootProps = Omit<
@@ -47,15 +48,20 @@
 		defaultIndeterminate?: boolean;
 		/** Give your own code full control of `indeterminate`. Read `controlledChecked`. */
 		controlledIndeterminate?: boolean;
+		/** The component calls it when the user changes the checked state. */
 		onCheckedChange?: (checked: boolean) => void;
+		/** The component calls it when the user changes the indeterminate state. From the indeterminate state, the first user action makes the checkbox checked. */
 		onIndeterminateChange?: (indeterminate: boolean) => void;
 		disabled?: boolean;
 		readonly?: boolean;
 		required?: boolean;
 		children?: Snippet;
 		class?: string;
+		/** The accessible name, for when the user sees no name. */
 		'aria-label'?: string;
+		/** The id of the element that gives the checkbox its name. */
 		'aria-labelledby'?: string;
+		/** Replaces the default position in the tab order. */
 		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
@@ -139,6 +145,13 @@
 	const inputId = instanceId;
 	const rootId = `${instanceId}-root`;
 
+	// Inside a `CheckboxGroup.Root` the group owns the checked state, and this checkbox becomes
+	// one entry of its `value` array. Outside one the context is undefined and every path below
+	// keeps the standalone behavior.
+	const checkboxGroup = getCheckboxGroupContext();
+	const registrationOwner = Symbol('checkbox-root');
+	let registeredValue = untrack(() => value);
+
 	const initialChecked = untrack(() => checked ?? defaultChecked);
 	const initialIndeterminate = untrack(() => indeterminate ?? defaultIndeterminate);
 	const initialState = resolveState(initialChecked, initialIndeterminate);
@@ -152,6 +165,35 @@
 	let rootRef: HTMLSpanElement | null = $state(null);
 	let inputRef: HTMLInputElement | null = $state(null);
 
+	// Registered while the script runs, before the element exists, so the group knows the
+	// checkbox at its first render. The effect below repeats it with the element attached,
+	// which is what gives the group its DOM order.
+	untrack(() => {
+		checkboxGroup?.registerCheckbox(registeredValue, {
+			isDisabled: disabled,
+			owner: registrationOwner
+		});
+	});
+
+	$effect(() => {
+		if (!checkboxGroup) return;
+
+		if (registeredValue !== value) {
+			checkboxGroup.unregisterCheckbox(registeredValue);
+		}
+
+		registeredValue = value;
+		checkboxGroup.registerCheckbox(value, {
+			isDisabled: disabled,
+			element: rootRef,
+			owner: registrationOwner
+		});
+	});
+
+	onDestroy(() => {
+		checkboxGroup?.unregisterCheckbox(registeredValue);
+	});
+
 	$effect(() => {
 		element = rootRef;
 		return () => {
@@ -159,10 +201,21 @@
 		};
 	});
 
+	// A grouped checkbox adds the disabled and read-only state of the group to its own.
+	// `required` is NOT among them: native `required` on a checkbox demands THAT box, so
+	// spreading it would turn "at least one" into "every one". The group carries that
+	// meaning itself, with `aria-required` on its own element.
+	const renderedDisabled = $derived(
+		checkboxGroup ? checkboxGroup.isCheckboxDisabled(value) : disabled
+	);
+	const renderedReadOnly = $derived(readonly || Boolean(checkboxGroup?.isReadOnly));
+	const renderedRequired = $derived(required);
+	const renderedName = $derived(name ?? checkboxGroup?.name);
+
 	$effect(() => {
-		if (!disabled && !readonly) return;
+		if (!renderedDisabled && !renderedReadOnly) return;
 		clearPressState();
-		if (disabled) {
+		if (renderedDisabled) {
 			focusVisible = false;
 		}
 	});
@@ -172,7 +225,9 @@
 	// broke every `bind:checked` seeded with `false`. It is opt-in per prop instead.
 	// Write the initial state back so `bind:` parents see the resolved default. Read
 	// untracked: this is a deliberate one-time seed at init, not a reactive mirror.
-	if (!untrack(() => controlledChecked)) {
+	// Skipped when grouped: there the group holds the checked state, and seeding the prop would
+	// report a value the group never agreed to.
+	if (!checkboxGroup && !untrack(() => controlledChecked)) {
 		checked = initialState === 'checked';
 	}
 
@@ -181,10 +236,15 @@
 	}
 
 	// The prop wins whenever it is supplied — that covers both `bind:` and a plain
-	// value — and the internal state only carries the fully uncontrolled case.
+	// value — and the internal state only carries the fully uncontrolled case. A group
+	// outranks all of it.
 	const currentState = $derived.by(() =>
 		resolveState(
-			controlledChecked ? Boolean(checked) : (checked ?? checkedInternal),
+			checkboxGroup
+				? checkboxGroup.isSelected(value)
+				: controlledChecked
+					? Boolean(checked)
+					: (checked ?? checkedInternal),
 			controlledIndeterminate ? Boolean(indeterminate) : (indeterminate ?? indeterminateInternal)
 		)
 	);
@@ -211,8 +271,15 @@
 		const nextIndeterminate = nextState === 'indeterminate';
 		const previousChecked = currentChecked;
 		const previousIndeterminate = currentIndeterminate;
+		let didChangeChecked = nextChecked !== previousChecked;
 
-		if (!controlledChecked) {
+		if (checkboxGroup) {
+			// The group owns the checked state, so the standalone `checked` prop is not written
+			// back. The group reports the whole selection through its own `value` and `onChange`,
+			// and it answers whether it took the change — a group that refuses one must not make
+			// this checkbox announce it.
+			didChangeChecked = checkboxGroup.setValueSelected(value, nextChecked) !== null;
+		} else if (!controlledChecked) {
 			checkedInternal = nextChecked;
 			checked = nextChecked;
 		}
@@ -222,7 +289,7 @@
 			indeterminate = nextIndeterminate;
 		}
 
-		if (nextChecked !== previousChecked) {
+		if (didChangeChecked) {
 			onCheckedChange?.(nextChecked);
 		}
 
@@ -236,7 +303,7 @@
 	}
 
 	function setState(nextState: CheckboxState, event?: Event) {
-		if (disabled || readonly) return;
+		if (renderedDisabled || renderedReadOnly) return;
 		publishState(nextState, event);
 	}
 
@@ -245,7 +312,7 @@
 	}
 
 	function requestNativeToggle(event?: Event) {
-		if (disabled || readonly) return;
+		if (renderedDisabled || renderedReadOnly) return;
 		if (!inputRef) {
 			toggle(event);
 			return;
@@ -258,7 +325,7 @@
 		trackInteractionModality(event, rootRef);
 
 		if (event.defaultPrevented) return;
-		if (disabled || readonly) {
+		if (renderedDisabled || renderedReadOnly) {
 			event.preventDefault();
 			return;
 		}
@@ -316,7 +383,7 @@
 		trackInteractionModality(event, rootRef);
 		focusVisible = false;
 
-		if (disabled || readonly) {
+		if (renderedDisabled || renderedReadOnly) {
 			event.preventDefault();
 			clearPressState();
 			return;
@@ -339,7 +406,7 @@
 	}
 
 	function handlePointerEnter(event: PointerEvent) {
-		if (disabled || readonly) return;
+		if (renderedDisabled || renderedReadOnly) return;
 
 		if ((event.buttons & 1) === 1 && pressedKey === null) {
 			pressed = true;
@@ -356,7 +423,7 @@
 		trackInteractionModality(event, rootRef);
 		focusVisible = false;
 
-		if (disabled || readonly) {
+		if (renderedDisabled || renderedReadOnly) {
 			event.preventDefault();
 			clearPressState();
 			return;
@@ -395,7 +462,7 @@
 		const target = event.currentTarget;
 		if (!(target instanceof HTMLInputElement)) return;
 
-		if (disabled || readonly) {
+		if (renderedDisabled || renderedReadOnly) {
 			target.checked = currentChecked;
 			target.indeterminate = currentIndeterminate;
 			return;
@@ -468,13 +535,13 @@
 			return currentIndeterminate;
 		},
 		get isDisabled() {
-			return disabled;
+			return renderedDisabled;
 		},
 		get isReadOnly() {
-			return readonly;
+			return renderedReadOnly;
 		},
 		get required() {
-			return required;
+			return renderedRequired;
 		},
 		get focused() {
 			return focused;
@@ -492,11 +559,11 @@
 	bind:this={rootRef}
 	id={rootId}
 	role="checkbox"
-	tabindex={disabled ? undefined : (tabindex ?? 0)}
+	tabindex={renderedDisabled ? undefined : (tabindex ?? 0)}
 	aria-checked={currentIndeterminate ? 'mixed' : currentChecked ? 'true' : 'false'}
-	aria-disabled={disabled || undefined}
-	aria-readonly={readonly || undefined}
-	aria-required={required || undefined}
+	aria-disabled={renderedDisabled || undefined}
+	aria-readonly={renderedReadOnly || undefined}
+	aria-required={renderedRequired || undefined}
 	aria-label={ariaLabel}
 	aria-labelledby={ariaLabelledby}
 	data-checkbox-root="true"
@@ -504,9 +571,9 @@
 	data-unchecked={currentUnchecked || undefined}
 	data-indeterminate={currentIndeterminate || undefined}
 	data-pressed={pressed || undefined}
-	data-disabled={disabled || undefined}
-	data-readonly={readonly || undefined}
-	data-required={required || undefined}
+	data-disabled={renderedDisabled || undefined}
+	data-readonly={renderedReadOnly || undefined}
+	data-required={renderedRequired || undefined}
 	data-focused={focused || undefined}
 	data-focus-visible={focusVisible || undefined}
 	onclick={composeEventHandlers(onClickExternal ?? undefined, handleClick)}
@@ -531,13 +598,13 @@
 		id={inputId}
 		tabindex={-1}
 		type="checkbox"
-		{name}
+		name={renderedName}
 		{value}
 		{form}
 		checked={currentChecked}
-		{disabled}
-		{required}
-		{readonly}
+		disabled={renderedDisabled}
+		required={renderedRequired}
+		readonly={renderedReadOnly}
 		aria-hidden="true"
 		data-checkbox-input="true"
 		onclick={handleInputClick}
