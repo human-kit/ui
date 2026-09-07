@@ -79,8 +79,6 @@
 	</LocaleProvider>
 
 	<p class="text-sm text-neutral-500 dark:text-neutral-400">
-		Selectable range: {minValue} → {maxValue} — value: {value
-			? `${value.start} → ${value.end}`
-			: 'null'}
+		Selectable range: {minValue} → {maxValue}
 	</p>
 </div>

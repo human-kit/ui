@@ -14,17 +14,25 @@
 		HTMLAttributes<HTMLDivElement>,
 		'children' | 'class' | 'id' | 'role' | 'tabindex' | 'aria-invalid'
 	> & {
+		/**
+		 * The id of the hidden proxy input. A `<label for>` points to it, and the segmented group
+		 * then takes a derived id.
+		 */
 		id?: string;
 		/**
-		 * Name of the hidden proxy input used for form submission. The proxy only
-		 * mirrors the committed value: autofill is NOT supported (it renders with
-		 * `autocomplete="off"` so browsers and password managers do not write
-		 * into it) — times are entered through the editable segments.
+		 * Name of the hidden proxy input for form submission. The proxy shows only the committed
+		 * value. It does not support autofill: it renders with `autocomplete="off"`, thus browsers
+		 * and password managers do not write into it. The user gives the time through the editable
+		 * segments.
 		 */
 		name?: string;
 		children?: Snippet<[TimePickerSegmentPart]>;
 		class?: string;
 		'aria-label'?: string;
+		/**
+		 * Marks the input as invalid. The group is also invalid while a segment draft is not
+		 * committable.
+		 */
 		'aria-invalid'?: HTMLAttributes<HTMLDivElement>['aria-invalid'];
 	};
 
