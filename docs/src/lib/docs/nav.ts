@@ -26,6 +26,7 @@ export const nav: NavGroup[] = [
 			{ slug: 'checkbox-group', title: 'CheckboxGroup' },
 			{ slug: 'input', title: 'Input' },
 			{ slug: 'numberfield', title: 'NumberField' },
+			{ slug: 'radio-group', title: 'RadioGroup' },
 			{ slug: 'switch', title: 'Switch' },
 			{ slug: 'textarea', title: 'TextArea' },
 			{ slug: 'toggle', title: 'Toggle' },

@@ -1,0 +1,415 @@
+{
+	"component": "radio-group",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The group container. It makes a div with role=\"radiogroup\". It holds the value and controls the roving focus.",
+			"props": [
+				{
+					"name": "value",
+					"type": "RadioGroupValue | null",
+					"required": false,
+					"default": null,
+					"description": "The selected value. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
+				},
+				{
+					"name": "defaultValue",
+					"type": "RadioGroupValue | null",
+					"required": false,
+					"default": null,
+					"description": "The selected value at the start, for when you give no `value`."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: RadioGroupValue) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user selects a radio."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The `name` of the hidden input of every radio in the group, for form submission."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form of the hidden inputs."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables each radio in the group."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Shows the value of the group, and refuses each change from the user."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the group with `aria-required`, and marks each hidden input as required."
+				},
+				{
+					"name": "orientation",
+					"type": "RadioGroupOrientation",
+					"required": false,
+					"default": "'vertical'",
+					"description": "The orientation of the layout. It sets `aria-orientation` and `data-orientation`, and it\nchooses the arrow keys that move the focus."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The radios of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the group element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The group element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "RadioGroupContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the group. Use `bind:context` to read the selection from outside."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-radio-group-root",
+					"description": "Identifies the group element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the whole group is disabled."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The group orientation (\"horizontal\" or \"vertical\")."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the whole group is read only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the group is required."
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "One answer of the group. It makes a span with role=\"radio\" and a hidden radio input for the form.",
+			"props": [
+				{
+					"name": "value",
+					"type": "RadioGroupValue | null",
+					"required": false,
+					"default": null,
+					"description": "The selected value. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
+				},
+				{
+					"name": "defaultValue",
+					"type": "RadioGroupValue | null",
+					"required": false,
+					"default": null,
+					"description": "The selected value at the start, for when you give no `value`."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: RadioGroupValue) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user selects a radio."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The `name` of the hidden input of every radio in the group, for form submission."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form of the hidden inputs."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables each radio in the group."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Shows the value of the group, and refuses each change from the user."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Marks the group with `aria-required`, and marks each hidden input as required."
+				},
+				{
+					"name": "orientation",
+					"type": "RadioGroupOrientation",
+					"required": false,
+					"default": null,
+					"description": "The orientation of the layout. It sets `aria-orientation` and `data-orientation`, and it\nchooses the arrow keys that move the focus."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The radios of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the group element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": null,
+					"description": "The group element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "RadioGroupContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the group. Use `bind:context` to read the selection from outside."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-radio-group-item",
+					"description": "Identifies the radio element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present when the radio is checked."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present when the radio is not checked."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the radio is held down."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the radio or its group is disabled."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the group is read only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the group is required."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present when the radio has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus came from the keyboard."
+				}
+			]
+		},
+		{
+			"name": "Indicator",
+			"description": "The mark of a checked radio. It is in the DOM only while the radio is checked, unless you give forceMount.",
+			"props": [
+				{
+					"name": "value",
+					"type": "RadioGroupValue | null",
+					"required": false,
+					"default": null,
+					"description": "The selected value. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
+				},
+				{
+					"name": "defaultValue",
+					"type": "RadioGroupValue | null",
+					"required": false,
+					"default": null,
+					"description": "The selected value at the start, for when you give no `value`."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: RadioGroupValue) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user selects a radio."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The `name` of the hidden input of every radio in the group, for form submission."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form of the hidden inputs."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Disables each radio in the group."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Shows the value of the group, and refuses each change from the user."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Marks the group with `aria-required`, and marks each hidden input as required."
+				},
+				{
+					"name": "orientation",
+					"type": "RadioGroupOrientation",
+					"required": false,
+					"default": null,
+					"description": "The orientation of the layout. It sets `aria-orientation` and `data-orientation`, and it\nchooses the arrow keys that move the focus."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The radios of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the group element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": null,
+					"description": "The group element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "RadioGroupContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the group. Use `bind:context` to read the selection from outside."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-radio-group-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present when the radio is checked."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present when the radio is not checked."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the radio is held down."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the radio or its group is disabled."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the group is read only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the group is required."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present when the radio has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus came from the keyboard."
+				}
+			]
+		}
+	]
+}

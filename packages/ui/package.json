@@ -153,6 +153,11 @@
 			"svelte": "./dist/popover/index.js",
 			"default": "./dist/popover/index.js"
 		},
+		"./radio-group": {
+			"types": "./dist/radio-group/index.d.ts",
+			"svelte": "./dist/radio-group/index.js",
+			"default": "./dist/radio-group/index.js"
+		},
 		"./table": {
 			"types": "./dist/table/index.d.ts",
 			"svelte": "./dist/table/index.js",
