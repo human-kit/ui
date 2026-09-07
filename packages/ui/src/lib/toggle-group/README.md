@@ -7,12 +7,12 @@
 ## Anatomy
 
 - `ToggleGroup.Root`
-- `Toggle.Root`
+- `ToggleGroup.Item`
 
 ```svelte
 <ToggleGroup.Root defaultValue={['bold']} selectionMode="multiple" aria-label="Text style">
-	<Toggle.Root value="bold">Bold</Toggle.Root>
-	<Toggle.Root value="italic">Italic</Toggle.Root>
+	<ToggleGroup.Item value="bold">Bold</ToggleGroup.Item>
+	<ToggleGroup.Item value="italic">Italic</ToggleGroup.Item>
 </ToggleGroup.Root>
 ```
 
@@ -26,7 +26,9 @@
 - Use `selectionMode="single"` when only one toggle can be selected.
 - Use `selectionMode="multiple"` when several toggles can be selected.
 - Use `disallowEmptySelection` when at least one enabled toggle must remain selected.
-- Every grouped `Toggle.Root` must provide a unique `value`.
+- `ToggleGroup.Item` is `Toggle.Root` under the namespace of the group, and the two names are
+  the same component. A toggle works on its own, thus it keeps its own name too.
+- Every toggle in a group must provide a unique `value`.
 
 ## API reference
 

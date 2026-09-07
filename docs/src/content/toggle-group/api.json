@@ -108,6 +108,106 @@
 					"description": "Identifies the group element."
 				}
 			]
+		},
+		{
+			"name": "Item",
+			"description": "One button of the group. It is Toggle.Root under the namespace of the group, and the two names are the same component.",
+			"props": [
+				{
+					"name": "value",
+					"type": "ToggleGroupValue",
+					"required": false,
+					"default": null,
+					"description": "The stable identifier, which the component puts on the button. In a `ToggleGroup.Root`, the\nselection needs it. It does not show the selected state."
+				},
+				{
+					"name": "defaultSelected",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "The selected state at the start, for when the component controls the state. In a\n`ToggleGroup`, the component ignores it."
+				},
+				{
+					"name": "selected",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "The selected state. You can bind it. When your own code controls the state, `undefined`\nbecomes `false`. In a `ToggleGroup`, the component ignores it."
+				},
+				{
+					"name": "onChange",
+					"type": "(selected: boolean) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user changes the selected state."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Stops the interaction with the toggle and removes it from the focus order."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[ToggleRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content of the button. As a snippet, it can receive the current render state, for\nexample `selected`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the toggle or its group is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus came from the keyboard."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present when the toggle has the focus."
+				},
+				{
+					"name": "data-grouped",
+					"description": ""
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present while the pointer is over the toggle."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the toggle is held down."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present when the toggle is selected."
+				},
+				{
+					"name": "data-toggle-root",
+					"description": "Identifies the toggle element."
+				},
+				{
+					"name": "data-unselected",
+					"description": "Present when the toggle is not selected."
+				}
+			]
 		}
 	]
 }
