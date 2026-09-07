@@ -47,15 +47,20 @@
 		defaultIndeterminate?: boolean;
 		/** Give your own code full control of `indeterminate`. Read `controlledChecked`. */
 		controlledIndeterminate?: boolean;
+		/** The component calls it when the user changes the checked state. */
 		onCheckedChange?: (checked: boolean) => void;
+		/** The component calls it when the user changes the indeterminate state. From the indeterminate state, the first user action makes the checkbox checked. */
 		onIndeterminateChange?: (indeterminate: boolean) => void;
 		disabled?: boolean;
 		readonly?: boolean;
 		required?: boolean;
 		children?: Snippet;
 		class?: string;
+		/** The accessible name, for when the user sees no name. */
 		'aria-label'?: string;
+		/** The id of the element that gives the checkbox its name. */
 		'aria-labelledby'?: string;
+		/** Replaces the default position in the tab order. */
 		tabindex?: number;
 		onclick?: HTMLAttributes<HTMLSpanElement>['onclick'];
 		onkeydown?: HTMLAttributes<HTMLSpanElement>['onkeydown'];
