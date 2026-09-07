@@ -1,0 +1,402 @@
+{
+	"component": "checkbox-group",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The group container. It makes a div with role=\"group\". It holds the checked state of the boxes in it.",
+			"props": [
+				{
+					"name": "value",
+					"type": "CheckboxGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "The selected values. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
+				},
+				{
+					"name": "defaultValue",
+					"type": "CheckboxGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "The selected values at the start, for when you give no `value`."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: CheckboxGroupValue[]) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user changes the selection."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The `name` of the hidden input of every checkbox in the group, for form submission."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables each checkbox in the group."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Shows the value of the group, and refuses each change from the user."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Records that the group needs an answer. It gives `data-required` for your styles, and it\ndoes not enforce a minimum count. It marks neither the group nor the boxes with\n`aria-required`: `role=\"group\"` does not support that property, and native `required` on a\nbox demands that one box. Say it in the group label, and give the reason with\n`aria-describedby`."
+				},
+				{
+					"name": "orientation",
+					"type": "CheckboxGroupOrientation",
+					"required": false,
+					"default": "'vertical'",
+					"description": "The orientation of the layout. It sets `data-orientation` for your styles. It does not change\nthe keyboard behavior: each checkbox keeps its own tab stop."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The checkboxes of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the group element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The group element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "CheckboxGroupContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the group. Use `bind:context` to read `allSelected` and `someSelected` for a\nparent \"select all\" checkbox, and to call `selectAll` and `clearAll`."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-group-root",
+					"description": "Identifies the group element."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the whole group is disabled."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The group orientation (\"horizontal\" or \"vertical\")."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the whole group is read only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the group is required."
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "One box of the group. It is Checkbox.Root under the namespace of the group, and the two names are the same component.",
+			"props": [
+				{
+					"name": "value",
+					"type": "CheckboxGroupValue[]",
+					"required": false,
+					"default": "'on'",
+					"description": "The selected values. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
+				},
+				{
+					"name": "defaultValue",
+					"type": "CheckboxGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "The selected values at the start, for when you give no `value`."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: CheckboxGroupValue[]) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user changes the selection."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The `name` of the hidden input of every checkbox in the group, for form submission."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables each checkbox in the group."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Shows the value of the group, and refuses each change from the user."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Records that the group needs an answer. It gives `data-required` for your styles, and it\ndoes not enforce a minimum count. It marks neither the group nor the boxes with\n`aria-required`: `role=\"group\"` does not support that property, and native `required` on a\nbox demands that one box. Say it in the group label, and give the reason with\n`aria-describedby`."
+				},
+				{
+					"name": "orientation",
+					"type": "CheckboxGroupOrientation",
+					"required": false,
+					"default": null,
+					"description": "The orientation of the layout. It sets `data-orientation` for your styles. It does not change\nthe keyboard behavior: each checkbox keeps its own tab stop."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The checkboxes of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the group element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": null,
+					"description": "The group element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "CheckboxGroupContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the group. Use `bind:context` to read `allSelected` and `someSelected` for a\nparent \"select all\" checkbox, and to call `selectAll` and `clearAll`."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-root",
+					"description": "Identifies the checkbox element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present when the box is checked."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present when the box is not checked."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present when the box is in the mixed state."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the box is held down."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the box or its group is disabled."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the box or its group is read only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the box is required."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present when the box has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus came from the keyboard."
+				}
+			]
+		},
+		{
+			"name": "Indicator",
+			"description": "The mark of a checked box. It is Checkbox.Indicator under the namespace of the group.",
+			"props": [
+				{
+					"name": "value",
+					"type": "CheckboxGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "The selected values. When you give this prop, it is the source of truth, with `bind:value` or\nwithout it. The component writes each change here and reports it through `onChange`.\n\nWithout a binding, that write stays local. Thus a parent that hears `onChange` and refuses the\nchange — it sends no new `value` down — sees the group move. The group then goes back to the\nvalue of the parent at the next render."
+				},
+				{
+					"name": "defaultValue",
+					"type": "CheckboxGroupValue[]",
+					"required": false,
+					"default": null,
+					"description": "The selected values at the start, for when you give no `value`."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: CheckboxGroupValue[]) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user changes the selection."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The `name` of the hidden input of every checkbox in the group, for form submission."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Disables each checkbox in the group."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Shows the value of the group, and refuses each change from the user."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Records that the group needs an answer. It gives `data-required` for your styles, and it\ndoes not enforce a minimum count. It marks neither the group nor the boxes with\n`aria-required`: `role=\"group\"` does not support that property, and native `required` on a\nbox demands that one box. Say it in the group label, and give the reason with\n`aria-describedby`."
+				},
+				{
+					"name": "orientation",
+					"type": "CheckboxGroupOrientation",
+					"required": false,
+					"default": null,
+					"description": "The orientation of the layout. It sets `data-orientation` for your styles. It does not change\nthe keyboard behavior: each checkbox keeps its own tab stop."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The checkboxes of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the group element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": null,
+					"description": "The group element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "CheckboxGroupContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the group. Use `bind:context` to read `allSelected` and `someSelected` for a\nparent \"select all\" checkbox, and to call `selectAll` and `clearAll`."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-checked",
+					"description": "Present when the box is checked."
+				},
+				{
+					"name": "data-unchecked",
+					"description": "Present when the box is not checked."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present when the box is in the mixed state."
+				},
+				{
+					"name": "data-pressed",
+					"description": "Present while the box is held down."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present when the box or its group is disabled."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the box or its group is read only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the box is required."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present when the box has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus came from the keyboard."
+				}
+			]
+		}
+	]
+}

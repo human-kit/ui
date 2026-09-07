@@ -73,6 +73,11 @@
 			"svelte": "./dist/checkbox/index.js",
 			"default": "./dist/checkbox/index.js"
 		},
+		"./checkbox-group": {
+			"types": "./dist/checkbox-group/index.d.ts",
+			"svelte": "./dist/checkbox-group/index.js",
+			"default": "./dist/checkbox-group/index.js"
+		},
 		"./collapsible": {
 			"types": "./dist/collapsible/index.d.ts",
 			"svelte": "./dist/collapsible/index.js",
