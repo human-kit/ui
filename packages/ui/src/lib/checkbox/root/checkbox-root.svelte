@@ -5,6 +5,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 	import { setCheckboxContext, type CheckboxContext, type CheckboxState } from './context';
 
 	type CheckboxRootProps = Omit<
@@ -191,6 +192,14 @@
 	const currentChecked = $derived(currentState === 'checked');
 	const currentIndeterminate = $derived(currentState === 'indeterminate');
 	const currentUnchecked = $derived(currentState === 'unchecked');
+
+	// The focus ring must appear when a pointer press is followed by a key press, and the modality
+	// alone changes there — no focus event fires to re-read it.
+	watchFocusVisible({
+		isFocused: () => focused,
+		element: () => rootRef,
+		set: (visible) => (focusVisible = visible)
+	});
 
 	function clearPressState() {
 		pressed = false;

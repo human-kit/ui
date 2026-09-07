@@ -322,4 +322,27 @@ describe('Checkbox.Root', () => {
 
 		expect(blurs).toBe(1);
 	});
+	// The modality can change while the element already holds focus, and no focus event fires
+	// there. React Aria and Base UI both bring the ring back on that key press.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		const screen = render(CheckboxTest);
+		const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+		const element = checkbox.element() as HTMLElement;
+
+		// Dispatched rather than driven through `userEvent`: the element has no size without the
+		// stylesheet, and the point here is the modality, not the hit area.
+		element.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		element.focus();
+
+		await expect.poll(() => element.getAttribute('data-focused')).toBe('true');
+		expect(element.hasAttribute('data-focus-visible')).toBe(false);
+
+		// A key the checkbox does not handle: the ring must come from the modality change alone.
+		await userEvent.keyboard('{ArrowDown}');
+		await expect.poll(() => element.getAttribute('data-focus-visible')).toBe('true');
+
+		// And it goes back off when the pointer takes over again.
+		element.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		await expect.poll(() => element.hasAttribute('data-focus-visible')).toBe(false);
+	});
 });
