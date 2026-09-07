@@ -19,8 +19,4 @@
 			<NumberField.Increment class={`${buttonClass} border-l`}>+</NumberField.Increment>
 		</NumberField.Group>
 	</NumberField.Root>
-
-	<p class="text-xs text-neutral-500 dark:text-neutral-400">
-		value: {value === null ? 'null' : value}
-	</p>
 </div>

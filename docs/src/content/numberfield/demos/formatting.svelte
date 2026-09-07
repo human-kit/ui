@@ -27,8 +27,4 @@
 			</NumberField.Group>
 		</NumberField.Root>
 	</LocaleProvider>
-
-	<p class="text-xs text-neutral-500 dark:text-neutral-400">
-		raw value: {amount === null ? 'null' : amount}
-	</p>
 </div>

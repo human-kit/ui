@@ -32,6 +32,6 @@
 	</Clock.Root>
 
 	<p class="text-sm text-neutral-500 dark:text-neutral-400">
-		Hours constrained between {minValue} and {maxValue} — value: {value ?? 'null'}
+		Hours constrained between {minValue} and {maxValue}
 	</p>
 </div>
