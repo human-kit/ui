@@ -213,4 +213,16 @@ describe('Button.Root', () => {
 		expect(button?.getAttribute('data-hovered')).toBeNull();
 		expect(button?.getAttribute('data-focused')).toBe('true');
 	});
+	// The modality can change while the element already holds focus, and no focus event fires
+	// there. React Aria and Base UI both bring the ring back on that key press.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		const screen = render(ButtonTest);
+		const element = screen.getByRole('button', { name: 'Save' }).element() as HTMLElement;
+		element.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		element.focus();
+		await expect.poll(() => element.getAttribute('data-focused')).toBe('true');
+		expect(element.hasAttribute('data-focus-visible')).toBe(false);
+		await userEvent.keyboard('a');
+		await expect.poll(() => element.getAttribute('data-focus-visible')).toBe('true');
+	});
 });
