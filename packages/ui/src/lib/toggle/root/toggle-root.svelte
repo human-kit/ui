@@ -23,13 +23,32 @@
 		HTMLButtonAttributes,
 		'children' | 'class' | 'disabled' | 'aria-pressed' | 'type' | 'value'
 	> & {
+		/**
+		 * The stable identifier, which the component puts on the button. In a `ToggleGroup.Root`, the
+		 * selection needs it. It does not show the selected state.
+		 */
 		value?: ToggleGroupValue;
+		/**
+		 * The selected state at the start, for when the component controls the state. In a
+		 * `ToggleGroup`, the component ignores it.
+		 */
 		defaultSelected?: boolean;
+		/**
+		 * The selected state. You can bind it. When your own code controls the state, `undefined`
+		 * becomes `false`. In a `ToggleGroup`, the component ignores it.
+		 */
 		selected?: boolean;
+		/** The component calls it when the user changes the selected state. */
 		onChange?: (selected: boolean) => void;
+		/** Stops the interaction with the toggle and removes it from the focus order. */
 		disabled?: boolean;
+		/**
+		 * The content of the button. As a snippet, it can receive the current render state, for
+		 * example `selected`.
+		 */
 		children?: Snippet<[ToggleRenderState]> | Snippet;
 		class?: string;
+		/** A bindable reference to the button element. */
 		element?: HTMLButtonElement | null;
 	};
 

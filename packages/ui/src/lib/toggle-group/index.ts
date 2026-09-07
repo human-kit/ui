@@ -1,10 +1,12 @@
 import type { ComponentProps } from 'svelte';
+import type ToggleRootComponent from '../toggle/root/toggle-root.svelte';
 import type ToggleGroupRootComponent from './root/toggle-group-root.svelte';
 
 export * as ToggleGroup from './index.parts.js';
 
 export { default as ToggleGroupRoot } from './root/toggle-group-root.svelte';
 export type ToggleGroupRootProps = ComponentProps<typeof ToggleGroupRootComponent>;
+export type ToggleGroupItemProps = ComponentProps<typeof ToggleRootComponent>;
 export {
 	createToggleGroupContext,
 	getToggleGroupContext,

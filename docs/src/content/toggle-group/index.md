@@ -18,16 +18,16 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 
 ## Anatomy
 
-`ToggleGroup.Root` contains usual `Toggle.Root` buttons. Each toggle in the group must have a unique `value`. The group uses the `value` to record the selection.
+`ToggleGroup.Root` contains `ToggleGroup.Item` buttons. That part is `Toggle.Root` under the namespace of the group, and the two names are the same component. Each button must have a unique `value`. The group uses the `value` to record the selection.
 
 ```svelte
 <script>
-	import { Toggle, ToggleGroup } from '@human-kit/ui';
+	import { ToggleGroup } from '@human-kit/ui';
 </script>
 
 <ToggleGroup.Root defaultValue={['bold']} selectionMode="multiple" aria-label="Text style">
-	<Toggle.Root value="bold">Bold</Toggle.Root>
-	<Toggle.Root value="italic">Italic</Toggle.Root>
+	<ToggleGroup.Item value="bold">Bold</ToggleGroup.Item>
+	<ToggleGroup.Item value="italic">Italic</ToggleGroup.Item>
 </ToggleGroup.Root>
 ```
 
@@ -45,7 +45,7 @@ description: Grouped toggle buttons with single or multiple selection, roving fo
 - Use `selectionMode="single"` when only one toggle can be selected.
 - Use `selectionMode="multiple"` when more than one toggle can be selected.
 - Use `disallowEmptySelection` when one enabled toggle must stay selected.
-- Each `Toggle.Root` in the group must have a unique `value`.
+- Each button in the group must have a unique `value`.
 - A toggle in a group ignores its own `selected` and `defaultSelected` props.
 
 ## Accessibility

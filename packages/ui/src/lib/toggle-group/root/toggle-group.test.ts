@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 import ToggleGroupDuplicateTest from './toggle-group-duplicate-test.svelte';
+import ToggleGroupItemTest from './toggle-group-item-test.svelte';
 import ToggleGroupNumericStringTest from './toggle-group-numeric-string-test.svelte';
 import ToggleGroupOrderTest from './toggle-group-order-test.svelte';
 import ToggleGroupRejectingParentTest from './toggle-group-rejecting-parent-test.svelte';
@@ -494,5 +495,24 @@ describe('ToggleGroup.Root', () => {
 		expect(number.element()?.getAttribute('aria-pressed')).toBe('true');
 		expect(string.element()?.getAttribute('aria-pressed')).toBe('true');
 		expect(document.querySelector('[data-current-value]')?.textContent).toBe('[1,"1"]');
+	});
+	// `ToggleGroup.Item` is `Toggle.Root` under the namespace of the group. Every other test in this
+	// file writes `Toggle.Root`, so this is the one that proves both names reach the same component.
+	it('accepts a toggle written as ToggleGroup.Item', async () => {
+		const changes: unknown[] = [];
+		render(ToggleGroupItemTest, {
+			defaultValue: ['bold'],
+			onChange: (value) => changes.push(value)
+		});
+		const bold = getToggle('toggle-bold');
+		const italic = getToggle('toggle-italic');
+
+		expect(bold.getAttribute('data-toggle-root')).toBe('true');
+		expect(bold.getAttribute('aria-pressed')).toBe('true');
+
+		await userEvent.click(italic);
+
+		expect(italic.getAttribute('aria-pressed')).toBe('true');
+		expect(changes).toEqual([['bold', 'italic']]);
 	});
 });
