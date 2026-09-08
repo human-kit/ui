@@ -293,6 +293,22 @@ describe('RadioGroup.Root', () => {
 		expectNoFalseFocusAttributes(document);
 	});
 
+	// The modality can change while the radio already holds focus, and no focus event fires
+	// to report it. A key that the radio ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		render(RadioGroupTest);
+
+		const medium = getRadio('radio-medium');
+		await userEvent.click(medium);
+		expect(medium.getAttribute('data-focused')).toBe('true');
+		expect(medium.hasAttribute('data-focus-visible')).toBe(false);
+
+		await userEvent.keyboard('a');
+		await expect.poll(() => medium.getAttribute('data-focus-visible')).toBe('true');
+		expectFocusVisibleImpliesFocused(medium);
+	});
+
 	it('gives every radio the name of the group, and submits the selected value', async () => {
 		const submissions: (string | null)[] = [];
 		render(RadioGroupFormTest, {

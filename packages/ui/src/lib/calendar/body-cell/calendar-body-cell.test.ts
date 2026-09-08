@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
 import CalendarRootTest from '../root/calendar-root-test.svelte';
 import { formatCalendarDate, getTodayUtcDate } from '../root/date-utils';
 
@@ -181,5 +182,20 @@ describe('Calendar.BodyCell', () => {
 			document.querySelector('[role="button"][data-date="2026-02-08"][data-range-end]')
 		).toBeFalsy();
 		expect(document.querySelector('[data-range-end]')).toBeFalsy();
+	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		render(CalendarRootTest);
+		const cell = document.querySelector<HTMLElement>('[role="gridcell"][data-date]')!;
+
+		await userEvent.click(cell);
+		await expect.poll(() => cell.getAttribute('data-focused')).toBe('true');
+		expect(cell.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => cell.getAttribute('data-focus-visible')).toBe('true');
 	});
 });

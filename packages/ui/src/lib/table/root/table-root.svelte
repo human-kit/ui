@@ -21,6 +21,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
 	import type { TableRootProps } from '../types.js';
 	import {
@@ -499,15 +500,37 @@
 		focusWithin =
 			!!tableElement && !!document.activeElement && tableElement.contains(document.activeElement);
 		if (!focusWithin) {
-			focusVisible = false;
+			setFocusVisible(false);
 			ctx.setFocusedCell(null);
 		}
 	}
 
 	function handleFocusIn(event: FocusEvent) {
 		focusWithin = true;
-		focusVisible = shouldShowFocusVisible(event.target as HTMLElement | null);
+		setFocusVisible(shouldShowFocusVisible(event.target as HTMLElement | null));
 	}
+
+	// Every part of the table reads one focus-visible value, and each writes it from its own
+	// focus handler. One watch on the focused descendant therefore serves them all: a key press
+	// that follows a pointer press brings the ring back on the cell, the row and the checkbox
+	// at once.
+	function getFocusedDescendant() {
+		if (!tableElement) return null;
+		const active = tableElement.ownerDocument.activeElement;
+		if (!(active instanceof HTMLElement)) return null;
+		return tableElement.contains(active) ? active : null;
+	}
+
+	function setFocusVisible(visible: boolean) {
+		focusVisible = visible;
+		ctx.setFocusVisible(visible);
+	}
+
+	watchFocusVisible({
+		isFocused: () => focusWithin,
+		element: getFocusedDescendant,
+		set: setFocusVisible
+	});
 
 	function handleFocusOut() {
 		queueMicrotask(syncFocusWithin);
@@ -515,14 +538,14 @@
 
 	function handleMouseDown(event: MouseEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
-		focusVisible = false;
+		setFocusVisible(false);
 	}
 
+	// No focus-visible write here: `trackInteractionModality` reports the key to the modality,
+	// and the watch above answers. A key that carries a modifier is not a modality change, and
+	// must leave the ring as the pointer left it.
 	function handleKeyDown(event: KeyboardEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
-		if (focusWithin) {
-			focusVisible = true;
-		}
 	}
 </script>
 

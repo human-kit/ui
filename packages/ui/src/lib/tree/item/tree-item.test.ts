@@ -150,4 +150,19 @@ describe('Tree.Item', () => {
 		await expect.element(reports).toHaveAttribute('data-focused', 'true');
 		expect(documents.getAttribute('data-focused')).toBeNull();
 	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		render(TreeItemTest);
+		const item = document.querySelector<HTMLElement>('[role="treeitem"]')!;
+
+		await userEvent.click(item);
+		await expect.poll(() => item.getAttribute('data-focused')).toBe('true');
+		expect(item.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => item.getAttribute('data-focus-visible')).toBe('true');
+	});
 });

@@ -1724,4 +1724,20 @@ describe('ComboBox', () => {
 			expect(input.element().getAttribute('aria-activedescendant')).toBe(activeDescendant);
 		});
 	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		const screen = render(ComboBoxTest);
+		const input = screen.getByRole('combobox');
+		const wrapper = document.querySelector<HTMLElement>('[data-combobox]')!;
+
+		await input.click();
+		await expect.poll(() => wrapper.getAttribute('data-focused')).toBe('true');
+		expect(wrapper.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => wrapper.getAttribute('data-focus-visible')).toBe('true');
+	});
 });

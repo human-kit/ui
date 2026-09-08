@@ -5,6 +5,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 	import { useRadioGroupContext } from '../root/context.svelte';
 	import { setRadioGroupItemContext, type RadioGroupItemContext } from './context';
 
@@ -141,6 +142,12 @@
 	const focused = $derived(radioGroup.isFocused(value));
 	const focusVisible = $derived(radioGroup.isFocusVisible(value));
 	const tabIndex = $derived(radioGroup.getTabIndex(value));
+
+	watchFocusVisible({
+		isFocused: () => focused,
+		element: () => rootRef,
+		set: (visible) => radioGroup.setFocusVisible(visible)
+	});
 
 	$effect(() => {
 		if (!renderedDisabled && !renderedReadOnly) return;
