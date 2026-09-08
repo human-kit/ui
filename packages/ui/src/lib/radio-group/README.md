@@ -9,11 +9,13 @@ state, and it controls the roving focus the pattern asks for.
 ## Anatomy
 
 - `RadioGroup.Root`
+- `RadioGroup.Label`
 - `RadioGroup.Item`
 - `RadioGroup.Indicator`
 
 ```svelte
-<RadioGroup.Root name="size" defaultValue="medium" aria-label="Size">
+<RadioGroup.Root name="size" defaultValue="medium">
+	<RadioGroup.Label>Size</RadioGroup.Label>
 	<RadioGroup.Item value="small">
 		<RadioGroup.Indicator>x</RadioGroup.Indicator>
 		Small
@@ -59,12 +61,22 @@ input for the form.
 
 `RadioGroup.Indicator` supports `forceMount`. It is in the DOM only while its radio is checked.
 
+`RadioGroup.Label` supports `children`, `class`, `id` and the usual `HTMLAttributes<HTMLSpanElement>`.
+It renders a span, and it registers its id with the group as `aria-labelledby`.
+
 ## Accessibility
 
 - `RadioGroup.Root` renders `role="radiogroup"`, with `aria-orientation`, `aria-required`,
   `aria-disabled` and `aria-readonly`. That role supports all four, which the plain `group` role of
   a checkbox group does not.
-- Give the group an accessible name with `aria-label` or `aria-labelledby`.
+- Give the group an accessible name with `RadioGroup.Label`, or with `aria-label` on the root for a
+  name the user does not see. Two labels read as one name, in the order they appear. An
+  `aria-labelledby` that the caller gives stands, thus an element of your own wins.
+- `RadioGroup.Label` renders a span, and not a `<label>`: a `<label>` names one control, thus it
+  cannot name a set.
+- The id reaches the group through the context. The server cannot do that: the group tag is
+  already written when the label registers. Thus `aria-labelledby` appears at hydration. Give
+  `aria-label` as well when the name must be there on the first paint.
 - The group holds **one** tab stop, on the checked radio, and on the first enabled radio while
   nothing is checked. Thus Tab enters the group where the user left it, and Tab leaves the group
   rather than walking through it.

@@ -9,11 +9,13 @@ required state, and it reports the counts a parent "select all" checkbox needs.
 ## Anatomy
 
 - `CheckboxGroup.Root`
+- `CheckboxGroup.Label`
 - `CheckboxGroup.Item`
 - `CheckboxGroup.Indicator`
 
 ```svelte
-<CheckboxGroup.Root name="colors" defaultValue={['red']} aria-label="Colors">
+<CheckboxGroup.Root name="colors" defaultValue={['red']}>
+	<CheckboxGroup.Label>Colors</CheckboxGroup.Label>
 	<Checkbox.Root value="red">
 		<Checkbox.Indicator>x</Checkbox.Indicator>
 		Red
@@ -66,7 +68,14 @@ required state, and it reports the counts a parent "select all" checkbox needs.
   `role="group"` does not support that property. It also never goes down to the boxes. Native
   `required` on a checkbox demands that one box. It would thus turn "at least one" into
   "every one". Put the word in the group label, and give the reason with `aria-describedby`.
-- Provide an accessible group name with `aria-label` or `aria-labelledby`.
+- Provide an accessible group name with `CheckboxGroup.Label`, or with `aria-label` on the root for
+  a name the user does not see. Two labels read as one name, in the order they appear. An
+  `aria-labelledby` that the caller gives stands, thus an element of your own wins.
+- `CheckboxGroup.Label` renders a span, and not a `<label>`: a `<label>` names one control, thus it
+  cannot name a set.
+- The id reaches the group through the context. The server cannot do that: the group tag is
+  already written when the label registers. Thus `aria-labelledby` appears at hydration. Give
+  `aria-label` as well when the name must be there on the first paint.
 - Every checkbox keeps its own tab stop, and `Space` toggles the focused one. The group adds no
   arrow-key navigation. This matches the APG, React Aria and Base UI: React Aria gives each
   checkbox of a group `tabindex="0"`, measured on its own live example. Arrow keys and one tab

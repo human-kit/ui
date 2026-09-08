@@ -58,3 +58,14 @@ export type CheckboxGroupRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'child
 	 */
 	context?: CheckboxGroupContext;
 };
+
+export type CheckboxGroupLabelProps = Omit<
+	HTMLAttributes<HTMLSpanElement>,
+	'children' | 'class' | 'id'
+> & {
+	/** The name of the group. */
+	children?: Snippet;
+	class?: string;
+	/** The id of the label element. The component makes one when you give none. */
+	id?: string;
+};

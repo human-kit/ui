@@ -112,8 +112,8 @@ importers:
         specifier: ^5.2.9
         version: 5.2.9
       '@human-kit/markdown':
-        specifier: ^0.3.1
-        version: 0.3.1(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+        specifier: ^0.3.2
+        version: 0.3.2(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
       '@human-kit/ui':
         specifier: workspace:*
         version: link:../packages/ui
@@ -532,8 +532,8 @@ packages:
   '@fontsource-variable/roboto-serif@5.2.9':
     resolution: {integrity: sha512-C502AILLgiRZmP3mgXXJiYp8/tQ+J/XQWw/dWtlRgE9X0yziBse9VHM9pCgaWqqzkdz4JB36fc0eYz0UritJIQ==}
 
-  '@human-kit/markdown@0.3.1':
-    resolution: {integrity: sha512-+rBrFW01tmhkIteA71yidABWDySc/lIL4ro4L95I0/wcESs4p5GQtB8bNoi1/RUY5XUNm/zIST5AZIVVCKzqTw==}
+  '@human-kit/markdown@0.3.2':
+    resolution: {integrity: sha512-MqYyFAqcvFhoJqVyqla7N++vQhXQ21htpoFWLO9m1aLp865OQztsqrhNPDiOt27rTdIhK/8MLqYyqvU1icaZ6g==}
     hasBin: true
     peerDependencies:
       svelte: ^5.0.0
@@ -3213,7 +3213,7 @@ snapshots:
 
   '@fontsource-variable/roboto-serif@5.2.9': {}
 
-  '@human-kit/markdown@0.3.1(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))':
+  '@human-kit/markdown@0.3.2(svelte@5.56.4(@typescript-eslint/types@8.62.1))(vite@7.3.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))':
     dependencies:
       property-information: 7.2.0
       remark-gfm: 4.0.1

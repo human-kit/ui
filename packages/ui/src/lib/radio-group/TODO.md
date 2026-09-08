@@ -16,7 +16,7 @@ Track RadioGroup work with a single mandatory TODO format.
 - [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Keep the value when the selected radio leaves the tree, and move the tab stop instead.
 - [x] [S][P0][Area: Forms][Owner: Unassigned][Target: Done] Share `name` and `form` with every radio, and spread group `disabled`, `readonly` and `required`.
 - [x] [M][P0][Area: Testing][Owner: Unassigned][Target: Done] Add coverage for the roving tab stop, arrow selection, wrapping, disabled radios, form submission and the focus contract.
-- [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Add a `RadioGroup.Label` part, so the group names itself without `aria-labelledby` by hand.
+- [x] [S][P1][Area: API][Owner: Unassigned][Target: Done] Add a `RadioGroup.Label` part, so the group names itself without `aria-labelledby` by hand.
 - [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Add an optional `nativeButton` rendering mode to `RadioGroup.Item`, for sibling-label patterns.
 - [ ] [C][P2][Area: Animation][Owner: Unassigned][Target: TBD] Add indicator presence data for enter and exit animations.
 - [x] [S][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Adopt `watchFocusVisible`, so a key press after a pointer press brings the ring back.

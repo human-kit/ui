@@ -19,6 +19,7 @@
 		class: className = '',
 		element = $bindable<HTMLDivElement | null>(null),
 		context = $bindable(),
+		'aria-labelledby': ariaLabelledBy,
 		...restProps
 	}: CheckboxGroupRootProps = $props();
 
@@ -105,6 +106,7 @@
 	bind:this={rootRef}
 	id={instanceId}
 	role="group"
+	aria-labelledby={ariaLabelledBy ?? checkboxGroup.labelledBy}
 	class={className}
 	data-checkbox-group-root="true"
 	data-orientation={currentOrientation}

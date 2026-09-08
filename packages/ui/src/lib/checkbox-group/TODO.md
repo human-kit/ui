@@ -18,7 +18,7 @@ Track CheckboxGroup work with a single mandatory TODO format.
 - [x] [S][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Honor the focus state contract, and check it with `test-utils/focus-contract`.
 - [x] [S][P1][Area: API][Owner: Unassigned][Target: Done] Report `allSelected` and `someSelected`, and expose `selectAll` and `clearAll` for a parent checkbox.
 - [x] [M][P0][Area: Testing][Owner: Unassigned][Target: Done] Add coverage for uncontrolled and controlled value, group state, removal, teardown, tab order, form submission and the parent checkbox.
-- [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Add a `CheckboxGroup.Label` part, so the group names itself without `aria-labelledby` by hand.
+- [x] [S][P1][Area: API][Owner: Unassigned][Target: Done] Add a `CheckboxGroup.Label` part, so the group names itself without `aria-labelledby` by hand.
 - [ ] [M][P1][Area: API][Owner: Unassigned][Target: TBD] Give the parent checkbox a first-class API, the way Base UI does with `allValues` and a `parent` prop, instead of `bind:context` by hand.
 - [ ] [C][P2][Area: Forms][Owner: Unassigned][Target: TBD] Enforce a minimum count for `required`, and report it through constraint validation with `aria-describedby`, the way React Aria does.
 - [ ] [C][P2][Area: State][Owner: Unassigned][Target: TBD] Restore the group value on form reset from the root, instead of one checkbox at a time.

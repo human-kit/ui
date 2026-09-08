@@ -1,4 +1,4 @@
-import { getContext, setContext } from 'svelte';
+import { getContext, setContext, untrack } from 'svelte';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { asCommand } from '../../internal/as-command.js';
 
@@ -32,11 +32,15 @@ export type CheckboxGroupContext = {
 	isReadOnly: boolean;
 	isRequired: boolean;
 	orientation: CheckboxGroupOrientation;
+	/** The ids of the `CheckboxGroup.Label` parts, for `aria-labelledby` on the group. */
+	labelledBy: string | undefined;
 	selectedValues: Set<CheckboxGroupValue>;
 	/** Every registered checkbox is selected, and there is at least one. */
 	allSelected: boolean;
 	/** Some but not all registered checkboxes are selected. Drives a parent `indeterminate`. */
 	someSelected: boolean;
+	/** Registers a label id; the returned function unregisters it. */
+	registerLabel: (id: string) => () => void;
 	registerCheckbox: (
 		value: CheckboxGroupValue,
 		options: { isDisabled?: boolean; element?: HTMLElement | null; owner?: symbol }
@@ -78,6 +82,7 @@ export function createCheckboxGroupContext(
 	let isReadOnly = $state(options.isReadOnly ?? false);
 	let isRequired = $state(options.isRequired ?? false);
 	let orientation = $state(options.orientation ?? 'vertical');
+	let labelIds = $state<string[]>([]);
 	// A `SvelteSet` carries its own reactivity, so it is mutated in place rather than
 	// reassigned: a plain Set behind `$state` would need a new instance for every change,
 	// and it would invalidate every reader of the group on each one.
@@ -299,6 +304,9 @@ export function createCheckboxGroupContext(
 		get orientation() {
 			return orientation;
 		},
+		get labelledBy() {
+			return labelIds.length > 0 ? labelIds.join(' ') : undefined;
+		},
 		get selectedValues() {
 			return selectedValues;
 		},
@@ -308,6 +316,17 @@ export function createCheckboxGroupContext(
 		get someSelected() {
 			const selectedCount = checkboxOrder.filter((value) => selectedValues.has(value)).length;
 			return selectedCount > 0 && selectedCount < checkboxOrder.length;
+		},
+		// `untrack` because the caller registers from an effect: reading `labelIds` here would
+		// make that effect depend on what it writes, and the pair would run without end.
+		registerLabel(id: string) {
+			untrack(() => {
+				labelIds = [...labelIds, id];
+			});
+			return () =>
+				untrack(() => {
+					labelIds = labelIds.filter((candidate) => candidate !== id);
+				});
 		},
 		registerCheckbox: asCommand(registerCheckbox),
 		unregisterCheckbox: asCommand(unregisterCheckbox),

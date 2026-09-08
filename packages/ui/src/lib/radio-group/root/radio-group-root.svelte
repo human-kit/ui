@@ -31,6 +31,7 @@
 		context = $bindable(),
 		onkeydown: onKeyDownExternal,
 		onmousedown: onMouseDownExternal,
+		'aria-labelledby': ariaLabelledBy,
 		...restProps
 	}: RadioGroupRootProps = $props();
 
@@ -174,6 +175,7 @@
 	bind:this={rootRef}
 	id={instanceId}
 	role="radiogroup"
+	aria-labelledby={ariaLabelledBy ?? radioGroup.labelledBy}
 	aria-orientation={currentOrientation}
 	aria-required={required || undefined}
 	aria-disabled={disabled || undefined}

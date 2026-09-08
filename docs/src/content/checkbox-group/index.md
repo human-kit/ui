@@ -20,12 +20,15 @@ description: A group of checkboxes with one array value, a shared name for the f
 
 `CheckboxGroup.Root` contains `CheckboxGroup.Item` boxes. That part is `Checkbox.Root` under the namespace of the group, and the two names are the same component. Each box must have a unique `value`. The group holds the checked state of each box.
 
+`CheckboxGroup.Label` names the group. It is optional: `aria-label` on the root does the same for a name that the user does not see.
+
 ```svelte
 <script>
 	import { CheckboxGroup } from '@human-kit/ui';
 </script>
 
-<CheckboxGroup.Root name="colors" defaultValue={['red']} aria-label="Colors">
+<CheckboxGroup.Root name="colors" defaultValue={['red']}>
+	<CheckboxGroup.Label>Colors</CheckboxGroup.Label>
 	<CheckboxGroup.Item value="red">
 		<CheckboxGroup.Indicator>x</CheckboxGroup.Indicator>
 	</CheckboxGroup.Item>
@@ -86,7 +89,8 @@ Keep the parent checkbox out of the group. In the group, it becomes one more val
 ## Accessibility
 
 - `CheckboxGroup.Root` has `role="group"`.
-- Give the group an accessible name with `aria-label` or `aria-labelledby`.
+- Give the group an accessible name with `CheckboxGroup.Label`, or with `aria-label` on the root. The label writes `aria-labelledby` on the group. An `aria-labelledby` that you give stands, thus your own element wins.
+- `CheckboxGroup.Label` renders a `<span>`, and not a `<label>`. A `<label>` names one control, thus it cannot name a set.
 - Each box keeps its own tab stop. The `Space` key changes the box that has the focus.
 - `required` marks no element with `aria-required`: `role="group"` does not support that
   property. Put the word in the group label, and give the reason with `aria-describedby`.

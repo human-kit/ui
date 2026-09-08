@@ -54,3 +54,14 @@ export type RadioGroupRootProps = Omit<
 	/** The state of the group. Use `bind:context` to read the selection from outside. */
 	context?: RadioGroupContext;
 };
+
+export type RadioGroupLabelProps = Omit<
+	HTMLAttributes<HTMLSpanElement>,
+	'children' | 'class' | 'id'
+> & {
+	/** The name of the group. */
+	children?: Snippet;
+	class?: string;
+	/** The id of the label element. The component makes one when you give none. */
+	id?: string;
+};
