@@ -1,7 +1,63 @@
 [
 	{
+		"version": "1.0.0-beta.7",
+		"date": "2026-09-08T00:51:56.519Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 87,
+						"prUrl": "https://github.com/human-kit/ui/pull/87",
+						"html": "<p>Add the CheckboxGroup primitive with <code>Root</code>, <code>Item</code> and <code>Indicator</code>: one array value for a set of checkboxes, a shared <code>name</code> for form submission, group-wide disabled, read-only and required state, <code>allSelected</code> and <code>someSelected</code> for a parent select-all checkbox, SSR-safe default selection, documentation, and demo coverage. <code>CheckboxGroup.Item</code> and <code>CheckboxGroup.Indicator</code> are <code>Checkbox.Root</code> and <code>Checkbox.Indicator</code> under the namespace of the group, so every group in the library reads the same way; a checkbox still works on its own under its own name.</p>"
+					},
+					{
+						"pr": 94,
+						"prUrl": "https://github.com/human-kit/ui/pull/94",
+						"html": "<p>Add <code>CheckboxGroup.Label</code> and <code>RadioGroup.Label</code>. The part names its group: it registers its id with the root, which gives it to the group element as <code>aria-labelledby</code>. Two labels read as one name, in the order they appear, and an <code>aria-labelledby</code> that the caller gives stands. It renders a <code>&lt;span&gt;</code> and not a <code>&lt;label&gt;</code>, because a <code>&lt;label&gt;</code> names one control and cannot name a set. This also corrects the API reference of <code>RadioGroup.Item</code>, which listed the props of <code>RadioGroup.Root</code>.</p>"
+					},
+					{
+						"pr": 89,
+						"prUrl": "https://github.com/human-kit/ui/pull/89",
+						"html": "<p>Add the RadioGroup primitive with <code>Root</code>, <code>Item</code> and <code>Indicator</code>: one value for a set of radio buttons, a shared <code>name</code> for form submission, group-wide disabled, read-only and required state, and the keyboard the WAI-ARIA APG asks for — a single tab stop on the checked button, and arrow keys that move the focus and the selection together, with wrapping. Includes documentation and demo coverage.</p>"
+					},
+					{
+						"pr": 90,
+						"prUrl": "https://github.com/human-kit/ui/pull/90",
+						"html": "<p>Add <code>ToggleGroup.Item</code>, which is <code>Toggle.Root</code> under the namespace of the group. Every group in the library now reads the same way — <code>Group.Root</code> with <code>Group.Item</code> inside — and <code>Toggle.Root</code> keeps working on its own and inside a group, so nothing that is already written changes.</p>\n<p>The props of <code>Toggle.Root</code> also move from <code>api.json</code> into JSDoc, so the reference of the toggle and the reference of the group both read them from one place.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 86,
+						"prUrl": "https://github.com/human-kit/ui/pull/86",
+						"html": "<p>Let the pointer take the virtual focus in <code>Autocomplete</code>, the same as in <code>ComboBox</code>.</p>\n<p>The keys moved the virtual focus and the pointer only marked <code>data-hovered</code>, so the row the keys left behind and the row under the pointer were both current at the same time. A style bound to <code>data-focused</code> and one bound to <code>data-hovered</code> then painted two rows, and an item cannot correct that on its own: it sees only its own attributes. <code>Autocomplete.Item</code> now moves the focus to the option the pointer enters, and clears the keyboard ring, so exactly one option is current.</p>"
+					},
+					{
+						"pr": 88,
+						"prUrl": "https://github.com/human-kit/ui/pull/88",
+						"html": "<p>Bring the focus ring back when a key press follows a pointer press. <code>Button</code>, <code>Checkbox</code>, <code>Switch</code> and <code>Toggle</code> read the interaction modality only when they take focus, so the ring stayed off for the rest of that focus, while the browser had already flipped <code>:focus-visible</code> back on. They now follow the modality for as long as they hold focus, which is what React Aria and Base UI do.</p>"
+					},
+					{
+						"pr": 93,
+						"prUrl": "https://github.com/human-kit/ui/pull/93",
+						"html": "<p>Bring the focus ring back on <code>RadioGroup.Item</code>, <code>Table</code> and <code>Calendar.BodyCell</code> when a key press follows a pointer press. These read the interaction modality only when they take focus, thus the ring stayed off for the rest of that focus. They now follow the modality for as long as they hold focus, the same as <code>Button</code>, <code>Checkbox</code>, <code>Switch</code> and <code>Toggle</code>. <code>Table</code> keeps one focus-visible value for every part, thus the watch is on the table and it serves the cell, the row and the header cell together.</p>"
+					},
+					{
+						"pr": 87,
+						"prUrl": "https://github.com/human-kit/ui/pull/87",
+						"html": "<p>Rewrite the <code>TimePicker.Input</code> <code>name</code> description in ASD-STE100, so the generated API reference passes the documentation style check.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.6",
-		"date": "2026-09-04T15:17:20.929Z",
+		"date": "2026-09-04T12:21:10-03:00",
 		"sections": [
 			{
 				"type": "Minor",
