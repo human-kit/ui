@@ -1,5 +1,31 @@
 # @human-kit/ui
 
+## 1.0.0-beta.7
+
+### Minor Changes
+
+- [#87](https://github.com/human-kit/ui/pull/87) [`bf27987`](https://github.com/human-kit/ui/commit/bf279879cac2f39962316c1b832205aa665d50f0) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add the CheckboxGroup primitive with `Root`, `Item` and `Indicator`: one array value for a set of checkboxes, a shared `name` for form submission, group-wide disabled, read-only and required state, `allSelected` and `someSelected` for a parent select-all checkbox, SSR-safe default selection, documentation, and demo coverage. `CheckboxGroup.Item` and `CheckboxGroup.Indicator` are `Checkbox.Root` and `Checkbox.Indicator` under the namespace of the group, so every group in the library reads the same way; a checkbox still works on its own under its own name.
+
+- [#94](https://github.com/human-kit/ui/pull/94) [`47bd47c`](https://github.com/human-kit/ui/commit/47bd47c9ec7e069ac551835f5099add6f0a0115a) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `CheckboxGroup.Label` and `RadioGroup.Label`. The part names its group: it registers its id with the root, which gives it to the group element as `aria-labelledby`. Two labels read as one name, in the order they appear, and an `aria-labelledby` that the caller gives stands. It renders a `<span>` and not a `<label>`, because a `<label>` names one control and cannot name a set. This also corrects the API reference of `RadioGroup.Item`, which listed the props of `RadioGroup.Root`.
+
+- [#89](https://github.com/human-kit/ui/pull/89) [`8daa1ae`](https://github.com/human-kit/ui/commit/8daa1ae67681beed87e61b12aabaee871aa5cafd) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add the RadioGroup primitive with `Root`, `Item` and `Indicator`: one value for a set of radio buttons, a shared `name` for form submission, group-wide disabled, read-only and required state, and the keyboard the WAI-ARIA APG asks for — a single tab stop on the checked button, and arrow keys that move the focus and the selection together, with wrapping. Includes documentation and demo coverage.
+
+- [#90](https://github.com/human-kit/ui/pull/90) [`3ad5d14`](https://github.com/human-kit/ui/commit/3ad5d14e2b1fd747b2bfdb7fe1d016f4258ba5bf) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `ToggleGroup.Item`, which is `Toggle.Root` under the namespace of the group. Every group in the library now reads the same way — `Group.Root` with `Group.Item` inside — and `Toggle.Root` keeps working on its own and inside a group, so nothing that is already written changes.
+
+  The props of `Toggle.Root` also move from `api.json` into JSDoc, so the reference of the toggle and the reference of the group both read them from one place.
+
+### Patch Changes
+
+- [#86](https://github.com/human-kit/ui/pull/86) [`10a45de`](https://github.com/human-kit/ui/commit/10a45de9a2ba41491d2040ebb21baf3c7a1a212b) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Let the pointer take the virtual focus in `Autocomplete`, the same as in `ComboBox`.
+
+  The keys moved the virtual focus and the pointer only marked `data-hovered`, so the row the keys left behind and the row under the pointer were both current at the same time. A style bound to `data-focused` and one bound to `data-hovered` then painted two rows, and an item cannot correct that on its own: it sees only its own attributes. `Autocomplete.Item` now moves the focus to the option the pointer enters, and clears the keyboard ring, so exactly one option is current.
+
+- [#88](https://github.com/human-kit/ui/pull/88) [`230d7b2`](https://github.com/human-kit/ui/commit/230d7b2722051814a5de6cda665607af32e44630) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Bring the focus ring back when a key press follows a pointer press. `Button`, `Checkbox`, `Switch` and `Toggle` read the interaction modality only when they take focus, so the ring stayed off for the rest of that focus, while the browser had already flipped `:focus-visible` back on. They now follow the modality for as long as they hold focus, which is what React Aria and Base UI do.
+
+- [#93](https://github.com/human-kit/ui/pull/93) [`18488d4`](https://github.com/human-kit/ui/commit/18488d4f99afeb98aa1e4c091fcb74efb41fe731) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Bring the focus ring back on `RadioGroup.Item`, `Table` and `Calendar.BodyCell` when a key press follows a pointer press. These read the interaction modality only when they take focus, thus the ring stayed off for the rest of that focus. They now follow the modality for as long as they hold focus, the same as `Button`, `Checkbox`, `Switch` and `Toggle`. `Table` keeps one focus-visible value for every part, thus the watch is on the table and it serves the cell, the row and the header cell together.
+
+- [#87](https://github.com/human-kit/ui/pull/87) [`bf27987`](https://github.com/human-kit/ui/commit/bf279879cac2f39962316c1b832205aa665d50f0) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Rewrite the `TimePicker.Input` `name` description in ASD-STE100, so the generated API reference passes the documentation style check.
+
 ## 1.0.0-beta.6
 
 ### Minor Changes
