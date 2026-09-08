@@ -19,5 +19,5 @@ Track RadioGroup work with a single mandatory TODO format.
 - [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Add a `RadioGroup.Label` part, so the group names itself without `aria-labelledby` by hand.
 - [ ] [S][P1][Area: API][Owner: Unassigned][Target: TBD] Add an optional `nativeButton` rendering mode to `RadioGroup.Item`, for sibling-label patterns.
 - [ ] [C][P2][Area: Animation][Owner: Unassigned][Target: TBD] Add indicator presence data for enter and exit animations.
-- [ ] [S][P1][Area: Accessibility][Owner: Unassigned][Target: TBD] Adopt `watchFocusVisible` once it lands, so a key press after a pointer press brings the ring back.
+- [x] [S][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Adopt `watchFocusVisible`, so a key press after a pointer press brings the ring back.
 - [ ] [C][P2][Area: Forms][Owner: Unassigned][Target: TBD] Report the required state through constraint validation with `aria-describedby`.

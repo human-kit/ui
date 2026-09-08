@@ -11,6 +11,8 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 	import { isRtl } from '../../internal/rtl';
 
 	let { children, class: className = '', ...restProps }: TableColumnHeaderCellProps = $props();
@@ -173,6 +175,28 @@
 		isFocusWithin = false;
 		isFocusVisibleWithin = false;
 	}
+
+	function getFocusedDescendant() {
+		if (!element) return null;
+		const active = element.ownerDocument.activeElement;
+		if (!(active instanceof HTMLElement) || active === element) return null;
+		return element.contains(active) ? active : null;
+	}
+
+	watchFocusVisible({
+		isFocused: () => isElementFocused,
+		element: () => element ?? null,
+		set: (visible) => {
+			isElementFocusVisible = visible;
+			table.setFocusVisible(visible);
+		}
+	});
+
+	watchFocusVisible({
+		isFocused: () => isFocusWithin,
+		element: getFocusedDescendant,
+		set: (visible) => (isFocusVisibleWithin = visible)
+	});
 
 	function handleClick() {
 		// A drag-resize that just ended emits a residual click on the header;

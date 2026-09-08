@@ -58,6 +58,7 @@
 		shouldShowFocusVisible,
 		trackInteractionModality
 	} from '../../primitives/input-modality';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 
 	type CalendarBodyCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
 		date: string;
@@ -153,6 +154,12 @@
 		calendar.setFocusedValue(date);
 		calendar.setFocusVisible(shouldShowFocusVisible(buttonElement ?? null));
 	}
+
+	watchFocusVisible({
+		isFocused: () => hasDomFocus,
+		element: () => buttonElement ?? null,
+		set: (visible) => calendar.setFocusVisible(visible)
+	});
 
 	function handleBlur() {
 		hasDomFocus = false;

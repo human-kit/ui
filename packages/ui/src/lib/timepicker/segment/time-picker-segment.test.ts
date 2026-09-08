@@ -337,4 +337,19 @@ describe('TimePicker.Segment', () => {
 		expect(wasNotCanceled).toBe(true);
 		expect(dayPeriodSegment.element()?.textContent).toBe(initialText);
 	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		render(TimePickerTest);
+		const segment = getSegment('hour').element();
+
+		await userEvent.click(segment);
+		await expect.poll(() => segment.getAttribute('data-focused')).toBe('true');
+		expect(segment.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => segment.getAttribute('data-focus-visible')).toBe('true');
+	});
 });

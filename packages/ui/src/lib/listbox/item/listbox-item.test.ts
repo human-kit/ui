@@ -416,4 +416,19 @@ describe('ListBox.Item', () => {
 			expect(options[3].hasAttribute('data-focused')).toBe(true);
 		});
 	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		render(ListBoxTest);
+		const option = document.querySelector<HTMLElement>('[role="option"]')!;
+
+		await userEvent.click(option);
+		await expect.poll(() => option.getAttribute('data-focused')).toBe('true');
+		expect(option.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => option.getAttribute('data-focus-visible')).toBe('true');
+	});
 });

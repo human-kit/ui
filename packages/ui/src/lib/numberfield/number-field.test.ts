@@ -925,4 +925,21 @@ describe('NumberField', () => {
 			document.querySelectorAll('[data-focus-visible="true"]:not([data-number-field-input="true"])')
 		).toHaveLength(0);
 	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		const screen = render(NumberFieldTest);
+		const inputElement = screen
+			.getByRole('spinbutton', { name: 'Amount' })
+			.element() as HTMLInputElement;
+
+		await userEvent.click(inputElement);
+		await expect.poll(() => inputElement.getAttribute('data-focused')).toBe('true');
+		expect(inputElement.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => inputElement.getAttribute('data-focus-visible')).toBe('true');
+	});
 });

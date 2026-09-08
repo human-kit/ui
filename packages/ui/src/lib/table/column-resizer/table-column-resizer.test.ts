@@ -1746,4 +1746,22 @@ describe('Table.ColumnResizer', () => {
 		await expect.poll(() => document.activeElement).toBe(emailHeaderCell);
 		await expect.element(emailResizer).not.toHaveAttribute('data-resizing');
 	});
+
+	// The modality can change while the element already holds focus, and no focus event fires
+	// to report it. A key that the component ignores must bring the ring back, the same as in
+	// React Aria and Base UI.
+	it('shows the focus ring when a key press follows a pointer press', async () => {
+		render(ColumnResizerTest);
+		const emailResizer = document.querySelector<HTMLElement>('[data-testid="email-resizer"]')!;
+
+		emailResizer.dispatchEvent(
+			new PointerEvent('pointerdown', { bubbles: true, isPrimary: true, pointerType: 'mouse' })
+		);
+		emailResizer.focus();
+		await expect.poll(() => emailResizer.getAttribute('data-focused')).toBe('true');
+		expect(emailResizer.getAttribute('data-focus-visible')).toBeNull();
+
+		await userEvent.keyboard('{F9}');
+		await expect.poll(() => emailResizer.getAttribute('data-focus-visible')).toBe('true');
+	});
 });
