@@ -1,4 +1,4 @@
-import { getContext, setContext } from 'svelte';
+import { getContext, setContext, untrack } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import { asCommand } from '../../internal/as-command.js';
 
@@ -32,8 +32,12 @@ export type RadioGroupContext = {
 	isReadOnly: boolean;
 	isRequired: boolean;
 	orientation: RadioGroupOrientation;
+	/** The ids of the `RadioGroup.Label` parts, for `aria-labelledby` on the group. */
+	labelledBy: string | undefined;
 	selectedValue: RadioGroupValue | null;
 	focusedValue: RadioGroupValue | null;
+	/** Registers a label id; the returned function unregisters it. */
+	registerLabel: (id: string) => () => void;
 	registerRadio: (
 		value: RadioGroupValue,
 		options: { isDisabled?: boolean; element?: HTMLElement | null; owner?: symbol }
@@ -76,6 +80,7 @@ export function createRadioGroupContext(
 	let isReadOnly = $state(options.isReadOnly ?? false);
 	let isRequired = $state(options.isRequired ?? false);
 	let orientation = $state(options.orientation ?? 'vertical');
+	let labelIds = $state<string[]>([]);
 	let selectedValue = $state<RadioGroupValue | null>(options.initialValue ?? null);
 	let focusedValue = $state<RadioGroupValue | null>(null);
 	let focusVisible = $state(false);
@@ -326,6 +331,9 @@ export function createRadioGroupContext(
 		get isRequired() {
 			return isRequired;
 		},
+		get labelledBy() {
+			return labelIds.length > 0 ? labelIds.join(' ') : undefined;
+		},
 		get orientation() {
 			return orientation;
 		},
@@ -348,6 +356,17 @@ export function createRadioGroupContext(
 		setFocusedValue: asCommand(setFocusedValue),
 		focusValue: asCommand(focusValue),
 		setFocusVisible: asCommand(setFocusVisible),
+		// `untrack` because the caller registers from an effect: reading `labelIds` here would
+		// make that effect depend on what it writes, and the pair would run without end.
+		registerLabel(id: string) {
+			untrack(() => {
+				labelIds = [...labelIds, id];
+			});
+			return () =>
+				untrack(() => {
+					labelIds = labelIds.filter((candidate) => candidate !== id);
+				});
+		},
 		isSelected,
 		isFocused,
 		isFocusVisible,

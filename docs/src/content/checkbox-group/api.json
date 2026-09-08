@@ -121,6 +121,39 @@
 			]
 		},
 		{
+			"name": "Label",
+			"description": "The accessible name of the group. It gives its id to the group as `aria-labelledby`.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The name of the group."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": ""
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the label element. The component makes one when you give none."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-checkbox-group-label",
+					"description": "Present on the label of the group."
+				}
+			]
+		},
+		{
 			"name": "Item",
 			"description": "One box of the group. It is Checkbox.Root under the namespace of the group, and the two names are the same component.",
 			"props": [

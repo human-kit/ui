@@ -20,12 +20,15 @@ description: A group of radio buttons with one value, a shared name for the form
 
 `RadioGroup.Root` contains `RadioGroup.Item` buttons. Each button must have a unique `value`, and it must be in a group. A radio on its own has no state, and no way to unselect itself.
 
+`RadioGroup.Label` names the group. It is optional: `aria-label` on the root does the same for a name that the user does not see.
+
 ```svelte
 <script>
 	import { RadioGroup } from '@human-kit/ui';
 </script>
 
-<RadioGroup.Root name="size" defaultValue="medium" aria-label="Size">
+<RadioGroup.Root name="size" defaultValue="medium">
+	<RadioGroup.Label>Size</RadioGroup.Label>
 	<RadioGroup.Item value="small">
 		<RadioGroup.Indicator>x</RadioGroup.Indicator>
 	</RadioGroup.Item>
@@ -67,7 +70,8 @@ The group also sends `disabled`, `readonly` and `required` down to each button.
 ## Accessibility
 
 - `RadioGroup.Root` has `role="radiogroup"`, with `aria-orientation`, `aria-required`, `aria-disabled` and `aria-readonly`. That role supports all four. The `group` role of a checkbox group supports none of them.
-- Give the group an accessible name with `aria-label` or `aria-labelledby`.
+- Give the group an accessible name with `RadioGroup.Label`, or with `aria-label` on the root. The label writes `aria-labelledby` on the group. An `aria-labelledby` that you give stands, thus your own element wins.
+- `RadioGroup.Label` renders a `<span>`, and not a `<label>`. A `<label>` names one control, thus it cannot name a set.
 - Each `RadioGroup.Item` has `role="radio"` with `aria-checked`, and it takes its tab stop from the group.
 - `Enter` does not select. It submits the form, which is the behavior of a native radio button.
 
