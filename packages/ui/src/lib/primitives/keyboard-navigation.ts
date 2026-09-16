@@ -106,6 +106,13 @@ export type KeyboardNavigationReturn = {
 
 	/** Update items (call after DOM changes) */
 	updateItems: () => void;
+
+	/**
+	 * Searches with a printable character, the same as a key press on the container. For a
+	 * widget that opens on a character typed outside the container, such as a select: the
+	 * character is applied once the items exist.
+	 */
+	typeahead: (char: string) => void;
 };
 
 /**
@@ -513,7 +520,8 @@ export function createKeyboardNavigation(
 		focusLast,
 		focusById,
 		setCurrentId,
-		updateItems
+		updateItems,
+		typeahead: handleTypeahead
 	};
 }
 

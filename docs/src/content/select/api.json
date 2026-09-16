@@ -1,0 +1,592 @@
+{
+	"component": "select",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The container. It holds the value and the open state, and it makes the native select for the form.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "A stable id, from which the component makes its internal ARIA ids. Give one on a server."
+				},
+				{
+					"name": "value",
+					"type": "SelectKey | null | SelectKey[]",
+					"required": false,
+					"default": null,
+					"description": "The selected key or keys: one key in the single mode, and an array in the multiple mode. You\ncan bind it with `bind:value`."
+				},
+				{
+					"name": "defaultValue",
+					"type": "SelectKey | null | SelectKey[]",
+					"required": false,
+					"default": null,
+					"description": "The selection at the start, for when you give no `value`."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Give your own code full control of the selection. The component stops to write back to\n`value`, and it reports only through `onChange`. Thus the parent can refuse a change: the\nparent does not send the new value down. The default is off, because `bind:value` is the usual\ncase and it needs the write-back."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: SelectKey | null | SelectKey[]) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the selection changes."
+				},
+				{
+					"name": "open",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "The open state of the popover. You can bind it with `bind:open`."
+				},
+				{
+					"name": "defaultOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "The open state at the start, for when you give no `open`."
+				},
+				{
+					"name": "controlledOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Give your own code full control of the open state. Read `controlledValue`."
+				},
+				{
+					"name": "onOpenChange",
+					"type": "(open: boolean, details: SelectOpenChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the open state changes. `details.cancel()` refuses the change."
+				},
+				{
+					"name": "selectionMode",
+					"type": "'single' | 'multiple'",
+					"required": false,
+					"default": "'single'",
+					"description": "The selection mode: 'single' permits one key, and 'multiple' permits more than one."
+				},
+				{
+					"name": "closeOnSelect",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Closes the popover after a selection. The default is true in the single mode, and false in the\nmultiple mode."
+				},
+				{
+					"name": "disabledKeys",
+					"type": "Iterable<SelectKey>",
+					"required": false,
+					"default": null,
+					"description": "The keys of the options that the user cannot select."
+				},
+				{
+					"name": "loop",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "At the last option, the arrow keys move the focus to the first option, and at the first\noption, to the last one."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables the select. The trigger is disabled natively."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the trigger in the tab order, but the popover does not open and the value does not change."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Tells a form that it must have a value. The hidden control gets the native `required`."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the value as invalid. The trigger gets `aria-invalid`."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the hidden form control. Without it, the form does not send the value."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form that the hidden control belongs to, when the select is outside it."
+				},
+				{
+					"name": "autocomplete",
+					"type": "FullAutoFill | null",
+					"required": false,
+					"default": null,
+					"description": "The `autocomplete` of the hidden form control, for the browser autofill."
+				},
+				{
+					"name": "items",
+					"type": "T[]",
+					"required": false,
+					"default": null,
+					"description": "The array of the items. The component reads the text of a selected key from it. Thus the\ntrigger shows the text while the popover is closed and the options are not in the DOM.\n\nEach item needs a key in `id` or `value`, and a text in `textValue`, `label` or `name`."
+				},
+				{
+					"name": "placeholder",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The text of the trigger while nothing is selected."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The accessible name of the select, for when there is no `Select.Label`."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that gives the select its name, in place of `Select.Label`."
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that describes the select, for example an error message."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: the label, the trigger and the popover."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the root element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the root element."
+				},
+				{
+					"name": "context",
+					"type": "SelectContext",
+					"required": false,
+					"default": null,
+					"description": "A bindable reference to the context, for a composition of your own."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the select is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus in the select came from the keyboard."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present when the trigger or the list has the focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the value is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the select is read-only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when a form must have a value here."
+				},
+				{
+					"name": "data-select",
+					"description": "Identifies the root element."
+				},
+				{
+					"name": "data-select-hidden",
+					"description": "Identifies the wrapper of the native select. It is hidden from assistive technology."
+				},
+				{
+					"name": "data-state",
+					"description": "The open state of the popover: \"open\" or \"closed\"."
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"description": "The name of the field. It makes a label for the trigger, and it registers its id with the root.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the label."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the select is disabled."
+				},
+				{
+					"name": "data-select-label",
+					"description": "Identifies the label element."
+				}
+			]
+		},
+		{
+			"name": "Trigger",
+			"description": "The button that opens the list. It makes a button with role=\"combobox\", and it shows the value.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[SelectTriggerRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content. As a snippet with one argument, it receives the render state: `open`,\n`placeholder` and `disabled`. Put a `Select.Value` inside it."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the trigger."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-invalid",
+					"description": "Present when the value is invalid."
+				},
+				{
+					"name": "data-placeholder",
+					"description": "Present while nothing is selected."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the select is read-only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when a form must have a value here."
+				},
+				{
+					"name": "data-select-trigger",
+					"description": "Identifies the trigger element."
+				},
+				{
+					"name": "data-state",
+					"description": "The open state of the popover: \"open\" or \"closed\"."
+				}
+			]
+		},
+		{
+			"name": "Value",
+			"description": "The text of the selection inside the trigger, or the placeholder. It is part of the name of the field.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[SelectValueRenderState]>",
+					"required": false,
+					"default": null,
+					"description": "The content. As a snippet with one argument, it receives the render state: `value`, `label` and\n`placeholder`. Without it, the component shows the text of the selection."
+				},
+				{
+					"name": "placeholder",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The text while nothing is selected. It replaces the placeholder of the root."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-placeholder",
+					"description": "Present while nothing is selected."
+				},
+				{
+					"name": "data-select-value",
+					"description": "Identifies the value element."
+				}
+			]
+		},
+		{
+			"name": "Popover",
+			"description": "The floating panel that holds the list. It is Popover.Content with role=\"presentation\".",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: the list."
+				},
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "The distance from the anchor element, on the main axis."
+				},
+				{
+					"name": "placement",
+					"type": "ExtendedPlacement",
+					"required": false,
+					"default": "'bottom-start'",
+					"description": "The position against the anchor element."
+				},
+				{
+					"name": "shouldFlip",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Moves the panel to the opposite side when the space is not sufficient."
+				},
+				{
+					"name": "boundaryElement",
+					"type": "Element | null",
+					"required": false,
+					"default": "null",
+					"description": "The element that gives the limits of the position."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the popover container."
+				},
+				{
+					"name": "nonModal",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Makes the popover non-modal. The user can then operate the page, the focus does not stay in\nthe panel, and the page scrolls."
+				},
+				{
+					"name": "shouldCloseOnInteractOutside",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Closes the popover when the user clicks outside it."
+				},
+				{
+					"name": "shouldCloseOnEscape",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Closes the popover when the user pushes the `Escape` key."
+				},
+				{
+					"name": "shouldCloseOnBlur",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Closes the popover when the focus goes out of it. The default is true for a non-modal popover."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-select-popover",
+					"description": "Identifies the popover element."
+				}
+			]
+		},
+		{
+			"name": "List",
+			"description": "The listbox inside the popover. It is ListBox.Root with the selection of the select, and it gets the focus when the popover opens.",
+			"props": [
+				{
+					"name": "items",
+					"type": "Iterable<T>",
+					"required": false,
+					"default": null,
+					"description": "The items, for a list that the component makes from an array. Use it with a snippet that\nreceives one item. Give the same array to the root, so the trigger knows the text of each\nkey while the popover is closed."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[T]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content of the list. From an array of items, it receives one item."
+				},
+				{
+					"name": "emptyPlaceholder",
+					"type": "string | Snippet",
+					"required": false,
+					"default": "'No items selected'",
+					"description": "The content while the list is empty. It can be a string or a Snippet."
+				},
+				{
+					"name": "getItemKey",
+					"type": "(item: T) => string | number",
+					"required": false,
+					"default": null,
+					"description": "Reads the key of an item. This is the same value as the `id` of `ListBox.Item`.\n\nYou need it only with `virtualizer`. Without it, a Shift range is measured over the options in\nthe DOM. In a virtualized list, those are only the rows near the viewport, thus the range\nstops at the scroll position of the user."
+				},
+				{
+					"name": "header",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The rows in the listbox above the items, for example an action row such as \"Create …\". They\nare not in `children`, because from an array of items the component calls that snippet one\ntime for each item.\n\nIn a virtualized list, the keyboard does not go into these rows. There, the keys move through\nthe array of the items, and these rows are not in it."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the listbox container."
+				},
+				{
+					"name": "virtualizer",
+					"type": "{ rowHeight?: number; overscan?: number }",
+					"required": false,
+					"default": null,
+					"description": "Makes only the rows near the viewport, and not all of the rows.\n\nThe component obeys it only with `items`. The listbox must control the loop to cut it, thus a\nlist written as static children is never virtualized.\n\nAll of the rows must have the same height. This is what lets the component calculate the\nscrollbar without a measurement of each row. The component measures the height from the first\nrow, but `rowHeight` replaces that measurement. Thus a list with your own styles needs no\nfixed number.\n\nThe listbox element is the element that scrolls. Give it a maximum height and `overflow-y:\nauto`. A long list without a virtualizer needs the same."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-select-list",
+					"description": "Identifies the list element."
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "One option. It is ListBox.Item with an id that is unique across selects.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string | number",
+					"required": true,
+					"default": null,
+					"description": "The unique identifier of this item. The component uses it for the selection."
+				},
+				{
+					"name": "textValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The text for the typeahead. If you give none, the component reads it from the content."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables this item. The user cannot select it."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the item element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content of the item."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-select-item",
+					"description": "Identifies the option element."
+				}
+			]
+		},
+		{
+			"name": "ItemIndicator",
+			"description": "The mark of a selected option. It is in the DOM only while its option is selected, unless forceMount keeps it.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content while the option is selected. The default is a check mark icon."
+				},
+				{
+					"name": "forceMount",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the indicator in the DOM, for each selection state."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-select-item-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-state",
+					"description": "The selection state of the option: \"checked\" or \"unchecked\"."
+				}
+			]
+		}
+	]
+}
