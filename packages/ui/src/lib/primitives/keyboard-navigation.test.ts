@@ -135,6 +135,26 @@ describe('createKeyboardNavigation', () => {
 			pressKey(items[1], 'l');
 			expect(document.activeElement).toBe(items[1]);
 		});
+
+		it('searches from a character given by code, and a key press continues the same buffer', () => {
+			const { nav, items } = setup(['Apple', 'Apricot', 'Banana'], { typeahead: true });
+
+			// A select opens on a character typed on its trigger, and hands it over once the
+			// options exist. The next key pressed inside the list extends the same search.
+			nav.typeahead('a');
+			expect(document.activeElement).toBe(items[0]);
+			pressKey(items[0], 'p');
+			expect(document.activeElement).toBe(items[1]);
+		});
+
+		it('ignores a character given by code while typeahead is off', () => {
+			const { nav, items } = setup(['Apple', 'Banana'], { typeahead: false });
+			nav.focusById('Banana');
+
+			nav.typeahead('a');
+
+			expect(document.activeElement).toBe(items[1]);
+		});
 	});
 
 	describe('getCurrentIndex priority', () => {
