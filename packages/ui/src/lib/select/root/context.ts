@@ -4,6 +4,7 @@ import type { ListBoxContext } from '../../listbox/root/context';
 export type SelectKey = string | number;
 
 export type SelectCloseReason =
+	| 'trigger-press'
 	| 'escape-key'
 	| 'outside-press'
 	| 'focus-out'

@@ -311,7 +311,7 @@
 
 	function togglePopover(reason: SelectOpenReason = 'trigger-press', event?: Event) {
 		if (currentIsOpen) {
-			closePopover('imperative-action', event);
+			closePopover('trigger-press', event);
 		} else {
 			openPopover(reason, event, 'selected');
 		}
@@ -330,8 +330,13 @@
 
 	// --- Hidden form control -----------------------------------------------------------------
 
+	// Every item goes into the native control only up to this many, so the autofill can pick
+	// any of them. Past it, the DOM cost of the options is not worth it (React Aria draws the
+	// same line), and the control carries only the selection.
+	const NATIVE_OPTIONS_LIMIT = 300;
+
 	const formOptions = $derived.by(() => {
-		if (items && items.length > 0) {
+		if (items && items.length > 0 && items.length <= NATIVE_OPTIONS_LIMIT) {
 			return orderedKeys.map((key) => ({ key, label: getLabel(key) }));
 		}
 		return Array.from(currentSelection).map((key) => ({ key, label: getLabel(key) }));
