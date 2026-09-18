@@ -56,6 +56,7 @@ export const nav: NavGroup[] = [
 			{ slug: 'drawer', title: 'Drawer' },
 			{ slug: 'menu', title: 'Menu' },
 			{ slug: 'popover', title: 'Popover' },
+			{ slug: 'toast', title: 'Toast' },
 			{ slug: 'tooltip', title: 'Tooltip' }
 		]
 	},
