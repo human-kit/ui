@@ -94,7 +94,7 @@ describe('Popover', () => {
 
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
 				// A press on the background leaves the focus on the body, and a keyboard user
-				// would have nowhere to continue from. Base UI and React Aria do the same.
+				// would have nowhere to continue from.
 				await expect.poll(() => document.activeElement).toBe(trigger.element());
 				expect(trigger.element()?.getAttribute('data-focused')).toBe('true');
 				expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();

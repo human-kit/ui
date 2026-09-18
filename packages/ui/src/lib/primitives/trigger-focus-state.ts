@@ -20,8 +20,8 @@ export function clearTriggerFocusState(trigger: HTMLElement) {
  *
  * An outside press on a heading, on a paragraph or on the background moves the focus to the
  * body, and a keyboard user then has nowhere to continue from — Space and Enter open nothing.
- * Base UI and React Aria both return the focus to the trigger in that case, and only in that
- * case: a press on a button or an input keeps the focus the user just gave it.
+ * The focus returns to the trigger in that case, and only in that case: a press on a button or
+ * an input keeps the focus the user just gave it.
  */
 export function focusFellToBody(): boolean {
 	const active = document.activeElement;

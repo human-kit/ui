@@ -451,7 +451,7 @@ describe('Select', () => {
 			await expect.poll(() => queryOpenListbox()).toBeTruthy();
 
 			// A press on the background leaves the focus on the body, and a keyboard user would
-			// have nowhere to continue from. Base UI and React Aria return it to the trigger.
+			// have nowhere to continue from.
 			await userEvent.click(document.querySelector<HTMLElement>('[data-testid="value"]')!);
 
 			await expect.poll(() => queryOpenListbox()).toBeNull();

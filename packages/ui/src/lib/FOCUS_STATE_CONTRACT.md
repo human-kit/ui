@@ -43,7 +43,7 @@ On overlay/popover close, the trigger shows only the focus it holds:
   focus attributes.
 - `outside-press` on nothing focusable (the focus fell to the body) => the focus returns to
   the trigger with the pointer modality: `data-focused=true` and `data-focus-visible` absent.
-  Base UI and React Aria do the same; without it a keyboard user has nowhere to continue from.
+  Without it a keyboard user has nowhere to continue from.
   Inside a modal popover every outside press is of this kind, because the page is inert.
 - `focus-out`, `scroll` => the focus stays where the user put it.
 
