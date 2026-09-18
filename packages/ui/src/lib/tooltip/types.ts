@@ -48,6 +48,12 @@ export type TooltipRootProps = {
 	/** Stops the tooltip: it does not open. */
 	disabled?: boolean;
 	/**
+	 * Opens the tooltip on a long press of a touch or a pen, because a touch has no hover. It then
+	 * stays open until a press somewhere else, or Escape. The default is off: a long press has a
+	 * meaning of its own on many controls.
+	 */
+	openOnLongPress?: boolean;
+	/**
 	 * The reference to the trigger element. Set it in your own code for an element that is not a
 	 * `Tooltip.Trigger`, or let `Tooltip.Trigger` set it.
 	 */
@@ -100,6 +106,12 @@ export type TooltipContentProps = {
 	shouldFlip?: boolean;
 	/** The element that gives the limits of the position. */
 	boundaryElement?: Element | null;
+	/**
+	 * Moves the panel with the pointer along one axis, or both, in place of a fixed position
+	 * against the trigger. For a wide trigger, `x` keeps the panel above the pointer. A tooltip
+	 * that a keyboard focus opened stays against the trigger.
+	 */
+	followPointer?: 'x' | 'y' | 'both';
 	/** The content. */
 	children?: Snippet;
 	/** The CSS class names of the panel. */

@@ -33,6 +33,26 @@ async function pointer(
 	await tick();
 }
 
+/** Moves the pointer on the document to a viewport point. */
+async function moveTo(x: number, y: number, pointerType: 'mouse' | 'touch' = 'mouse') {
+	document.dispatchEvent(
+		new PointerEvent('pointermove', {
+			clientX: x,
+			clientY: y,
+			pointerType,
+			pointerId: 1,
+			bubbles: true
+		})
+	);
+	await tick();
+}
+
+/** The pointer leaves the trigger and goes somewhere far from the content. */
+async function leaveAway(trigger: Element) {
+	await pointer(trigger, 'pointerleave');
+	await moveTo(-1000, -1000);
+}
+
 /** Runs the timers `ms` forward, and lets the DOM catch up. */
 async function advance(ms: number) {
 	await vi.advanceTimersByTimeAsync(ms);
@@ -96,7 +116,7 @@ describe('Tooltip', () => {
 			await pointer(trigger, 'pointerenter');
 			expect(content()).not.toBeNull();
 
-			await pointer(trigger, 'pointerleave');
+			await leaveAway(trigger);
 			await advance(150);
 			expect(trigger.getAttribute('data-state')).toBe('open');
 			await advance(50);
@@ -113,7 +133,7 @@ describe('Tooltip', () => {
 			const trigger = byTestId('trigger');
 
 			await pointer(trigger, 'pointerenter');
-			await pointer(trigger, 'pointerleave');
+			await leaveAway(trigger);
 			await advance(100);
 			const panel = content();
 			expect(panel).not.toBeNull();
@@ -123,6 +143,64 @@ describe('Tooltip', () => {
 
 			await pointer(panel as HTMLElement, 'pointerleave');
 			await advance(200);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+		});
+
+		it('waits for a pointer that crosses the gap toward the content', async () => {
+			render(TooltipTest, { delay: 0, closeDelay: 0, placement: 'bottom' });
+			const trigger = byTestId('trigger');
+
+			await pointer(trigger, 'pointerenter');
+			const panel = content() as HTMLElement;
+			await expect.poll(() => panel.style.left).toMatch(/px$/);
+			const triggerRect = trigger.getBoundingClientRect();
+			const panelRect = panel.getBoundingClientRect();
+			const exit = { x: triggerRect.left + triggerRect.width / 2, y: triggerRect.bottom };
+
+			trigger.dispatchEvent(
+				new PointerEvent('pointerleave', {
+					clientX: exit.x,
+					clientY: exit.y,
+					pointerType: 'mouse',
+					pointerId: 1
+				})
+			);
+			await tick();
+			// A move on the straight line to the panel keeps it open past the close delay.
+			await moveTo(exit.x, (exit.y + panelRect.top) / 2);
+			await advance(200);
+			expect(trigger.getAttribute('data-state')).toBe('open');
+
+			// A move to the side closes it.
+			await moveTo(exit.x - 300, (exit.y + panelRect.top) / 2);
+			await advance(10);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+		});
+
+		it('closes when the pointer stops in the gap', async () => {
+			render(TooltipTest, { delay: 0, closeDelay: 0, placement: 'bottom' });
+			const trigger = byTestId('trigger');
+
+			await pointer(trigger, 'pointerenter');
+			const panel = content() as HTMLElement;
+			await expect.poll(() => panel.style.left).toMatch(/px$/);
+			const triggerRect = trigger.getBoundingClientRect();
+			const panelRect = panel.getBoundingClientRect();
+			const x = triggerRect.left + triggerRect.width / 2;
+
+			trigger.dispatchEvent(
+				new PointerEvent('pointerleave', {
+					clientX: x,
+					clientY: triggerRect.bottom,
+					pointerType: 'mouse',
+					pointerId: 1
+				})
+			);
+			await tick();
+			await moveTo(x, (triggerRect.bottom + panelRect.top) / 2);
+			await advance(250);
+			expect(trigger.getAttribute('data-state')).toBe('open');
+			await advance(100);
 			expect(trigger.getAttribute('data-state')).toBe('closed');
 		});
 
@@ -172,6 +250,58 @@ describe('Tooltip', () => {
 				[false, 'trigger-press'],
 				[true, 'hover']
 			]);
+		});
+	});
+
+	describe('long press', () => {
+		function touch(target: Element, type: 'pointerdown' | 'pointerup', x = 10, y = 10) {
+			target.dispatchEvent(
+				new PointerEvent(type, {
+					pointerType: 'touch',
+					pointerId: 2,
+					isPrimary: true,
+					button: 0,
+					clientX: x,
+					clientY: y,
+					bubbles: true,
+					cancelable: true
+				})
+			);
+		}
+
+		it('opens on a long press of a touch, and closes on a press somewhere else', async () => {
+			const changes: Change[] = [];
+			render(TooltipTest, {
+				openOnLongPress: true,
+				onOpenChange: (open, details) => changes.push([open, details.reason])
+			});
+			const trigger = byTestId('trigger');
+
+			touch(trigger, 'pointerdown');
+			await advance(400);
+			expect(content()).toBeNull();
+			await advance(100);
+			expect(content()).not.toBeNull();
+			touch(trigger, 'pointerup');
+			await advance(100);
+			expect(trigger.getAttribute('data-state')).toBe('open');
+
+			touch(byTestId('after'), 'pointerdown');
+			await tick();
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+			expect(changes).toEqual([
+				[true, 'hover'],
+				[false, 'hover-out']
+			]);
+		});
+
+		it('does not open on a long press without the prop', async () => {
+			render(TooltipTest);
+
+			touch(byTestId('trigger'), 'pointerdown');
+			await advance(600);
+
+			expect(content()).toBeNull();
 		});
 	});
 
@@ -273,7 +403,7 @@ describe('Tooltip', () => {
 			await pointer(byTestId('trigger'), 'pointerenter');
 			expect(content()).not.toBeNull();
 
-			await pointer(byTestId('trigger'), 'pointerleave');
+			await leaveAway(byTestId('trigger'));
 			await pointer(byTestId('trigger-2'), 'pointerenter');
 			await tick();
 
@@ -292,7 +422,7 @@ describe('Tooltip', () => {
 			await pointer(byTestId('trigger'), 'pointerenter');
 			await advance(500);
 			expect(byTestId('trigger').getAttribute('data-state')).toBe('open');
-			await pointer(byTestId('trigger'), 'pointerleave');
+			await leaveAway(byTestId('trigger'));
 			expect(byTestId('trigger').getAttribute('data-state')).toBe('closed');
 
 			await advance(100);
@@ -305,7 +435,7 @@ describe('Tooltip', () => {
 
 			await pointer(byTestId('trigger'), 'pointerenter');
 			await advance(500);
-			await pointer(byTestId('trigger'), 'pointerleave');
+			await leaveAway(byTestId('trigger'));
 
 			await advance(400);
 			await pointer(byTestId('trigger-2'), 'pointerenter');
@@ -361,7 +491,7 @@ describe('Tooltip', () => {
 			const trigger = byTestId('trigger');
 
 			await pointer(trigger, 'pointerenter');
-			await pointer(trigger, 'pointerleave');
+			await leaveAway(trigger);
 			await advance(500);
 
 			expect(trigger.getAttribute('data-state')).toBe('open');
@@ -386,13 +516,45 @@ describe('Tooltip', () => {
 			expect(link.getAttribute('data-state')).toBe('open');
 			expect(link.getAttribute('aria-describedby')).toBe(`hint ${content()?.id}`);
 
-			await pointer(link, 'pointerleave');
+			await leaveAway(link);
 			await advance(200);
 			expect(link.getAttribute('aria-describedby')).toBe('hint');
 		});
 	});
 
 	describe('position', () => {
+		it('follows the pointer along the x axis', async () => {
+			render(TooltipTest, { delay: 0, followPointer: 'x', wide: true, placement: 'bottom' });
+			const trigger = byTestId('trigger');
+			const rect = trigger.getBoundingClientRect();
+			const y = rect.top + rect.height / 2;
+
+			trigger.dispatchEvent(
+				new PointerEvent('pointermove', {
+					clientX: rect.left + 20,
+					clientY: y,
+					pointerType: 'mouse',
+					pointerId: 1
+				})
+			);
+			await pointer(trigger, 'pointerenter');
+			const panel = content() as HTMLElement;
+			await expect.poll(() => panel.style.left).toMatch(/px$/);
+			const firstLeft = parseFloat(panel.style.left);
+
+			trigger.dispatchEvent(
+				new PointerEvent('pointermove', {
+					clientX: rect.left + 180,
+					clientY: y,
+					pointerType: 'mouse',
+					pointerId: 1
+				})
+			);
+			await expect.poll(() => parseFloat(panel.style.left)).toBeGreaterThan(firstLeft + 100);
+			// The panel stays under the trigger: the y axis does not follow.
+			expect(panel.getAttribute('data-placement')).toBe('bottom');
+		});
+
 		it('places the panel and the arrow against the trigger', async () => {
 			render(TooltipTest, { delay: 0, withArrow: true, placement: 'bottom' });
 

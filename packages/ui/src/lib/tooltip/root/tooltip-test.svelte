@@ -10,6 +10,10 @@
 		delay?: number;
 		closeDelay?: number;
 		disabled?: boolean;
+		openOnLongPress?: boolean;
+		followPointer?: 'x' | 'y' | 'both';
+		/** Makes the trigger 240px wide. */
+		wide?: boolean;
 		withArrow?: boolean;
 		placement?: 'top' | 'bottom' | 'left' | 'right';
 		/** Renders a second tooltip beside the first. */
@@ -27,6 +31,9 @@
 		delay,
 		closeDelay,
 		disabled = false,
+		openOnLongPress = false,
+		followPointer,
+		wide = false,
 		withArrow = false,
 		placement = 'top',
 		second = false,
@@ -46,14 +53,21 @@
 	{delay}
 	{closeDelay}
 	{disabled}
+	{openOnLongPress}
 	triggerRef={customTrigger ? customRef : undefined}
 >
 	{#if customTrigger}
 		<a href="#save" data-testid="custom" bind:this={customRef} aria-describedby="hint">Save</a>
 	{:else}
-		<Tooltip.Trigger data-testid="trigger" aria-label="Save">S</Tooltip.Trigger>
+		<Tooltip.Trigger
+			data-testid="trigger"
+			aria-label="Save"
+			style={wide ? 'width: 240px; height: 32px;' : undefined}
+		>
+			S
+		</Tooltip.Trigger>
 	{/if}
-	<Tooltip.Content data-testid="content" {placement}>
+	<Tooltip.Content data-testid="content" {placement} {followPointer}>
 		Save the document
 		{#if withArrow}
 			<Tooltip.Arrow data-testid="arrow" style="width: 8px; height: 8px;" />

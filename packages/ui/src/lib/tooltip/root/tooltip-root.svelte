@@ -2,6 +2,7 @@
 	import { onDestroy, untrack } from 'svelte';
 	import { browser } from '../../internal/environment';
 	import { shouldShowFocusVisible } from '../../primitives/input-modality';
+	import { longPress } from '../../primitives/long-press';
 	import type { TooltipRootProps } from '../types';
 	import {
 		getTooltipProviderContext,
@@ -20,6 +21,13 @@
 		shouldSkipDelay,
 		unregisterOpenTooltip
 	} from './tooltip-group';
+	import {
+		buildSafePolygon,
+		isPointInPolygon,
+		isPointInRect,
+		type Point,
+		type Side
+	} from './safe-polygon';
 
 	/**
 	 * Tooltip.Root — the open state, the delays, and the interaction with the trigger.
@@ -41,6 +49,7 @@
 		delay,
 		closeDelay,
 		disabled = false,
+		openOnLongPress = false,
 		triggerRef = $bindable<HTMLElement | null>(null),
 		children,
 		context = $bindable()
@@ -51,6 +60,7 @@
 	const contentId = `tooltip-${instanceId}`;
 
 	let isOpenInternal = $state(untrack(() => defaultOpen));
+	let contentRef: HTMLElement | null = $state(null);
 	let arrowRef: HTMLElement | null = $state(null);
 	// Whether `Tooltip.Trigger` set the trigger. It then renders the attributes of the trigger
 	// itself; for an element the consumer gave, the root writes them.
@@ -175,6 +185,7 @@
 	function handleTriggerPointerEnter(event: PointerEvent) {
 		// A touch has no hover: the finger lands and presses.
 		if (event.pointerType === 'touch') return;
+		stopGapTracking();
 		if (pressSuppressed) return;
 		scheduleOpen('hover', event);
 	}
@@ -187,10 +198,100 @@
 			openTimer = null;
 		}
 		if (keyboardFocused) return;
+		if (isOpen && startGapTracking(event)) return;
 		scheduleClose('hover-out', event);
 	}
 
+	// --- The gap between the trigger and the content ------------------------------------------
+
+	// The pointer that leaves the trigger toward the content crosses a gap where it is on
+	// neither. While it moves inside the triangle from the exit point to the near edge of the
+	// content, the tooltip waits for it. Outside the triangle, or still for too long, it closes.
+	const GAP_STALL_MS = 300;
+	let gapPolygon: Point[] | null = null;
+	let gapStallTimer: ReturnType<typeof setTimeout> | null = null;
+	let gapLeaveEvent: Event | null = null;
+
+	function readContentSide(): Side {
+		const side = contentRef?.dataset.placement;
+		return side === 'bottom' || side === 'left' || side === 'right' ? side : 'top';
+	}
+
+	function startGapTracking(event: PointerEvent): boolean {
+		if (!contentRef || !triggerRef) return false;
+		const content = contentRef.getBoundingClientRect();
+		const exit = { x: event.clientX, y: event.clientY };
+		gapPolygon = buildSafePolygon(exit, content, readContentSide());
+		gapLeaveEvent = event;
+		document.addEventListener('pointermove', handleGapPointerMove);
+		restartGapStall();
+		return true;
+	}
+
+	function stopGapTracking() {
+		if (!gapPolygon) return;
+		gapPolygon = null;
+		gapLeaveEvent = null;
+		document.removeEventListener('pointermove', handleGapPointerMove);
+		if (gapStallTimer !== null) {
+			clearTimeout(gapStallTimer);
+			gapStallTimer = null;
+		}
+	}
+
+	function restartGapStall() {
+		if (gapStallTimer !== null) clearTimeout(gapStallTimer);
+		gapStallTimer = setTimeout(() => {
+			gapStallTimer = null;
+			const event = gapLeaveEvent;
+			stopGapTracking();
+			if (!pointerOnContent && event) scheduleClose('hover-out', event);
+		}, GAP_STALL_MS);
+	}
+
+	function handleGapPointerMove(event: PointerEvent) {
+		if (!gapPolygon) return;
+		const point = { x: event.clientX, y: event.clientY };
+		const onContent = contentRef ? isPointInRect(point, contentRef.getBoundingClientRect()) : false;
+		const onTrigger = triggerRef ? isPointInRect(point, triggerRef.getBoundingClientRect()) : false;
+		if (onContent || onTrigger) {
+			// The `pointerenter` of the content or the trigger takes over from here.
+			stopGapTracking();
+			return;
+		}
+		if (isPointInPolygon(point, gapPolygon)) {
+			restartGapStall();
+			return;
+		}
+		stopGapTracking();
+		scheduleClose('hover-out', event);
+	}
+
+	// --- Long press ---------------------------------------------------------------------------
+
+	// A touch has no hover. Behind a prop, a long press opens the tooltip, and it stays open
+	// until a press somewhere else or Escape. The press itself closes nothing here: it is the
+	// start of the gesture.
+	function handleLongPress(_point: unknown, event: PointerEvent) {
+		if (disabled) return;
+		openedByTouch = true;
+		openTooltip('hover', event);
+	}
+
+	let openedByTouch = false;
+
+	function handleDocumentPointerDown(event: PointerEvent) {
+		if (!openedByTouch || !isOpen) return;
+		const target = event.target;
+		if (target instanceof Node && (triggerRef?.contains(target) || contentRef?.contains(target))) {
+			return;
+		}
+		openedByTouch = false;
+		closeTooltip('hover-out', event);
+	}
+
 	function handleTriggerPointerDown(event: PointerEvent) {
+		if (event.pointerType === 'touch' && openOnLongPress) return;
 		pressSuppressed = true;
 		closeTooltip('trigger-press', event);
 	}
@@ -220,6 +321,7 @@
 	function handleContentPointerEnter(event: PointerEvent) {
 		if (event.pointerType === 'touch') return;
 		pointerOnContent = true;
+		stopGapTracking();
 		if (closeTimer !== null) {
 			clearTimeout(closeTimer);
 			closeTimer = null;
@@ -248,12 +350,27 @@
 			trigger.removeEventListener('focus', handleTriggerFocus);
 			trigger.removeEventListener('blur', handleTriggerBlur);
 			untrack(() => {
+				stopGapTracking();
 				pointerOnContent = false;
 				pressSuppressed = false;
 				keyboardFocused = false;
+				openedByTouch = false;
 				clearTimers();
 			});
 		};
+	});
+
+	$effect(() => {
+		const trigger = triggerRef;
+		if (!trigger || !openOnLongPress) return;
+		const press = longPress(trigger, { onLongPress: handleLongPress });
+		return () => press.destroy();
+	});
+
+	$effect(() => {
+		if (!isOpen || !openOnLongPress) return;
+		document.addEventListener('pointerdown', handleDocumentPointerDown, true);
+		return () => document.removeEventListener('pointerdown', handleDocumentPointerDown, true);
 	});
 
 	$effect(() => {
@@ -287,6 +404,7 @@
 	onDestroy(() => {
 		if (!browser) return;
 		clearTimers();
+		stopGapTracking();
 	});
 
 	const ctx: TooltipContext = {
@@ -307,6 +425,9 @@
 		setTriggerRef(element) {
 			triggerFromPart = element !== null;
 			triggerRef = element;
+		},
+		setContentRef(element) {
+			contentRef = element;
 		},
 		setArrowRef(element) {
 			arrowRef = element;

@@ -9,6 +9,8 @@ description: A short description of a control that appears on hover or on keyboa
 	import heroSource from './demos/hero.svelte?highlight';
 	import Toolbar from './demos/toolbar.svelte';
 	import toolbarSource from './demos/toolbar.svelte?highlight';
+	import Follow from './demos/follow.svelte';
+	import followSource from './demos/follow.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -50,7 +52,11 @@ The tooltip opens when the pointer rests on the trigger for `delay` milliseconds
 
 It closes when the pointer leaves the trigger and the content, when the focus leaves, on `Escape`, and on a press on the trigger. A press does something, and the tooltip gets out of the way.
 
-The pointer can move from the trigger to the content: `closeDelay` is the time it gets to cross. The content then keeps the tooltip open while the pointer rests on it. Thus the user can read a long text to the end, and select it.
+The pointer can move from the trigger to the content. While it moves in a straight line toward the content, the tooltip waits for it. A move to the side closes it, and so does a stop of 300 milliseconds in the gap. `closeDelay` adds a wait before each close. The content then keeps the tooltip open while the pointer rests on it. Thus the user can read a long text to the end, and select it.
+
+## Touch
+
+A touch has no hover, thus a tooltip does not open on a touch. Set `openOnLongPress` on the root for a tooltip that opens on a long press of a finger or a pen. It then stays open until a press somewhere else, or `Escape`. Use it with care: a long press has a meaning of its own on many controls, for example a text selection.
 
 ## A group of tooltips
 
@@ -59,6 +65,12 @@ One tooltip at most is open. When a second one opens, the first one closes.
 The first tooltip of a row waits `delay`; the next ones open at once while the user moves along the row. That window after a close is `skipDelay`. Put a `Tooltip.Provider` around a toolbar to give the same delays to each tooltip in it.
 
 <Demo source={toolbarSource}><Toolbar /></Demo>
+
+## A wide trigger
+
+For a trigger much wider than the tooltip, for example a progress bar, set `followPointer` on the content. The panel then moves with the pointer along that axis, and it stays against the trigger on the other axis. A tooltip that a keyboard focus opened stays at the center of the trigger.
+
+<Demo source={followSource}><Follow /></Demo>
 
 ## Any trigger
 
