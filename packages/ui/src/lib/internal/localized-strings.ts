@@ -34,6 +34,22 @@ const LOCALIZED_STRINGS = {
 		de: 'Vorherige Seite',
 		it: 'Pagina precedente'
 	},
+	'slider.minimum': {
+		en: 'Minimum',
+		es: 'Mínimo',
+		pt: 'Mínimo',
+		fr: 'Minimum',
+		de: 'Minimum',
+		it: 'Minimo'
+	},
+	'slider.maximum': {
+		en: 'Maximum',
+		es: 'Máximo',
+		pt: 'Máximo',
+		fr: 'Maximum',
+		de: 'Maximum',
+		it: 'Massimo'
+	},
 	'datePicker.calendar': {
 		en: 'Calendar',
 		es: 'Calendario',
