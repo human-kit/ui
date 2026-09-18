@@ -81,6 +81,54 @@
 			]
 		},
 		{
+			"name": "Positioner",
+			"description": "Puts a toast with an anchor against that element, as a fixed div. For a toast without one, it is out of the layout.",
+			"props": [
+				{
+					"name": "toast",
+					"type": "ToastItem",
+					"required": true,
+					"default": null,
+					"description": "The item from `Toast.Viewport`."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The `Toast.Root`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The bindable positioner element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-anchored",
+					"description": "Present when the item has an anchor."
+				},
+				{
+					"name": "data-placement",
+					"description": "The side of the anchor where the toast sits, after a flip."
+				},
+				{
+					"name": "data-toast-positioner",
+					"description": "Identifies the positioner element."
+				}
+			]
+		},
+		{
 			"name": "Root",
 			"description": "One toast. It makes a div with role=\"dialog\", or role=\"alertdialog\" for a high priority, that is not modal.",
 			"props": [
@@ -121,6 +169,10 @@
 				}
 			],
 			"dataAttributes": [
+				{
+					"name": "data-anchored",
+					"description": "Present when the item has an anchor. The toast is out of the stack."
+				},
 				{
 					"name": "data-ending",
 					"description": "Present through the exit animation."

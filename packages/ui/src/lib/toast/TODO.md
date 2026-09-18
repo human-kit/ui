@@ -16,5 +16,5 @@ Track Toast work with a single mandatory TODO format.
 - [x] [M][P1][Area: Interaction][Owner: Unassigned][Target: Done] Dismiss on a swipe that follows the finger, with a threshold and a flick, and never from a button.
 - [x] [S][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Keep the viewport reachable behind a modal dialog.
 - [x] [M][P0][Area: Testing][Owner: Unassigned][Target: Done] Add coverage for the region, the announcements, the timers, the keyboard, the buttons, the limit, the swipe, the shared manager and SSR.
-- [ ] [S][P2][Area: API][Owner: Unassigned][Target: Backlog] Add a `Toast.Positioner` for a toast anchored to an element, such as a button.
-- [ ] [S][P2][Area: Interaction][Owner: Unassigned][Target: Backlog] Add a `data-hk-swipe-ignore` note to the docs for content of the consumer that must not start a swipe.
+- [x] [S][P2][Area: API][Owner: Unassigned][Target: Done] Add a `Toast.Positioner` for a toast anchored to an element, such as a button.
+- [x] [S][P2][Area: Interaction][Owner: Unassigned][Target: Done] Add a `data-hk-swipe-ignore` note to the docs for content of the consumer that must not start a swipe.
