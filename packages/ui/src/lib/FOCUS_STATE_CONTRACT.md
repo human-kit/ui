@@ -74,3 +74,4 @@ The following components implement this contract:
 - **ListBox** — items with roving tabindex.
 - **TransferList** — two ListBoxes plus move buttons. Focus is placed explicitly after every move, because the rows the user was on stop existing: it stays on the button while that button still has work, and otherwise follows the items to the destination list; a double-clicked row hands focus to whichever row took its place.
 - **NumberField** — spinbutton input, stepper buttons, wheel, and pointer scrub area.
+- **Slider** — one native range input per thumb. The thumb shows `data-focused` and `data-focus-visible` for its input, and the root shows `data-focus-within` and `data-focus-visible`. A press on the track focuses the thumb with the pointer modality, and a key press after it turns the ring on through `watchFocusVisible`.
