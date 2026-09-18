@@ -119,7 +119,11 @@ receives `{ value, label, placeholder }`.
 - A second press on the selected option changes nothing, and the popover closes, the same as a
   native select. In the multiple mode a press toggles.
 - `onOpenChange` receives the reason of each change: `trigger-press`, `item-select`, `escape-key`,
-  `outside-press`, `focus-out`, `scroll` or `imperative-action`. `details.cancel()` refuses it.
+  `outside-press`, `focus-out`, `scroll` or `imperative-action`. A press on the trigger reports
+  `trigger-press` for the open and for the close. `details.cancel()` refuses it.
+- The ids of `Select.Label` and `Select.Value` reach the trigger through the context, and the
+  server cannot do that: `aria-labelledby` appears at hydration. Give `aria-label` on the root as
+  well when the name must be there on the first paint.
 - `Select.Trigger` shows `data-state`, `data-placeholder`, `data-readonly`, `data-required` and
   `data-invalid`. `Select.Value` shows `data-placeholder`. `Select.Item` shows the attributes of
   `ListBox.Item`.

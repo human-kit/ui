@@ -568,13 +568,19 @@ describe('Select', () => {
 			await openWithKeyboard('{ArrowDown}');
 			await userEvent.keyboard('{Enter}');
 			await expect.poll(() => queryOpenListbox()).toBeNull();
+			await userEvent.click(queryTrigger());
+			await expect.poll(() => queryOpenListbox()).toBeTruthy();
+			await userEvent.click(queryTrigger());
+			await expect.poll(() => queryOpenListbox()).toBeNull();
 
 			const reasons = onOpenChange.mock.calls.map(([open, details]) => `${open}:${details.reason}`);
 			expect(reasons).toEqual([
 				'true:trigger-press',
 				'false:escape-key',
 				'true:trigger-press',
-				'false:item-select'
+				'false:item-select',
+				'true:trigger-press',
+				'false:trigger-press'
 			]);
 		});
 	});
