@@ -65,3 +65,4 @@ The following components implement this contract:
 - **ListBox** — items with roving tabindex.
 - **TransferList** — two ListBoxes plus move buttons. Focus is placed explicitly after every move, because the rows the user was on stop existing: it stays on the button while that button still has work, and otherwise follows the items to the destination list; a double-clicked row hands focus to whichever row took its place.
 - **NumberField** — spinbutton input, stepper buttons, wheel, and pointer scrub area.
+- **Tooltip** — never takes the focus, and never moves it. It opens on a focus of the trigger only when `shouldShowFocusVisible` says the focus came from the keyboard, thus a focus that a script gave with the pointer modality opens nothing.
