@@ -64,6 +64,7 @@
 	const dragging = $derived(ctx.draggingIndex === index);
 	const focused = $derived(ctx.focusedIndex === index);
 	const focusVisible = $derived(focused && ctx.isFocusVisible);
+	const active = $derived(ctx.activeIndex === index);
 
 	// Two thumbs with the same name are two sliders the screen reader cannot tell apart. A range
 	// of two gets "Minimum" and "Maximum" when the consumer gives no name of its own.
@@ -111,7 +112,21 @@
 		const left = ctx.isRtl ? 100 - percent : percent;
 		return `position: absolute; left: ${left}%; top: 50%; translate: -50% -50%;`;
 	});
-	const resolvedStyle = $derived(`${positionStyle} touch-action: none;${style ? ` ${style}` : ''}`);
+	// The thumb the user touched last draws above the others: two thumbs at the same value
+	// would hide the one that just moved.
+	const resolvedStyle = $derived(
+		`${positionStyle} touch-action: none;${active ? ' z-index: 1;' : ''}${style ? ` ${style}` : ''}`
+	);
+
+	// The keyboard reports `onChange` on each key press, and `onChangeEnd` one time at the
+	// release, thus a held key does not report an end on each repeat.
+	let keyboardChanged = false;
+
+	function commitKeyboard(event: Event) {
+		if (!keyboardChanged) return;
+		keyboardChanged = false;
+		ctx.commitValue({ reason: 'keyboard', index, event });
+	}
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.defaultPrevented) return;
@@ -161,13 +176,18 @@
 		if (ctx.isReadOnly) return;
 
 		if (absolute !== null) {
-			const details: SliderChangeDetails = { reason: 'keyboard', index, event };
-			if (ctx.setValueAt(index, absolute, details)) ctx.commitValue(details);
+			if (ctx.setValueAt(index, absolute, { reason: 'keyboard', index, event })) {
+				keyboardChanged = true;
+			}
 			return;
 		}
-		if (direction !== null) {
-			ctx.stepValueAt(index, direction, { large, event });
+		if (direction !== null && ctx.stepValueAt(index, direction, { large, event })) {
+			keyboardChanged = true;
 		}
+	}
+
+	function handleKeyUp(event: KeyboardEvent) {
+		commitKeyboard(event);
 	}
 
 	// A change that did not come through the keyboard handler: a mobile screen reader swipe, or
@@ -188,7 +208,9 @@
 		ctx.setFocusVisible(shouldShowFocusVisible(inputRef));
 	}
 
-	function handleBlur() {
+	function handleBlur(event: FocusEvent) {
+		// A key still held when the focus leaves has no release to wait for.
+		commitKeyboard(event);
 		ctx.setThumbFocus(index, false);
 	}
 
@@ -243,6 +265,7 @@
 		data-index={index}
 		style="position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:inherit;pointer-events:none;"
 		onkeydown={handleKeyDown}
+		onkeyup={handleKeyUp}
 		oninput={handleInput}
 		onfocus={handleFocus}
 		onblur={handleBlur}

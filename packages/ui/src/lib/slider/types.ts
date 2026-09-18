@@ -26,8 +26,9 @@ export type SliderRootProps = {
 	/** The component calls it on each change, also on each move of a drag. */
 	onChange?: (value: SliderValue, details: SliderChangeDetails) => void;
 	/**
-	 * The component calls it when a sequence of changes ends: after a key press, after a drag, and
-	 * after a change from assistive technology. Use it for work that must not run on each move.
+	 * The component calls it when a sequence of changes ends: at the release of a key, and at the
+	 * end of a drag. A change from assistive technology ends at once. Use it for work that must
+	 * not run on each move.
 	 */
 	onChangeEnd?: (value: SliderValue, details: SliderChangeDetails) => void;
 	/** The lowest value. The default is 0. */

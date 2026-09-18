@@ -62,6 +62,9 @@
 	let labelId: string | null = $state(null);
 	let draggingIndex: number | null = $state(null);
 	let focusedIndex: number | null = $state(null);
+	// The thumb the user touched last. It draws above the others, thus two thumbs at the same
+	// value do not hide the one that just moved.
+	let activeIndex: number | null = $state(null);
 	let focusVisible = $state(false);
 	// Read at mount, and again at each pointer press: the direction can change after the mount.
 	let rtl = $derived(isRtl(rootRef));
@@ -168,14 +171,15 @@
 		index: number,
 		direction: -1 | 1,
 		options: { large?: boolean; event?: Event }
-	) {
+	): boolean {
 		const current = currentValues[index];
-		if (current === undefined) return;
+		if (current === undefined) return false;
 		const delta = options.large ? resolvedLargeStep : resolvedStep;
-		const details: SliderChangeDetails = { reason: 'keyboard', index, event: options.event };
-		if (setValueAt(index, current + direction * delta, details)) {
-			commitValue(details);
-		}
+		return setValueAt(index, current + direction * delta, {
+			reason: 'keyboard',
+			index,
+			event: options.event
+		});
 	}
 
 	// --- Pointer drag -----------------------------------------------------------------------
@@ -183,15 +187,26 @@
 	let dragPointerId: number | null = null;
 	let dragTarget: HTMLElement | null = null;
 	let dragChanged = false;
+	// The track rect is read one time at the press, and again only when the page scrolls: a
+	// layout read on each move is what a drag does most.
+	let dragRect: DOMRect | null = null;
+	// A press on two or more thumbs at the same value does not say which one the user wants.
+	// The first move says it: up takes the highest of them, down takes the lowest.
+	let dragStack: number[] | null = null;
 
 	function valueFromPointer(event: PointerEvent): number | null {
 		if (!trackRef) return null;
-		return getSliderValueFromPointer(event, trackRef.getBoundingClientRect(), {
-			min,
-			max,
-			orientation,
-			rtl
+		dragRect ??= trackRef.getBoundingClientRect();
+		return getSliderValueFromPointer(event, dragRect, { min, max, orientation, rtl });
+	}
+
+	function getStackAt(index: number): number[] {
+		const value = currentValues[index];
+		const stack: number[] = [];
+		currentValues.forEach((other, otherIndex) => {
+			if (other === value) stack.push(otherIndex);
 		});
+		return stack;
 	}
 
 	function startDrag(event: PointerEvent, index?: number) {
@@ -202,6 +217,7 @@
 		// takes the focus below, with the pointer modality.
 		event.preventDefault();
 		rtl = isRtl(rootRef);
+		dragRect = trackRef.getBoundingClientRect();
 
 		let targetIndex = index;
 		let changed = false;
@@ -210,6 +226,9 @@
 			if (rawValue === null) return;
 			targetIndex = getNearestThumbIndex(currentValues, rawValue);
 			changed = setValueAt(targetIndex, rawValue, { reason: 'pointer', index: targetIndex, event });
+		} else {
+			const stack = getStackAt(targetIndex);
+			dragStack = stack.length > 1 ? stack : null;
 		}
 
 		const target = event.currentTarget instanceof HTMLElement ? event.currentTarget : trackRef;
@@ -217,6 +236,7 @@
 		dragTarget = target;
 		dragChanged = changed;
 		draggingIndex = targetIndex;
+		activeIndex = targetIndex;
 
 		try {
 			target.setPointerCapture(event.pointerId);
@@ -227,14 +247,32 @@
 		target.addEventListener('pointerup', handleDragEnd);
 		target.addEventListener('pointercancel', handleDragEnd);
 		target.addEventListener('lostpointercapture', handleDragEnd);
+		window.addEventListener('scroll', handleDragScroll, true);
 
 		focusThumb(targetIndex, 'pointer');
+	}
+
+	function handleDragScroll() {
+		dragRect = null;
 	}
 
 	function handleDragMove(event: PointerEvent) {
 		if (event.pointerId !== dragPointerId || draggingIndex === null) return;
 		const rawValue = valueFromPointer(event);
 		if (rawValue === null) return;
+
+		if (dragStack) {
+			const stackValue = currentValues[draggingIndex];
+			if (rawValue === stackValue) return;
+			const resolved = rawValue > stackValue ? Math.max(...dragStack) : Math.min(...dragStack);
+			dragStack = null;
+			if (resolved !== draggingIndex) {
+				draggingIndex = resolved;
+				activeIndex = resolved;
+				focusThumb(resolved, 'pointer');
+			}
+		}
+
 		if (setValueAt(draggingIndex, rawValue, { reason: 'pointer', index: draggingIndex, event })) {
 			dragChanged = true;
 		}
@@ -257,6 +295,7 @@
 			target.removeEventListener('pointerup', handleDragEnd);
 			target.removeEventListener('pointercancel', handleDragEnd);
 			target.removeEventListener('lostpointercapture', handleDragEnd);
+			window.removeEventListener('scroll', handleDragScroll, true);
 			if (dragPointerId !== null && target.hasPointerCapture?.(dragPointerId)) {
 				try {
 					target.releasePointerCapture(dragPointerId);
@@ -268,6 +307,8 @@
 		dragPointerId = null;
 		dragTarget = null;
 		dragChanged = false;
+		dragRect = null;
+		dragStack = null;
 		draggingIndex = null;
 	}
 
@@ -405,6 +446,9 @@
 		get focusedIndex() {
 			return focusedIndex;
 		},
+		get activeIndex() {
+			return activeIndex;
+		},
 		get isFocusVisible() {
 			return focusVisible;
 		},
@@ -460,6 +504,7 @@
 		setThumbFocus(index, focused) {
 			if (focused) {
 				focusedIndex = index;
+				activeIndex = index;
 			} else if (focusedIndex === index) {
 				focusedIndex = null;
 				focusVisible = false;

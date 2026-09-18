@@ -1,20 +1,5 @@
+import { decimalPlaces, roundToPrecision } from '../../internal/number-precision';
 import type { SliderOrientation } from './context';
-
-function decimalPlaces(value: number): number {
-	if (!Number.isFinite(value)) return 0;
-	const text = value.toString().toLowerCase();
-	if (!text.includes('e')) {
-		return text.split('.')[1]?.length ?? 0;
-	}
-	const [coefficient, exponentText] = text.split('e');
-	const coefficientDecimals = coefficient.split('.')[1]?.length ?? 0;
-	return Math.max(0, coefficientDecimals - Number(exponentText));
-}
-
-function roundToPrecision(value: number, precision: number): number {
-	const factor = 10 ** Math.min(precision, 12);
-	return Math.round(value * factor) / factor;
-}
 
 /** A step that is not a positive finite number falls back to 1. */
 export function normalizeSliderStep(step: number | undefined): number {
@@ -29,7 +14,7 @@ export function clampSliderValue(value: number, min: number, max: number): numbe
  * Snaps a value to the nearest step from `min`, and then clamps it to `[min, max]`.
  *
  * The clamp comes after the snap on purpose: when the range is not a multiple of the step, `max`
- * stays reachable, as in a native `<input type="range">` and in React Aria.
+ * stays reachable, as in a native `<input type="range">`.
  */
 export function snapSliderValue(value: number, min: number, max: number, step: number): number {
 	if (!Number.isFinite(value)) return min;
@@ -108,7 +93,7 @@ export function getThumbBounds(
 
 /**
  * The step that PageUp, PageDown and Shift+Arrow use when the consumer gives none: one tenth of
- * the range, and never less than one step. React Aria does the same.
+ * the range, and never less than one step.
  */
 export function getDefaultLargeStep(min: number, max: number, step: number): number {
 	const resolvedStep = normalizeSliderStep(step);

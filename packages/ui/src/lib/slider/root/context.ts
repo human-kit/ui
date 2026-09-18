@@ -51,6 +51,8 @@ export type SliderContext = {
 	draggingIndex: number | null;
 	/** The index of the thumb that has the focus, or null. */
 	focusedIndex: number | null;
+	/** The index of the thumb the user touched last. It draws above the others. */
+	activeIndex: number | null;
 	/** Whether the focus in the slider must show as keyboard focus. */
 	isFocusVisible: boolean;
 	/** Whether the root is in a right-to-left context. Read at mount and on each pointer press. */
@@ -84,12 +86,12 @@ export type SliderContext = {
 	 * whether the value changed.
 	 */
 	setValueAt: (index: number, value: number, details: SliderChangeDetails) => boolean;
-	/** Moves one thumb by a step, or by the large step. */
+	/** Moves one thumb by a step, or by the large step. Returns whether the value changed. */
 	stepValueAt: (
 		index: number,
 		direction: -1 | 1,
 		options: { large?: boolean; event?: Event }
-	) => void;
+	) => boolean;
 	/** Reports the end of a sequence of changes: a key press, a drag. */
 	commitValue: (details: SliderChangeDetails) => void;
 	/**
