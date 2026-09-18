@@ -16,7 +16,7 @@ Track Select work with a single mandatory TODO format.
 - [x] [M][P0][Area: Focus][Owner: Unassigned][Target: Done] Return the focus to the trigger after `Escape` and after a selection, with the modality of the close.
 - [x] [S][P1][Area: Selection][Owner: Unassigned][Target: Done] Support `selectionMode="multiple"` with an array value and a popover that stays open.
 - [x] [M][P0][Area: Testing][Owner: Unassigned][Target: Done] Add browser and SSR coverage for the ARIA contract, the keyboard, the pointer, the forms and the focus contract.
-- [ ] [S][P1][Area: Interaction][Owner: Unassigned][Target: TBD] Place the popover so the selected option sits over the trigger, as Base UI does with `alignItemWithTrigger`.
+- [ ] [S][P1][Area: Interaction][Owner: Unassigned][Target: TBD] Place the popover so the selected option sits over the trigger (`alignItemWithTrigger`).
 - [ ] [S][P1][Area: Interaction][Owner: Unassigned][Target: TBD] Change the value with a printable character on the closed trigger, without an open, as a native select does.
 - [ ] [C][P2][Area: API][Owner: Unassigned][Target: TBD] Add `Select.Group` and `Select.GroupLabel` for sections in the list.
 - [ ] [C][P2][Area: API][Owner: Unassigned][Target: TBD] Add a `Select.Icon` part that shows the open state.

@@ -83,7 +83,7 @@ receives `{ value, label, placeholder }`.
 
 - `Select.Trigger` is a native `<button>` with `role="combobox"`, `aria-haspopup="listbox"`,
   `aria-expanded`, and `aria-controls` while the list is open. This is what a native select is in
-  the accessibility tree, and what Base UI makes.
+  the accessibility tree.
 - The name of the trigger is `Select.Label` and `Select.Value`, in that order: a screen reader
   announces "Fruit, Apple, combo box". An `aria-labelledby` on the root replaces the label, and an
   `aria-label` on the root is read in its place.

@@ -320,8 +320,8 @@
 	// --- Hidden form control -----------------------------------------------------------------
 
 	// Every item goes into the native control only up to this many, so the autofill can pick
-	// any of them. Past it, the DOM cost of the options is not worth it (React Aria draws the
-	// same line), and the control carries only the selection.
+	// any of them. Past it, the DOM cost of the options is not worth it, and the control carries
+	// only the selection.
 	const NATIVE_OPTIONS_LIMIT = 300;
 
 	const formOptions = $derived.by(() => {

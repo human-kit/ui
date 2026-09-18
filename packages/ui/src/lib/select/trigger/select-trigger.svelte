@@ -14,7 +14,7 @@
 	 * Select.Trigger — the button that opens the list and shows the value.
 	 *
 	 * It carries `role="combobox"` with `aria-haspopup="listbox"`, the same as a native select
-	 * in the accessibility tree, and the same as Base UI. Its name comes from `Select.Label`
+	 * in the accessibility tree. Its name comes from `Select.Label`
 	 * and from `Select.Value` together, thus a screen reader announces the field and the
 	 * selection in one go.
 	 */
