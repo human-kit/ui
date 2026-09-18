@@ -1,4 +1,5 @@
 import {
+	arrow as arrowMiddleware,
 	computePosition,
 	flip,
 	shift,
@@ -106,6 +107,12 @@ export type FloatingOptions = {
 	 * so a panel that shrinks to fit still leaves the gutter visible.
 	 */
 	collisionPadding?: number;
+	/**
+	 * An arrow element inside the floating element. The action moves it along the edge that faces
+	 * the anchor, with `left` or `top`, and it writes the side in `data-placement`. The offset from
+	 * that edge is for the CSS of the arrow.
+	 */
+	arrow?: HTMLElement | null;
 	/** Callback when position is updated. */
 	onPositionUpdate?: (x: number, y: number, placement: FloatingPlacement) => void;
 };
@@ -265,8 +272,20 @@ export function floating(
 					floatingEl.style.maxWidth = `${clampedAvailableWidth}px`;
 					floatingEl.style.maxHeight = `${clampedAvailableHeight}px`;
 				}
-			})
+			}),
+			...(currentOptions.arrow ? [arrowMiddleware({ element: currentOptions.arrow })] : [])
 		];
+	}
+
+	function applyArrowPosition(
+		arrowElement: HTMLElement,
+		data: { x?: number; y?: number } | undefined,
+		finalPlacement: FloatingPlacement
+	) {
+		const side = finalPlacement.split('-')[0];
+		arrowElement.dataset.placement = side;
+		arrowElement.style.left = data?.x !== undefined ? `${data.x}px` : '';
+		arrowElement.style.top = data?.y !== undefined ? `${data.y}px` : '';
 	}
 
 	async function updatePosition() {
@@ -276,7 +295,8 @@ export function floating(
 		const {
 			x,
 			y,
-			placement: finalPlacement
+			placement: finalPlacement,
+			middlewareData
 		} = await computePosition(anchor, floatingElement, {
 			placement: normalizeExtendedPlacement(currentOptions.placement || 'bottom'),
 			middleware: buildMiddleware(),
@@ -287,6 +307,10 @@ export function floating(
 			left: `${x}px`,
 			top: `${y}px`
 		});
+
+		if (currentOptions.arrow) {
+			applyArrowPosition(currentOptions.arrow, middlewareData.arrow, finalPlacement);
+		}
 
 		currentOptions.onPositionUpdate?.(x, y, finalPlacement);
 	}
@@ -314,7 +338,7 @@ export function floating(
 				// Re-subscribe autoUpdate to the new anchor (or stop when it's gone).
 				start();
 			} else if (cleanup) {
-				// Same anchor, new placement/offset/boundary: reposition immediately.
+				// Same anchor, new placement/offset/boundary/arrow: reposition immediately.
 				void updatePosition();
 			}
 		},
