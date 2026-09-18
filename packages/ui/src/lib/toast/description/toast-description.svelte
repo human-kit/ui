@@ -19,14 +19,23 @@
 	const generatedId = $props.id();
 	const id = $derived(idProp ?? generatedId);
 
+	// Without children and without a `description` on the item there is nothing to say: the
+	// part renders nothing, and it describes nothing.
+	const hasContent = $derived(Boolean(children) || Boolean(ctx.toast.description));
+
 	// The returned unregister runs on destroy, and again whenever the id changes.
-	$effect(() => ctx.registerDescription(id));
+	$effect(() => {
+		if (!hasContent) return;
+		return ctx.registerDescription(id);
+	});
 </script>
 
-<p {...restProps} {id} class={className} data-toast-description="true">
-	{#if children}
-		{@render children()}
-	{:else}
-		{ctx.toast.description}
-	{/if}
-</p>
+{#if hasContent}
+	<p {...restProps} {id} class={className} data-toast-description="true">
+		{#if children}
+			{@render children()}
+		{:else}
+			{ctx.toast.description}
+		{/if}
+	</p>
+{/if}

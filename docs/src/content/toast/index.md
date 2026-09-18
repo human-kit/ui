@@ -85,7 +85,7 @@ The title and the description are text. That text is what the screen reader hear
 
 A toast stays `timeout` milliseconds: 5000 by default, on the provider or on the toast. `0` keeps it until a close.
 
-The timers stop while the pointer rests on the viewport, while the keyboard focus is in it, and while the window is in the background. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
+The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. They also stop while the window is in the background, or the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
 
 ## The stack
 
@@ -128,10 +128,10 @@ Give `anchor` to `add`, with an optional `placement` and `offset`, for a toast t
 ## Accessibility
 
 - `Toast.Viewport` is a `role="region"` landmark, named with the count of toasts. `F6` moves the focus into it from anywhere on the page, and back. A `Tab` past the last button goes back to where the focus was.
-- Two live regions beside the viewport announce each toast: `role="status"` for the normal priority, and `role="alert"` for the high priority. They are on the page before the first toast, thus the first toast is announced too.
-- `Toast.Root` is a `role="dialog"` that is not modal, or an `alertdialog` for the high priority. It has `aria-labelledby` from the title and `aria-describedby` from the description, and it is a tab stop.
+- Two live regions beside the viewport announce each toast: `role="status"` for the normal priority, and `role="alert"` for the high priority. They are on the page before the first toast, thus the first toast is announced too. Two toasts in the same tick are two messages.
+- `Toast.Root` is a `role="dialog"` that is not modal, or an `alertdialog` for the high priority. It has `aria-labelledby` from the title and `aria-describedby` from the description, and it is a tab stop. A toast without a title takes its name from the description: a dialog without a name is a fault.
 - `Escape` closes the focused toast. The focus moves to the next toast, or back to where it was.
-- The viewport stays reachable behind a modal `Dialog`.
+- The viewport stays reachable behind a modal `Dialog`: `F6` moves the focus into it, `Tab` moves in it, and a `Tab` past its last button goes back to the dialog.
 
 ## API reference
 

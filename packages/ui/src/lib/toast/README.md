@@ -67,5 +67,5 @@
 - Two live regions beside the viewport announce each toast: `role="status"` for the normal priority, and `role="alert"` for the high priority. The message is the title and the description.
 - `Toast.Root` is a `role="dialog"` that is not modal, or an `alertdialog` for the high priority. It has `aria-labelledby` from the title and `aria-describedby` from the description, and it is a tab stop.
 - `Escape` closes the focused toast, and the focus moves to the next toast, or back to where it was.
-- The timers stop while the pointer rests on the viewport, while the focus is in it, and while the window is in the background.
-- The viewport stays reachable behind a modal dialog.
+- The timers stop while the pointer rests on the viewport, and while the focus is in it. They also stop while the window is in the background, or the tab is hidden.
+- The viewport stays reachable behind a modal dialog, with `F6` and `Tab`.

@@ -51,8 +51,11 @@
 	// it back there.
 	let previousFocus: HTMLElement | null = null;
 	let windowFocused = true;
+	// A page that opens in a background tab gets no `blur`: the visibility says it is hidden.
+	let documentVisible = typeof document === 'undefined' || document.visibilityState !== 'hidden';
 
-	const count = $derived(manager.visibleToasts.length);
+	// A toast on its way out is not one the user can act on: the name does not count it.
+	const count = $derived(manager.visibleToasts.filter((toast) => toast.status !== 'ending').length);
 	const ariaLabel = $derived.by(() => {
 		if (ariaLabelProp) return ariaLabelProp;
 		if (count === 1) return resolveLocalizedString($localeStore, 'toast.oneNotification');
@@ -70,17 +73,32 @@
 
 	// --- Announcements ------------------------------------------------------------------------
 
-	// Each new toast, and each update, is one message. The key changes with each one, thus the
-	// live region gets a new node and reads the same text twice when two toasts say the same.
-	let politeMessage = $state('');
-	let politeKey = $state(0);
-	let assertiveMessage = $state('');
-	let assertiveKey = $state(0);
+	// Each new toast, and each update, is one message with a key of its own. Two toasts in the
+	// same tick are two nodes, thus the live region reads both, and the same text twice when two
+	// toasts say the same. A message leaves the region after a while, or the next one would be a
+	// change of a text the screen reader already read.
+	type Announcement = { key: number; text: string };
+	const ANNOUNCEMENT_MS = 2000;
+	let announcementKey = 0;
+	let politeMessages = $state<Announcement[]>([]);
+	let assertiveMessages = $state<Announcement[]>([]);
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a record of what was said, not state: nothing renders from it.
 	const announced = new Map<string, number>();
 
 	function messageOf(toast: ToastItem) {
 		return [toast.title, toast.description].filter(Boolean).join('. ');
+	}
+
+	function announce(text: string, priority: 'low' | 'high') {
+		announcementKey += 1;
+		const entry = { key: announcementKey, text };
+		if (priority === 'high') assertiveMessages = [...assertiveMessages, entry];
+		else politeMessages = [...politeMessages, entry];
+		// By key, not by identity: the state holds a proxy of the entry, not the entry.
+		setTimeout(() => {
+			politeMessages = politeMessages.filter((candidate) => candidate.key !== entry.key);
+			assertiveMessages = assertiveMessages.filter((candidate) => candidate.key !== entry.key);
+		}, ANNOUNCEMENT_MS);
 	}
 
 	$effect(() => {
@@ -94,13 +112,7 @@
 				announced.set(toast.id, toast.updateKey);
 				const message = messageOf(toast);
 				if (!message) continue;
-				if (toast.priority === 'high') {
-					assertiveMessage = message;
-					assertiveKey += 1;
-				} else {
-					politeMessage = message;
-					politeKey += 1;
-				}
+				announce(message, toast.priority);
 			}
 			for (const id of announced.keys()) {
 				if (!ids.has(id)) announced.delete(id);
@@ -111,7 +123,7 @@
 	// --- Timers -------------------------------------------------------------------------------
 
 	function syncTimers() {
-		if (ctx.hovering || ctx.focused || !windowFocused) manager.pauseTimers();
+		if (ctx.hovering || ctx.focused || !windowFocused || !documentVisible) manager.pauseTimers();
 		else manager.resumeTimers();
 	}
 
@@ -164,6 +176,11 @@
 		syncTimers();
 	}
 
+	function handleVisibilityChange() {
+		documentVisible = document.visibilityState !== 'hidden';
+		syncTimers();
+	}
+
 	// --- Focus --------------------------------------------------------------------------------
 
 	function toastElements(): HTMLElement[] {
@@ -211,9 +228,21 @@
 			`[data-toast-root][data-toast-id="${id}"]`
 		);
 		if (!closing || !(active instanceof Node) || !closing.contains(active)) return;
-		const toasts = toastElements();
-		const index = toasts.indexOf(closing);
-		const next = toasts[index + 1] ?? toasts[index - 1];
+		// The closing toast may already be on its way out: the list keeps it, thus the next one is
+		// the one after it in the order, and the one before it when it was last.
+		const all = Array.from(
+			regionRef?.querySelectorAll<HTMLElement>('[data-toast-root]:not([inert])') ?? []
+		);
+		const open = (candidate: HTMLElement | undefined) =>
+			candidate && candidate !== closing && !candidate.hasAttribute('data-ending')
+				? candidate
+				: null;
+		const index = all.indexOf(closing);
+		const next =
+			all
+				.slice(index + 1)
+				.map(open)
+				.find(Boolean) ?? all.slice(0, Math.max(0, index)).reverse().map(open).find(Boolean);
 		if (next) {
 			next.focus();
 			return;
@@ -247,7 +276,10 @@
 		window.addEventListener('keydown', handleWindowKeyDown);
 		window.addEventListener('blur', handleWindowBlur);
 		window.addEventListener('focus', handleWindowFocus);
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+		untrack(syncTimers);
 		return () => {
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
 			window.removeEventListener('keydown', handleWindowKeyDown);
 			window.removeEventListener('blur', handleWindowBlur);
 			window.removeEventListener('focus', handleWindowFocus);
@@ -262,15 +294,15 @@
 </script>
 
 {#snippet viewport()}
-	<div role="status" aria-live="polite" aria-atomic="true" style={visuallyHiddenStyle}>
-		{#key politeKey}
-			<div>{politeMessage}</div>
-		{/key}
+	<div role="status" aria-live="polite" aria-relevant="additions" style={visuallyHiddenStyle}>
+		{#each politeMessages as message (message.key)}
+			<div>{message.text}</div>
+		{/each}
 	</div>
-	<div role="alert" aria-live="assertive" aria-atomic="true" style={visuallyHiddenStyle}>
-		{#key assertiveKey}
-			<div>{assertiveMessage}</div>
-		{/key}
+	<div role="alert" aria-live="assertive" aria-relevant="additions" style={visuallyHiddenStyle}>
+		{#each assertiveMessages as message (message.key)}
+			<div>{message.text}</div>
+		{/each}
 	</div>
 	{#if manager.toasts.length > 0}
 		<div
