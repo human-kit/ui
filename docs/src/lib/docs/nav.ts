@@ -61,6 +61,7 @@ export const nav: NavGroup[] = [
 		items: [
 			{ slug: 'accordion', title: 'Accordion' },
 			{ slug: 'collapsible', title: 'Collapsible' },
+			{ slug: 'progress', title: 'Progress' },
 			{ slug: 'table', title: 'Table' },
 			{ slug: 'tabs', title: 'Tabs' },
 			{ slug: 'tree', title: 'Tree' }
