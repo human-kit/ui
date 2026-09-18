@@ -49,8 +49,8 @@ export type TooltipRootProps = {
 	disabled?: boolean;
 	/**
 	 * Opens the tooltip on a long press of a touch or a pen, because a touch has no hover. It then
-	 * stays open until a press somewhere else, or Escape. The default is off: a long press has a
-	 * meaning of its own on many controls.
+	 * stays open until a press somewhere else, a tap on the trigger, or Escape. Set it to `false`
+	 * on a control where a long press has a meaning of its own, such as a text selection.
 	 */
 	openOnLongPress?: boolean;
 	/**

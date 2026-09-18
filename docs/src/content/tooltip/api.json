@@ -65,8 +65,8 @@
 					"name": "openOnLongPress",
 					"type": "boolean",
 					"required": false,
-					"default": "false",
-					"description": "Opens the tooltip on a long press of a touch or a pen, because a touch has no hover. It then\nstays open until a press somewhere else, or Escape. The default is off: a long press has a\nmeaning of its own on many controls."
+					"default": "true",
+					"description": "Opens the tooltip on a long press of a touch or a pen, because a touch has no hover. It then\nstays open until a press somewhere else, a tap on the trigger, or Escape. Set it to `false`\non a control where a long press has a meaning of its own, such as a text selection."
 				},
 				{
 					"name": "triggerRef",

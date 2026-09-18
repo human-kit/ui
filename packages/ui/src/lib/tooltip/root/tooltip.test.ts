@@ -272,7 +272,6 @@ describe('Tooltip', () => {
 		it('opens on a long press of a touch, and closes on a press somewhere else', async () => {
 			const changes: Change[] = [];
 			render(TooltipTest, {
-				openOnLongPress: true,
 				onOpenChange: (open, details) => changes.push([open, details.reason])
 			});
 			const trigger = byTestId('trigger');
@@ -295,13 +294,55 @@ describe('Tooltip', () => {
 			]);
 		});
 
-		it('does not open on a long press without the prop', async () => {
-			render(TooltipTest);
+		it('closes on a tap on the trigger, which then works as a press', async () => {
+			const changes: Change[] = [];
+			render(TooltipTest, {
+				onOpenChange: (open, details) => changes.push([open, details.reason])
+			});
+			const trigger = byTestId('trigger');
+
+			touch(trigger, 'pointerdown');
+			await advance(500);
+			touch(trigger, 'pointerup');
+			await advance(100);
+			expect(trigger.getAttribute('data-state')).toBe('open');
+
+			touch(trigger, 'pointerdown');
+			await tick();
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+			touch(trigger, 'pointerup');
+			await advance(600);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+			expect(changes).toEqual([
+				[true, 'hover'],
+				[false, 'trigger-press']
+			]);
+		});
+
+		it('does not open on a long press when the prop is off', async () => {
+			render(TooltipTest, { openOnLongPress: false });
 
 			touch(byTestId('trigger'), 'pointerdown');
 			await advance(600);
 
 			expect(content()).toBeNull();
+		});
+
+		it('keeps a quick tap as a press when the prop is off', async () => {
+			const changes: Change[] = [];
+			render(TooltipTest, {
+				openOnLongPress: false,
+				delay: 0,
+				onOpenChange: (open, details) => changes.push([open, details.reason])
+			});
+			const trigger = byTestId('trigger');
+
+			touch(trigger, 'pointerdown');
+			touch(trigger, 'pointerup');
+			await advance(100);
+
+			expect(content()).toBeNull();
+			expect(changes).toEqual([]);
 		});
 	});
 

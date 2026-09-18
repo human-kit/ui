@@ -24,7 +24,7 @@
 
 ## Usage guidelines
 
-- Use it for a description the user can do without. A touch has no hover.
+- Use it for a description the user can do without. A touch has no hover: a long press opens it.
 - Give the trigger a name of its own. The tooltip is the description, not the name.
 - Put only text in the content. It takes no focus.
 - Put a `Tooltip.Provider` around a toolbar, thus every tooltip in it has the same delays.
@@ -48,6 +48,6 @@
 ## Accessibility
 
 - `Tooltip.Content` has `role="tooltip"`; the trigger gets `aria-describedby` while the content is in the DOM.
-- A keyboard focus opens at once. A focus that a script gives opens only with the keyboard modality. A touch does not open.
+- A keyboard focus opens at once. A focus that a script gives opens only with the keyboard modality. A touch opens on a long press, and a tap does not.
 - The pointer can cross the gap to the content in a straight line, and rest on the content. `Escape` closes, and a press on the trigger closes.
 - One tooltip at most is open on the page. The next one after a close skips its delay for `skipDelay` milliseconds.

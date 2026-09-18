@@ -49,7 +49,7 @@
 		delay,
 		closeDelay,
 		disabled = false,
-		openOnLongPress = false,
+		openOnLongPress = true,
 		triggerRef = $bindable<HTMLElement | null>(null),
 		children,
 		context = $bindable()
@@ -269,9 +269,9 @@
 
 	// --- Long press ---------------------------------------------------------------------------
 
-	// A touch has no hover. Behind a prop, a long press opens the tooltip, and it stays open
-	// until a press somewhere else or Escape. The press itself closes nothing here: it is the
-	// start of the gesture.
+	// A touch has no hover. A long press opens the tooltip, and it stays open until a press
+	// somewhere else, a tap on the trigger, or Escape. The press itself closes nothing here: it
+	// is the start of the gesture.
 	function handleLongPress(_point: unknown, event: PointerEvent) {
 		if (disabled) return;
 		openedByTouch = true;
@@ -291,7 +291,14 @@
 	}
 
 	function handleTriggerPointerDown(event: PointerEvent) {
-		if (event.pointerType === 'touch' && openOnLongPress) return;
+		if (event.pointerType !== 'mouse' && openOnLongPress) {
+			// A finger that lands on the trigger starts a long press when the tooltip is closed,
+			// and closes an open one: the user is done with the description.
+			if (!isOpen) return;
+			openedByTouch = false;
+			closeTooltip('trigger-press', event);
+			return;
+		}
 		pressSuppressed = true;
 		closeTooltip('trigger-press', event);
 	}
