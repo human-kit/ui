@@ -2,6 +2,7 @@
 	import { tick, untrack, type Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
+	import { focusFellToBody } from '../../popover/root/focus-state';
 	import {
 		focusWithModality,
 		resolveCloseInteractionModality
@@ -95,8 +96,20 @@
 	 */
 	function restoreFocusTo(
 		target: HTMLElement,
-		modality: ReturnType<typeof resolveCloseInteractionModality>
+		modality: ReturnType<typeof resolveCloseInteractionModality>,
+		reason: string = 'imperative-action'
 	) {
+		// An outside press moves the focus after this runs: the browser sends it to the
+		// pressed element, and to the body when that element takes no focus — which is every
+		// element outside a modal, since the page is inert. A restore made now is undone a
+		// moment later, so it waits a frame and then fills the gap the press left.
+		if (reason === 'outside-press') {
+			requestAnimationFrame(() => {
+				if (!target.isConnected || !focusFellToBody()) return;
+				focusWithModality(target, modality);
+			});
+			return;
+		}
 		focusWithModality(target, modality);
 		if (document.activeElement === target) return;
 
@@ -113,7 +126,7 @@
 		// back down) — don't steal focus while the dialog is still open.
 		if (!wasOpen || isOpen) return;
 		if (triggerRef) {
-			restoreFocusTo(triggerRef, resolveCloseInteractionModality(reason, event));
+			restoreFocusTo(triggerRef, resolveCloseInteractionModality(reason, event), reason);
 		}
 	}
 

@@ -172,6 +172,29 @@ describe('Drawer', () => {
 				.toBe('Open Drawer');
 		});
 
+		it('returns the focus to the trigger after an outside press, so the keyboard can open it again', async () => {
+			const screen = render(DrawerTest);
+			const trigger = screen.getByRole('button', { name: 'Open Drawer' });
+			await trigger.click();
+			await expect.poll(panel).toBeTruthy();
+
+			// The overlay is inert, thus the test runner refuses to press it. The press is made by
+			// hand, with the focus move a real press makes afterwards: the page is inert behind
+			// a modal, so the press leaves the focus on the body, after the close handlers ran.
+			screen
+				.getByTestId('drawer-overlay')
+				.element()
+				.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+			(document.activeElement as HTMLElement | null)?.blur();
+
+			await expect.poll(panel).toBeNull();
+			await expect.poll(() => document.activeElement).toBe(trigger.element());
+			expect(trigger.element().getAttribute('data-focus-visible')).toBeNull();
+
+			await userEvent.keyboard(' ');
+			await expect.poll(panel).toBeTruthy();
+		});
+
 		it('marks the first frame so the enter transition has somewhere to start', async () => {
 			const screen = render(DrawerTest);
 
