@@ -1,0 +1,292 @@
+{
+	"component": "progress",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The progress bar. It makes a div with role=\"progressbar\", and it holds the numbers for the parts in it.",
+			"props": [
+				{
+					"name": "value",
+					"type": "number | null",
+					"required": true,
+					"default": null,
+					"description": "The progress of the task, between `min` and `max`. `null` makes the progress indeterminate:\nthe task runs, and its end is not known. A value out of the range is held at the near end."
+				},
+				{
+					"name": "min",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "The value at the start of the task."
+				},
+				{
+					"name": "max",
+					"type": "number",
+					"required": false,
+					"default": "100",
+					"description": "The value at the end of the task. The progress is complete when the value reaches it."
+				},
+				{
+					"name": "format",
+					"type": "Intl.NumberFormatOptions",
+					"required": false,
+					"default": null,
+					"description": "The format of the value as text. Without it, the text is the position in the range as a\npercentage. Give the options of `Intl.NumberFormat` to show the value itself, in a unit."
+				},
+				{
+					"name": "getValueText",
+					"type": "(formattedValue: string, value: number | null) => string",
+					"required": false,
+					"default": null,
+					"description": "Makes the text a screen reader gets for the value. It gets the formatted text and the value.\nWithout it, the screen reader gets the formatted text."
+				},
+				{
+					"name": "aria-valuetext",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The text a screen reader gets for the value. It wins over `getValueText`. It has no effect\nwhile the progress is indeterminate: without a number, a text for the number is nothing."
+				},
+				{
+					"name": "orientation",
+					"type": "ProgressOrientation",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "The direction of the bar. It sets `data-orientation` for your styles, and it tells the\nindicator which side to fill from."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The parts of the progress bar."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the root element. The component makes one when you give none."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The root element. Use `bind:element` to read it."
+				},
+				{
+					"name": "context",
+					"type": "ProgressContext",
+					"required": false,
+					"default": null,
+					"description": "The state of the progress. Use `bind:context` to read `percent`, `status` and\n`formattedValue` for a shape of your own, such as a ring."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-complete",
+					"description": "Present when the value has reached max."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the progress has no value."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation of the bar: `horizontal` or `vertical`."
+				},
+				{
+					"name": "data-progress-root",
+					"description": "Identifies the progress bar element."
+				},
+				{
+					"name": "data-progressing",
+					"description": "Present while the value is below max."
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"description": "The name of the task. It gives its id to the bar as `aria-labelledby`.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The name of the task."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the label element. The component makes one when you give none."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-complete",
+					"description": "Present when the value has reached max."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the progress has no value."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation of the bar: `horizontal` or `vertical`."
+				},
+				{
+					"name": "data-progress-label",
+					"description": "Identifies the label element."
+				},
+				{
+					"name": "data-progressing",
+					"description": "Present while the value is below max."
+				}
+			]
+		},
+		{
+			"name": "Track",
+			"description": "The full length of the task. It makes a div with position relative, thus the indicator takes its place in it.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The indicator."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-complete",
+					"description": "Present when the value has reached max."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the progress has no value."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation of the bar: `horizontal` or `vertical`."
+				},
+				{
+					"name": "data-progress-track",
+					"description": "Identifies the track element."
+				},
+				{
+					"name": "data-progressing",
+					"description": "Present while the value is below max."
+				}
+			]
+		},
+		{
+			"name": "Indicator",
+			"description": "The part of the track that the task has done. It sizes itself to the percentage, and it gets no size while the progress is indeterminate.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "Content inside the indicator, such as a stripe."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-complete",
+					"description": "Present when the value has reached max."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the progress has no value."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation of the bar: `horizontal` or `vertical`."
+				},
+				{
+					"name": "data-progress-indicator",
+					"description": "Identifies the indicator element."
+				},
+				{
+					"name": "data-progressing",
+					"description": "Present while the value is below max."
+				}
+			]
+		},
+		{
+			"name": "Value",
+			"description": "The value as text, for the user. It is hidden from the screen reader, which gets the value from the bar.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[ProgressValueState]>",
+					"required": false,
+					"default": null,
+					"description": "The content in place of the formatted text. It gets the text, the value and the status."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-complete",
+					"description": "Present when the value has reached max."
+				},
+				{
+					"name": "data-indeterminate",
+					"description": "Present while the progress has no value."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation of the bar: `horizontal` or `vertical`."
+				},
+				{
+					"name": "data-progress-value",
+					"description": "Identifies the value element."
+				},
+				{
+					"name": "data-progressing",
+					"description": "Present while the value is below max."
+				}
+			]
+		}
+	]
+}
