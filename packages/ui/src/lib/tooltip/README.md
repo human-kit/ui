@@ -37,15 +37,17 @@
   - `onOpenChange?: (open, details) => void`
   - `delay?: number` (600), `closeDelay?: number` (100)
   - `disabled?: boolean`
+  - `openOnLongPress?: boolean`
   - `triggerRef?: HTMLElement | null`
 - `Tooltip.Provider`
   - `delay?: number`, `closeDelay?: number`, `skipDelay?: number` (300)
 - `Tooltip.Content`
   - `placement?: ExtendedPlacement` (top), `offset?: number` (8), `shouldFlip?: boolean`, `boundaryElement?: Element | null`
+  - `followPointer?: 'x' | 'y' | 'both'`
 
 ## Accessibility
 
 - `Tooltip.Content` has `role="tooltip"`; the trigger gets `aria-describedby` while the content is in the DOM.
 - A keyboard focus opens at once. A focus that a script gives opens only with the keyboard modality. A touch does not open.
-- The pointer can rest on the content; `Escape` closes; a press on the trigger closes.
+- The pointer can cross the gap to the content in a straight line, and rest on the content. `Escape` closes, and a press on the trigger closes.
 - One tooltip at most is open on the page. The next one after a close skips its delay for `skipDelay` milliseconds.

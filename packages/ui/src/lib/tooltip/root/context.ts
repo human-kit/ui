@@ -36,6 +36,7 @@ export type TooltipContext = {
 	/** The reference to the arrow element, when a `Tooltip.Arrow` is in the DOM. */
 	arrowRef: HTMLElement | null;
 	setTriggerRef: (element: HTMLElement | null) => void;
+	setContentRef: (element: HTMLElement | null) => void;
 	setArrowRef: (element: HTMLElement | null) => void;
 	open: (reason?: TooltipOpenReason, event?: Event) => void;
 	close: (reason?: TooltipCloseReason, event?: Event) => void;

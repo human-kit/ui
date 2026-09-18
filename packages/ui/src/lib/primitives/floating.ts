@@ -50,6 +50,10 @@ export function createPointAnchor(
 	};
 }
 
+function isVirtualAnchor(anchor: FloatingAnchor): anchor is VirtualElement {
+	return anchor !== null && !(anchor instanceof Element);
+}
+
 /**
  * Placement options for floating elements.
  * Follows the specification with logical 'start'/'end' values.
@@ -332,9 +336,18 @@ export function floating(
 	return {
 		update(newOptions: { anchor: FloatingAnchor } & FloatingOptions) {
 			const anchorChanged = newOptions.anchor !== currentOptions.anchor;
+			// Two virtual anchors on the same context element are two points on one surface: a
+			// panel that follows the pointer makes one per move. The listeners of `autoUpdate`
+			// are on the context element, thus they stay, and only the position runs again.
+			const sameSurface =
+				anchorChanged &&
+				isVirtualAnchor(newOptions.anchor) &&
+				isVirtualAnchor(currentOptions.anchor) &&
+				newOptions.anchor.contextElement !== undefined &&
+				newOptions.anchor.contextElement === currentOptions.anchor.contextElement;
 			currentOptions = newOptions;
 
-			if (anchorChanged) {
+			if (anchorChanged && !(sameSurface && cleanup)) {
 				// Re-subscribe autoUpdate to the new anchor (or stop when it's gone).
 				start();
 			} else if (cleanup) {
