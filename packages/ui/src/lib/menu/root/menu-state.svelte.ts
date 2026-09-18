@@ -183,7 +183,11 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		anchorPoint = null;
 		const triggerRef = options.getTriggerRef();
 		if (!triggerRef) return;
-		if (!TRIGGER_REFOCUS_REASONS.includes(reason)) return;
+		// An outside press is handled by the root menu alone: the focus state decides whether
+		// the press left the focus on nothing, and a submenu trigger sits inside content that
+		// is already closing.
+		const outsidePressOnRoot = reason === 'outside-press' && options.parent === null;
+		if (!TRIGGER_REFOCUS_REASONS.includes(reason) && !outsidePressOnRoot) return;
 		// The INTERNAL reason drives the trigger focus visuals ('submenu-back' styles like an
 		// Escape); only the reason reported to consumers is canonicalized.
 		scheduleTriggerCloseFocus(triggerRef, reason, event);

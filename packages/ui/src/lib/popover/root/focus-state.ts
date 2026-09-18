@@ -23,21 +23,38 @@ export function shouldRefocusTriggerOnClose(reason: PopoverCloseReason): boolean
 	return TRIGGER_REFOCUS_CLOSE_REASONS.has(reason);
 }
 
+/**
+ * Whether the last interaction left the focus on nothing: the body, or no element at all.
+ *
+ * An outside press on a heading, on a paragraph or on the background moves the focus to the
+ * body, and a keyboard user then has nowhere to continue from — Space and Enter open nothing.
+ * Base UI and React Aria both return the focus to the trigger in that case, and only in that
+ * case: a press on a button or an input keeps the focus the user just gave it.
+ */
+export function focusFellToBody(): boolean {
+	const active = document.activeElement;
+	return !active || active === document.body || active === document.documentElement;
+}
+
 export function applyTriggerCloseFocusState(
 	trigger: HTMLElement,
 	reason: PopoverCloseReason,
 	event?: Event
 ) {
 	const closeModality = resolveCloseInteractionModality(reason, event);
-	if (shouldRefocusTriggerOnClose(reason)) {
+	if (shouldRefocusTriggerOnClose(reason) || (reason === 'outside-press' && focusFellToBody())) {
 		focusWithModality(trigger, closeModality);
 	}
-	if (reason === 'outside-press' || reason === 'escape-key') {
+	// The attributes say what is true, and nothing else: a trigger that does not hold the
+	// focus shows no focus state. Written by hand, they would only clear on a blur of the
+	// trigger, and a trigger that never took the focus never blurs.
+	const holdsFocus = document.activeElement === trigger;
+	if (holdsFocus) {
 		trigger.dataset.focused = 'true';
 	} else {
 		delete trigger.dataset.focused;
 	}
-	if (closeModality === 'keyboard') {
+	if (holdsFocus && closeModality === 'keyboard') {
 		trigger.dataset.focusVisible = 'true';
 	} else {
 		delete trigger.dataset.focusVisible;

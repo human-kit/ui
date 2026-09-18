@@ -102,7 +102,7 @@ Give the root a `name`. The root makes a native `<select>` that the form reads, 
 - `Select.List` has `role="listbox"` with the trigger as its name, and each option has `aria-selected`. The list gets the DOM focus when the popover opens, on the selected option.
 - `aria-required`, `aria-readonly` and `aria-invalid` are on the combobox, which supports all three.
 - The popover is not a dialog. It has `role="presentation"`, and the listbox is what assistive technology lands on.
-- The focus returns to the trigger after `Escape`, after a selection, and after a close by code. After an outside press, a scroll or a `Tab`, it stays where the user put it.
+- The focus returns to the trigger after `Escape`, after a selection, and after a close by code. After an outside press, a scroll or a `Tab`, it stays where the user put it. An outside press on nothing focusable is the exception: the focus goes back to the trigger, thus the keyboard can open the list again.
 
 ## API reference
 
