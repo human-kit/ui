@@ -31,7 +31,7 @@
 		delay,
 		closeDelay,
 		disabled = false,
-		openOnLongPress = false,
+		openOnLongPress,
 		followPointer,
 		wide = false,
 		withArrow = false,

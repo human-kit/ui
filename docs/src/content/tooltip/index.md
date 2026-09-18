@@ -48,7 +48,7 @@ The trigger must have a name of its own, in its text or in `aria-label`. The too
 
 ## Open and close
 
-The tooltip opens when the pointer rests on the trigger for `delay` milliseconds. A keyboard focus opens it at once. A focus that a script gives does not open it, and a touch does not open it: a finger lands and presses.
+The tooltip opens when the pointer rests on the trigger for `delay` milliseconds. A keyboard focus opens it at once. A focus that a script gives does not open it, and a tap does not open it: a finger lands and presses. A long press of a finger opens it.
 
 It closes when the pointer leaves the trigger and the content, when the focus leaves, on `Escape`, and on a press on the trigger. A press does something, and the tooltip gets out of the way.
 
@@ -56,7 +56,9 @@ The pointer can move from the trigger to the content. While it moves in a straig
 
 ## Touch
 
-A touch has no hover, thus a tooltip does not open on a touch. Set `openOnLongPress` on the root for a tooltip that opens on a long press of a finger or a pen. It then stays open until a press somewhere else, or `Escape`. Use it with care: a long press has a meaning of its own on many controls, for example a text selection.
+A touch has no hover, thus a tap does not open a tooltip: it presses the control. A long press of a finger or a pen opens it. The tooltip then stays open until a press somewhere else, a tap on the trigger, or `Escape`. The `click` and the `contextmenu` of that long press do not reach the control. A trigger that is not a button, with text in it, needs `user-select: none`: without it, the long press selects the text.
+
+Set `openOnLongPress={false}` on the root for a control where a long press has a meaning of its own, for example a text selection. That tooltip then does not open on a touch: give the control a visible name when a touch user needs it.
 
 ## A group of tooltips
 
@@ -93,7 +95,7 @@ For a trigger much wider than the tooltip, for example a progress bar, set `foll
 - The tooltip takes no focus, and a screen reader does not enter it. Put only text in it.
 - A keyboard focus opens it at once, without the delay of the pointer. A focus that a script gives, for example after a menu closes, opens it only when the user got there with the keyboard.
 - The content stays open while the pointer rests on it, and `Escape` closes it without a move of the pointer.
-- The tooltip does not open on a touch. Give the control a visible name when a touch user needs it.
+- A long press opens the tooltip on a touch, and a tap presses the control. A tooltip with `openOnLongPress={false}` does not open on a touch: give that control a visible name when a touch user needs it.
 
 ## API reference
 
