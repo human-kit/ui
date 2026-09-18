@@ -27,6 +27,7 @@ export const nav: NavGroup[] = [
 			{ slug: 'input', title: 'Input' },
 			{ slug: 'numberfield', title: 'NumberField' },
 			{ slug: 'radio-group', title: 'RadioGroup' },
+			{ slug: 'slider', title: 'Slider' },
 			{ slug: 'switch', title: 'Switch' },
 			{ slug: 'textarea', title: 'TextArea' },
 			{ slug: 'toggle', title: 'Toggle' },
