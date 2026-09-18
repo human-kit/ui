@@ -53,7 +53,8 @@ export const nav: NavGroup[] = [
 			{ slug: 'dialog', title: 'Dialog' },
 			{ slug: 'drawer', title: 'Drawer' },
 			{ slug: 'menu', title: 'Menu' },
-			{ slug: 'popover', title: 'Popover' }
+			{ slug: 'popover', title: 'Popover' },
+			{ slug: 'toast', title: 'Toast' }
 		]
 	},
 	{

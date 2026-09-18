@@ -63,7 +63,8 @@ function resolveInitialFocus(
 	return initialFocus;
 }
 
-function getFocusableElements(container: HTMLElement): HTMLElement[] {
+/** The elements in `container` that a `Tab` can reach, in DOM order. */
+export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
 		(element) =>
 			// getClientRects covers display:none and detached nodes while still
