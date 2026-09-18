@@ -11,6 +11,8 @@ description: A short message about an event, for a time, in a landmark the keybo
 	import promiseSource from './demos/promise.svelte?highlight';
 	import Action from './demos/action.svelte';
 	import actionSource from './demos/action.svelte?highlight';
+	import Anchored from './demos/anchored.svelte';
+	import anchoredSource from './demos/anchored.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -24,7 +26,7 @@ description: A short message about an event, for a time, in a landmark the keybo
 
 `Toast.Provider` holds the list of toasts and the timers. Put one around the app. `Toast.Viewport` is the region where the toasts land. Put one in the provider, and give it a snippet that renders a `Toast.Root` for each item.
 
-`Toast.Content` holds `Toast.Title` and `Toast.Description`. `Toast.Action` and `Toast.Close` are the buttons, outside the content.
+`Toast.Content` holds `Toast.Title` and `Toast.Description`. `Toast.Action` and `Toast.Close` are the buttons, outside the content. `Toast.Positioner` is optional: it puts a toast with an `anchor` against that element.
 
 ```svelte
 <script>
@@ -105,7 +107,15 @@ Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and th
 
 ## A swipe
 
-A swipe pushes the toast out through one of `swipeDirection`: `bottom` and `right` by default. The toast follows the finger with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`, and it comes back when the swipe is short. `data-swipe-dismissed` and `data-swipe-direction` are on the toast for the exit. A swipe never starts on `Toast.Close` or `Toast.Action`.
+A swipe pushes the toast out through one of `swipeDirection`: `bottom` and `right` by default. The toast follows the finger with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`, and it comes back when the swipe is short. `data-swipe-dismissed` and `data-swipe-direction` are on the toast for the exit.
+
+A swipe never starts on `Toast.Close` or `Toast.Action`. Put `data-hk-swipe-ignore` on other content of your own that must not start one, such as a slider in the toast.
+
+## Against an element
+
+Give `anchor` to `add`, with an optional `placement` and `offset`, for a toast that sits against an element in place of the corner. Put `Toast.Positioner` around `Toast.Root` in the viewport snippet. For a toast without an anchor, the positioner is out of the layout, thus one snippet serves both kinds. A toast with an anchor is out of the stack: `--toast-index` reads 0, and `data-anchored` is on the root.
+
+<Demo source={anchoredSource}><Anchored /></Demo>
 
 ## Usage guidelines
 

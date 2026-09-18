@@ -67,6 +67,17 @@ export type ToastRootProps = Omit<
 	element?: HTMLDivElement | null;
 };
 
+export type ToastPositionerProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
+	/** The item from `Toast.Viewport`. */
+	toast: ToastItem;
+	/** The `Toast.Root`. */
+	children?: Snippet;
+	/** The CSS class names of the element. */
+	class?: string;
+	/** The bindable positioner element. */
+	element?: HTMLDivElement | null;
+};
+
 export type ToastContentProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	/** The title and the description. */
 	children?: Snippet;

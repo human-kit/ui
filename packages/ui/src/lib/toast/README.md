@@ -8,6 +8,7 @@
 
 - `Toast.Provider`
 - `Toast.Viewport`
+- `Toast.Positioner`
 - `Toast.Root`
 - `Toast.Content`
 - `Toast.Title`
@@ -40,6 +41,7 @@
 - Keep the buttons out of `Toast.Content`, thus the announcement does not read them.
 - Use `priority: 'high'` only for a message that cannot wait. It interrupts the screen reader.
 - Keep the default `timeout` at 5 seconds or more. A user who reads slowly needs the time.
+- Give `anchor` to `add`, and put `Toast.Positioner` around the root, for a toast against an element.
 - Style the stack with `--toast-index`, `--toast-offset-y`, `--toast-height`, `--toast-frontmost-height`, `data-front` and `data-expanded`. Move the toast with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`.
 
 ## API reference
@@ -49,12 +51,14 @@
   - `manager?: ToastManager` (bindable)
 - `Toast.Viewport`
   - `children: Snippet<[ToastItem]>`, `portal?: boolean` (true)
+- `Toast.Positioner`
+  - `toast: ToastItem`
 - `Toast.Root`
   - `toast: ToastItem`, `swipeDirection?: SwipeSide[]` (`['bottom', 'right']`)
 - `Toast.Action`
   - `keepOpen?: boolean`
 - `ToastManager`
-  - `add(options) => id`, `update(id, options | (toast) => options)`, `close(id?)`, `promise(promise, { loading, success, error })`
+  - `add({ title, description, type, timeout, priority, data, anchor, placement, offset }) => id`, `update(id, options | (toast) => options)`, `close(id?)`, `promise(promise, { loading, success, error })`
   - `pauseTimers()`, `resumeTimers()`, `toasts`, `visibleToasts`
 
 ## Accessibility

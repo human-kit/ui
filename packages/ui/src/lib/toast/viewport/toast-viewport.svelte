@@ -255,7 +255,7 @@
 	});
 
 	const frontmostHeight = $derived.by(() => {
-		const front = manager.visibleToasts[0];
+		const front = manager.stackedToasts[0];
 		return front ? (ctx.heights.get(front.id) ?? null) : null;
 	});
 	const exemptAttribute = { [HIDE_OUTSIDE_EXEMPT_ATTRIBUTE]: '' };

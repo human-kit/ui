@@ -424,6 +424,39 @@ describe('Toast', () => {
 		});
 	});
 
+	describe('positioner', () => {
+		it('puts an anchored toast against its anchor, and keeps it out of the stack', async () => {
+			setup({ withPositioner: true });
+
+			await press('add');
+			await press('add-anchored');
+			await tick();
+
+			const anchored = toasts().find((toast) => toast.hasAttribute('data-anchored'));
+			const stacked = toasts().find((toast) => !toast.hasAttribute('data-anchored'));
+			expect(anchored).toBeDefined();
+			expect(stacked?.getAttribute('data-front')).toBe('true');
+			expect(stacked?.style.getPropertyValue('--toast-index')).toBe('0');
+			expect(anchored?.style.getPropertyValue('--toast-index')).toBe('0');
+
+			const positioner = anchored?.parentElement as HTMLElement;
+			expect(positioner.getAttribute('data-toast-positioner')).toBe('true');
+			expect(positioner.getAttribute('data-anchored')).toBe('true');
+			expect(positioner.style.position).toBe('fixed');
+			await expect.poll(() => positioner.getAttribute('data-placement')).toBe('bottom');
+			const anchorRect = byTestId('add-anchored').getBoundingClientRect();
+			await expect
+				.poll(() => Math.round(positioner.getBoundingClientRect().top))
+				.toBe(Math.round(anchorRect.bottom + 4));
+
+			// The plain wrapper of a stacked toast stays out of the layout.
+			const plain = stacked?.parentElement as HTMLElement;
+			expect(plain.getAttribute('data-toast-positioner')).toBe('true');
+			expect(plain.hasAttribute('data-anchored')).toBe(false);
+			expect(plain.style.display).toBe('contents');
+		});
+	});
+
 	describe('swipe', () => {
 		it('follows the finger, and dismisses past the threshold', async () => {
 			setup({ swipeDirection: ['right'] });

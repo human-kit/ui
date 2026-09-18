@@ -1,4 +1,5 @@
 import { untrack } from 'svelte';
+import type { ExtendedPlacement } from '../../primitives/floating';
 
 export type ToastPriority = 'low' | 'high';
 export type ToastStatus = 'open' | 'ending';
@@ -29,6 +30,15 @@ export type ToastOptions<Data = unknown> = {
 	priority?: ToastPriority;
 	/** Data of your own, for the content you render. */
 	data?: Data;
+	/**
+	 * An element the toast sits against, in place of the viewport. `Toast.Positioner` puts the
+	 * toast there. The toast is out of the stack: it has no place in the corner to take.
+	 */
+	anchor?: HTMLElement | null;
+	/** The side of the anchor for the toast. `top` by default. */
+	placement?: ExtendedPlacement;
+	/** The gap between the anchor and the toast, in pixels. 8 by default. */
+	offset?: number;
 	/** Runs when the toast starts to close. */
 	onClose?: () => void;
 	/** Runs when the toast leaves the DOM, after its exit animation. */
@@ -43,6 +53,9 @@ export type ToastItem<Data = unknown> = {
 	readonly timeout: number;
 	readonly priority: ToastPriority;
 	readonly data: Data | undefined;
+	readonly anchor: HTMLElement | null | undefined;
+	readonly placement: ExtendedPlacement | undefined;
+	readonly offset: number | undefined;
 	/** `open` on the screen, `ending` through the exit animation. */
 	readonly status: ToastStatus;
 	/** The toast is past the limit of the viewport. It waits, hidden and inert. */
@@ -73,6 +86,8 @@ export type ToastManager<Data = unknown> = {
 	readonly toasts: readonly ToastItem<Data>[];
 	/** The toasts on the screen: the newest ones, up to the limit. */
 	readonly visibleToasts: readonly ToastItem<Data>[];
+	/** The toasts on the screen that stack in the viewport: the ones without an anchor. */
+	readonly stackedToasts: readonly ToastItem<Data>[];
 	/** Adds a toast, and answers its id. */
 	add: (options: ToastOptions<Data>) => string;
 	/** Updates a toast. The options replace the fields they name. */
@@ -139,6 +154,7 @@ export function createToastManager<Data = unknown>(
 	const getLimit = options.limit ?? (() => DEFAULT_TOAST_LIMIT);
 
 	const visibleToasts = $derived(toasts.filter((toast) => !toast.limited));
+	const stackedToasts = $derived(visibleToasts.filter((toast) => !toast.anchor));
 
 	function setToasts(next: ToastItem<Data>[]) {
 		toasts = applyLimit(next);
@@ -228,6 +244,9 @@ export function createToastManager<Data = unknown>(
 			timeout: options.timeout ?? untrack(getTimeout),
 			priority: options.priority ?? 'low',
 			data: options.data,
+			anchor: options.anchor,
+			placement: options.placement,
+			offset: options.offset,
 			status: 'open',
 			limited: false,
 			updateKey: 0,
@@ -320,6 +339,9 @@ export function createToastManager<Data = unknown>(
 		},
 		get visibleToasts() {
 			return visibleToasts;
+		},
+		get stackedToasts() {
+			return stackedToasts;
 		},
 		get paused() {
 			return paused;

@@ -42,13 +42,14 @@
 	let descriptionIds = $state<string[]>([]);
 
 	const isEnding = $derived(toast.status === 'ending');
-	const index = $derived(manager.visibleToasts.findIndex((candidate) => candidate.id === toast.id));
+	// A toast against an anchor is out of the stack: `index` is -1, and the vars read 0.
+	const index = $derived(manager.stackedToasts.findIndex((candidate) => candidate.id === toast.id));
 	const height = $derived(ctx.heights.get(toast.id) ?? null);
 	// The height of the toasts in front, for a stack that shifts the ones behind.
 	const offsetY = $derived.by(() => {
 		if (index <= 0) return 0;
 		let total = 0;
-		for (const candidate of manager.visibleToasts.slice(0, index)) {
+		for (const candidate of manager.stackedToasts.slice(0, index)) {
 			total += ctx.heights.get(candidate.id) ?? 0;
 		}
 		return total;
@@ -242,6 +243,7 @@ before it reaches the buttons in it. -->
 	data-type={toast.type}
 	data-priority={toast.priority}
 	data-front={index === 0 || undefined}
+	data-anchored={Boolean(toast.anchor) || undefined}
 	data-limited={toast.limited || undefined}
 	data-expanded={ctx.expanded || undefined}
 	data-ending={isEnding || undefined}
