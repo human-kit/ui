@@ -56,9 +56,19 @@
 	});
 
 	function close() {
-		ctx.focusAfterClose(toast.id);
 		manager.close(toast.id);
 	}
+
+	// A close from anywhere, also from the page through the manager, moves the focus on when it
+	// was in this toast. Otherwise the focus would fall to the body with the element.
+	$effect(() => {
+		if (!isEnding) return;
+		const node = rootRef;
+		const active = document.activeElement;
+		if (node && active instanceof Node && node.contains(active)) {
+			untrack(() => ctx.focusAfterClose(toast.id));
+		}
+	});
 
 	function register(list: 'title' | 'description', id: string) {
 		untrack(() => {
@@ -233,8 +243,8 @@ before it reaches the buttons in it. -->
 	{role}
 	aria-modal="false"
 	tabindex="0"
-	aria-labelledby={context.labelledBy}
-	aria-describedby={context.describedBy}
+	aria-labelledby={context.labelledBy ?? context.describedBy}
+	aria-describedby={context.labelledBy ? context.describedBy : undefined}
 	inert={toast.limited || undefined}
 	class={className}
 	style={inlineStyle}

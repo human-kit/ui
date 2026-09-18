@@ -21,12 +21,14 @@ function region(): HTMLElement | null {
 	return document.querySelector<HTMLElement>('[data-toast-viewport]');
 }
 
+/** The last message of the polite announcer. */
 function polite(): string {
-	return document.querySelector('[role="status"]')?.textContent?.trim() ?? '';
+	return document.querySelector('[role="status"] > div:last-child')?.textContent?.trim() ?? '';
 }
 
+/** The last message of the assertive announcer. */
 function assertive(): string {
-	return document.querySelector('[role="alert"]')?.textContent?.trim() ?? '';
+	return document.querySelector('[role="alert"] > div:last-child')?.textContent?.trim() ?? '';
 }
 
 async function press(id: string) {
@@ -68,11 +70,15 @@ function getManager(): ToastManager {
 describe('Toast', () => {
 	beforeEach(() => {
 		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
+		// The full run puts each file in a frame the browser can report as hidden, and a hidden
+		// page stops the timers. These tests are about a page the user looks at.
+		Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
 	});
 
 	afterEach(() => {
 		vi.useRealTimers();
 		manager = undefined;
+		Reflect.deleteProperty(document, 'visibilityState');
 	});
 
 	describe('region and announcement', () => {
@@ -298,6 +304,22 @@ describe('Toast', () => {
 			await expect.poll(() => toasts().length).toBe(0);
 		});
 
+		it('stops the timers while the tab is hidden', async () => {
+			setup({ timeout: 1000 });
+			await press('add');
+			await advance(500);
+
+			Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+			document.dispatchEvent(new Event('visibilitychange'));
+			await advance(3000);
+			expect(toasts()).toHaveLength(1);
+
+			Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+			document.dispatchEvent(new Event('visibilitychange'));
+			await advance(500);
+			await expect.poll(() => toasts().length).toBe(0);
+		});
+
 		it('does not stop the timers for a touch on the region', async () => {
 			setup({ timeout: 1000 });
 			await press('add');
@@ -324,6 +346,97 @@ describe('Toast', () => {
 			expect(viewport?.closest('[aria-hidden="true"]')).toBeNull();
 			expect(viewport?.closest('[inert]')).toBeNull();
 			expect(byTestId('add').closest('[aria-hidden="true"]')).not.toBeNull();
+		});
+
+		it('F6 reaches the toast from the modal, and F6 goes back to it', async () => {
+			render(ToastModalTest);
+			await tick();
+			await expect.poll(() => byTestId('dialog').getAttribute('aria-modal')).toBe('true');
+			await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+			byTestId('add').click();
+			await tick();
+			const dismiss = byTestId('dialog').querySelector<HTMLButtonElement>('[data-dialog-close]');
+			dismiss?.focus();
+			expect(document.activeElement).toBe(dismiss);
+
+			await userEvent.keyboard('{F6}');
+			await tick();
+			await new Promise((done) => requestAnimationFrame(done));
+			expect(document.activeElement?.hasAttribute('data-toast-root')).toBe(true);
+
+			await userEvent.keyboard('{Tab}');
+			await tick();
+			expect(document.activeElement).toBe(byTestId('close'));
+
+			await userEvent.keyboard('{F6}');
+			await tick();
+			expect(document.activeElement).toBe(dismiss);
+		});
+	});
+
+	describe('announcements', () => {
+		it('reads two toasts of the same tick, and the same text twice', async () => {
+			setup();
+			await tick();
+
+			getManager().add({ title: 'Same' });
+			getManager().add({ title: 'Same' });
+			await tick();
+
+			const nodes = document.querySelectorAll('[role="status"] > div');
+			expect(Array.from(nodes).map((node) => node.textContent)).toEqual(['Same', 'Same']);
+
+			await advance(2100);
+			expect(document.querySelectorAll('[role="status"] > div')).toHaveLength(0);
+		});
+
+		it('names a toast without a title by its description', async () => {
+			setup();
+			await tick();
+
+			getManager().add({ description: 'Only a message' });
+			await tick();
+			const toast = toasts()[0];
+
+			await expect
+				.poll(() => toast.getAttribute('aria-labelledby'))
+				.toBe(byTestId('description').id);
+			expect(toast.hasAttribute('aria-describedby')).toBe(false);
+		});
+
+		it('does not count a toast on its way out in the name of the region', async () => {
+			setup({ timeout: 0 });
+			await tick();
+
+			const id = getManager().add({ title: 'A' });
+			getManager().add({ title: 'B' });
+			await tick();
+			expect(region()?.getAttribute('aria-label')).toBe('2 notifications');
+
+			getManager().close(id);
+			await tick();
+			expect(region()?.getAttribute('aria-label')).toBe('1 notification');
+		});
+
+		it('moves the focus on when the page closes the focused toast', async () => {
+			setup();
+			await tick();
+
+			const first = getManager().add({ title: 'A' });
+			getManager().add({ title: 'B' });
+			await tick();
+			byTestId('before').focus();
+			await userEvent.keyboard('{F6}');
+			await tick();
+			// The newest is first: F6 lands on B. Focus A, then close it from the page.
+			const a = byTestId(`toast-${first}`);
+			a.focus();
+			expect(document.activeElement).toBe(a);
+
+			getManager().close(first);
+			await tick();
+			expect(document.activeElement?.getAttribute('data-toast-id')).not.toBe(first);
+			expect(document.activeElement?.hasAttribute('data-toast-root')).toBe(true);
 		});
 	});
 
