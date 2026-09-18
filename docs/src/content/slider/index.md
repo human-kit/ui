@@ -47,11 +47,13 @@ Use `bind:value` to give the root your state. Use `value` with `onChange` and `c
 
 Use `defaultValue` when the root holds its own state. The default is `min`.
 
-`onChange` runs on each change, also on each move of a drag. `onChangeEnd` runs when a sequence of changes ends: after a key press, and after a drag. Use it for work that must not run on each move, for example a request.
+`onChange` runs on each change, also on each move of a drag. `onChangeEnd` runs when a sequence of changes ends: at the release of a key, and at the end of a drag. A held key reports one end, at its release. Use it for work that must not run on each move, for example a request.
 
 ## Range
 
 Give an array as the value, in ascending order, and put one `Slider.Thumb` in the track for each number. A thumb cannot pass its neighbors. `minStepsBetweenThumbs` keeps a distance between them.
+
+Two thumbs can meet on one value. A press on the track to one side of them takes the thumb that can move to that side. A press on the thumbs waits for the first move: a move up takes the upper thumb, and a move down takes the lower one.
 
 The thumbs take their indexes in order. Give `index` to a thumb when you render the thumbs in a different order.
 
@@ -75,7 +77,7 @@ Set `orientation="vertical"` for a vertical track. The bottom edge is `min`. `Ar
 
 The parts have no styles. Each part shows its state in `data-*` attributes: `data-orientation`, `data-disabled`, `data-readonly`, `data-invalid` and `data-dragging`. The thumb has `data-index`, `data-focused` and `data-focus-visible`.
 
-`Slider.Track` is `position: relative`, and `Slider.Thumb` and `Slider.Fill` are `position: absolute`, at a position in percent of the value. Give the track a size, and give the thumb a size. The thumb is centered on its position.
+`Slider.Track` is `position: relative`, and `Slider.Thumb` and `Slider.Fill` are `position: absolute`, at a position in percent of the value. Give the track a size, and give the thumb a size. The thumb is centered on its position. The thumb the user touched last gets `z-index: 1`, thus it draws above a thumb on the same value.
 
 ## Forms
 

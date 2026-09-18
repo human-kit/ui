@@ -45,7 +45,7 @@
 					"type": "(value: SliderValue, details: SliderChangeDetails) => void",
 					"required": false,
 					"default": null,
-					"description": "The component calls it when a sequence of changes ends: after a key press, after a drag, and\nafter a change from assistive technology. Use it for work that must not run on each move."
+					"description": "The component calls it when a sequence of changes ends: at the release of a key, and at the\nend of a drag. A change from assistive technology ends at once. Use it for work that must\nnot run on each move."
 				},
 				{
 					"name": "min",

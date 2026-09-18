@@ -141,6 +141,55 @@ describe('Slider', () => {
 			await expect.poll(() => boundValue()).toBe(100);
 		});
 
+		it('reports one end for a held key', async () => {
+			const changes: SliderValue[] = [];
+			const ends: Array<[SliderValue, SliderChangeDetails['reason']]> = [];
+			render(SliderTest, {
+				defaultValue: 50,
+				onChange: (value) => changes.push(value),
+				onChangeEnd: (value, details) => ends.push([value, details.reason])
+			});
+
+			input().focus();
+			for (let i = 0; i < 3; i += 1) {
+				input().dispatchEvent(
+					new KeyboardEvent('keydown', {
+						key: 'ArrowRight',
+						repeat: i > 0,
+						bubbles: true,
+						cancelable: true
+					})
+				);
+			}
+			expect(changes).toEqual([51, 52, 53]);
+			expect(ends).toEqual([]);
+
+			input().dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight', bubbles: true }));
+			expect(ends).toEqual([[53, 'keyboard']]);
+
+			// A release without a change reports no end.
+			await userEvent.keyboard('{ArrowRight}');
+			input().dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight', bubbles: true }));
+			expect(ends).toEqual([
+				[53, 'keyboard'],
+				[54, 'keyboard']
+			]);
+		});
+
+		it('reports the end when the focus leaves with a key still held', async () => {
+			const ends: SliderValue[] = [];
+			render(SliderTest, { defaultValue: 50, onChangeEnd: (value) => ends.push(value) });
+
+			input().focus();
+			input().dispatchEvent(
+				new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })
+			);
+			expect(ends).toEqual([]);
+			byTestId('after').focus();
+
+			expect(ends).toEqual([51]);
+		});
+
 		it('stops at the ends, and reports nothing there', async () => {
 			const changes: SliderValue[] = [];
 			render(SliderTest, { defaultValue: 100, onChange: (value) => changes.push(value) });
@@ -249,6 +298,26 @@ describe('Slider', () => {
 			]);
 			expect(ends).toEqual([50]);
 			expectNoFalseFocusAttributes();
+		});
+
+		it('takes a real click on the track', async () => {
+			const ends: SliderValue[] = [];
+			const screen = render(SliderTest, {
+				defaultValue: 25,
+				onChangeEnd: (value) => ends.push(value)
+			});
+			const track = byTestId('track');
+
+			await userEvent.click(screen.getByTestId('track'), {
+				position: { x: track.clientWidth * 0.75, y: track.clientHeight / 2 }
+			});
+
+			expect(input().value).toBe('75');
+			expect(document.activeElement).toBe(input());
+			expect(byTestId('thumb-0').getAttribute('data-focused')).toBe('true');
+			expect(byTestId('thumb-0').hasAttribute('data-focus-visible')).toBe(false);
+			expect(byTestId('root').hasAttribute('data-dragging')).toBe(false);
+			expect(ends).toEqual([75]);
 		});
 
 		it('keeps the value on a press on the thumb, and moves it with the drag', async () => {
@@ -421,6 +490,58 @@ describe('Slider', () => {
 			await pointer(track, 'pointerup', at(track, 0.3));
 
 			expect([input(0).value, input(1).value]).toEqual(['30', '50']);
+		});
+
+		it('takes the thumb that can move from a press on two stacked thumbs', async () => {
+			render(SliderTest, { defaultValue: [100, 100] });
+			const track = byTestId('track');
+			const top = byTestId('thumb-1');
+			const topRect = top.getBoundingClientRect();
+			const center = {
+				clientX: topRect.left + topRect.width / 2,
+				clientY: topRect.top + topRect.height / 2
+			};
+
+			// The press lands on the thumb above, and the drag down can only mean the one below.
+			await pointer(top, 'pointerdown', center);
+			await pointer(top, 'pointermove', at(track, 0.6));
+			expect([input(0).value, input(1).value]).toEqual(['60', '100']);
+			expect(byTestId('thumb-0').getAttribute('data-dragging')).toBe('true');
+			expect(document.activeElement).toBe(input(0));
+			await pointer(top, 'pointerup', at(track, 0.6));
+
+			// And the other way around at min.
+			input(0).focus();
+			await userEvent.keyboard('{Home}');
+			input(1).focus();
+			await userEvent.keyboard('{Home}');
+			const bottom = byTestId('thumb-0');
+			const bottomRect = bottom.getBoundingClientRect();
+			await pointer(bottom, 'pointerdown', {
+				clientX: bottomRect.left + bottomRect.width / 2,
+				clientY: bottomRect.top + bottomRect.height / 2
+			});
+			await pointer(bottom, 'pointermove', at(track, 0.4));
+			await pointer(bottom, 'pointerup', at(track, 0.4));
+			expect([input(0).value, input(1).value]).toEqual(['0', '40']);
+		});
+
+		it('draws the thumb the user touched last above the others', async () => {
+			render(SliderTest, { defaultValue: [25, 45] });
+
+			expect(byTestId('thumb-0').style.zIndex).toBe('');
+			expect(byTestId('thumb-1').style.zIndex).toBe('');
+
+			input(0).focus();
+			await tick();
+			expect(byTestId('thumb-0').style.zIndex).toBe('1');
+			expect(byTestId('thumb-1').style.zIndex).toBe('');
+
+			const track = byTestId('track');
+			await pointer(track, 'pointerdown', at(track, 0.6));
+			await pointer(track, 'pointerup', at(track, 0.6));
+			expect(byTestId('thumb-0').style.zIndex).toBe('');
+			expect(byTestId('thumb-1').style.zIndex).toBe('1');
 		});
 
 		it('reports an array with one element for a range of one', async () => {
