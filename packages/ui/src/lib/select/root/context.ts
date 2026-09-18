@@ -1,17 +1,15 @@
 import { setContext, getContext } from 'svelte';
 import type { ListBoxContext } from '../../listbox/root/context';
+import type { PopoverCloseReason } from '../../popover/root/context';
 
 export type SelectKey = string | number;
 
+/**
+ * The reasons of Popover, less its close button, plus the two of a select: a press on the open
+ * trigger, and a selection.
+ */
 export type SelectCloseReason =
-	| 'trigger-press'
-	| 'escape-key'
-	| 'outside-press'
-	| 'focus-out'
-	| 'scroll'
-	| 'item-select'
-	| 'imperative-action'
-	| 'none';
+	Exclude<PopoverCloseReason, 'close-press'> | 'trigger-press' | 'item-select';
 
 export type SelectOpenReason = 'trigger-press' | 'imperative-action' | 'none';
 
@@ -91,7 +89,8 @@ export type SelectContext = {
 	registerItemLabel: (key: SelectKey, label: string) => void;
 
 	open: (reason?: SelectOpenReason, event?: Event, focus?: SelectOpenFocusIntent) => void;
-	close: (reason?: SelectCloseReason, event?: Event) => void;
+	/** Closes the popover. Returns false when it was closed already, or when the consumer refused. */
+	close: (reason?: SelectCloseReason, event?: Event) => boolean;
 	toggle: (reason?: SelectOpenReason, event?: Event) => void;
 	/** Opens the popover with a character for the list to search with. */
 	openWithTypeahead: (char: string, event?: Event) => void;

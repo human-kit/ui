@@ -47,7 +47,7 @@ On overlay/popover close, the trigger shows only the focus it holds:
   Inside a modal popover every outside press is of this kind, because the page is inert.
 - `focus-out`, `scroll` => the focus stays where the user put it.
 
-`focusFellToBody()` in `popover/root/focus-state.ts` is the shared check.
+`focusFellToBody()` and `applyTriggerCloseFocusState()` in `primitives/trigger-focus-state.ts` are the shared implementation; Popover and Menu only decide which reasons return the focus.
 
 ## Recommended Implementation
 

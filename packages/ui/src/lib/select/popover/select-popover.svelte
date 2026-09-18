@@ -41,23 +41,19 @@
 		none: 'none'
 	};
 
+	// The root holds the open state. A close that `Popover.Content` asks for (Escape, an
+	// outside press, a Tab out, a scroll) goes to the root, and a refusal of the consumer goes
+	// back to `Popover.Root` through the same details, so both agree. `Popover.Root` then
+	// applies the focus state of the trigger, as it does for every popover.
 	function handleOpenChange(open: boolean, details: PopoverOpenChangeDetails) {
 		if (open) {
 			ctx.open('trigger-press', details.event);
 			return;
 		}
-		// The root closes, and it puts the focus back on the trigger. `Popover.Root` would do
-		// that itself, but with `data-*` written on the trigger by hand, and only a blur of the
-		// trigger removes them: after an outside press the trigger never had the focus, and the
-		// attributes would stay for good. So its close is refused, and the state change waits a
-		// microtask: `Popover.Root` re-reads the open state right after this callback, and a
-		// synchronous change would get past its refusal.
-		details.cancel();
 		const reason = POPOVER_TO_SELECT_REASON[details.reason] ?? 'imperative-action';
-		const event = details.event;
-		queueMicrotask(() => {
-			ctx.close(reason, event);
-		});
+		if (!ctx.close(reason, details.event)) {
+			details.cancel();
+		}
 	}
 
 	function handleWheel(event: WheelEvent & { currentTarget: EventTarget & HTMLDivElement }) {

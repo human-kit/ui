@@ -57,7 +57,7 @@ The options are not in the DOM while the popover is closed. Give the same array 
 
 ## More than one value
 
-Set `selectionMode="multiple"`. The popover then stays open after a selection, and `value` is an array. `Select.Value` shows the texts with a comma between them, and its snippet receives the array when you want a different text.
+Set `selectionMode="multiple"`. The popover then stays open after a selection, and `value` is an array. `Select.Value` shows the texts as a list in the language of the locale, and its snippet receives the array when you want a different text.
 
 <Demo source={multipleSource}><Multiple /></Demo>
 

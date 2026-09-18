@@ -2,7 +2,7 @@
 	import { tick, untrack, type Snippet } from 'svelte';
 	import { setDialogContext, type DialogContext } from './context';
 	import type { DialogStateHelpers } from './types';
-	import { focusFellToBody } from '../../popover/root/focus-state';
+	import { focusFellToBody } from '../../primitives/trigger-focus-state';
 	import {
 		focusWithModality,
 		resolveCloseInteractionModality
