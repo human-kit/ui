@@ -3,6 +3,7 @@
 	import { useComboBoxContext } from '../root/context';
 	import { Popover } from '../../popover';
 	import { focusWithModality, type InputModality } from '../../primitives/input-modality';
+	import { containWheel } from '../../primitives/contain-wheel';
 	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
 
 	/**
@@ -98,65 +99,12 @@
 		};
 	}
 
-	function canElementScrollInDirection(element: HTMLElement, deltaY: number) {
-		const isScrollingDown = deltaY > 0;
-		const isScrollingUp = deltaY < 0;
-		const canScrollDown = element.scrollTop < element.scrollHeight - element.clientHeight;
-		const canScrollUp = element.scrollTop > 0;
-
-		return (isScrollingDown && canScrollDown) || (isScrollingUp && canScrollUp);
-	}
-
-	function isScrollableElement(element: HTMLElement) {
-		const { overflowY } = getComputedStyle(element);
-		return (
-			['auto', 'scroll', 'overlay'].includes(overflowY) &&
-			element.scrollHeight > element.clientHeight
-		);
-	}
-
-	function hasScrollableDescendantForWheel(
-		boundary: HTMLElement,
-		target: EventTarget | null,
-		deltaY: number
-	) {
-		let current =
-			target instanceof HTMLElement ? target : target instanceof Node ? target.parentElement : null;
-
-		while (current) {
-			if (isScrollableElement(current) && canElementScrollInDirection(current, deltaY)) {
-				return true;
-			}
-
-			if (current === boundary) {
-				break;
-			}
-
-			current = current.parentElement;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Prevent wheel/scroll events from propagating to the page
-	 * This keeps the page from scrolling when scrolling over the popover
-	 * But allows internal scrolling when either the popover or a descendant owns overflow
-	 */
+	// The page must not scroll under the popover, and a scroll of the page closes it. The
+	// wheel scrolls the panel, or a scrollable element inside it, while one of them can move.
 	function handleWheel(event: WheelEvent) {
 		const element = event.currentTarget as HTMLElement;
 		if (!element) return;
-
-		if (
-			hasScrollableDescendantForWheel(element, event.target, event.deltaY) ||
-			(isScrollableElement(element) && canElementScrollInDirection(element, event.deltaY))
-		) {
-			event.stopPropagation();
-			return;
-		}
-
-		event.preventDefault();
-		event.stopPropagation();
+		containWheel(event, element);
 	}
 
 	$effect(() => {

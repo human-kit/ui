@@ -14,7 +14,7 @@
 		DrawerStateHelpers
 	} from './types';
 	import type { DrawerHandle } from './handle.svelte';
-	import { focusFellToBody } from '../../popover/root/focus-state';
+	import { focusFellToBody } from '../../primitives/trigger-focus-state';
 	import {
 		focusWithModality,
 		resolveCloseInteractionModality
