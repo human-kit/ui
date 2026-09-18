@@ -134,28 +134,27 @@ describe('DatePicker.Root', () => {
 		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBe('true');
 	});
 
-	it('marks trigger focused without stealing focus back on outside pointer press', async () => {
+	it('returns the focus to the trigger after an outside press on nothing focusable', async () => {
 		const screen = render(DatePickerTest);
 		const trigger = screen.getByRole('button', { name: 'Open calendar' });
-		const outside = screen.getByTestId('outside-button');
+		const outside = screen.getByTestId('date-picker-value');
 
 		await trigger.click();
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
-		outside.element()?.dispatchEvent(
-			new MouseEvent('mousedown', {
-				bubbles: true,
-				cancelable: true
-			})
-		);
+		// Dispatched by hand: the calendar is modal, thus the page is inert to the pointer of the
+		// test runner. Nothing outside a modal popover can take the focus, so every outside
+		// press is a press on nothing focusable.
+		outside
+			.element()
+			?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
 
 		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-		await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
-		await expect.poll(() => trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
-		// INVERTED (previously asserted focus returned to the trigger): an
-		// outside press must not steal focus back — the pressed element keeps
-		// its native focus/caret behavior (APG/React Aria/Radix).
-		expect(document.activeElement).not.toBe(trigger.element());
+		// A press on the background leaves the focus on the body, and a keyboard user would
+		// have nowhere to continue from.
+		await expect.poll(() => document.activeElement).toBe(trigger.element());
+		expect(trigger.element()?.getAttribute('data-focused')).toBe('true');
+		expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
 	});
 
 	it('clears active segment focused state when focus moves outside date picker', async () => {

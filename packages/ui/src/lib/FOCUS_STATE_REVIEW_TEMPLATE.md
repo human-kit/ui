@@ -20,14 +20,14 @@ Fill this out for PRs that modify interaction, keyboard navigation, overlays, or
 
 > Mark **OK/NA/FAIL** and add a short note when failing.
 
-| Scenario                           | What to validate                                                            | Status | Note |
-| ---------------------------------- | --------------------------------------------------------------------------- | ------ | ---- |
-| Keyboard (Tab/Arrow/Home/End/Page) | `data-*` and ARIA stay in sync with logical focus                           |        |      |
-| Pointer (click/mousedown)          | do not elevate `data-focus-visible` by default                              |        |      |
-| External blur                      | transient state cleanup (`data-focus-within`, `data-focus-visible`)         |        |      |
-| Close restore (`escape-key`)       | trigger: `data-focused=true`, `data-focus-visible=true` (when applicable)   |        |      |
-| Close restore (`outside-press`)    | trigger: `data-focused=true`, `data-focus-visible` absent (when applicable) |        |      |
-| Programmatic focus                 | does not break invariants or leave stale state                              |        |      |
+| Scenario                           | What to validate                                                                                                                                                    | Status | Note |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---- |
+| Keyboard (Tab/Arrow/Home/End/Page) | `data-*` and ARIA stay in sync with logical focus                                                                                                                   |        |      |
+| Pointer (click/mousedown)          | do not elevate `data-focus-visible` by default                                                                                                                      |        |      |
+| External blur                      | transient state cleanup (`data-focus-within`, `data-focus-visible`)                                                                                                 |        |      |
+| Close restore (`escape-key`)       | trigger: `data-focused=true`, `data-focus-visible=true` (when applicable)                                                                                           |        |      |
+| Close restore (`outside-press`)    | focusable target: focus stays there, trigger without focus attrs; nothing focusable: focus returns to the trigger, `data-focused=true`, `data-focus-visible` absent |        |      |
+| Programmatic focus                 | does not break invariants or leave stale state                                                                                                                      |        |      |
 
 ## 3) Required Invariants
 

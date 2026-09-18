@@ -14,6 +14,7 @@
 		DrawerStateHelpers
 	} from './types';
 	import type { DrawerHandle } from './handle.svelte';
+	import { focusFellToBody } from '../../primitives/trigger-focus-state';
 	import {
 		focusWithModality,
 		resolveCloseInteractionModality
@@ -184,8 +185,20 @@
 	 */
 	function restoreFocusTo(
 		target: HTMLElement,
-		modality: ReturnType<typeof resolveCloseInteractionModality>
+		modality: ReturnType<typeof resolveCloseInteractionModality>,
+		reason: string = 'imperative-action'
 	) {
+		// An outside press moves the focus after this runs: the browser sends it to the
+		// pressed element, and to the body when that element takes no focus — which is every
+		// element outside a modal, since the page is inert. A restore made now is undone a
+		// moment later, so it waits a frame and then fills the gap the press left.
+		if (reason === 'outside-press') {
+			requestAnimationFrame(() => {
+				if (!target.isConnected || !focusFellToBody()) return;
+				focusWithModality(target, modality);
+			});
+			return;
+		}
 		focusWithModality(target, modality);
 		if (document.activeElement === target) return;
 
@@ -205,7 +218,7 @@
 		// whichever one happened to register itself last.
 		const restoreTarget = handle?.trigger ?? triggerRef;
 		if (restoreTarget) {
-			restoreFocusTo(restoreTarget, resolveCloseInteractionModality(reason, event));
+			restoreFocusTo(restoreTarget, resolveCloseInteractionModality(reason, event), reason);
 		}
 	}
 

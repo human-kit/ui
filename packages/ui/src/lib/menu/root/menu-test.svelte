@@ -57,3 +57,4 @@
 
 <!-- The trigger's natural Tab successor; lets tests assert where focus lands after Tab. -->
 <button type="button">After</button>
+<p data-testid="outside-text">Outside text</p>

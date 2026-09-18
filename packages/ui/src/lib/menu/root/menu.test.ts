@@ -177,6 +177,38 @@ describe('Menu', () => {
 			expectNoFalseFocusAttributes();
 		});
 
+		it('leaves the focus on a focusable element pressed outside, and the trigger shows no focus', async () => {
+			const screen = render(MenuTest);
+			const trigger = screen.getByRole('button', { name: 'Open Menu' });
+			const after = screen.getByRole('button', { name: 'After' });
+			await trigger.click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			await after.click();
+
+			await expect.poll(() => openMenuCount()).toBe(0);
+			await expect.poll(() => document.activeElement).toBe(after.element());
+			expect(trigger.element().getAttribute('data-focused')).toBeNull();
+			expect(trigger.element().getAttribute('data-focus-visible')).toBeNull();
+		});
+
+		it('returns the focus to the trigger after an outside press on nothing focusable', async () => {
+			const screen = render(MenuTest);
+			const trigger = screen.getByRole('button', { name: 'Open Menu' });
+			await trigger.click();
+			await expect.poll(() => queryMenu()).toBeTruthy();
+
+			// A press on the background leaves the focus on the body, and a keyboard user would
+			// have nowhere to continue from.
+			await screen.getByTestId('outside-text').click();
+
+			await expect.poll(() => openMenuCount()).toBe(0);
+			await expect.poll(() => document.activeElement).toBe(trigger.element());
+			expect(trigger.element().getAttribute('data-focused')).toBe('true');
+			expect(trigger.element().getAttribute('data-focus-visible')).toBeNull();
+			expectNoFalseFocusAttributes();
+		});
+
 		it('moves focus past the trigger and closes the chain on Tab', async () => {
 			const screen = render(MenuTest, { withSubmenu: true });
 			await openWithSubmenu(screen);
