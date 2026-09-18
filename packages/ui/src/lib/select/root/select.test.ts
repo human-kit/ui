@@ -444,6 +444,30 @@ describe('Select', () => {
 			expectNoFalseFocusAttributes();
 		});
 
+		it('returns the focus to the trigger after an outside press on nothing focusable', async () => {
+			const onChange = vi.fn();
+			render(SelectTest, { onChange });
+			await userEvent.click(queryTrigger());
+			await expect.poll(() => queryOpenListbox()).toBeTruthy();
+
+			// A press on the background leaves the focus on the body, and a keyboard user would
+			// have nowhere to continue from. Base UI and React Aria return it to the trigger.
+			await userEvent.click(document.querySelector<HTMLElement>('[data-testid="value"]')!);
+
+			await expect.poll(() => queryOpenListbox()).toBeNull();
+			expect(onChange).not.toHaveBeenCalled();
+			const trigger = queryTrigger();
+			await expect.poll(() => document.activeElement).toBe(trigger);
+			expect(trigger.getAttribute('data-focused')).toBe('true');
+			expect(trigger.hasAttribute('data-focus-visible')).toBe(false);
+			expect(queryRoot().getAttribute('data-focus-within')).toBe('true');
+
+			// And the keyboard opens it again from there.
+			await userEvent.keyboard(' ');
+			await expect.poll(() => queryOpenListbox()).toBeTruthy();
+			expectNoFalseFocusAttributes();
+		});
+
 		it('focuses the trigger from its label', async () => {
 			render(SelectTest);
 			const label = document.querySelector<HTMLLabelElement>('[data-select-label]')!;

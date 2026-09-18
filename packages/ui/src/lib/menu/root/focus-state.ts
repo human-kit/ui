@@ -3,6 +3,7 @@ import {
 	focusWithModality,
 	resolveCloseInteractionModality
 } from '../../primitives/input-modality';
+import { focusFellToBody } from '../../popover/root/focus-state';
 
 export function clearTriggerFocusState(trigger: HTMLElement) {
 	delete trigger.dataset.focused;
@@ -15,14 +16,21 @@ export function applyTriggerCloseFocusState(
 	event?: Event
 ) {
 	const closeModality = resolveCloseInteractionModality(reason, event);
-	focusWithModality(trigger, closeModality);
-	// 'submenu-back' (ArrowLeft) styles the submenu trigger exactly like an Escape.
-	if (reason === 'outside-press' || reason === 'escape-key' || reason === 'submenu-back') {
+	// An outside press on nothing focusable leaves the focus on the body, and a keyboard user
+	// has nowhere to continue from. The focus goes back to the trigger then, as in Base UI and
+	// React Aria; a press on a focusable element keeps the focus the user gave it.
+	if (reason !== 'outside-press' || focusFellToBody()) {
+		focusWithModality(trigger, closeModality);
+	}
+	// The attributes say what is true: a trigger that does not hold the focus shows no focus
+	// state. 'submenu-back' (ArrowLeft) styles the submenu trigger exactly like an Escape.
+	const holdsFocus = document.activeElement === trigger;
+	if (holdsFocus) {
 		trigger.dataset.focused = 'true';
 	} else {
 		delete trigger.dataset.focused;
 	}
-	if (closeModality === 'keyboard') {
+	if (holdsFocus && closeModality === 'keyboard') {
 		trigger.dataset.focusVisible = 'true';
 	} else {
 		delete trigger.dataset.focusVisible;

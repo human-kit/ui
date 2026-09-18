@@ -104,7 +104,9 @@ receives `{ value, label, placeholder }`.
   option and close the list. `Escape` closes it without a change. `Tab` closes it and moves the
   focus past the trigger.
 - The focus returns to the trigger after `Escape`, after a selection, and after a close by code.
-  After an outside press, a scroll or a `Tab`, it stays where the user put it.
+  After an outside press, a scroll or a `Tab`, it stays where the user put it. An outside press
+  on nothing focusable is the exception: the focus goes back to the trigger, thus the keyboard
+  can open the list again.
 - The native control is out of the tab order and hidden from assistive technology. A form that
   reports the validity of a `required` select focuses that control, and the root moves the focus
   to the trigger.

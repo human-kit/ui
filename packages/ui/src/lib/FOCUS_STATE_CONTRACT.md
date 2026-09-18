@@ -35,10 +35,19 @@ Canonical implementation lives in `primitives/input-modality.ts`:
 
 ## Restore focus
 
-On overlay/popover close, transient trigger state is allowed:
+On overlay/popover close, the trigger shows only the focus it holds:
 
-- `escape-key` => `data-focused=true` and `data-focus-visible=true`.
-- `outside-press` => `data-focused=true` and `data-focus-visible` absent.
+- `escape-key`, `close-press`, `imperative-action` => the focus returns to the trigger:
+  `data-focused=true`, and `data-focus-visible=true` when the close came from the keyboard.
+- `outside-press` on a focusable element => the focus stays there, and the trigger shows no
+  focus attributes.
+- `outside-press` on nothing focusable (the focus fell to the body) => the focus returns to
+  the trigger with the pointer modality: `data-focused=true` and `data-focus-visible` absent.
+  Base UI and React Aria do the same; without it a keyboard user has nowhere to continue from.
+  Inside a modal popover every outside press is of this kind, because the page is inert.
+- `focus-out`, `scroll` => the focus stays where the user put it.
+
+`focusFellToBody()` in `popover/root/focus-state.ts` is the shared check.
 
 ## Recommended Implementation
 

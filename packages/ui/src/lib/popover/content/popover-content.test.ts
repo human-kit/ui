@@ -63,24 +63,55 @@ describe('Popover.Content', () => {
 			await expect.poll(() => document.activeElement).toBe(trigger.element());
 		});
 
-		it('closes on outside click and marks trigger focused without focus-visible', async () => {
-			const screen = render(PopoverContentTest);
+		it('closes on an outside click of a focusable element and leaves the focus there', async () => {
+			const screen = render(PopoverContentTest, { nonModal: true });
 			const trigger = screen.getByRole('button', { name: 'Open Popover' });
 			const outside = document.createElement('button');
+			outside.textContent = 'Outside';
+			// Away from the popover, which floats under the trigger.
+			outside.style.cssText = 'position: fixed; right: 0; bottom: 0;';
 			document.body.appendChild(outside);
 
 			try {
 				await trigger.click();
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
 
+				// Non-modal: a modal popover makes the page inert, thus nothing outside it can take
+				// the focus, and every outside press is a press on nothing focusable.
+				await userEvent.click(outside);
+
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
+				// The pressed element keeps its native focus, and the trigger shows no focus
+				// state it does not have.
+				await expect.poll(() => document.activeElement).toBe(outside);
+				expect(trigger.element()?.getAttribute('data-focused')).toBeNull();
+				expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
+			} finally {
+				outside.remove();
+			}
+		});
+
+		it('returns the focus to the trigger after an outside press on nothing focusable', async () => {
+			const screen = render(PopoverContentTest);
+			const trigger = screen.getByRole('button', { name: 'Open Popover' });
+			const outside = document.createElement('p');
+			outside.textContent = 'Outside text';
+			document.body.appendChild(outside);
+
+			try {
+				await trigger.click();
+				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+
+				// Dispatched by hand: a modal popover is inert to the pointer of the test runner. A
+				// paragraph takes no focus, so nothing moves it here.
 				outside.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
 
 				await expect.poll(() => document.querySelector('[role="dialog"]')).toBeNull();
-				await expect.poll(() => trigger.element()?.getAttribute('data-focused')).toBe('true');
+				// A press on the background leaves the focus on the body, and a keyboard user
+				// would have nowhere to continue from. Base UI and React Aria do the same.
+				await expect.poll(() => document.activeElement).toBe(trigger.element());
+				expect(trigger.element()?.getAttribute('data-focused')).toBe('true');
 				expect(trigger.element()?.getAttribute('data-focus-visible')).toBeNull();
-				// An outside press must not steal focus back to the trigger — the
-				// pressed element keeps its native focus/caret behavior.
-				expect(document.activeElement).not.toBe(trigger.element());
 			} finally {
 				outside.remove();
 			}

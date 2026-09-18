@@ -11,6 +11,7 @@
 		getInteractionModality,
 		type InputModality
 	} from '../../primitives/input-modality';
+	import { focusFellToBody } from '../../popover/root/focus-state';
 	import type { SelectRootProps } from '../types';
 	import {
 		setSelectContext,
@@ -272,10 +273,24 @@
 		const wasInList = focusIsInList();
 		if (!setOpen(false, reason, event)) return;
 		pendingTypeahead = null;
-		// The focus goes back to the trigger only after a deliberate close. After an outside
-		// press, a scroll, or a Tab, it stays where the user put it. It moves before the list
-		// leaves the DOM, thus the focus never falls on the body in between.
-		if (!triggerRef || !wasInList || !TRIGGER_REFOCUS_REASONS.has(reason)) return;
+		if (!triggerRef || !wasInList) return;
+		const trigger = triggerRef;
+		// After an outside press the focus stays where the user put it. But a press on a heading
+		// or on the background puts it on the body, and a keyboard user then has nowhere to
+		// continue from: the focus goes back to the trigger, as in Base UI and React Aria. The
+		// check waits a frame, because the press moves the focus after this runs.
+		if (reason === 'outside-press') {
+			requestAnimationFrame(() => {
+				if (trigger.isConnected && focusFellToBody()) {
+					focusWithModality(trigger, 'pointer');
+				}
+			});
+			return;
+		}
+		// The focus goes back to the trigger only after a deliberate close. After a scroll or a
+		// Tab, it stays where the user put it. It moves before the list leaves the DOM, thus the
+		// focus never falls on the body in between.
+		if (!TRIGGER_REFOCUS_REASONS.has(reason)) return;
 		const closeModality =
 			modality ??
 			(reason === 'escape-key' || event instanceof KeyboardEvent
@@ -283,7 +298,7 @@
 				: event instanceof MouseEvent
 					? 'pointer'
 					: 'virtual');
-		focusWithModality(triggerRef, closeModality);
+		focusWithModality(trigger, closeModality);
 	}
 
 	// A printable character on the closed trigger opens the list, and the list searches with
