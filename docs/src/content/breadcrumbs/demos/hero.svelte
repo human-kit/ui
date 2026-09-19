@@ -4,8 +4,8 @@
 
 	const pages = [
 		{ href: '/', title: 'Home' },
-		{ href: '/docs', title: 'Docs' },
-		{ href: '/docs/components', title: 'Components' }
+		{ href: '/docs/quick-start', title: 'Docs' },
+		{ href: '/docs/accessibility', title: 'Accessibility' }
 	];
 
 	const linkClass =
