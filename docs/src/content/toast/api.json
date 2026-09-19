@@ -72,7 +72,7 @@
 			"dataAttributes": [
 				{
 					"name": "data-expanded",
-					"description": "Present while the pointer rests on the viewport, or the focus is in it. A tap on a toast holds it on until a touch outside the viewport."
+					"description": "Present while the pointer rests on the viewport, or the focus is in it. A tap on a toast, not a swipe, holds it on until a touch outside the viewport."
 				},
 				{
 					"name": "data-toast-viewport",
@@ -187,7 +187,7 @@
 				},
 				{
 					"name": "data-expanded",
-					"description": "Present while the pointer rests on the viewport, or the focus is in it. A tap on a toast holds it on until a touch outside the viewport."
+					"description": "Present while the pointer rests on the viewport, or the focus is in it. A tap on a toast, not a swipe, holds it on until a touch outside the viewport."
 				},
 				{
 					"name": "data-front",

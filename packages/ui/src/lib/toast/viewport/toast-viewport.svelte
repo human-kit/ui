@@ -7,6 +7,7 @@
 	import { HIDE_OUTSIDE_EXEMPT_ATTRIBUTE } from '../../primitives/aria-hide-outside';
 	import { getFocusableElements } from '../../primitives/focus-trap';
 	import { shouldShowFocusVisible } from '../../primitives/input-modality';
+	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture';
 	import { visuallyHiddenStyle } from '../../table/utils/visually-hidden-style';
 	import { useToastProviderContext } from '../provider/context';
 	import type { ToastItem } from '../provider/toast-manager.svelte';
@@ -22,7 +23,8 @@
 	 * not read the buttons of the toast as part of the message.
 	 *
 	 * A touch has no hover: a tap on a toast spreads the stack out, and a touch outside the
-	 * region folds it back. The timers stop while the pointer rests on the region, while the
+	 * region folds it back. A tap is a touch that lifts where it landed: a swipe is not one, and
+	 * a press on a button is not one. The timers stop while the pointer rests on the region, while the
 	 * focus is in it, while a tap holds it open, and while the tab is hidden. A toast that closes
 	 * while the user reads it is a toast the user did not read.
 	 */
@@ -34,6 +36,8 @@
 		onpointerenter,
 		onpointerleave,
 		onpointerdown,
+		onpointerup,
+		onpointercancel,
 		onfocusin,
 		onfocusout,
 		onkeydown,
@@ -129,13 +133,39 @@
 		else manager.resumeTimers();
 	}
 
+	// A tap lifts within this distance of where it landed. Past it, the touch is a swipe.
+	const TAP_SLOP_PX = 10;
+	let tapStart: { id: number; x: number; y: number } | null = null;
+
 	function handlePointerDown(
 		event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }
 	) {
 		onpointerdown?.(event);
-		if (event.pointerType === 'mouse' || ctx.tapped) return;
+		tapStart = null;
+		if (event.pointerType === 'mouse') return;
+		// A press on a button is a press: it must not spread the stack under the finger.
+		if (event.target instanceof Element && event.target.closest(`[${SWIPE_IGNORE_ATTRIBUTE}]`)) {
+			return;
+		}
+		tapStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+	}
+
+	function handlePointerUp(event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+		onpointerup?.(event);
+		const start = tapStart;
+		tapStart = null;
+		if (!start || start.id !== event.pointerId) return;
+		if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
+		if (ctx.tapped) return;
 		ctx.setTapped(true);
 		syncTimers();
+	}
+
+	function handlePointerCancel(
+		event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }
+	) {
+		onpointercancel?.(event);
+		tapStart = null;
 	}
 
 	// A touch anywhere else folds the stack back. The listener is on the document, thus a touch
@@ -338,6 +368,8 @@
 			onpointerenter={handlePointerEnter}
 			onpointerleave={handlePointerLeave}
 			onpointerdown={handlePointerDown}
+			onpointerup={handlePointerUp}
+			onpointercancel={handlePointerCancel}
 			onfocusin={handleFocusIn}
 			onfocusout={handleFocusOut}
 			onkeydown={handleKeyDown}

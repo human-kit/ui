@@ -9,7 +9,7 @@ export type ToastProviderContext = {
 	readonly hovering: boolean;
 	/** The focus is in the viewport. */
 	readonly focused: boolean;
-	/** A touch tapped a toast, and no touch outside the viewport came after it. */
+	/** A touch tapped a toast, lifted where it landed, and no touch outside came after it. */
 	readonly tapped: boolean;
 	/**
 	 * The toasts are spread out: the pointer rests on them, the focus is in them, or a touch

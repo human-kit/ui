@@ -350,7 +350,11 @@ describe('Toast', () => {
 			await press('add');
 			expect(region()?.hasAttribute('data-expanded')).toBe(false);
 
+			// The finger down alone is not a tap yet: a swipe starts the same way.
 			pointer(toasts()[0], 'pointerdown', 'touch');
+			await tick();
+			expect(region()?.hasAttribute('data-expanded')).toBe(false);
+			pointer(toasts()[0], 'pointerup', 'touch');
 			await tick();
 			expect(region()?.getAttribute('data-expanded')).toBe('true');
 			expect(toasts()[1].getAttribute('data-expanded')).toBe('true');
@@ -367,6 +371,41 @@ describe('Toast', () => {
 			expect(region()?.hasAttribute('data-expanded')).toBe(false);
 			await advance(1000);
 			await expect.poll(() => toasts().length).toBe(0);
+		});
+
+		it('a swipe and a press on a button are not taps', async () => {
+			await setup({ timeout: 0, withAction: true });
+			await press('add');
+			await press('add');
+			const toast = toasts()[0];
+			const touchAt = (target: Element, type: string, x: number) =>
+				target.dispatchEvent(
+					new PointerEvent(type, {
+						pointerType: 'touch',
+						pointerId: 8,
+						isPrimary: true,
+						bubbles: true,
+						clientX: 100 + x,
+						clientY: 100
+					})
+				);
+
+			// A finger that moves before it lifts is a swipe, even a short one.
+			touchAt(toast, 'pointerdown', 0);
+			touchAt(toast, 'pointerup', 30);
+			await tick();
+			expect(region()?.hasAttribute('data-expanded')).toBe(false);
+
+			const close = byTestId('close');
+			touchAt(close, 'pointerdown', 0);
+			touchAt(close, 'pointerup', 0);
+			await tick();
+			expect(region()?.hasAttribute('data-expanded')).toBe(false);
+
+			touchAt(toast, 'pointerdown', 0);
+			touchAt(toast, 'pointerup', 4);
+			await tick();
+			expect(region()?.getAttribute('data-expanded')).toBe('true');
 		});
 	});
 

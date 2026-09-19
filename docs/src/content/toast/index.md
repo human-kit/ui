@@ -85,7 +85,7 @@ The title and the description are text. That text is what the screen reader hear
 
 A toast stays `timeout` milliseconds: 5000 by default, on the provider or on the toast. `0` keeps it until a close.
 
-The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. A touch has no hover: a tap on a toast holds the stack open, and the timers with it, until a touch outside the viewport. They also stop while the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
+The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. A touch has no hover: a tap on a toast holds the stack open, and the timers with it, until a touch outside the viewport. A tap lifts where it landed. A swipe is not a tap, and a press on a button is not one. They also stop while the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
 
 ## The stack
 
