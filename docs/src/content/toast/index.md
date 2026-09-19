@@ -85,7 +85,7 @@ The title and the description are text. That text is what the screen reader hear
 
 A toast stays `timeout` milliseconds: 5000 by default, on the provider or on the toast. `0` keeps it until a close.
 
-The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. They also stop while the window is in the background, or the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
+The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. They also stop while the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
 
 ## The stack
 

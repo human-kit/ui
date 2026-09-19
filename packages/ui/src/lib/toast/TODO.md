@@ -10,7 +10,7 @@ Track Toast work with a single mandatory TODO format.
 - [x] [M][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Make the viewport a `role="region"` landmark named with the count, with `F6` in and out, and a tab that leaves it back to the previous focus.
 - [x] [M][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Announce each toast from two live regions beside the viewport, thus the buttons are not part of the message.
 - [x] [S][P0][Area: Accessibility][Owner: Unassigned][Target: Done] Make each toast a `dialog` or an `alertdialog` that is not modal, named by its title and described by its description.
-- [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Stop the timers on hover, on keyboard focus, and in a background window, and give each toast the time it had left on resume.
+- [x] [M][P0][Area: State][Owner: Unassigned][Target: Done] Stop the timers on hover, on keyboard focus, and in a hidden tab, and give each toast the time it had left on resume.
 - [x] [S][P1][Area: State][Owner: Unassigned][Target: Done] Keep the newest toasts up to the limit, and hold the older ones inert with their timers stopped.
 - [x] [S][P1][Area: State][Owner: Unassigned][Target: Done] Add `promise` for a loading toast that turns into success or error.
 - [x] [M][P1][Area: Interaction][Owner: Unassigned][Target: Done] Dismiss on a swipe that follows the finger, with a threshold and a flick, and never from a button.
