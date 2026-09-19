@@ -290,20 +290,6 @@ describe('Toast', () => {
 			expect(document.body.lastElementChild?.contains(region())).toBe(true);
 		});
 
-		it('stops the timers while the window is in the background', async () => {
-			setup({ timeout: 1000 });
-			await press('add');
-			await advance(500);
-
-			window.dispatchEvent(new Event('blur'));
-			await advance(3000);
-			expect(toasts()).toHaveLength(1);
-
-			window.dispatchEvent(new Event('focus'));
-			await advance(500);
-			await expect.poll(() => toasts().length).toBe(0);
-		});
-
 		it('stops the timers while the tab is hidden', async () => {
 			setup({ timeout: 1000 });
 			await press('add');

@@ -22,8 +22,8 @@
 	 * not read the buttons of the toast as part of the message.
 	 *
 	 * The timers stop while the pointer rests on the region, while the focus is in it, and while
-	 * the window is in the background. A toast that closes while the user reads it is a toast
-	 * the user did not read.
+	 * the tab is hidden. A toast that closes while the user reads it is a toast the user did not
+	 * read.
 	 */
 	let {
 		children,
@@ -50,8 +50,8 @@
 	// Where the focus was before `F6` or a click moved it into the region, thus a close can send
 	// it back there.
 	let previousFocus: HTMLElement | null = null;
-	let windowFocused = true;
-	// A page that opens in a background tab gets no `blur`: the visibility says it is hidden.
+	// The visibility of the tab, not the focus of the window: a window without the focus can
+	// still be in view, and a frame beside others loses the focus all the time.
 	let documentVisible = typeof document === 'undefined' || document.visibilityState !== 'hidden';
 
 	// A toast on its way out is not one the user can act on: the name does not count it.
@@ -123,7 +123,7 @@
 	// --- Timers -------------------------------------------------------------------------------
 
 	function syncTimers() {
-		if (ctx.hovering || ctx.focused || !windowFocused || !documentVisible) manager.pauseTimers();
+		if (ctx.hovering || ctx.focused || !documentVisible) manager.pauseTimers();
 		else manager.resumeTimers();
 	}
 
@@ -163,16 +163,6 @@
 		const related = event.relatedTarget;
 		if (related instanceof Node && regionRef?.contains(related)) return;
 		ctx.setFocused(false);
-		syncTimers();
-	}
-
-	function handleWindowBlur() {
-		windowFocused = false;
-		syncTimers();
-	}
-
-	function handleWindowFocus() {
-		windowFocused = true;
 		syncTimers();
 	}
 
@@ -274,15 +264,11 @@
 
 	$effect(() => {
 		window.addEventListener('keydown', handleWindowKeyDown);
-		window.addEventListener('blur', handleWindowBlur);
-		window.addEventListener('focus', handleWindowFocus);
 		document.addEventListener('visibilitychange', handleVisibilityChange);
 		untrack(syncTimers);
 		return () => {
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
 			window.removeEventListener('keydown', handleWindowKeyDown);
-			window.removeEventListener('blur', handleWindowBlur);
-			window.removeEventListener('focus', handleWindowFocus);
 		};
 	});
 
