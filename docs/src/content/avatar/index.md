@@ -39,7 +39,7 @@ description: A picture of a person or a thing, with a fallback for when the pict
 
 ## The fallback
 
-`Avatar.Fallback` shows while the image is not on the screen. Give `delay` in milliseconds to hold it back while the image loads. A fallback that flashes before a fast image is noise, and 600 hides it on a good connection. It shows at once when the image fails, or when there is no image.
+`Avatar.Fallback` shows while the image is not on the screen, with the name of the image as its own. Give `delay` in milliseconds to hold it back while the image loads. A fallback that flashes before a fast image is noise, and 600 hides it on a good connection. It shows at once when the image fails, or when there is no image.
 
 ## Status
 
@@ -47,16 +47,20 @@ The root has `data-status` for your styles: `loading`, `loaded` or `error`. `onS
 
 <Demo source={statusSource}><Status /></Demo>
 
+## Lazy images
+
+The image loads as soon as the root mounts, thus `loading="lazy"` on `Avatar.Image` has no effect. A list of avatars below the fold loads them all. Render the list when it comes into view, or keep it short.
+
 ## Usage guidelines
 
-- Give `alt` the name of the person or the thing. Give an empty `alt` when the name is beside the avatar already, thus a screen reader does not read it twice. Hide a fallback of initials with `aria-hidden="true"` in that case.
+- Give `alt` the name of the person or the thing. Give an empty `alt` when the name is beside the avatar already, thus a screen reader does not read it twice. The fallback follows the `alt`: it takes the name, or it hides.
 - Give the root a size and `overflow: hidden`, and the image `object-fit: cover`.
 - Give `delay` to the fallback on a list of avatars: a list that flashes initials is noise.
 
 ## Accessibility
 
 - The image is an `<img>` with your `alt`. The root has no role of its own.
-- The fallback is plain content. A screen reader reads it as text, and initials read as letters. A name in `alt` on the image reads better. So does `aria-hidden` on initials beside a visible name.
+- The fallback takes the name of the image: it is a `role="img"` named with the `alt`. A screen reader hears the name, and not the letters of the initials. An empty `alt` hides it. Without an image, it is plain content.
 - Nothing in the avatar is focusable.
 
 ## API reference

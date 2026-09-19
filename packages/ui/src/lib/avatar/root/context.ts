@@ -8,6 +8,9 @@ export type AvatarStatus = 'loading' | 'loaded' | 'error';
 export type AvatarContext = {
 	status: AvatarStatus;
 	setStatus: (status: AvatarStatus) => void;
+	/** The `alt` of the image, thus the fallback can take its name. `undefined` without an image. */
+	alt: string | undefined;
+	setAlt: (alt: string | undefined) => void;
 };
 
 export function setAvatarContext(context: AvatarContext) {

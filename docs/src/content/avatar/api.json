@@ -87,7 +87,7 @@
 		},
 		{
 			"name": "Fallback",
-			"description": "What shows in place of the image, while the image is not on the screen. `delay` holds it back while the image loads.",
+			"description": "What shows in place of the image, while the image is not on the screen, named with its `alt`. `delay` holds it back while the image loads.",
 			"props": [
 				{
 					"name": "children",

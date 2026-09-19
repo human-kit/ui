@@ -24,6 +24,13 @@
 
 	let imageRef: HTMLImageElement | null = $state(null);
 
+	// The fallback takes the name of the image, thus a failed image is not a nameless avatar.
+	$effect(() => {
+		const name = alt;
+		untrack(() => avatar.setAlt(name));
+		return () => avatar.setAlt(undefined);
+	});
+
 	$effect(() => {
 		element = imageRef;
 		return () => {

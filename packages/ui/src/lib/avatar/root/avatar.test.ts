@@ -39,6 +39,23 @@ describe('Avatar', () => {
 		expect(onStatusChange).toHaveBeenLastCalledWith('error');
 	});
 
+	it('gives the fallback the name of the image, and hides it for an empty alt', async () => {
+		render(AvatarTest, { src: BROKEN });
+		await expect.poll(() => byTestId('root')?.getAttribute('data-status')).toBe('error');
+		const fallback = byTestId('fallback');
+		expect(fallback?.getAttribute('role')).toBe('img');
+		expect(fallback?.getAttribute('aria-label')).toBe('Ada Lovelace');
+		expect(fallback?.hasAttribute('aria-hidden')).toBe(false);
+
+		document.body.innerHTML = '';
+		render(AvatarTest, { src: BROKEN, alt: '' });
+		await expect.poll(() => byTestId('root')?.getAttribute('data-status')).toBe('error');
+		const decorative = byTestId('fallback');
+		expect(decorative?.hasAttribute('role')).toBe(false);
+		expect(decorative?.hasAttribute('aria-label')).toBe(false);
+		expect(decorative?.getAttribute('aria-hidden')).toBe('true');
+	});
+
 	it('shows the fallback at once without a source', async () => {
 		render(AvatarTest, { src: null });
 

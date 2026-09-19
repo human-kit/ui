@@ -24,7 +24,7 @@
 					{page.title}
 				</Breadcrumbs.Link>
 				<Breadcrumbs.Separator class="text-neutral-400">
-					<ChevronRightIcon class="size-3.5" />
+					<ChevronRightIcon class="size-3.5 rtl:-scale-x-100" />
 				</Breadcrumbs.Separator>
 			</Breadcrumbs.Item>
 		{/each}

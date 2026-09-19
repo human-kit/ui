@@ -20,6 +20,7 @@
 
 	let rootRef: HTMLSpanElement | null = $state(null);
 	let status = $state<AvatarStatus>('loading');
+	let alt = $state<string | undefined>(undefined);
 
 	const context: AvatarContext = {
 		get status() {
@@ -29,6 +30,12 @@
 			if (status === next) return;
 			status = next;
 			onStatusChange?.(next);
+		},
+		get alt() {
+			return alt;
+		},
+		setAlt(next) {
+			alt = next;
 		}
 	};
 

@@ -8,6 +8,11 @@
 	 * It shows while the image is not on the screen. `delay` holds it back while the image
 	 * loads, thus a fast image does not flash a fallback first. It shows at once when the image
 	 * fails, or when there is no image.
+	 *
+	 * It takes the name of the image: with an `alt` on `Avatar.Image`, the fallback is a
+	 * `role="img"` with that `alt` as its name, thus a screen reader hears "Ada Lovelace" and not
+	 * the letters of her initials. An empty `alt` makes the fallback decorative, the same as it
+	 * makes the image.
 	 */
 	let {
 		children,
@@ -42,12 +47,17 @@
 	const shown = $derived(
 		avatar.status === 'error' || (avatar.status === 'loading' && (delay <= 0 || delayPassed))
 	);
+	// `undefined` without an image: the fallback is then the content, with no name of its own.
+	const name = $derived(avatar.alt);
 </script>
 
 {#if shown}
 	<span
 		{...restProps}
 		bind:this={fallbackRef}
+		role={name ? 'img' : undefined}
+		aria-label={name || undefined}
+		aria-hidden={name === '' ? 'true' : undefined}
 		class={className}
 		data-avatar-fallback="true"
 		data-status={avatar.status}
