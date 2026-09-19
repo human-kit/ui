@@ -454,16 +454,21 @@ describe('Toast', () => {
 	});
 
 	describe('announcements', () => {
-		it('reads two toasts of the same tick, and the same text twice', async () => {
+		it('reads two toasts of the same tick in their order, and the same text twice', async () => {
 			await setup();
 			await tick();
 
+			getManager().add({ title: 'First' });
 			getManager().add({ title: 'Same' });
 			getManager().add({ title: 'Same' });
 			await tick();
 
 			const nodes = document.querySelectorAll('[role="status"] > div');
-			expect(Array.from(nodes).map((node) => node.textContent)).toEqual(['Same', 'Same']);
+			expect(Array.from(nodes).map((node) => node.textContent)).toEqual([
+				'First',
+				'Same',
+				'Same'
+			]);
 
 			await advance(2100);
 			expect(document.querySelectorAll('[role="status"] > div')).toHaveLength(0);

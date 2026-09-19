@@ -147,8 +147,10 @@
 		visibility: hidden;
 	}
 
+	/* The enter rule is more specific than `.toast`: the reduced motion names it too. */
 	@media (prefers-reduced-motion: reduce) {
-		:global(.toast) {
+		:global(.toast),
+		:global(.toast[data-entering]) {
 			transition-duration: 0.01s;
 			animation-duration: 0.01s;
 		}

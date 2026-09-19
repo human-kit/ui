@@ -66,4 +66,12 @@
 			transform: translateY(4px);
 		}
 	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.anchored-toast),
+		:global(.anchored-toast[data-entering]) {
+			transition-duration: 0.01s;
+			animation-duration: 0.01s;
+		}
+	}
 </style>

@@ -112,7 +112,8 @@
 		untrack(() => {
 			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a scratch set for one pass.
 			const ids = new Set<string>();
-			for (const toast of toasts) {
+			// The list is the newest first; the screen reader hears the oldest first.
+			for (const toast of [...toasts].reverse()) {
 				ids.add(toast.id);
 				if (toast.status === 'ending' || announced.get(toast.id) === toast.updateKey) continue;
 				announced.set(toast.id, toast.updateKey);
