@@ -464,11 +464,7 @@ describe('Toast', () => {
 			await tick();
 
 			const nodes = document.querySelectorAll('[role="status"] > div');
-			expect(Array.from(nodes).map((node) => node.textContent)).toEqual([
-				'First',
-				'Same',
-				'Same'
-			]);
+			expect(Array.from(nodes).map((node) => node.textContent)).toEqual(['First', 'Same', 'Same']);
 
 			await advance(2100);
 			expect(document.querySelectorAll('[role="status"] > div')).toHaveLength(0);
