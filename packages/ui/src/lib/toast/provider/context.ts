@@ -9,7 +9,12 @@ export type ToastProviderContext = {
 	readonly hovering: boolean;
 	/** The focus is in the viewport. */
 	readonly focused: boolean;
-	/** The toasts are spread out: the pointer rests on them, or the focus is in them. */
+	/** A touch tapped a toast, and no touch outside the viewport came after it. */
+	readonly tapped: boolean;
+	/**
+	 * The toasts are spread out: the pointer rests on them, the focus is in them, or a touch
+	 * tapped them.
+	 */
 	readonly expanded: boolean;
 	/** The viewport element. */
 	readonly viewportElement: HTMLElement | null;
@@ -17,6 +22,7 @@ export type ToastProviderContext = {
 	readonly heights: ReadonlyMap<string, number>;
 	setHovering: (hovering: boolean) => void;
 	setFocused: (focused: boolean) => void;
+	setTapped: (tapped: boolean) => void;
 	setViewportElement: (element: HTMLElement | null) => void;
 	setHeight: (id: string, height: number | null) => void;
 	/** Moves the focus to the next toast, or back to where it was before the viewport. */

@@ -21,9 +21,10 @@
 	 * assertive, say the title and the description of each new toast. Thus the screen reader does
 	 * not read the buttons of the toast as part of the message.
 	 *
-	 * The timers stop while the pointer rests on the region, while the focus is in it, and while
-	 * the tab is hidden. A toast that closes while the user reads it is a toast the user did not
-	 * read.
+	 * A touch has no hover: a tap on a toast spreads the stack out, and a touch outside the
+	 * region folds it back. The timers stop while the pointer rests on the region, while the
+	 * focus is in it, while a tap holds it open, and while the tab is hidden. A toast that closes
+	 * while the user reads it is a toast the user did not read.
 	 */
 	let {
 		children,
@@ -32,6 +33,7 @@
 		element = $bindable<HTMLDivElement | null>(null),
 		onpointerenter,
 		onpointerleave,
+		onpointerdown,
 		onfocusin,
 		onfocusout,
 		onkeydown,
@@ -123,8 +125,26 @@
 	// --- Timers -------------------------------------------------------------------------------
 
 	function syncTimers() {
-		if (ctx.hovering || ctx.focused || !documentVisible) manager.pauseTimers();
+		if (ctx.hovering || ctx.focused || ctx.tapped || !documentVisible) manager.pauseTimers();
 		else manager.resumeTimers();
+	}
+
+	function handlePointerDown(
+		event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }
+	) {
+		onpointerdown?.(event);
+		if (event.pointerType === 'mouse' || ctx.tapped) return;
+		ctx.setTapped(true);
+		syncTimers();
+	}
+
+	// A touch anywhere else folds the stack back. The listener is on the document, thus a touch
+	// on a page that stops its own events folds it too.
+	function handleDocumentPointerDown(event: PointerEvent) {
+		if (!ctx.tapped || event.pointerType === 'mouse') return;
+		if (event.target instanceof Node && regionRef?.contains(event.target)) return;
+		ctx.setTapped(false);
+		syncTimers();
 	}
 
 	function handlePointerEnter(
@@ -262,11 +282,22 @@
 		}
 	}
 
+	// The region leaves with the last toast, and a tap does not outlive it.
+	$effect(() => {
+		if (manager.toasts.length > 0 || !ctx.tapped) return;
+		untrack(() => {
+			ctx.setTapped(false);
+			syncTimers();
+		});
+	});
+
 	$effect(() => {
 		window.addEventListener('keydown', handleWindowKeyDown);
 		document.addEventListener('visibilitychange', handleVisibilityChange);
+		document.addEventListener('pointerdown', handleDocumentPointerDown, true);
 		untrack(syncTimers);
 		return () => {
+			document.removeEventListener('pointerdown', handleDocumentPointerDown, true);
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
 			window.removeEventListener('keydown', handleWindowKeyDown);
 		};
@@ -306,6 +337,7 @@
 			data-expanded={ctx.expanded || undefined}
 			onpointerenter={handlePointerEnter}
 			onpointerleave={handlePointerLeave}
+			onpointerdown={handlePointerDown}
 			onfocusin={handleFocusIn}
 			onfocusout={handleFocusOut}
 			onkeydown={handleKeyDown}

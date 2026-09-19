@@ -331,11 +331,36 @@ describe('Toast', () => {
 			await expect.poll(() => toasts().length).toBe(0);
 		});
 
-		it('does not stop the timers for a touch on the region', async () => {
+		it('does not stop the timers for a touch that passes over the region', async () => {
 			setup({ timeout: 1000 });
 			await press('add');
 
 			pointer(region()!, 'pointerenter', 'touch');
+			await advance(1000);
+			await expect.poll(() => toasts().length).toBe(0);
+		});
+
+		it('a tap spreads the stack out and holds the timers, and a touch outside folds it back', async () => {
+			setup({ timeout: 1000 });
+			await press('add');
+			await press('add');
+			expect(region()?.hasAttribute('data-expanded')).toBe(false);
+
+			pointer(toasts()[0], 'pointerdown', 'touch');
+			await tick();
+			expect(region()?.getAttribute('data-expanded')).toBe('true');
+			expect(toasts()[1].getAttribute('data-expanded')).toBe('true');
+			await advance(1500);
+			expect(toasts().length).toBe(2);
+
+			// A mouse press outside is not a touch: the stack stays open.
+			pointer(byTestId('before'), 'pointerdown', 'mouse');
+			await tick();
+			expect(region()?.getAttribute('data-expanded')).toBe('true');
+
+			pointer(byTestId('before'), 'pointerdown', 'touch');
+			await tick();
+			expect(region()?.hasAttribute('data-expanded')).toBe(false);
 			await advance(1000);
 			await expect.poll(() => toasts().length).toBe(0);
 		});
@@ -675,6 +700,41 @@ describe('Toast', () => {
 			await tick();
 			expect(toast.style.getPropertyValue('--toast-swipe-movement-x')).toBe('0px');
 			expect(toast.hasAttribute('data-swiping')).toBe(false);
+			expect(toast.hasAttribute('data-ending')).toBe(false);
+		});
+
+		it('gives a little to a pull the wrong way, and no more', async () => {
+			setup({ swipeDirection: ['right'] });
+
+			await press('add');
+			const toast = toasts()[0];
+			const rect = toast.getBoundingClientRect();
+			const move = (x: number, type: string, target: EventTarget = window) =>
+				target.dispatchEvent(
+					new PointerEvent(type, {
+						pointerType: 'touch',
+						pointerId: 7,
+						isPrimary: true,
+						button: 0,
+						clientX: rect.left + 200 + x,
+						clientY: rect.top + 10,
+						bubbles: true,
+						cancelable: true
+					})
+				);
+
+			move(0, 'pointerdown', toast);
+			move(-8, 'pointermove');
+			await tick();
+			const short = parseFloat(toast.style.getPropertyValue('--toast-swipe-movement-x'));
+			move(-160, 'pointermove');
+			await tick();
+			const long = parseFloat(toast.style.getPropertyValue('--toast-swipe-movement-x'));
+			expect(short).toBeLessThan(0);
+			expect(long).toBeLessThan(short);
+			expect(long).toBeGreaterThan(-8);
+			move(-160, 'pointerup');
+			await tick();
 			expect(toast.hasAttribute('data-ending')).toBe(false);
 		});
 	});

@@ -22,6 +22,8 @@
 	 */
 	const SWIPE_THRESHOLD_PX = 40;
 	const FLICK_VELOCITY_PX_MS = 0.5;
+	// A pull the wrong way gives a little, and no more: the toast behind must not come into view.
+	const INWARD_PULL_MAX_PX = 8;
 
 	let {
 		toast,
@@ -183,8 +185,13 @@
 				manager.pauseTimers();
 			},
 			onMove: ({ displacement }) => {
-				// The toast follows the finger outward, and resists a pull the other way.
-				const outward = displacement >= 0 ? displacement : displacement / 4;
+				// The toast follows the finger outward. A pull the other way is a rubber band that
+				// stops short of the toast behind.
+				const pull = -displacement;
+				const outward =
+					displacement >= 0
+						? displacement
+						: -(INWARD_PULL_MAX_PX * pull) / (pull + INWARD_PULL_MAX_PX);
 				if (axis === 'x') swipeX = outward * sign;
 				else swipeY = outward * sign;
 			},
@@ -199,14 +206,14 @@
 				swipeX = 0;
 				swipeY = 0;
 				swipeSide = null;
-				if (!ctx.hovering && !ctx.focused) manager.resumeTimers();
+				if (!ctx.expanded) manager.resumeTimers();
 			},
 			onCancel: () => {
 				swiping = false;
 				swipeX = 0;
 				swipeY = 0;
 				swipeSide = null;
-				if (!ctx.hovering && !ctx.focused) manager.resumeTimers();
+				if (!ctx.expanded) manager.resumeTimers();
 			}
 		};
 	}

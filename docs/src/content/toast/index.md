@@ -85,13 +85,13 @@ The title and the description are text. That text is what the screen reader hear
 
 A toast stays `timeout` milliseconds: 5000 by default, on the provider or on the toast. `0` keeps it until a close.
 
-The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. They also stop while the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
+The timers stop while the pointer rests on the viewport, and while the keyboard focus is in it. A touch has no hover: a tap on a toast holds the stack open, and the timers with it, until a touch outside the viewport. They also stop while the tab is hidden. They start again with the time each toast had left. A toast that closes while the user reads it is a toast the user did not read.
 
 ## The stack
 
 The viewport shows the newest toasts up to `limit`: 3 by default. The older ones wait behind, hidden and inert, with their timers stopped, and they come forward as the newer ones close.
 
-Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and the viewport gets `--toast-frontmost-height`. `data-front` marks the toast in front. `data-expanded` is on the viewport and on each toast while the pointer rests on the viewport, or while the focus is in it. The viewport of the first demo stacks the toasts in the corner with them, and spreads them out on `data-expanded`. Its source is in `viewport.svelte`, under the demo.
+Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and the viewport gets `--toast-frontmost-height`. `data-front` marks the toast in front. `data-expanded` is on the viewport and on each toast while the pointer rests on the viewport, or while the focus is in it. A tap on a toast holds it on until a touch outside the viewport. The viewport of the first demo stacks the toasts in the corner with them, and spreads them out on `data-expanded`. Its source is in `viewport.svelte`, under the demo.
 
 ```css
 .toast {
@@ -142,7 +142,7 @@ The pointer must not leave the viewport on its way from one toast to the next. T
 
 ## A swipe
 
-A swipe pushes the toast out through one of `swipeDirection`: `bottom` and `right` by default. The toast follows the finger with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`, and it comes back when the swipe is short. `data-swipe-dismissed` and `data-swipe-direction` are on the toast for the exit.
+A swipe pushes the toast out through one of `swipeDirection`: `bottom` and `right` by default. The toast follows the finger with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`, and it comes back when the swipe is short. A pull the other way gives 8 px at most, thus the toast behind stays behind. `data-swipe-dismissed` and `data-swipe-direction` are on the toast for the exit.
 
 A swipe never starts on `Toast.Close` or `Toast.Action`. Put `data-hk-swipe-ignore` on other content of your own that must not start one, such as a slider in the toast.
 

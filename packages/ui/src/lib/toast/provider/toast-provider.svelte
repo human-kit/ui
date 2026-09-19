@@ -39,6 +39,7 @@
 
 	let hovering = $state(false);
 	let focused = $state(false);
+	let tapped = $state(false);
 	let viewportElement = $state<HTMLElement | null>(null);
 	const heights = new SvelteMap<string, number>();
 	let focusAfterCloseHandler: ((id: string) => void) | null = null;
@@ -51,8 +52,11 @@
 		get focused() {
 			return focused;
 		},
+		get tapped() {
+			return tapped;
+		},
 		get expanded() {
-			return hovering || focused;
+			return hovering || focused || tapped;
 		},
 		get viewportElement() {
 			return viewportElement;
@@ -65,6 +69,9 @@
 		},
 		setFocused(value) {
 			focused = value;
+		},
+		setTapped(value) {
+			tapped = value;
 		},
 		setViewportElement(element) {
 			viewportElement = element;

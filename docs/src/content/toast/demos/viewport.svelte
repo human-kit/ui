@@ -4,7 +4,7 @@
 </script>
 
 <!-- One viewport for the app. The toasts stack in the corner, and they spread out while the
-     pointer rests on them or the focus is in them. -->
+     pointer rests on them, while the focus is in them, or after a tap on them. -->
 <Toast.Viewport class="toast-viewport">
 	{#snippet children(toast)}
 		<Toast.Root {toast} class="toast">
