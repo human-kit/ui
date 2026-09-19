@@ -80,10 +80,24 @@
 		transition: none;
 	}
 
-	:global(.toast[data-entering]),
+	/* The enter is an animation: `data-entering` stays on for the whole motion, thus a transition
+	   would sit still in the start state. The exit is a transition: `data-exiting` is the end
+	   state, and the motion runs from where the toast is. */
+	:global(.toast[data-entering]) {
+		animation: toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+		transition: none;
+	}
+
 	:global(.toast[data-exiting]) {
 		opacity: 0;
 		transform: translateY(1rem);
+	}
+
+	@keyframes toast-in {
+		from {
+			opacity: 0;
+			transform: translateY(1rem);
+		}
 	}
 
 	:global(.toast[data-swipe-dismissed][data-swipe-direction='right']) {
@@ -110,6 +124,7 @@
 	@media (prefers-reduced-motion: reduce) {
 		:global(.toast) {
 			transition-duration: 0.01s;
+			animation-duration: 0.01s;
 		}
 	}
 </style>
