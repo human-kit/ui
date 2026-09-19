@@ -77,8 +77,18 @@
 		overflow: hidden;
 	}
 
+	:global(.toast-content) {
+		transition: opacity 0.2s;
+	}
+
 	:global(.toast:not([data-front]):not([data-expanded]) .toast-content) {
 		opacity: 0;
+	}
+
+	/* While a swipe moves the front toast aside, the ones behind show their text: the next one
+	   is in view, and an empty card there reads as a fault. */
+	:global(.toast-viewport:has(.toast[data-front][data-swiping]) .toast .toast-content) {
+		opacity: 1;
 	}
 
 	:global(.toast[data-expanded]) {
