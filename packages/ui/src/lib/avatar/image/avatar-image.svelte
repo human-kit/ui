@@ -8,11 +8,13 @@
 	 *
 	 * It loads the image off the screen first, and it renders the `<img>` once the image is
 	 * there: a broken image icon, or a blank box, never shows. Without a `src`, or when the
-	 * image fails, the status is `error` and `Avatar.Fallback` shows in its place.
+	 * image fails, the status is `error` and `Avatar.Fallback` shows in its place. With
+	 * `loading="lazy"`, the load waits for the root to come into view.
 	 */
 	let {
 		src,
 		alt,
+		loading = 'eager',
 		class: className = '',
 		element = $bindable<HTMLImageElement | null>(null),
 		crossorigin,
@@ -38,12 +40,35 @@
 		};
 	});
 
+	// A lazy image waits for the root to come into view. Without an observer, it loads at once.
+	let inView = $state(false);
+	$effect(() => {
+		const root = avatar.element;
+		if (loading !== 'lazy' || !root || typeof IntersectionObserver === 'undefined') {
+			inView = true;
+			return;
+		}
+		inView = false;
+		const observer = new IntersectionObserver((entries) => {
+			if (entries.some((entry) => entry.isIntersecting)) {
+				inView = true;
+				observer.disconnect();
+			}
+		});
+		observer.observe(root);
+		return () => observer.disconnect();
+	});
+
 	// The status is set in `untrack`: the setter reads the status to skip a repeat, and a read
 	// here would make the load depend on its own result.
 	$effect(() => {
 		const source = src;
 		if (!source) {
 			untrack(() => avatar.setStatus('error'));
+			return;
+		}
+		if (!inView) {
+			untrack(() => avatar.setStatus('loading'));
 			return;
 		}
 		// The same request the `<img>` makes, thus the browser serves the `<img>` from its cache.

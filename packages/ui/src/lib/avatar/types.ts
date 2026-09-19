@@ -3,6 +3,52 @@ import type { HTMLAttributes, HTMLImgAttributes } from 'svelte/elements';
 import type { AvatarStatus } from './root/context.js';
 
 export type { AvatarContext, AvatarStatus } from './root/context.js';
+export type { AvatarGroupContext } from './group/context.js';
+
+export type AvatarGroupProps = Omit<
+	HTMLAttributes<HTMLDivElement>,
+	'children' | 'class' | 'role'
+> & {
+	/** The avatars, and an `Avatar.Count` for the ones past `max`. */
+	children?: Snippet;
+	/** The CSS class names of the element. */
+	class?: string;
+	/**
+	 * The count of avatars on the screen. The ones past it render nothing, and `Avatar.Count`
+	 * says how many they are. Without it, every avatar is on the screen.
+	 */
+	max?: number;
+	/**
+	 * The name of the group, such as "Assignees". A group with no name is a group a screen
+	 * reader cannot tell apart from the content around it.
+	 */
+	'aria-label'?: string;
+	/** The group element. Use `bind:element` to read it. */
+	element?: HTMLDivElement | null;
+};
+
+export type AvatarCountState = {
+	/** The count of avatars past `max`. */
+	overflow: number;
+	/** The count of avatars in the group. */
+	count: number;
+	/** The limit of the group. */
+	max: number;
+};
+
+export type AvatarCountProps = Omit<
+	HTMLAttributes<HTMLSpanElement>,
+	'children' | 'class' | 'aria-label'
+> & {
+	/** The content in place of `+N`. It gets the overflow, the count and the limit. */
+	children?: Snippet<[AvatarCountState]>;
+	/** The CSS class names of the element. */
+	class?: string;
+	/** The name for the screen reader. Without it, "N more" in the locale of `LocaleProvider`. */
+	'aria-label'?: string;
+	/** The count element, while it is on the screen. Use `bind:element` to read it. */
+	element?: HTMLSpanElement | null;
+};
 
 export type AvatarRootProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
 	/** `Avatar.Image` and `Avatar.Fallback`. */
@@ -15,9 +61,14 @@ export type AvatarRootProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' |
 	onStatusChange?: (status: AvatarStatus) => void;
 };
 
-export type AvatarImageProps = Omit<HTMLImgAttributes, 'class' | 'src' | 'alt'> & {
+export type AvatarImageProps = Omit<HTMLImgAttributes, 'class' | 'src' | 'alt' | 'loading'> & {
 	/** The address of the image. Without it, the fallback shows. */
 	src?: string | null;
+	/**
+	 * `lazy` starts the load when the avatar comes into view, and not on mount. Use it on a long
+	 * list of avatars, thus the ones below the fold do not all load at once.
+	 */
+	loading?: 'eager' | 'lazy';
 	/**
 	 * The text in place of the image. Give the name of the person or the thing. Give an empty
 	 * string when the name is beside the avatar already, thus a screen reader does not read it

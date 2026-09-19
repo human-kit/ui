@@ -11,5 +11,5 @@ Track Avatar work with a single mandatory TODO format.
 - [x] [S][P1][Area: UX][Owner: Unassigned][Target: Done] Hold the fallback back for `delay` milliseconds while the image loads.
 - [x] [M][P0][Area: Testing][Owner: Unassigned][Target: Done] Add coverage for the load, the failure, the missing source, the delay, a change of source, `onStatusChange`, and SSR.
 - [x] [S][P1][Area: Accessibility][Owner: Unassigned][Target: Done] Name the fallback with the `alt` of the image, and hide it for an empty `alt`.
-- [ ] [S][P2][Area: API][Owner: Unassigned][Target: Backlog] Add an `Avatar.Group` for a row of avatars that overlap, with a count of the rest.
-- [ ] [S][P2][Area: Performance][Owner: Unassigned][Target: Backlog] Honor `loading="lazy"`: start the load when the root comes into view, and not on mount.
+- [x] [S][P2][Area: API][Owner: Unassigned][Target: Done] Add `Avatar.Group` and `Avatar.Count` for a row of avatars with a limit and a count of the rest.
+- [x] [S][P2][Area: Performance][Owner: Unassigned][Target: Done] Honor `loading="lazy"`: start the load when the root comes into view, and not on mount.

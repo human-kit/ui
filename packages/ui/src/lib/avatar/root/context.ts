@@ -11,6 +11,8 @@ export type AvatarContext = {
 	/** The `alt` of the image, thus the fallback can take its name. `undefined` without an image. */
 	alt: string | undefined;
 	setAlt: (alt: string | undefined) => void;
+	/** The root element, for a lazy image that waits for it to come into view. */
+	readonly element: HTMLElement | null;
 };
 
 export function setAvatarContext(context: AvatarContext) {

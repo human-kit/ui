@@ -40,6 +40,10 @@
 					"description": "Present on the element."
 				},
 				{
+					"name": "data-index",
+					"description": "The place of the avatar in its group, from 0. Absent outside a group."
+				},
+				{
 					"name": "data-status",
 					"description": "`loading`, `loaded` or `error`."
 				}
@@ -55,6 +59,13 @@
 					"required": false,
 					"default": null,
 					"description": "The address of the image. Without it, the fallback shows."
+				},
+				{
+					"name": "loading",
+					"type": "'eager' | 'lazy'",
+					"required": false,
+					"default": "'eager'",
+					"description": "`lazy` starts the load when the avatar comes into view, and not on mount. Use it on a long\nlist of avatars, thus the ones below the fold do not all load at once."
 				},
 				{
 					"name": "alt",
@@ -126,6 +137,97 @@
 				{
 					"name": "data-status",
 					"description": "`loading` or `error`: the fallback is not on the screen while the image is."
+				}
+			]
+		},
+		{
+			"name": "Group",
+			"description": "A row of avatars, as a `role=\"group\"` named with `aria-label`. `max` limits the avatars on the screen.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The avatars, and an `Avatar.Count` for the ones past `max`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "max",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The count of avatars on the screen. The ones past it render nothing, and `Avatar.Count`\nsays how many they are. Without it, every avatar is on the screen."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the group, such as \"Assignees\". A group with no name is a group a screen\nreader cannot tell apart from the content around it."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The group element. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-group",
+					"description": "Present on the element."
+				},
+				{
+					"name": "data-overflow",
+					"description": "Present while the group has more avatars than it shows."
+				}
+			]
+		},
+		{
+			"name": "Count",
+			"description": "The count of avatars past the `max` of the group, as `+N`, and \"N more\" for the screen reader. It renders only while there are some.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[AvatarCountState]>",
+					"required": false,
+					"default": null,
+					"description": "The content in place of `+N`. It gets the overflow, the count and the limit."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name for the screen reader. Without it, \"N more\" in the locale of `LocaleProvider`."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The count element, while it is on the screen. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-count",
+					"description": "Present on the element."
 				}
 			]
 		}

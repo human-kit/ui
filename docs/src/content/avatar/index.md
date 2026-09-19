@@ -1,6 +1,6 @@
 ---
 title: Avatar
-description: A picture of a person or a thing, with a fallback for when the picture is not there, which never shows a broken image and holds the fallback back while a fast image loads.
+description: A picture of a person or a thing, with a fallback for when the picture is not there, which never shows a broken image, holds the fallback back while a fast image loads, and groups a row of avatars with a count of the rest.
 ---
 
 <script>
@@ -9,6 +9,8 @@ description: A picture of a person or a thing, with a fallback for when the pict
 	import heroSource from './demos/hero.svelte?highlight';
 	import Status from './demos/status.svelte';
 	import statusSource from './demos/status.svelte?highlight';
+	import Group from './demos/group.svelte';
+	import groupSource from './demos/group.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -49,18 +51,26 @@ The root has `data-status` for your styles: `loading`, `loaded` or `error`. `onS
 
 ## Lazy images
 
-The image loads as soon as the root mounts, thus `loading="lazy"` on `Avatar.Image` has no effect. A list of avatars below the fold loads them all. Render the list when it comes into view, or keep it short.
+Give `loading="lazy"` to `Avatar.Image` on a long list: the load then starts when the avatar comes into view, and not on mount. The status is `loading` until then, and the fallback shows after its `delay`.
+
+## A group
+
+`Avatar.Group` is a row of avatars, such as the people on a task. It is a `role="group"`: give it a name with `aria-label`. `max` limits the avatars on the screen, and the ones past it render nothing, thus they load no image. `Avatar.Count` shows how many they are, as `+N`. The screen reader hears "N more", in the locale of `LocaleProvider`.
+
+<Demo source={groupSource}><Group /></Demo>
 
 ## Usage guidelines
 
 - Give `alt` the name of the person or the thing. Give an empty `alt` when the name is beside the avatar already, thus a screen reader does not read it twice. The fallback follows the `alt`: it takes the name, or it hides.
 - Give the root a size and `overflow: hidden`, and the image `object-fit: cover`.
 - Give `delay` to the fallback on a list of avatars: a list that flashes initials is noise.
+- Give a group a name with `aria-label`. A row of pictures with no name is a row a screen reader cannot tell apart from the content around it.
 
 ## Accessibility
 
 - The image is an `<img>` with your `alt`. The root has no role of its own.
 - The fallback takes the name of the image: it is a `role="img"` named with the `alt`. A screen reader hears the name, and not the letters of the initials. An empty `alt` hides it. Without an image, it is plain content.
+- `Avatar.Group` is a `role="group"` named with your `aria-label`. `Avatar.Count` is a `role="img"` named "N more".
 - Nothing in the avatar is focusable.
 
 ## API reference

@@ -9,6 +9,8 @@
 - `Avatar.Root`
 - `Avatar.Image`
 - `Avatar.Fallback`
+- `Avatar.Group`
+- `Avatar.Count`
 
 ```svelte
 <Avatar.Root class="size-10 rounded-full">
@@ -23,6 +25,8 @@
 - Give `delay` to the fallback, such as 600, thus a fast image does not flash initials first.
 - Style the root by `data-status`: `loading`, `loaded` or `error`.
 - Read the status with `onStatusChange` on the root.
+- Give `loading="lazy"` to the image on a long list: the load starts when the avatar comes into view.
+- Put a row of avatars in `Avatar.Group` with an `aria-label` and a `max`, and an `Avatar.Count` for the ones past the limit.
 
 ## API reference
 
@@ -35,9 +39,14 @@
 - `Avatar.Fallback`
   - `delay?: number` (`0`)
   - `element?: HTMLSpanElement | null` (bindable)
+- `Avatar.Group`
+  - `max?: number`, `aria-label?: string`
+- `Avatar.Count`
+  - `children?: Snippet<[{ overflow, count, max }]>`, `aria-label?: string` ("N more", localized)
 
 ## Accessibility
 
 - The image is an `<img>` with your `alt`. The root has no role of its own.
 - The fallback takes the name of the image: it is a `role="img"` named with the `alt`. A screen reader hears the name, and not the letters of the initials. An empty `alt` hides it. Without an image, it is plain content.
+- `Avatar.Group` is a `role="group"` named with your `aria-label`. `Avatar.Count` is a `role="img"` named "N more".
 - Nothing in the avatar is focusable.

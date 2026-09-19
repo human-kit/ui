@@ -97,6 +97,19 @@ describe('Avatar', () => {
 		expect(byTestId('fallback')).toBeNull();
 	});
 
+	it('waits for the avatar to come into view with loading lazy', async () => {
+		render(AvatarTest, { src: PIXEL, lazy: true });
+		// The avatar is below a tall block: out of view until a scroll.
+		expect(byTestId('root')?.getAttribute('data-status')).toBe('loading');
+		await new Promise((done) => setTimeout(done, 150));
+		expect(byTestId('root')?.getAttribute('data-status')).toBe('loading');
+		expect(byTestId('image')).toBeNull();
+
+		byTestId('root')?.scrollIntoView();
+		await expect.poll(() => byTestId('root')?.getAttribute('data-status')).toBe('loaded');
+		expect(byTestId('image')).not.toBeNull();
+	});
+
 	it('is not in the tab order', () => {
 		render(AvatarTest, { src: null });
 		const root = byTestId('root');

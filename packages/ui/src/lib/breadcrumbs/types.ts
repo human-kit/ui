@@ -1,5 +1,12 @@
 import type { Snippet } from 'svelte';
-import type { HTMLAnchorAttributes, HTMLAttributes, HTMLOlAttributes } from 'svelte/elements';
+import type {
+	HTMLAnchorAttributes,
+	HTMLAttributes,
+	HTMLButtonAttributes,
+	HTMLOlAttributes
+} from 'svelte/elements';
+
+export type { BreadcrumbsContext } from './root/context.js';
 
 export type BreadcrumbsRootProps = Omit<HTMLAttributes<HTMLElement>, 'children' | 'class'> & {
 	/** `Breadcrumbs.List`. */
@@ -11,6 +18,15 @@ export type BreadcrumbsRootProps = Omit<HTMLAttributes<HTMLElement>, 'children' 
 	 * `LocaleProvider`. Give one when the page has two sets of breadcrumbs.
 	 */
 	'aria-label'?: string;
+	/**
+	 * The count of items past which the middle of the trail folds behind a `Breadcrumbs.Ellipsis`.
+	 * The first item and the last `maxItems - 1` stay in view. Without it, every item is in view.
+	 */
+	maxItems?: number;
+	/** True once the user unfolds the trail. Use `bind:expanded` to read it, or to fold it again. */
+	expanded?: boolean;
+	/** Called when the trail unfolds or folds. */
+	onExpandedChange?: (expanded: boolean) => void;
 	/** The `<nav>` element. Use `bind:element` to read it. */
 	element?: HTMLElement | null;
 };
@@ -52,6 +68,24 @@ export type BreadcrumbsLinkProps = Omit<
 	disabled?: boolean;
 	/** The `<a>` element, or the `<span>` without an `href`. Use `bind:element` to read it. */
 	element?: HTMLAnchorElement | HTMLSpanElement | null;
+};
+
+export type BreadcrumbsEllipsisProps = Omit<
+	HTMLButtonAttributes,
+	'children' | 'class' | 'type' | 'aria-label'
+> & {
+	/** The content of the button. Three dots without children. */
+	children?: Snippet;
+	/** The CSS class names of the button. */
+	class?: string;
+	/** The CSS class names of the `<li>` around the button. */
+	itemClass?: string;
+	/** The sign after the button, such as a `Breadcrumbs.Separator`. */
+	separator?: Snippet;
+	/** The name of the button. Without it, "Show N more pages" in the locale of `LocaleProvider`. */
+	'aria-label'?: string;
+	/** The button element, while the trail is folded. Use `bind:element` to read it. */
+	element?: HTMLButtonElement | null;
 };
 
 export type BreadcrumbsSeparatorProps = Omit<

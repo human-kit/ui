@@ -1,6 +1,6 @@
 ---
 title: Breadcrumbs
-description: The trail of pages above the one the user is on, as a nav landmark with an ordered list of links, the current page marked for the screen reader, and separators it does not read.
+description: The trail of pages above the one the user is on, as a nav landmark with an ordered list of links, the current page marked for the screen reader, separators it does not read, and a fold for a long trail.
 ---
 
 <script>
@@ -9,6 +9,8 @@ description: The trail of pages above the one the user is on, as a nav landmark 
 	import heroSource from './demos/hero.svelte?highlight';
 	import Disabled from './demos/disabled.svelte';
 	import disabledSource from './demos/disabled.svelte?highlight';
+	import Collapsed from './demos/collapsed.svelte';
+	import collapsedSource from './demos/collapsed.svelte?highlight';
 	import api from './api.json';
 </script>
 
@@ -58,6 +60,12 @@ Give `current` to the last link. It gets `aria-current="page"`, and `data-curren
 
 <Demo source={disabledSource}><Disabled /></Demo>
 
+## A long trail
+
+Give `maxItems` to fold the middle of a long trail. The first page and the last `maxItems - 1` stay in view. A `Breadcrumbs.Ellipsis` in the list stands for the rest: put it after the first item. It is a button named "Show N more pages", in the locale of `LocaleProvider`. A press unfolds the trail, and the focus moves to the first page that comes into view. `bind:expanded` reads the state, and folds the trail again.
+
+<Demo source={collapsedSource}><Collapsed /></Demo>
+
 ## The name
 
 The landmark is named "Breadcrumb", in the locale of `LocaleProvider`. Give `aria-label` for a name of your own, and always when the page has two sets of breadcrumbs. Two landmarks with one name are one to the screen reader.
@@ -75,6 +83,7 @@ The landmark is named "Breadcrumb", in the locale of `LocaleProvider`. Give `ari
 - `Breadcrumbs.List` is an `<ol>` of `<li>`: a screen reader says the count and the position of each page. It has `role="list"` in writing, for the browsers that drop a list with `list-style: none`.
 - `Breadcrumbs.Link` with `current` has `aria-current="page"`. Without an `href`, or with `disabled`, it is a `<span>`: not a link, and not a tab stop.
 - `Breadcrumbs.Separator` is `aria-hidden`.
+- `Breadcrumbs.Ellipsis` is a button with a name that says how many pages it hides. After the press, the focus lands on the first of them. The button is gone, and a focus left on nothing is a focus lost.
 - The keyboard moves through the links with `Tab`. Breadcrumbs are links on a page, not a widget with arrow keys.
 
 ## API reference

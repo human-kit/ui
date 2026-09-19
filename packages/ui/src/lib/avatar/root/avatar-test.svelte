@@ -6,11 +6,13 @@
 		src = undefined,
 		alt = 'Ada Lovelace',
 		delay = 0,
+		lazy = false,
 		onStatusChange
 	}: {
 		src?: string | null;
 		alt?: string;
 		delay?: number;
+		lazy?: boolean;
 		onStatusChange?: (status: AvatarStatus) => void;
 	} = $props();
 
@@ -18,8 +20,18 @@
 	let fallback = $state<HTMLSpanElement | null>(null);
 </script>
 
+{#if lazy}
+	<div style="height: 300vh"></div>
+{/if}
 <Avatar.Root data-testid="root" class="avatar" {onStatusChange}>
-	<Avatar.Image {src} {alt} data-testid="image" class="image" bind:element={image} />
+	<Avatar.Image
+		{src}
+		{alt}
+		loading={lazy ? 'lazy' : 'eager'}
+		data-testid="image"
+		class="image"
+		bind:element={image}
+	/>
 	<Avatar.Fallback {delay} data-testid="fallback" class="fallback" bind:element={fallback}>
 		AL
 	</Avatar.Fallback>
