@@ -17,7 +17,14 @@ import { TOP_LAYER_SELECTOR } from './click-outside';
  * region staying reachable behind a modal — is intentional: status/alert content is transient
  * and announcing it is the whole point.
  */
-const LIVE_REGION_SELECTOR = '[aria-live], [role="status"], [role="alert"], [role="log"]';
+/**
+ * An element that opts out of the hide, without being a live region itself: a toast viewport,
+ * whose toasts are announced by a live region beside it, but whose buttons must stay reachable
+ * behind a modal.
+ */
+export const HIDE_OUTSIDE_EXEMPT_ATTRIBUTE = 'data-hk-hide-outside-exempt';
+
+const LIVE_REGION_SELECTOR = `[aria-live], [role="status"], [role="alert"], [role="log"], [${HIDE_OUTSIDE_EXEMPT_ATTRIBUTE}]`;
 
 /**
  * Elements the MutationObserver must never hide when they appear while a modal is active:

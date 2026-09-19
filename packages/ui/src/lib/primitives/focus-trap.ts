@@ -3,6 +3,7 @@
  * Traps keyboard focus within a container element.
  */
 
+import { HIDE_OUTSIDE_EXEMPT_ATTRIBUTE } from './aria-hide-outside';
 import { focusWithModality, getInteractionModality } from './input-modality';
 
 const FOCUSABLE_SELECTOR = [
@@ -63,7 +64,8 @@ function resolveInitialFocus(
 	return initialFocus;
 }
 
-function getFocusableElements(container: HTMLElement): HTMLElement[] {
+/** The elements in `container` that a `Tab` can reach, in DOM order. */
+export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
 		(element) =>
 			// getClientRects covers display:none and detached nodes while still
@@ -97,6 +99,9 @@ export function focusTrap(node: HTMLElement, options: boolean | FocusTrapOptions
 		// Only the topmost active trap arbitrates Tab; ancestor traps under a
 		// nested overlay must not intercept it.
 		if (!isTopmostTrap(node)) return;
+		// A surface that stays reachable behind the modal, such as a toast viewport, manages its
+		// own Tab while the focus is in it, and sends the focus back on its own.
+		if (document.activeElement?.closest(`[${HIDE_OUTSIDE_EXEMPT_ATTRIBUTE}]`)) return;
 
 		const focusableElements = getFocusableElements(node);
 		if (focusableElements.length === 0) {
