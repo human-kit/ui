@@ -43,6 +43,7 @@
 - Keep the default `timeout` at 5 seconds or more. A user who reads slowly needs the time.
 - Give `anchor` to `add`, and put `Toast.Positioner` around the root, for a toast against an element.
 - Style the stack with `--toast-index`, `--toast-offset-y`, `--toast-height`, `--toast-frontmost-height`, `data-front` and `data-expanded`. Move the toast with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`.
+- A toast that closes is out of the stack at once, and it keeps the place it had for its exit. Cover the gap between two spread toasts with a pseudo-element, or the pointer leaves the viewport between them.
 
 ## API reference
 

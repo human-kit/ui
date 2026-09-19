@@ -86,7 +86,11 @@ export type ToastManager<Data = unknown> = {
 	readonly toasts: readonly ToastItem<Data>[];
 	/** The toasts on the screen: the newest ones, up to the limit. */
 	readonly visibleToasts: readonly ToastItem<Data>[];
-	/** The toasts on the screen that stack in the viewport: the ones without an anchor. */
+	/**
+	 * The toasts that take a place in the stack of the viewport: the ones on the screen, without
+	 * an anchor, and not on their way out. A toast through its exit keeps the place it had, and
+	 * the ones behind it move up at once.
+	 */
 	readonly stackedToasts: readonly ToastItem<Data>[];
 	/** Adds a toast, and answers its id. */
 	add: (options: ToastOptions<Data>) => string;
@@ -154,7 +158,9 @@ export function createToastManager<Data = unknown>(
 	const getLimit = options.limit ?? (() => DEFAULT_TOAST_LIMIT);
 
 	const visibleToasts = $derived(toasts.filter((toast) => !toast.limited));
-	const stackedToasts = $derived(visibleToasts.filter((toast) => !toast.anchor));
+	const stackedToasts = $derived(
+		visibleToasts.filter((toast) => !toast.anchor && toast.status !== 'ending')
+	);
 
 	function setToasts(next: ToastItem<Data>[]) {
 		toasts = applyLimit(next);

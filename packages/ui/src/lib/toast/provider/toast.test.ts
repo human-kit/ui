@@ -136,6 +136,31 @@ describe('Toast', () => {
 			expect(toasts()[1].style.getPropertyValue('--toast-index')).toBe('1');
 		});
 
+		it('moves the toasts behind up while one is on its way out, which keeps its place', async () => {
+			setup({ timeout: 0 });
+			await tick();
+
+			getManager().add({ title: 'A' });
+			const middle = getManager().add({ title: 'B' });
+			getManager().add({ title: 'C' });
+			await tick();
+			expect(toasts().map((toast) => toast.style.getPropertyValue('--toast-index'))).toEqual([
+				'0',
+				'1',
+				'2'
+			]);
+
+			getManager().close(middle);
+			await tick();
+
+			const [front, ending, behind] = toasts();
+			expect(ending.getAttribute('data-ending')).toBe('true');
+			expect(ending.style.getPropertyValue('--toast-index')).toBe('1');
+			expect(front.style.getPropertyValue('--toast-index')).toBe('0');
+			expect(behind.style.getPropertyValue('--toast-index')).toBe('1');
+			expect(getManager().stackedToasts.map((toast) => toast.title)).toEqual(['C', 'A']);
+		});
+
 		it('does not read the buttons as part of the message', async () => {
 			setup({ withAction: true });
 

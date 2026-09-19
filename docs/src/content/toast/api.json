@@ -191,7 +191,7 @@
 				},
 				{
 					"name": "data-front",
-					"description": "Present on the toast in front."
+					"description": "Present on the toast in front. A toast on its way out keeps it, thus its exit runs from its place."
 				},
 				{
 					"name": "data-limited",

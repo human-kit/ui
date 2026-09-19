@@ -105,9 +105,23 @@ Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and th
 }
 ```
 
+A toast that closes is out of the stack at once: the ones behind it move up while it fades. It keeps the `--toast-index` and `--toast-offset-y` it had, thus its exit runs from its place.
+
+The pointer must not leave the viewport on its way from one toast to the next. The spread stack has a gap between two toasts, and a pointer in the gap is out of all of them. Put a pseudo-element on the toast that covers the gap, as the demo does.
+
+```css
+.toast::after {
+	content: '';
+	position: absolute;
+	inset-inline: 0;
+	inset-block-start: 100%;
+	height: 8px;
+}
+```
+
 ## Motion
 
-`data-entering` is on the toast through the enter motion, and `data-exiting` through the exit motion. The toast leaves the DOM when the exit motion ends. Write the enter as an animation on `data-entering`. The attribute stays on for the whole motion, thus a transition would sit still in the start state. Write the exit as a transition on `data-exiting`: it is the end state, and the motion runs from where the toast is.
+`data-entering` is on the toast through the enter motion, and `data-exiting` through the exit motion. The toast leaves the DOM when the exit motion ends. Write the enter as an animation on `data-entering`. The attribute stays on for the whole motion, thus a transition would sit still in the start state. Write the exit as a transition on `data-exiting`: it is the end state, and the motion runs from where the toast is. Keep the place in the stack in that end state. A `transform` that reads only `translateY(1rem)` puts a toast from behind under the front one for its exit.
 
 ```css
 .toast[data-entering] {

@@ -43,16 +43,32 @@
 
 	const isEnding = $derived(toast.status === 'ending');
 	// A toast against an anchor is out of the stack: `index` is -1, and the vars read 0.
-	const index = $derived(manager.stackedToasts.findIndex((candidate) => candidate.id === toast.id));
+	const liveIndex = $derived(
+		manager.stackedToasts.findIndex((candidate) => candidate.id === toast.id)
+	);
 	const height = $derived(ctx.heights.get(toast.id) ?? null);
 	// The height of the toasts in front, for a stack that shifts the ones behind.
-	const offsetY = $derived.by(() => {
-		if (index <= 0) return 0;
+	const liveOffsetY = $derived.by(() => {
+		if (liveIndex <= 0) return 0;
 		let total = 0;
-		for (const candidate of manager.stackedToasts.slice(0, index)) {
+		for (const candidate of manager.stackedToasts.slice(0, liveIndex)) {
 			total += ctx.heights.get(candidate.id) ?? 0;
 		}
 		return total;
+	});
+	// A toast on its way out is out of the stack, thus the ones behind it move up at once. It
+	// keeps the place it had for its exit motion: a place of 0 would put it under the front one.
+	let lastIndex = -1;
+	let lastOffsetY = 0;
+	const index = $derived.by(() => {
+		if (isEnding) return lastIndex;
+		lastIndex = liveIndex;
+		return liveIndex;
+	});
+	const offsetY = $derived.by(() => {
+		if (isEnding) return lastOffsetY;
+		lastOffsetY = liveOffsetY;
+		return liveOffsetY;
 	});
 
 	function close() {
