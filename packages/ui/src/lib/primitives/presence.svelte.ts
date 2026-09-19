@@ -10,6 +10,7 @@
  * starts on mount and tears down (canceling any in-flight motion tracker) on destroy.
  */
 
+import { untrack } from 'svelte';
 import { trackMotionEnd, type MotionTracker } from './motion';
 
 export type PresenceOptions = {
@@ -57,7 +58,11 @@ export function createPresence(
 	options: PresenceOptions = {}
 ): Presence {
 	let isMounted = $state(options.initiallyMounted ?? false);
-	let isEntering = $state(false);
+	// A node that is in the DOM from the first render, such as a toast, must paint its first frame
+	// in the enter state. The effect below runs after the mount, and a layout read in between
+	// (a measure, a floating position) would fix the final styles first: the enter would then
+	// play backwards before it plays forwards. So the enter state starts here, at creation.
+	let isEntering = $state(!(options.initiallyMounted ?? false) && untrack(getOpen));
 	let isExiting = $state(false);
 	let tracker: MotionTracker | undefined;
 

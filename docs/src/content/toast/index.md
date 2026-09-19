@@ -105,6 +105,27 @@ Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and th
 }
 ```
 
+## Motion
+
+`data-entering` is on the toast through the enter motion, and `data-exiting` through the exit motion. The toast leaves the DOM when the exit motion ends. Write the enter as an animation on `data-entering`. The attribute stays on for the whole motion, thus a transition would sit still in the start state. Write the exit as a transition on `data-exiting`: it is the end state, and the motion runs from where the toast is.
+
+```css
+.toast[data-entering] {
+	animation: toast-in 0.4s ease-out;
+}
+
+.toast[data-exiting] {
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+@keyframes toast-in {
+	from {
+		opacity: 0;
+	}
+}
+```
+
 ## A swipe
 
 A swipe pushes the toast out through one of `swipeDirection`: `bottom` and `right` by default. The toast follows the finger with `--toast-swipe-movement-x` and `--toast-swipe-movement-y`, and it comes back when the swipe is short. `data-swipe-dismissed` and `data-swipe-direction` are on the toast for the exit.

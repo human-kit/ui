@@ -51,9 +51,19 @@
 			transform 0.2s;
 	}
 
-	:global(.anchored-toast[data-entering]),
+	:global(.anchored-toast[data-entering]) {
+		animation: anchored-toast-in 0.2s ease-out;
+	}
+
 	:global(.anchored-toast[data-exiting]) {
 		opacity: 0;
 		transform: translateY(4px);
+	}
+
+	@keyframes anchored-toast-in {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
 	}
 </style>
