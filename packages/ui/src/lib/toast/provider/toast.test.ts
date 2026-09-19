@@ -53,13 +53,17 @@ function pointer(target: Element, type: string, pointerType: 'mouse' | 'touch' =
 
 let manager: ToastManager | undefined;
 
-function setup(props: Record<string, unknown> = {}) {
-	return render(ToastTest, {
+async function setup(props: Record<string, unknown> = {}) {
+	const screen = render(ToastTest, {
 		...props,
 		onManager: (value: ToastManager) => {
 			manager = value;
 		}
 	});
+	// The real mouse rests where the file before left it. On the region, it would be a hover
+	// that stops the timers and spreads the stack out: park it on the button above the region.
+	await userEvent.hover(byTestId('before'));
+	return screen;
 }
 
 function getManager(): ToastManager {
@@ -82,8 +86,8 @@ describe('Toast', () => {
 	});
 
 	describe('region and announcement', () => {
-		it('renders nothing but the announcers while there is no toast', () => {
-			setup();
+		it('renders nothing but the announcers while there is no toast', async () => {
+			await setup();
 
 			expect(region()).toBeNull();
 			expect(document.querySelector('[role="status"][aria-live="polite"]')).not.toBeNull();
@@ -91,7 +95,7 @@ describe('Toast', () => {
 		});
 
 		it('adds a dialog with its name and its description, and announces it politely', async () => {
-			setup();
+			await setup();
 
 			await press('add');
 
@@ -114,7 +118,7 @@ describe('Toast', () => {
 		});
 
 		it('makes a high priority toast an alertdialog, and announces it assertively', async () => {
-			setup();
+			await setup();
 
 			await press('add-high');
 
@@ -124,7 +128,7 @@ describe('Toast', () => {
 		});
 
 		it('counts the toasts in the name of the region', async () => {
-			setup();
+			await setup();
 
 			await press('add');
 			await press('add');
@@ -137,7 +141,7 @@ describe('Toast', () => {
 		});
 
 		it('moves the toasts behind up while one is on its way out, which keeps its place', async () => {
-			setup({ timeout: 0 });
+			await setup({ timeout: 0 });
 			await tick();
 
 			getManager().add({ title: 'A' });
@@ -162,7 +166,7 @@ describe('Toast', () => {
 		});
 
 		it('does not read the buttons as part of the message', async () => {
-			setup({ withAction: true });
+			await setup({ withAction: true });
 
 			await press('add');
 
@@ -173,7 +177,7 @@ describe('Toast', () => {
 
 	describe('timers', () => {
 		it('closes on its own after the timeout, and leaves the DOM', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 
 			await press('add');
 			await advance(900);
@@ -186,7 +190,7 @@ describe('Toast', () => {
 		});
 
 		it('stops the timer while the pointer rests on the region', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 
 			await press('add');
 			await advance(500);
@@ -203,7 +207,7 @@ describe('Toast', () => {
 		});
 
 		it('stops the timer while the keyboard focus is in the region', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 
 			await press('add');
 			byTestId('before').focus();
@@ -223,7 +227,7 @@ describe('Toast', () => {
 		});
 
 		it('keeps a toast with timeout 0, and a loading toast', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 			await tick();
 
 			getManager().add({ title: 'Forever', timeout: 0 });
@@ -234,7 +238,7 @@ describe('Toast', () => {
 		});
 
 		it('gives a toast its full time again on an update', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 			await tick();
 
 			const id = getManager().add({ title: 'One' });
@@ -251,7 +255,7 @@ describe('Toast', () => {
 		});
 
 		it('turns a promise into loading, then success', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 			await tick();
 
 			let resolve!: (value: string) => void;
@@ -277,7 +281,7 @@ describe('Toast', () => {
 		});
 
 		it('closes all toasts at once', async () => {
-			setup();
+			await setup();
 			await tick();
 
 			getManager().add({ title: 'A' });
@@ -308,7 +312,7 @@ describe('Toast', () => {
 		});
 
 		it('renders the viewport at the end of the body by default', async () => {
-			setup({ portal: true });
+			await setup({ portal: true });
 			await press('add');
 
 			expect(region()?.parentElement?.parentElement).toBe(document.body);
@@ -316,7 +320,7 @@ describe('Toast', () => {
 		});
 
 		it('stops the timers while the tab is hidden', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 			await press('add');
 			await advance(500);
 
@@ -332,7 +336,7 @@ describe('Toast', () => {
 		});
 
 		it('does not stop the timers for a touch that passes over the region', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 			await press('add');
 
 			pointer(region()!, 'pointerenter', 'touch');
@@ -341,7 +345,7 @@ describe('Toast', () => {
 		});
 
 		it('a tap spreads the stack out and holds the timers, and a touch outside folds it back', async () => {
-			setup({ timeout: 1000 });
+			await setup({ timeout: 1000 });
 			await press('add');
 			await press('add');
 			expect(region()?.hasAttribute('data-expanded')).toBe(false);
@@ -412,7 +416,7 @@ describe('Toast', () => {
 
 	describe('announcements', () => {
 		it('reads two toasts of the same tick, and the same text twice', async () => {
-			setup();
+			await setup();
 			await tick();
 
 			getManager().add({ title: 'Same' });
@@ -427,7 +431,7 @@ describe('Toast', () => {
 		});
 
 		it('names a toast without a title by its description', async () => {
-			setup();
+			await setup();
 			await tick();
 
 			getManager().add({ description: 'Only a message' });
@@ -441,7 +445,7 @@ describe('Toast', () => {
 		});
 
 		it('does not count a toast on its way out in the name of the region', async () => {
-			setup({ timeout: 0 });
+			await setup({ timeout: 0 });
 			await tick();
 
 			const id = getManager().add({ title: 'A' });
@@ -455,7 +459,7 @@ describe('Toast', () => {
 		});
 
 		it('moves the focus on when the page closes the focused toast', async () => {
-			setup();
+			await setup();
 			await tick();
 
 			const first = getManager().add({ title: 'A' });
@@ -478,7 +482,7 @@ describe('Toast', () => {
 
 	describe('keyboard', () => {
 		it('F6 lands on the first toast, Escape closes it and the focus goes back', async () => {
-			setup();
+			await setup();
 
 			await press('add');
 			byTestId('before').focus();
@@ -493,7 +497,7 @@ describe('Toast', () => {
 		});
 
 		it('moves the focus to the next toast when the focused one closes', async () => {
-			setup();
+			await setup();
 
 			await press('add');
 			await press('add');
@@ -509,7 +513,7 @@ describe('Toast', () => {
 		});
 
 		it('Tab past the last button goes back to where the focus was', async () => {
-			setup();
+			await setup();
 
 			await press('add');
 			byTestId('before').focus();
@@ -526,7 +530,7 @@ describe('Toast', () => {
 
 	describe('buttons', () => {
 		it('the close button closes the toast', async () => {
-			setup();
+			await setup();
 
 			await press('add');
 			await press('close');
@@ -536,7 +540,7 @@ describe('Toast', () => {
 		});
 
 		it('the action closes the toast, unless keepOpen', async () => {
-			setup({ withAction: true, keepOpen: true });
+			await setup({ withAction: true, keepOpen: true });
 
 			await press('add');
 			await press('action');
@@ -547,7 +551,7 @@ describe('Toast', () => {
 
 	describe('limit', () => {
 		it('keeps the newest toasts on the screen, and the older ones inert behind', async () => {
-			setup({ limit: 2, timeout: 1000 });
+			await setup({ limit: 2, timeout: 1000 });
 
 			await press('add');
 			await press('add');
@@ -575,7 +579,7 @@ describe('Toast', () => {
 
 	describe('positioner', () => {
 		it('puts an anchored toast against its anchor, and keeps it out of the stack', async () => {
-			setup({ withPositioner: true });
+			await setup({ withPositioner: true });
 
 			await press('add');
 			await press('add-anchored');
@@ -608,7 +612,7 @@ describe('Toast', () => {
 
 	describe('swipe', () => {
 		it('follows the finger, and dismisses past the threshold', async () => {
-			setup({ swipeDirection: ['right'] });
+			await setup({ swipeDirection: ['right'] });
 
 			await press('add');
 			const toast = toasts()[0];
@@ -668,7 +672,7 @@ describe('Toast', () => {
 		});
 
 		it('comes back after a short swipe', async () => {
-			setup({ swipeDirection: ['right'] });
+			await setup({ swipeDirection: ['right'] });
 
 			await press('add');
 			const toast = toasts()[0];
@@ -704,7 +708,7 @@ describe('Toast', () => {
 		});
 
 		it('gives a little to a pull the wrong way, and no more', async () => {
-			setup({ swipeDirection: ['right'] });
+			await setup({ swipeDirection: ['right'] });
 
 			await press('add');
 			const toast = toasts()[0];
