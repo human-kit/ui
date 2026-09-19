@@ -203,6 +203,21 @@
 			"svelte": "./dist/tree/index.js",
 			"default": "./dist/tree/index.js"
 		},
+		"./avatar": {
+			"types": "./dist/avatar/index.d.ts",
+			"svelte": "./dist/avatar/index.js",
+			"default": "./dist/avatar/index.js"
+		},
+		"./breadcrumbs": {
+			"types": "./dist/breadcrumbs/index.d.ts",
+			"svelte": "./dist/breadcrumbs/index.js",
+			"default": "./dist/breadcrumbs/index.js"
+		},
+		"./separator": {
+			"types": "./dist/separator/index.d.ts",
+			"svelte": "./dist/separator/index.js",
+			"default": "./dist/separator/index.js"
+		},
 		"./input": {
 			"types": "./dist/input/index.d.ts",
 			"svelte": "./dist/input/index.js",

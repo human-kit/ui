@@ -1,0 +1,133 @@
+{
+	"component": "avatar",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The picture and its fallback. It holds the status of the image, and it has no role of its own.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "`Avatar.Image` and `Avatar.Fallback`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The root element. Use `bind:element` to read it."
+				},
+				{
+					"name": "onStatusChange",
+					"type": "(status: AvatarStatus) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the image starts to load, loads, or fails."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-root",
+					"description": "Present on the element."
+				},
+				{
+					"name": "data-status",
+					"description": "`loading`, `loaded` or `error`."
+				}
+			]
+		},
+		{
+			"name": "Image",
+			"description": "The picture. It loads the image off the screen first, and it renders the `<img>` once the image is there.",
+			"props": [
+				{
+					"name": "src",
+					"type": "string | null",
+					"required": false,
+					"default": null,
+					"description": "The address of the image. Without it, the fallback shows."
+				},
+				{
+					"name": "alt",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The text in place of the image. Give the name of the person or the thing. Give an empty\nstring when the name is beside the avatar already, thus a screen reader does not read it\ntwice."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLImageElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The image element, once the image is on the screen. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-image",
+					"description": "Present on the element."
+				}
+			]
+		},
+		{
+			"name": "Fallback",
+			"description": "What shows in place of the image, while the image is not on the screen. `delay` holds it back while the image loads.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content in place of the image, such as initials or an icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "delay",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "The time in milliseconds before the fallback shows while the image loads. A fallback that\nflashes before a fast image is noise: 300 or 600 hides it on a good connection. It shows at\nonce when the image fails, or when there is no image."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The fallback element, while it is on the screen. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-fallback",
+					"description": "Present on the element."
+				},
+				{
+					"name": "data-status",
+					"description": "`loading` or `error`: the fallback is not on the screen while the image is."
+				}
+			]
+		}
+	]
+}

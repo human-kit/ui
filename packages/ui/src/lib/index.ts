@@ -3,6 +3,8 @@
 // Components (namespace exports)
 export { Accordion } from './accordion/index.js';
 export { Autocomplete } from './autocomplete/index.js';
+export { Avatar } from './avatar/index.js';
+export { Breadcrumbs } from './breadcrumbs/index.js';
 export { Button } from './button/index.js';
 export { Checkbox } from './checkbox/index.js';
 export { CheckboxGroup } from './checkbox-group/index.js';
@@ -35,6 +37,7 @@ export { Tree } from './tree/index.js';
 // Simple components
 export { default as Input } from './input/index.js';
 export { default as Label } from './label/index.js';
+export { default as Separator } from './separator/index.js';
 export { default as Dropzone } from './dropzone/index.js';
 export { default as LocaleProvider } from './locale-provider/index.js';
 export { Portal } from './portal/index.js';
@@ -42,6 +45,7 @@ export { OverflowRow, type OverflowRowState } from './overflow-row/index.js';
 export { default as TextArea } from './textarea/index.js';
 
 export * from './locale-provider/index.js';
+export type { SeparatorOrientation, SeparatorProps } from './separator/index.js';
 
 // Re-export named exports from components
 export * from './accordion/index.js';
@@ -49,6 +53,8 @@ export * from './autocomplete/index.js';
 export * from './button/index.js';
 export * from './checkbox/index.js';
 export * from './checkbox-group/index.js';
+export * from './avatar/index.js';
+export * from './breadcrumbs/index.js';
 export * from './collapsible/index.js';
 export * from './combobox/index.js';
 export * from './calendar/index.js';

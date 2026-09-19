@@ -1,0 +1,53 @@
+{
+	"component": "separator",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "A line between two groups of content. It is a `role=\"separator\"` element, or `role=\"none\"` when decorative. Give it a size with CSS.",
+			"props": [
+				{
+					"name": "orientation",
+					"type": "SeparatorOrientation",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "The direction of the line. A horizontal separator sits between two blocks, one above the\nother. A vertical one sits between two items side by side, such as in a toolbar."
+				},
+				{
+					"name": "decorative",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Makes the separator a visual line only. A screen reader then skips it. Use it for a line\nthat repeats a break the content already makes, such as a border between two sections\nwith headings. Without it, the separator is a `role=\"separator\"` element, which a screen\nreader reads as a break between two groups of content."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The separator element. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-decorative",
+					"description": "Present when the separator is decorative."
+				},
+				{
+					"name": "data-orientation",
+					"description": "`horizontal` or `vertical`."
+				},
+				{
+					"name": "data-separator-root",
+					"description": "Present on the element."
+				}
+			]
+		}
+	]
+}

@@ -338,6 +338,14 @@ const LOCALIZED_STRINGS = {
 		de: '{count} Elemente nach {label} verschoben',
 		it: '{count} elementi spostati in {label}'
 	},
+	'breadcrumbs.label': {
+		en: 'Breadcrumb',
+		es: 'Ruta de navegación',
+		pt: 'Trilha de navegação',
+		fr: "Fil d'Ariane",
+		de: 'Brotkrumennavigation',
+		it: 'Percorso di navigazione'
+	},
 	'segment.empty': {
 		en: 'Empty',
 		es: 'Vacío',
