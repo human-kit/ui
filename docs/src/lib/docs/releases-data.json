@@ -1,7 +1,63 @@
 [
 	{
+		"version": "1.0.0-beta.8",
+		"date": "2026-09-20T14:55:55.147Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 101,
+						"prUrl": "https://github.com/human-kit/ui/pull/101",
+						"html": "<p>Add the Avatar primitive with <code>Root</code>, <code>Image</code> and <code>Fallback</code>. The image loads off the screen first, and the <code>&lt;img&gt;</code> renders once it is there, thus a broken image icon never shows. The fallback shows while the image is not on the screen, at once for a failure or a missing <code>src</code>, and after <code>delay</code> milliseconds while a slow image loads. The root has <code>data-status</code> and <code>onStatusChange</code> for <code>loading</code>, <code>loaded</code> and <code>error</code>. The fallback takes the name of the image as a <code>role=&quot;img&quot;</code>, and <code>loading=&quot;lazy&quot;</code> starts the load when the avatar comes into view. <code>Avatar.Group</code> is a named <code>role=&quot;group&quot;</code> with a <code>max</code>, and <code>Avatar.Count</code> says how many avatars are past it, as <code>+N</code> on the screen and &quot;N more&quot; for the screen reader.</p>"
+					},
+					{
+						"pr": 101,
+						"prUrl": "https://github.com/human-kit/ui/pull/101",
+						"html": "<p>Add the Breadcrumbs primitive with <code>Root</code>, <code>List</code>, <code>Item</code>, <code>Link</code> and <code>Separator</code>. The root is a <code>&lt;nav&gt;</code> landmark named &quot;Breadcrumb&quot; in the locale of <code>LocaleProvider</code>, the list is an <code>&lt;ol&gt;</code> of <code>&lt;li&gt;</code>, and <code>current</code> gives the last link <code>aria-current=&quot;page&quot;</code>. A link without an <code>href</code>, or with <code>disabled</code>, is a <code>&lt;span&gt;</code> out of the tab order. The separator is <code>aria-hidden</code>, in the item after the link, thus the list holds pages only. <code>maxItems</code> folds the middle of a long trail behind <code>Breadcrumbs.Ellipsis</code>, a button named &quot;Show N more pages&quot; that unfolds it and moves the focus to the first page that comes into view.</p>"
+					},
+					{
+						"pr": 98,
+						"prUrl": "https://github.com/human-kit/ui/pull/98",
+						"html": "<p>Add the Progress primitive with <code>Root</code>, <code>Label</code>, <code>Track</code>, <code>Indicator</code> and <code>Value</code>. The root is the <code>role=&quot;progressbar&quot;</code> element with <code>aria-valuemin</code>, <code>aria-valuemax</code>, <code>aria-valuenow</code> and <code>aria-valuetext</code>; <code>value={null}</code> makes it indeterminate, with no number for the screen reader. The label names the bar through <code>aria-labelledby</code>, the value is <code>aria-hidden</code> because the bar already gives it, and the text follows the locale of <code>LocaleProvider</code> as a percentage of the range or in a unit through <code>format</code>. The indicator fills from the start edge of the text direction, or from the bottom of a vertical track, and <code>bind:context</code> gives <code>percent</code> and <code>status</code> for a shape of your own.</p>"
+					},
+					{
+						"pr": 95,
+						"prUrl": "https://github.com/human-kit/ui/pull/95",
+						"html": "<p>Add the Select primitive with <code>Root</code>, <code>Label</code>, <code>Trigger</code>, <code>Value</code>, <code>Popover</code>, <code>List</code>, <code>Item</code> and <code>ItemIndicator</code>: a form field with one value from a list of options, or more than one with <code>selectionMode=&quot;multiple&quot;</code>. The trigger is a <code>role=&quot;combobox&quot;</code> button named by the label and the value together, the list is a <code>ListBox</code> in a popover that takes the focus on the selected option, and a hidden native <code>&lt;select&gt;</code> sends the value with the form. It has the keyboard of the WAI-ARIA select-only combobox: the arrows, <code>Home</code>, <code>End</code>, <code>PageUp</code>, <code>PageDown</code> and typed characters open the list and move through it, <code>Enter</code>, <code>Space</code> and <code>Alt+ArrowUp</code> select, and <code>Escape</code> and <code>Tab</code> close. Includes documentation and demo coverage.</p>\n<p>The keyboard-navigation primitive gains a <code>typeahead(char)</code> method, for a widget that opens on a character typed outside the list.</p>"
+					},
+					{
+						"pr": 101,
+						"prUrl": "https://github.com/human-kit/ui/pull/101",
+						"html": "<p>Add the Separator primitive: a <code>role=&quot;separator&quot;</code> line with <code>aria-orientation=&quot;vertical&quot;</code> for a vertical one, and <code>role=&quot;none&quot;</code> with <code>decorative</code> for a line the content already makes. With a <code>value</code>, it is a window splitter: a tab stop with <code>aria-valuenow</code>, which the arrow keys, <code>Home</code>, <code>End</code>, <code>Enter</code> and a pointer drag move.</p>"
+					},
+					{
+						"pr": 96,
+						"prUrl": "https://github.com/human-kit/ui/pull/96",
+						"html": "<p>Add the <code>Slider</code> component: a number, or a range of numbers, on a track. Each thumb holds a native range input for the form and for screen readers, the keyboard follows the text direction, and the text of the value comes from <code>Intl.NumberFormat</code> in the locale.</p>"
+					},
+					{
+						"pr": 97,
+						"prUrl": "https://github.com/human-kit/ui/pull/97",
+						"html": "<p>Add the <code>Tooltip</code> component: a short description of a control on hover or on keyboard focus, with <code>role=&quot;tooltip&quot;</code> and <code>aria-describedby</code> on the trigger, a delay that the next tooltip in a row skips, content the pointer can cross to and rest on, a long press for touch that <code>openOnLongPress={false}</code> turns off, a panel that follows the pointer with <code>followPointer</code>, and an arrow. The <code>floating</code> primitive learned to position an arrow.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 95,
+						"prUrl": "https://github.com/human-kit/ui/pull/95",
+						"html": "<p>After an outside press on nothing focusable, Popover, Menu, Dialog, Drawer, DatePicker and Select return the focus to the trigger, with no focus ring. Dialog and Drawer restored it too early: the press moved the focus to the body right after. The focus fell to the body before, and a keyboard user had nowhere to continue from. A press on a focusable element keeps the focus there, and the trigger no longer shows a <code>data-focused</code> it does not have.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.7",
-		"date": "2026-09-08T00:51:56.519Z",
+		"date": "2026-09-07T21:57:34-03:00",
 		"sections": [
 			{
 				"type": "Minor",
