@@ -34,6 +34,14 @@ const LOCALIZED_STRINGS = {
 		de: 'Vorherige Seite',
 		it: 'Pagina precedente'
 	},
+	'select.placeholder': {
+		en: 'Select an option',
+		es: 'Seleccione una opción',
+		pt: 'Selecione uma opção',
+		fr: 'Sélectionnez une option',
+		de: 'Option auswählen',
+		it: 'Seleziona un’opzione'
+	},
 	'datePicker.calendar': {
 		en: 'Calendar',
 		es: 'Calendario',

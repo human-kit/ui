@@ -35,10 +35,19 @@ Canonical implementation lives in `primitives/input-modality.ts`:
 
 ## Restore focus
 
-On overlay/popover close, transient trigger state is allowed:
+On overlay/popover close, the trigger shows only the focus it holds:
 
-- `escape-key` => `data-focused=true` and `data-focus-visible=true`.
-- `outside-press` => `data-focused=true` and `data-focus-visible` absent.
+- `escape-key`, `close-press`, `imperative-action` => the focus returns to the trigger:
+  `data-focused=true`, and `data-focus-visible=true` when the close came from the keyboard.
+- `outside-press` on a focusable element => the focus stays there, and the trigger shows no
+  focus attributes.
+- `outside-press` on nothing focusable (the focus fell to the body) => the focus returns to
+  the trigger with the pointer modality: `data-focused=true` and `data-focus-visible` absent.
+  Without it a keyboard user has nowhere to continue from.
+  Inside a modal popover every outside press is of this kind, because the page is inert.
+- `focus-out`, `scroll` => the focus stays where the user put it.
+
+`focusFellToBody()` and `applyTriggerCloseFocusState()` in `primitives/trigger-focus-state.ts` are the shared implementation; Popover and Menu only decide which reasons return the focus.
 
 ## Recommended Implementation
 
@@ -55,7 +64,7 @@ On overlay/popover close, transient trigger state is allowed:
 The following components implement this contract:
 
 - **Popover** — trigger + content, restore focus on close.
-- **Dialog** — trigger + overlay/content, nested stack support.
+- **Dialog** — trigger + overlay/content, nested stack support. After an outside press the restore waits a frame, because the press moves the focus to the body after the close.
 - **Drawer** — trigger + overlay/content, shares the modal layer stack with Dialog. Restore also covers the `swipe` close reason (resolves to `pointer`), and retries the trigger focus after `ariaHideOutside` lifts `inert`.
 - **Menu** — trigger + content, restore focus on close (`menu/root/focus-state.ts`). `Menu.ContextTrigger` is the same contract on a surface instead of a button: it registers as the trigger ref, so Escape and item selection restore focus to it. It is a tab stop by default so there is something to restore focus to.
 - **DatePicker** — segment spinbuttons, trigger, popover (calendar).
