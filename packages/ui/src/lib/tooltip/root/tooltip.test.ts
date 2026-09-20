@@ -53,6 +53,19 @@ async function leaveAway(trigger: Element) {
 	await moveTo(-1000, -1000);
 }
 
+/**
+ * Parks the real mouse in a corner of the viewport. It rests where the file before left it, and
+ * on the trigger it is a hover that opens the tooltip and holds it open under the synthetic
+ * pointer of these tests.
+ */
+async function parkMouse() {
+	const spot = document.createElement('div');
+	spot.style.cssText = 'position: fixed; right: 0; bottom: 0; width: 8px; height: 8px;';
+	document.body.append(spot);
+	await userEvent.hover(spot);
+	spot.remove();
+}
+
 /** Runs the timers `ms` forward, and lets the DOM catch up. */
 async function advance(ms: number) {
 	await vi.advanceTimersByTimeAsync(ms);
@@ -62,7 +75,8 @@ async function advance(ms: number) {
 type Change = [boolean, TooltipOpenChangeDetails['reason']];
 
 describe('Tooltip', () => {
-	beforeEach(() => {
+	beforeEach(async () => {
+		await parkMouse();
 		resetTooltipGroup();
 		vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
 	});
