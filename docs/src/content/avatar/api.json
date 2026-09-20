@@ -1,0 +1,235 @@
+{
+	"component": "avatar",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The picture and its fallback. It holds the status of the image, and it has no role of its own.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "`Avatar.Image` and `Avatar.Fallback`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The root element. Use `bind:element` to read it."
+				},
+				{
+					"name": "onStatusChange",
+					"type": "(status: AvatarStatus) => void",
+					"required": false,
+					"default": null,
+					"description": "Called when the image starts to load, loads, or fails."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-root",
+					"description": "Present on the element."
+				},
+				{
+					"name": "data-index",
+					"description": "The place of the avatar in its group, from 0. Absent outside a group."
+				},
+				{
+					"name": "data-status",
+					"description": "`loading`, `loaded` or `error`."
+				}
+			]
+		},
+		{
+			"name": "Image",
+			"description": "The picture. It loads the image off the screen first, and it renders the `<img>` once the image is there.",
+			"props": [
+				{
+					"name": "src",
+					"type": "string | null",
+					"required": false,
+					"default": null,
+					"description": "The address of the image. Without it, the fallback shows."
+				},
+				{
+					"name": "loading",
+					"type": "'eager' | 'lazy'",
+					"required": false,
+					"default": "'eager'",
+					"description": "`lazy` starts the load when the avatar comes into view, and not on mount. Use it on a long\nlist of avatars, thus the ones below the fold do not all load at once."
+				},
+				{
+					"name": "alt",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The text in place of the image. Give the name of the person or the thing. Give an empty\nstring when the name is beside the avatar already, thus a screen reader does not read it\ntwice."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLImageElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The image element, once the image is on the screen. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-image",
+					"description": "Present on the element."
+				}
+			]
+		},
+		{
+			"name": "Fallback",
+			"description": "What shows in place of the image, while the image is not on the screen, named with its `alt`. `delay` holds it back while the image loads.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content in place of the image, such as initials or an icon."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "delay",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "The time in milliseconds before the fallback shows while the image loads. A fallback that\nflashes before a fast image is noise: 300 or 600 hides it on a good connection. It shows at\nonce when the image fails, or when there is no image."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The fallback element, while it is on the screen. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-fallback",
+					"description": "Present on the element."
+				},
+				{
+					"name": "data-status",
+					"description": "`loading` or `error`: the fallback is not on the screen while the image is."
+				}
+			]
+		},
+		{
+			"name": "Group",
+			"description": "A row of avatars, as a `role=\"group\"` named with `aria-label`. `max` limits the avatars on the screen.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The avatars, and an `Avatar.Count` for the ones past `max`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "max",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The count of avatars on the screen. The ones past it render nothing, and `Avatar.Count`\nsays how many they are. Without it, every avatar is on the screen."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the group, such as \"Assignees\". A group with no name is a group a screen\nreader cannot tell apart from the content around it."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The group element. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-group",
+					"description": "Present on the element."
+				},
+				{
+					"name": "data-overflow",
+					"description": "Present while the group has more avatars than it shows."
+				}
+			]
+		},
+		{
+			"name": "Count",
+			"description": "The count of avatars past the `max` of the group, as `+N`, and \"N more\" for the screen reader. It renders only while there are some.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[AvatarCountState]>",
+					"required": false,
+					"default": null,
+					"description": "The content in place of `+N`. It gets the overflow, the count and the limit."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name for the screen reader. Without it, \"N more\" in the locale of `LocaleProvider`."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The count element, while it is on the screen. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-avatar-count",
+					"description": "Present on the element."
+				}
+			]
+		}
+	]
+}

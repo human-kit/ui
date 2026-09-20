@@ -1,0 +1,129 @@
+{
+	"component": "separator",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "A line between two groups of content: a `role=\"separator\"` element, or `role=\"none\"` when decorative. With a `value`, a window splitter the keyboard and the pointer move. Give it a size with CSS.",
+			"props": [
+				{
+					"name": "orientation",
+					"type": "SeparatorOrientation",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "The direction of the line. A horizontal separator sits between two blocks, one above the\nother. A vertical one sits between two items side by side, such as in a toolbar."
+				},
+				{
+					"name": "decorative",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Makes the separator a visual line only. A screen reader then skips it. Use it for a line\nthat repeats a break the content already makes, such as a border between two sections\nwith headings. Without it, the separator is a `role=\"separator\"` element, which a screen\nreader reads as a break between two groups of content. A separator with a `value` keeps\nits role."
+				},
+				{
+					"name": "value",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Makes the separator a window splitter the user moves: the size of the pane before it, as a\nnumber between `min` and `max`. Use `bind:value` and give the pane its size from it. The\nsplitter is a tab stop. The arrow keys move it, `Home` and `End` send it to the ends, and\n`Enter` folds the pane and unfolds it. The pointer drags it along its parent."
+				},
+				{
+					"name": "min",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "The value with the pane folded."
+				},
+				{
+					"name": "max",
+					"type": "number",
+					"required": false,
+					"default": "100",
+					"description": "The value with the pane at its largest."
+				},
+				{
+					"name": "step",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "The move of one arrow key."
+				},
+				{
+					"name": "largeStep",
+					"type": "number",
+					"required": false,
+					"default": "10",
+					"description": "The move of one arrow key with `Shift`."
+				},
+				{
+					"name": "onValueChange",
+					"type": "(value: number) => void",
+					"required": false,
+					"default": null,
+					"description": "Called with the value after each move."
+				},
+				{
+					"name": "aria-controls",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the pane the splitter sizes, for `aria-controls`."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Holds the splitter still. It stays a tab stop, and it says it is disabled."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The separator element. Use `bind:element` to read it."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-decorative",
+					"description": "Present when the separator is decorative."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present on a disabled splitter."
+				},
+				{
+					"name": "data-dragging",
+					"description": "Present while the pointer drags the splitter."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the splitter has the focus from the keyboard."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the splitter has the focus."
+				},
+				{
+					"name": "data-movable",
+					"description": "Present on a window splitter: a separator with a `value`."
+				},
+				{
+					"name": "data-orientation",
+					"description": "`horizontal` or `vertical`."
+				},
+				{
+					"name": "data-separator-root",
+					"description": "Present on the element."
+				}
+			]
+		}
+	]
+}

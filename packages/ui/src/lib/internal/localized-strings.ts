@@ -338,6 +338,30 @@ const LOCALIZED_STRINGS = {
 		de: '{count} Elemente nach {label} verschoben',
 		it: '{count} elementi spostati in {label}'
 	},
+	'avatar.more': {
+		en: '{count} more',
+		es: '{count} más',
+		pt: '{count} mais',
+		fr: '{count} de plus',
+		de: '{count} weitere',
+		it: '{count} altri'
+	},
+	'breadcrumbs.label': {
+		en: 'Breadcrumb',
+		es: 'Ruta de navegación',
+		pt: 'Trilha de navegação',
+		fr: "Fil d'Ariane",
+		de: 'Brotkrumennavigation',
+		it: 'Percorso di navigazione'
+	},
+	'breadcrumbs.showMore': {
+		en: 'Show {count} more pages',
+		es: 'Mostrar {count} páginas más',
+		pt: 'Mostrar mais {count} páginas',
+		fr: 'Afficher {count} pages de plus',
+		de: '{count} weitere Seiten anzeigen',
+		it: 'Mostra altre {count} pagine'
+	},
 	'segment.empty': {
 		en: 'Empty',
 		es: 'Vacío',

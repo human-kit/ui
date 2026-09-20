@@ -63,8 +63,11 @@ export const nav: NavGroup[] = [
 		label: 'Structure',
 		items: [
 			{ slug: 'accordion', title: 'Accordion' },
+			{ slug: 'avatar', title: 'Avatar' },
+			{ slug: 'breadcrumbs', title: 'Breadcrumbs' },
 			{ slug: 'collapsible', title: 'Collapsible' },
 			{ slug: 'progress', title: 'Progress' },
+			{ slug: 'separator', title: 'Separator' },
 			{ slug: 'table', title: 'Table' },
 			{ slug: 'tabs', title: 'Tabs' },
 			{ slug: 'tree', title: 'Tree' }
