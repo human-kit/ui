@@ -88,6 +88,11 @@
 			"svelte": "./dist/slider/index.js",
 			"default": "./dist/slider/index.js"
 		},
+		"./tooltip": {
+			"types": "./dist/tooltip/index.d.ts",
+			"svelte": "./dist/tooltip/index.js",
+			"default": "./dist/tooltip/index.js"
+		},
 		"./switch": {
 			"types": "./dist/switch/index.d.ts",
 			"svelte": "./dist/switch/index.js",
