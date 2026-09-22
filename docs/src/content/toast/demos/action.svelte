@@ -25,7 +25,7 @@
 	<!-- The action closes the toast on the press: the offer is taken. -->
 	<Toast.Viewport class="toast-viewport">
 		{#snippet children(toast)}
-			<Toast.Root {toast} class="toast flex items-center gap-3">
+			<Toast.Root {toast} class="toast toast-inline flex items-center gap-3">
 				<Toast.Content class="toast-content flex-1">
 					<Toast.Title class="text-sm text-neutral-900 dark:text-white" />
 				</Toast.Content>
@@ -45,3 +45,11 @@
 		{/snippet}
 	</Toast.Viewport>
 </Toast.Provider>
+
+<style>
+	/* The buttons of this toast are in the flow, not in the corner: the padding of the shared
+	   toast leaves room for a close button that floats, and here that room is a gap. */
+	:global(.toast-inline) {
+		padding-inline-end: 0.75rem;
+	}
+</style>

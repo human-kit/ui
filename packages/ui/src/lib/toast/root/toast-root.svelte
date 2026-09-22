@@ -44,16 +44,21 @@
 	let descriptionIds = $state<string[]>([]);
 
 	const isEnding = $derived(toast.status === 'ending');
+	// The order in the corner: the toasts on the screen, and behind them the ones that wait past
+	// the limit. A toast that waits takes the place after the stack, thus it comes forward one
+	// step when a place frees. A place of 0 would put it in front, and it would walk from there.
+	const stackOrder = $derived([
+		...manager.stackedToasts,
+		...manager.toasts.filter((candidate) => candidate.limited && !candidate.anchor)
+	]);
 	// A toast against an anchor is out of the stack: `index` is -1, and the vars read 0.
-	const liveIndex = $derived(
-		manager.stackedToasts.findIndex((candidate) => candidate.id === toast.id)
-	);
+	const liveIndex = $derived(stackOrder.findIndex((candidate) => candidate.id === toast.id));
 	const height = $derived(ctx.heights.get(toast.id) ?? null);
 	// The height of the toasts in front, for a stack that shifts the ones behind.
 	const liveOffsetY = $derived.by(() => {
 		if (liveIndex <= 0) return 0;
 		let total = 0;
-		for (const candidate of manager.stackedToasts.slice(0, liveIndex)) {
+		for (const candidate of stackOrder.slice(0, liveIndex)) {
 			total += ctx.heights.get(candidate.id) ?? 0;
 		}
 		return total;
@@ -275,7 +280,7 @@ before it reaches the buttons in it. -->
 	data-toast-id={toast.id}
 	data-type={toast.type}
 	data-priority={toast.priority}
-	data-front={index === 0 || undefined}
+	data-front={(index === 0 && !isEnding && !toast.limited) || undefined}
 	data-anchored={Boolean(toast.anchor) || undefined}
 	data-limited={toast.limited || undefined}
 	data-expanded={ctx.expanded || undefined}

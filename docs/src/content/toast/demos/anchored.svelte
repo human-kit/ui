@@ -51,6 +51,7 @@
 			transform 0.2s;
 	}
 
+	/* The enter moves `translate`, and the exit `transform`: the two never fight for one property. */
 	:global(.anchored-toast[data-entering]) {
 		animation: anchored-toast-in 0.2s ease-out;
 	}
@@ -63,7 +64,7 @@
 	@keyframes anchored-toast-in {
 		from {
 			opacity: 0;
-			transform: translateY(4px);
+			translate: 0 4px;
 		}
 	}
 

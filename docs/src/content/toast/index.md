@@ -91,7 +91,7 @@ The timers stop while the pointer rests on the viewport, and while the keyboard 
 
 The viewport shows the newest toasts up to `limit`: 3 by default. The older ones wait behind, hidden and inert, with their timers stopped, and they come forward as the newer ones close.
 
-Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and the viewport gets `--toast-frontmost-height`. `data-front` marks the toast in front. `data-expanded` is on the viewport and on each toast while the pointer rests on the viewport, or while the focus is in it. A tap on a toast holds it on until a touch outside the viewport. The viewport of the first demo stacks the toasts in the corner with them, and spreads them out on `data-expanded`. Its source is in `viewport.svelte`, under the demo.
+Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and the viewport gets `--toast-frontmost-height`. `data-front` marks the one toast in front. A toast on its way out drops it, and it keeps the place it had. `data-expanded` is on the viewport and on each toast while the pointer rests on the viewport, or while the focus is in it. A tap on a toast holds it on until a touch outside the viewport. The viewport of the first demo stacks the toasts in the corner with them, and spreads them out on `data-expanded`. Its source is in `viewport.svelte`, under the demo.
 
 ```css
 .toast {
@@ -105,7 +105,9 @@ Each toast gets `--toast-index`, `--toast-offset-y` and `--toast-height`, and th
 }
 ```
 
-A toast that closes is out of the stack at once: the ones behind it move up while it fades. It keeps the `--toast-index` and `--toast-offset-y` it had, thus its exit runs from its place.
+A toast that closes is out of the stack at once: the ones behind it move up while it fades. It keeps the `--toast-index` and `--toast-offset-y` it had, thus its exit runs from its place. A rule that hides the toasts behind must let it pass, with `:not([data-ending])`.
+
+A toast past the limit waits in the place behind the stack. It comes forward one step when a place frees.
 
 The pointer must not leave the viewport on its way from one toast to the next. The spread stack has a gap between two toasts, and a pointer in the gap is out of all of them. Put a pseudo-element on the toast that covers the gap, as the demo does.
 
@@ -123,7 +125,14 @@ The pointer must not leave the viewport on its way from one toast to the next. T
 
 `data-entering` is on the toast through the enter motion, and `data-exiting` through the exit motion. The toast leaves the DOM when the exit motion ends. Write the enter as an animation on `data-entering`. The attribute stays on for the whole motion, thus a transition would sit still in the start state. Write the exit as a transition on `data-exiting`: it is the end state, and the motion runs from where the toast is. Keep the place in the stack in that end state. A `transform` that reads only `translateY(1rem)` puts a toast from behind under the front one for its exit.
 
+Move the enter with `translate`, and leave `transform` to the place in the stack. A toast that comes in while the next one arrives is pushed back at that moment. With the enter on `transform` too, the two fight for the property, and the toast jumps to its new place.
+
 ```css
+.toast {
+	transform: translateY(calc(var(--toast-index) * -12px));
+	transition: transform 0.4s;
+}
+
 .toast[data-entering] {
 	animation: toast-in 0.4s ease-out;
 }
@@ -136,6 +145,7 @@ The pointer must not leave the viewport on its way from one toast to the next. T
 @keyframes toast-in {
 	from {
 		opacity: 0;
+		translate: 0 1rem;
 	}
 }
 ```

@@ -50,6 +50,7 @@
 		transform: translateX(var(--toast-swipe-movement-x)) translateY(var(--toast-y))
 			scale(var(--toast-scale));
 		transform-origin: bottom center;
+		translate: 0 0;
 		transition:
 			transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
 			opacity 0.3s;
@@ -71,8 +72,9 @@
 		background: var(--color-neutral-900);
 	}
 
-	/* The toasts behind the front one take its height while the stack is collapsed. */
-	:global(.toast:not([data-front]):not([data-expanded])) {
+	/* The toasts behind the front one take its height while the stack is collapsed. A toast on
+	   its way out is none of them: it shows what it said until it is gone. */
+	:global(.toast:not([data-front]):not([data-expanded]):not([data-ending])) {
 		height: var(--toast-frontmost-height);
 		overflow: hidden;
 	}
@@ -81,7 +83,7 @@
 		transition: opacity 0.2s;
 	}
 
-	:global(.toast:not([data-front]):not([data-expanded]) .toast-content) {
+	:global(.toast:not([data-front]):not([data-expanded]):not([data-ending]) .toast-content) {
 		opacity: 0;
 	}
 
@@ -102,13 +104,14 @@
 		transition: none;
 	}
 
-	/* The enter is an animation: `data-entering` stays on for the whole motion, thus a transition
-	   would sit still in the start state. The exit is a transition: `data-exiting` is the end
-	   state, and the motion runs from where the toast is. The toast keeps its place in the stack
-	   through the exit, and it sinks from there. */
+	/* The enter is an animation, because `data-entering` stays on for the whole motion: a
+	   transition would sit still in the start state. It moves `translate`, not `transform`, thus
+	   the place in the stack stays with the transition. A toast that comes in while the next one
+	   arrives is pushed back, and it slides back while it rises. The exit is a transition:
+	   `data-exiting` is the end state, and the motion runs from where the toast is. The toast
+	   keeps its place in the stack through the exit, and it sinks from there. */
 	:global(.toast[data-entering]) {
 		animation: toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-		transition: none;
 	}
 
 	:global(.toast[data-exiting]) {
@@ -120,7 +123,7 @@
 	@keyframes toast-in {
 		from {
 			opacity: 0;
-			transform: translateY(1rem);
+			translate: 0 1rem;
 		}
 	}
 

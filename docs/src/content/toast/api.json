@@ -191,11 +191,11 @@
 				},
 				{
 					"name": "data-front",
-					"description": "Present on the toast in front. A toast on its way out keeps it, thus its exit runs from its place."
+					"description": "Present on the one toast in front. A toast on its way out drops it, and it keeps the place it had for its exit."
 				},
 				{
 					"name": "data-limited",
-					"description": "Present on a toast past the limit. It is inert."
+					"description": "Present on a toast past the limit. It is inert, and it waits in the place behind the stack."
 				},
 				{
 					"name": "data-priority",

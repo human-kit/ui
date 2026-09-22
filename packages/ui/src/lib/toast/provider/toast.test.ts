@@ -165,6 +165,23 @@ describe('Toast', () => {
 			expect(getManager().stackedToasts.map((toast) => toast.title)).toEqual(['C', 'A']);
 		});
 
+		it('gives up the front to the toast behind while it goes', async () => {
+			await setup({ timeout: 0 });
+			await tick();
+
+			getManager().add({ title: 'A' });
+			const front = getManager().add({ title: 'B' });
+			await tick();
+			expect(toasts()[0].getAttribute('data-front')).toBe('true');
+
+			getManager().close(front);
+			await tick();
+
+			const [ending, behind] = toasts();
+			expect(ending.hasAttribute('data-front')).toBe(false);
+			expect(behind.getAttribute('data-front')).toBe('true');
+		});
+
 		it('does not read the buttons as part of the message', async () => {
 			await setup({ withAction: true });
 
@@ -614,6 +631,28 @@ describe('Toast', () => {
 			expect(left.hasAttribute('data-ending')).toBe(false);
 			await advance(100);
 			await expect.poll(() => toasts().length).toBe(0);
+		});
+
+		it('gives a toast past the limit the place behind the stack', async () => {
+			await setup({ limit: 2, timeout: 0 });
+			await tick();
+
+			getManager().add({ title: 'A' });
+			getManager().add({ title: 'B' });
+			getManager().add({ title: 'C' });
+			await tick();
+
+			// The waiting toast must not take the place in front: it would come forward from
+			// there, over the toast the user reads, when a place frees.
+			const waiting = toasts()[2];
+			expect(waiting.getAttribute('data-limited')).toBe('true');
+			expect(waiting.hasAttribute('data-front')).toBe(false);
+			expect(waiting.style.getPropertyValue('--toast-index')).toBe('2');
+
+			getManager().close(toasts()[0].dataset.toastId);
+			await tick();
+
+			expect(waiting.style.getPropertyValue('--toast-index')).toBe('1');
 		});
 	});
 
