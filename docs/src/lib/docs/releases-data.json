@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.0.0-beta.9",
+		"date": "2026-09-23T23:32:53.743Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 99,
+						"prUrl": "https://github.com/human-kit/ui/pull/99",
+						"html": "<p>Add the Toast primitive with <code>Provider</code>, <code>Viewport</code>, <code>Positioner</code>, <code>Root</code>, <code>Content</code>, <code>Title</code>, <code>Description</code>, <code>Action</code> and <code>Close</code>. The manager on <code>useToastManager()</code> or <code>bind:manager</code> has <code>add</code>, <code>update</code>, <code>close</code> and <code>promise</code>. The viewport is a <code>role=&quot;region&quot;</code> landmark named with the count of toasts, with <code>F6</code> in and out, and two live regions beside it announce each toast without its buttons. Each toast is a <code>dialog</code> that is not modal, or an <code>alertdialog</code> for a high priority, with <code>Escape</code> to close, a swipe that follows the finger, and an exit animation from its CSS. <code>Toast.Positioner</code> puts a toast with an <code>anchor</code> against that element. The timers stop on hover, on keyboard focus and in a hidden tab, the newest toasts stay up to a limit, and the viewport stays reachable behind a modal dialog. The <code>ariaHideOutside</code> primitive learned <code>data-hk-hide-outside-exempt</code>, and the focus trap leaves <code>Tab</code> to a surface with that attribute while the focus is in it.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.8",
-		"date": "2026-09-20T14:55:55.147Z",
+		"date": "2026-09-20T13:21:59-03:00",
 		"sections": [
 			{
 				"type": "Minor",
