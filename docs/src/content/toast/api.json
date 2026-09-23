@@ -1,0 +1,404 @@
+{
+	"component": "toast",
+	"parts": [
+		{
+			"name": "Provider",
+			"description": "The list of toasts and the timers. It renders nothing of its own.",
+			"props": [
+				{
+					"name": "timeout",
+					"type": "number",
+					"required": false,
+					"default": "DEFAULT_TOAST_TIMEOUT",
+					"description": "The default time a toast stays, in milliseconds. `0` keeps each toast until a close."
+				},
+				{
+					"name": "limit",
+					"type": "number",
+					"required": false,
+					"default": "DEFAULT_TOAST_LIMIT",
+					"description": "The count of toasts on the screen. The older ones past it wait behind, hidden and inert,\nwith their timers stopped, and they come forward as the newer ones close."
+				},
+				{
+					"name": "manager",
+					"type": "ToastManager",
+					"required": false,
+					"default": null,
+					"description": "The manager: `add`, `update`, `close` and `promise`. Use `bind:manager` to read it in the\npage, or give one to share a list of toasts between two providers."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The app, with a `Toast.Viewport` somewhere in it."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Viewport",
+			"description": "The region where the toasts land. It makes a div with role=\"region\", at the end of the body, and it renders the snippet for each toast.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[ToastItem]>",
+					"required": true,
+					"default": null,
+					"description": "The toast to render for each item. It gets the item; render a `Toast.Root` with it."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "portal",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "Renders the viewport at the end of `<body>`, thus it draws above the page. Set it to\n`false` to render it in place."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The bindable viewport element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-expanded",
+					"description": "Present while the pointer rests on the viewport, or the focus is in it. A tap on a toast, not a swipe, holds it on until a touch outside the viewport."
+				},
+				{
+					"name": "data-toast-viewport",
+					"description": "Identifies the viewport element."
+				}
+			]
+		},
+		{
+			"name": "Positioner",
+			"description": "Puts a toast with an anchor against that element, as a fixed div. For a toast without one, it is out of the layout.",
+			"props": [
+				{
+					"name": "toast",
+					"type": "ToastItem",
+					"required": true,
+					"default": null,
+					"description": "The item from `Toast.Viewport`."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The `Toast.Root`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The bindable positioner element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-anchored",
+					"description": "Present when the item has an anchor."
+				},
+				{
+					"name": "data-placement",
+					"description": "The side of the anchor where the toast sits, after a flip."
+				},
+				{
+					"name": "data-toast-positioner",
+					"description": "Identifies the positioner element."
+				}
+			]
+		},
+		{
+			"name": "Root",
+			"description": "One toast. It makes a div with role=\"dialog\", or role=\"alertdialog\" for a high priority, that is not modal.",
+			"props": [
+				{
+					"name": "toast",
+					"type": "ToastItem",
+					"required": true,
+					"default": null,
+					"description": "The item from `Toast.Viewport`."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The parts of the toast."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "swipeDirection",
+					"type": "SwipeSide[]",
+					"required": false,
+					"default": "['bottom', 'right']",
+					"description": "The sides a swipe can push the toast out through: `bottom` and `right` by default. One side\nper axis counts. An empty array turns the swipe off. A swipe on `Toast.Close` or\n`Toast.Action` never starts."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The bindable toast element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-anchored",
+					"description": "Present when the item has an anchor. The toast is out of the stack."
+				},
+				{
+					"name": "data-ending",
+					"description": "Present through the exit animation."
+				},
+				{
+					"name": "data-entering",
+					"description": "Present through the enter animation."
+				},
+				{
+					"name": "data-exiting",
+					"description": "Present through the exit animation."
+				},
+				{
+					"name": "data-expanded",
+					"description": "Present while the pointer rests on the viewport, or the focus is in it. A tap on a toast, not a swipe, holds it on until a touch outside the viewport."
+				},
+				{
+					"name": "data-front",
+					"description": "Present on the one toast in front. A toast on its way out drops it, and it keeps the place it had for its exit."
+				},
+				{
+					"name": "data-limited",
+					"description": "Present on a toast past the limit. It is inert, and it waits in the place behind the stack."
+				},
+				{
+					"name": "data-priority",
+					"description": "The priority of the item: `low` or `high`."
+				},
+				{
+					"name": "data-swipe-direction",
+					"description": "The side of the swipe in progress, or of the swipe that dismissed the toast."
+				},
+				{
+					"name": "data-swipe-dismissed",
+					"description": "Present when a swipe dismissed the toast, for the exit."
+				},
+				{
+					"name": "data-swiping",
+					"description": "Present while a swipe is in progress."
+				},
+				{
+					"name": "data-toast-id",
+					"description": "The id of the item."
+				},
+				{
+					"name": "data-toast-root",
+					"description": "Identifies the toast element."
+				},
+				{
+					"name": "data-type",
+					"description": "The `type` of the item, such as `success` or `loading`."
+				}
+			]
+		},
+		{
+			"name": "Content",
+			"description": "The message: the title and the description. Keep the buttons out of it.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The title and the description."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-priority",
+					"description": "The priority of the item: `low` or `high`."
+				},
+				{
+					"name": "data-toast-content",
+					"description": "Identifies the content element."
+				},
+				{
+					"name": "data-type",
+					"description": "The `type` of the item, such as `success` or `loading`."
+				}
+			]
+		},
+		{
+			"name": "Title",
+			"description": "The name of the toast. It gives its id to the toast as `aria-labelledby`, and it shows the `title` of the item without children.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The title. Without children, it shows the `title` of the item."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element. The component makes one when you give none."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-toast-title",
+					"description": "Identifies the title element."
+				}
+			]
+		},
+		{
+			"name": "Description",
+			"description": "The message of the toast. It gives its id to the toast as `aria-describedby`, and it shows the `description` of the item without children.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The description. Without children, it shows the `description` of the item."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element. The component makes one when you give none."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-toast-description",
+					"description": "Identifies the description element."
+				}
+			]
+		},
+		{
+			"name": "Close",
+			"description": "A button that closes the toast.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The name on the button."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The bindable button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-toast-close",
+					"description": "Identifies the close button."
+				}
+			]
+		},
+		{
+			"name": "Action",
+			"description": "The one thing the toast offers. The press closes the toast.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The name on the button."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "keepOpen",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the toast open after the press. By default, the press closes it."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "The bindable button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-toast-action",
+					"description": "Identifies the action button."
+				}
+			]
+		}
+	]
+}

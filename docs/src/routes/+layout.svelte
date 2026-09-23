@@ -18,8 +18,10 @@
      of their own, because Svelte dedupes the former and not the latter. -->
 <Seo />
 
+<!-- The button sits to the left of the corner: the toast demos put their viewport there, and a
+     click on a close button must not land on it. -->
 {#if dev && !isBench}
-	<RenderScan />
+	<RenderScan offsetLeft={336} />
 {/if}
 
 {@render children()}

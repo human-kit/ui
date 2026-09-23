@@ -369,6 +369,30 @@ const LOCALIZED_STRINGS = {
 		fr: 'Vide',
 		de: 'Leer',
 		it: 'Vuoto'
+	},
+	'toast.notifications': {
+		en: 'Notifications',
+		es: 'Notificaciones',
+		pt: 'Notificações',
+		fr: 'Notifications',
+		de: 'Benachrichtigungen',
+		it: 'Notifiche'
+	},
+	'toast.oneNotification': {
+		en: '1 notification',
+		es: '1 notificación',
+		pt: '1 notificação',
+		fr: '1 notification',
+		de: '1 Benachrichtigung',
+		it: '1 notifica'
+	},
+	'toast.multipleNotifications': {
+		en: '{count} notifications',
+		es: '{count} notificaciones',
+		pt: '{count} notificações',
+		fr: '{count} notifications',
+		de: '{count} Benachrichtigungen',
+		it: '{count} notifiche'
 	}
 } as const satisfies Record<string, LocalizedTable>;
 
