@@ -80,4 +80,6 @@ Each item shows its state in `data-selected`, `data-highlighted`, `data-partial`
 
 Give `name` for the value of the field. The root renders a hidden input with the value as a number, and a `<form>` reset takes the first value back. `required` marks the field as necessary, and `invalid` marks the value as wrong.
 
-<ApiReference {api} />
+## API reference
+
+<ApiReference api={api} />

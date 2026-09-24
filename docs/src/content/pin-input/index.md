@@ -81,4 +81,6 @@ The cell is the input, thus your CSS holds the text, the caret and the border. `
 
 Give `name` for the whole value of the field. The root renders a hidden input with the characters together, and a `<form>` reset takes the first value back. `required` marks each cell as necessary, and `invalid` marks the value as wrong.
 
-<ApiReference {api} />
+## API reference
+
+<ApiReference api={api} />

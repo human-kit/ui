@@ -192,7 +192,9 @@
 		const cleared = allowClear && next === currentValue;
 		const reason = cleared ? 'clear' : 'pointer';
 		const changed = setValue(cleared ? 0 : next, { reason, event });
-		hoverValue = cleared ? 0 : next;
+		// The preview follows a pointer that can rest on the items. A finger cannot, and the leave
+		// that would end the preview does not come from each browser.
+		hoverValue = event.pointerType === 'touch' ? null : cleared ? 0 : next;
 		focusValue(cleared ? 0 : next, 'pointer');
 		if (changed) commitValue({ reason, event });
 	}

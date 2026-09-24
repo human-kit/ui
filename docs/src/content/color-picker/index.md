@@ -106,4 +106,6 @@ The picker paints nothing of its own. These custom properties give your CSS what
 
 Give `name` for the color of the field. The root renders a hidden input with the text of the color, and a `<form>` reset takes the first color back. `invalid` marks the color as wrong.
 
-<ApiReference {api} />
+## API reference
+
+<ApiReference api={api} />

@@ -136,6 +136,35 @@ describe('Rating', () => {
 		expect(byTestId('root').hasAttribute('data-hovering')).toBe(false);
 	});
 
+	it('leaves no preview after a press with a finger', async () => {
+		render(RatingTest, { defaultValue: 1 });
+
+		const target = item(3);
+		const rect = target.getBoundingClientRect();
+		for (const type of ['pointerenter', 'pointerdown', 'pointerup']) {
+			target.dispatchEvent(
+				new PointerEvent(type, {
+					clientX: rect.left + rect.width / 2,
+					clientY: rect.top + rect.height / 2,
+					pointerId: 7,
+					pointerType: 'touch',
+					button: 0,
+					buttons: type === 'pointerup' ? 0 : 1,
+					bubbles: true,
+					cancelable: true,
+					composed: true
+				})
+			);
+			await tick();
+		}
+
+		// A finger cannot rest on an item, and the leave that ends a preview does not come from
+		// each browser: a preview that stays on is a preview that never goes.
+		expect(boundValue()).toBe(4);
+		expect(byTestId('root').hasAttribute('data-hovering')).toBe(false);
+		expect(byTestId('output').textContent?.trim()).toBe('4 of 5');
+	});
+
 	it('moves the value with the arrows, and carries the focus with it', async () => {
 		render(RatingTest, { defaultValue: 2 });
 

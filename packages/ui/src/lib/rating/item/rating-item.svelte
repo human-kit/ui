@@ -88,6 +88,9 @@
 
 	function handlePointerEnter(event: PointerEvent & { currentTarget: EventTarget & HTMLElement }) {
 		onpointerenter?.(event);
+		// A finger has no preview: it is on the item only while it presses it, and the leave that
+		// ends a preview does not come from each browser.
+		if (event.pointerType === 'touch') return;
 		ctx.setHoverValue(previewValue(event));
 	}
 
@@ -95,7 +98,7 @@
 		onpointermove?.(event);
 		// A move inside one item changes the preview only at a precision below 1, where the two
 		// halves of the item are two values.
-		if (ctx.precision === 1) return;
+		if (event.pointerType === 'touch' || ctx.precision === 1) return;
 		ctx.setHoverValue(previewValue(event));
 	}
 
