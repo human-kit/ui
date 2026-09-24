@@ -178,6 +178,21 @@
 			"svelte": "./dist/radio-group/index.js",
 			"default": "./dist/radio-group/index.js"
 		},
+		"./rating": {
+			"types": "./dist/rating/index.d.ts",
+			"svelte": "./dist/rating/index.js",
+			"default": "./dist/rating/index.js"
+		},
+		"./pin-input": {
+			"types": "./dist/pin-input/index.d.ts",
+			"svelte": "./dist/pin-input/index.js",
+			"default": "./dist/pin-input/index.js"
+		},
+		"./color-picker": {
+			"types": "./dist/color-picker/index.d.ts",
+			"svelte": "./dist/color-picker/index.js",
+			"default": "./dist/color-picker/index.js"
+		},
 		"./select": {
 			"types": "./dist/select/index.d.ts",
 			"svelte": "./dist/select/index.js",

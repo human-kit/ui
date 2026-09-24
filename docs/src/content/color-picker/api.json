@@ -1,0 +1,746 @@
+{
+	"component": "color-picker",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The color, and the context of each control. It renders a div with role=\"group\", named by ColorPicker.Label, and it carries the color in --color-picker-value.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "A stable id, from which the component makes its internal ARIA ids. Give one on a server."
+				},
+				{
+					"name": "value",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The color, as text: a hex color, `rgb()`, `hsl()` or `hsb()`. You can bind it with\n`bind:value`. The component answers in the format of `format`."
+				},
+				{
+					"name": "defaultValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The color at the start, for when you give no `value`. The default is `#000000`."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Give your own code full control of the color. The component stops to write back to `value`,\nand it reports only through `onChange`. Thus the parent can refuse a change."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: string, details: ColorPickerChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it on each change, also on each move of a drag."
+				},
+				{
+					"name": "onChangeEnd",
+					"type": "(value: string, details: ColorPickerChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when a sequence of changes ends: at the release of a key, and at the\nend of a drag. Use it for work that must not run on each move."
+				},
+				{
+					"name": "format",
+					"type": "ColorFormat",
+					"required": false,
+					"default": "'hex'",
+					"description": "The text format of the value. The default is `hex`."
+				},
+				{
+					"name": "alpha",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps an alpha in the color. The value then holds a fourth number, and `ColorPicker.Slider`\naccepts the `alpha` channel. The default is off."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables each control of the picker. The controls leave the tab order."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the controls in the tab order, but the color does not change."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the color as invalid. Each control gets `aria-invalid`."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the hidden input that carries the color in a form."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form that the hidden input belongs to, when the picker is outside it."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The accessible name of the picker, for when there is no `ColorPicker.Label`."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that gives the picker its name, in place of `ColorPicker.Label`."
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that describes the picker, for example an error message."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: the label, the area, the sliders and the fields."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the root element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the root element."
+				},
+				{
+					"name": "context",
+					"type": "ColorPickerContext",
+					"required": false,
+					"default": null,
+					"description": "A bindable reference to the context, for a composition of your own."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-alpha",
+					"description": "Present while the picker holds an alpha."
+				},
+				{
+					"name": "data-color-picker-root",
+					"description": ""
+				},
+				{
+					"name": "data-color-picker-value",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-format",
+					"description": "The text format of the value: \"hex\", \"rgb\", \"hsl\" or \"hsb\"."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the color is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"description": "The accessible name of the picker. It renders a span, and the root points at it with aria-labelledby.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the label."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color-picker-label",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				}
+			]
+		},
+		{
+			"name": "Area",
+			"description": "The square of two channels. A press in it moves the thumb there and starts a drag. It is position: relative, and it carries the position of the thumb in --color-picker-area-x and --color-picker-area-y.",
+			"props": [
+				{
+					"name": "xChannel",
+					"type": "ColorChannel",
+					"required": false,
+					"default": "'saturation'",
+					"description": "The channel of the horizontal axis. The default is `saturation`."
+				},
+				{
+					"name": "yChannel",
+					"type": "ColorChannel",
+					"required": false,
+					"default": "'brightness'",
+					"description": "The channel of the vertical axis, which counts from the bottom. The default is `brightness`."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: a `ColorPicker.AreaThumb`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the area."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the area element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color-picker-area",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-dragging",
+					"description": "Present while a pointer moves the thumb."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				},
+				{
+					"name": "data-x-channel",
+					"description": "The channel of the horizontal axis."
+				},
+				{
+					"name": "data-y-channel",
+					"description": "The channel of the vertical axis."
+				}
+			]
+		},
+		{
+			"name": "AreaThumb",
+			"description": "The handle of the square. It renders a div at a position in percent, with two native sliders in it: one for each axis. The inputs have the focus and the ARIA state.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[ColorPickerAreaThumbRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content. As a snippet with one argument, it receives the render state: `xPercent`,\n`yPercent`, `dragging` and `focused`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the thumb."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the thumb element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-axis",
+					"description": "The axis of one native input: \"x\" or \"y\"."
+				},
+				{
+					"name": "data-color-picker-area-input",
+					"description": ""
+				},
+				{
+					"name": "data-color-picker-area-thumb",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-dragging",
+					"description": "Present while a pointer moves the thumb."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus on the thumb must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while one of the two inputs has the focus."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "Slider",
+			"description": "The track of one channel. A press on it moves the thumb there and starts a drag. It carries the two ends of the channel in --color-picker-slider-start and --color-picker-slider-end.",
+			"props": [
+				{
+					"name": "channel",
+					"type": "ColorChannel",
+					"required": true,
+					"default": null,
+					"description": "The channel the slider moves, for example `hue` or `alpha`."
+				},
+				{
+					"name": "orientation",
+					"type": "ColorPickerSliderOrientation",
+					"required": false,
+					"default": "'horizontal'",
+					"description": "The direction of the track. The default is horizontal."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: a `ColorPicker.SliderThumb`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the track."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the track element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-channel",
+					"description": "The channel of the slider."
+				},
+				{
+					"name": "data-color-picker-slider",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-dragging",
+					"description": "Present while a pointer moves the thumb."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation: \"horizontal\" or \"vertical\"."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "SliderThumb",
+			"description": "The handle of one channel. It renders a div at a position in percent, with a native slider in it. The input has the focus and the ARIA state.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[ColorPickerSliderThumbRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content. As a snippet with one argument, it receives the render state: `percent`,\n`value`, `dragging` and `focused`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the thumb."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the thumb element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-channel",
+					"description": "The channel of the slider."
+				},
+				{
+					"name": "data-color-picker-slider-input",
+					"description": ""
+				},
+				{
+					"name": "data-color-picker-slider-thumb",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-dragging",
+					"description": "Present while a pointer moves the thumb."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus on the thumb must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the native input has the focus."
+				},
+				{
+					"name": "data-orientation",
+					"description": "The orientation: \"horizontal\" or \"vertical\"."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "HexField",
+			"description": "The color as a hex text. It renders a native text input, and it reads the text at Enter and when the focus leaves.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the field."
+				},
+				{
+					"name": "element",
+					"type": "HTMLInputElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color-picker-hex-field",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the field has the focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the color is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "ChannelField",
+			"description": "One channel as a number. It renders a native number input with the limits and the step of that channel.",
+			"props": [
+				{
+					"name": "channel",
+					"type": "ColorChannel",
+					"required": true,
+					"default": null,
+					"description": "The channel the field holds, for example `red`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the field."
+				},
+				{
+					"name": "element",
+					"type": "HTMLInputElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-channel",
+					"description": "The channel of the field."
+				},
+				{
+					"name": "data-color-picker-channel-field",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the field has the focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the color is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "SwatchList",
+			"description": "A set of colors to choose from. It renders a div with role=\"listbox\", and each ColorPicker.Swatch in it is an option.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: one `ColorPicker.Swatch` for each color."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the list."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the list element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color-picker-swatch-list",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the picker is read-only."
+				}
+			]
+		},
+		{
+			"name": "Swatch",
+			"description": "One color to choose. In a list it is an option with role=\"option\". Outside a list it shows a color and answers nothing. The color is in --color-picker-swatch-color.",
+			"props": [
+				{
+					"name": "color",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The color of the swatch, as text."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the swatch, for the screen reader. The default is the text of its color."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content. Without it, the swatch is an empty element that your CSS paints."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the swatch."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the swatch element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color",
+					"description": "The color of the swatch, as the consumer wrote it."
+				},
+				{
+					"name": "data-color-picker-swatch",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus on the swatch must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the swatch has the focus."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present while the color of the swatch is the color of the picker."
+				}
+			]
+		},
+		{
+			"name": "Preview",
+			"description": "The color of now. It renders a div with the color in --color-picker-swatch-color, and it has no name and no role.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content. Without it, the preview is an empty element that your CSS paints."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the preview."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the preview element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color",
+					"description": "The text of the color, in the format of the root."
+				},
+				{
+					"name": "data-color-picker-preview",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				}
+			]
+		},
+		{
+			"name": "EyeDropper",
+			"description": "Takes a color from the screen. It renders a button that opens the eye dropper of the browser.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the button."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-color-picker-eye-dropper",
+					"description": ""
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the picker is disabled."
+				},
+				{
+					"name": "data-open",
+					"description": "Present while the eye dropper of the browser is open."
+				},
+				{
+					"name": "data-unsupported",
+					"description": "Present while the browser has no eye dropper."
+				}
+			]
+		}
+	]
+}
