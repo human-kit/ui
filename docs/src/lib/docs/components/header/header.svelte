@@ -5,6 +5,7 @@
 	import { Frame } from '../frame/index.js';
 	import { buttonVariants } from '../button/recipe';
 	import Github from '../icons/github.svelte';
+	import { track } from '$lib/docs/telemetry';
 
 	interface Props {
 		title?: string;
@@ -109,6 +110,7 @@
 					rel="noreferrer"
 					aria-label="GitHub repository"
 					class={buttonVariants({ variant: 'ghost', size: 'icon' })}
+					onclick={() => track('github_click')}
 				>
 					<Github />
 				</a>

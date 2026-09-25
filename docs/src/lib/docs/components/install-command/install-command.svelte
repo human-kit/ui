@@ -75,7 +75,13 @@
 			{/each}
 		</Tabs.List>
 
-		<CopyButton class="ml-auto" text={active.cmd} label="Copy {active.id} command" />
+		<CopyButton
+			class="ml-auto"
+			text={active.cmd}
+			label="Copy {active.id} command"
+			source="install-command"
+			detail={active.id}
+		/>
 	</div>
 
 	<!-- Only the command area is a <Surface>: the header keeps the ambient
