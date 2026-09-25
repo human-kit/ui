@@ -69,6 +69,7 @@
 	aria-describedby={ctx.ariaDescribedBy}
 	class={className}
 	data-color-picker-eye-dropper="true"
+	aria-busy={open || undefined}
 	data-open={open || undefined}
 	data-unsupported={!supported || undefined}
 	data-disabled={ctx.isDisabled || undefined}

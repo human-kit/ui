@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import { isRtl } from '../../internal/rtl';
 	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { shouldShowFocusVisible } from '../../primitives/input-modality';
+	import { focusWithModality, shouldShowFocusVisible } from '../../primitives/input-modality';
 	import { useColorPickerContext, useColorPickerSliderContext } from '../root/context';
 	import type { ColorPickerSliderThumbProps, ColorPickerSliderThumbRenderState } from '../types';
 
@@ -147,7 +147,9 @@
 		onpointerdown?.(event);
 		if (event.defaultPrevented) return;
 		slider.startDrag(event);
-		inputRef?.focus({ preventScroll: true });
+		// With the modality, and not a plain focus: the focus ring belongs to the keyboard, and a
+		// press that leaves it on paints a ring the reader did not ask for.
+		if (inputRef) focusWithModality(inputRef, 'pointer');
 	}
 
 	const positionStyle = $derived.by(() => {

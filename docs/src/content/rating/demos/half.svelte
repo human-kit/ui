@@ -9,7 +9,7 @@
 	bind:value
 	precision={0.5}
 	aria-label="Quality"
-	class="flex items-center gap-3 rounded-md outline-none data-[focus-visible=true]:outline-solid data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-4 data-[focus-visible=true]:outline-neutral-900 dark:data-[focus-visible=true]:outline-white"
+	class="flex flex-col items-start gap-2 rounded-md outline-none data-[focus-visible=true]:outline-solid data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-4 data-[focus-visible=true]:outline-neutral-900 dark:data-[focus-visible=true]:outline-white"
 >
 	<div class="flex gap-1">
 		{#each { length: 5 } as _, index (index)}

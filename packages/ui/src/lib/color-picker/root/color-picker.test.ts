@@ -261,6 +261,62 @@ describe('ColorPicker', () => {
 		expect(button.hasAttribute('data-unsupported')).toBe('EyeDropper' in window ? false : true);
 	});
 
+	it('reports one change for one move of the pointer in the square', async () => {
+		const changes: string[] = [];
+		render(ColorPickerTest, { defaultValue: '#ff0000', onChange: (value) => changes.push(value) });
+
+		await pointerAt(byTestId('area'), 'pointerdown', 0.5, 0.5);
+
+		// The two axes are one color. Two writes report a color between them that the pointer was
+		// never on, and they make a consumer do its work two times for each move.
+		expect(changes).toHaveLength(1);
+		expect(changes[0]).toBe(boundValue());
+	});
+
+	it('answers Home and End on the axis that has the focus', async () => {
+		render(ColorPickerTest, { defaultValue: '#3366cc' });
+
+		const saturationBefore = areaInput('x').value;
+		areaInput('y').focus();
+		await userEvent.keyboard('{Home}');
+
+		// Home on the brightness takes the brightness to its lowest, and leaves the saturation.
+		expect(areaInput('y').value).toBe('0');
+		expect(areaInput('x').value).toBe(saturationBefore);
+
+		areaInput('x').focus();
+		await userEvent.keyboard('{End}');
+		expect(areaInput('x').value).toBe('100');
+	});
+
+	it('reports no end from a hex field that holds a text of no color', async () => {
+		const ends: string[] = [];
+		render(ColorPickerTest, { defaultValue: '#3366cc', onChangeEnd: (value) => ends.push(value) });
+
+		const hex = byTestId<HTMLInputElement>('hex');
+		hex.focus();
+		await userEvent.fill(hex, 'not a color');
+		byTestId<HTMLButtonElement>('after').focus();
+		await tick();
+
+		expect(ends).toEqual([]);
+		// The field cannot hold a text that is not the color.
+		expect(hex.value).toBe('#3366cc');
+		expect(boundValue()).toBe('#3366cc');
+	});
+
+	it('reports no end from a number field the reader only passed through', async () => {
+		const ends: string[] = [];
+		render(ColorPickerTest, { defaultValue: '#3366cc', onChangeEnd: (value) => ends.push(value) });
+
+		byTestId<HTMLInputElement>('red').focus();
+		byTestId<HTMLInputElement>('green').focus();
+		byTestId<HTMLButtonElement>('after').focus();
+		await tick();
+
+		expect(ends).toEqual([]);
+	});
+
 	it('changes nothing while disabled, and leaves the controls out of the tab order', async () => {
 		const onChange = vi.fn();
 		render(ColorPickerTest, { defaultValue: '#ff0000', disabled: true, onChange });

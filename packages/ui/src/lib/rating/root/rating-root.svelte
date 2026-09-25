@@ -233,7 +233,14 @@
 	}
 
 	function focusValue(val: number, modality: 'keyboard' | 'pointer' = 'keyboard') {
-		if (!isRadioGroup || disabled) return;
+		if (disabled) return;
+		// A slider has one tab stop, and it is the root. Without this the arrows after a press
+		// went to the body, and the rating did not answer them until the reader pressed Tab.
+		if (!isRadioGroup) {
+			if (!rootRef || document.activeElement === rootRef) return;
+			focusWithModality(rootRef, modality);
+			return;
+		}
 		const index = Math.min(Math.max(Math.ceil(val), 1), resolvedCount) - 1;
 		const node = items.get(index)?.elementRef();
 		if (!node || document.activeElement === node) return;
@@ -478,7 +485,7 @@ stop of the rating, and the checker cannot read a role that the props decide. --
 	aria-required={required || undefined}
 	aria-invalid={invalid || undefined}
 	aria-disabled={disabled || undefined}
-	aria-readonly={isRadioGroup ? undefined : readonly || undefined}
+	aria-readonly={readonly || undefined}
 	aria-valuemin={isRadioGroup ? undefined : 0}
 	aria-valuemax={isRadioGroup ? undefined : resolvedCount}
 	aria-valuenow={isRadioGroup ? undefined : currentValue}

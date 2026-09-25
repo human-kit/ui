@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import { isRtl } from '../../internal/rtl';
 	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { shouldShowFocusVisible } from '../../primitives/input-modality';
+	import { focusWithModality, shouldShowFocusVisible } from '../../primitives/input-modality';
 	import { useColorPickerAreaContext, useColorPickerContext } from '../root/context';
 	import type { ColorPickerAreaThumbProps, ColorPickerAreaThumbRenderState } from '../types';
 
@@ -75,9 +75,16 @@
 		ctx.commit({ reason: 'keyboard', event });
 	}
 
-	function handleKeyDown(event: KeyboardEvent) {
+	/**
+	 * The keys of one axis act on the axis that has the focus. The arrows name their own axis,
+	 * thus they move the square from either input. `Home`, `End` and the page keys do not, and
+	 * they moved the saturation while the brightness had the focus.
+	 */
+	function handleKeyDown(axis: 'x' | 'y', event: KeyboardEvent) {
 		if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
 		const large = event.shiftKey;
+		const axisChannel = axis === 'x' ? area.xChannel : area.yChannel;
+		const axisRange = axis === 'x' ? xRange : yRange;
 		let changed = false;
 
 		switch (event.key) {
@@ -94,16 +101,16 @@
 				changed = ctx.stepChannel(area.yChannel, -1, { large, event });
 				break;
 			case 'PageUp':
-				changed = ctx.stepChannel(area.yChannel, 1, { large: true, event });
+				changed = ctx.stepChannel(axisChannel, 1, { large: true, event });
 				break;
 			case 'PageDown':
-				changed = ctx.stepChannel(area.yChannel, -1, { large: true, event });
+				changed = ctx.stepChannel(axisChannel, -1, { large: true, event });
 				break;
 			case 'Home':
-				changed = ctx.setChannel(area.xChannel, xRange.min, { reason: 'keyboard', event });
+				changed = ctx.setChannel(axisChannel, axisRange.min, { reason: 'keyboard', event });
 				break;
 			case 'End':
-				changed = ctx.setChannel(area.xChannel, xRange.max, { reason: 'keyboard', event });
+				changed = ctx.setChannel(axisChannel, axisRange.max, { reason: 'keyboard', event });
 				break;
 			default:
 				return;
@@ -144,7 +151,9 @@
 		onpointerdown?.(event);
 		if (event.defaultPrevented) return;
 		area.startDrag(event);
-		xInputRef?.focus({ preventScroll: true });
+		// With the modality, and not a plain focus: the focus ring belongs to the keyboard, and a
+		// press that leaves it on paints a ring the reader did not ask for.
+		if (xInputRef) focusWithModality(xInputRef, 'pointer');
 	}
 
 	const inputStyle =
@@ -187,7 +196,7 @@
 		data-color-picker-area-input="true"
 		data-axis="x"
 		style={inputStyle}
-		onkeydown={handleKeyDown}
+		onkeydown={(event) => handleKeyDown('x', event)}
 		onkeyup={commitKeyboard}
 		oninput={(event) => handleInput('x', event)}
 		onfocus={() => handleFocus('x')}
@@ -210,7 +219,7 @@
 		data-color-picker-area-input="true"
 		data-axis="y"
 		style={inputStyle}
-		onkeydown={handleKeyDown}
+		onkeydown={(event) => handleKeyDown('y', event)}
 		onkeyup={commitKeyboard}
 		oninput={(event) => handleInput('y', event)}
 		onfocus={() => handleFocus('y')}

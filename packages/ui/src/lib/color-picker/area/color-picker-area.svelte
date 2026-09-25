@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { isRtl } from '../../internal/rtl';
+	import { withColorChannel } from '../root/color';
 	import { useColorPickerContext, setColorPickerAreaContext } from '../root/context';
 	import type { ColorPickerAreaProps } from '../types';
 
@@ -59,9 +60,10 @@
 		const nextX = xRange.min + fractionX * (xRange.max - xRange.min);
 		const nextY = yRange.min + fractionY * (yRange.max - yRange.min);
 
-		let changed = ctx.setChannel(xChannel, nextX, { reason: 'pointer', event });
-		changed = ctx.setChannel(yChannel, nextY, { reason: 'pointer', event }) || changed;
-		if (changed) dragChanged = true;
+		// One write for the two axes. Two writes report two changes for one move of the pointer,
+		// and the color between them is a color the pointer was never on.
+		const next = withColorChannel(withColorChannel(ctx.color, xChannel, nextX), yChannel, nextY);
+		if (ctx.setColor(next, { reason: 'pointer', event })) dragChanged = true;
 	}
 
 	function beginDrag(event: PointerEvent, target: HTMLElement) {

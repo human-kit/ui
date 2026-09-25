@@ -247,6 +247,30 @@ describe('Rating', () => {
 		expect(byTestId('root').getAttribute('aria-valuenow')).toBe('3');
 	});
 
+	it('takes the focus at a press, thus the arrows answer without a Tab first', async () => {
+		render(RatingTest, { defaultValue: 3.5, precision: 0.5 });
+
+		// A slider has one tab stop, and it is the root. Without the focus the arrows go to the
+		// body, and the rating answers nothing until the reader presses Tab.
+		// The centre of an item is the border of its two halves, thus this press gives the half.
+		await pointer(item(2), 'pointerdown');
+
+		expect(document.activeElement).toBe(byTestId('root'));
+		expect(boundValue()).toBe(2.5);
+
+		await userEvent.keyboard('{ArrowRight}');
+		expect(boundValue()).toBe(3);
+		// A press shows no focus ring.
+		expectNoFalseFocusAttributes();
+	});
+
+	it('says that a radio group is read only', async () => {
+		render(RatingTest, { defaultValue: 2, readonly: true });
+
+		expect(byTestId('root').getAttribute('role')).toBe('radiogroup');
+		expect(byTestId('root').getAttribute('aria-readonly')).toBe('true');
+	});
+
 	it('says no rating at 0', async () => {
 		render(RatingTest, { defaultValue: 0, precision: 0.5 });
 

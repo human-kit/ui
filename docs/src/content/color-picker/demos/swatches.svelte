@@ -40,7 +40,7 @@
 			class="w-28 rounded-md border border-neutral-300 bg-white px-2 py-1 font-mono text-sm text-neutral-900 outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-white"
 		/>
 		<ColorPicker.EyeDropper
-			class="inline-flex size-9 items-center justify-center rounded-md border border-neutral-300 text-neutral-700 outline-none hover:bg-neutral-100 data-[unsupported=true]:hidden data-[focus-visible=true]:outline-solid dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+			class="inline-flex size-9 items-center justify-center rounded-md border border-neutral-300 text-neutral-700 outline-none hover:bg-neutral-100 data-[open=true]:bg-neutral-200 data-[open=true]:text-neutral-900 data-[unsupported=true]:hidden data-[focus-visible=true]:outline-solid dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:data-[open=true]:bg-neutral-700 dark:data-[open=true]:text-white"
 		>
 			<PipetteIcon class="size-4" />
 		</ColorPicker.EyeDropper>

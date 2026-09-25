@@ -24,6 +24,8 @@
 
 	let inputRef: HTMLInputElement | null = $state(null);
 	let focused = $state(false);
+	// Whether a key of the reader moved the color while this field had the focus.
+	let changedWhileFocused = false;
 
 	$effect(() => {
 		element = inputRef;
@@ -43,7 +45,9 @@
 		const next = Number(event.currentTarget.value);
 		// An empty field, or a half written number, is not a color yet: it waits for the next key.
 		if (event.currentTarget.value === '' || Number.isNaN(next)) return;
-		ctx.setChannel(channel, next, { reason: 'input', channel, event });
+		if (ctx.setChannel(channel, next, { reason: 'input', channel, event })) {
+			changedWhileFocused = true;
+		}
 	}
 
 	function handleFocus(event: FocusEvent & { currentTarget: EventTarget & HTMLInputElement }) {
@@ -56,8 +60,11 @@
 		focused = false;
 		// The field goes back to the color: an empty field, or a number past the limits, is not
 		// what the color says.
+		const wrote = event.currentTarget.value !== String(value);
 		event.currentTarget.value = String(value);
-		ctx.commit({ reason: 'input', channel, event });
+		// A field the reader only passed through changed nothing, and it reports no end.
+		if (changedWhileFocused || wrote) ctx.commit({ reason: 'input', channel, event });
+		changedWhileFocused = false;
 	}
 </script>
 

@@ -734,7 +734,7 @@
 				},
 				{
 					"name": "data-open",
-					"description": "Present while the eye dropper of the browser is open."
+					"description": "Present while the eye dropper of the browser is open. The browser takes up to two seconds to paint it, thus this attribute is what tells the reader that the press did something."
 				},
 				{
 					"name": "data-unsupported",

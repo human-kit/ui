@@ -43,7 +43,9 @@
 		const next = draft;
 		draft = null;
 		if (next === null || next === text) return;
-		ctx.setText(next, { reason: 'input', event });
+		// A text that names no color changes nothing, and an end of a change that did not happen
+		// is an end the consumer must not hear.
+		if (!ctx.setText(next, { reason: 'input', event })) return;
 		ctx.commit({ reason: 'input', event });
 	}
 

@@ -90,6 +90,8 @@ Without `alpha` the text holds only the three color channels. A picker with no a
 
 `ColorPicker.EyeDropper` opens the eye dropper of the browser, and the color of the press becomes the color of the picker. A browser without it gets `data-unsupported`, which your CSS can hide. Test for it before you make it the one way to choose a color.
 
+The browser takes up to two seconds to paint its eye dropper, because it must first read the screen. Give `data-open` a style of its own: the button carries it, and `aria-busy`, from the press until the color arrives. Without that style the button does not move, and the reader presses it again.
+
 <Demo source={swatchesSource}><Swatches /></Demo>
 
 ## Style
