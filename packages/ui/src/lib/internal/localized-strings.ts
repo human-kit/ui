@@ -393,6 +393,150 @@ const LOCALIZED_STRINGS = {
 		fr: '{count} notifications',
 		de: '{count} Benachrichtigungen',
 		it: '{count} notifiche'
+	},
+	'rating.valueText': {
+		en: '{value} of {count}',
+		es: '{value} de {count}',
+		pt: '{value} de {count}',
+		fr: '{value} sur {count}',
+		de: '{value} von {count}',
+		it: '{value} su {count}'
+	},
+	'rating.empty': {
+		en: 'No rating',
+		es: 'Sin calificación',
+		pt: 'Sem classificação',
+		fr: 'Aucune note',
+		de: 'Keine Bewertung',
+		it: 'Nessuna valutazione'
+	},
+	'rating.label': {
+		en: 'Rating',
+		es: 'Calificación',
+		pt: 'Classificação',
+		fr: 'Note',
+		de: 'Bewertung',
+		it: 'Valutazione'
+	},
+	'pinInput.digitLabel': {
+		en: 'Digit {index} of {count}',
+		es: 'Dígito {index} de {count}',
+		pt: 'Dígito {index} de {count}',
+		fr: 'Chiffre {index} sur {count}',
+		de: 'Ziffer {index} von {count}',
+		it: 'Cifra {index} di {count}'
+	},
+	'pinInput.characterLabel': {
+		en: 'Character {index} of {count}',
+		es: 'Carácter {index} de {count}',
+		pt: 'Caractere {index} de {count}',
+		fr: 'Caractère {index} sur {count}',
+		de: 'Zeichen {index} von {count}',
+		it: 'Carattere {index} di {count}'
+	},
+	'pinInput.label': {
+		en: 'Verification code',
+		es: 'Código de verificación',
+		pt: 'Código de verificação',
+		fr: 'Code de vérification',
+		de: 'Bestätigungscode',
+		it: 'Codice di verifica'
+	},
+	'colorPicker.label': {
+		en: 'Color',
+		es: 'Color',
+		pt: 'Cor',
+		fr: 'Couleur',
+		de: 'Farbe',
+		it: 'Colore'
+	},
+	'colorPicker.hue': {
+		en: 'Hue',
+		es: 'Matiz',
+		pt: 'Matiz',
+		fr: 'Teinte',
+		de: 'Farbton',
+		it: 'Tonalità'
+	},
+	'colorPicker.saturation': {
+		en: 'Saturation',
+		es: 'Saturación',
+		pt: 'Saturação',
+		fr: 'Saturation',
+		de: 'Sättigung',
+		it: 'Saturazione'
+	},
+	'colorPicker.brightness': {
+		en: 'Brightness',
+		es: 'Brillo',
+		pt: 'Brilho',
+		fr: 'Luminosité',
+		de: 'Helligkeit',
+		it: 'Luminosità'
+	},
+	'colorPicker.lightness': {
+		en: 'Lightness',
+		es: 'Luminosidad',
+		pt: 'Luminosidade',
+		fr: 'Clarté',
+		de: 'Helligkeit',
+		it: 'Chiarezza'
+	},
+	'colorPicker.alpha': {
+		en: 'Alpha',
+		es: 'Alfa',
+		pt: 'Alfa',
+		fr: 'Alpha',
+		de: 'Alpha',
+		it: 'Alfa'
+	},
+	'colorPicker.red': {
+		en: 'Red',
+		es: 'Rojo',
+		pt: 'Vermelho',
+		fr: 'Rouge',
+		de: 'Rot',
+		it: 'Rosso'
+	},
+	'colorPicker.green': {
+		en: 'Green',
+		es: 'Verde',
+		pt: 'Verde',
+		fr: 'Vert',
+		de: 'Grün',
+		it: 'Verde'
+	},
+	'colorPicker.blue': {
+		en: 'Blue',
+		es: 'Azul',
+		pt: 'Azul',
+		fr: 'Bleu',
+		de: 'Blau',
+		it: 'Blu'
+	},
+	'colorPicker.hex': {
+		en: 'Hex',
+		es: 'Hex',
+		pt: 'Hex',
+		fr: 'Hex',
+		de: 'Hex',
+		it: 'Hex'
+	},
+	'colorPicker.eyeDropper': {
+		en: 'Pick a color from the screen',
+		es: 'Tomar un color de la pantalla',
+		pt: 'Escolher uma cor da tela',
+		fr: 'Prendre une couleur sur l’écran',
+		de: 'Eine Farbe vom Bildschirm wählen',
+		it: 'Scegliere un colore dallo schermo'
+	},
+	'colorPicker.swatches': {
+		en: 'Color swatches',
+		es: 'Muestras de color',
+		pt: 'Amostras de cor',
+		fr: 'Échantillons de couleur',
+		de: 'Farbfelder',
+		it: 'Campioni di colore'
 	}
 } as const satisfies Record<string, LocalizedTable>;
 
