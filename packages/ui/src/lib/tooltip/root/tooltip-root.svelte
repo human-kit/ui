@@ -164,7 +164,11 @@
 	$effect(() => {
 		if (!isOpen) return;
 		registerOpenTooltip(groupEntry);
-		return () => unregisterOpenTooltip(groupEntry);
+		return () => {
+			unregisterOpenTooltip(groupEntry);
+			// The panel may go with the pointer still on it, and no `pointerleave` follows.
+			pointerOnContent = false;
+		};
 	});
 
 	$effect(() => {
@@ -326,7 +330,10 @@
 	}
 
 	function handleContentPointerEnter(event: PointerEvent) {
-		if (event.pointerType === 'touch') return;
+		// A closed panel is still in the DOM through its exit animation, and a pointer that lands
+		// on it then is not reading it: counted, it would hold the next open forever, because the
+		// panel leaves the DOM under the pointer and its `pointerleave` never comes.
+		if (event.pointerType === 'touch' || !isOpen) return;
 		pointerOnContent = true;
 		stopGapTracking();
 		if (closeTimer !== null) {
