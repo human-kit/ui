@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.0.0-beta.10",
+		"date": "2026-10-01T14:40:52.069Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 108,
+						"prUrl": "https://github.com/human-kit/ui/pull/108",
+						"html": "<p>Fix a tooltip that stayed open after the pointer left. A pointer that crossed the panel while it played its exit animation was counted as resting on it, and the panel then left the DOM under the pointer with no <code>pointerleave</code>: from there on, every close waited for a pointer that was no longer there. The content now ignores a pointer that lands on it while closed, and forgets the pointer whenever the tooltip closes.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.9",
-		"date": "2026-09-23T23:32:53.743Z",
+		"date": "2026-09-23T20:37:23-03:00",
 		"sections": [
 			{
 				"type": "Minor",
