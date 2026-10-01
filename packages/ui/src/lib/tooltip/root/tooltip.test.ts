@@ -160,6 +160,45 @@ describe('Tooltip', () => {
 			expect(trigger.getAttribute('data-state')).toBe('closed');
 		});
 
+		it('ignores a pointer that lands on the content after it closed', async () => {
+			// A close delay: only its timer asks whether the pointer is on the content.
+			render(TooltipTest, { delay: 0, closeDelay: 100 });
+			const trigger = byTestId('trigger');
+
+			await pointer(trigger, 'pointerenter');
+			const panel = content() as HTMLElement;
+			await leaveAway(trigger);
+			await advance(400);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+			// The panel goes on its exit animation, or is already gone, and takes no `pointerleave`.
+			await pointer(panel, 'pointerenter');
+
+			await pointer(trigger, 'pointerenter');
+			expect(trigger.getAttribute('data-state')).toBe('open');
+			await leaveAway(trigger);
+			await advance(400);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+		});
+
+		it('forgets the pointer on the content when it closes under it', async () => {
+			// A close delay: only its timer asks whether the pointer is on the content.
+			render(TooltipTest, { delay: 0, closeDelay: 100 });
+			const trigger = byTestId('trigger');
+
+			await pointer(trigger, 'pointerenter');
+			await pointer(content() as HTMLElement, 'pointerenter');
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+			await tick();
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+
+			await advance(400);
+			await pointer(trigger, 'pointerenter');
+			expect(trigger.getAttribute('data-state')).toBe('open');
+			await leaveAway(trigger);
+			await advance(400);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+		});
+
 		it('waits for a pointer that crosses the gap toward the content', async () => {
 			render(TooltipTest, { delay: 0, closeDelay: 0, placement: 'bottom' });
 			const trigger = byTestId('trigger');
