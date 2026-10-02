@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.0.0-beta.11",
+		"date": "2026-10-02T23:02:45.004Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 110,
+						"prUrl": "https://github.com/human-kit/ui/pull/110",
+						"html": "<p>Fix a tooltip that stayed open after the pointer crossed the corner of a rounded panel. While the pointer was in the gap between the trigger and the panel, a move inside the panel's bounding box counted as landing on it, and tracking stopped to let the panel's <code>pointerenter</code> take over. The corner of a rounded panel is inside its box but not on it, so that <code>pointerenter</code> never came and the tooltip never closed. The gap now asks what the pointer is on, as the browser hit-tests it.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.10",
-		"date": "2026-10-01T14:40:52.069Z",
+		"date": "2026-10-01T11:45:05-03:00",
 		"sections": [
 			{
 				"type": "Patch",
