@@ -21,12 +21,7 @@
 		shouldSkipDelay,
 		unregisterOpenTooltip
 	} from './tooltip-group';
-	import {
-		buildSafePolygon,
-		isPointInPolygon,
-		type Point,
-		type Side
-	} from './safe-polygon';
+	import { buildSafePolygon, isPointInPolygon, type Point, type Side } from './safe-polygon';
 
 	/**
 	 * Tooltip.Root — the open state, the delays, and the interaction with the trigger.
