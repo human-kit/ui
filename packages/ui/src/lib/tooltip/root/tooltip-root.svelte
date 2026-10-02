@@ -24,7 +24,6 @@
 	import {
 		buildSafePolygon,
 		isPointInPolygon,
-		isPointInRect,
 		type Point,
 		type Side
 	} from './safe-polygon';
@@ -256,8 +255,12 @@
 	function handleGapPointerMove(event: PointerEvent) {
 		if (!gapPolygon) return;
 		const point = { x: event.clientX, y: event.clientY };
-		const onContent = contentRef ? isPointInRect(point, contentRef.getBoundingClientRect()) : false;
-		const onTrigger = triggerRef ? isPointInRect(point, triggerRef.getBoundingClientRect()) : false;
+		// What the pointer is on, as the browser hit-tests it, not the bounding box: the corner of a
+		// rounded panel is inside its box but not on it, and no `pointerenter` comes from there to
+		// take over — tracking stopped on it left the tooltip open for good.
+		const target = event.target instanceof Node ? event.target : null;
+		const onContent = target !== null && (contentRef?.contains(target) ?? false);
+		const onTrigger = target !== null && (triggerRef?.contains(target) ?? false);
 		if (onContent || onTrigger) {
 			// The `pointerenter` of the content or the trigger takes over from here.
 			stopGapTracking();

@@ -230,6 +230,33 @@ describe('Tooltip', () => {
 			expect(trigger.getAttribute('data-state')).toBe('closed');
 		});
 
+		it('keeps tracking a pointer inside the panel box but not on the panel', async () => {
+			render(TooltipTest, { delay: 0, closeDelay: 100, placement: 'bottom' });
+			const trigger = byTestId('trigger');
+
+			await pointer(trigger, 'pointerenter');
+			const panel = content() as HTMLElement;
+			await expect.poll(() => panel.style.left).toMatch(/px$/);
+			const triggerRect = trigger.getBoundingClientRect();
+			const panelRect = panel.getBoundingClientRect();
+
+			trigger.dispatchEvent(
+				new PointerEvent('pointerleave', {
+					clientX: triggerRect.left + triggerRect.width / 2,
+					clientY: triggerRect.bottom,
+					pointerType: 'mouse',
+					pointerId: 1
+				})
+			);
+			await tick();
+			// The rounded corner of the panel: inside its box, but the browser hit-tests what is
+			// under it, so the move does not land on the panel and no `pointerenter` follows.
+			await moveTo(panelRect.left + 1, panelRect.top + 1);
+			await moveTo(panelRect.right + 300, panelRect.bottom + 300);
+			await advance(100);
+			expect(trigger.getAttribute('data-state')).toBe('closed');
+		});
+
 		it('closes when the pointer stops in the gap', async () => {
 			render(TooltipTest, { delay: 0, closeDelay: 0, placement: 'bottom' });
 			const trigger = byTestId('trigger');
