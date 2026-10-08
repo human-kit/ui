@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { buttonVariants } from '../button/recipe';
+	import { track } from '$lib/docs/telemetry';
 	import {
 		groupHits,
 		hitLabel,
@@ -49,6 +50,32 @@
 				loadStarted = false;
 			}
 		);
+	});
+
+	/** The shortest query worth a report. One letter matches too much to mean anything. */
+	const MIN_REPORTED_QUERY = 2;
+
+	/** How long the reader must stop writing before the query counts as a question. */
+	const REPORT_AFTER_MS = 700;
+
+	/** Longest query sent. A reader who pastes a page must not put it in the numbers. */
+	const MAX_QUERY_LENGTH = 80;
+
+	// What the readers look for, and what they do not find: a query with 0 results
+	// is the name of a component that is missing, or of a page that does not say
+	// the word the reader knows. The report waits for the writing to stop, so one
+	// question is one event and not one for each keystroke.
+	$effect(() => {
+		const text = query.trim();
+		const found = results.length;
+		// The index arrives after the dialog opens, and a 0 from before it is here
+		// means "not loaded", not "nothing found".
+		if (index === null || text.length < MIN_REPORTED_QUERY) return;
+		const timer = setTimeout(
+			() => track('search', { query: text.slice(0, MAX_QUERY_LENGTH), results: found }),
+			REPORT_AFTER_MS
+		);
+		return () => clearTimeout(timer);
 	});
 
 	// After mount rather than during render: the server has no platform to read,

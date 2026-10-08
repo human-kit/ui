@@ -36,6 +36,7 @@
 				props: {
 					text,
 					label: 'Copy code',
+					source: 'code-block',
 					class: 'absolute top-1.5 right-1.5'
 				}
 			});

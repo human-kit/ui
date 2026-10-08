@@ -72,6 +72,8 @@
     "toast-v1",
     "toggle-group-item",
     "toggle-group-owns-its-value",
+    "tooltip-gap-hit-test",
+    "tooltip-stale-content-hover",
     "tooltip-v1",
     "transfer-list-filter-reorder-form",
     "transfer-list",

@@ -29,6 +29,7 @@ export const nav: NavGroup[] = [
 			{ slug: 'pin-input', title: 'PinInput' },
 			{ slug: 'radio-group', title: 'RadioGroup' },
 			{ slug: 'rating', title: 'Rating' },
+			{ slug: 'search-field', title: 'SearchField' },
 			{ slug: 'slider', title: 'Slider' },
 			{ slug: 'switch', title: 'Switch' },
 			{ slug: 'textarea', title: 'TextArea' },

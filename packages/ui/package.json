@@ -1,6 +1,6 @@
 {
 	"name": "@human-kit/ui",
-	"version": "1.0.0-beta.9",
+	"version": "1.0.0-beta.11",
 	"description": "Accessible, typed UI components for Svelte 5 — shipped as native ESM with per-component subpath exports so bundlers only include what you import.",
 	"license": "MIT",
 	"author": "Agustin Delgado <agustindariodelgado@gmail.com>",
@@ -192,6 +192,11 @@
 			"types": "./dist/color-picker/index.d.ts",
 			"svelte": "./dist/color-picker/index.js",
 			"default": "./dist/color-picker/index.js"
+		},
+		"./search-field": {
+			"types": "./dist/search-field/index.d.ts",
+			"svelte": "./dist/search-field/index.js",
+			"default": "./dist/search-field/index.js"
 		},
 		"./select": {
 			"types": "./dist/select/index.d.ts",

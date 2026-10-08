@@ -1,5 +1,17 @@
 # @human-kit/ui
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- [#110](https://github.com/human-kit/ui/pull/110) [`7b1433d`](https://github.com/human-kit/ui/commit/7b1433da656a339457577ae8efa9471bee52c657) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix a tooltip that stayed open after the pointer crossed the corner of a rounded panel. While the pointer was in the gap between the trigger and the panel, a move inside the panel's bounding box counted as landing on it, and tracking stopped to let the panel's `pointerenter` take over. The corner of a rounded panel is inside its box but not on it, so that `pointerenter` never came and the tooltip never closed. The gap now asks what the pointer is on, as the browser hit-tests it.
+
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [#108](https://github.com/human-kit/ui/pull/108) [`35b9f27`](https://github.com/human-kit/ui/commit/35b9f27a0ad498c017f5ef705a2f55935c45a37a) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix a tooltip that stayed open after the pointer left. A pointer that crossed the panel while it played its exit animation was counted as resting on it, and the panel then left the DOM under the pointer with no `pointerleave`: from there on, every close waited for a pointer that was no longer there. The content now ignores a pointer that lands on it while closed, and forgets the pointer whenever the tooltip closes.
+
 ## 1.0.0-beta.9
 
 ### Minor Changes

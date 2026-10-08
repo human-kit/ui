@@ -2,6 +2,8 @@ packages:
   - 'packages/*'
   - 'docs'
 allowBuilds:
+  # core-js only prints a funding notice at install time; it needs no build step.
+  core-js: false
   esbuild: true
 minimumReleaseAgeExclude:
   - '@human-kit/*'

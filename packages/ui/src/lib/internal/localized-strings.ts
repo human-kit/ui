@@ -154,6 +154,14 @@ const LOCALIZED_STRINGS = {
 		de: 'Spalte',
 		it: 'Colonna'
 	},
+	'searchField.clear': {
+		en: 'Clear search',
+		es: 'Borrar búsqueda',
+		pt: 'Limpar pesquisa',
+		fr: 'Effacer la recherche',
+		de: 'Suche löschen',
+		it: 'Cancella ricerca'
+	},
 	'numberField.increment': {
 		en: 'Increment',
 		es: 'Incrementar',

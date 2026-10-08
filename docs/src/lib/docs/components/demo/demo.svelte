@@ -5,6 +5,7 @@
 	import { buttonVariants } from '../button/recipe';
 	import Surface from '../surface/surface.svelte';
 	import Code from '../icons/code.svelte';
+	import { track } from '$lib/docs/telemetry';
 
 	interface Props {
 		source: { code: string; html: string };
@@ -14,18 +15,35 @@
 	let { source, children }: Props = $props();
 
 	let expanded = $state(false);
+
+	// One event for each demo, not one for each click: the question is whether the
+	// reader tried the component, and the answer does not become more true with
+	// the second press. A plain variable, because no markup reads it.
+	let interacted = false;
+
+	// In the capture phase: a primitive inside the demo can stop a press from
+	// going up, and the read of this signal must not depend on which one does.
+	function onPreviewInteraction() {
+		if (interacted) return;
+		interacted = true;
+		track('demo_interact');
+	}
 </script>
 
 <div class="not-prose my-4 overflow-hidden rounded-xl border border-border">
 	<!-- Preview -->
-	<div class="flex min-h-48 items-center justify-center bg-surface p-4 sm:p-8">
+	<div
+		class="flex min-h-48 items-center justify-center bg-surface p-4 sm:p-8"
+		onpointerdowncapture={onPreviewInteraction}
+		onkeydowncapture={onPreviewInteraction}
+	>
 		{@render children()}
 	</div>
 
 	<Collapsible.Root open={expanded} onOpenChange={(next) => (expanded = next)}>
 		<!-- Toolbar: a Surface so its buttons elevate relative to it (no hand-picked bg). -->
 		<Surface level={1} class="flex items-center justify-end gap-1 border-t p-1">
-			<CopyButton text={source.code} label="Copy source code" />
+			<CopyButton text={source.code} label="Copy source code" source="demo-source" />
 			<Collapsible.Trigger class={buttonVariants({ variant: 'ghost', size: 'sm' })}>
 				<Code />
 				{expanded ? 'Hide code' : 'Show code'}

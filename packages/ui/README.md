@@ -44,15 +44,15 @@ For the smallest bundle, import one component from its subpath:
 
 ## Components
 
-| Category    | Components                                                                    |
-| ----------- | ----------------------------------------------------------------------------- |
-| Overlays    | `Dialog`, `Drawer`, `Popover`, `Menu`, `Portal`                               |
-| Forms       | `Input`, `TextArea`, `Label`, `Checkbox`, `Switch`, `NumberField`, `Dropzone` |
-| Selection   | `ComboBox`, `Autocomplete`, `ListBox`, `Toggle`, `ToggleGroup`                |
-| Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`            |
-| Layout      | `Accordion`, `Collapsible`, `Tabs`, `Table`, `Tree`, `OverflowRow`            |
-| Actions     | `Button`                                                                      |
-| Utilities   | `LocaleProvider`, primitives, and the `cn` class function                     |
+| Category    | Components                                                                                   |
+| ----------- | -------------------------------------------------------------------------------------------- |
+| Overlays    | `Dialog`, `Drawer`, `Popover`, `Menu`, `Portal`                                              |
+| Forms       | `Input`, `TextArea`, `Label`, `Checkbox`, `Switch`, `NumberField`, `SearchField`, `Dropzone` |
+| Selection   | `ComboBox`, `Autocomplete`, `ListBox`, `Toggle`, `ToggleGroup`                               |
+| Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`                           |
+| Layout      | `Accordion`, `Collapsible`, `Tabs`, `Table`, `Tree`, `OverflowRow`                           |
+| Actions     | `Button`                                                                                     |
+| Utilities   | `LocaleProvider`, primitives, and the `cn` class function                                    |
 
 Each component also has a subpath export, for example `@human-kit/ui/calendar`.
 

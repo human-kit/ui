@@ -3,14 +3,24 @@
 	import '@fontsource-variable/roboto-serif';
 	import '../app.css';
 	import { dev } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { RenderScan } from 'svelte-render-scan';
 	import Seo from '$lib/docs/components/seo/seo.svelte';
+	import { startTelemetry, trackPageView } from '$lib/docs/telemetry';
 	let { children } = $props();
 
 	// The render overlay repaints on every DOM mutation, which would dominate
 	// any measurement taken under /bench.
 	const isBench = $derived(page.url.pathname.startsWith('/bench'));
+
+	// `afterNavigate` also runs for the first page, so this is both the start of
+	// the client and every view after it. The router swaps a prerendered page
+	// without a load, so no script can see a view by itself.
+	afterNavigate(() => {
+		startTelemetry();
+		trackPageView(page.url, page.route.id);
+	});
 </script>
 
 <!-- The site's only head block. Routes describe themselves by returning `seo`

@@ -64,13 +64,13 @@ The element has nothing more.
 
 ## Components
 
-| Category  | Components                                                                                                       |
-| --------- | ---------------------------------------------------------------------------------------------------------------- |
-| Form      | `Button`, `Checkbox`, `Input`, `TextArea`, `Label`, `NumberField`, `Switch`, `Toggle`, `ToggleGroup`, `Dropzone` |
-| Pickers   | `Autocomplete`, `ComboBox`, `ListBox`, `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`        |
-| Overlays  | `Dialog`, `Drawer`, `Menu`, `Popover`, `Portal`                                                                  |
-| Structure | `Accordion`, `Collapsible`, `Table`, `Tabs`, `Tree`, `OverflowRow`                                               |
-| Utilities | `LocaleProvider`, `primitives`, and the `cn` class function                                                      |
+| Category  | Components                                                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Form      | `Button`, `Checkbox`, `Input`, `TextArea`, `Label`, `NumberField`, `SearchField`, `Switch`, `Toggle`, `ToggleGroup`, `Dropzone` |
+| Pickers   | `Autocomplete`, `ComboBox`, `ListBox`, `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`                       |
+| Overlays  | `Dialog`, `Drawer`, `Menu`, `Popover`, `Portal`                                                                                 |
+| Structure | `Accordion`, `Collapsible`, `Table`, `Tabs`, `Tree`, `OverflowRow`                                                              |
+| Utilities | `LocaleProvider`, `primitives`, and the `cn` class function                                                                     |
 
 Each component also has a subpath export, for example `@human-kit/ui/menu` and
 `@human-kit/ui/table`. The documentation site has the full API reference, the

@@ -21,13 +21,7 @@
 		shouldSkipDelay,
 		unregisterOpenTooltip
 	} from './tooltip-group';
-	import {
-		buildSafePolygon,
-		isPointInPolygon,
-		isPointInRect,
-		type Point,
-		type Side
-	} from './safe-polygon';
+	import { buildSafePolygon, isPointInPolygon, type Point, type Side } from './safe-polygon';
 
 	/**
 	 * Tooltip.Root — the open state, the delays, and the interaction with the trigger.
@@ -164,7 +158,11 @@
 	$effect(() => {
 		if (!isOpen) return;
 		registerOpenTooltip(groupEntry);
-		return () => unregisterOpenTooltip(groupEntry);
+		return () => {
+			unregisterOpenTooltip(groupEntry);
+			// The panel may go with the pointer still on it, and no `pointerleave` follows.
+			pointerOnContent = false;
+		};
 	});
 
 	$effect(() => {
@@ -252,8 +250,12 @@
 	function handleGapPointerMove(event: PointerEvent) {
 		if (!gapPolygon) return;
 		const point = { x: event.clientX, y: event.clientY };
-		const onContent = contentRef ? isPointInRect(point, contentRef.getBoundingClientRect()) : false;
-		const onTrigger = triggerRef ? isPointInRect(point, triggerRef.getBoundingClientRect()) : false;
+		// What the pointer is on, as the browser hit-tests it, not the bounding box: the corner of a
+		// rounded panel is inside its box but not on it, and no `pointerenter` comes from there to
+		// take over — tracking stopped on it left the tooltip open for good.
+		const target = event.target instanceof Node ? event.target : null;
+		const onContent = target !== null && (contentRef?.contains(target) ?? false);
+		const onTrigger = target !== null && (triggerRef?.contains(target) ?? false);
 		if (onContent || onTrigger) {
 			// The `pointerenter` of the content or the trigger takes over from here.
 			stopGapTracking();
@@ -326,7 +328,10 @@
 	}
 
 	function handleContentPointerEnter(event: PointerEvent) {
-		if (event.pointerType === 'touch') return;
+		// A closed panel is still in the DOM through its exit animation, and a pointer that lands
+		// on it then is not reading it: counted, it would hold the next open forever, because the
+		// panel leaves the DOM under the pointer and its `pointerleave` never comes.
+		if (event.pointerType === 'touch' || !isOpen) return;
 		pointerOnContent = true;
 		stopGapTracking();
 		if (closeTimer !== null) {
