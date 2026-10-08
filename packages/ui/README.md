@@ -1,84 +1,51 @@
 # @human-kit/ui
 
-Accessible UI components for **Svelte 5**.
-
-The components use Svelte 5 runes and have full types. The package is native
-ESM, and each component has a subpath export, thus your bundler includes only
-the components that you import.
+Headless and accessible UI components for **Svelte 5**. More than 40 components
+give you the behavior, and you give them the styles.
 
 **[Documentation and live demos → ui.human-kit.com](https://ui.human-kit.com)**
+
+## Features
+
+- **Headless.** No component has a style. Each part accepts a `class` attribute
+  and shows its state in `data-*` attributes.
+- **Accessible.** The components follow the WAI-ARIA Authoring Practices for
+  the roles, the keyboard, and the focus.
+- **Ready for each input.** The components work with a mouse, a touch screen,
+  and a keyboard.
+- **International.** `LocaleProvider` gives a locale to the dates, the times,
+  and the numbers, and the built-in labels are in six languages.
+- **Small.** Native ESM with one subpath export for each component, and one
+  dependency at run time: `@floating-ui/dom`.
 
 ## Installation
 
 ```bash
 npm install @human-kit/ui
-# or
-pnpm add @human-kit/ui
 ```
 
-Svelte 5 is a peer dependency:
-
-```json
-"peerDependencies": {
-  "svelte": "^5.0.0"
-}
-```
+Svelte `^5.0.0` is a peer dependency.
 
 ## Usage
 
-Import from the root of the package:
+Each component is a namespace of parts. Import it from the root of the package,
+or from its subpath for the smallest bundle:
 
 ```svelte
 <script lang="ts">
-	import { Dialog, ComboBox, Input, Label } from '@human-kit/ui';
+	import { Switch } from '@human-kit/ui/switch';
 </script>
+
+<Switch.Root
+	aria-label="Notifications"
+	class="h-5 w-9 rounded-full bg-neutral-300 p-0.5 data-[checked=true]:bg-black"
+>
+	<Switch.Thumb class="block size-4 rounded-full bg-white data-[checked=true]:translate-x-4" />
+</Switch.Root>
 ```
 
-For the smallest bundle, import one component from its subpath:
-
-```svelte
-<script lang="ts">
-	import { Dialog } from '@human-kit/ui/dialog';
-</script>
-```
-
-## Components
-
-| Category    | Components                                                                                   |
-| ----------- | -------------------------------------------------------------------------------------------- |
-| Overlays    | `Dialog`, `Drawer`, `Popover`, `Menu`, `Portal`                                              |
-| Forms       | `Input`, `TextArea`, `Label`, `Checkbox`, `Switch`, `NumberField`, `SearchField`, `Dropzone` |
-| Selection   | `ComboBox`, `Autocomplete`, `ListBox`, `Toggle`, `ToggleGroup`                               |
-| Date & time | `Calendar`, `Clock`, `DatePicker`, `DateRangePicker`, `TimePicker`                           |
-| Layout      | `Accordion`, `Collapsible`, `Tabs`, `Table`, `Tree`, `OverflowRow`                           |
-| Actions     | `Button`                                                                                     |
-| Utilities   | `LocaleProvider`, primitives, and the `cn` class function                                    |
-
-Each component also has a subpath export, for example `@human-kit/ui/calendar`.
-
-## Styles
-
-The components are headless: they have no CSS, and they do not need a CSS
-framework. Each part accepts a `class` attribute. Each part also shows its state
-in `data-*` attributes, for example `data-state`, `data-disabled`,
-`data-focus-visible`, and `data-pressed`. Thus you can write the styles in plain
-CSS, in Tailwind, or in a different tool. Each component page in the
-documentation gives the full list of the data attributes.
-
-```svelte
-<Button.Root class="rounded-md bg-black px-3 py-1.5 text-white data-[pressed]:opacity-80">
-	Save
-</Button.Root>
-```
-
-The library has one dependency at run time:
-[`@floating-ui/dom`](https://floating-ui.com). Only the components that put an
-element against an anchor use it.
-
-## Requirements
-
-- Svelte `^5.0.0`
-- Node.js version 20 or later
+Each component page in the documentation gives the anatomy, the data
+attributes, and the full API reference.
 
 ## License
 
