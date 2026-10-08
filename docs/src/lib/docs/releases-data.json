@@ -1,7 +1,413 @@
 [
 	{
+		"version": "1.0.0",
+		"date": "2026-10-08T23:38:37.444Z",
+		"sections": [
+			{
+				"type": "Major",
+				"entries": [
+					{
+						"pr": 1,
+						"prUrl": "https://github.com/human-kit/ui/pull/1",
+						"html": "<p>Initial release of @human-kit/ui</p>\n<ul>\n<li>ComboBox (single &amp; multi-select with tags, virtual focus, filtering)</li>\n<li>Dialog (modal with portal, overlay, nested dialogs, focus trap)</li>\n<li>ListBox (keyboard navigation, single selection)</li>\n<li>Popover (floating UI positioning, click outside, trigger)</li>\n<li>Input, Label, Portal primitives</li>\n<li>Utility primitives (aria-hide-outside, scroll-lock, focus-trap, keyboard-navigation)</li>\n</ul>"
+					},
+					{
+						"pr": 79,
+						"prUrl": "https://github.com/human-kit/ui/pull/79",
+						"html": "<p><strong>Breaking:</strong> remove <code>ToggleGroup.Root</code>'s <code>controlledValue</code> prop, and stop the group from reporting a selection change while it is unmounting.</p>\n<ul>\n<li><code>value</code> is the source of truth whenever it is supplied, with <code>bind:value</code> or without — there is no longer a flag to declare which. <code>onChange</code> always fires on a real interaction, and the write-back still reaches a binding.</li>\n<li>A parent that owns <code>value</code> and rejects a change still sees the group move; the supplied <code>value</code> takes the selection back on the parent's next render.</li>\n<li>Unmounting the whole group no longer fires <code>onChange</code>. Previously the selected toggle unregistered during teardown, <code>disallowEmptySelection</code> picked a fallback, and the consumer heard a press the user never made — enough to navigate a URL-backed group straight back to the screen being left. Removing a single <code>Toggle.Root</code> from a group that stays mounted still falls back and reports.</li>\n</ul>\n<p>Migration: delete <code>controlledValue</code>. <code>value</code> + <code>onChange</code> without a binding already is the controlled case.</p>"
+					}
+				]
+			},
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 101,
+						"prUrl": "https://github.com/human-kit/ui/pull/101",
+						"html": "<p>Add the Avatar primitive with <code>Root</code>, <code>Image</code> and <code>Fallback</code>. The image loads off the screen first, and the <code>&lt;img&gt;</code> renders once it is there, thus a broken image icon never shows. The fallback shows while the image is not on the screen, at once for a failure or a missing <code>src</code>, and after <code>delay</code> milliseconds while a slow image loads. The root has <code>data-status</code> and <code>onStatusChange</code> for <code>loading</code>, <code>loaded</code> and <code>error</code>. The fallback takes the name of the image as a <code>role=&quot;img&quot;</code>, and <code>loading=&quot;lazy&quot;</code> starts the load when the avatar comes into view. <code>Avatar.Group</code> is a named <code>role=&quot;group&quot;</code> with a <code>max</code>, and <code>Avatar.Count</code> says how many avatars are past it, as <code>+N</code> on the screen and &quot;N more&quot; for the screen reader.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Add <code>Table.Checkbox</code> and <code>Table.CheckboxIndicator</code> for explicit row selection controls in body cells and select-all behavior in header cells, including keyboard navigation integration with the table grid.</p>\n<p>Add <code>hiddenColumns</code> (bindable) and <code>defaultHiddenColumns</code> props to <code>Table.Root</code> for controlled and uncontrolled column visibility. Hidden columns are excluded from grid navigation, visible column counts (<code>aria-colcount</code>), and resize interactions while preserving their registered widths.</p>\n<p>Add <code>aria-colindex</code> to header and body cells for accurate screen reader column position announcements.</p>"
+					},
+					{
+						"pr": 101,
+						"prUrl": "https://github.com/human-kit/ui/pull/101",
+						"html": "<p>Add the Breadcrumbs primitive with <code>Root</code>, <code>List</code>, <code>Item</code>, <code>Link</code> and <code>Separator</code>. The root is a <code>&lt;nav&gt;</code> landmark named &quot;Breadcrumb&quot; in the locale of <code>LocaleProvider</code>, the list is an <code>&lt;ol&gt;</code> of <code>&lt;li&gt;</code>, and <code>current</code> gives the last link <code>aria-current=&quot;page&quot;</code>. A link without an <code>href</code>, or with <code>disabled</code>, is a <code>&lt;span&gt;</code> out of the tab order. The separator is <code>aria-hidden</code>, in the item after the link, thus the list holds pages only. <code>maxItems</code> folds the middle of a long trail behind <code>Breadcrumbs.Ellipsis</code>, a button named &quot;Show N more pages&quot; that unfolds it and moves the focus to the first page that comes into view.</p>"
+					},
+					{
+						"pr": 13,
+						"prUrl": "https://github.com/human-kit/ui/pull/13",
+						"html": "<p>Refactor TimePicker panel to Apple-like wheel architecture.</p>\n<ul>\n<li>Replace <code>TimePicker.Column</code>/<code>TimePicker.ColumnCell</code> with <code>TimePicker.WheelColumn</code>/<code>TimePicker.WheelItem</code>.</li>\n<li>Migrate panel semantics from <code>listbox/option</code> to <code>spinbutton</code> per wheel column.</li>\n<li>Remove <code>shouldCloseOnSelect</code> and <code>closeOnSelect</code> from <code>TimePicker.Root</code>; wheel selection now commits on snap without auto-close.</li>\n<li>Replace root context column APIs with wheel APIs: <code>getWheelOptions</code>, <code>getSelectedWheelValue</code>, <code>selectWheelValue</code>.</li>\n<li>Update docs and tests for wheel interaction and focus behavior.</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add the new <code>Toggle</code> primitive with a single <code>Root</code> part.</p>\n<ul>\n<li>support controlled and uncontrolled selected state with <code>selected</code>, <code>defaultSelected</code>, and <code>onChange</code></li>\n<li>expose native button semantics with <code>aria-pressed</code>, disabled behavior, and keyboard activation</li>\n<li>add styling hooks for selected, unselected, pressed, hover, focus, and focus-visible states</li>\n<li>expose the <code>./toggle</code> package entry and add docs/demo coverage</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add a <code>filter</code> prop to <code>ComboBox.Root</code> so consumers can customize local option filtering or pass <code>null</code> to disable it for externally filtered lists.</p>"
+					},
+					{
+						"pr": 28,
+						"prUrl": "https://github.com/human-kit/ui/pull/28",
+						"html": "<p>Add new ComboBox trigger and clear parts, plus pending and scroll improvements.</p>\n<ul>\n<li>Add <code>ComboBox.Trigger</code> as the primary trigger part while keeping <code>ComboBox.Button</code> as a compatibility alias.</li>\n<li>Add <code>ComboBox.Clear</code> to reset the input and clear the current selection without stealing focus.</li>\n<li>Reflect <code>isPending</code> on trigger and clear affordances while keeping the root as the main async state source.</li>\n<li>Clear the selected value when a single-select combobox input is fully emptied.</li>\n<li>Allow wheel events to stay inside the combobox when a descendant scroll container can continue scrolling.</li>\n<li>Prevent page scroll when neither the popover nor a descendant scroll container can scroll further.</li>\n<li>Forward <code>Popover.Content</code> configuration props through <code>ComboBox.Popover</code>, including positioning options like <code>offset</code>.</li>\n<li>Add docs coverage for pending state and the pattern where overflow is applied to <code>ComboBox.List</code> instead of <code>ComboBox.Popover</code>.</li>\n</ul>"
+					},
+					{
+						"pr": 87,
+						"prUrl": "https://github.com/human-kit/ui/pull/87",
+						"html": "<p>Add the CheckboxGroup primitive with <code>Root</code>, <code>Item</code> and <code>Indicator</code>: one array value for a set of checkboxes, a shared <code>name</code> for form submission, group-wide disabled, read-only and required state, <code>allSelected</code> and <code>someSelected</code> for a parent select-all checkbox, SSR-safe default selection, documentation, and demo coverage. <code>CheckboxGroup.Item</code> and <code>CheckboxGroup.Indicator</code> are <code>Checkbox.Root</code> and <code>Checkbox.Indicator</code> under the namespace of the group, so every group in the library reads the same way; a checkbox still works on its own under its own name.</p>"
+					},
+					{
+						"pr": 106,
+						"prUrl": "https://github.com/human-kit/ui/pull/106",
+						"html": "<p>Add the ColorPicker primitive with <code>Root</code>, <code>Label</code>, <code>Area</code>, <code>AreaThumb</code>, <code>Slider</code>, <code>SliderThumb</code>, <code>HexField</code>, <code>ChannelField</code>, <code>SwatchList</code>, <code>Swatch</code>, <code>Preview</code> and <code>EyeDropper</code>. The color is held as hue, saturation and brightness. The square keeps its shape at each hue, and a color that goes to black keeps the hue it had. The value is text: a hex color, <code>rgb()</code>, <code>hsl()</code> and <code>hsb()</code> come in, and <code>format</code> decides what goes out. <code>alpha</code> adds the fourth number and the <code>alpha</code> channel. <code>ColorPicker.AreaThumb</code> holds one native slider for each axis, each with the name of its channel and with <code>aria-valuetext</code>. The arrows move both axes from either of them. <code>ColorPicker.SwatchList</code> is a listbox of options. The parts paint nothing: <code>--color-picker-value</code>, <code>--color-picker-hue-color</code>, <code>--color-picker-area-x</code>, <code>--color-picker-slider-start</code> and <code>--color-picker-swatch-color</code> give your CSS what it needs.</p>"
+					},
+					{
+						"pr": 61,
+						"prUrl": "https://github.com/human-kit/ui/pull/61",
+						"html": "<p>Add <code>Drawer</code>, an edge-anchored panel dismissed by swiping it away.</p>\n<ul>\n<li>Compose <code>Drawer.Root</code>, <code>Drawer.Trigger</code>, <code>Drawer.Portal</code>, <code>Drawer.Overlay</code> and <code>Drawer.Content</code>, plus <code>Drawer.Body</code> (the scrolling region), <code>Drawer.Title</code>, <code>Drawer.Description</code> and <code>Drawer.Close</code>. <code>Drawer.Viewport</code> is an optional positioning layer; without it the panel pins itself to its edge.</li>\n<li><code>side</code> anchors the panel to any of the four edges. <code>modal</code> accepts <code>true</code>, <code>'trap-focus'</code> (keyboard captured, page still scrollable) or <code>false</code>. Drawers register in the same layer stack as <code>Dialog</code>, so Escape and outside presses only ever dismiss the topmost layer and z-indexes interleave correctly.</li>\n<li>Swipe-to-dismiss with velocity-aware release and deference to any scrollable region between the finger and the panel — a sheet with a scrolling body no longer drags itself off screen when you try to scroll it. The panel publishes <code>--drawer-swipe-movement-x/y</code>, <code>--drawer-swipe-progress</code> and <code>--drawer-swipe-strength</code>; appearance stays with the consumer's CSS.</li>\n<li><code>--drawer-swipe-progress</code> measures progress toward <strong>dismissal</strong>, staying at <code>0</code> for the whole trip between snap points. A backdrop tied to raw movement brightened the page while a sheet travelled from one snap point to another and snapped dark again on release, for a drawer that never left.</li>\n<li>Pulling a drawer further open than it can go stretches it against heavy resistance, capped at 40px and published as <code>--drawer-overdrag</code>. The strip of page the panel moves off is covered in the panel's own background, so the drawer never looks like it is coming apart from its edge.</li>\n<li>Only the drawer at the back of the stack paints a backdrop. Each root brings its own overlay, so stacking two dimmed the page twice — darkening the drawer underneath along with everything else. The ones above get <code>data-nested</code> on their overlay and stand down.</li>\n<li><code>data-starting-style</code> marks the first painted frame after the panel mounts, giving a CSS transition a value to animate from. Without it a drawer built on <code>transition</code> has an exit animation and no entrance.</li>\n<li><code>snapPoints</code> / <code>snapPoint</code> / <code>defaultSnapPoint</code> / <code>onSnapPointChange</code> / <code>snapToSequentialPoints</code>, resolved from fractions, pixels or CSS lengths, with releases settling on the point the flick was heading for. Exposed through <code>--drawer-snap-point-offset</code> and <code>data-expanded</code>.</li>\n<li>Nested drawers expose <code>data-nested-drawer-open</code>, <code>data-nested-drawer-swiping</code>, <code>--nested-drawers</code> and <code>--drawer-frontmost-height</code>; <code>Drawer.Indent</code> and <code>Drawer.IndentBackground</code> let the app behind pull back with the gesture.</li>\n<li><code>Drawer.SwipeArea</code> opens the drawer from a viewport edge with the panel following the finger, and <code>Drawer.VirtualKeyboardProvider</code> publishes <code>--drawer-keyboard-inset</code> so a bottom sheet's footer clears the software keyboard.</li>\n<li><code>createDrawerHandle()</code> drives a drawer from triggers anywhere in the tree, passing a <code>payload</code> to the root's <code>children</code> snippet and returning focus to the trigger that actually opened it.</li>\n</ul>\n<p>Add <code>Dialog.Title</code>, <code>Dialog.Description</code> and <code>Dialog.Close</code>.</p>\n<p><code>Dialog.Title</code> and <code>Dialog.Description</code> register their ids and wire <code>aria-labelledby</code> / <code>aria-describedby</code> on <code>Dialog.Content</code>. A <code>role=&quot;dialog&quot;</code> takes its name from <code>aria-labelledby</code>, never from the text inside it, so a dialog built with a bare heading had no accessible name. The new parts are additive — existing dialogs are unchanged.</p>\n<p>Move the layer z-index math from <code>dialog/root/dialog-stack.ts</code> into <code>primitives/layer-stack.ts</code>, so <code>Menu</code> and <code>Popover</code> no longer import from <code>Dialog</code> to place themselves. The public helpers keep their names and values.</p>"
+					},
+					{
+						"pr": 58,
+						"prUrl": "https://github.com/human-kit/ui/pull/58",
+						"html": "<p>Promote the library to its first public beta, exiting the alpha prerelease line.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add the new <code>Tabs</code> primitive with <code>Root</code>, <code>List</code>, <code>Tab</code>, <code>Indicator</code>, and <code>Panel</code> parts.</p>\n<ul>\n<li>support controlled and uncontrolled selection, including <code>null</code> values</li>\n<li>add automatic and manual keyboard activation with horizontal and vertical roving focus</li>\n<li>include accessible tab and tabpanel wiring, SSR-ready default selection, disabled tabs, and indicator positioning hooks</li>\n<li>expose the <code>./tabs</code> package entry and add docs/demo coverage</li>\n</ul>"
+					},
+					{
+						"pr": 37,
+						"prUrl": "https://github.com/human-kit/ui/pull/37",
+						"html": "<p>Add table row actions and selection-only disabled behavior.</p>\n<ul>\n<li>add <code>onRowAction</code> to <code>Table.Root</code> with RAC-style interaction rules across <code>selectionMode</code> and <code>selectionBehavior</code></li>\n<li>add <code>disabledBehavior=&quot;selection&quot; | &quot;all&quot;</code> to split selection disabling from fully disabled rows</li>\n<li>expose actionable and selection-disabled row/cell state through data attributes for styling</li>\n<li>document and demo manual testing flows for toggle-mode actions, replace-mode double click actions, and disabled row behavior</li>\n</ul>"
+					},
+					{
+						"pr": 94,
+						"prUrl": "https://github.com/human-kit/ui/pull/94",
+						"html": "<p>Add <code>CheckboxGroup.Label</code> and <code>RadioGroup.Label</code>. The part names its group: it registers its id with the root, which gives it to the group element as <code>aria-labelledby</code>. Two labels read as one name, in the order they appear, and an <code>aria-labelledby</code> that the caller gives stands. It renders a <code>&lt;span&gt;</code> and not a <code>&lt;label&gt;</code>, because a <code>&lt;label&gt;</code> names one control and cannot name a set. This also corrects the API reference of <code>RadioGroup.Item</code>, which listed the props of <code>RadioGroup.Root</code>.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add an <code>autofocus</code> prop to <code>Input</code> that reliably focuses the element on mount.</p>\n<p>Native <code>autofocus</code> only focuses the first autofocus element inserted per document, so it silently fails for inputs that mount inside an already-open popover/dialog or that remount as a view swaps. The prop focuses the underlying input on mount instead, so it works every time the input appears.</p>"
+					},
+					{
+						"pr": 6,
+						"prUrl": "https://github.com/human-kit/ui/pull/6",
+						"html": "<p>Add the new Calendar component as a public feature release.</p>\n<ul>\n<li>introduce single and range selection modes</li>\n<li>add keyboard navigation and accessibility improvements</li>\n<li>include docs/demo integration and supporting tests</li>\n</ul>"
+					},
+					{
+						"pr": 73,
+						"prUrl": "https://github.com/human-kit/ui/pull/73",
+						"html": "<p>Add <code>Menu.ContextTrigger</code>, a surface that opens the menu on right click, on long press for touch and pen, and with <code>Shift+F10</code> or the <code>ContextMenu</code> key. Everything below the trigger — items, groups, submenus, keyboard navigation — is unchanged, so a context menu is the same menu with a different opener.</p>\n<p>The panel is anchored at the pointer (and <code>Menu.Content</code> drops its default <code>offset</code> to <code>0</code> for a context menu), or to the surface itself when opened from the keyboard, where no pointer position exists.</p>\n<p>Two new primitives back it and are exported for reuse: <code>createPointAnchor</code>, which lets any floating panel anchor to a viewport point instead of an element, and the <code>longPress</code> action.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add <code>Menu</code>, an accessible dropdown / action menu following the WAI-ARIA menu button pattern.</p>\n<ul>\n<li>Compose <code>Menu.Root</code>, <code>Menu.Trigger</code>, and <code>Menu.Content</code> (portal + floating + <code>role=&quot;menu&quot;</code> panel), built on the same positioning/presence primitives as <code>Popover</code>.</li>\n<li><code>Menu.Item</code> with <code>onSelect</code>, <code>disabled</code>, <code>closeOnSelect</code>, and <code>textValue</code>; arrow-key navigation, typeahead, Home/End, and hover highlighting via roving focus.</li>\n<li><code>Menu.Separator</code>, plus <code>Menu.Group</code> + <code>Menu.GroupLabel</code> with <code>aria-labelledby</code> wiring.</li>\n<li><code>Menu.SubmenuRoot</code> + <code>Menu.SubmenuTrigger</code> for nested submenus, with a layer stack so only the topmost menu handles Escape / outside-press, <code>ArrowRight</code>/<code>ArrowLeft</code> open/close, and sibling submenus collapse on hover.</li>\n<li><code>Menu.Root</code> exposes <code>open</code>/<code>defaultOpen</code>/<code>onOpenChange</code> (with cancelable <code>details</code>), <code>loop</code>, <code>typeahead</code>, and <code>closeOnSelect</code>. Escape and selection return focus to the trigger; Tab and outside interaction close the whole chain.</li>\n</ul>"
+					},
+					{
+						"pr": 31,
+						"prUrl": "https://github.com/human-kit/ui/pull/31",
+						"html": "<p>Add follow-up ComboBox and Popover improvements after the previous prerelease changeset was already consumed.</p>\n<ul>\n<li>Forward <code>Popover.Content</code> configuration props through <code>ComboBox.Popover</code>, including positioning options like <code>offset</code>, <code>placement</code>, <code>shouldFlip</code>, <code>shouldCloseOnEscape</code>, and <code>shouldCloseOnBlur</code>.</li>\n<li>Ensure <code>ComboBox</code> virtual focus marks the active <code>ListBox.Item</code> with <code>data-focus-visible</code> during keyboard navigation.</li>\n<li>Keep the interactive ComboBox docs aligned with the shared popover positioning behavior.</li>\n</ul>"
+					},
+					{
+						"pr": 106,
+						"prUrl": "https://github.com/human-kit/ui/pull/106",
+						"html": "<p>Add the PinInput primitive with <code>Root</code>, <code>Label</code> and <code>Cell</code>. Each cell is a real input with its own name, its <code>inputmode</code> and its <code>autocomplete</code>. A telephone shows the correct keyboard, and a code from a message fills the cells with one touch. A paste goes across the cells from the cell it starts in, and the characters that <code>type</code> or <code>pattern</code> refuses are dropped. The value has no holes. The characters fill the cells from the first one, and a press on a cell past the first empty one goes to that one. A character that goes away takes the ones after it one cell to the left. <code>onComplete</code> runs when the last cell takes a character, <code>mask</code> hides the characters, and <code>name</code> sends the whole value in a form.</p>"
+					},
+					{
+						"pr": 98,
+						"prUrl": "https://github.com/human-kit/ui/pull/98",
+						"html": "<p>Add the Progress primitive with <code>Root</code>, <code>Label</code>, <code>Track</code>, <code>Indicator</code> and <code>Value</code>. The root is the <code>role=&quot;progressbar&quot;</code> element with <code>aria-valuemin</code>, <code>aria-valuemax</code>, <code>aria-valuenow</code> and <code>aria-valuetext</code>; <code>value={null}</code> makes it indeterminate, with no number for the screen reader. The label names the bar through <code>aria-labelledby</code>, the value is <code>aria-hidden</code> because the bar already gives it, and the text follows the locale of <code>LocaleProvider</code> as a percentage of the range or in a unit through <code>format</code>. The indicator fills from the start edge of the text direction, or from the bottom of a vertical track, and <code>bind:context</code> gives <code>percent</code> and <code>status</code> for a shape of your own.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add the ToggleGroup primitive with single and multiple selection, roving focus, disabled reconciliation, SSR-safe default selection, documentation, and demo coverage.</p>"
+					},
+					{
+						"pr": 89,
+						"prUrl": "https://github.com/human-kit/ui/pull/89",
+						"html": "<p>Add the RadioGroup primitive with <code>Root</code>, <code>Item</code> and <code>Indicator</code>: one value for a set of radio buttons, a shared <code>name</code> for form submission, group-wide disabled, read-only and required state, and the keyboard the WAI-ARIA APG asks for — a single tab stop on the checked button, and arrow keys that move the focus and the selection together, with wrapping. Includes documentation and demo coverage.</p>"
+					},
+					{
+						"pr": 106,
+						"prUrl": "https://github.com/human-kit/ui/pull/106",
+						"html": "<p>Add the Rating primitive with <code>Root</code>, <code>Label</code>, <code>Output</code> and <code>Item</code>. With whole items the root is a radio group, and each item is a radio with its own name, because each value is one item. With <code>precision={0.5}</code> the root is a slider with <code>aria-valuenow</code> and <code>aria-valuetext</code>, because a radio group cannot say 3.5. The keyboard is the same in the two shapes. The arrows step by the precision, <code>Home</code> and <code>End</code> go to the ends, and <code>Delete</code> clears the value. The value follows the pointer before a press, in <code>Rating.Output</code> and in <code>--rating-display-value</code>. Each item carries <code>--rating-item-fill</code>, from 0 to 1, thus one shape over the item gives you a half star. <code>name</code> sends the value in a form, and a <code>&lt;form&gt;</code> reset takes the first value back.</p>"
+					},
+					{
+						"pr": 112,
+						"prUrl": "https://github.com/human-kit/ui/pull/112",
+						"html": "<p>Add the <code>SearchField</code> component with <code>Root</code>, <code>Label</code>, <code>Input</code> and <code>Clear</code>. The input is a native <code>&lt;input type=&quot;search&quot;&gt;</code>. The <code>Escape</code> key empties the text and stops the key, but an empty field lets the key go on, thus a dialog around the field can close. The <code>Enter</code> key calls <code>onSubmit</code>, and the form also submits. Keys in an IME composition do neither. The clear button is not in the tab order, keeps the focus in the input, and has a localized name. A form reset puts back <code>defaultValue</code>.</p>"
+					},
+					{
+						"pr": 95,
+						"prUrl": "https://github.com/human-kit/ui/pull/95",
+						"html": "<p>Add the Select primitive with <code>Root</code>, <code>Label</code>, <code>Trigger</code>, <code>Value</code>, <code>Popover</code>, <code>List</code>, <code>Item</code> and <code>ItemIndicator</code>: a form field with one value from a list of options, or more than one with <code>selectionMode=&quot;multiple&quot;</code>. The trigger is a <code>role=&quot;combobox&quot;</code> button named by the label and the value together, the list is a <code>ListBox</code> in a popover that takes the focus on the selected option, and a hidden native <code>&lt;select&gt;</code> sends the value with the form. It has the keyboard of the WAI-ARIA select-only combobox: the arrows, <code>Home</code>, <code>End</code>, <code>PageUp</code>, <code>PageDown</code> and typed characters open the list and move through it, <code>Enter</code>, <code>Space</code> and <code>Alt+ArrowUp</code> select, and <code>Escape</code> and <code>Tab</code> close. Includes documentation and demo coverage.</p>\n<p>The keyboard-navigation primitive gains a <code>typeahead(char)</code> method, for a widget that opens on a character typed outside the list.</p>"
+					},
+					{
+						"pr": 101,
+						"prUrl": "https://github.com/human-kit/ui/pull/101",
+						"html": "<p>Add the Separator primitive: a <code>role=&quot;separator&quot;</code> line with <code>aria-orientation=&quot;vertical&quot;</code> for a vertical one, and <code>role=&quot;none&quot;</code> with <code>decorative</code> for a line the content already makes. With a <code>value</code>, it is a window splitter: a tab stop with <code>aria-valuenow</code>, which the arrow keys, <code>Home</code>, <code>End</code>, <code>Enter</code> and a pointer drag move.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p><strong>Table Column Resizing</strong></p>\n<p>Add column resizing support to <code>Table</code>.</p>\n<ul>\n<li>add <code>Table.ColumnResizer</code> as a public part</li>\n<li>add column width and resize APIs to <code>Table.Root</code> and <code>Table.Column</code></li>\n<li>render managed column widths through <code>colgroup</code></li>\n<li>document and demo resizable table columns</li>\n</ul>"
+					},
+					{
+						"pr": 96,
+						"prUrl": "https://github.com/human-kit/ui/pull/96",
+						"html": "<p>Add the <code>Slider</code> component: a number, or a range of numbers, on a track. Each thumb holds a native range input for the form and for screen readers, the keyboard follows the text direction, and the text of the value comes from <code>Intl.NumberFormat</code> in the locale.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add short helper types to the public <code>table</code> module for column-driven wrappers and consumer-defined table abstractions.</p>\n<ul>\n<li>export <code>RowData</code>, <code>Row</code>, <code>ColumnDef</code>, <code>CellContext</code>, <code>CellProps</code>, and <code>CellRenderer</code></li>\n<li>keep these helpers generic so consumers can build any wrapper shape on top of the existing table primitives</li>\n</ul>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Add a new <code>Table</code> component with composable parts, grid-style keyboard navigation, row selection, sorting support, docs, and tests.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Add a new headless Checkbox component with Root and Indicator parts.</p>\n<ul>\n<li>Add tri-state checkbox behavior with checked and indeterminate bindings.</li>\n<li>Sync a hidden native input for form submission and label targeting.</li>\n<li>Export Checkbox from the root library entrypoint and package subpath exports.</li>\n<li>Add baseline docs and browser tests for checkbox interaction.</li>\n</ul>"
+					},
+					{
+						"pr": 67,
+						"prUrl": "https://github.com/human-kit/ui/pull/67",
+						"html": "<p>Add <code>keyboardNavigation</code> to <code>Table.Root</code> (<code>'grid' | 'row' | 'none'</code>, defaulting to <code>'grid'</code>), which decides how far the roving tab stop reaches into the body.</p>\n<p>Cell navigation is not free: every body cell registers itself with the focus registry and derives its own focus state, and a virtualized table pays that again for every row it mounts while scrolling. <code>'row'</code> keeps the body keyboard-reachable at one focus target per row — arrows walk rows, <code>Enter</code> presses one, <code>Space</code> toggles its selection — and <code>'none'</code> leaves the body inert. In both, focusable content inside a body cell (<code>Table.Checkbox</code>, links) becomes a regular tab stop, since no roving focus reaches it any more.</p>\n<p>The header keeps its own cell navigation in every mode, so sorting and column resizing stay reachable.</p>"
+					},
+					{
+						"pr": 51,
+						"prUrl": "https://github.com/human-kit/ui/pull/51",
+						"html": "<p>Replace implicit table header sorting with an explicit <code>Table.SortTrigger</code> part. <code>Table.Column</code> no longer accepts <code>allowsSorting</code>; columns become sortable by composing <code>Table.SortTrigger</code> inside <code>Table.ColumnHeaderCell</code>.</p>\n<p>This change prevents nested header actions like filter popovers from triggering sort through click bubbling and lets sortable headers take DOM focus directly through the trigger while keeping the table grid navigation contract.</p>"
+					},
+					{
+						"pr": 78,
+						"prUrl": "https://github.com/human-kit/ui/pull/78",
+						"html": "<p><code>TimePicker.Input</code> accepts <code>id</code> and <code>name</code>, matching <code>DatePicker.Input</code>.</p>\n<p>Either one renders a visually hidden, focusable proxy input that carries them, so a <code>&lt;label for&gt;</code> reaches the segments and a native form submit reads the committed value. The segment group keeps an id of its own (<code>${id}-group</code>). An <code>aria-invalid</code> passed by the consumer is now combined with the invalid segment draft instead of being dropped.</p>"
+					},
+					{
+						"pr": 99,
+						"prUrl": "https://github.com/human-kit/ui/pull/99",
+						"html": "<p>Add the Toast primitive with <code>Provider</code>, <code>Viewport</code>, <code>Positioner</code>, <code>Root</code>, <code>Content</code>, <code>Title</code>, <code>Description</code>, <code>Action</code> and <code>Close</code>. The manager on <code>useToastManager()</code> or <code>bind:manager</code> has <code>add</code>, <code>update</code>, <code>close</code> and <code>promise</code>. The viewport is a <code>role=&quot;region&quot;</code> landmark named with the count of toasts, with <code>F6</code> in and out, and two live regions beside it announce each toast without its buttons. Each toast is a <code>dialog</code> that is not modal, or an <code>alertdialog</code> for a high priority, with <code>Escape</code> to close, a swipe that follows the finger, and an exit animation from its CSS. <code>Toast.Positioner</code> puts a toast with an <code>anchor</code> against that element. The timers stop on hover, on keyboard focus and in a hidden tab, the newest toasts stay up to a limit, and the viewport stays reachable behind a modal dialog. The <code>ariaHideOutside</code> primitive learned <code>data-hk-hide-outside-exempt</code>, and the focus trap leaves <code>Tab</code> to a surface with that attribute while the focus is in it.</p>"
+					},
+					{
+						"pr": 90,
+						"prUrl": "https://github.com/human-kit/ui/pull/90",
+						"html": "<p>Add <code>ToggleGroup.Item</code>, which is <code>Toggle.Root</code> under the namespace of the group. Every group in the library now reads the same way — <code>Group.Root</code> with <code>Group.Item</code> inside — and <code>Toggle.Root</code> keeps working on its own and inside a group, so nothing that is already written changes.</p>\n<p>The props of <code>Toggle.Root</code> also move from <code>api.json</code> into JSDoc, so the reference of the toggle and the reference of the group both read them from one place.</p>"
+					},
+					{
+						"pr": 97,
+						"prUrl": "https://github.com/human-kit/ui/pull/97",
+						"html": "<p>Add the <code>Tooltip</code> component: a short description of a control on hover or on keyboard focus, with <code>role=&quot;tooltip&quot;</code> and <code>aria-describedby</code> on the trigger, a delay that the next tooltip in a row skips, content the pointer can cross to and rest on, a long press for touch that <code>openOnLongPress={false}</code> turns off, a panel that follows the pointer with <code>followPointer</code>, and an arrow. The <code>floating</code> primitive learned to position an arrow.</p>"
+					},
+					{
+						"pr": 74,
+						"prUrl": "https://github.com/human-kit/ui/pull/74",
+						"html": "<p><code>TransferList</code> gains filtering, ordering, form submission and a keyboard shortcut:</p>\n<ul>\n<li><strong><code>filter</code> per side.</strong> A predicate decides what each list shows; the input driving it stays yours. With a filter applied, &quot;move all&quot; means the rows on screen rather than the whole side — moving items the user cannot see would be invisible work.</li>\n<li><strong><code>TransferList.MoveUp</code> / <code>MoveDown</code>.</strong> They shift the right-hand selection one position within <code>value</code>, keeping a contiguous block together and disabling at the ends instead of doing nothing quietly. Reordering exists only on the right, where the order is state the user is building.</li>\n<li><strong><code>name</code> on the Root</strong> renders one hidden input per key, in order, so <code>value</code> submits with a form without any wiring.</li>\n<li><strong><code>Ctrl</code>/<code>Cmd</code>+<code>Enter</code></strong> sends the focused list's selection to the other one. Each list has exactly one destination, so the shortcut carries no direction and stays correct in a mirrored layout; each list advertises it with <code>aria-keyshortcuts</code>, and <code>moveShortcut={false}</code> turns it off.</li>\n</ul>\n<p><code>onChange</code> details now carry a <code>type</code> of <code>'move'</code> or <code>'reorder'</code>, plus the <code>direction</code> of a reorder, and reorders are announced too — otherwise they are completely silent, since the rows are all still there and only their order changed.</p>\n<p>Two accessibility fixes came out of auditing it. The Root renders <code>role=&quot;group&quot;</code> once it has an <code>aria-label</code> or <code>aria-labelledby</code>, so the two lists and the buttons reach assistive technology as one control rather than unrelated ones. And a <strong>virtualized <code>ListBox</code> now carries <code>aria-setsize</code> and <code>aria-posinset</code></strong> on its rows: only a window of options exists in the DOM, so a screen reader was announcing the size of the window — &quot;1 of 8&quot; for a list of two thousand.</p>\n<p><code>ListBox</code> also gains <code>getItemKey</code>, which lets a Shift range be measured over the whole collection rather than over the options in the DOM: with <code>virtualizer</code>, a range now spans rows that were never rendered, and the anchor survives scrolling away. It composes <code>onkeydown</code>, <code>onmousedown</code>, <code>onfocusin</code>, <code>onfocusout</code> and <code>onscroll</code> with its own handlers instead of letting a consumer's replace them.</p>"
+					},
+					{
+						"pr": 74,
+						"prUrl": "https://github.com/human-kit/ui/pull/74",
+						"html": "<p>Add <code>TransferList</code>: two selectable lists with buttons that move items between them. There is one source of truth — <code>items</code> is the whole collection and <code>value</code> is the ordered list of keys on the right — so <code>value</code> is exactly what a form submits, and the right-hand list keeps the order things were moved in.</p>\n<p>Both sides are <code>ListBox</code>es, so selection, arrow-key navigation, typeahead and virtualization come from there unchanged. Double click moves a row; <code>Enter</code> deliberately does not, because in a multi-select listbox it toggles selection. Focus is placed explicitly after every move rather than left to fall on the <code>&lt;body&gt;</code>, and <code>TransferList.Status</code> announces what moved.</p>\n<p><code>ListBox</code> gains <strong>range selection</strong> in <code>selectionMode=&quot;multiple&quot;</code>: Shift+click, Shift+Arrow and Shift+Home/End select a range from an anchor, and Ctrl/Cmd+click toggles a single option even under <code>selectionBehavior=&quot;replace&quot;</code>. It also accepts <code>aria-labelledby</code>, and now forwards unknown props to its element like every other component.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Add a new headless <code>Tree</code> component with hierarchical keyboard navigation, controlled and uncontrolled expansion state, configurable selection propagation, section headers, and docs/demo coverage.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 86,
+						"prUrl": "https://github.com/human-kit/ui/pull/86",
+						"html": "<p>Let the pointer take the virtual focus in <code>Autocomplete</code>, the same as in <code>ComboBox</code>.</p>\n<p>The keys moved the virtual focus and the pointer only marked <code>data-hovered</code>, so the row the keys left behind and the row under the pointer were both current at the same time. A style bound to <code>data-focused</code> and one bound to <code>data-hovered</code> then painted two rows, and an item cannot correct that on its own: it sees only its own attributes. <code>Autocomplete.Item</code> now moves the focus to the option the pointer enters, and clears the keyboard ring, so exactly one option is current.</p>"
+					},
+					{
+						"pr": 39,
+						"prUrl": "https://github.com/human-kit/ui/pull/39",
+						"html": "<p><strong>Summary</strong></p>\n<p>Clean up the Table contract by removing the legacy <code>Table.Column.allowsResizing</code> prop, exporting explicit public prop types for <code>Table.Root</code>, <code>Table.Column</code>, <code>Table.ColumnHeaderCell</code>, and <code>Table.ColumnResizer</code>, and documenting the intended composition model separately from internal normalized column metadata.</p>"
+					},
+					{
+						"pr": 43,
+						"prUrl": "https://github.com/human-kit/ui/pull/43",
+						"html": "<p><strong>RAC-style Table Widths</strong></p>\n<p>Add <code>%</code> and <code>fr</code> support to table width state, and preserve a flexible trailing column during resize so RAC-style resizable tables can keep filling the available width.</p>"
+					},
+					{
+						"pr": 83,
+						"prUrl": "https://github.com/human-kit/ui/pull/83",
+						"html": "<p>Fix the focus return of <code>Dialog</code> when the panel has an exit animation.</p>\n<p>The animation keeps the content mounted after the close. The <code>inert</code> attribute that hides the page from the open dialog is thus still on the trigger, and <code>focus()</code> on an inert element does nothing. The focus stayed on the <code>&lt;body&gt;</code>, which sent the keyboard user back to the top of the page. <code>Dialog</code> now tries again after the update, in the same way as <code>Drawer</code>.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Bias <code>Table.Body</code> virtualization overscan toward the current scroll direction when no explicit <code>overscan</code> distribution is provided, reducing the chance of visible blanking ahead of the viewport during fast scrolling.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Update <code>Table.ColumnResizer</code> keyboard interaction to use an explicit Enter-to-resize mode.</p>\n<ul>\n<li>Focused resize handles now enter keyboard resize mode with <code>Enter</code> and exit with <code>Enter</code>.</li>\n<li><code>Escape</code> cancels keyboard resizing, restores the starting width, and returns focus to the header cell.</li>\n<li>Update table docs, demo styling, and tests to reflect the new focus and resize flow.</li>\n</ul>"
+					},
+					{
+						"pr": 88,
+						"prUrl": "https://github.com/human-kit/ui/pull/88",
+						"html": "<p>Bring the focus ring back when a key press follows a pointer press. <code>Button</code>, <code>Checkbox</code>, <code>Switch</code> and <code>Toggle</code> read the interaction modality only when they take focus, so the ring stayed off for the rest of that focus, while the browser had already flipped <code>:focus-visible</code> back on. They now follow the modality for as long as they hold focus, which is what React Aria and Base UI do.</p>"
+					},
+					{
+						"pr": 93,
+						"prUrl": "https://github.com/human-kit/ui/pull/93",
+						"html": "<p>Bring the focus ring back on <code>RadioGroup.Item</code>, <code>Table</code> and <code>Calendar.BodyCell</code> when a key press follows a pointer press. These read the interaction modality only when they take focus, thus the ring stayed off for the rest of that focus. They now follow the modality for as long as they hold focus, the same as <code>Button</code>, <code>Checkbox</code>, <code>Switch</code> and <code>Toggle</code>. <code>Table</code> keeps one focus-visible value for every part, thus the watch is on the table and it serves the cell, the row and the header cell together.</p>"
+					},
+					{
+						"pr": 20,
+						"prUrl": "https://github.com/human-kit/ui/pull/20",
+						"html": "<p><strong>Summary</strong></p>\n<p>Add a new headless <code>Button</code> component with modality-aware focus state, pressed and hovered data attributes, and RAC-style pending semantics.</p>"
+					},
+					{
+						"pr": 41,
+						"prUrl": "https://github.com/human-kit/ui/pull/41",
+						"html": "<p>Fix table accessibility helper nodes so the sort live region and selection-unavailable description stay visually hidden without contributing to page overflow.</p>"
+					},
+					{
+						"pr": 46,
+						"prUrl": "https://github.com/human-kit/ui/pull/46",
+						"html": "<p>Fix <code>Table</code> column sizing and ordering edge cases by keeping trailing flexible columns in sync during resize recovery, recomputing relative widths after viewport or container size changes, avoiding one-pixel width loss from relative-column rounding, and updating body cell column indices correctly when keyed columns reorder.</p>"
+					},
+					{
+						"pr": 75,
+						"prUrl": "https://github.com/human-kit/ui/pull/75",
+						"html": "<p>Fix non-modal popovers refusing to scroll when opened from inside a modal. A <code>ComboBox</code> listbox, a <code>Select</code> menu or any <code>Popover.Content</code> with <code>modal={false}</code> is portalled to the body, so it sits outside the dialog that holds the scroll lock — and that lock cancels wheel and touch events everywhere but its own node. The list rendered with a scrollbar that would not move.</p>\n<p>Non-modal popover content now registers itself as a live scroll region for as long as it is open, through a new <code>allowScrollWithin</code> action. It never takes the lock, so it cannot keep the page frozen on its own.</p>"
+					},
+					{
+						"pr": 49,
+						"prUrl": "https://github.com/human-kit/ui/pull/49",
+						"html": "<p>Fix <code>Table</code> minimum width calculations so relative and resizable columns preserve measured minimum widths more reliably during layout and resize updates.</p>"
+					},
+					{
+						"pr": 83,
+						"prUrl": "https://github.com/human-kit/ui/pull/83",
+						"html": "<p>Fix the wheel inside a modal popover, and let the browser zoom again.</p>\n<p><code>Popover.Content</code> puts two actions on one element: <code>scrollLock</code> while it is modal, and <code>allowScrollWithin</code> while it is not. The disabled action removed the registration that the enabled one had just made. The panel thus held the scroll lock with no live scroll region of its own, and every wheel event inside it was cancelled. The <code>TimePicker</code> wheels did not turn, and no list in a modal popover could scroll. The registry now counts the registrations, so an action releases only what it took.</p>\n<p>A wheel with the <code>Ctrl</code> key also goes through now. That gesture is the browser zoom, not a scroll, and cancelling it took page zoom away from the user for as long as an overlay was open.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p><strong>Summary</strong></p>\n<p>Add the composable <code>NumberField</code> component with locale-aware formatting, spinbutton semantics, steppers, wheel scrubbing, and pointer scrubbing.</p>"
+					},
+					{
+						"pr": 18,
+						"prUrl": "https://github.com/human-kit/ui/pull/18",
+						"html": "<p>Fix published package entrypoints so generated ESM files no longer import sibling TypeScript source paths.</p>"
+					},
+					{
+						"pr": 95,
+						"prUrl": "https://github.com/human-kit/ui/pull/95",
+						"html": "<p>After an outside press on nothing focusable, Popover, Menu, Dialog, Drawer, DatePicker and Select return the focus to the trigger, with no focus ring. Dialog and Drawer restored it too early: the press moved the focus to the body right after. The focus fell to the body before, and a keyboard user had nowhere to continue from. A press on a focusable element keeps the focus there, and the trigger no longer shows a <code>data-focused</code> it does not have.</p>"
+					},
+					{
+						"pr": 11,
+						"prUrl": "https://github.com/human-kit/ui/pull/11",
+						"html": "<p>Standardize focus-visible modality behavior across overlay flows.</p>\n<ul>\n<li>Remove DatePicker local interaction modality state and rely on shared input-modality primitive.</li>\n<li>Restore DatePicker trigger focus via <code>focusWithModality</code> for consistent pointer/keyboard semantics.</li>\n<li>Unify close-modality resolution between Popover and Dialog through shared primitive helper.</li>\n<li>Align DatePicker input modality handling with shared focus-visible contract.</li>\n<li>Expand input-modality tests and document primitive usage in the focus-state contract.</li>\n</ul>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p>Fix nested popovers dismissing together: add a popover layer stack so only the topmost open popover handles Escape, outside-press, outside-scroll, and focus-out. Closing a nested popover (e.g. a date picker calendar inside a filter popover) no longer closes its ancestors.</p>"
+					},
+					{
+						"pr": 35,
+						"prUrl": "https://github.com/human-kit/ui/pull/35",
+						"html": "<p>Fix ComboBox and ListBox interaction regressions around input behavior, focus handling, and virtual focus scrolling.</p>\n<p>This disables native browser autocomplete on ComboBox inputs, prevents the reused ListBox root from stealing DOM focus, avoids filtering flashes during popover close animations, and keeps hover-driven virtual focus from auto-scrolling overflowed option lists.</p>"
+					},
+					{
+						"pr": 53,
+						"prUrl": "https://github.com/human-kit/ui/pull/53",
+						"html": "<p><strong>Table Body typing and overscan</strong></p>\n<p>Improve <code>Table.Body</code> item-driven typings and virtualization defaults.</p>\n<ul>\n<li>Infer the <code>children(item)</code> snippet parameter from the <code>items</code> element type in item-driven mode.</li>\n<li>Make body virtualization derive <code>overscan</code> automatically from the current viewport row count when it is not provided.</li>\n</ul>"
+					},
+					{
+						"pr": 43,
+						"prUrl": "https://github.com/human-kit/ui/pull/43",
+						"html": "<p><strong>Width Contract</strong></p>\n<p>Treat <code>Table.Column.width</code> as a fixed width that disables user resizing, while keeping <code>defaultWidth</code> as the uncontrolled resizable initial width.</p>"
+					},
+					{
+						"pr": 33,
+						"prUrl": "https://github.com/human-kit/ui/pull/33",
+						"html": "<p>Fix ListBox and ComboBox interaction state issues so keyboard focus, hover, and virtual focus stay in sync.</p>\n<p>This includes clearing item <code>data-focus-visible</code> on pointer hover, tightening ListBox focus ownership, skipping disabled ComboBox options during keyboard navigation, and continuing keyboard navigation from the clicked option in multiselect flows.</p>"
+					},
+					{
+						"pr": 22,
+						"prUrl": "https://github.com/human-kit/ui/pull/22",
+						"html": "<p><strong>Summary</strong></p>\n<p>Upgrade <code>Input</code> to a focus-aware native input primitive with RAC-style disabled, read-only, invalid, and required state props.</p>"
+					},
+					{
+						"pr": 114,
+						"prUrl": "https://github.com/human-kit/ui/pull/114",
+						"html": "<p>The first stable release. The library leaves the beta, and it follows semantic versioning from this version: only a major version can change the public API in a way that breaks your code.</p>"
+					},
+					{
+						"pr": 82,
+						"prUrl": "https://github.com/human-kit/ui/pull/82",
+						"html": "<p>Rewrite every prop description in ASD-STE100 (Simplified Technical English), the\nwriting standard the rest of the documentation now follows. The text ships in the\n<code>.d.ts</code> files, so it is what an editor shows on hover — the wording changes, the\nAPI does not. No prop, type, default or behaviour was touched.</p>"
+					},
+					{
+						"pr": 25,
+						"prUrl": "https://github.com/human-kit/ui/pull/25",
+						"html": "<p><strong>Summary</strong></p>\n<p>Make <code>ComboBox.Input</code> render through the shared <code>Input</code> primitive while preserving existing combobox behavior and accessibility semantics.</p>"
+					},
+					{
+						"pr": 67,
+						"prUrl": "https://github.com/human-kit/ui/pull/67",
+						"html": "<p>Keep <code>left</code>/<code>right</code>-placed floating panels on screen when they fit on neither side.</p>\n<p><code>shift</code>'s main axis is the one running along the placement edge, and its cross axis is off by\ndefault. For <code>top</code>/<code>bottom</code> placements that main axis is horizontal, so a dropdown too wide for\nthe viewport is pulled back into view. For <code>left</code>/<code>right</code> it is vertical — nothing pulled the\npanel back horizontally, so one that fit on neither side stayed wherever the placement left it.</p>\n<p>Submenus are exactly that case: they open <code>right-start</code> and flip to <code>left-start</code>, and on a phone\nneither side has room, which put the panel off the edge of the screen entirely. The cross axis is\nnow enabled for the horizontal placements only — on <code>top</code>/<code>bottom</code> it is vertical, where shifting\nwould slide a dropdown over its own trigger and <code>flip</code> already does better — with <code>limitShift</code> so\na panel never slides far enough to detach from its anchor.</p>"
+					},
+					{
+						"pr": 64,
+						"prUrl": "https://github.com/human-kit/ui/pull/64",
+						"html": "<p>Export the table cell context, <code>TableRowItem</code> and <code>TableRowFocusEdge</code> from <code>@human-kit/ui/table</code>.</p>\n<p><code>useTableCellContext</code> (and its <code>get</code>/<code>set</code> pair, plus the <code>TableCellContext</code> type) were defined\nalongside the table, row and column contexts but left out of the subpath's barrel. Every other\nlevel of the grid was reachable; the cell was the one that forced consumers to deep-import\n<code>table/root/context.svelte.js</code>, a path outside the package's <code>exports</code> map — so it typechecked\nonly against the source, never against the published package.</p>\n<p>Two type-level gaps of the same kind are closed with it. <code>TableRowItem</code> is the constraint on the\nalready-exported <code>TableBodyProps&lt;T extends TableRowItem&gt;</code>, and <code>TableRowFocusEdge</code> is the second\nparameter of <code>focusRowByToken</code> and <code>setFocusedRow</code> on the already-exported <code>TableContext</code>. Both\nwere unnameable from outside the package, which made the surfaces that use them impossible to\nannotate or wrap.</p>"
+					},
+					{
+						"pr": 55,
+						"prUrl": "https://github.com/human-kit/ui/pull/55",
+						"html": "<p><strong>Summary</strong></p>\n<p>Add the headless <code>TextArea</code> primitive with native textarea semantics, shared focus state attributes, RAC-style state props, and opt-in auto-resize.</p>"
+					},
+					{
+						"pr": 16,
+						"prUrl": "https://github.com/human-kit/ui/pull/16",
+						"html": "<p>Fix table column resizing so keyboard interactions use the same resize lifecycle as pointer input, add Pointer Events support for touch and pen resizing, announce committed width changes to screen readers, respect RTL keyboard controls, support cancelling pointer drags with Escape, and reduce resize overhead with cached column lookups plus animation-frame batched drag updates. Also make table cell and header column indices react correctly when keyed column order changes and replace module-level table instance counters with per-root token generation to avoid shared SSR and test state.</p>"
+					},
+					{
+						"pr": 87,
+						"prUrl": "https://github.com/human-kit/ui/pull/87",
+						"html": "<p>Rewrite the <code>TimePicker.Input</code> <code>name</code> description in ASD-STE100, so the generated API reference passes the documentation style check.</p>"
+					},
+					{
+						"pr": 110,
+						"prUrl": "https://github.com/human-kit/ui/pull/110",
+						"html": "<p>Fix a tooltip that stayed open after the pointer crossed the corner of a rounded panel. While the pointer was in the gap between the trigger and the panel, a move inside the panel's bounding box counted as landing on it, and tracking stopped to let the panel's <code>pointerenter</code> take over. The corner of a rounded panel is inside its box but not on it, so that <code>pointerenter</code> never came and the tooltip never closed. The gap now asks what the pointer is on, as the browser hit-tests it.</p>"
+					},
+					{
+						"pr": 108,
+						"prUrl": "https://github.com/human-kit/ui/pull/108",
+						"html": "<p>Fix a tooltip that stayed open after the pointer left. A pointer that crossed the panel while it played its exit animation was counted as resting on it, and the panel then left the DOM under the pointer with no <code>pointerleave</code>: from there on, every close waited for a pointer that was no longer there. The content now ignores a pointer that lands on it while closed, and forgets the pointer whenever the tooltip closes.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0-beta.11",
-		"date": "2026-10-02T23:02:45.004Z",
+		"date": "2026-10-02T20:06:31-03:00",
 		"sections": [
 			{
 				"type": "Patch",
