@@ -61,9 +61,9 @@ pnpm exec changeset
 Pick the bump type (patch / minor / major) and write a short, user-facing
 summary.
 
-The versions are in the prerelease mode (`1.0.0-beta.x`). When you merge to
-`main`, the `.github/workflows/release.yml` workflow starts and does one of
-these two operations:
+The versions follow semantic versioning. When you merge to `main`, the
+`.github/workflows/release.yml` workflow starts and does one of these two
+operations:
 
 - If changesets are present, it pushes a `changeset-release/main` branch with
   the new version and the changelog. Merge that branch to publish.
