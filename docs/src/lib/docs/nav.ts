@@ -26,7 +26,9 @@ export const nav: NavGroup[] = [
 			{ slug: 'checkbox-group', title: 'CheckboxGroup' },
 			{ slug: 'input', title: 'Input' },
 			{ slug: 'numberfield', title: 'NumberField' },
+			{ slug: 'pin-input', title: 'PinInput' },
 			{ slug: 'radio-group', title: 'RadioGroup' },
+			{ slug: 'rating', title: 'Rating' },
 			{ slug: 'search-field', title: 'SearchField' },
 			{ slug: 'slider', title: 'Slider' },
 			{ slug: 'switch', title: 'Switch' },
@@ -39,6 +41,7 @@ export const nav: NavGroup[] = [
 		label: 'Pickers',
 		items: [
 			{ slug: 'autocomplete', title: 'Autocomplete' },
+			{ slug: 'color-picker', title: 'ColorPicker' },
 			{ slug: 'combobox', title: 'ComboBox' },
 			{ slug: 'listbox', title: 'ListBox' },
 			{ slug: 'select', title: 'Select' },

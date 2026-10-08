@@ -1,0 +1,326 @@
+{
+	"component": "pin-input",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The value, the cells and the focus between them. It renders a div with role=\"group\", named by PinInput.Label.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "A stable id, from which the component makes its internal ARIA ids. Give one on a server."
+				},
+				{
+					"name": "value",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The value. It is never longer than `length`, and it has no holes: the characters fill the\ncells from the first one. You can bind it with `bind:value`."
+				},
+				{
+					"name": "defaultValue",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The value at the start, for when you give no `value`."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Give your own code full control of the value. The component stops to write back to `value`,\nand it reports only through `onChange`. Thus the parent can refuse a change."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: string, details: PinInputChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it on each change."
+				},
+				{
+					"name": "onComplete",
+					"type": "(value: string) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it one time, when the last cell takes a character."
+				},
+				{
+					"name": "length",
+					"type": "number",
+					"required": false,
+					"default": "6",
+					"description": "The count of cells. The default is 6."
+				},
+				{
+					"name": "type",
+					"type": "PinInputType",
+					"required": false,
+					"default": "'numeric'",
+					"description": "Which characters the cells accept: only the digits, the letters, or both. The default is\n`numeric`, which also sets the numeric keyboard on a telephone."
+				},
+				{
+					"name": "pattern",
+					"type": "RegExp",
+					"required": false,
+					"default": null,
+					"description": "A test of your own for one character. It replaces the test of `type`."
+				},
+				{
+					"name": "otp",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the cells as a code from a message. The telephone then offers the code of the last\nmessage above the keyboard, and one touch fills each cell."
+				},
+				{
+					"name": "mask",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Hides the characters, as a password field does."
+				},
+				{
+					"name": "placeholder",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The text of an empty cell."
+				},
+				{
+					"name": "blurOnComplete",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Moves the focus off the last cell when the value is complete."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables each cell. The cells leave the tab order."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the cells in the tab order, but the value does not change."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the value as necessary. Each cell gets `required`."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the value as invalid. Each cell gets `aria-invalid`."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the hidden input that carries the whole value in a form."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form that the hidden input belongs to, when the group is outside it."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The accessible name of the group, for when there is no `PinInput.Label`."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that gives the group its name, in place of `PinInput.Label`."
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that describes the group, for example an error message."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: the label and the cells."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the root element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the root element."
+				},
+				{
+					"name": "context",
+					"type": "PinInputContext",
+					"required": false,
+					"default": null,
+					"description": "A bindable reference to the context, for a composition of your own."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-complete",
+					"description": "Present while each cell has a character."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the field is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus in the field must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while a cell has the focus."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the value is invalid."
+				},
+				{
+					"name": "data-pin-input-root",
+					"description": ""
+				},
+				{
+					"name": "data-pin-input-value",
+					"description": ""
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the field is read-only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present while the field is necessary."
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"description": "The accessible name of the group. It renders a span, and the root points at it with aria-labelledby. A press on it puts the focus on the first cell that is open.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the label."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present while the field is disabled."
+				},
+				{
+					"name": "data-pin-input-label",
+					"description": ""
+				}
+			]
+		},
+		{
+			"name": "Cell",
+			"description": "One character of the value. It renders a native input of one character, with its own name, its inputmode and its autocomplete.",
+			"props": [
+				{
+					"name": "index",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The index of the cell. Without it, the cells take the indexes in mount order."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of this cell, for the screen reader. The default is \"Digit 2 of 6\"."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the cell."
+				},
+				{
+					"name": "element",
+					"type": "HTMLInputElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-active",
+					"description": "Present on the cell that takes the next character."
+				},
+				{
+					"name": "data-disabled",
+					"description": "Present while the field is disabled."
+				},
+				{
+					"name": "data-filled",
+					"description": "Present while the cell has a character."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus on the cell must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the cell has the focus."
+				},
+				{
+					"name": "data-index",
+					"description": "The index of the cell, from 0."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the value is invalid."
+				},
+				{
+					"name": "data-pin-input-cell",
+					"description": ""
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the field is read-only."
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,353 @@
+{
+	"component": "rating",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The scale, the value and the keyboard. It renders a div with role=\"radiogroup\", or role=\"slider\" at a precision below 1, named by Rating.Label.",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "A stable id, from which the component makes its internal ARIA ids. Give one on a server."
+				},
+				{
+					"name": "value",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The value, from 0 to `count`. 0 is no rating. You can bind it with `bind:value`."
+				},
+				{
+					"name": "defaultValue",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The value at the start, for when you give no `value`. The default is 0."
+				},
+				{
+					"name": "controlledValue",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Give your own code full control of the value. The component stops to write back to `value`,\nand it reports only through `onChange`. Thus the parent can refuse a change."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: number, details: RatingChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it on each change."
+				},
+				{
+					"name": "onChangeEnd",
+					"type": "(value: number, details: RatingChangeDetails) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when a sequence of changes ends: at the release of a key, and at the\npress on an item. Use it for work that must not run on each key repeat."
+				},
+				{
+					"name": "count",
+					"type": "number",
+					"required": false,
+					"default": "5",
+					"description": "The count of items. The default is 5."
+				},
+				{
+					"name": "precision",
+					"type": "number",
+					"required": false,
+					"default": "1",
+					"description": "The distance between two values. The default is 1, which gives whole items. 0.5 gives half\nitems. A precision below 1 makes the rating a slider, because a radio group cannot say 3.5."
+				},
+				{
+					"name": "allowClear",
+					"type": "boolean",
+					"required": false,
+					"default": "true",
+					"description": "A press on the item of the current value puts the value back to 0. `Delete` and `Backspace`\ndo the same. The default is on."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables the rating. The items leave the tab order, and the value does not change."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Keeps the items in the tab order, but the value does not change."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the rating as necessary. The root gets `aria-required`."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the value as invalid. The root gets `aria-invalid`."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the hidden input that carries the value in a form."
+				},
+				{
+					"name": "form",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the form that the hidden input belongs to, when the rating is outside it."
+				},
+				{
+					"name": "getItemLabel",
+					"type": "(value: number, count: number) => string",
+					"required": false,
+					"default": null,
+					"description": "The text of one item, for the screen reader. The default is \"3 of 5\" in the locale. The\nsecond argument is the count."
+				},
+				{
+					"name": "getValueText",
+					"type": "(value: number, count: number) => string",
+					"required": false,
+					"default": null,
+					"description": "The text of the value, for `Rating.Output` and for the text a screen reader reads. The\ndefault is \"3 of 5\" in the locale, and \"No rating\" at 0."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The accessible name of the rating, for when there is no `Rating.Label`."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that gives the rating its name, in place of `Rating.Label`."
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that describes the rating, for example an error message."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: the label, the output and the items."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the root element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLDivElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the root element."
+				},
+				{
+					"name": "context",
+					"type": "RatingContext",
+					"required": false,
+					"default": null,
+					"description": "A bindable reference to the context, for a composition of your own."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present while the rating is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus in the rating must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present while an item, or the root, has the focus."
+				},
+				{
+					"name": "data-hovering",
+					"description": "Present while the pointer is on the items."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present while the value is invalid."
+				},
+				{
+					"name": "data-rating-input",
+					"description": ""
+				},
+				{
+					"name": "data-rating-root",
+					"description": ""
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the rating is read-only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present while the rating is necessary."
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"description": "The accessible name of the rating. It renders a span, and the root points at it with aria-labelledby. A press on it puts the focus on the rating.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the label."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present while the rating is disabled."
+				},
+				{
+					"name": "data-rating-label",
+					"description": ""
+				}
+			]
+		},
+		{
+			"name": "Output",
+			"description": "The text of the value. It renders an output element for the root, with aria-live=\"off\". The text follows the pointer while the pointer is on the items.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[RatingOutputRenderState]>",
+					"required": false,
+					"default": null,
+					"description": "The content. As a snippet with one argument, it receives the render state: `value`,\n`displayValue`, `count` and `text`. Without it, the component shows `text`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present while the rating is disabled."
+				},
+				{
+					"name": "data-rating-output",
+					"description": ""
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"description": "One item of the scale, for example one star. It renders a span with role=\"radio\", or role=\"presentation\" at a precision below 1. The fill of the item is in --rating-item-fill.",
+			"props": [
+				{
+					"name": "index",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The index of the item. Without it, the items take the indexes in mount order."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of this item, for the screen reader. It replaces `getItemLabel` of the root."
+				},
+				{
+					"name": "children",
+					"type": "Snippet<[RatingItemRenderState]> | Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content. As a snippet with one argument, it receives the render state: `value`, `index`,\n`fill`, `selected`, `highlighted` and `focused`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The CSS class names of the item."
+				},
+				{
+					"name": "element",
+					"type": "HTMLSpanElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the item element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present while the rating is disabled."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present while the focus on the item must be visible (keyboard modality)."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present while the item has the focus."
+				},
+				{
+					"name": "data-highlighted",
+					"description": "Present while the value, or the pointer, is at this item or past it."
+				},
+				{
+					"name": "data-index",
+					"description": "The index of the item, from 0."
+				},
+				{
+					"name": "data-partial",
+					"description": "Present while the item is more than empty and less than full."
+				},
+				{
+					"name": "data-rating-item",
+					"description": ""
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present while the rating is read-only."
+				},
+				{
+					"name": "data-selected",
+					"description": "Present while the item is the value."
+				},
+				{
+					"name": "data-value",
+					"description": "The value of the item, from 1."
+				}
+			]
+		}
+	]
+}
