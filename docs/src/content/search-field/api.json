@@ -1,0 +1,272 @@
+{
+	"component": "search-field",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The container of the search field. It holds the search text and the state, and it gives the context to all of the parts.",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The parts of the search field."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the root element. If you give none, the component makes one."
+				},
+				{
+					"name": "value",
+					"type": "string",
+					"required": false,
+					"default": "undefined",
+					"description": "The search text. You can bind it with `bind:value`."
+				},
+				{
+					"name": "defaultValue",
+					"type": "string",
+					"required": false,
+					"default": "''",
+					"description": "The search text at the start, for when you give no `value`. A form reset goes back to it."
+				},
+				{
+					"name": "onChange",
+					"type": "(value: string) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the search text changes."
+				},
+				{
+					"name": "onSubmit",
+					"type": "(value: string) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it with the search text when the user presses `Enter` in the input."
+				},
+				{
+					"name": "onClear",
+					"type": "() => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it after the `Escape` key or the clear button empties the input."
+				},
+				{
+					"name": "disabled",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Disables the input and the clear button."
+				},
+				{
+					"name": "readonly",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "The user cannot change the text. The `Escape` key and the clear button do nothing."
+				},
+				{
+					"name": "required",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Tells a form that it must have a value. The input gets the native `required`."
+				},
+				{
+					"name": "invalid",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Marks the value as invalid. The input gets `aria-invalid`."
+				},
+				{
+					"name": "aria-invalid",
+					"type": "HTMLAttributes<HTMLDivElement>['aria-invalid']",
+					"required": false,
+					"default": null,
+					"description": "Marks the value as invalid, the same as `invalid`."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the input in a form. The form submits the search text with this name."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-empty",
+					"description": "Present when the search text is empty."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the input shows a keyboard focus ring."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "Present when the focus is in the field."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the value is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is read-only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the field is required."
+				},
+				{
+					"name": "data-search-field-root",
+					"description": "Always present on the root element."
+				}
+			]
+		},
+		{
+			"name": "Label",
+			"description": "A native label for the input. A click on it moves the focus to the input.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-search-field-label",
+					"description": "Always present on the label element."
+				}
+			]
+		},
+		{
+			"name": "Input",
+			"description": "The native search input. It holds the text, and it handles the `Escape` key and the `Enter` key.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "type",
+					"type": "HTMLInputAttributes['type']",
+					"required": false,
+					"default": "'search'",
+					"description": "The type of the input. Keep `search`, because it gives the input the `searchbox` role.\nChange it only when the field holds a different kind of text, for example an email."
+				},
+				{
+					"name": "element",
+					"type": "HTMLInputElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the input element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-disabled",
+					"description": "Present when the field is disabled."
+				},
+				{
+					"name": "data-empty",
+					"description": "Present when the search text is empty."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "Present when the focus came from the keyboard."
+				},
+				{
+					"name": "data-focused",
+					"description": "Present when the input has the focus."
+				},
+				{
+					"name": "data-hovered",
+					"description": "Present when the pointer is on the input."
+				},
+				{
+					"name": "data-invalid",
+					"description": "Present when the value is invalid."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is read-only."
+				},
+				{
+					"name": "data-required",
+					"description": "Present when the field is required."
+				},
+				{
+					"name": "data-search-field-input",
+					"description": "Always present on the input element."
+				}
+			]
+		},
+		{
+			"name": "Clear",
+			"description": "The button that empties the search text. It is not in the tab order, and a press on it keeps the focus in the input. It is disabled while the text is empty.",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the element."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content of the button. If you give none, the component shows an \"x\" icon."
+				},
+				{
+					"name": "element",
+					"type": "HTMLButtonElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the button element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-empty",
+					"description": "Present when the search text is empty."
+				},
+				{
+					"name": "data-readonly",
+					"description": "Present when the field is read-only."
+				},
+				{
+					"name": "data-search-field-clear",
+					"description": "Always present on the clear button."
+				}
+			]
+		}
+	]
+}

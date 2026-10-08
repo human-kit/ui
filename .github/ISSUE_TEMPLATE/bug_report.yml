@@ -39,6 +39,7 @@ body:
         - NumberField
         - OverflowRow
         - Popover
+        - SearchField
         - Switch
         - Table
         - Tabs
