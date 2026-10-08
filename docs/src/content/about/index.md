@@ -25,7 +25,7 @@ The API and the interaction contracts come from [Base UI](https://base-ui.com) a
 
 ## Status
 
-The library is in **public beta** (`1.0.0-beta`). The API is almost stable, but small changes can occur before version `1.0.0`. The [Releases](/docs/releases) page shows each change.
+The library is stable from version `1.0.0`. It follows semantic versioning: only a major version can change the public API in a way that breaks your code. The [Releases](/docs/releases) page shows each change.
 
 ## License and source
 

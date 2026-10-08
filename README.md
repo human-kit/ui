@@ -32,9 +32,6 @@ The [documentation site](https://ui.human-kit.com) has the
 [quick start](https://ui.human-kit.com/docs/quick-start), a live demo of each
 component, the anatomy, and the full API reference.
 
-> **Status: beta.** The version numbers are `1.0.0-beta.x`. The public API can
-> change before version `1.0.0`.
-
 ## Getting started
 
 ```bash
