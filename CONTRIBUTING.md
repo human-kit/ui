@@ -41,6 +41,9 @@ pnpm run dev        # start the docs/demo app
    pnpm run build       # package the library
    ```
 
+   After a change to a prop or to its JSDoc, run `pnpm run docs:api` to make
+   the API tables of the documentation site again.
+
 4. Add a changeset describing your change (see below).
 5. Open a pull request against `main`.
 
@@ -56,8 +59,20 @@ pnpm exec changeset
 ```
 
 Pick the bump type (patch / minor / major) and write a short, user-facing
-summary. The release workflow consolidates changesets into the changelog and
-publishes to npm automatically once merged to `main`.
+summary.
+
+The versions are in the prerelease mode (`1.0.0-beta.x`). When you merge to
+`main`, the `.github/workflows/release.yml` workflow starts and does one of
+these two operations:
+
+- If changesets are present, it pushes a `changeset-release/main` branch with
+  the new version and the changelog. Merge that branch to publish.
+- If no changesets are present, it publishes the package to npm and pushes the
+  tags.
+
+A change that touches only `docs/` does not change a version. It only deploys
+the site again. After a release, run `pnpm run docs:releases` to update the
+releases page of the documentation site.
 
 ## Coding conventions
 
