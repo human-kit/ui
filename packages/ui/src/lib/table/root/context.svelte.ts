@@ -165,6 +165,11 @@ type TableRowRegistration = {
 	section: TableSectionKind;
 	id?: TableSelectionKey;
 	disabled: boolean;
+	/**
+	 * Marks a `Table.SectionRow`: a full-width group header that takes part in
+	 * focus navigation but never in selection or in `onRowAction`.
+	 */
+	isSection?: boolean;
 	element?: HTMLTableRowElement;
 };
 
@@ -176,6 +181,12 @@ type TableCellRegistration = {
 	columnToken?: string;
 	element?: HTMLElement;
 	focusDelegate?: () => HTMLElement | undefined;
+	/**
+	 * The single cell of a `Table.SectionRow`. It spans every column, so it
+	 * belongs to no column: it sits at the first visible column for navigation
+	 * and never takes part in column measurement or column hiding.
+	 */
+	spansRow?: boolean;
 };
 
 export type CreateTableContextOptions = {
@@ -274,6 +285,13 @@ export type TableContext = {
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
 	setLogicalBodyRows: (ids?: Iterable<TableSelectionKey>) => void;
+	/**
+	 * Declares which logical body rows are section rows. `Table.Body` calls it
+	 * from `isSectionItem`, so section rows a virtualizer has not mounted are
+	 * still kept out of select-all and range selection.
+	 */
+	setSectionRowKeys: (ids?: Iterable<TableSelectionKey>) => void;
+	isSectionRowKey: (id: TableSelectionKey | undefined) => boolean;
 	markBodyRowsInitialized: () => void;
 	getHeaderRowCount: () => number;
 	getBodyRowCount: () => number;
@@ -427,6 +445,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	let selectableBodyRowCount = 0;
 	let logicalBodyRowIds: TableSelectionKey[] | null = null;
 	let logicalBodyRowIndexCache: Map<TableSelectionKey, number> | null = null;
+	// Section row keys come from two places: the section rows that registered
+	// (kept after they unmount, so a virtualizer scrolling them away does not
+	// make them selectable again) and the keys `Table.Body` declares up front.
+	const registeredSectionRowKeys = new SvelteSet<TableSelectionKey>();
+	const declaredSectionRowKeys = new SvelteSet<TableSelectionKey>();
 	const cells = new SvelteMap<string, TableCellRegistration>();
 	const cellOrderSet = new SvelteSet<string>();
 	// Cell keys grouped by row, so dropping a row does not have to scan every
@@ -875,6 +898,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			left.section === right.section &&
 			left.id === right.id &&
 			left.disabled === right.disabled &&
+			left.isSection === right.isSection &&
 			left.element === right.element
 		);
 	}
@@ -887,7 +911,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			left.columnIndex === right.columnIndex &&
 			left.columnToken === right.columnToken &&
 			left.element === right.element &&
-			left.focusDelegate === right.focusDelegate
+			left.focusDelegate === right.focusDelegate &&
+			left.spansRow === right.spansRow
 		);
 	}
 
@@ -1437,6 +1462,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getCellColumn(cell: ResolvedCellTarget) {
+		if (cell.spansRow) return undefined;
 		if (cell.section === 'header' && cell.columnToken) {
 			return columns.get(cell.columnToken);
 		}
@@ -1717,16 +1743,20 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			bodyRowOrderSet.delete(row.token);
 		}
 		const previousSelectableBodyRow = isSelectableBodyRow(existing);
+		const sectionKeysChanged = syncRegisteredSectionRowKey(row);
 		rows.set(row.token, row);
 		if (targetOrder && targetOrderSet && !targetOrderSet.has(row.token)) {
 			targetOrder.push(row.token);
 			targetOrderSet.add(row.token);
 		}
 		const nextSelectableBodyRow = isSelectableBodyRow(row);
-		if (previousSelectableBodyRow !== nextSelectableBodyRow) {
+		if (sectionKeysChanged) {
+			recomputeSelectableBodyRowCount();
+		} else if (previousSelectableBodyRow !== nextSelectableBodyRow) {
 			selectableBodyRowCount += nextSelectableBodyRow ? 1 : -1;
 		}
 		if (
+			sectionKeysChanged ||
 			(selectedKeys.size > 0 &&
 				logicalBodyRowIds === null &&
 				(existing?.section === 'body' || row.section === 'body')) ||
@@ -1757,8 +1787,54 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (hasSameLogicalBodyRows(nextIds)) return;
 		logicalBodyRowIds = nextIds;
 		logicalBodyRowIndexCache = null;
+		pruneRegisteredSectionRowKeys();
 		notifyLayout();
 		notifySelection();
+	}
+
+	/**
+	 * Records a section row's key, or forgets it when a regular row now owns
+	 * that key. Returns whether the set of section keys changed.
+	 */
+	function syncRegisteredSectionRowKey(row: TableRowRegistration) {
+		if (row.section !== 'body' || row.id === undefined) return false;
+		if (row.isSection) {
+			if (registeredSectionRowKeys.has(row.id)) return false;
+			registeredSectionRowKeys.add(row.id);
+			return true;
+		}
+		return registeredSectionRowKeys.delete(row.id);
+	}
+
+	// A registered section key outlives its row, so that an unmounted
+	// (virtualized) section stays out of the selection. Once the key leaves the
+	// logical rows altogether it no longer names a section of this table.
+	function pruneRegisteredSectionRowKeys() {
+		if (registeredSectionRowKeys.size === 0 || logicalBodyRowIds === null) return;
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a throwaway lookup, not state.
+		const logicalKeys = new Set(logicalBodyRowIds);
+		for (const key of [...registeredSectionRowKeys]) {
+			if (!logicalKeys.has(key)) registeredSectionRowKeys.delete(key);
+		}
+	}
+
+	function setSectionRowKeys(ids?: Iterable<TableSelectionKey>) {
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a throwaway comparison, not state.
+		const next = new Set(ids ?? []);
+		if (hasSameSelection(declaredSectionRowKeys, next)) return;
+		declaredSectionRowKeys.clear();
+		for (const key of next) {
+			declaredSectionRowKeys.add(key);
+		}
+		recomputeSelectableBodyRowCount();
+		invalidateLayoutCaches();
+		notifyLayout();
+		notifySelection();
+	}
+
+	function isSectionRowKey(id: TableSelectionKey | undefined) {
+		if (id === undefined) return false;
+		return declaredSectionRowKeys.has(id) || registeredSectionRowKeys.has(id);
 	}
 
 	function unregisterRow(token: string) {
@@ -1768,6 +1844,11 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		rows.delete(token);
 		if (isSelectableBodyRow(row)) {
 			selectableBodyRowCount = Math.max(0, selectableBodyRowCount - 1);
+		}
+		// Without logical rows nothing else can tell the key apart, so a manual
+		// section row that unmounts takes its key with it.
+		if (row?.isSection && row.id !== undefined && logicalBodyRowIds === null) {
+			registeredSectionRowKeys.delete(row.id);
 		}
 		if (focusedRowTarget?.rowToken === token) {
 			focusedRowTarget = null;
@@ -1903,10 +1984,17 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		return rowIds;
 	}
 
-	function isRowSelectionDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
+	function isRowKeyDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
 		if (localDisabled) return true;
 		if (id === undefined) return false;
 		return disabledKeys.has(id);
+	}
+
+	// A section row is never selectable, but it is not disabled either: it stays
+	// focusable and keeps its own action. That is why this check, and not
+	// `isRowKeyDisabled`, is the one that knows about sections.
+	function isRowSelectionDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
+		return isRowKeyDisabled(id, localDisabled) || isSectionRowKey(id);
 	}
 
 	function isSelectableBodyRow(row: TableRowRegistration | undefined) {
@@ -1928,15 +2016,20 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function isRowDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
-		return disabledBehavior === 'all' && isRowSelectionDisabled(id, localDisabled);
+		return disabledBehavior === 'all' && isRowKeyDisabled(id, localDisabled);
 	}
 
 	function isRowActionDisabled(id: TableSelectionKey | undefined, localDisabled = false) {
-		return disabledBehavior === 'all' && isRowSelectionDisabled(id, localDisabled);
+		return disabledBehavior === 'all' && isRowKeyDisabled(id, localDisabled);
 	}
 
 	function isRowActionable(id: TableSelectionKey | undefined, localDisabled = false) {
-		return Boolean(onRowAction) && id !== undefined && !isRowActionDisabled(id, localDisabled);
+		return (
+			Boolean(onRowAction) &&
+			id !== undefined &&
+			!isSectionRowKey(id) &&
+			!isRowActionDisabled(id, localDisabled)
+		);
 	}
 
 	function isRowSelected(id: TableSelectionKey | undefined) {
@@ -2075,11 +2168,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			const row = rows.get(rowToken);
 			if (isRowDisabled(row?.id, row?.disabled)) continue;
 			const bodyCells = getResolvedBodyCellsForRow(rowToken)
-				.filter(
-					(cell): cell is ResolvedCellTarget & { columnIndex: number } =>
-						Boolean(cell.element) && cell.columnIndex !== undefined && !isCellColumnHidden(cell)
-				)
-				.sort((left, right) => left.columnIndex - right.columnIndex);
+				.filter((cell) => Boolean(cell.element) && getColumnIndex(cell) >= 0)
+				.sort((left, right) => getColumnIndex(left) - getColumnIndex(right));
 			const firstBodyCell = bodyCells[0]?.key;
 			if (firstBodyCell) {
 				defaultFocusKeyCache = firstBodyCell;
@@ -2121,6 +2211,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnIndex(cell: TableCellRegistration) {
+		if (cell.spansRow) {
+			return getVisibleColumnCount() > 0 ? 0 : -1;
+		}
 		if (cell.section === 'header' && cell.columnToken) {
 			return getVisibleColumnIndexByToken(cell.columnToken);
 		}
@@ -2210,6 +2303,14 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		const row = rows.get(token);
 		if (!row?.element || row.section !== 'body') return;
 		if (isRowDisabled(row.id, row.disabled)) return;
+		// Under grid navigation a section row has no row-edge stop: its single
+		// cell spans the row, so every move that would land on the row lands on
+		// that cell instead, and the horizontal keys keep the focus there.
+		if (row.isSection && keyboardNavigation === 'grid') {
+			const [cell] = getResolvedBodyCellsForRow(token);
+			if (cell) focusCellByKey(cell.key);
+			return;
+		}
 		focusedCellKey = null;
 		focusedRowTarget = { rowToken: token, edge };
 		row.element.focus();
@@ -2399,7 +2500,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function performRowAction(id: TableSelectionKey | undefined) {
-		if (!onRowAction || id === undefined || isRowActionDisabled(id)) return;
+		if (!onRowAction || id === undefined) return;
+		if (isSectionRowKey(id) || isRowActionDisabled(id)) return;
 		onRowAction(id);
 	}
 
@@ -3018,6 +3120,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		registerRow: asCommand(registerRow),
 		unregisterRow: asCommand(unregisterRow),
 		setLogicalBodyRows: asCommand(setLogicalBodyRows),
+		setSectionRowKeys: asCommand(setSectionRowKeys),
+		isSectionRowKey,
 		markBodyRowsInitialized: asCommand(markBodyRowsInitialized),
 		getHeaderRowCount,
 		getBodyRowCount,

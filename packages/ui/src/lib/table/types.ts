@@ -83,6 +83,11 @@ export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'ch
 export type TableBodyVirtualizer = {
 	rowHeight: number;
 	/**
+	 * Height, in px, of a section row, when it differs from `rowHeight`. It needs `isSectionItem` on
+	 * `Table.Body` to know which items are section rows. Without it, each item is `rowHeight` high.
+	 */
+	sectionRowHeight?: number;
+	/**
 	 * Extra rows rendered above and below the viewport, defaulting to 18. It
 	 * buffers against row render cost: while the main thread builds rows, the
 	 * compositor keeps scrolling, and anything past the last rendered row shows
@@ -98,6 +103,7 @@ type TableBodyBaseProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'childre
 export type TableBodyManualProps = TableBodyBaseProps & {
 	items?: undefined;
 	virtualizer?: undefined;
+	isSectionItem?: undefined;
 	children?: Snippet;
 	empty?: undefined;
 };
@@ -105,6 +111,12 @@ export type TableBodyManualProps = TableBodyBaseProps & {
 export type TableBodyItemsProps<T extends TableRowItem = TableRowItem> = TableBodyBaseProps & {
 	items: readonly T[];
 	virtualizer?: TableBodyVirtualizer;
+	/**
+	 * Tells which items render a `Table.SectionRow`. A section row that is mounted declares itself,
+	 * so this is optional without a virtualizer. With one, pass it: it keeps the section rows that
+	 * are not mounted out of select-all and range selection, and it lets `sectionRowHeight` apply.
+	 */
+	isSectionItem?: (item: T) => boolean;
 	children?: Snippet<[T]>;
 	empty?: Snippet;
 };
@@ -173,6 +185,21 @@ export type TableRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children'
 	id?: TableSelectionKey;
 	disabled?: boolean;
 	textValue?: string;
+	children?: Snippet;
+	class?: string;
+};
+
+export type TableSectionRowProps = Omit<HTMLAttributes<HTMLTableRowElement>, 'children' | 'id'> & {
+	/**
+	 * Key of the item this section row stands for. It takes a place in the logical rows (and in
+	 * `aria-rowindex`) like any row, but it is never selected and never passed to `onRowAction`.
+	 */
+	id?: TableSelectionKey;
+	/**
+	 * Called when the section row is pressed: on click, and on `Enter` or `Space` while it has the
+	 * focus. This is where a group collapses or expands. The table's `onRowAction` is not called.
+	 */
+	onAction?: () => void;
 	children?: Snippet;
 	class?: string;
 };
