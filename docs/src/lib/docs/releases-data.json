@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.1.0",
+		"date": "2026-10-10T16:07:43.251Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 116,
+						"prUrl": "https://github.com/human-kit/ui/pull/116",
+						"html": "<p>Add <code>Table.SectionRow</code> to show a table in groups. A section row is a full-width header row between the body rows, with one cell that covers all the visible columns. The arrow keys move into it and out of it as on a row. It is not in the selection, it has no checkbox, and it does not call <code>onRowAction</code>: a click, <code>Enter</code> or <code>Space</code> calls its own <code>onAction</code>. <code>Table.Body</code> gets <code>isSectionItem</code>, and the virtualizer gets <code>sectionRowHeight</code>, so that a virtualized list knows its section rows and their height.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.0.0",
-		"date": "2026-10-08T23:38:37.444Z",
+		"date": "2026-10-08T20:42:41-03:00",
 		"sections": [
 			{
 				"type": "Major",

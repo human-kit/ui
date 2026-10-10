@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.1.0
+
+### Minor Changes
+
+- [#116](https://github.com/human-kit/ui/pull/116) [`dd42d27`](https://github.com/human-kit/ui/commit/dd42d274f29854cd778a99cef43b4d1e9c93b1a5) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `Table.SectionRow` to show a table in groups. A section row is a full-width header row between the body rows, with one cell that covers all the visible columns. The arrow keys move into it and out of it as on a row. It is not in the selection, it has no checkbox, and it does not call `onRowAction`: a click, `Enter` or `Space` calls its own `onAction`. `Table.Body` gets `isSectionItem`, and the virtualizer gets `sectionRowHeight`, so that a virtualized list knows its section rows and their height.
+
 ## 1.0.0
 
 ### Major Changes
