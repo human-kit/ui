@@ -9,6 +9,7 @@
 	let {
 		items,
 		virtualizer,
+		isSectionItem,
 		children,
 		empty,
 		class: className = '',
@@ -28,6 +29,17 @@
 		table.setLogicalBodyRows(items?.map((item) => item.id));
 		return () => {
 			table.setLogicalBodyRows(undefined);
+		};
+	});
+
+	$effect(() => {
+		table.setSectionRowKeys(
+			isSectionItem && items
+				? items.filter((item) => isSectionItem(item)).map((item) => item.id)
+				: undefined
+		);
+		return () => {
+			table.setSectionRowKeys(undefined);
 		};
 	});
 
@@ -77,6 +89,39 @@
 		return 18;
 	});
 
+	/**
+	 * Top offset of each item (and, last, the total height) when section rows
+	 * have a height of their own. `undefined` keeps the uniform path, where the
+	 * offsets are plain multiples of `rowHeight`.
+	 */
+	const rowOffsets = $derived.by(() => {
+		if (!virtualizer || !virtualizerEnabled || !isSectionItem) return undefined;
+		const { rowHeight, sectionRowHeight } = virtualizer;
+		if (sectionRowHeight === undefined || sectionRowHeight === rowHeight) return undefined;
+
+		const offsets = new Float64Array(itemList.length + 1);
+		for (let index = 0; index < itemList.length; index += 1) {
+			const height = isSectionItem(itemList[index]) ? sectionRowHeight : rowHeight;
+			offsets[index + 1] = offsets[index] + height;
+		}
+		return offsets;
+	});
+
+	/** Index of the item whose box contains `offset` (the last one past the end). */
+	function findItemIndexAt(offsets: Float64Array, offset: number) {
+		let low = 0;
+		let high = offsets.length - 2;
+		while (low < high) {
+			const middle = Math.ceil((low + high) / 2);
+			if (offsets[middle] <= offset) {
+				low = middle;
+			} else {
+				high = middle - 1;
+			}
+		}
+		return low;
+	}
+
 	// Plain (non-reactive) memo of the last window, used only to keep the derived
 	// value's identity stable across recomputations that produce the same window.
 	let lastVisibleRange:
@@ -94,8 +139,14 @@
 
 		const rowHeight = virtualizer.rowHeight;
 		const rowCount = itemList.length;
-		const startIndex = Math.min(rowCount - 1, Math.floor(Math.max(0, scrollTop) / rowHeight));
-		const endIndex = Math.min(rowCount - 1, startIndex + visibleCount - 1);
+		const offsets = rowOffsets;
+		const viewportTop = Math.max(0, scrollTop);
+		const startIndex = offsets
+			? findItemIndexAt(offsets, viewportTop)
+			: Math.min(rowCount - 1, Math.floor(viewportTop / rowHeight));
+		const endIndex = offsets
+			? findItemIndexAt(offsets, viewportTop + effectiveViewportHeight)
+			: Math.min(rowCount - 1, startIndex + visibleCount - 1);
 
 		// Snap the window edges to a block boundary so scrolling *within* a block
 		// leaves the rendered set identical.
@@ -130,8 +181,10 @@
 		const from = Math.max(0, Math.floor(rawFrom / block) * block);
 		const to = Math.max(from, Math.min(rowCount - 1, Math.ceil((rawTo + 1) / block) * block - 1));
 
-		const topSpacerHeight = from * rowHeight;
-		const bottomSpacerHeight = Math.max(0, (rowCount - to - 1) * rowHeight);
+		const topSpacerHeight = offsets ? offsets[from] : from * rowHeight;
+		const bottomSpacerHeight = offsets
+			? Math.max(0, offsets[rowCount] - offsets[to + 1])
+			: Math.max(0, (rowCount - to - 1) * rowHeight);
 
 		// Return the *same object* when nothing about the window changed. Scrolling
 		// within a block recomputes this on every scroll event, and a fresh object

@@ -22,7 +22,8 @@ export type {
 	TableFooterProps,
 	TableHeaderProps,
 	TableRowProps,
-	TableRootProps
+	TableRootProps,
+	TableSectionRowProps
 } from './types.js';
 
 export { default as TableRoot } from './root/table-root.svelte';
@@ -32,6 +33,7 @@ export { default as TableBody } from './body/table-body.svelte';
 export { default as TableEmptyState } from './empty-state/table-empty-state.svelte';
 export { default as TableFooter } from './footer/table-footer.svelte';
 export { default as TableRow } from './row/table-row.svelte';
+export { default as TableSectionRow } from './section-row/table-section-row.svelte';
 export { default as TableColumnHeaderCell } from './column-header-cell/table-column-header-cell.svelte';
 export { default as TableSortTrigger } from './sort-trigger/table-sort-trigger.svelte';
 export { default as TableColumnResizer } from './column-resizer/table-column-resizer.svelte';

@@ -9,7 +9,7 @@
 The table barrel exports the prop types of each public Table part.
 
 These are `TableRootProps`, `TableColumnProps`, `TableHeaderProps`, `TableBodyProps`,
-`TableFooterProps`, `TableRowProps`, `TableColumnHeaderCellProps`, `TableSortTriggerProps`,
+`TableFooterProps`, `TableRowProps`, `TableSectionRowProps`, `TableColumnHeaderCellProps`, `TableSortTriggerProps`,
 `TableColumnResizerProps`, `TableCellProps`, `TableEmptyStateProps`, `TableCheckboxProps`,
 and `TableCheckboxIndicatorProps`.
 
@@ -82,6 +82,7 @@ and `TableCheckboxIndicatorProps`.
 - `Table.EmptyState`
 - `Table.Footer`
 - `Table.Row`
+- `Table.SectionRow`
 - `Table.ColumnHeaderCell`
 - `Table.SortTrigger`
 - `Table.ColumnResizer`
@@ -124,9 +125,68 @@ and `TableCheckboxIndicatorProps`.
 - In body rows, pressing `ArrowLeft` before the first cell or `ArrowRight` after the last cell moves focus to the row itself. Repeating that same horizontal arrow loops back into the opposite edge cell of the same row.
 - `Table.Checkbox` is the supported interactive control inside table cells for explicit row selection in v1.
 
+## Grouped lists
+
+Use `Table.SectionRow` to show a list in groups. A section row is a full-width header row between the body rows. It has one cell, and that cell covers all the visible columns, also the selection column.
+
+Put the groups and their rows in one `items` array. In the `children` snippet of `Table.Body`, render a `Table.SectionRow` for each group item and a `Table.Row` for each other item. To close a group, remove its rows from `items`.
+
+```svelte
+<script lang="ts">
+	type Item =
+		| { id: string; kind: 'group'; label: string; count: number }
+		| { id: string; kind: 'user'; email: string };
+
+	let collapsed = $state(new Set<string>());
+
+	const items = $derived(
+		groups.flatMap((group): Item[] => [
+			{ id: `group-${group.name}`, kind: 'group', label: group.name, count: group.users.length },
+			...(collapsed.has(group.name)
+				? []
+				: group.users.map((user): Item => ({ id: user.id, kind: 'user', email: user.email })))
+		])
+	);
+
+	function toggle(name: string) {
+		const next = new Set(collapsed);
+		if (next.has(name)) next.delete(name);
+		else next.add(name);
+		collapsed = next;
+	}
+</script>
+
+<Table.Body {items} isSectionItem={(item) => item.kind === 'group'}>
+	{#snippet children(item)}
+		{#if item.kind === 'group'}
+			<Table.SectionRow
+				id={item.id}
+				aria-expanded={!collapsed.has(item.label)}
+				onAction={() => toggle(item.label)}
+			>
+				<ChevronIcon />
+				{item.label}
+				<span>{item.count}</span>
+			</Table.SectionRow>
+		{:else}
+			<Table.Row id={item.id}>
+				<Table.Cell>{item.email}</Table.Cell>
+			</Table.Row>
+		{/if}
+	{/snippet}
+</Table.Body>
+```
+
+- A section row is a row for the keyboard. `ArrowUp` and `ArrowDown` move into it and out of it. Under `keyboardNavigation="grid"` its single cell takes the focus, and `Home`, `End`, `ArrowLeft` and `ArrowRight` keep the focus on that cell. Under `keyboardNavigation="row"` the row takes the focus, as other rows do.
+- A section row is not a data row. It has no checkbox, and it is not in the selection. Select-all, the range selection with `Shift`, and the header checkbox do not include it.
+- A click, `Enter` or `Space` calls `onAction` of the section row. The table does not call `onRowAction` for a section row.
+- A mounted section row tells the table that it is a section row. With a virtualizer, also set `isSectionItem` on `Table.Body`, because the table does not know the section rows that are not mounted.
+- With a virtualizer, set `sectionRowHeight` when a section row has a different height from `rowHeight`. This also needs `isSectionItem`. Give the rows the same heights in CSS.
+- The cell is not sticky. In a table with pinned columns, add `sticky left-0` (or a similar class) to the content of the section row to keep it in view.
+
 ## Composition contract
 
-- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.Cell`, `Table.InteractiveCell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
+- DOM-rendering parts: `Table.Root`, `Table.Header`, `Table.Body`, `Table.Footer`, `Table.Row`, `Table.SectionRow`, `Table.Cell`, `Table.InteractiveCell`, `Table.ColumnHeaderCell`, `Table.ColumnResizer`, `Table.Checkbox`, `Table.CheckboxIndicator`, and `Table.EmptyState` all render DOM.
 - Metadata-only part: `Table.Column` does not render its own element. It only registers the public column input for the surrounding header composition.
 - Sorting: `Table.SortTrigger` is the public opt-in for sortable columns. Rendering it inside `Table.ColumnHeaderCell` makes the owning `Table.Column` sortable and toggles `Table.Root.sortDescriptor`.
 - `Table.SortTrigger.children` can consume a `sortDirection` render state so the trigger button can expose stateful labels or visuals without reading the root descriptor directly.
