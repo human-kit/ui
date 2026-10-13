@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.1.1
+
+### Patch Changes
+
+- [#119](https://github.com/human-kit/ui/pull/119) [`5356f1c`](https://github.com/human-kit/ui/commit/5356f1cf2f64170d0a04a03b1c9b39fd7364bc95) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - `Table.ColumnResizer` on a column pinned to the right now sits on the column's free, inline-start edge, and pulling it towards the start widens the column (pointer and arrow keys alike). On the inline-end edge it was half covered by the next pinned column, or by the table's own edge, and the drag found nothing to grab.
+
 ## 1.1.0
 
 ### Minor Changes
