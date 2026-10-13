@@ -40,6 +40,15 @@
 	// its width outwards; the physical shift direction depends on the layout
 	// direction, resolved once the element mounts.
 	const handleRtl = $derived(element ? isRightToLeft() : false);
+	// A column pinned to the inline end is held by that edge: it is the table's, or the next
+	// pinned column's, which paints over it — half the handle was covered and the drag found
+	// nothing there. Its free edge is the inline start, so the handle moves there and the drag
+	// reads mirrored: pulling it towards the start widens the column.
+	const atInlineStart = $derived(column.pin === 'right');
+	// Centred on the edge it sits on: half inside the column, half over its neighbour.
+	const handleTransform = $derived(
+		atInlineStart !== handleRtl ? 'translateX(-50%)' : 'translateX(50%)'
+	);
 
 	let isFocused = $state(false);
 	let isFocusVisible = $state(false);
@@ -336,7 +345,7 @@
 
 			const pointerDelta = latestClientX - previousClientX;
 			previousClientX = latestClientX;
-			const widthDelta = isRTL ? -pointerDelta : pointerDelta;
+			const widthDelta = isRTL !== atInlineStart ? -pointerDelta : pointerDelta;
 			dragWidth = clampWidth(dragWidth + widthDelta);
 			const nextWidth = dragWidth;
 			updateWidth(nextWidth);
@@ -531,7 +540,7 @@
 		event.stopPropagation();
 
 		const delta = event.shiftKey ? shiftStep : step;
-		const direction = isRightToLeft() ? -1 : 1;
+		const direction = isRightToLeft() !== atInlineStart ? -1 : 1;
 		const baseWidth = getResolvedWidth();
 
 		switch (event.key) {
@@ -595,12 +604,13 @@
 		data-resizing={isResizing ? 'true' : undefined}
 		data-resizable={isResizable ? 'true' : undefined}
 		data-table-column-resizer="true"
-		data-resizable-direction="right"
+		data-resizable-direction={atInlineStart ? 'left' : 'right'}
 		style:position="absolute"
 		style:z-index="2"
 		style:top="0"
-		style:inset-inline-end="0"
-		style:transform={handleRtl ? 'translateX(-50%)' : 'translateX(50%)'}
+		style:inset-inline-start={atInlineStart ? '0' : undefined}
+		style:inset-inline-end={atInlineStart ? undefined : '0'}
+		style:transform={handleTransform}
 		style:width="0.75rem"
 		style:height="100%"
 		style:display="flex"

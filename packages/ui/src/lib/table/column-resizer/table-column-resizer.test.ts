@@ -11,6 +11,7 @@ import ColumnResizerPaddedContainerTest from './table-column-resizer-padded-cont
 import ColumnResizerSandboxOverflowTest from './table-column-resizer-sandbox-overflow-test.svelte';
 import ColumnResizerThreeColumnRelativeTest from './table-column-resizer-three-column-relative-test.svelte';
 import ColumnResizerSelectionColumnTest from './table-column-resizer-selection-column-test.svelte';
+import ColumnResizerPinnedRightTest from './table-column-resizer-pinned-right-test.svelte';
 
 type ColumnWidthState = Record<string, TableColumnWidth>;
 
@@ -54,6 +55,11 @@ function readNarrowMinWidthWidths() {
 	return JSON.parse(text) as ColumnWidthState;
 }
 
+function readPinnedColumnWidths() {
+	const text = document.querySelector('[data-testid="pinned-column-widths"]')?.textContent ?? '{}';
+	return JSON.parse(text) as ColumnWidthState;
+}
+
 function readNumericWidth(width: TableColumnWidth | undefined) {
 	if (typeof width === 'number') return width;
 	if (typeof width === 'string' && width.trim().endsWith('px')) {
@@ -74,6 +80,36 @@ function readResizeAnnouncement(testId: string) {
 }
 
 describe('Table.ColumnResizer', () => {
+	it('puts the handle of a column pinned to the right on its free, inline-start edge', async () => {
+		render(ColumnResizerPinnedRightTest);
+		const resizer = document.querySelector<HTMLElement>('[data-testid="pinned-group-resizer"]')!;
+
+		// Its inline-end edge is held by the table, or by the next pinned column painting over it.
+		expect(resizer.style.insetInlineStart).toBe('0px');
+		expect(resizer.style.insetInlineEnd).toBe('');
+		expect(resizer.style.transform).toBe('translateX(-50%)');
+		await expect.element(resizer).toHaveAttribute('data-resizable-direction', 'left');
+	});
+
+	it('widens a column pinned to the right when its handle is pulled towards the start', async () => {
+		render(ColumnResizerPinnedRightTest);
+		const resizer = document.querySelector<HTMLElement>('[data-testid="pinned-group-resizer"]')!;
+
+		const pointer = { bubbles: true, pointerId: 31, pointerType: 'mouse', isPrimary: true };
+		resizer.dispatchEvent(new PointerEvent('pointerdown', { ...pointer, button: 0, clientX: 300 }));
+		window.dispatchEvent(new PointerEvent('pointermove', { ...pointer, clientX: 260 }));
+		window.dispatchEvent(new PointerEvent('pointerup', { ...pointer, clientX: 260 }));
+
+		await expect.poll(() => readPinnedColumnWidths().group).toBe(200);
+
+		resizer.focus();
+		await userEvent.keyboard('{Enter}');
+		await userEvent.keyboard('{ArrowLeft}');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.poll(() => readPinnedColumnWidths().group).toBe(216);
+	});
+
 	it('renders a separator outside the tab order and applies controlled widths on header cells', async () => {
 		render(ColumnResizerTest);
 
