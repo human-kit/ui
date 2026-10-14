@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.1.2
+
+### Patch Changes
+
+- [#121](https://github.com/human-kit/ui/pull/121) [`cb2f700`](https://github.com/human-kit/ui/commit/cb2f700cc997f4b5555d2b7a880833365f039b80) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - A collapsible panel opens to its content's exact size instead of the whole pixels `scrollHeight` rounds to. Content 57.5px tall used to open a 58px panel, half a pixel taller than the same page rendered on the server, so everything under the panel moved when the page hydrated.
+
 ## 1.1.1
 
 ### Patch Changes
