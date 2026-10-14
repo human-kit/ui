@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 
 import CollapseTransitionTest from './collapse-transition-test.svelte';
+import { exactSize } from './collapse-transition.svelte';
 
 function panel() {
 	return document.querySelector('[data-testid="panel"]');
@@ -40,5 +41,16 @@ describe('createCollapseTransition', () => {
 		// ...then unmounts once the animation completes.
 		await expect.poll(() => panel()?.getAttribute('data-mounted')).toBe('false');
 		expect(panel()?.getAttribute('data-status')).toBe('idle');
+	});
+});
+
+describe('exactSize', () => {
+	it('keeps the half pixel the scroll size rounds away', () => {
+		expect(exactSize(58, 57.5)).toBe(57.5);
+		expect(exactSize(57, 57.4)).toBe(57.4);
+	});
+
+	it('opens to the scroll size when the content overflows its box', () => {
+		expect(exactSize(80, 57.5)).toBe(80);
 	});
 });

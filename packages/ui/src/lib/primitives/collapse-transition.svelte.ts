@@ -21,6 +21,19 @@ export type CollapseTransition = {
 };
 
 /**
+ * The content's size without the rounding `scrollHeight`/`scrollWidth` apply.
+ *
+ * Those are whole pixels: content 57.5px tall measures 58, so an open panel came out half a pixel
+ * taller than the same content laid out without the variable (on the server, before hydration),
+ * and everything under it moved when the page hydrated. Within a pixel of the laid-out box the
+ * scroll size is only that rounding, so the box's own fractional size is the answer; beyond it the
+ * content really overflows its box, and the scroll size is what the panel has to open to.
+ */
+export function exactSize(scrollSize: number, boxSize: number): number {
+	return Math.abs(scrollSize - boxSize) < 1 ? boxSize : scrollSize;
+}
+
+/**
  * Drives a collapsible panel's enter/exit transitions the way Base UI's Collapsible does:
  * - keeps the content mounted for the full exit animation, then unmounts it (or, with
  *   `forceMount`, leaves it mounted to be `hidden` at rest);
@@ -51,8 +64,8 @@ export function createCollapseTransition(
 	function measure() {
 		// Freeze the size while collapsing so the exit animates from the open height, not from 0.
 		if (!measured || status === 'ending') return;
-		height = measured.scrollHeight;
-		width = measured.scrollWidth;
+		height = exactSize(measured.scrollHeight, measured.getBoundingClientRect().height);
+		width = exactSize(measured.scrollWidth, measured.getBoundingClientRect().width);
 	}
 
 	function cancelRelease() {
