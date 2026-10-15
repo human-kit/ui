@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.2.0
+
+### Minor Changes
+
+- [#126](https://github.com/human-kit/ui/pull/126) [`26686ec`](https://github.com/human-kit/ui/commit/26686ec35f3969bee944ca44573b5fb7b6fe5e10) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Table: add `selectionBehavior="checkbox"`. A press on a row only performs its action, even while rows are selected; the selection changes only through the selection checkbox, `Space` and the select-all shortcut.
+
 ## 1.1.3
 
 ### Patch Changes
