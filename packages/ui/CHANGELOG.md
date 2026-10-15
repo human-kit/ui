@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.2.1
+
+### Patch Changes
+
+- [#128](https://github.com/human-kit/ui/pull/128) [`9600a44`](https://github.com/human-kit/ui/commit/9600a44d4fdea4b0e96399a97dcde4e13173d73d) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Table: a change in the body's rows no longer throws away the column layout and the measured widths. Adding or removing a row used to force a synchronous layout of the whole table, which grew with the number of rows.
+
 ## 1.2.0
 
 ### Minor Changes
