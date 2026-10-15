@@ -591,6 +591,28 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		}
 	}
 
+	/**
+	 * The body's rows changed (one added, one removed, the order of the items), and nothing about
+	 * the columns did. Only the caches built from the rows go, so their aria indexes and the
+	 * navigation are worked out again; the column layout and the widths stay.
+	 *
+	 * `notifyLayout` threw those away too, and the next read of a width re-measured the table:
+	 * a `getBoundingClientRect` that forced a synchronous layout of every row on each line added
+	 * to an editable sheet, which grew with the sheet. The container's own size still reaches the
+	 * widths through `refreshMeasuredLayout`, which the root's `ResizeObserver` calls — including
+	 * when a vertical scrollbar appears because the rows outgrew the box.
+	 */
+	function notifyBodyLayout() {
+		invalidateBodyStructureCaches();
+		if (!layoutNotifyScheduled) {
+			layoutNotifyScheduled = true;
+			queueMicrotask(() => {
+				layoutNotifyScheduled = false;
+				layoutEpoch += 1;
+			});
+		}
+	}
+
 	function notifySelection() {
 		if (!selectionNotifyScheduled) {
 			selectionNotifyScheduled = true;
@@ -1798,7 +1820,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		logicalBodyRowIds = nextIds;
 		logicalBodyRowIndexCache = null;
 		pruneRegisteredSectionRowKeys();
-		notifyLayout();
+		notifyBodyLayout();
 		notifySelection();
 	}
 
@@ -1924,7 +1946,10 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function getLogicalBodyRowIndex(id: TableSelectionKey) {
 		if (!logicalBodyRowIds) return -1;
 		if (!logicalBodyRowIndexCache) {
-			logicalBodyRowIndexCache = new SvelteMap();
+			// A plain map: a cache rebuilt when the rows change and read through `layoutEpoch`,
+			// like the other layout caches. Reactive, it set up a signal per row on every rebuild.
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- epoch-driven cache, not state.
+			logicalBodyRowIndexCache = new Map();
 			for (let index = 0; index < logicalBodyRowIds.length; index += 1) {
 				const rowId = logicalBodyRowIds[index];
 				if (!logicalBodyRowIndexCache.has(rowId)) {
