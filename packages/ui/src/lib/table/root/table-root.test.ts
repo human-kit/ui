@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import TableTest from './table-test.svelte';
 import TableReorderTest from './table-reorder-test.svelte';
+import TableDropColumnTest from './table-drop-column-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 function getHeaderCells(container: HTMLElement) {
@@ -1265,5 +1266,22 @@ describe('Table.Root', () => {
 		expect(
 			getBodySecondColumnCells(document.body).map((cell) => cell.textContent?.trim())
 		).toContain('Admin');
+	});
+
+	// A row keeps the order of its cells in plain arrays, announced by an epoch: a cell that
+	// leaves from the middle has to move the ones after it down, in the header and the body.
+	it('moves the cells after a removed one down a column', async () => {
+		render(TableDropColumnTest);
+		const index = (testId: string) =>
+			document.querySelector(`[data-testid="${testId}"]`)?.getAttribute('data-column-index');
+
+		expect(index('role-header')).toBe('2');
+		expect(index('role-cell-danilo')).toBe('2');
+
+		document.querySelector<HTMLElement>('[data-testid="drop-group"]')?.click();
+
+		await expect.poll(() => index('role-header')).toBe('1');
+		await expect.poll(() => index('role-cell-danilo')).toBe('1');
+		await expect.poll(() => index('role-cell-zahra')).toBe('1');
 	});
 });

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import {
 		setTableRowContext,
 		useTableContext,
@@ -24,9 +23,12 @@
 	const table = useTableContext();
 	const section = useTableSectionContext();
 	const rowToken = table.createInstanceToken('row');
+	// Plain, not reactive: the epoch below is what announces a change. These used to be a
+	// `SvelteSet` and a `SvelteMap` whose indexes were rewritten for every cell after the one that
+	// left, so a virtualized row of fourteen columns leaving the viewport made ~100 reactive writes
+	// — the whole cost of scrolling a wide table. A row has a handful of cells: `indexOf` over them
+	// is cheaper than keeping an index map in step.
 	const cellOrder: string[] = [];
-	const cellOrderSet = new SvelteSet<string>();
-	const cellIndexByToken = new SvelteMap<string, number>();
 	const cellElements: Record<string, () => HTMLElement | undefined> = {};
 	// Counter-based on purpose: cell indexes are resolved against the live DOM
 	// (`rowElement.children`), so order changes are event-like (registration /
@@ -101,10 +103,8 @@
 	}
 
 	function registerCellToken(token: string, getElement?: () => HTMLElement | undefined) {
-		const alreadyOrdered = cellOrderSet.has(token);
+		const alreadyOrdered = cellOrder.includes(token);
 		if (!alreadyOrdered) {
-			cellOrderSet.add(token);
-			cellIndexByToken.set(token, cellOrder.length);
 			cellOrder.push(token);
 		}
 		if (getElement) {
@@ -125,17 +125,15 @@
 
 	function unregisterCellToken(token: string) {
 		delete cellElements[token];
-		const index = cellIndexByToken.get(token) ?? -1;
+		const index = cellOrder.indexOf(token);
 		if (index >= 0) {
 			cellOrder.splice(index, 1);
-			cellOrderSet.delete(token);
-			cellIndexByToken.delete(token);
-			for (let nextIndex = index; nextIndex < cellOrder.length; nextIndex += 1) {
-				cellIndexByToken.set(cellOrder[nextIndex], nextIndex);
-			}
 			if (isBodyRow && !tracksDynamicBodyCellOrder) {
 				if (bodyCellOrderSealed) {
 					promoteBodyCellOrderTracking();
+				} else if (index < cellOrder.length) {
+					// The cells after it moved down one: the index map used to say so by itself.
+					notifyCellOrderChange();
 				}
 				return;
 			}
@@ -150,7 +148,7 @@
 			const index = Array.from(rowElement.children).indexOf(element);
 			if (index >= 0) return index;
 		}
-		return cellIndexByToken.get(token) ?? -1;
+		return cellOrder.indexOf(token);
 	}
 
 	setTableRowContext({
