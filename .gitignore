@@ -35,3 +35,6 @@ yarn.lock
 
 # Playwright MCP scratch output (snapshots, console logs)
 .playwright-mcp/
+
+# Local skills of coding agents. They hold third-party licenses, which GitHub shows next to the MIT license.
+.agents/
