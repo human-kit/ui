@@ -27,7 +27,17 @@ export type TableSelectionMode = 'none' | 'single' | 'multiple';
  * so it costs nothing, and it is where sorting and resizing live.
  */
 export type TableKeyboardNavigation = 'grid' | 'row' | 'none';
-export type TableSelectionBehavior = 'toggle' | 'replace';
+/**
+ * How a press on a row relates to the selection.
+ *
+ * - `'toggle'`: a press toggles the row, checkbox-style. With `onRowAction`, a press performs the
+ *   action while nothing is selected and toggles once something is.
+ * - `'replace'`: a press replaces the selection with the row; the arrows move it.
+ * - `'checkbox'`: a press never touches the selection. The row performs its action (if there is
+ *   one), and only the selection checkbox, `Space` or the select-all shortcut select. Use it when
+ *   the rows open something and selecting is a deliberate, secondary act.
+ */
+export type TableSelectionBehavior = 'toggle' | 'replace' | 'checkbox';
 export type TableDisabledBehavior = 'selection' | 'all';
 export type TableSortDirection = 'ascending' | 'descending';
 export type TableSectionKind = 'header' | 'body' | 'footer';
@@ -2455,8 +2465,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		if (selectionMode === 'single') {
 			const wasSelected = selectedKeys.has(id);
 			applySelectionChange(
-				selectionBehavior === 'toggle' && wasSelected ? new SvelteSet() : new SvelteSet([id]),
-				selectionBehavior === 'toggle' && wasSelected ? null : id
+				selectionBehavior !== 'replace' && wasSelected ? new SvelteSet() : new SvelteSet([id]),
+				selectionBehavior !== 'replace' && wasSelected ? null : id
 			);
 			return;
 		}
@@ -2545,6 +2555,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				performRowAction(id);
 				return;
 			}
+			if (selectionBehavior === 'checkbox') return;
 			pressRowSelection(id, interaction);
 			return;
 		}
@@ -2559,6 +2570,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 				return;
 			}
 			toggleRowSelection(id);
+			return;
+		}
+
+		// Only the checkbox selects: the row does what it does, or nothing.
+		if (selectionBehavior === 'checkbox') {
+			if (source === 'pointer' && onRowAction) performRowAction(id);
 			return;
 		}
 
