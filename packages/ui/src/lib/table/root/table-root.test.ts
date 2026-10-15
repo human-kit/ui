@@ -460,6 +460,51 @@ describe('Table.Root', () => {
 		expect(secondBodyCell.getAttribute('data-actionable')).toBe('true');
 	});
 
+	it('keeps running onRowAction on click in checkbox mode while a selection exists', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'checkbox',
+			initialSelectedKeys: ['danilo'],
+			onRowAction: vi.fn()
+		});
+		const secondBodyCell = getBodyFirstColumnCells(document.body)[1];
+
+		await userEvent.click(secondBodyCell);
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="row-action-log"]')?.textContent)
+			.toBe('["zahra"]');
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('["danilo"]');
+	});
+
+	it('leaves the selection alone on click in checkbox mode without a row action', async () => {
+		render(TableTest, { selectionMode: 'multiple', selectionBehavior: 'checkbox' });
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		await userEvent.click(firstBodyCell);
+		firstBodyCell.focus();
+		await userEvent.keyboard('{Enter}');
+
+		expect(document.querySelector('[data-testid="selected-keys"]')?.textContent).toBe('[]');
+	});
+
+	it('still selects with Space in checkbox mode', async () => {
+		render(TableTest, {
+			selectionMode: 'multiple',
+			selectionBehavior: 'checkbox',
+			onRowAction: vi.fn()
+		});
+		const firstBodyCell = document.querySelector<HTMLElement>('tbody [role="rowheader"]')!;
+
+		firstBodyCell.focus();
+		await userEvent.keyboard(' ');
+
+		await expect
+			.poll(() => document.querySelector('[data-testid="selected-keys"]')?.textContent)
+			.toBe('["danilo"]');
+		expect(document.querySelector('[data-testid="row-action-log"]')?.textContent).toBe('[]');
+	});
+
 	it('uses Enter for action and Space for selection when onRowAction is provided', async () => {
 		render(TableTest, {
 			selectionMode: 'multiple',
