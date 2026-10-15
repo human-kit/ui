@@ -34,6 +34,11 @@ execSync('pnpm exec changeset publish', { stdio: 'inherit' });
 //
 // `changeset publish` REJECTS an explicit `--tag` in pre mode, so the tag is moved
 // afterwards. It is idempotent, and a no-op once the version already carries it.
+//
+// The Release workflow has no npm token: it publishes through trusted publishing,
+// which authorizes the publish and nothing else by default. Before the next
+// prerelease, give this step a credential (for example, allow `npm dist-tag` on the
+// trusted publisher at npmjs.com), or it fails.
 if (pre) {
 	const pkg = JSON.parse(readFileSync(packageUrl, 'utf8'));
 	console.log(`Pointing the "${pre.tag}" dist-tag at ${pkg.version}.`);

@@ -30,6 +30,10 @@ concurrency:
 # The whole permission surface: push the release branch, publish, tag.
 permissions:
   contents: write
+  # npm trusted publishing: the job asks GitHub for an OIDC token, and pnpm
+  # exchanges it for a short npm token that can publish `@human-kit/ui` only.
+  # There is no npm secret.
+  id-token: write
 
 jobs:
   release:
@@ -96,31 +100,15 @@ jobs:
             echo "Merging it publishes to npm."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # `changeset publish` authenticates through an `.npmrc`, and nothing else
-      # here writes one: the repo ships none, and `actions/setup-node` only
-      # generates one when given `registry-url`. `changesets/action` used to do
-      # this itself, which is why it was invisible until that action was dropped —
-      # an unauthenticated publish comes back as `E404 undefined`, because npm
-      # masks "you may not publish here" as "no such package".
-      #
-      # Written to $HOME rather than the workspace so it cannot be committed by a
-      # later step, and only on the branch that actually publishes.
-      - name: Authenticate with npm
-        if: steps.version.outputs.versioned == 'false'
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > "$HOME/.npmrc"
-
       # Only when there was nothing left to version — that is, the release branch
       # has been merged. `changeset publish` skips versions already on npm, so a
       # rerun is a no-op, and it recovers a release whose version commit landed
-      # but whose publish did not.
+      # but whose publish did not. No `.npmrc` carries a token, so a failed OIDC
+      # exchange stops the publish instead of falling back to a stale credential.
       - name: Publish
         if: steps.version.outputs.versioned == 'false'
         run: pnpm run release
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # `changeset publish` creates the `@human-kit/ui@<version>` tags locally and
