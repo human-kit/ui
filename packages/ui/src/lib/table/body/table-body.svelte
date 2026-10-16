@@ -98,10 +98,13 @@
 		if (!virtualizer || !virtualizerEnabled || !isSectionItem) return undefined;
 		const { rowHeight, sectionRowHeight } = virtualizer;
 		if (sectionRowHeight === undefined || sectionRowHeight === rowHeight) return undefined;
+		const sectionHeight =
+			typeof sectionRowHeight === 'function' ? sectionRowHeight : () => sectionRowHeight;
 
 		const offsets = new Float64Array(itemList.length + 1);
 		for (let index = 0; index < itemList.length; index += 1) {
-			const height = isSectionItem(itemList[index]) ? sectionRowHeight : rowHeight;
+			const item = itemList[index];
+			const height = isSectionItem(item) ? sectionHeight(item) : rowHeight;
 			offsets[index + 1] = offsets[index] + height;
 		}
 		return offsets;

@@ -95,7 +95,7 @@ and `TableCheckboxIndicatorProps`.
 
 - Use `Table.Root` as the stateful container for focus, selection, and sorting state.
 - Use `keyboardNavigation` to choose how far the roving tab stop reaches into the body: `'grid'` (default) makes every body cell a focus target, `'row'` makes the row the only one, and `'none'` leaves the body inert. The cell navigation has a cost: one focus registration and one focus state for each cell. A virtualized table does this again for each row that it makes. Use `'row'` when the body is a list, and not a surface where the user works. Use `'none'` only when nothing in the body does an action. The header keeps its own navigation in every mode.
-- Use `selectionBehavior="toggle"` to let the user remove the selection of a selected row. Use `selectionBehavior="replace"` to keep a selected row selected when the user presses it again. Use `selectionBehavior="checkbox"` when a press on the row should only perform its action: then only the selection checkbox, `Space` or the select-all shortcut change the selection.
+- Use `selectionBehavior="toggle"` to let the user remove the selection of a selected row. Use `selectionBehavior="replace"` to keep a selected row selected when the user presses it again. Use `selectionBehavior="checkbox"` when a press on the row must only do its action. Then only the selection checkbox, `Space` or the select-all shortcut change the selection.
 - `Table.Column` is a logical-only wrapper for column metadata; it does not render DOM by itself and should wrap a single `Table.ColumnHeaderCell`.
 - Wrap each header cell in `Table.Column` so the table can register stable column metadata.
 - Add `Table.ColumnResizer` inside `Table.ColumnHeaderCell` to make the owning `Table.Column` resizable.
@@ -182,6 +182,7 @@ Put the groups and their rows in one `items` array. In the `children` snippet of
 - A click, `Enter` or `Space` calls `onAction` of the section row. The table does not call `onRowAction` for a section row.
 - A mounted section row tells the table that it is a section row. With a virtualizer, also set `isSectionItem` on `Table.Body`, because the table does not know the section rows that are not mounted.
 - With a virtualizer, set `sectionRowHeight` when a section row has a different height from `rowHeight`. This also needs `isSectionItem`. Give the rows the same heights in CSS.
+- When the section rows are not all the same height, pass `sectionRowHeight` as a function of the item. The table calls it only for the items that `isSectionItem` accepts.
 - The cell is not sticky. In a table with pinned columns, add `sticky left-0` (or a similar class) to the content of the section row to keep it in view.
 
 ## Composition contract

@@ -80,13 +80,17 @@ export type TableHeaderProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'ch
 	class?: string;
 };
 
-export type TableBodyVirtualizer = {
+export type TableBodyVirtualizer<T extends TableRowItem = TableRowItem> = {
 	rowHeight: number;
 	/**
 	 * Height, in px, of a section row, when it differs from `rowHeight`. It needs `isSectionItem` on
 	 * `Table.Body` to know which items are section rows. Without it, each item is `rowHeight` high.
+	 *
+	 * A function sizes each section row on its own, for a body whose section rows are not all
+	 * alike — a group's header beside the header of an open row's children, say. It is only
+	 * called for the items `isSectionItem` accepts.
 	 */
-	sectionRowHeight?: number;
+	sectionRowHeight?: number | ((item: T) => number);
 	/**
 	 * Extra rows rendered above and below the viewport, defaulting to 18. It
 	 * buffers against row render cost: while the main thread builds rows, the
@@ -110,7 +114,7 @@ export type TableBodyManualProps = TableBodyBaseProps & {
 
 export type TableBodyItemsProps<T extends TableRowItem = TableRowItem> = TableBodyBaseProps & {
 	items: readonly T[];
-	virtualizer?: TableBodyVirtualizer;
+	virtualizer?: TableBodyVirtualizer<T>;
 	/**
 	 * Tells which items render a `Table.SectionRow`. A section row that is mounted declares itself,
 	 * so this is optional without a virtualizer. With one, pass it: it keeps the section rows that
