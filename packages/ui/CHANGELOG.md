@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.3.0
+
+### Minor Changes
+
+- [#130](https://github.com/human-kit/ui/pull/130) [`ec99e9b`](https://github.com/human-kit/ui/commit/ec99e9b04e9f99e20b435add8fe820995417c61c) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Table: `sectionRowHeight` of the body's virtualizer also takes a function of the item, so section rows of different kinds (a group's header, the header of an expanded row's children) can each keep their own height.
+
 ## 1.2.1
 
 ### Patch Changes
