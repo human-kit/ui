@@ -222,4 +222,51 @@ describe('Table.SectionRow', () => {
 		scroller.dispatchEvent(new Event('scroll'));
 		await expect.poll(() => Boolean(getSectionRow('group-10'))).toBe(true);
 	});
+
+	it('sizes each section row on its own when the height is a function', async () => {
+		const items = createManyItems(20, 5);
+		// Even groups are 24px high, odd ones 40px.
+		const heightOf = (id: string) => (Number(id.split('-')[1]) % 2 === 0 ? 24 : 40);
+		render(SectionRowTest, {
+			items,
+			declareSections: true,
+			virtualizer: {
+				rowHeight: 32,
+				sectionRowHeight: (item) => heightOf(item.id),
+				overscan: 0
+			}
+		});
+
+		await expect
+			.poll(
+				() =>
+					document.querySelector<HTMLElement>('[data-virtual-spacer="bottom"] div')?.style.height
+			)
+			.toBeTruthy();
+
+		// 10 x 24 + 10 x 40 + 100 x 32 = 3840px in all.
+		const mountedHeight = Array.from(
+			document.querySelectorAll<HTMLElement>('tbody tr[data-testid]')
+		).reduce(
+			(total, row) =>
+				total +
+				(row.hasAttribute('data-section-row')
+					? heightOf(row.dataset.testid!.replace('section-', ''))
+					: 32),
+			0
+		);
+		const top = parseFloat(
+			document.querySelector<HTMLElement>('[data-virtual-spacer="top"] div')?.style.height ?? '0'
+		);
+		const bottom = parseFloat(
+			document.querySelector<HTMLElement>('[data-virtual-spacer="bottom"] div')!.style.height
+		);
+		expect(top + mountedHeight + bottom).toBe(3840);
+
+		const scroller = document.querySelector('table')!.parentElement!;
+		// Group 10 starts at 5 x 24 + 5 x 40 + 10 x 160 = 1920px.
+		scroller.scrollTop = 1920;
+		scroller.dispatchEvent(new Event('scroll'));
+		await expect.poll(() => Boolean(getSectionRow('group-10'))).toBe(true);
+	});
 });

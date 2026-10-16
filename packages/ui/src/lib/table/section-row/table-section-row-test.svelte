@@ -25,10 +25,17 @@
 		keyboardNavigation?: TableKeyboardNavigation;
 		hiddenColumns?: string[];
 		declareSections?: boolean;
-		virtualizer?: TableBodyVirtualizer;
+		virtualizer?: TableBodyVirtualizer<ListItem>;
 		onRowAction?: (id: TableSelectionKey) => void;
 		onSectionAction?: (id: string) => void;
 	};
+
+	/** The section row's own height, as the virtualizer is told it, so the two agree. */
+	function sectionStyle(item: GroupItem) {
+		const height = virtualizer?.sectionRowHeight;
+		if (height === undefined) return undefined;
+		return `height:${typeof height === 'function' ? height(item) : height}px;`;
+	}
 
 	let {
 		items = defaultItems,
@@ -92,9 +99,7 @@
 						id={item.id}
 						aria-expanded={!collapsed.has(item.id)}
 						data-testid={`section-${item.id}`}
-						style={virtualizer?.sectionRowHeight
-							? `height:${virtualizer.sectionRowHeight}px;`
-							: undefined}
+						style={sectionStyle(item)}
 						onAction={() => toggleGroup(item.id)}
 					>
 						<span>{item.label}</span>

@@ -182,6 +182,7 @@ Put the groups and their rows in one `items` array. In the `children` snippet of
 - A click, `Enter` or `Space` calls `onAction` of the section row. The table does not call `onRowAction` for a section row.
 - A mounted section row tells the table that it is a section row. With a virtualizer, also set `isSectionItem` on `Table.Body`, because the table does not know the section rows that are not mounted.
 - With a virtualizer, set `sectionRowHeight` when a section row has a different height from `rowHeight`. This also needs `isSectionItem`. Give the rows the same heights in CSS.
+- When the section rows are not all the same height, pass `sectionRowHeight` as a function of the item. The table calls it only for the items that `isSectionItem` accepts.
 - The cell is not sticky. In a table with pinned columns, add `sticky left-0` (or a similar class) to the content of the section row to keep it in view.
 
 ## Composition contract
