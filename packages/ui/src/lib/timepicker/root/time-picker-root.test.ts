@@ -155,19 +155,61 @@ describe('TimePicker.Root', () => {
 			.toBe('true');
 	});
 
-	it('flags the input as invalid when a typed hour falls out of min/max', async () => {
+	it('holds a typed time inside min/max as it is typed', async () => {
 		render(TimePickerTest, { minValue: '09:00', maxValue: '17:00' });
 		const input = () => document.querySelector<HTMLElement>('.time-picker-input');
-		expect(input()?.getAttribute('data-invalid')).toBeNull();
+		const value = () => document.querySelector('[data-testid="time-picker-value"]')?.textContent;
 
-		const hourSegment = getSegment('hour');
-		hourSegment.element()?.focus();
+		getSegment('hour').element()?.focus();
 		await userEvent.keyboard('22');
+		// 22:30 is past the max: the max, at once and never flagged invalid.
+		await expect.poll(value).toBe('17:00');
+		expect(getSegment('hour').element()?.textContent).toBe('17');
+		expect(getSegment('minute').element()?.textContent).toBe('00');
+		expect(input()?.getAttribute('data-invalid')).toBeNull();
+	});
 
-		// The draft (22:30) is complete but out of range: no value is committed
-		// and the input is flagged invalid.
-		await expect.poll(() => input()?.getAttribute('data-invalid')).toBe('true');
-		expect(document.querySelector('[data-testid="time-picker-value"]')?.textContent).toBe('');
+	it('completes a two-digit hour that starts below the min', async () => {
+		render(TimePickerTest, { minValue: '10:00', maxValue: '20:00' });
+		const value = () => document.querySelector('[data-testid="time-picker-value"]')?.textContent;
+
+		getSegment('hour').element()?.focus();
+		await userEvent.keyboard('19');
+		await expect.poll(value).toBe('19:30');
+	});
+
+	it('holds a digit left waiting for its pair once the segment is left', async () => {
+		render(TimePickerTest, { minValue: '09:00', maxValue: '17:00' });
+		const value = () => document.querySelector('[data-testid="time-picker-value"]')?.textContent;
+
+		getSegment('hour').element()?.focus();
+		await userEvent.keyboard('1');
+		getSegment('minute').element()?.focus();
+		await expect.poll(value).toBe('09:00');
+	});
+
+	it('stops the arrows at min and max', async () => {
+		render(TimePickerTest, { defaultValue: '16:30', minValue: '09:00', maxValue: '17:00' });
+		const value = () => document.querySelector('[data-testid="time-picker-value"]')?.textContent;
+
+		getSegment('hour').element()?.focus();
+		await userEvent.keyboard('{ArrowUp}');
+		await expect.poll(value).toBe('17:00');
+		await userEvent.keyboard('{ArrowUp}');
+		await expect.poll(value).toBe('17:00');
+
+		getSegment('minute').element()?.focus();
+		await userEvent.keyboard('{ArrowUp}');
+		await expect.poll(value).toBe('17:00');
+	});
+
+	it('stops the arrows at the min', async () => {
+		render(TimePickerTest, { defaultValue: '09:30', minValue: '09:00', maxValue: '17:00' });
+		const value = () => document.querySelector('[data-testid="time-picker-value"]')?.textContent;
+
+		getSegment('hour').element()?.focus();
+		await userEvent.keyboard('{ArrowDown}');
+		await expect.poll(value).toBe('09:00');
 	});
 
 	it('rebuilds segment draft when hourCycle changes with a committed value', async () => {

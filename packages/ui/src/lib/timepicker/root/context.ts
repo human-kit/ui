@@ -40,7 +40,11 @@ export type TimePickerContext = {
 	setValue: (nextValue: TimePickerTimeValue | null) => void;
 	getSegments: () => TimePickerSegmentPart[];
 	getSegmentValue: (type: Exclude<TimePickerSegmentType, 'literal'>) => string;
-	setSegmentValue: (type: Exclude<TimePickerSegmentType, 'literal'>, nextValue: string) => void;
+	setSegmentValue: (
+		type: Exclude<TimePickerSegmentType, 'literal'>,
+		nextValue: string,
+		options?: { clamp?: boolean }
+	) => void;
 	typeSegmentDigit: (type: Exclude<TimePickerSegmentType, 'literal'>, digit: string) => boolean;
 	adjustSegmentValue: (type: Exclude<TimePickerSegmentType, 'literal'>, step: number) => void;
 	getSegmentLabel: (type: TimePickerEditableSegmentType) => string;

@@ -106,7 +106,17 @@ export type TimeSelectionState = {
 	 */
 	readonly isInvalidDraft: boolean;
 	getSegmentValue: (type: TimePickerEditableSegmentType) => string;
-	setSegmentValue: (type: TimePickerEditableSegmentType, nextValue: string) => void;
+	/**
+	 * Writes one segment and commits. The draft is held inside min/max unless `clamp` is
+	 * `false`: a first digit still waiting for its pair is not a time yet.
+	 */
+	setSegmentValue: (
+		type: TimePickerEditableSegmentType,
+		nextValue: string,
+		options?: { clamp?: boolean }
+	) => void;
+	/** Holds the draft inside min/max and commits it: a pending digit that was left alone. */
+	clampDraft: () => void;
 	/** Re-commits the current draft (publishes `null` when it is not committeable). */
 	commitDraft: () => void;
 	/**
@@ -280,10 +290,45 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 		return segmentDraft.dayPeriod;
 	}
 
-	function setSegmentValue(type: TimePickerEditableSegmentType, nextValue: string) {
+	function setSegmentValue(
+		type: TimePickerEditableSegmentType,
+		nextValue: string,
+		{ clamp = true }: { clamp?: boolean } = {}
+	) {
 		if (!options.isEditable()) return;
 		writeSegmentValue(type, nextValue);
+		if (clamp) clampDraftToRange();
 		commitFromDraft();
+	}
+
+	function clampDraft() {
+		if (!options.isEditable()) return;
+		clampDraftToRange();
+		commitFromDraft();
+	}
+
+	/**
+	 * Holds a typed or stepped draft inside `minValue`/`maxValue`, the way React Aria's
+	 * segments hold a number inside its bounds: a complete time past the max becomes the
+	 * max, one before the min becomes the min, at once rather than on blur. A first digit
+	 * that waits for its pair is skipped (`1` on the way to `19` under a `10:00` min), and
+	 * held once it is completed or left alone.
+	 */
+	function clampDraftToRange() {
+		const granularity = options.granularity();
+		const parts = buildTimePartsFromDraft(segmentDraft, granularity, resolvedHourCycle);
+		if (!parts) return;
+
+		const candidate = formatTimePickerValue(parts, granularity);
+		let boundary: TimePickerTimeValue | undefined;
+		if (isTimeOutOfRange(candidate, undefined, normalizedMaxValue, granularity)) {
+			boundary = normalizedMaxValue;
+		} else if (isTimeOutOfRange(candidate, normalizedMinValue, undefined, granularity)) {
+			boundary = normalizedMinValue;
+		}
+		if (!boundary) return;
+
+		segmentDraft = toDraftFromTimeValue(boundary, resolvedHourCycle);
 	}
 
 	/** Normalizes and writes a segment into the draft without committing it. */
@@ -510,6 +555,7 @@ export function createTimeSelectionState(options: TimeSelectionStateOptions): Ti
 		},
 		getSegmentValue,
 		setSegmentValue,
+		clampDraft,
 		commitDraft: commitFromDraft,
 		setValue,
 		selectWheelValue,

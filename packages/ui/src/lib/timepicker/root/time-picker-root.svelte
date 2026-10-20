@@ -197,6 +197,7 @@
 		if (!nextWithin && activeSegment !== null) {
 			activeSegment = null;
 			segmentTypeBuffer = createEmptyTimePickerDraft();
+			timeSelection.clampDraft();
 		}
 		if (focusWithin === nextWithin) return;
 		focusWithin = nextWithin;
@@ -206,6 +207,8 @@
 		if (activeSegment === segment) return;
 		activeSegment = segment;
 		segmentTypeBuffer = createEmptyTimePickerDraft();
+		// A digit left waiting, or one erased, is held to min/max once the segment is left.
+		timeSelection.clampDraft();
 	}
 
 	function openPopover(reason: TimePickerOpenChangeReason = 'imperative-action', event?: Event) {
@@ -246,14 +249,11 @@
 
 		const threshold = getTypingThreshold(type);
 		if (candidate.length === 1) {
-			timeSelection.setSegmentValue(type, candidate);
-			segmentTypeBuffer[type] = candidate;
-			const numeric = Number(candidate);
-			if (Number.isFinite(numeric) && numeric >= threshold) {
-				segmentTypeBuffer[type] = '';
-				return true;
-			}
-			return false;
+			// A digit that waits for its pair is not held to min/max yet: `1` on the way to `19`.
+			const completes = Number(candidate) >= threshold;
+			timeSelection.setSegmentValue(type, candidate, { clamp: completes });
+			segmentTypeBuffer[type] = completes ? '' : candidate;
+			return completes;
 		}
 
 		const numericCandidate = Number(candidate);
@@ -271,14 +271,10 @@
 
 		if (numericCandidate < min || numericCandidate > max) {
 			candidate = digit;
-			timeSelection.setSegmentValue(type, candidate);
-			segmentTypeBuffer[type] = candidate;
-			const fallbackNumeric = Number(candidate);
-			if (fallbackNumeric >= threshold) {
-				segmentTypeBuffer[type] = '';
-				return true;
-			}
-			return false;
+			const completes = Number(candidate) >= threshold;
+			timeSelection.setSegmentValue(type, candidate, { clamp: completes });
+			segmentTypeBuffer[type] = completes ? '' : candidate;
+			return completes;
 		}
 
 		timeSelection.setSegmentValue(type, candidate);
