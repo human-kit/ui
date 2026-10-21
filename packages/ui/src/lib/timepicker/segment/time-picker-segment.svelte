@@ -308,7 +308,8 @@
 				}
 				return;
 			}
-			timePicker.setSegmentValue(segment.type, currentValue.slice(0, -1));
+			// Erasing is on the way to typing: held to min/max once the segment is left.
+			timePicker.setSegmentValue(segment.type, currentValue.slice(0, -1), { clamp: false });
 			return;
 		}
 
