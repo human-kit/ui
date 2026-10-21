@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.0
+
+### Minor Changes
+
+- [#132](https://github.com/human-kit/ui/pull/132) [`b539fcd`](https://github.com/human-kit/ui/commit/b539fcd9363efd674832946dbdfe68ed33f41876) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - TimePicker: typed and stepped times are held inside `minValue`/`maxValue` as they change. A time past the max becomes the max and one before the min becomes the min, at once rather than being left invalid; a first digit waiting for its pair is held once it is completed or its segment is left.
+
 ## 1.3.0
 
 ### Minor Changes

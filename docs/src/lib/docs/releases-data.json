@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.0",
+		"date": "2026-10-21T11:51:31.123Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 132,
+						"prUrl": "https://github.com/human-kit/ui/pull/132",
+						"html": "<p>TimePicker: typed and stepped times are held inside <code>minValue</code>/<code>maxValue</code> as they change. A time past the max becomes the max and one before the min becomes the min, at once rather than being left invalid; a first digit waiting for its pair is held once it is completed or its segment is left.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.3.0",
-		"date": "2026-10-16T22:24:46.475Z",
+		"date": "2026-10-16T19:29:44-03:00",
 		"sections": [
 			{
 				"type": "Minor",
