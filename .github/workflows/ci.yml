@@ -45,7 +45,11 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    # Pinned: when `ubuntu-latest` moved to 26.04 (October 2026), the browser tests began
+    # to lose their iframe in the middle of a run ("Cannot connect to the iframe",
+    # "Failed to fetch dynamically imported module") or to hang, with the same code that
+    # passed on 24.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
