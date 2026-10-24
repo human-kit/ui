@@ -3,9 +3,13 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  # Also on main: a cache saved by a pull request is visible only to that pull
+  # request, and one saved on main is visible to all of them.
+  push:
+    branches: [main]
 
 concurrency:
-  group: ci-${{ github.head_ref }}
+  group: ci-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -62,12 +66,22 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The key is the installed Playwright version. `hashFiles` on the package in
+      # `node_modules` gave an empty hash (pnpm links it from outside the workspace),
+      # so the key never changed and the browsers were downloaded on every run.
+      - name: Read the Playwright version
+        id: playwright-version
+        # `ImageOS` is a variable of the runner, not of the `env` context, so it is read here.
+        run: |
+          echo "version=$(cd packages/ui && pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+          echo "image=$ImageOS" >> "$GITHUB_OUTPUT"
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('packages/ui/node_modules/playwright/package.json') }}
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.image }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
