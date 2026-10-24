@@ -53,7 +53,7 @@ jobs:
     # to lose their iframe in the middle of a run ("Cannot connect to the iframe",
     # "Failed to fetch dynamically imported module") or to hang, with the same code that
     # passed on 24.04.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
 
