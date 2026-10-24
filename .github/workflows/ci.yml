@@ -62,12 +62,19 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The key is the installed Playwright version. `hashFiles` on the package in
+      # `node_modules` gave an empty hash (pnpm links it from outside the workspace),
+      # so the key never changed and the browsers were downloaded on every run.
+      - name: Read the Playwright version
+        id: playwright-version
+        run: echo "version=$(cd packages/ui && pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('packages/ui/node_modules/playwright/package.json') }}
+          key: playwright-${{ runner.os }}-${{ env.ImageOS }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
