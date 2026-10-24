@@ -22,7 +22,7 @@
 		trackInteractionModality
 	} from '../../primitives/input-modality';
 	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 	import type { TableRootProps } from '../types.js';
 	import {
 		createTableContext,

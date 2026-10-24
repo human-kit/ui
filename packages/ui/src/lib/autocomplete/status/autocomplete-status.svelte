@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { useAutocompleteContext } from '../root/context';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 
 	/**
 	 * Autocomplete.Status - Visually-hidden live region that announces the number
@@ -14,9 +15,6 @@
 		formatMessage = (count: number) =>
 			count === 0 ? 'No results available' : `${count} result${count === 1 ? '' : 's'} available`
 	}: AutocompleteStatusProps = $props();
-
-	const visuallyHiddenStyle =
-		'position:fixed;top:0;left:0;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
 
 	const ctx = useAutocompleteContext();
 	const message = $derived(formatMessage(ctx.visibleCount));

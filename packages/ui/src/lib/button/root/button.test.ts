@@ -170,6 +170,16 @@ describe('Button.Root', () => {
 		expect(buttonElement.textContent).not.toContain(', pending');
 	});
 
+	it('keeps the live region fixed, so it never escapes a scroll container', () => {
+		// An absolute live region inside an unpositioned scroller made Chrome promote the sticky
+		// content around it to its own layer, which dropped subpixel anti-aliasing from its text.
+		render(ButtonTest, { pending: true });
+		const status = document.querySelector<HTMLElement>('[data-button-live-region="true"]');
+
+		expect(status).not.toBeNull();
+		expect(getComputedStyle(status as HTMLElement).position).toBe('fixed');
+	});
+
 	it('updates to pending dynamically and suppresses later activation', async () => {
 		render(ButtonTest, { type: 'submit' });
 		const button = document.querySelector<HTMLButtonElement>('[data-button-root="true"]');

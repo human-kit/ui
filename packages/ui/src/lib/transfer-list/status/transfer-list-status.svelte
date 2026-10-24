@@ -4,6 +4,7 @@
 	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import { useTransferListContext } from '../root/context';
 	import type { TransferListMoveDetails } from '../root/types';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 
 	/**
 	 * TransferList.Status - Visually-hidden live region that announces each move.
@@ -24,9 +25,6 @@
 	const localeStore = localeContext?.locale ?? emptyLocaleStore;
 
 	const ctx = useTransferListContext('TransferList.Status');
-
-	const visuallyHiddenStyle =
-		'position:fixed;top:0;left:0;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
 
 	const message = $derived.by(() => {
 		const move = ctx.lastMove;
