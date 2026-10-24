@@ -3,9 +3,13 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  # Also on main: a cache saved by a pull request is visible only to that pull
+  # request, and one saved on main is visible to all of them.
+  push:
+    branches: [main]
 
 concurrency:
-  group: ci-${{ github.head_ref }}
+  group: ci-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
