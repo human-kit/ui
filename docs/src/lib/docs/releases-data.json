@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.1",
+		"date": "2026-10-24T21:56:50.511Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 138,
+						"prUrl": "https://github.com/human-kit/ui/pull/138",
+						"html": "<p>Fix: the screen reader live regions of <code>Button</code>, <code>Dropzone</code> and <code>TimePicker</code> wheel columns now use <code>position: fixed</code>, not <code>position: absolute</code>. An absolute live region inside a scroll container that is not positioned is laid out against an ancestor outside the container. Chrome then puts the sticky content near it, such as a page header, in its own compositing layer, and the text of that content loses subpixel anti-aliasing. All the live regions of the library now use one shared style.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.0",
-		"date": "2026-10-21T11:51:31.123Z",
+		"date": "2026-10-21T08:54:16-03:00",
 		"sections": [
 			{
 				"type": "Minor",
