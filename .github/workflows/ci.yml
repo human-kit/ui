@@ -71,14 +71,17 @@ jobs:
       # so the key never changed and the browsers were downloaded on every run.
       - name: Read the Playwright version
         id: playwright-version
-        run: echo "version=$(cd packages/ui && pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        # `ImageOS` is a variable of the runner, not of the `env` context, so it is read here.
+        run: |
+          echo "version=$(cd packages/ui && pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+          echo "image=$ImageOS" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ env.ImageOS }}-${{ steps.playwright-version.outputs.version }}
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.image }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
