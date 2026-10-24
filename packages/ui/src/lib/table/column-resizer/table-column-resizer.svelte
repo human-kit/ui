@@ -10,7 +10,7 @@
 		useTableContext
 	} from '../root/context.svelte';
 	import type { TableColumnResizerProps } from '../types.js';
-	import { visuallyHiddenStyle } from '../utils/visually-hidden-style';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality

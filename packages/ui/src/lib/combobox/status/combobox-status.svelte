@@ -3,6 +3,7 @@
 	import { resolveLocalizedString } from '../../internal/localized-strings';
 	import { useLocaleContextOptional } from '../../locale-provider/context';
 	import { useComboBoxContext } from '../root/context';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 
 	/**
 	 * ComboBox.Status - Visually-hidden live region that announces the number of
@@ -24,9 +25,6 @@
 	const localeStore = localeContext?.locale ?? emptyLocaleStore;
 
 	const ctx = useComboBoxContext();
-
-	const visuallyHiddenStyle =
-		'position:fixed;top:0;left:0;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
 
 	const defaultMessage = $derived.by(() => {
 		const count = ctx.visibleCount;

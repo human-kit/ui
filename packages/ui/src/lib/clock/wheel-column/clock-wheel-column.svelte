@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { resolveLocalizedString } from '../../internal/localized-strings';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 	import { useClockContext, type ClockEditableSegmentType } from '../root/context';
 	import TimePickerWheelItem from '../wheel-item/clock-wheel-item.svelte';
 	import { useWheelScroll, type WheelScrollBehavior } from '../hooks/use-wheel-scroll.svelte';
@@ -506,18 +507,13 @@
 >
 	<div data-wheel-spacer="top" style={`height:${spacerHeight}px`}></div>
 	<!--
-		Visually-hidden live region using inline styles so the headless library
+		Visually-hidden live region using the shared inline style so the headless library
 		does not depend on an external `sr-only` utility class (e.g. Tailwind).
 		Kept in addition to aria-valuetext: valuetext changes are only announced
 		while the spinbutton has DOM focus, whereas this also covers pointer and
 		touch scrolling without focus.
 	-->
-	<span
-		role="status"
-		aria-live="polite"
-		style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0"
-		>{valueText}</span
-	>
+	<span role="status" aria-live="polite" style={visuallyHiddenStyle}>{valueText}</span>
 	{#each options as option, index (option.value)}
 		{#if children}
 			{@render children(option, selectedValue === option.value)}

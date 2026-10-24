@@ -8,7 +8,7 @@
 	import { getFocusableElements } from '../../primitives/focus-trap';
 	import { shouldShowFocusVisible } from '../../primitives/input-modality';
 	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture';
-	import { visuallyHiddenStyle } from '../../table/utils/visually-hidden-style';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
 	import { useToastProviderContext } from '../provider/context';
 	import type { ToastItem } from '../provider/toast-manager.svelte';
 	import type { ToastViewportProps } from '../types.js';

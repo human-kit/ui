@@ -2,6 +2,7 @@
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { visuallyHiddenStyle } from '../primitives/visually-hidden';
 	import type { ClassValue } from '../utils/cn';
 	import { composeEventHandlers } from '../utils/compose-event-handlers';
 
@@ -315,10 +316,6 @@
 	onchange={handleInputChange}
 />
 
-<span
-	role="status"
-	aria-live="polite"
-	aria-atomic="true"
-	style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+<span role="status" aria-live="polite" aria-atomic="true" style={visuallyHiddenStyle}
 	>{announcement}</span
 >
