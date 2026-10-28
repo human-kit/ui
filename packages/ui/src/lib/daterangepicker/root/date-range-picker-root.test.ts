@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import DateRangePickerAnchorTest from './date-range-picker-anchor-test.svelte';
 import { userEvent } from 'vitest/browser';
 import DateRangePickerTest from './date-range-picker-test.svelte';
 import DateRangePickerBindableTest from './date-range-picker-bindable-test.svelte';
@@ -478,22 +477,5 @@ describe('DateRangePicker.Root', () => {
 					?.getAttribute('data-invalid')
 			).toBeNull();
 		});
-	});
-});
-
-describe('DateRangePicker popover anchor', () => {
-	afterEach(() => {
-		document.querySelectorAll('[role="dialog"]').forEach((dialog) => dialog.remove());
-	});
-
-	// Anchored to the small trigger, the panel's edge ran a pixel under the field's bottom border.
-	it('opens against the whole field, not the trigger inside it', async () => {
-		const screen = render(DateRangePickerAnchorTest);
-		const field = screen.container.querySelector('.anchor-field')!;
-
-		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-		await expect
-			.poll(() => document.querySelector('[role="dialog"]')!.getBoundingClientRect().top)
-			.toBeCloseTo(field.getBoundingClientRect().bottom + 4, 0);
 	});
 });

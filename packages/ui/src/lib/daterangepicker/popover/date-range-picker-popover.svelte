@@ -82,7 +82,6 @@
 >
 	<Popover.Content
 		id={dialogId}
-		anchorRef={dateRangePicker.fieldRef}
 		class={className}
 		aria-label={resolvedAriaLabel}
 		onmousedown={composeEventHandlers(handlePointerDown, onMouseDownExternal ?? undefined)}

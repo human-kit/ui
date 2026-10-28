@@ -43,12 +43,6 @@ export type DateRangePickerContext = {
 	maxValue: DatePickerDateValue | undefined;
 	triggerRef: HTMLElement | null;
 	setTriggerRef: (element: HTMLElement | null) => void;
-	/**
-	 * What the popover is placed against: the root, which holds the whole field. The trigger is
-	 * only a part of it, and a popover anchored to a small button inside a field landed a pixel
-	 * under the field's own bottom edge, its border running beside the field's.
-	 */
-	fieldRef: HTMLElement | null;
 	setFocusVisible: (visible: boolean) => void;
 	syncFocusWithin: () => void;
 	setActiveSegment: (

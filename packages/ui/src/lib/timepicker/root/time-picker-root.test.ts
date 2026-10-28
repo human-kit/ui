@@ -1,6 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import TimePickerAnchorTest from './time-picker-anchor-test.svelte';
 import { userEvent } from 'vitest/browser';
 import TimePickerTest from './time-picker-test.svelte';
 import TimePickerBindableTest from './time-picker-bindable-test.svelte';
@@ -312,22 +311,5 @@ describe('TimePicker.Root', () => {
 			expect(amItem?.textContent?.trim()).toBe(expectedAm);
 			expect(pmItem?.textContent?.trim()).toBe(expectedPm);
 		});
-	});
-});
-
-describe('TimePicker popover anchor', () => {
-	afterEach(() => {
-		document.querySelectorAll('[role="dialog"]').forEach((dialog) => dialog.remove());
-	});
-
-	// Anchored to the small trigger, the panel's edge ran a pixel under the field's bottom border.
-	it('opens against the whole field, not the trigger inside it', async () => {
-		const screen = render(TimePickerAnchorTest);
-		const field = screen.container.querySelector('.anchor-field')!;
-
-		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
-		await expect
-			.poll(() => document.querySelector('[role="dialog"]')!.getBoundingClientRect().top)
-			.toBeCloseTo(field.getBoundingClientRect().bottom + 4, 0);
 	});
 });

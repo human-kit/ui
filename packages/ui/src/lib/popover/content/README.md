@@ -13,7 +13,6 @@ Description: Floating panel rendered in a portal. Supports context mode (`Popove
 | `placement`                    | `ExtendedPlacement`              | `'bottom'`  | Preferred floating placement.                                                  |
 | `shouldFlip`                   | `boolean`                        | `true`      | Enables automatic fallback placement when space is limited.                    |
 | `boundaryElement`              | `Element \| null`                | `null`      | Optional boundary element for positioning constraints.                         |
-| `anchorRef`                    | `HTMLElement \| null`            | `null`      | Element the panel is placed against, if not the trigger (a picker's field).    |
 | `children`                     | `Snippet`                        | `undefined` | Rendered popover panel content.                                                |
 | `class`                        | `string`                         | `''`        | CSS class names for the panel element.                                         |
 | `nonModal`                     | `boolean`                        | `false`     | Disables modal behaviors (focus trap, scroll lock, outside aria hiding).       |

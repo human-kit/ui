@@ -37,11 +37,6 @@
 		shouldFlip?: boolean;
 		/** The element that gives the limits of the position. */
 		boundaryElement?: Element | null;
-		/**
-		 * The element the panel is placed against, when it is not the trigger: a picker's whole field,
-		 * whose button is only a small part of it. The trigger still owns the focus and the open state.
-		 */
-		anchorRef?: HTMLElement | null;
 		/** The content of the popover. */
 		children?: Snippet;
 		/** The CSS class names of the popover container. */
@@ -75,7 +70,6 @@
 		placement = 'bottom',
 		shouldFlip = true,
 		boundaryElement = null,
-		anchorRef = null,
 		children,
 		class: className = '',
 		nonModal = false,
@@ -338,7 +332,7 @@
 			data-exiting={presence.isExiting || undefined}
 			data-placement={resolvedPlacement}
 			use:floating={{
-				anchor: anchorRef ?? triggerRef,
+				anchor: triggerRef,
 				offset,
 				placement,
 				shouldFlip,
