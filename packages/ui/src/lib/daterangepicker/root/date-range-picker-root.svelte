@@ -97,7 +97,6 @@
 	const instanceId = untrack(() => id) ?? generatedInstanceId;
 
 	let triggerRef: HTMLElement | null = $state(null);
-	let fieldRef: HTMLDivElement | null = $state(null);
 	let openInternal = $state((() => defaultOpen)());
 	let focusVisible = $state(false);
 	let focusWithin = $state(false);
@@ -665,9 +664,6 @@
 			return triggerRef;
 		},
 		setTriggerRef,
-		get fieldRef() {
-			return fieldRef;
-		},
 		setFocusVisible,
 		syncFocusWithin,
 		setActiveSegment,
@@ -702,7 +698,6 @@
 </script>
 
 <div
-	bind:this={fieldRef}
 	id={instanceId}
 	class={className}
 	role={ariaLabel ? 'group' : undefined}

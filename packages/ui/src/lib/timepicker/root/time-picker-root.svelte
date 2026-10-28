@@ -399,9 +399,6 @@
 			return activeSegment;
 		},
 		setTriggerRef,
-		get fieldRef() {
-			return rootRef;
-		},
 		setFocusVisible,
 		syncFocusWithin,
 		setActiveSegment,
