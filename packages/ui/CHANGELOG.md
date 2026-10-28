@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.2
+
+### Patch Changes
+
+- [#140](https://github.com/human-kit/ui/pull/140) [`91ac2b5`](https://github.com/human-kit/ui/commit/91ac2b519169ad256a2a1bb4109e3681ec35f7c9) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - DatePicker, DateRangePicker and TimePicker place their popover against the whole field (the root) instead of the small trigger inside it. Anchored to the button, the panel's edge landed a pixel under the field's bottom border and drew it twice while the panel faded in. `Popover.Content` takes an `anchorRef` for this: the element the panel is placed against, while the trigger keeps the focus and the open state.
+
 ## 1.4.1
 
 ### Patch Changes
