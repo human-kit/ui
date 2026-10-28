@@ -73,6 +73,7 @@
 >
 	<Popover.Content
 		id={dialogId}
+		anchorRef={timePicker.fieldRef}
 		class={className}
 		aria-label={ariaLabel}
 		onmousedown={composeEventHandlers(handlePointerDown, onMouseDownExternal ?? undefined)}

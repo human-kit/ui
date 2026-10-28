@@ -5,6 +5,7 @@ import PopoverContentTest from './popover-content-test.svelte';
 import PopoverContentControlledCloseTest from './popover-content-controlled-close-test.svelte';
 import PopoverContentNestedTest from './popover-content-nested-test.svelte';
 import PopoverContentStandaloneTest from './popover-content-standalone-test.svelte';
+import PopoverContentAnchorTest from './popover-content-anchor-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Popover.Content', () => {
@@ -518,6 +519,23 @@ describe('Popover.Content', () => {
 					{ timeout: 2000 }
 				)
 				.toBeTruthy();
+		});
+	});
+
+	describe('Anchor', () => {
+		it('is placed against the anchor, not the trigger inside it', async () => {
+			render(PopoverContentAnchorTest);
+
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			const anchor = document.querySelector('[data-testid="anchor"]')!.getBoundingClientRect();
+
+			await expect
+				.poll(() => document.querySelector('[role="dialog"]')!.getBoundingClientRect().top)
+				.toBeCloseTo(anchor.bottom + 4, 0);
+			expect(document.querySelector('[role="dialog"]')!.getBoundingClientRect().right).toBeCloseTo(
+				anchor.right,
+				0
+			);
 		});
 	});
 });
