@@ -1,5 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import DatePickerAnchorTest from './date-picker-anchor-test.svelte';
 import { userEvent } from 'vitest/browser';
 import DatePickerTest from './date-picker-test.svelte';
 import DatePickerBindableTest from './date-picker-bindable-test.svelte';
@@ -403,5 +404,22 @@ describe('DatePicker.Root', () => {
 		await userEvent.keyboard('{ArrowUp}');
 		await trigger.click();
 		expectNoFalseFocusAttributes(document);
+	});
+});
+
+describe('DatePicker popover anchor', () => {
+	afterEach(() => {
+		document.querySelectorAll('[role="dialog"]').forEach((dialog) => dialog.remove());
+	});
+
+	// Anchored to the small trigger, the panel's edge ran a pixel under the field's bottom border.
+	it('opens against the whole field, not the trigger inside it', async () => {
+		const screen = render(DatePickerAnchorTest);
+		const field = screen.container.querySelector('.anchor-field')!;
+
+		await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+		await expect
+			.poll(() => document.querySelector('[role="dialog"]')!.getBoundingClientRect().top)
+			.toBeCloseTo(field.getBoundingClientRect().bottom + 4, 0);
 	});
 });
