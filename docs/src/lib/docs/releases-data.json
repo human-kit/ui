@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.3",
+		"date": "2026-10-28T23:13:28.399Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 142,
+						"prUrl": "https://github.com/human-kit/ui/pull/142",
+						"html": "<p>Reverts 1.4.2: DatePicker, DateRangePicker and TimePicker place their popover against the trigger again, as in 1.4.1, and <code>Popover.Content</code> no longer takes <code>anchorRef</code>. The doubled border it was meant to fix came from elsewhere, and the new anchor moved the panel a few pixels.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.2",
-		"date": "2026-10-28T21:22:51.946Z",
+		"date": "2026-10-28T18:26:26-03:00",
 		"sections": [
 			{
 				"type": "Patch",

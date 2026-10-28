@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.3
+
+### Patch Changes
+
+- [#142](https://github.com/human-kit/ui/pull/142) [`6fd722e`](https://github.com/human-kit/ui/commit/6fd722ef22f32089ffe60575aadda44fefc1ce38) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Reverts 1.4.2: DatePicker, DateRangePicker and TimePicker place their popover against the trigger again, as in 1.4.1, and `Popover.Content` no longer takes `anchorRef`. The doubled border it was meant to fix came from elsewhere, and the new anchor moved the panel a few pixels.
+
 ## 1.4.2
 
 ### Patch Changes
