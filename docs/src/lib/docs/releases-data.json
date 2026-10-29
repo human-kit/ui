@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.4",
+		"date": "2026-10-29T21:40:07.300Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 144,
+						"prUrl": "https://github.com/human-kit/ui/pull/144",
+						"html": "<p>Add npm keywords for the search of the package: <code>humankit</code>, <code>headless-ui</code>, <code>svelte-components</code>, <code>svelte-ui</code>, <code>sveltekit</code>, <code>aria</code> and <code>wai-aria</code>.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.3",
-		"date": "2026-10-28T23:13:28.399Z",
+		"date": "2026-10-28T20:16:34-03:00",
 		"sections": [
 			{
 				"type": "Patch",

@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.4
+
+### Patch Changes
+
+- [#144](https://github.com/human-kit/ui/pull/144) [`9159d11`](https://github.com/human-kit/ui/commit/9159d11c757ffa0ec6fd0c2cd4c9a90dbcb13252) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add npm keywords for the search of the package: `humankit`, `headless-ui`, `svelte-components`, `svelte-ui`, `sveltekit`, `aria` and `wai-aria`.
+
 ## 1.4.3
 
 ### Patch Changes
