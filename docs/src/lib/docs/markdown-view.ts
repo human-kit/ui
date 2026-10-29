@@ -40,6 +40,14 @@ export function markdownSlugs(): string[] {
 	return Object.keys(pages).map((path) => path.slice('/src/content/'.length, -'/index.md'.length));
 }
 
+/** The frontmatter title and description of a page, or null for a slug with no markdown. */
+export function pageMeta(slug: string): { title: string; description: string | null } | null {
+	const source = pages[`/src/content/${slug}/index.md`];
+	if (source === undefined) return null;
+	const { title, description } = parsePageSource(source);
+	return { title, description };
+}
+
 /** `./demos/hero.svelte?highlight` from page `button` -> `/src/content/button/demos/hero.svelte`. */
 function resolveImport(slug: string, specifier: string): string {
 	const clean = specifier.split('?')[0];
