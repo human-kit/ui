@@ -1,0 +1,39 @@
+name: IndexNow
+
+# Asks the IndexNow search engines to crawl the docs again after a change to
+# the site. Vercel deploys `main` on its own, thus the job first waits until the
+# new deployment serves the key file, and then sends the URLs of the sitemap.
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**']
+  workflow_dispatch:
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  indexnow:
+    name: IndexNow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The deployment of the docs takes some minutes. The script fails while the
+      # key file is not live, so it tries again for up to 15 minutes.
+      - name: Submit the sitemap
+        run: |
+          for attempt in $(seq 1 15); do
+            if node scripts/indexnow.mjs; then exit 0; fi
+            sleep 60
+          done
+          exit 1

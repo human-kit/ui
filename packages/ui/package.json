@@ -25,7 +25,14 @@
 		"headless",
 		"design-system",
 		"tailwind",
-		"human-kit"
+		"human-kit",
+		"humankit",
+		"headless-ui",
+		"svelte-components",
+		"svelte-ui",
+		"sveltekit",
+		"aria",
+		"wai-aria"
 	],
 	"type": "module",
 	"engines": {
