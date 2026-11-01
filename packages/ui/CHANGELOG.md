@@ -1,5 +1,15 @@
 # @human-kit/ui
 
+## 1.4.4
+
+### Patch Changes
+
+- [#144](https://github.com/human-kit/ui/pull/144) [`9159d11`](https://github.com/human-kit/ui/commit/9159d11c757ffa0ec6fd0c2cd4c9a90dbcb13252) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add npm keywords for the search of the package: `humankit`, `headless-ui`, `svelte-components`, `svelte-ui`, `sveltekit`, `aria` and `wai-aria`.
+
+- [#145](https://github.com/human-kit/ui/pull/145) [`b1d3c66`](https://github.com/human-kit/ui/commit/b1d3c668eed9d38efee8663427bb192122ecdbed) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - `Table`: the server renders the column widths that the browser uses after hydration. A `%` or `fr` column, and a column with no width in a table that has resizers, now gets its `minWidth` in px in the server markup. Before, a `%` column took all the remaining width and the last flexible column had no width, and both changed size on hydration. In the browser, a `%` column that the table resolved now gets that width in px, so each column keeps its `minWidth`. Before, the browser divided the remaining width between the `%` columns by their ratio and ignored their `minWidth`.
+
+- [#145](https://github.com/human-kit/ui/pull/145) [`b1d3c66`](https://github.com/human-kit/ui/commit/b1d3c668eed9d38efee8663427bb192122ecdbed) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Keep the text that a person types into a server-rendered field before hydration. `Input`, `TextArea`, `SearchField.Input`, `NumberField.Input` and `Autocomplete.Input` now keep the value from the element, as a native `bind:value` does, and send it to the owner of the value as an `input` event. Before, hydration wrote the value from the server over the text, and the state did not get it.
+
 ## 1.4.3
 
 ### Patch Changes

@@ -1,7 +1,33 @@
 [
 	{
+		"version": "1.4.4",
+		"date": "2026-11-01T22:41:38.380Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 144,
+						"prUrl": "https://github.com/human-kit/ui/pull/144",
+						"html": "<p>Add npm keywords for the search of the package: <code>humankit</code>, <code>headless-ui</code>, <code>svelte-components</code>, <code>svelte-ui</code>, <code>sveltekit</code>, <code>aria</code> and <code>wai-aria</code>.</p>"
+					},
+					{
+						"pr": 145,
+						"prUrl": "https://github.com/human-kit/ui/pull/145",
+						"html": "<p><code>Table</code>: the server renders the column widths that the browser uses after hydration. A <code>%</code> or <code>fr</code> column, and a column with no width in a table that has resizers, now gets its <code>minWidth</code> in px in the server markup. Before, a <code>%</code> column took all the remaining width and the last flexible column had no width, and both changed size on hydration. In the browser, a <code>%</code> column that the table resolved now gets that width in px, so each column keeps its <code>minWidth</code>. Before, the browser divided the remaining width between the <code>%</code> columns by their ratio and ignored their <code>minWidth</code>.</p>"
+					},
+					{
+						"pr": 145,
+						"prUrl": "https://github.com/human-kit/ui/pull/145",
+						"html": "<p>Keep the text that a person types into a server-rendered field before hydration. <code>Input</code>, <code>TextArea</code>, <code>SearchField.Input</code>, <code>NumberField.Input</code> and <code>Autocomplete.Input</code> now keep the value from the element, as a native <code>bind:value</code> does, and send it to the owner of the value as an <code>input</code> event. Before, hydration wrote the value from the server over the text, and the state did not get it.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.3",
-		"date": "2026-10-28T23:13:28.399Z",
+		"date": "2026-10-28T20:16:34-03:00",
 		"sections": [
 			{
 				"type": "Patch",
