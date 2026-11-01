@@ -1172,7 +1172,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return `${clampColumnWidth(columnId, parsed.value)}px`;
 		}
 		if (parsed.unit === '%') {
-			return `${parsed.value}%`;
+			// Once resolved, the px width: it already holds each column at its `minWidth`. A
+			// bare `%` is shared out again by the browser, which ignores those floors and splits
+			// what is left between the `%` columns by their ratio.
+			const resolvedPercent = isColumnHidden(columnId)
+				? undefined
+				: getResolvedVisibleColumnWidths().get(columnId);
+			return resolvedPercent === undefined ? `${parsed.value}%` : `${resolvedPercent}px`;
 		}
 
 		let fixedPxTotal = 0;

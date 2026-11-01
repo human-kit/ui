@@ -38,7 +38,14 @@ describe('Table.Root column widths across hydration', () => {
 
 		const served = columnWidths(target);
 		// Wider than its box: the `%` and the flexible column sit at their minWidth.
-		expect(served).toEqual({ name: 160, email: 180, role: 180, created: 200, actions: 32 });
+		expect(served).toEqual({
+			name: 160,
+			email: 180,
+			team: 120,
+			role: 180,
+			created: 200,
+			actions: 32
+		});
 
 		app = hydrate(TableWidths, { target });
 		flushSync();

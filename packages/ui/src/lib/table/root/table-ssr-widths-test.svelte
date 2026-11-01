@@ -10,11 +10,12 @@
 		resizable?: boolean;
 	};
 
-	// A list wider than its box: px columns, one that takes a share in `%`, and the last one
-	// flexible, with no width of its own.
+	// A list wider than its box: px columns, two that take a share in `%` with different floors,
+	// and the last one flexible, with no width of its own.
 	const columns: Column[] = [
 		{ id: 'name', label: 'Name', defaultWidth: 160, minWidth: 120, resizable: true },
 		{ id: 'email', label: 'Email', defaultWidth: '30%', minWidth: 180, resizable: true },
+		{ id: 'team', label: 'Team', defaultWidth: '30%', minWidth: 120, resizable: true },
 		{ id: 'role', label: 'Role', defaultWidth: 180, minWidth: 140, resizable: true },
 		{ id: 'created', label: 'Created', minWidth: 200 },
 		{ id: 'actions', label: 'Actions', width: 32 }
