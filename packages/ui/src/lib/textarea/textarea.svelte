@@ -2,6 +2,7 @@
 	import { tick, untrack } from 'svelte';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { TypedBeforeHydration } from '../primitives/typed-before-hydration.svelte';
 	import { isAriaInvalidValue } from '../utils/aria-invalid';
 	import type { ClassValue } from '../utils/cn';
 	import { composeEventHandlers } from '../utils/compose-event-handlers';
@@ -78,6 +79,7 @@
 	const resolvedId = untrack(() => id) ?? generatedId;
 
 	let textAreaRef: HTMLTextAreaElement | null = $state(null);
+	const typed = new TypedBeforeHydration(() => textAreaRef);
 	let hovered = $state(false);
 	let focused = $state(false);
 	let focusVisible = $state(false);
@@ -231,7 +233,7 @@
 	{...restProps}
 	bind:this={textAreaRef}
 	id={resolvedId}
-	{value}
+	bind:value={() => typed.read(value), typed.adopt}
 	{disabled}
 	{readonly}
 	{required}

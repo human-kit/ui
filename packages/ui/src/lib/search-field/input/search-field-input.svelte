@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
+	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte';
 	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
 	import {
 		shouldShowFocusVisible,
@@ -51,6 +52,7 @@
 
 	const ctx = useSearchFieldContext('SearchField.Input');
 	let inputRef: HTMLInputElement | null = $state(null);
+	const typed = new TypedBeforeHydration(() => inputRef);
 	let hovered = $state(false);
 
 	$effect(() => {
@@ -129,7 +131,7 @@
 	{type}
 	{enterkeyhint}
 	name={ctx.name}
-	value={ctx.value}
+	bind:value={() => typed.read(ctx.value), typed.adopt}
 	defaultValue={ctx.defaultValue}
 	disabled={ctx.isDisabled}
 	readonly={ctx.isReadOnly}
