@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { playwright } from '@vitest/browser-playwright';
 import { resolve } from 'path';
+import { renderOnServer } from './vitest.commands';
 
 export default defineConfig({
 	plugins: [svelte({ hot: false })],
@@ -30,7 +31,8 @@ export default defineConfig({
 			provider: playwright(),
 			instances: [{ browser: 'chromium' }],
 			headless: true,
-			screenshotFailures: false
+			screenshotFailures: false,
+			commands: { renderOnServer }
 		}
 	}
 });

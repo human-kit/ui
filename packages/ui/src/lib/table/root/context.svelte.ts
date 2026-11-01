@@ -795,10 +795,22 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return defaultWidth;
 		}
 
-		return resizerLayoutReady && columnsWithResizers.size > 0 ? ('1fr' as const) : undefined;
+		// The server resolves an implicit column the way the browser will (see
+		// `getMeasuredTableWidth`), so it reads the resizers registered so far as ready.
+		return (resizerLayoutReady || !IS_BROWSER) && columnsWithResizers.size > 0
+			? ('1fr' as const)
+			: undefined;
 	}
 
 	function getMeasuredTableWidth() {
+		// The server has no box to measure. It resolves `%`/`fr` columns as if the table had
+		// no room left for them, which puts each one at its `minWidth`: that is where the
+		// browser settles them for a table wider than its box, and it does not depend on the
+		// columns that have not registered yet when an early header cell serializes. The table
+		// is then exactly as wide as `getTableSsrMinWidth` reserves, so hydration only grows a
+		// table that fits its box with room to spare.
+		if (!IS_BROWSER) return 0;
+
 		if (hasMeasuredTableWidthCache) {
 			return measuredTableWidthCache;
 		}
@@ -1140,6 +1152,15 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	}
 
 	function getColumnWidthStyle(columnId: string) {
+		// On the server every visible column already has its px width (see
+		// `getMeasuredTableWidth`). A `%` or a `calc()` would resolve against a table whose
+		// width the browser decides, and a column without one would collapse to nothing under
+		// the fixed layout; both moved on hydration.
+		if (!IS_BROWSER && !isColumnHidden(columnId)) {
+			const serverWidth = getResolvedVisibleColumnWidths().get(columnId);
+			if (serverWidth !== undefined) return `${serverWidth}px`;
+		}
+
 		const resolvedWidth = getColumnWidth(columnId);
 		if (resolvedWidth !== undefined) {
 			return `${resolvedWidth}px`;
@@ -1151,7 +1172,13 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			return `${clampColumnWidth(columnId, parsed.value)}px`;
 		}
 		if (parsed.unit === '%') {
-			return `${parsed.value}%`;
+			// Once resolved, the px width: it already holds each column at its `minWidth`. A
+			// bare `%` is shared out again by the browser, which ignores those floors and splits
+			// what is left between the `%` columns by their ratio.
+			const resolvedPercent = isColumnHidden(columnId)
+				? undefined
+				: getResolvedVisibleColumnWidths().get(columnId);
+			return resolvedPercent === undefined ? `${parsed.value}%` : `${resolvedPercent}px`;
 		}
 
 		let fixedPxTotal = 0;

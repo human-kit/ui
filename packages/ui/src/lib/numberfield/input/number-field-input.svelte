@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
+	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
@@ -63,6 +64,7 @@
 
 	const numberField = useNumberFieldContext();
 	let inputRef: HTMLInputElement | null = $state(null);
+	const typed = new TypedBeforeHydration(() => inputRef);
 	let hovered = $state(false);
 
 	$effect(() => {
@@ -192,7 +194,7 @@
 	role="spinbutton"
 	{inputmode}
 	{autocomplete}
-	value={numberField.inputValue}
+	bind:value={() => typed.read(numberField.inputValue), typed.adopt}
 	disabled={numberField.isDisabled}
 	readonly={numberField.isReadOnly}
 	required={numberField.isRequired}

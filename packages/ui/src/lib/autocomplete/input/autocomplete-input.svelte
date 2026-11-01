@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
+	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte';
 	import { untrack } from 'svelte';
 	import { useAutocompleteContext } from '../root/context';
 	import {
@@ -45,6 +46,7 @@
 	const resolvedId = untrack(() => id) ?? generatedId;
 
 	let inputRef = $state<HTMLInputElement | null>(null);
+	const typed = new TypedBeforeHydration(() => inputRef);
 	const ctx = useAutocompleteContext();
 
 	let isFocused = $state(false);
@@ -105,7 +107,7 @@
 		? `autocomplete-item-${ctx.instanceId}-${ctx.focusedItemId}`
 		: undefined}
 	autocomplete="off"
-	value={ctx.inputValue}
+	bind:value={() => typed.read(ctx.inputValue), typed.adopt}
 	disabled={ctx.isDisabled}
 	readonly={ctx.isReadOnly}
 	aria-disabled={ctx.isDisabled || undefined}

@@ -2,6 +2,7 @@
 	import { untrack } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { TypedBeforeHydration } from '../primitives/typed-before-hydration.svelte';
 	import { isAriaInvalidValue } from '../utils/aria-invalid';
 	import type { ClassValue } from '../utils/cn';
 	import { composeEventHandlers } from '../utils/compose-event-handlers';
@@ -52,6 +53,7 @@
 	const resolvedId = untrack(() => id) ?? generatedId;
 
 	let inputRef: HTMLInputElement | null = $state(null);
+	const typed = new TypedBeforeHydration(() => inputRef);
 	let hovered = $state(false);
 	let focused = $state(false);
 	let focusVisible = $state(false);
@@ -98,6 +100,16 @@
 		focusVisible = false;
 	}
 
+	// The binding below compares a number input's value as a number (`bind:value` does), so it
+	// is handed one; the value itself stays the string the input writes.
+	function boundValue() {
+		const shown = typed.read(value);
+		if (type !== 'number' && type !== 'range') return shown;
+		if (shown === '' || shown === null || shown === undefined) return null;
+		const numeric = Number(shown);
+		return Number.isNaN(numeric) ? shown : numeric;
+	}
+
 	function handleInput(event: Event) {
 		value = (event.currentTarget as HTMLInputElement).value;
 	}
@@ -136,7 +148,7 @@
 	bind:this={inputRef}
 	id={resolvedId}
 	{type}
-	{value}
+	bind:value={boundValue, typed.adopt}
 	{disabled}
 	{readonly}
 	{required}

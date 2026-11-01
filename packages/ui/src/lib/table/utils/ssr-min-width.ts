@@ -48,10 +48,9 @@ function columnFloorWidth(column: TableColumnWidthSpec, defaultMinWidth: number)
  *
  * Pass the result to `Table.Root`'s `ssrMinTableWidth`. A table's columns only
  * register after its `<table>` serializes, so on the server it can't derive its
- * own minimum width: it falls back to a content-driven auto layout that
- * collapses flexible columns until hydration measures the real widths. Reserving
- * this width up-front commits SSR to the final layout and avoids that jump under
- * overflow.
+ * own minimum width. Its header cells do carry these same floors as px widths,
+ * which is where the browser settles a table wider than its box; reserving their
+ * sum here makes the table that wide too, so hydration doesn't move a column.
  */
 export function getTableSsrMinWidth(
 	columns: Iterable<TableColumnWidthSpec>,
