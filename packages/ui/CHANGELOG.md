@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.5
+
+### Patch Changes
+
+- [#147](https://github.com/human-kit/ui/pull/147) [`6c7036a`](https://github.com/human-kit/ui/commit/6c7036a2552cb5124279809c936560e6d6a6e1c8) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix an overlay that closed, showed again for a moment, and closed again. Dialog, Drawer, Popover, Menu, Select, Combobox, Tooltip and Toast end their exit animation on its end event. The end event counted only when the time from the start of the tracking was the full duration, and that time starts a frame after the animation. When that frame was late, the end event did not count and the exit ended on the fallback timer, 50ms or more after the animation. An exit animation without a fill mode, such as `animate-out` of tw-animate-css, then showed the panel at full opacity until it left the DOM. Now the end event counts when no other animation or transition on the element is in progress.
+
 ## 1.4.4
 
 ### Patch Changes
