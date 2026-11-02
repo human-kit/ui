@@ -41,6 +41,10 @@
 	let currentValue = $state<TabsValue | null | undefined>((() => value)());
 	let currentDisabledKeys = $state<TabsValue[]>((() => [...disabledKeys])());
 	let changeLog = $state<Array<TabsValue | null>>([]);
+	// The whole strip going away, as a page does when the app navigates elsewhere.
+	let shown = $state(true);
+	// One tab going away while the strip stays, as a tab whose content stops existing.
+	let securityShown = $state(true);
 
 	function handleChange(nextValue: TabsValue | null) {
 		currentValue = nextValue;
@@ -60,7 +64,9 @@
 		<Tabs.Tab value="billing" disabled={billingDisabled} data-testid="tab-billing">
 			Billing
 		</Tabs.Tab>
-		<Tabs.Tab value="security" data-testid="tab-security">Security</Tabs.Tab>
+		{#if securityShown}
+			<Tabs.Tab value="security" data-testid="tab-security">Security</Tabs.Tab>
+		{/if}
 		<Tabs.Indicator data-testid="tabs-indicator" />
 	</Tabs.List>
 
@@ -71,7 +77,9 @@
 	</Tabs.Panel>
 {/snippet}
 
-{#if controlled}
+{#if !shown}
+	<!-- Nothing: the tabs were taken off the page. -->
+{:else if controlled}
 	<Tabs.Root
 		bind:value={currentValue}
 		{controlledValue}
@@ -106,6 +114,10 @@
 	>
 		Set security
 	</button>
+	<button type="button" data-testid="hide-security" onclick={() => (securityShown = false)}>
+		Hide security
+	</button>
+	<button type="button" data-testid="hide-tabs" onclick={() => (shown = false)}> Hide tabs </button>
 	<button type="button" data-testid="set-value-null" onclick={() => (currentValue = null)}>
 		Set null
 	</button>

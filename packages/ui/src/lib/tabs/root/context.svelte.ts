@@ -284,6 +284,10 @@ export function createTabsContext(options: CreateTabsContextOptions): TabsContex
 		if (valuesMatch(focusedValue, value)) {
 			focusedValue = null;
 		}
+		// The whole strip leaving the page tears its tabs down one by one. Handing the selection
+		// to the next tab each time is a choice nobody made, and a page that writes the bound
+		// value into its URL navigated back to itself when it was left.
+		if (listElement !== null && !listElement.isConnected) return;
 		if (wasSelected && !isControlled) {
 			const candidate = tabOrder[index];
 			publishSelectedValue(
