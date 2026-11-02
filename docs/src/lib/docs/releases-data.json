@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.6",
+		"date": "2026-11-02T16:24:57.368Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 149,
+						"prUrl": "https://github.com/human-kit/ui/pull/149",
+						"html": "<p>Tabs no longer report a change of selection while the whole strip is being taken off the page. Each tab torn down handed the selection to the next one, the last one to <code>null</code>, so a page that writes the bound tab into its URL navigated back to itself when it was left. A single tab removed while the strip stays still hands the selection on.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.5",
-		"date": "2026-11-02T15:23:38.152Z",
+		"date": "2026-11-02T12:28:10-03:00",
 		"sections": [
 			{
 				"type": "Patch",
