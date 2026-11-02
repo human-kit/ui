@@ -61,6 +61,29 @@ describe('Tabs', () => {
 		expect(document.querySelector('[role="tabpanel"][data-selected]')).toBeNull();
 	});
 
+	it('reports no change of selection when the whole strip is taken off the page', async () => {
+		// A page that writes the bound tab into its URL navigated back to itself when it was
+		// left: each tab torn down handed the selection to the next one, the last one to null.
+		const screen = render(TabsTest, { controlled: true, value: 'billing', showControls: true });
+		await expect.poll(() => selectedTabValue()).toBe('billing');
+
+		await userEvent.click(screen.getByTestId('hide-tabs'));
+
+		await expect.poll(() => document.querySelector('[role="tablist"]')).toBeNull();
+		expect(document.querySelector('[data-testid="change-log"]')?.textContent).toBe('[]');
+		expect(document.querySelector('[data-testid="selected-value"]')?.textContent).toBe('billing');
+	});
+
+	it('hands the selection on when only the selected tab is taken away', async () => {
+		const screen = render(TabsTest, { controlled: true, value: 'security', showControls: true });
+		await expect.poll(() => selectedTabValue()).toBe('security');
+
+		await userEvent.click(screen.getByTestId('hide-security'));
+
+		await expect.poll(() => selectedTabValue()).toBe('overview');
+		expect(document.querySelector('[data-testid="change-log"]')?.textContent).toBe('["overview"]');
+	});
+
 	it('syncs bind:value after initial auto-selection without firing onChange', async () => {
 		render(TabsTest, { controlled: true });
 
