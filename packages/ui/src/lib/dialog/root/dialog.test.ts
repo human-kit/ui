@@ -4,6 +4,7 @@ import { userEvent } from 'vitest/browser';
 import DialogTest from './dialog-test.svelte';
 import DialogBindTest from './dialog-bind-test.svelte';
 import DialogExitAnimationTest from './dialog-exit-animation-test.svelte';
+import DialogExitKeyframesTest from './dialog-exit-keyframes-test.svelte';
 import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
 
 describe('Dialog', () => {
@@ -175,6 +176,45 @@ describe('Dialog', () => {
 				.poll(() => document.activeElement?.getAttribute('data-dialog-trigger'))
 				.toBe('true');
 			expectNoFalseFocusAttributes(document);
+		});
+	});
+
+	describe('Exit animation', () => {
+		// The exit keyframes have no fill mode: from their end until the panel leaves the DOM, it
+		// paints whole again. When the frame that starts to track the exit ran late, the panel left on
+		// the fallback timer, 50ms or more after the end event, and showed as a dialog that closed,
+		// came back and closed again. A busy page makes that frame late now and then; here every
+		// frame callback runs 30ms late, so the case comes every time.
+		it('removes the panel on the end event of its exit animation, when the frames run late', async () => {
+			const screen = render(DialogExitKeyframesTest);
+			await screen.getByRole('button', { name: 'Open Dialog' }).click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			const panel = document.querySelector<HTMLElement>('[role="dialog"]');
+			if (!panel) throw new Error('The dialog did not open');
+
+			const endedAt = new Promise<number>((resolve) => {
+				panel.addEventListener('animationend', () => resolve(performance.now()), { once: true });
+			});
+			const removedAt = new Promise<number>((resolve) => {
+				const observer = new MutationObserver(() => {
+					if (panel.isConnected) return;
+					observer.disconnect();
+					resolve(performance.now());
+				});
+				observer.observe(document.body, { childList: true, subtree: true });
+			});
+
+			const requestFrame = window.requestAnimationFrame;
+			window.requestAnimationFrame = (callback) =>
+				window.setTimeout(() => requestFrame(callback), 30);
+			try {
+				await userEvent.keyboard('{Escape}');
+				const [ended, removed] = await Promise.all([endedAt, removedAt]);
+
+				expect(removed - ended).toBeLessThan(20);
+			} finally {
+				window.requestAnimationFrame = requestFrame;
+			}
 		});
 	});
 
