@@ -42,6 +42,23 @@ export function getMotionTime(element: HTMLElement): number {
 	return Math.max(transitionTime, animationTime);
 }
 
+/**
+ * Whether the element still has a transition or an animation in progress, at one of its end events.
+ *
+ * It asks the element, not the clock. The clock starts in a frame callback, and the animation
+ * started at the time of that frame, before the callback: when the frame ran late, the time measured
+ * at the end event came out short of the duration, and the last end event was ignored. The motion
+ * then finished on the fallback timer, 50ms late — long enough to show an exit animation without a
+ * fill mode at full opacity again: an overlay that closes, opens and closes. The clock remains only
+ * where the browser cannot list the animations.
+ */
+function isStillMoving(element: HTMLElement, startTime: number, total: number): boolean {
+	if (typeof element.getAnimations !== 'function') {
+		return performance.now() - startTime < total - 5;
+	}
+	return element.getAnimations().some((animation) => animation.playState === 'running');
+}
+
 export type MotionTracker = {
 	/** Tear down all listeners/timers without invoking the completion callback. */
 	cancel: () => void;
@@ -84,10 +101,10 @@ export function trackMotionEnd(element: HTMLElement, onComplete: () => void): Mo
 			if (event.target !== element) return;
 			// A multi-property transition (e.g. `opacity 150ms, transform 300ms`)
 			// fires one end event per property; finishing on the first one cut the
-			// motion short (overlays unmounted mid-exit). Only finish once the
-			// longest tracked duration has actually elapsed — the timeout below
-			// still covers the case where the final event never fires.
-			if (performance.now() - startTime < total - 5) return;
+			// motion short (overlays unmounted mid-exit). So an end event only
+			// finishes once nothing else on the element still moves — the timeout
+			// below still covers the case where the final event never fires.
+			if (isStillMoving(element, startTime, total)) return;
 			finish();
 		};
 
