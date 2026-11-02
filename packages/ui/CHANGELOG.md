@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.6
+
+### Patch Changes
+
+- [#149](https://github.com/human-kit/ui/pull/149) [`61b358c`](https://github.com/human-kit/ui/commit/61b358cad41444ae983d2a0eff783bf1b0c73356) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Tabs no longer report a change of selection while the whole strip is being taken off the page. Each tab torn down handed the selection to the next one, the last one to `null`, so a page that writes the bound tab into its URL navigated back to itself when it was left. A single tab removed while the strip stays still hands the selection on.
+
 ## 1.4.5
 
 ### Patch Changes
