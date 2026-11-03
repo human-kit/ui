@@ -246,24 +246,24 @@
 			scrollTop = scrollContainer.scrollTop;
 		};
 
+		// Scrolls and resizes flush at once so the window of rows moves in the same frame.
 		const updateMetrics = () => {
 			flushSync(setMetrics);
 		};
 
-		const handleScroll = () => {
-			flushSync(setMetrics);
-		};
-
-		updateMetrics();
+		// The first measure is a plain write: `flushSync` is forbidden inside an effect, and
+		// outside async mode it doesn't throw — it flushes the batch this effect runs in, and
+		// the effects after it in the same pass run without one (`schedule` of null).
+		setMetrics();
 
 		const resizeObserver =
 			typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateMetrics) : null;
 
-		scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+		scrollContainer.addEventListener('scroll', updateMetrics, { passive: true });
 		resizeObserver?.observe(scrollContainer);
 
 		return () => {
-			scrollContainer.removeEventListener('scroll', handleScroll);
+			scrollContainer.removeEventListener('scroll', updateMetrics);
 			resizeObserver?.disconnect();
 		};
 	});
