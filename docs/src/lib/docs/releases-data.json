@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.7",
+		"date": "2026-11-03T12:22:37.176Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 151,
+						"prUrl": "https://github.com/human-kit/ui/pull/151",
+						"html": "<p>fix(table): the body no longer calls <code>flushSync</code> from inside its measuring effect. Svelte forbids it, and outside async mode it flushed the batch the effect ran in, so the effects after it in the same pass ran without one and a self-invalidating one crashed with &quot;Cannot read properties of null (reading 'schedule')&quot;.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.6",
-		"date": "2026-11-02T16:24:57.368Z",
+		"date": "2026-11-02T13:46:15-03:00",
 		"sections": [
 			{
 				"type": "Patch",
