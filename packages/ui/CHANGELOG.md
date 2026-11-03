@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.4.8
+
+### Patch Changes
+
+- [#153](https://github.com/human-kit/ui/pull/153) [`ea731b0`](https://github.com/human-kit/ui/commit/ea731b0c828448bf4f3cf8c66979c2390dc6e9ab) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - fix(menu): a context menu leaves from the point it opened at. Closing dropped the pointer's point at once, so for the frames of its exit animation the menu was placed against its whole surface and flashed somewhere else.
+
 ## 1.4.7
 
 ### Patch Changes
