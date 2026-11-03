@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.8",
+		"date": "2026-11-03T15:04:31.280Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 153,
+						"prUrl": "https://github.com/human-kit/ui/pull/153",
+						"html": "<p>fix(menu): a context menu leaves from the point it opened at. Closing dropped the pointer's point at once, so for the frames of its exit animation the menu was placed against its whole surface and flashed somewhere else.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.7",
-		"date": "2026-11-03T12:22:37.176Z",
+		"date": "2026-11-03T09:26:42-03:00",
 		"sections": [
 			{
 				"type": "Patch",
