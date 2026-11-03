@@ -67,7 +67,14 @@
 	// (`bottom-start`) already matches how a native context menu unfolds down and to the
 	// right, and `flip`/`shift` handle the viewport edges.
 	const resolvedOffset = $derived(offset ?? (ctx.isContextMenu ? 0 : 4));
-	const anchorPoint = $derived(ctx.anchorPoint);
+	// The point the menu is shown at, held through its exit: the state drops the point as soon as
+	// the menu closes (a later keyboard open must land on the trigger), and following it then
+	// moved a leaving context menu onto its surface for the frames of its exit animation.
+	let shownAnchorPoint: typeof ctx.anchorPoint = null;
+	const anchorPoint = $derived.by(() => {
+		if (ctx.isOpen) shownAnchorPoint = ctx.anchorPoint;
+		return shownAnchorPoint;
+	});
 	const resolvedAnchor = $derived(
 		anchorPoint ? createPointAnchor(anchorPoint.x, anchorPoint.y, triggerRef) : triggerRef
 	);
