@@ -60,6 +60,30 @@ describe('Menu.ContextTrigger', () => {
 			expect(queryMenu()!.getBoundingClientRect().top).toBeCloseTo(90, 0);
 		});
 
+		it('leaves at the point it opened at, not at the surface', async () => {
+			render(MenuContextTriggerTest);
+
+			rightClick(surface(), 120, 90);
+			await expect.poll(() => queryOpenMenu()).toBeTruthy();
+			await expect.poll(() => queryMenu()!.getBoundingClientRect().left).toBeCloseTo(120, 0);
+
+			// Every frame of the exit, until the panel is gone, stays where it was opened: dropping
+			// the point at the close moved it onto the surface for the frames it was leaving.
+			const positions: number[] = [];
+			const record = () => {
+				const menu = queryMenu();
+				if (!menu) return;
+				positions.push(Math.round(menu.getBoundingClientRect().left));
+				requestAnimationFrame(record);
+			};
+			record();
+			await userEvent.keyboard('{Escape}');
+			await expect.poll(() => queryMenu()).toBeNull();
+
+			expect(positions.length).toBeGreaterThan(0);
+			expect(new Set(positions)).toEqual(new Set([120]));
+		});
+
 		it('re-anchors when the surface is right clicked again, without closing', async () => {
 			const onOpenChange = vi.fn();
 			render(MenuContextTriggerTest, { onOpenChange });
