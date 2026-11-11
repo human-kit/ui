@@ -549,6 +549,22 @@ describe('Menu', () => {
 			await expect.poll(() => openMenuCount(), { timeout: 2000 }).toBe(2);
 		});
 
+		it('keeps the submenu open when the browser repeats the enter point in a pointermove', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			const { root, geo } = await openWithSubmenu(screen);
+			const towardSubmenu = Math.sign(geo.aimEnter.x - geo.aimApex.x);
+
+			move(root, geo.aimApex);
+			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.aimEnter);
+			// A real mouse sends this pointermove right after the pointerenter.
+			move(root, geo.aimEnter);
+			// A tremor back must still be forgiven: the repeat was not a miss.
+			move(root, { x: geo.aimEnter.x - towardSubmenu * 2, y: geo.aimEnter.y });
+
+			flushSync();
+			expect(openMenuCount()).toBe(2);
+		});
+
 		it('keeps the submenu open when one stray move leaves the triangle', async () => {
 			const screen = render(MenuTest, { withSubmenu: true });
 			const { root, geo } = await openWithSubmenu(screen);

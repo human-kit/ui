@@ -20,8 +20,9 @@ import type { MenuContext } from './context';
 type Point = { x: number; y: number };
 
 /** How long the pointer may go without moving before a deferred highlight commits. Pointer
- *  events arrive once per frame while the pointer moves, so this is a few frames of silence. */
-export const SUBMENU_INTENT_STOP_MS = 50;
+ *  events arrive once per frame while the pointer moves; 100 ms still holds when a busy page
+ *  drops to 30 fps and loses a frame, and it is a third of a fixed 300 ms timeout. */
+export const SUBMENU_INTENT_STOP_MS = 100;
 /** Consecutive moves outside the triangle that commit a deferred highlight. */
 const MAX_MISSES = 2;
 /** Vertical padding added to the submenu's near edge so the triangle is forgiving. */
@@ -95,6 +96,9 @@ export function createSubmenuIntent(getActiveChild: () => MenuContext | null): S
 	return {
 		track(x, y) {
 			const point = { x, y };
+			// The browser sends a `pointermove` at the `pointerenter` coordinates. It has no
+			// direction, so it is neither a miss nor progress. The stop timer still runs.
+			if (previous && previous.x === x && previous.y === y) return;
 			if (pending) {
 				if (isAimingAtSubmenu(point)) {
 					misses = 0;

@@ -61,6 +61,15 @@ describe('createSubmenuIntent', () => {
 		expect(commit).not.toHaveBeenCalled();
 	});
 
+	it('does not count a move without displacement as a miss', () => {
+		const { intent, commit } = setup();
+		// The browser repeats the enter coordinates in a pointermove; then a tremor back.
+		intent.track(aimed.x, aimed.y);
+		intent.track(aimed.x, aimed.y);
+		intent.track(aimed.x - 1, aimed.y);
+		expect(commit).not.toHaveBeenCalled();
+	});
+
 	it('commits on the second move outside the triangle in a row', () => {
 		const { intent, commit } = setup();
 		intent.track(aimed.x - 5, 100);
