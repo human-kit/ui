@@ -141,8 +141,13 @@ export type MenuContext = {
 	/** Records pointer movement over the content (drives submenu "safe triangle" intent). */
 	trackPointer: (x: number, y: number) => void;
 	/** Highlights an item from a pointer hover, deferring the close of an open submenu while
-	 *  the pointer is travelling toward it. */
-	highlightItemFromPointer: (id: string | number, x: number, y: number) => void;
+	 *  a mouse pointer is travelling toward it. */
+	highlightItemFromPointer: (
+		id: string | number,
+		x: number,
+		y: number,
+		pointerType?: string
+	) => void;
 	/** Cancels a pending deferred highlight (pointer reached the submenu). */
 	cancelPendingHighlight: () => void;
 };

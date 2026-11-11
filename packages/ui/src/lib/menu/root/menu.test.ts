@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { flushSync } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import MenuTest from './menu-test.svelte';
@@ -415,7 +416,7 @@ describe('Menu', () => {
 			}
 		});
 
-		it('keeps the submenu open while the pointer travels toward it, then closes after the grace period', async () => {
+		it('keeps the submenu open while the pointer travels toward it, then closes once it stops', async () => {
 			const screen = render(MenuTest, { withSubmenu: true });
 			const { root, geo } = await openWithSubmenu(screen);
 
@@ -423,11 +424,13 @@ describe('Menu', () => {
 			move(root, geo.aimApex);
 			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.aimEnter);
 
-			// Deferred: the submenu stays open through the grace period (not closed on cross).
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			// Deferred: crossing the sibling does not close the submenu.
+			flushSync();
 			expect(openMenuCount()).toBe(2);
-			// But it closes once the grace period fully elapses without reaching the submenu.
-			await expect.poll(() => openMenuCount(), { timeout: 2000 }).toBe(1);
+			// But a pointer that stops there wants the sibling: the submenu closes well before
+			// a fixed 300ms timeout would have let it.
+			await expect.poll(() => openMenuCount(), { timeout: 250, interval: 16 }).toBe(1);
+			await expect.poll(highlightedText).toBe('Delete');
 		});
 
 		it('cancels the pending close when the pointer reaches the submenu', async () => {
@@ -546,27 +549,54 @@ describe('Menu', () => {
 			await expect.poll(() => openMenuCount(), { timeout: 2000 }).toBe(2);
 		});
 
-		it('keeps the submenu open while the pointer keeps aiming at it past the grace period', async () => {
+		it('keeps the submenu open when one stray move leaves the triangle', async () => {
 			const screen = render(MenuTest, { withSubmenu: true });
 			const { root, geo } = await openWithSubmenu(screen);
 			const towardSubmenu = Math.sign(geo.aimEnter.x - geo.aimApex.x);
 
 			move(root, geo.aimApex);
 			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.aimEnter);
+			// A tremor back, then on toward the submenu.
+			move(root, { x: geo.aimEnter.x - towardSubmenu * 2, y: geo.aimEnter.y });
+			move(root, { x: geo.aimEnter.x + towardSubmenu * 2, y: geo.aimEnter.y });
 
-			// The diagonal takes longer than the 300ms grace period, but every move keeps
-			// aiming at the submenu: each one must re-arm the grace timer.
-			for (let step = 1; step <= 10; step += 1) {
-				await new Promise((resolve) => setTimeout(resolve, 50));
-				move(root, {
-					x: geo.aimEnter.x + towardSubmenu * step * 0.5,
-					y: geo.aimEnter.y
-				});
-			}
+			flushSync();
 			expect(openMenuCount()).toBe(2);
+		});
 
-			// Once the pointer stops, the grace timer finally expires and the submenu closes.
-			await expect.poll(() => openMenuCount(), { timeout: 2000 }).toBe(1);
+		it('closes the submenu at once when the pointer leaves the triangle twice in a row', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			const { root, geo } = await openWithSubmenu(screen);
+			const towardSubmenu = Math.sign(geo.aimEnter.x - geo.aimApex.x);
+
+			move(root, geo.aimApex);
+			enter(screen.getByRole('menuitem', { name: 'Delete' }).element(), geo.aimEnter);
+			move(root, { x: geo.aimEnter.x - towardSubmenu * 5, y: geo.aimEnter.y });
+			move(root, { x: geo.aimEnter.x - towardSubmenu * 10, y: geo.aimEnter.y });
+
+			flushSync();
+			expect(openMenuCount()).toBe(1);
+		});
+
+		it('does not defer a touch on a sibling, wherever the last pointer was', async () => {
+			const screen = render(MenuTest, { withSubmenu: true });
+			const { root, geo } = await openWithSubmenu(screen);
+
+			move(root, geo.aimApex);
+			screen
+				.getByRole('menuitem', { name: 'Delete' })
+				.element()
+				.dispatchEvent(
+					new PointerEvent('pointerenter', {
+						clientX: geo.aimEnter.x,
+						clientY: geo.aimEnter.y,
+						pointerType: 'touch'
+					})
+				);
+
+			flushSync();
+			expect(openMenuCount()).toBe(1);
+			expect(highlightedText()).toBe('Delete');
 		});
 
 		it('closes only the submenu on ArrowLeft', async () => {
