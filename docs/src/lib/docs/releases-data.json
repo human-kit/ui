@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.4.9",
+		"date": "2026-11-11T17:52:18.897Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 155,
+						"prUrl": "https://github.com/human-kit/ui/pull/155",
+						"html": "<p>Menu: a submenu stays open while a mouse moves at an angle to it. Before, the browser sent a pointer move at the same point as the pointer enter on a sibling item, and this closed the submenu during the movement. A submenu now also closes 100 ms after the pointer stops on a sibling item, not after 300 ms. One stray movement does not close it. A touch or pen on a sibling item highlights it immediately.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.8",
-		"date": "2026-11-03T15:04:31.280Z",
+		"date": "2026-11-03T12:15:06-03:00",
 		"sections": [
 			{
 				"type": "Patch",
