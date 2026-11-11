@@ -187,7 +187,7 @@
 		if (disabled) return;
 		// Hovering a sibling collapses an open submenu — but defer while the pointer is
 		// travelling toward it (safe-triangle intent), so diagonal moves aren't interrupted.
-		ctx.highlightItemFromPointer(itemId, event.clientX, event.clientY);
+		ctx.highlightItemFromPointer(itemId, event.clientX, event.clientY, event.pointerType);
 
 		// Re-entering the item that started the press (button still held) restores its
 		// pressed look; arriving on an item that didn't start the press leaves it alone.

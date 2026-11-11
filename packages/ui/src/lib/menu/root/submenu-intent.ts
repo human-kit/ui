@@ -6,12 +6,25 @@ import type { MenuContext } from './context';
  * When a submenu is open and the pointer moves diagonally from the trigger toward the
  * submenu, the path crosses sibling items. Naively, each sibling's `pointerenter` would
  * close the submenu before the pointer arrives. This tracks the pointer trajectory and,
- * while the pointer is aimed at the open submenu, defers the sibling highlight/close for a
- * short grace period so the user can reach the submenu.
+ * while the pointer keeps moving toward the open submenu, defers the sibling highlight/close
+ * so the user can reach the submenu.
+ *
+ * The deferral ends as soon as the pointer shows it is not on its way:
+ * - it stops: a still pointer sends no `pointermove`, so a short timer stands in for it.
+ *   A fixed long timeout would make everyone who wants the sibling wait for it.
+ * - it leaves the triangle on two moves in a row. One stray move is forgiven, so a hand
+ *   tremor or a jittery trackpad does not drop the submenu mid-travel.
+ *
+ * Only a mouse aims. Touch and pen have no hover travel, so they highlight at once.
  */
 type Point = { x: number; y: number };
 
-const GRACE_MS = 300;
+/** How long the pointer may go without moving before a deferred highlight commits. Pointer
+ *  events arrive once per frame while the pointer moves; 100 ms still holds when a busy page
+ *  drops to 30 fps and loses a frame, and it is a third of a fixed 300 ms timeout. */
+export const SUBMENU_INTENT_STOP_MS = 100;
+/** Consecutive moves outside the triangle that commit a deferred highlight. */
+const MAX_MISSES = 2;
 /** Vertical padding added to the submenu's near edge so the triangle is forgiving. */
 const EDGE_PADDING = 16;
 
@@ -31,8 +44,8 @@ function pointInTriangle(p: Point, a: Point, b: Point, c: Point): boolean {
 export type SubmenuIntent = {
 	/** Records a pointer move; flushes a pending highlight if the pointer stops aiming. */
 	track: (x: number, y: number) => void;
-	/** Highlights an item, deferring if the pointer is aimed at the open submenu. */
-	request: (point: Point, commit: () => void) => void;
+	/** Highlights an item, deferring if a mouse pointer is aimed at the open submenu. */
+	request: (point: Point, commit: () => void, pointerType?: string) => void;
 	/** Drops a pending highlight without committing (pointer reached the submenu). */
 	cancel: () => void;
 };
@@ -40,6 +53,7 @@ export type SubmenuIntent = {
 export function createSubmenuIntent(getActiveChild: () => MenuContext | null): SubmenuIntent {
 	let previous: Point | null = null;
 	let pending: { commit: () => void } | null = null;
+	let misses = 0;
 	let timer: ReturnType<typeof setTimeout> | null = null;
 
 	function clearTimer() {
@@ -49,9 +63,15 @@ export function createSubmenuIntent(getActiveChild: () => MenuContext | null): S
 		}
 	}
 
+	function armStopTimer() {
+		clearTimer();
+		timer = setTimeout(commit, SUBMENU_INTENT_STOP_MS);
+	}
+
 	function commit() {
 		const current = pending;
 		pending = null;
+		misses = 0;
 		clearTimer();
 		current?.commit();
 	}
@@ -76,25 +96,30 @@ export function createSubmenuIntent(getActiveChild: () => MenuContext | null): S
 	return {
 		track(x, y) {
 			const point = { x, y };
+			// The browser sends a `pointermove` at the `pointerenter` coordinates. It has no
+			// direction, so it is neither a miss nor progress. The stop timer still runs.
+			if (previous && previous.x === x && previous.y === y) return;
 			if (pending) {
 				if (isAimingAtSubmenu(point)) {
-					// Still aiming at the submenu: re-arm the grace timer so a long diagonal
-					// travel doesn't expire (and commit the highlight/close) mid-flight.
-					clearTimer();
-					timer = setTimeout(commit, GRACE_MS);
+					misses = 0;
+					armStopTimer();
 				} else {
-					commit();
+					misses += 1;
+					if (misses >= MAX_MISSES) commit();
+					// A forgiven miss keeps the stop timer running: it is not progress.
 				}
 			}
 			previous = point;
 		},
-		request(point, commitFn) {
-			if (getActiveChild() && isAimingAtSubmenu(point)) {
-				clearTimer();
+		request(point, commitFn, pointerType) {
+			const canAim = pointerType !== 'touch' && pointerType !== 'pen';
+			if (canAim && getActiveChild() && isAimingAtSubmenu(point)) {
 				pending = { commit: commitFn };
-				timer = setTimeout(commit, GRACE_MS);
+				misses = 0;
+				armStopTimer();
 			} else {
 				pending = null;
+				misses = 0;
 				clearTimer();
 				commitFn();
 			}
@@ -102,6 +127,7 @@ export function createSubmenuIntent(getActiveChild: () => MenuContext | null): S
 		},
 		cancel() {
 			pending = null;
+			misses = 0;
 			clearTimer();
 		}
 	};

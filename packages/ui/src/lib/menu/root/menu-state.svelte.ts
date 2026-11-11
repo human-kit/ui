@@ -279,11 +279,20 @@ export function createMenuState(options: CreateMenuStateOptions): MenuState {
 		submenuIntent.track(x, y);
 	}
 
-	function highlightItemFromPointer(id: string | number, x: number, y: number) {
-		submenuIntent.request({ x, y }, () => {
-			closeActiveChild();
-			keyboardNav.focusById(id);
-		});
+	function highlightItemFromPointer(
+		id: string | number,
+		x: number,
+		y: number,
+		pointerType?: string
+	) {
+		submenuIntent.request(
+			{ x, y },
+			() => {
+				closeActiveChild();
+				keyboardNav.focusById(id);
+			},
+			pointerType
+		);
 	}
 
 	function cancelPendingHighlight() {

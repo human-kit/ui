@@ -30,7 +30,7 @@ primitives as `Popover`.
   typed text.
 - Escape closes the current (topmost) menu and returns focus to its trigger. `Tab` and outside
   interaction close the whole menu chain. Within a submenu, `ArrowLeft` closes just that level.
-- A submenu uses a safe triangle for the pointer. While the pointer moves at an angle to the open submenu, the items that the pointer goes over do not close it. This continues for a short time. Thus the user gets to the submenu, and the submenu stays open.
+- A submenu uses a safe triangle for the pointer. While the pointer moves at an angle to the open submenu, the items that the pointer goes over do not close it. Thus the user gets to the submenu, and the submenu stays open. The submenu closes when the pointer stops on an item. It also closes when the pointer moves away from it two times in sequence. Touch and pen do not use the triangle.
 
 ## Context menus
 
