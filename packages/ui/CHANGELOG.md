@@ -1,5 +1,16 @@
 # @human-kit/ui
 
+## 1.5.0
+
+### Minor Changes
+
+- [#157](https://github.com/human-kit/ui/pull/157) [`9a7b1de`](https://github.com/human-kit/ui/commit/9a7b1ded44d1b39c419b66efc7f1419666e4ef99) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Table: two new options for a wide table that draws only the cells near the screen.
+
+  - `Table.Cell` takes a `columnIndex` prop. Before, a cell found its column from its place among the cells of its row, so a row with a `colspan` filler cell mapped each cell to the wrong column. The prop also skips the scan of the row that each cell did.
+  - `Table.Body` takes `virtualizer.recycle`. When the window moves, a row that leaves it is given to an item that enters. Before, the body destroyed that row and built another. A cell that keeps its own state must reset it when its item changes.
+
+  Both options are off by default, so a table that does not set them does not change.
+
 ## 1.4.9
 
 ### Patch Changes
