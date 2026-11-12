@@ -240,20 +240,22 @@ describe('Button.Root', () => {
 	describe('data-pressed-when-expanded', () => {
 		it('shows the pressed state while aria-expanded is true', async () => {
 			const screen = render(ButtonExpandedTest);
-			const button = screen.getByRole('button', { name: 'Toggle' }).element();
+			const locator = screen.getByRole('button', { name: 'Toggle' });
+			const button = locator.element();
 
 			expect(button.getAttribute('data-pressed')).toBeNull();
-			button.click();
+			await locator.click();
 			await expect.poll(() => button.getAttribute('data-pressed')).toBe('true');
-			button.click();
+			await locator.click();
 			await expect.poll(() => button.getAttribute('data-pressed')).toBeNull();
 		});
 
 		it('does not show the pressed state for a button that did not opt in', async () => {
 			const screen = render(ButtonExpandedTest, { opt: false });
-			const button = screen.getByRole('button', { name: 'Toggle' }).element();
+			const locator = screen.getByRole('button', { name: 'Toggle' });
+			const button = locator.element();
 
-			button.click();
+			await locator.click();
 			await expect.poll(() => button.getAttribute('aria-expanded')).toBe('true');
 			expect(button.getAttribute('data-pressed')).toBeNull();
 		});
