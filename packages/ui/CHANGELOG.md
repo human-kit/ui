@@ -1,5 +1,13 @@
 # @human-kit/ui
 
+## 1.5.1
+
+### Patch Changes
+
+- [#159](https://github.com/human-kit/ui/pull/159) [`2af6d5c`](https://github.com/human-kit/ui/commit/2af6d5ccf992664de7bc4602c3cca90634255e76) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Button: a button makes a `MutationObserver` only when it has `data-pressed-when-expanded="true"`. Before, every button made one to watch `aria-expanded`. A page with 1000 buttons made 1000 observers, and so did each trigger of Menu, Popover, Dialog and Tooltip.
+
+- [#159](https://github.com/human-kit/ui/pull/159) [`2af6d5c`](https://github.com/human-kit/ui/commit/2af6d5ccf992664de7bc4602c3cca90634255e76) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - ListBox: the items share one set of `pointerup`, `pointercancel` and `mouseup` listeners on `window`. Before, each item added its own three listeners. A list of 1000 items ran 3000 handlers at the end of each pointer press, in the whole page. The affected components are ListBox, Select, ComboBox, Autocomplete and any list that uses `ListBox.Item`.
+
 ## 1.5.0
 
 ### Minor Changes
