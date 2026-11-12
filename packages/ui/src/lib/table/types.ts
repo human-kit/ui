@@ -98,6 +98,14 @@ export type TableBodyVirtualizer<T extends TableRowItem = TableRowItem> = {
 	 * as blank. Raise it for expensive rows or very fast scrolling.
 	 */
 	overscan?: number;
+	/**
+	 * Reuse the mounted rows. When the window moves, a row that leaves it is given to an item that
+	 * enters, and the body does not destroy that row to build another. Building a row of a wide
+	 * table is most of the cost of a scroll, and updating one costs much less. Whatever a cell
+	 * keeps in its own state stays after the item changes, so a cell that keeps state must reset
+	 * it when its item changes.
+	 */
+	recycle?: boolean;
 };
 
 type TableBodyBaseProps = Omit<HTMLAttributes<HTMLTableSectionElement>, 'children'> & {
@@ -233,6 +241,12 @@ export type TableColumnResizerProps = Omit<HTMLAttributes<HTMLDivElement>, 'chil
 export type TableCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
 	children?: Snippet;
 	class?: string;
+	/**
+	 * Index of the column this cell belongs to. By default the cell takes the index from its place
+	 * among the cells of its row. Set it when the row skips columns, for example with a `colspan`
+	 * filler cell.
+	 */
+	columnIndex?: number;
 };
 
 export type TableInteractiveCellProps = TableCellProps;

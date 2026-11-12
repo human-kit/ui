@@ -796,6 +796,13 @@
 					"required": false,
 					"default": "''",
 					"description": ""
+				},
+				{
+					"name": "columnIndex",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "Index of the column this cell belongs to. By default the cell takes the index from its place\namong the cells of its row. Set it when the row skips columns, for example with a `colspan`\nfiller cell."
 				}
 			],
 			"dataAttributes": [

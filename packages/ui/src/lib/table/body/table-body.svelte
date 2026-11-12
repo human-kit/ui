@@ -212,6 +212,33 @@
 		return itemList.slice(visibleRange.from, visibleRange.to + 1);
 	});
 
+	// With `virtualizer.recycle`, each rendered item is drawn by a numbered row slot. An item that
+	// is already drawn keeps its slot. An item that enters takes the slot of an item that left, so
+	// the keyed `each` updates that row to the new item and does not destroy one row and build
+	// another. This is plain bookkeeping and not state: it answers only for the items it gets, and
+	// it gives the same answer when asked twice for the same items.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- not state, see above
+	const slotOf = new Map<string | number, number>();
+	const freeSlots: number[] = [];
+	let slotCount = 0;
+	const slotKeys = $derived.by(() => {
+		if (!virtualizerEnabled || virtualizer?.recycle !== true) return undefined;
+		const present = new Set(renderedItems.map((item) => item.id));
+		for (const [id, slot] of slotOf) {
+			if (present.has(id)) continue;
+			slotOf.delete(id);
+			freeSlots.push(slot);
+		}
+		return renderedItems.map((item) => {
+			let slot = slotOf.get(item.id);
+			if (slot === undefined) {
+				slot = freeSlots.pop() ?? slotCount++;
+				slotOf.set(item.id, slot);
+			}
+			return slot;
+		});
+	});
+
 	const isEmpty = $derived.by(() => {
 		void table.layoutEpoch;
 		return table.getLogicalBodyRowCount() === 0;
@@ -285,7 +312,7 @@
 			</tr>
 		{/if}
 
-		{#each renderedItems as item (item.id)}
+		{#each renderedItems as item, index (slotKeys ? slotKeys[index] : item.id)}
 			{#if children}
 				{@render (children as Snippet<[T]>)(item)}
 			{/if}

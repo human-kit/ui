@@ -13,7 +13,7 @@
 	} from '../../primitives/input-modality';
 	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
 
-	let { children, class: className = '', ...restProps }: TableCellProps = $props();
+	let { children, class: className = '', columnIndex, ...restProps }: TableCellProps = $props();
 
 	const table = useTableContext();
 	const row = useTableRowContext();
@@ -22,7 +22,11 @@
 	let element = $state<HTMLElement | undefined>(undefined);
 	let focusDelegate = $state<(() => HTMLElement | undefined) | undefined>(undefined);
 	row.registerCellToken(key, () => element);
+	// `columnIndex` is for a row that does not draw every cell, for example one that uses a
+	// `colspan` filler for the columns far from the screen. Counting the cells of such a row gives
+	// the wrong columns. It also skips the scan of the row that each cell would do.
 	const cellIndex = $derived.by(() => {
+		if (columnIndex !== undefined) return columnIndex;
 		void row.cellOrderEpoch;
 		return row.getCellIndex(key);
 	});
