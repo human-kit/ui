@@ -431,4 +431,54 @@ describe('ListBox.Item', () => {
 		await userEvent.keyboard('{F9}');
 		await expect.poll(() => option.getAttribute('data-focus-visible')).toBe('true');
 	});
+
+	describe('Pointer press', () => {
+		it('adds one set of window listeners for all the items, and not one set for each item', async () => {
+			const added: string[] = [];
+			const original = window.addEventListener;
+			window.addEventListener = function (
+				this: Window,
+				...args: Parameters<typeof original>
+			): void {
+				added.push(String(args[0]));
+				return original.apply(this, args);
+			} as typeof original;
+
+			try {
+				render(ListBoxTest);
+				await expect.poll(() => document.querySelectorAll('[role="option"]').length).toBe(5);
+			} finally {
+				window.addEventListener = original;
+			}
+
+			expect(added.filter((type) => type === 'pointerup').length).toBeLessThanOrEqual(1);
+			expect(added.filter((type) => type === 'mouseup').length).toBeLessThanOrEqual(1);
+		});
+
+		it('clears the pressed state when the pointer ends outside the item', async () => {
+			render(ListBoxTest);
+			const option = document.querySelector<HTMLElement>('[role="option"]')!;
+
+			option.dispatchEvent(
+				new PointerEvent('pointerdown', { bubbles: true, pointerId: 7, button: 0, buttons: 1 })
+			);
+			await expect.poll(() => option.getAttribute('data-pressed')).toBe('true');
+
+			window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 7 }));
+			await expect.poll(() => option.getAttribute('data-pressed')).toBeNull();
+		});
+
+		it('keeps the pressed state when another pointer ends', async () => {
+			render(ListBoxTest);
+			const option = document.querySelector<HTMLElement>('[role="option"]')!;
+
+			option.dispatchEvent(
+				new PointerEvent('pointerdown', { bubbles: true, pointerId: 7, button: 0, buttons: 1 })
+			);
+			await expect.poll(() => option.getAttribute('data-pressed')).toBe('true');
+
+			window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 9 }));
+			expect(option.getAttribute('data-pressed')).toBe('true');
+		});
+	});
 });

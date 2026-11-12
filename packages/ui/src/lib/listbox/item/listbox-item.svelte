@@ -2,9 +2,45 @@
 	type PointerPressOwner = {
 		key: symbol;
 		pointerId: number | null;
+		/** Clears the pressed state of the owning item. */
+		release: () => void;
 	};
 
 	let pointerPressOwner: PointerPressOwner | null = null;
+
+	// A press can end anywhere on the page, so the end of the press is seen on `window`. One
+	// handler, shared by all the items and counted by the mounted items, serves them all. Before,
+	// each item added three listeners, and a list of 1000 items ran 3000 handlers on every
+	// pointer end.
+	let pointerEndListenerRefCount = 0;
+
+	function handleGlobalPointerEnd(event: PointerEvent | MouseEvent) {
+		const owner = pointerPressOwner;
+		if (!owner) return;
+		const pointerId = 'pointerId' in event ? event.pointerId : null;
+		if (owner.pointerId !== null && pointerId !== null && owner.pointerId !== pointerId) return;
+		owner.release();
+	}
+
+	function acquireGlobalPointerEndListeners() {
+		if (typeof window === 'undefined') return;
+		if (pointerEndListenerRefCount === 0) {
+			window.addEventListener('pointerup', handleGlobalPointerEnd);
+			window.addEventListener('pointercancel', handleGlobalPointerEnd);
+			window.addEventListener('mouseup', handleGlobalPointerEnd);
+		}
+		pointerEndListenerRefCount += 1;
+	}
+
+	function releaseGlobalPointerEndListeners() {
+		if (typeof window === 'undefined') return;
+		pointerEndListenerRefCount = Math.max(0, pointerEndListenerRefCount - 1);
+		if (pointerEndListenerRefCount === 0) {
+			window.removeEventListener('pointerup', handleGlobalPointerEnd);
+			window.removeEventListener('pointercancel', handleGlobalPointerEnd);
+			window.removeEventListener('mouseup', handleGlobalPointerEnd);
+		}
+	}
 </script>
 
 <script lang="ts">
@@ -159,17 +195,11 @@
 			listboxCtx.keyboardNav.updateItems();
 		}
 
-		window.addEventListener('pointerup', handleGlobalPointerEnd);
-		window.addEventListener('pointercancel', handleGlobalPointerEnd);
-		window.addEventListener('mouseup', handleGlobalPointerEnd);
+		acquireGlobalPointerEndListeners();
 	});
 
 	onDestroy(() => {
-		if (typeof window !== 'undefined') {
-			window.removeEventListener('pointerup', handleGlobalPointerEnd);
-			window.removeEventListener('pointercancel', handleGlobalPointerEnd);
-			window.removeEventListener('mouseup', handleGlobalPointerEnd);
-		}
+		releaseGlobalPointerEndListeners();
 		clearOwnedPointerPress();
 		listboxCtx.unregisterItem(id);
 		unsubscribeSelection?.();
@@ -238,7 +268,7 @@
 	}
 
 	function startPointerPress(pointerId: number | null) {
-		pointerPressOwner = { key: pointerPressOwnerKey, pointerId };
+		pointerPressOwner = { key: pointerPressOwnerKey, pointerId, release: clearPressedState };
 		isPressed = true;
 		pressedKey = null;
 	}
@@ -247,14 +277,6 @@
 		isPressed = false;
 		pressedKey = null;
 		clearOwnedPointerPress();
-	}
-
-	function handleGlobalPointerEnd(event: PointerEvent | MouseEvent) {
-		if (!ownsPointerPress(event)) {
-			return;
-		}
-
-		clearPressedState();
 	}
 
 	function listboxHasDomFocus() {

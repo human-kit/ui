@@ -198,8 +198,15 @@
 			buttonRef?.getAttribute('aria-expanded') === 'true';
 	}
 
+	// Only a button that opts in with `data-pressed-when-expanded` needs to watch `aria-expanded`.
+	// The attribute comes in through the props, so the check is reactive. Before, every button
+	// made a `MutationObserver` for nothing, and a page with 1000 buttons made 1000 of them.
+	const watchesExpanded = $derived(
+		(restProps as Record<string, unknown>)['data-pressed-when-expanded'] === 'true'
+	);
+
 	$effect(() => {
-		if (!buttonRef) {
+		if (!buttonRef || !watchesExpanded) {
 			expandedPressed = false;
 			return;
 		}
