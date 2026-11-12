@@ -7,6 +7,7 @@ import {
 	expectNoFalseFocusAttributes
 } from '../../test-utils/focus-contract';
 import ButtonTest from './button-test.svelte';
+import ButtonExpandedTest from './button-expanded-test.svelte';
 
 describe('Button.Root', () => {
 	it('renders a native button with default type button', () => {
@@ -234,5 +235,49 @@ describe('Button.Root', () => {
 		expect(element.hasAttribute('data-focus-visible')).toBe(false);
 		await userEvent.keyboard('a');
 		await expect.poll(() => element.getAttribute('data-focus-visible')).toBe('true');
+	});
+
+	describe('data-pressed-when-expanded', () => {
+		it('shows the pressed state while aria-expanded is true', async () => {
+			const screen = render(ButtonExpandedTest);
+			const locator = screen.getByRole('button', { name: 'Toggle' });
+			const button = locator.element();
+
+			expect(button.getAttribute('data-pressed')).toBeNull();
+			await locator.click();
+			await expect.poll(() => button.getAttribute('data-pressed')).toBe('true');
+			await locator.click();
+			await expect.poll(() => button.getAttribute('data-pressed')).toBeNull();
+		});
+
+		it('does not show the pressed state for a button that did not opt in', async () => {
+			const screen = render(ButtonExpandedTest, { opt: false });
+			const locator = screen.getByRole('button', { name: 'Toggle' });
+			const button = locator.element();
+
+			await locator.click();
+			await expect.poll(() => button.getAttribute('aria-expanded')).toBe('true');
+			expect(button.getAttribute('data-pressed')).toBeNull();
+		});
+
+		it('makes no MutationObserver for a button that did not opt in', async () => {
+			const Original = window.MutationObserver;
+			let made = 0;
+			window.MutationObserver = class extends Original {
+				constructor(callback: MutationCallback) {
+					super(callback);
+					made++;
+				}
+			};
+
+			try {
+				render(ButtonExpandedTest, { opt: false });
+				await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+			} finally {
+				window.MutationObserver = Original;
+			}
+
+			expect(made).toBe(0);
+		});
 	});
 });
