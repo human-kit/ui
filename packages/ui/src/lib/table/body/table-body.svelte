@@ -182,7 +182,15 @@
 		const rawFrom = Math.max(0, startIndex - overscan);
 		const rawTo = Math.min(rowCount - 1, endIndex + overscan);
 		const from = Math.max(0, Math.floor(rawFrom / block) * block);
-		const to = Math.max(from, Math.min(rowCount - 1, Math.ceil((rawTo + 1) / block) * block - 1));
+		// With `recycle` the window keeps one length and moves by whole blocks. Its two edges then move
+		// in the same step, so the rows that leave one edge are the rows that enter the other. With
+		// edges that snap apart, the window grew at one edge and shrank at the other at different
+		// steps, and each growth built a row that the next shrink destroyed.
+		const length = visibleCount + 2 * overscan + block + 2;
+		const to =
+			virtualizer.recycle === true
+				? Math.min(rowCount - 1, from + length - 1)
+				: Math.max(from, Math.min(rowCount - 1, Math.ceil((rawTo + 1) / block) * block - 1));
 
 		const topSpacerHeight = offsets ? offsets[from] : from * rowHeight;
 		const bottomSpacerHeight = offsets

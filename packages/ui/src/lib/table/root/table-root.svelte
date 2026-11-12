@@ -547,6 +547,11 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		trackInteractionModality(event, event.target as HTMLElement | null);
 	}
+
+	// One listener for the table: a body cell used to carry its own, and a table draws thousands.
+	function handleDoubleClick(event: MouseEvent) {
+		if (event.target instanceof Element) ctx.pressRowFromDoubleClick(event.target);
+	}
 </script>
 
 <table
@@ -585,6 +590,7 @@
 	onfocusout={handleFocusOut}
 	onmousedown={handleMouseDown}
 	onkeydown={handleKeyDown}
+	ondblclick={handleDoubleClick}
 	{...restProps}
 >
 	{#if layoutColumns.length > 0}

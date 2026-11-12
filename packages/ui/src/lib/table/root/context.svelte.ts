@@ -294,6 +294,16 @@ export type TableContext = {
 	hasResizableColumns: () => boolean;
 	registerRow: (row: TableRowRegistration) => void;
 	unregisterRow: (token: string) => void;
+	/**
+	 * Calls `callback` when the children of `element` (a row) change, and returns the function that
+	 * stops it. Every row shares one `MutationObserver`.
+	 */
+	observeRowChildren: (element: HTMLElement, callback: () => void) => () => void;
+	/**
+	 * Presses the body row that holds `target` as a double click does. `Table.Root` listens once
+	 * for `dblclick` and passes what it hit here, instead of every cell carrying a listener.
+	 */
+	pressRowFromDoubleClick: (target: Element) => void;
 	setLogicalBodyRows: (ids?: Iterable<TableSelectionKey>) => void;
 	/**
 	 * Declares which logical body rows are section rows. `Table.Body` calls it
@@ -1389,6 +1399,9 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			.at(-1)?.id;
 	}
 
+	// The column whose drag already found nothing to freeze.
+	let preparedResizeColumnId: string | null = null;
+
 	function prepareColumnWidthsForResize(activeColumnId: string) {
 		const next = new SvelteMap<string, TableColumnWidth>(columnWidths);
 		const baselineWidths = new SvelteMap<string, number>();
@@ -1423,7 +1436,12 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			}
 		}
 
-		if (!changed) return;
+		if (!changed) {
+			// Nothing to freeze: the widths are already the ones the drag starts from. Said once, or
+			// every move of the drag measured every header again.
+			preparedResizeColumnId = activeColumnId;
+			return;
+		}
 
 		columnWidths.clear();
 		for (const [columnId, width] of next) {
@@ -1457,6 +1475,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function shouldPrepareColumnWidthsForResize(columnId: string) {
 		if (getFixedColumnWidthSpec(columnId) !== undefined) return false;
 		if (!hasRelativeVisibleColumnWidths()) return false;
+		if (preparedResizeColumnId === columnId) return false;
 		return resizeSession?.activeColumnId !== columnId;
 	}
 
@@ -1734,6 +1753,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function startColumnResize(columnId: string) {
 		if (!isColumnResizable(columnId) || resizingColumnId === columnId) return;
 		resizeSession = null;
+		preparedResizeColumnId = null;
 		resizingColumnId = columnId;
 		options.onColumnResizeStart?.(columnId);
 	}
@@ -1754,6 +1774,7 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 			restoredFlexibleTail = true;
 		}
 		resizingColumnId = null;
+		preparedResizeColumnId = null;
 		if (restoredFlexibleTail) {
 			options.onColumnWidthsChange?.(getColumnWidths());
 		}
@@ -1894,6 +1915,67 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 	function isSectionRowKey(id: TableSelectionKey | undefined) {
 		if (id === undefined) return false;
 		return declaredSectionRowKeys.has(id) || registeredSectionRowKeys.has(id);
+	}
+
+	let rowChildrenObserver: MutationObserver | undefined;
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- plain bookkeeping, not state
+	const rowChildrenCallbacks = new Map<Node, () => void>();
+
+	function observeRowChildren(element: HTMLElement, callback: () => void) {
+		rowChildrenObserver ??= new MutationObserver((records) => {
+			// A row that changed several times in one batch is told once.
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a throwaway set, not state
+			const told = new Set<Node>();
+			for (const record of records) {
+				if (told.has(record.target)) continue;
+				told.add(record.target);
+				rowChildrenCallbacks.get(record.target)?.();
+			}
+		});
+		rowChildrenCallbacks.set(element, callback);
+		rowChildrenObserver.observe(element, { childList: true });
+
+		return () => {
+			rowChildrenCallbacks.delete(element);
+			// An observer cannot let go of one node, only of all: a gone row has no callback, so the
+			// records it still queues are dropped, and the observer ends with the last row.
+			if (rowChildrenCallbacks.size === 0) {
+				rowChildrenObserver?.disconnect();
+				rowChildrenObserver = undefined;
+			}
+		};
+	}
+
+	function pressRowFromDoubleClick(target: Element) {
+		const cellElement = target.closest('td, th');
+		// An interactive cell answers its own double click, and only when it is the target.
+		if (cellElement?.hasAttribute('data-table-interactive-cell')) return;
+
+		const rowElement = target.closest('tr');
+		if (!rowElement) return;
+
+		let found: TableRowRegistration | undefined;
+		for (const row of rows.values()) {
+			if (row.element === rowElement) {
+				found = row;
+				break;
+			}
+		}
+		if (!found || found.section !== 'body' || found.isSection) return;
+		if (isRowDisabled(found.id, found.disabled)) return;
+
+		// What a press on the cell did first: the focus goes where the keyboard carries on from.
+		if (keyboardNavigation === 'grid') {
+			for (const cell of cells.values()) {
+				if (cell.element === cellElement) {
+					focusCellByKey(cell.key);
+					break;
+				}
+			}
+		} else if (keyboardNavigation === 'row') {
+			focusRowByToken(found.token, 'start');
+		}
+		pressRow(found.id, 'pointer-double', {}, found.disabled);
 	}
 
 	function unregisterRow(token: string) {
@@ -3188,6 +3270,8 @@ export function createTableContext(options: CreateTableContextOptions = {}): Tab
 		hasResizableColumns,
 		registerRow: asCommand(registerRow),
 		unregisterRow: asCommand(unregisterRow),
+		observeRowChildren,
+		pressRowFromDoubleClick: asCommand(pressRowFromDoubleClick),
 		setLogicalBodyRows: asCommand(setLogicalBodyRows),
 		setSectionRowKeys: asCommand(setSectionRowKeys),
 		isSectionRowKey,

@@ -98,6 +98,26 @@ describe('Table.Body', () => {
 			expect(row.getAttribute('aria-rowindex')).toBe('102');
 		});
 
+		it('builds no new row while it scrolls by small steps', async () => {
+			render(TableBodyRecycleTest);
+			await expect.poll(() => itemIds().includes('row-001')).toBe(true);
+
+			const rows = new Set(document.querySelectorAll('tbody tr[data-item-id]'));
+			const count = rows.size;
+
+			// Both edges of the window move in the same step, so no step grows the window.
+			for (let row = 3; row <= 60; row += 3) {
+				scrollTo(row);
+				await expect
+					.poll(() => itemIds().includes(`row-${String(row + 1).padStart(3, '0')}`))
+					.toBe(true);
+				expect(document.querySelectorAll('tbody tr[data-item-id]')).toHaveLength(count);
+				for (const row of document.querySelectorAll('tbody tr[data-item-id]')) {
+					expect(rows.has(row)).toBe(true);
+				}
+			}
+		});
+
 		it('builds a new row for every item that enters when recycle is off', async () => {
 			render(TableBodyRecycleTest, { recycle: false });
 			await expect.poll(() => itemIds().includes('row-001')).toBe(true);

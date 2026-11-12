@@ -214,7 +214,9 @@
 			});
 		}
 
-		const observer = new MutationObserver(() => {
+		// One observer for every row of the table: a body row used to make its own, and a table keeps
+		// a few dozen mounted and swaps them as it scrolls.
+		const stopObserving = table.observeRowChildren(rowElement, () => {
 			if (isBodyRow && !bodyCellOrderSealed) {
 				return;
 			}
@@ -231,11 +233,10 @@
 
 			scheduleCellOrderNotify();
 		});
-		observer.observe(rowElement, { childList: true });
 
 		return () => {
 			disposed = true;
-			observer.disconnect();
+			stopObserving();
 		};
 	});
 

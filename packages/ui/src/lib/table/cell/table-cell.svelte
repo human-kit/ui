@@ -87,9 +87,12 @@
 	const visibleColumnIndex = $derived(column?.visibleColumnIndex ?? -1);
 	const pinState = $derived.by(() => {
 		void table.layoutEpoch;
-		void table.widthEpoch;
 		const columnId = resolvedColumn?.id;
-		return columnId ? table.getColumnPinState(columnId) : null;
+		// A pinned cell follows the column widths, as its offset is made of them. A cell that is not
+		// pinned has no offset, so a column drag does not have to ask it again at every move.
+		if (!columnId || table.getColumnPin(columnId) === undefined) return null;
+		void table.widthEpoch;
+		return table.getColumnPinState(columnId);
 	});
 	const tagName = $derived(row.section === 'body' && resolvedColumn?.isRowHeader ? 'th' : 'td');
 	const role = $derived.by(() => {
@@ -160,18 +163,6 @@
 				metaKey: event.metaKey,
 				altKey: event.altKey
 			},
-			row.isDisabled
-		);
-	}
-
-	function handleDoubleClick() {
-		if (row.section !== 'body') return;
-		if (isRowDisabled) return;
-		focusPressTarget();
-		table.pressRow(
-			row.rowId as TableSelectionKey | undefined,
-			'pointer-double',
-			{},
 			row.isDisabled
 		);
 	}
@@ -251,7 +242,6 @@
 	style:display={isColumnHidden ? 'none' : 'table-cell'}
 	onfocus={isFocusTarget ? handleFocus : undefined}
 	onclick={row.section === 'body' ? handleClick : undefined}
-	ondblclick={row.section === 'body' ? handleDoubleClick : undefined}
 	onmousedown={row.section === 'body' ? handleMouseDown : undefined}
 	onkeydown={isFocusTarget ? handleKeyDown : undefined}
 	{...restProps}
