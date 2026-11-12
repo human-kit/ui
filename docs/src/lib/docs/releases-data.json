@@ -1,7 +1,28 @@
 [
 	{
+		"version": "1.5.1",
+		"date": "2026-11-12T18:20:59.652Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 159,
+						"prUrl": "https://github.com/human-kit/ui/pull/159",
+						"html": "<p>Button: a button makes a <code>MutationObserver</code> only when it has <code>data-pressed-when-expanded=&quot;true&quot;</code>. Before, every button made one to watch <code>aria-expanded</code>. A page with 1000 buttons made 1000 observers, and so did each trigger of Menu, Popover, Dialog and Tooltip.</p>"
+					},
+					{
+						"pr": 159,
+						"prUrl": "https://github.com/human-kit/ui/pull/159",
+						"html": "<p>ListBox: the items share one set of <code>pointerup</code>, <code>pointercancel</code> and <code>mouseup</code> listeners on <code>window</code>. Before, each item added its own three listeners. A list of 1000 items ran 3000 handlers at the end of each pointer press, in the whole page. The affected components are ListBox, Select, ComboBox, Autocomplete and any list that uses <code>ListBox.Item</code>.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.5.0",
-		"date": "2026-11-12T16:27:35.915Z",
+		"date": "2026-11-12T13:31:54-03:00",
 		"sections": [
 			{
 				"type": "Minor",
