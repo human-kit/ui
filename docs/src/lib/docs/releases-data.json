@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.5.0",
+		"date": "2026-11-12T16:27:35.915Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 157,
+						"prUrl": "https://github.com/human-kit/ui/pull/157",
+						"html": "<p>Table: two new options for a wide table that draws only the cells near the screen.</p>\n<ul>\n<li><code>Table.Cell</code> takes a <code>columnIndex</code> prop. Before, a cell found its column from its place among the cells of its row, so a row with a <code>colspan</code> filler cell mapped each cell to the wrong column. The prop also skips the scan of the row that each cell did.</li>\n<li><code>Table.Body</code> takes <code>virtualizer.recycle</code>. When the window moves, a row that leaves it is given to an item that enters. Before, the body destroyed that row and built another. A cell that keeps its own state must reset it when its item changes.</li>\n</ul>\n<p>Both options are off by default, so a table that does not set them does not change.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.4.9",
-		"date": "2026-11-11T17:52:18.897Z",
+		"date": "2026-11-11T14:56:20-03:00",
 		"sections": [
 			{
 				"type": "Patch",
