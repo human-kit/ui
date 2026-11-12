@@ -11,10 +11,11 @@ Description: Table data cell part. In body scope it participates in roving focus
 
 Public prop type: `TableCellProps`
 
-| Prop       | Type      | Default     | Description                                |
-| ---------- | --------- | ----------- | ------------------------------------------ |
-| `class`    | `string`  | `''`        | Class names for the rendered `td` or `th`. |
-| `children` | `Snippet` | `undefined` | Cell content.                              |
+| Prop          | Type      | Default     | Description                                                         |
+| ------------- | --------- | ----------- | ------------------------------------------------------------------- |
+| `class`       | `string`  | `''`        | Class names for the rendered `td` or `th`.                          |
+| `children`    | `Snippet` | `undefined` | Cell content.                                                       |
+| `columnIndex` | `number`  | `undefined` | Index of the column of the cell. Set it when the row skips columns. |
 
 ### Context utilities
 

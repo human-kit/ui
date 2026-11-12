@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TableTest from '../root/table-test.svelte';
 import TableBodyItemsTest from './table-body-items-test.svelte';
+import TableBodyRecycleTest from './table-body-recycle-test.svelte';
 
 describe('Table.Body', () => {
 	it('marks the body as empty when there are no rows', async () => {
@@ -54,5 +55,58 @@ describe('Table.Body', () => {
 		expect(document.querySelector('tbody tr[data-item-id]')?.getAttribute('aria-rowindex')).toBe(
 			'22'
 		);
+	});
+
+	describe('virtualizer.recycle', () => {
+		function scrollTo(row: number) {
+			const scroller = document.querySelector('table')!.parentElement!;
+			scroller.scrollTop = row * 32;
+			scroller.dispatchEvent(new Event('scroll'));
+		}
+
+		function itemIds() {
+			return [...document.querySelectorAll('tbody tr[data-item-id]')].map((row) =>
+				row.getAttribute('data-item-id')
+			);
+		}
+
+		it('gives the row of an item that left to an item that enters', async () => {
+			render(TableBodyRecycleTest);
+			await expect.poll(() => itemIds().includes('row-001')).toBe(true);
+
+			const firstRow = document.querySelector('tbody tr[data-item-id="row-001"]');
+
+			scrollTo(100);
+			await expect.poll(() => itemIds().includes('row-101')).toBe(true);
+
+			expect(itemIds().includes('row-001')).toBe(false);
+			// The element is the same one, now for another item.
+			expect(firstRow?.isConnected).toBe(true);
+			expect(firstRow?.getAttribute('data-item-id')).not.toBe('row-001');
+		});
+
+		it('keeps the content and the row index of each row in line with its item', async () => {
+			render(TableBodyRecycleTest);
+			await expect.poll(() => itemIds().includes('row-001')).toBe(true);
+
+			scrollTo(100);
+			await expect.poll(() => itemIds().includes('row-101')).toBe(true);
+
+			const row = document.querySelector('tbody tr[data-item-id="row-101"]')!;
+			expect(row.textContent).toContain('Label 101');
+			// One header row, then the body rows: the 101st item is row 102.
+			expect(row.getAttribute('aria-rowindex')).toBe('102');
+		});
+
+		it('builds a new row for every item that enters when recycle is off', async () => {
+			render(TableBodyRecycleTest, { recycle: false });
+			await expect.poll(() => itemIds().includes('row-001')).toBe(true);
+
+			const firstRow = document.querySelector('tbody tr[data-item-id="row-001"]');
+			scrollTo(100);
+			await expect.poll(() => itemIds().includes('row-101')).toBe(true);
+
+			expect(firstRow?.isConnected).toBe(false);
+		});
 	});
 });
