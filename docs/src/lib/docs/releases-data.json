@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.5.2",
+		"date": "2026-11-13T18:50:46.481Z",
+		"sections": [
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 161,
+						"prUrl": "https://github.com/human-kit/ui/pull/161",
+						"html": "<p>Make <code>Table.Cell</code> and <code>Table.Row</code> cheaper. <code>Table.Root</code> now listens one time for double clicks. Before, each body cell added its own <code>dblclick</code> listener. All rows of a table now share one <code>MutationObserver</code>. Before, each body row created its own. A cell that is not pinned no longer reads the column widths. A column drag does not ask it again at each move. A column drag that has no width to freeze no longer measures all headers at each move. A <code>Table.Body</code> with <code>recycle</code> keeps its window at one length, so the rows that leave one edge are the rows that enter the other.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.5.1",
-		"date": "2026-11-12T18:20:59.652Z",
+		"date": "2026-11-12T15:26:40-03:00",
 		"sections": [
 			{
 				"type": "Patch",
