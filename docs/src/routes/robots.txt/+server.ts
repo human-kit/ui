@@ -13,9 +13,10 @@ Allow: /
 # Measurement harness: no prose to index, and it competes for crawl budget.
 Disallow: /bench/
 
-# The raw-markdown twin of every docs page stays crawlable on purpose: /llms.txt
-# links to it for AI tools. It is not indexed, because it answers with
-# X-Robots-Tag: noindex, and a crawler must fetch it to see that header.
+# The raw-markdown twin of every docs page, and /llms-full.txt (all pages in
+# one file), stay crawlable on purpose: they are for AI tools. They are not
+# indexed, because they answer with X-Robots-Tag: noindex, and a crawler must
+# fetch them to see that header.
 
 Sitemap: ${SITE_URL}/sitemap.xml
 `;
