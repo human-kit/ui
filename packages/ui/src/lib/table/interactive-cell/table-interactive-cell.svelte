@@ -82,9 +82,12 @@
 	const visibleColumnIndex = $derived(column?.visibleColumnIndex ?? -1);
 	const pinState = $derived.by(() => {
 		void table.layoutEpoch;
-		void table.widthEpoch;
 		const columnId = resolvedColumn?.id;
-		return columnId ? table.getColumnPinState(columnId) : null;
+		// A pinned cell follows the column widths, as its offset is made of them. A cell that is not
+		// pinned has no offset, so a column drag does not have to ask it again at every move.
+		if (!columnId || table.getColumnPin(columnId) === undefined) return null;
+		void table.widthEpoch;
+		return table.getColumnPinState(columnId);
 	});
 	const tagName = $derived(row.section === 'body' && resolvedColumn?.isRowHeader ? 'th' : 'td');
 	const role = $derived.by(() => {
@@ -244,6 +247,7 @@
 		? 'true'
 		: undefined}
 	data-disabled={isRowDisabled || undefined}
+	data-table-interactive-cell=""
 	data-column-index={visibleColumnIndex >= 0 ? visibleColumnIndex : undefined}
 	data-pinned={pinState?.side}
 	data-pin-edge={pinState?.isEdge ? 'true' : undefined}
