@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.5.3
+
+### Patch Changes
+
+- [#165](https://github.com/human-kit/ui/pull/165) [`bd66cef`](https://github.com/human-kit/ui/commit/bd66cef6f8212a7c8b5a5a7d40ee2e19ee906851) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Fix an effect loop in the `DatePicker`, `DateRangePicker`, and `TimePicker` triggers. With Svelte 5.57, the trigger made the error `effect_update_depth_exceeded` when it mounted and when the value changed. Many pickers on one page can then stop the page.
+
 ## 1.5.2
 
 ### Patch Changes
