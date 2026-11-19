@@ -183,7 +183,9 @@
 	}
 
 	function setTriggerRef(element: HTMLElement | null) {
-		if (triggerRef === element) return;
+		// The trigger calls this from an effect. A tracked read here made that effect depend on the
+		// ref it writes, and its cleanup and body then cleared and set it in a loop.
+		if (untrack(() => triggerRef) === element) return;
 		triggerRef = element;
 	}
 
