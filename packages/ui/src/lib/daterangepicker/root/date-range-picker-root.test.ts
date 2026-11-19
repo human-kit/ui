@@ -478,4 +478,26 @@ describe('DateRangePicker.Root', () => {
 			).toBeNull();
 		});
 	});
+	// The trigger registers itself in an effect. setTriggerRef read triggerRef there, and the
+	// effect then depended on the value that it wrote: each run cleared the ref in the cleanup and
+	// set it again, and Svelte stopped the loop with effect_update_depth_exceeded.
+	it('does not loop on the trigger ref when it mounts or when the value changes', async () => {
+		const errors: string[] = [];
+		const onError = (event: ErrorEvent) => errors.push(String(event.message));
+		window.addEventListener('error', onError);
+		try {
+			const screen = render(DateRangePickerTest);
+			const trigger = screen.getByRole('button', { name: 'Open calendar' });
+			await trigger.click();
+			await expect.poll(() => document.querySelector('[role="dialog"]')).toBeTruthy();
+			await userEvent.keyboard('{Escape}');
+			await userEvent.keyboard('{Shift>}{Tab}{/Shift}2');
+			await new Promise((resolve) => setTimeout(resolve, 100));
+			expect(errors.filter((message) => message.includes('effect_update_depth_exceeded'))).toEqual(
+				[]
+			);
+		} finally {
+			window.removeEventListener('error', onError);
+		}
+	});
 });
