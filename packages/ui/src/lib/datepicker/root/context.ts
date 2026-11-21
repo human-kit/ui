@@ -4,8 +4,8 @@ import type {
 	DatePickerEditableSegmentType,
 	DatePickerSegmentPart,
 	DatePickerSegmentType
-} from './date-utils';
-import type { PopoverChangeReason, PopoverOpenChangeDetails } from '../../popover/root/context';
+} from './date-utils.js';
+import type { PopoverChangeReason, PopoverOpenChangeDetails } from '../../popover/root/context.js';
 
 const KEY = Symbol('date-picker');
 

@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { dev } from '../../internal/environment';
+	import { dev } from '../../internal/environment.js';
 	import {
 		resolveLocalizedString,
 		type LocalizedStringKey
-	} from '../../internal/localized-strings';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import type { ColorPickerRootProps } from '../types';
+	} from '../../internal/localized-strings.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import type { ColorPickerRootProps } from '../types.js';
 	import {
 		setColorPickerContext,
 		type ColorPickerChangeDetails,
 		type ColorPickerContext
-	} from './context';
+	} from './context.js';
 	import {
 		BLACK,
 		COLOR_CHANNEL_RANGES,
@@ -26,7 +26,7 @@
 		withColorChannel,
 		type Color,
 		type ColorChannel
-	} from './color';
+	} from './color.js';
 
 	/**
 	 * ColorPicker.Root — the color, and the context of each control.

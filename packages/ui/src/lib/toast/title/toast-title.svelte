@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useToastContext } from '../root/context';
+	import { useToastContext } from '../root/context.js';
 	import type { ToastTitleProps } from '../types.js';
 
 	/**

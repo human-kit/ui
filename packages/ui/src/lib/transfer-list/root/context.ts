@@ -1,6 +1,6 @@
 import { getContext, setContext } from 'svelte';
-import type { ListBoxContext } from '../../listbox/root/context';
-import type { TransferListKey, TransferListMoveDetails, TransferListSide } from './types';
+import type { ListBoxContext } from '../../listbox/root/context.js';
+import type { TransferListKey, TransferListMoveDetails, TransferListSide } from './types.js';
 
 /**
  * Shared state for the two lists and the move buttons.

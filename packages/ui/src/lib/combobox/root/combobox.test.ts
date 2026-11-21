@@ -4,7 +4,7 @@ import { userEvent } from 'vitest/browser';
 import ComboBoxTest from './combobox-test.svelte';
 import ComboBoxFormTest from './combobox-form-test.svelte';
 import ComboBoxControlledExternalTest from './combobox-controlled-external-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 describe('ComboBox', () => {
 	describe('Keyboard Navigation', () => {

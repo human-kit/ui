@@ -4,10 +4,10 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { getCheckboxGroupContext } from '../../checkbox-group/root/context.svelte';
-	import { setCheckboxContext, type CheckboxContext, type CheckboxState } from './context';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { getCheckboxGroupContext } from '../../checkbox-group/root/context.svelte.js';
+	import { setCheckboxContext, type CheckboxContext, type CheckboxState } from './context.js';
 
 	type CheckboxRootProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,

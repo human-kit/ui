@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { BreadcrumbsItemProps } from '../types.js';
-	import { useBreadcrumbsContext } from '../root/context';
+	import { useBreadcrumbsContext } from '../root/context.js';
 
 	/**
 	 * Breadcrumbs.Item — one page of the trail.

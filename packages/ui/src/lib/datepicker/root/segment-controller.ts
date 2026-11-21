@@ -1,4 +1,4 @@
-import type { DatePickerEditableSegmentType } from './date-utils';
+import type { DatePickerEditableSegmentType } from './date-utils.js';
 
 export type DatePickerSegmentRefs = Record<DatePickerEditableSegmentType, HTMLElement | null>;
 

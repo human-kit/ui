@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Tree from '../index';
-	import type { TreeContext, TreeItemTransition } from '../index';
+	import Tree from '../index.js';
+	import type { TreeContext, TreeItemTransition } from '../index.js';
 
 	type Props = {
 		selectionMode?: 'none' | 'single' | 'multiple';

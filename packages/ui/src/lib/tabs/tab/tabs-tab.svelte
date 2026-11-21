@@ -4,8 +4,8 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { useTabsContext } from '../root/context.svelte';
+	} from '../../primitives/input-modality.js';
+	import { useTabsContext } from '../root/context.svelte.js';
 	import type { TabsTabProps } from '../types.js';
 
 	type TabsTabMouseEvent = MouseEvent & {

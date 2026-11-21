@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Tabs } from '../index';
-	import type { TabsKeyboardActivation, TabsOrientation, TabsValue } from './context.svelte';
+	import { Tabs } from '../index.js';
+	import type { TabsKeyboardActivation, TabsOrientation, TabsValue } from './context.svelte.js';
 
 	type TabsTestProps = {
 		/** Render the `bind:value` variant instead of the `defaultValue` one. */

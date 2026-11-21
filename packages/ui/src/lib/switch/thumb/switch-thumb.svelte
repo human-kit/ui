@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useSwitchContext } from '../root/context';
+	import { useSwitchContext } from '../root/context.js';
 
 	type SwitchThumbProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
 		/** The content of the thumb. */

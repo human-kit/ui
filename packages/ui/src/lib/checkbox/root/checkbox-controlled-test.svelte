@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Checkbox } from '../index';
+	import { Checkbox } from '../index.js';
 
 	type Props = {
 		acceptChanges?: boolean;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Tooltip } from '../index';
-	import type { TooltipOpenChangeDetails } from '../types';
+	import { Tooltip } from '../index.js';
+	import type { TooltipOpenChangeDetails } from '../types.js';
 
 	type Props = {
 		open?: boolean;

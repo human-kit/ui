@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { Input } from '../../input';
-	import { getComboBoxTagDomId, useComboBoxContext } from '../root/context';
+	import { Input } from '../../input/index.js';
+	import { getComboBoxTagDomId, useComboBoxContext } from '../root/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type ComboBoxInputProps = HTMLInputAttributes & {
 		/** The accessible name of the input. */

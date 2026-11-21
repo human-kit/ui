@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { requireDrawerContext } from '../root/context';
-	import { getDrawerPresenceContext } from '../root/presence-context';
-	import { markDrawerViewport } from '../root/viewport-context';
-	import { getContentZIndex } from '../../primitives/layer-stack';
-	import type { DrawerSide } from '../root/types';
+	import { requireDrawerContext } from '../root/context.js';
+	import { getDrawerPresenceContext } from '../root/presence-context.js';
+	import { markDrawerViewport } from '../root/viewport-context.js';
+	import { getContentZIndex } from '../../primitives/layer-stack.js';
+	import type { DrawerSide } from '../root/types.js';
 
 	/**
 	 * Drawer.Viewport — the positioning layer that pins the panel to its edge.

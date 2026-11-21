@@ -4,7 +4,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useNumberFieldContext } from '../root/context';
+	import { useNumberFieldContext } from '../root/context.js';
 
 	type NumberFieldStepperProps = HTMLButtonAttributes & {
 		class?: string;

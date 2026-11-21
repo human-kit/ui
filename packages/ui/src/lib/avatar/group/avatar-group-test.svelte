@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Avatar } from '../index';
-	import LocaleProvider from '../../locale-provider/index';
+	import { Avatar } from '../index.js';
+	import LocaleProvider from '../../locale-provider/index.js';
 
 	let {
 		names = ['Ada', 'Grace', 'Katherine', 'Mary', 'Dorothy'],

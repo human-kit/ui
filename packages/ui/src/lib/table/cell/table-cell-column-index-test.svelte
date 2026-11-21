@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table } from '../index';
+	import { Table } from '../index.js';
 </script>
 
 <Table.Root aria-label="Filler row table">

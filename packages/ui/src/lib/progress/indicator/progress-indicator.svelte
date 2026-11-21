@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProgressIndicatorProps } from '../types.js';
-	import { useProgressContext } from '../root/context';
+	import { useProgressContext } from '../root/context.js';
 
 	/**
 	 * Progress.Indicator — the part of the track that the task has done.

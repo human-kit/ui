@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useCalendarContext } from '../root/context.svelte';
-	import { getCalendarGridContext } from '../grid/context';
+	import { useCalendarContext } from '../root/context.svelte.js';
+	import { getCalendarGridContext } from '../grid/context.js';
 	import CalendarHeaderCell from '../header-cell/calendar-header-cell.svelte';
 
 	type CalendarGridHeaderProps = {

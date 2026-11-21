@@ -1,9 +1,9 @@
-import type { MenuInternalCloseReason } from './context';
+import type { MenuInternalCloseReason } from './context.js';
 import {
 	applyTriggerCloseFocusState as applyTriggerCloseFocusStateShared,
 	addTriggerBlurCleanup,
 	clearTriggerFocusState
-} from '../../primitives/trigger-focus-state';
+} from '../../primitives/trigger-focus-state.js';
 
 export { addTriggerBlurCleanup, clearTriggerFocusState };
 

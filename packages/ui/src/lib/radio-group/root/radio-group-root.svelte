@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { RadioGroupRootProps } from '../types.js';
-	import { createRadioGroupContext, setRadioGroupContext } from './context.svelte';
-	import { trackInteractionModality } from '../../primitives/input-modality';
-	import { isRtl } from '../../internal/rtl';
+	import { createRadioGroupContext, setRadioGroupContext } from './context.svelte.js';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
+	import { isRtl } from '../../internal/rtl.js';
 
 	type RadioGroupKeyboardEvent = KeyboardEvent & {
 		currentTarget: EventTarget & HTMLDivElement;

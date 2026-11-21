@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { RadioGroup } from '../index';
+	import { RadioGroup } from '../index.js';
 
 	type Props = {
 		showLabel?: boolean;

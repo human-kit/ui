@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useRatingContext } from '../root/context';
-	import type { RatingLabelProps } from '../types';
+	import { useRatingContext } from '../root/context.js';
+	import type { RatingLabelProps } from '../types.js';
 
 	/**
 	 * Rating.Label — the accessible name of the rating.

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import type { BreadcrumbsRootProps } from '../types.js';
-	import { setBreadcrumbsContext, type BreadcrumbsContext } from './context';
+	import { setBreadcrumbsContext, type BreadcrumbsContext } from './context.js';
 
 	/**
 	 * Breadcrumbs.Root — the trail of pages above the one the user is on.

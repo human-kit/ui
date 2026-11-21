@@ -4,7 +4,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
+} from '../../test-utils/focus-contract.js';
 import ToggleTest from './toggle-test.svelte';
 import ToggleUncontrolledTest from './toggle-uncontrolled-test.svelte';
 

@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import PopoverTest from './popover-test.svelte';
 import PopoverBindTest from './popover-bind-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 describe('Popover', () => {
 	// Clean up any portaled content after each test

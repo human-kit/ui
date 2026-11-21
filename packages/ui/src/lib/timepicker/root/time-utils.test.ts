@@ -12,7 +12,7 @@ import {
 	adjustSegmentWithStep,
 	createEmptyTimePickerDraft,
 	type TimePickerDraft
-} from './time-utils';
+} from './time-utils.js';
 
 describe('isValidTimePickerValue', () => {
 	it('accepts HH:mm format', () => {

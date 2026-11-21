@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox from '../index';
+	import ComboBox from '../index.js';
 
 	type Props = {
 		/** How many options the list holds. Big enough that rendering them all would show. */

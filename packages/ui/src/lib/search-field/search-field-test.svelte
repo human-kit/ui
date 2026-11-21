@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '../locale-provider';
-	import { SearchField } from './index';
+	import { LocaleProvider } from '../locale-provider/index.js';
+	import { SearchField } from './index.js';
 
 	type Props = {
 		value?: string;

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Dialog } from '../../dialog/index';
-	import { Toast } from '../index';
-	import type { ToastManager } from '../index';
+	import { Dialog } from '../../dialog/index.js';
+	import { Toast } from '../index.js';
+	import type { ToastManager } from '../index.js';
 
 	let manager = $state<ToastManager>();
 </script>

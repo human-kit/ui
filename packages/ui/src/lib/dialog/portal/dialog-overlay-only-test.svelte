@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Dialog } from '../index';
+	import { Dialog } from '../index.js';
 </script>
 
 <!-- Portal with only an Overlay (no Dialog.Content): there is no motion target,

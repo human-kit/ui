@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DatePicker from '../index';
+	import DatePicker from '../index.js';
 
 	let value = $state<string | null | undefined>('2026-02-10');
 	let open = $state(false);

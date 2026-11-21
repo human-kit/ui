@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { TabsRootProps } from '../types.js';
-	import { createTabsContext, setTabsContext } from './context.svelte';
+	import { createTabsContext, setTabsContext } from './context.svelte.js';
 
 	const generatedId = $props.id();
 

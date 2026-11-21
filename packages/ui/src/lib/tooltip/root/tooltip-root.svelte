@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { browser } from '../../internal/environment';
-	import { shouldShowFocusVisible } from '../../primitives/input-modality';
-	import { longPress } from '../../primitives/long-press';
-	import type { TooltipRootProps } from '../types';
+	import { browser } from '../../internal/environment.js';
+	import { shouldShowFocusVisible } from '../../primitives/input-modality.js';
+	import { longPress } from '../../primitives/long-press.js';
+	import type { TooltipRootProps } from '../types.js';
 	import {
 		getTooltipProviderContext,
 		setTooltipContext,
@@ -12,7 +12,7 @@
 		type TooltipContext,
 		type TooltipOpenChangeDetails,
 		type TooltipOpenReason
-	} from './context';
+	} from './context.js';
 	import {
 		DEFAULT_TOOLTIP_CLOSE_DELAY,
 		DEFAULT_TOOLTIP_DELAY,
@@ -20,8 +20,8 @@
 		registerOpenTooltip,
 		shouldSkipDelay,
 		unregisterOpenTooltip
-	} from './tooltip-group';
-	import { buildSafePolygon, isPointInPolygon, type Point, type Side } from './safe-polygon';
+	} from './tooltip-group.js';
+	import { buildSafePolygon, isPointInPolygon, type Point, type Side } from './safe-polygon.js';
 
 	/**
 	 * Tooltip.Root — the open state, the delays, and the interaction with the trigger.

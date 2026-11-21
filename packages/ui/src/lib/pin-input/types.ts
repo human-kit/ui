@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
-import type { PinInputChangeDetails, PinInputContext, PinInputType } from './root/context';
+import type { PinInputChangeDetails, PinInputContext, PinInputType } from './root/context.js';
 
 export type { PinInputChangeDetails, PinInputContext, PinInputType };
 

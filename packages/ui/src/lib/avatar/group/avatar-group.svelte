@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { AvatarGroupProps } from '../types.js';
-	import { setAvatarGroupContext, type AvatarGroupContext } from './context';
+	import { setAvatarGroupContext, type AvatarGroupContext } from './context.js';
 
 	/**
 	 * Avatar.Group — a row of avatars, such as the people on a task.

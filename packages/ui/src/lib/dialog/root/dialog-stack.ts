@@ -11,7 +11,7 @@ import {
 	getLayerCount,
 	getLayerKindIndex,
 	subscribeLayerStack
-} from '../../primitives/layer-stack';
+} from '../../primitives/layer-stack.js';
 
 /**
  * The z-index scale lives in `primitives/layer-stack.ts` — it is shared by every
@@ -23,7 +23,7 @@ export {
 	getContentZIndex,
 	getFloatingLayerZIndex,
 	getFloatingLayerOverlayZIndex
-} from '../../primitives/layer-stack';
+} from '../../primitives/layer-stack.js';
 
 /**
  * Register a dialog when it opens.

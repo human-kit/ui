@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { usePinInputContext } from '../root/context';
-	import type { PinInputLabelProps } from '../types';
+	import { usePinInputContext } from '../root/context.js';
+	import type { PinInputLabelProps } from '../types.js';
 
 	/**
 	 * PinInput.Label — the accessible name of the group.

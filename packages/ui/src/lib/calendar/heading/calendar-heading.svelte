@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useCalendarContext } from '../root/context.svelte';
+	import { useCalendarContext } from '../root/context.svelte.js';
 
 	type CalendarHeadingProps = Omit<HTMLAttributes<HTMLHeadingElement>, 'children'>;
 

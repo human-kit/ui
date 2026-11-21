@@ -1,5 +1,5 @@
 import { setContext, getContext } from 'svelte';
-import type { ListBoxContext } from '../../listbox/root/context';
+import type { ListBoxContext } from '../../listbox/root/context.js';
 
 /**
  * Filter predicate used to decide whether an item is visible for a given query.

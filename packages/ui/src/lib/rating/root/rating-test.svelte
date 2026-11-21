@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Rating } from '../index';
-	import type { RatingChangeDetails } from '../types';
+	import { Rating } from '../index.js';
+	import type { RatingChangeDetails } from '../types.js';
 
 	type Props = {
 		value?: number;

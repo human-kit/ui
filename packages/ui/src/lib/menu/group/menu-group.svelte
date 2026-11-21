@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { setMenuGroupContext } from './context';
+	import { setMenuGroupContext } from './context.js';
 
 	/**
 	 * Menu.Group - Groups related items (role="group"), labelled by an optional Menu.GroupLabel.

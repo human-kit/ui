@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 
-import { expectNoFalseFocusAttributes } from '../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../test-utils/focus-contract.js';
 import DropzoneTest from './dropzone-test.svelte';
 
 function fileInput() {

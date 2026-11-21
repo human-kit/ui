@@ -12,4 +12,4 @@ export {
 	useLocaleContext,
 	useLocaleContextOptional,
 	type LocaleContext
-} from './context';
+} from './context.js';

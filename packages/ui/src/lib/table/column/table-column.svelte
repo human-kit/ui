@@ -4,7 +4,7 @@
 		setTableColumnContext,
 		useTableContext,
 		useTableSectionContext
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableColumnProps } from '../types.js';
 
 	let {

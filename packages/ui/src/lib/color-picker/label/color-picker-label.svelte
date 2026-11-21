@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useColorPickerContext } from '../root/context';
-	import type { ColorPickerLabelProps } from '../types';
+	import { useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerLabelProps } from '../types.js';
 
 	/**
 	 * ColorPicker.Label — the accessible name of the picker.

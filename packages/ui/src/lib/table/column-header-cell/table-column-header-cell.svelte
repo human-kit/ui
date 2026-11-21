@@ -5,15 +5,15 @@
 		useTableColumnContext,
 		useTableContext,
 		useTableRowContext
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableColumnHeaderCellProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { isRtl } from '../../internal/rtl';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { isRtl } from '../../internal/rtl.js';
 
 	let { children, class: className = '', ...restProps }: TableColumnHeaderCellProps = $props();
 

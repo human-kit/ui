@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useComboBoxContext } from '../root/context';
+	import { useComboBoxContext } from '../root/context.js';
 
 	type ComboBoxClearProps = HTMLButtonAttributes & {
 		class?: string;

@@ -4,7 +4,7 @@ import {
 	resolveSnapOffsets,
 	findNearestSnapIndex,
 	resolveSnapOnRelease
-} from './snap-points';
+} from './snap-points.js';
 
 describe('resolveSnapPointSize', () => {
 	it('reads a 0–1 number as a fraction of the viewport', () => {

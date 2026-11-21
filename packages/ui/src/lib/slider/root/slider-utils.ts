@@ -1,5 +1,5 @@
-import { decimalPlaces, roundToPrecision } from '../../internal/number-precision';
-import type { SliderOrientation } from './context';
+import { decimalPlaces, roundToPrecision } from '../../internal/number-precision.js';
+import type { SliderOrientation } from './context.js';
 
 /** A step that is not a positive finite number falls back to 1. */
 export function normalizeSliderStep(step: number | undefined): number {

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { isRtl } from '../../internal/rtl';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { focusWithModality } from '../../primitives/input-modality';
-	import { colorsAreEqual, parseColor } from '../root/color';
-	import { setColorPickerSwatchListContext, useColorPickerContext } from '../root/context';
-	import type { ColorPickerSwatchListProps } from '../types';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { isRtl } from '../../internal/rtl.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { focusWithModality } from '../../primitives/input-modality.js';
+	import { colorsAreEqual, parseColor } from '../root/color.js';
+	import { setColorPickerSwatchListContext, useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerSwatchListProps } from '../types.js';
 
 	/**
 	 * ColorPicker.SwatchList — a set of colors to choose from.

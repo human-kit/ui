@@ -1,4 +1,4 @@
-import { focusWithModality, type InputModality } from '../../primitives/input-modality';
+import { focusWithModality, type InputModality } from '../../primitives/input-modality.js';
 
 export function applyTriggerSelectionCloseState(
 	triggerRef: HTMLElement | null,

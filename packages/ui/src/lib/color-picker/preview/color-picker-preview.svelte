@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useColorPickerContext } from '../root/context';
-	import type { ColorPickerPreviewProps } from '../types';
+	import { useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerPreviewProps } from '../types.js';
 
 	/**
 	 * ColorPicker.Preview — the color of now.

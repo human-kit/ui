@@ -42,7 +42,7 @@ export {
 	type CalendarValueBySelectionMode,
 	type CalendarValue,
 	type CreateCalendarContextOptions
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 import * as CalendarParts from './index.parts.js';
 export default CalendarParts;

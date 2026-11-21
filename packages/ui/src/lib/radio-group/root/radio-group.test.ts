@@ -4,7 +4,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
+} from '../../test-utils/focus-contract.js';
 import RadioGroupDuplicateTest from './radio-group-duplicate-test.svelte';
 import RadioGroupFormTest from './radio-group-form-test.svelte';
 import RadioGroupOrphanTest from './radio-group-orphan-test.svelte';

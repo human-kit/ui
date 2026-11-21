@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { Checkbox } from '../../checkbox';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { getLocaleContext } from '../../locale-provider/context';
+	import { Checkbox } from '../../checkbox/index.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { useTreeContext } from '../root/context.svelte';
-	import { getTreeRenderMode } from '../root/render-mode';
-	import { useTreeItemContext } from '../item/context';
-	import type { TreeCheckboxProps } from '../types';
+	} from '../../primitives/input-modality.js';
+	import { useTreeContext } from '../root/context.svelte.js';
+	import { getTreeRenderMode } from '../root/render-mode.js';
+	import { useTreeItemContext } from '../item/context.js';
+	import type { TreeCheckboxProps } from '../types.js';
 
 	let {
 		id,

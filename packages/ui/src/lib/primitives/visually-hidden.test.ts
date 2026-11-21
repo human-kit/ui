@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { visuallyHiddenStyle } from './visually-hidden';
+import { visuallyHiddenStyle } from './visually-hidden.js';
 
 function styleOf(css: string): CSSStyleDeclaration {
 	const element = document.createElement('span');

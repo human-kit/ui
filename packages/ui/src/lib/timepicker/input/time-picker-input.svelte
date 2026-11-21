@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useTimePickerContext, type TimePickerSegmentPart } from '../root/context';
+	import { useTimePickerContext, type TimePickerSegmentPart } from '../root/context.js';
 	import TimePickerSegment from '../segment/time-picker-segment.svelte';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
-	import { composeEventHandlers } from '../internal/strict-props';
+	import { composeEventHandlers } from '../internal/strict-props.js';
 
 	type TimePickerInputProps = Omit<
 		HTMLAttributes<HTMLDivElement>,

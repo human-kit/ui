@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
 	import { ButtonRoot } from '../../button/index.js';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import type { BreadcrumbsEllipsisProps } from '../types.js';
-	import { useBreadcrumbsContext } from '../root/context';
+	import { useBreadcrumbsContext } from '../root/context.js';
 
 	/**
 	 * Breadcrumbs.Ellipsis — the button that stands for the folded middle of a long trail.

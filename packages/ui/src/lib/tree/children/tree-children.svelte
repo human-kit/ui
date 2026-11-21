@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getTreeRenderMode } from '../root/render-mode';
-	import { useTreeItemBuildContext } from '../item/build-context';
-	import type { TreeChildrenProps } from '../types';
+	import { getTreeRenderMode } from '../root/render-mode.js';
+	import { useTreeItemBuildContext } from '../item/build-context.js';
+	import type { TreeChildrenProps } from '../types.js';
 
 	let { children }: TreeChildrenProps = $props();
 

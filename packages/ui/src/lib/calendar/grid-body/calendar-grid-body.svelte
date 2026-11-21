@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useCalendarContext } from '../root/context.svelte';
-	import { getCalendarMonthIndex } from '../grid/month-scope';
+	import { useCalendarContext } from '../root/context.svelte.js';
+	import { getCalendarMonthIndex } from '../grid/month-scope.js';
 	import CalendarBodyCell from '../body-cell/calendar-body-cell.svelte';
 
 	type CalendarGridBodyProps = {

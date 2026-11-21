@@ -13,9 +13,9 @@ import type {
 	TableSelectionMode,
 	TableSortDirection,
 	TableSortDescriptor
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
-export type { TableColumnPin } from './root/context.svelte';
+export type { TableColumnPin } from './root/context.svelte.js';
 
 export type TableColumnProps = {
 	id: string;

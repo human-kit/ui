@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { floating, type ExtendedPlacement } from '../../primitives/floating';
-	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
-	import { useToastProviderContext } from '../provider/context';
+	import { floating, type ExtendedPlacement } from '../../primitives/floating.js';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack.js';
+	import { useToastProviderContext } from '../provider/context.js';
 	import type { ToastPositionerProps } from '../types.js';
 
 	/**

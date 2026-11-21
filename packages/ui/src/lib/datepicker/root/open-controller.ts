@@ -1,5 +1,5 @@
-import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context';
-import { createDatePickerOpenChangeDetails } from './open-change';
+import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context.js';
+import { createDatePickerOpenChangeDetails } from './open-change.js';
 
 type DatePickerOpenChangeInput =
 	| DatePickerOpenChangeDetails

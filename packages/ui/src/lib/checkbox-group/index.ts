@@ -20,7 +20,7 @@ export {
 	type CheckboxGroupOrientation,
 	type CheckboxGroupValue,
 	type CreateCheckboxGroupContextOptions
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 import * as CheckboxGroupParts from './index.parts.js';
 export default CheckboxGroupParts;

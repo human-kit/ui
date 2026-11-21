@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { CollapsibleRootProps } from '../types.js';
-	import { setCollapsibleContext, type CollapsibleContext } from './context';
+	import { setCollapsibleContext, type CollapsibleContext } from './context.js';
 
 	const generatedId = $props.id();
 

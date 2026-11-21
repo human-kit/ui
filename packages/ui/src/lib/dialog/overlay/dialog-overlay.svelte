@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { getDialogContext } from '../root/context';
-	import { getDialogPresenceContext } from '../root/presence-context';
-	import { getOverlayZIndex } from '../root/dialog-stack';
+	import { getDialogContext } from '../root/context.js';
+	import { getDialogPresenceContext } from '../root/presence-context.js';
+	import { getOverlayZIndex } from '../root/dialog-stack.js';
 
 	/**
 	 * Dialog.Overlay - The backdrop overlay behind the dialog.

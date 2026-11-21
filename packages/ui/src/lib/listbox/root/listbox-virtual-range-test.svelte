@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ListBox from '../index';
+	import ListBox from '../index.js';
 
 	type Row = { id: number; name: string };
 

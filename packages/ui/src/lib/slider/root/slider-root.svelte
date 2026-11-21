@@ -2,12 +2,12 @@
 	import { untrack } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { readable } from 'svelte/store';
-	import { dev } from '../../internal/environment';
-	import { isRtl } from '../../internal/rtl';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { focusWithModality } from '../../primitives/input-modality';
-	import type { SliderRootProps, SliderValue } from '../types';
-	import { setSliderContext, type SliderChangeDetails, type SliderContext } from './context';
+	import { dev } from '../../internal/environment.js';
+	import { isRtl } from '../../internal/rtl.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { focusWithModality } from '../../primitives/input-modality.js';
+	import type { SliderRootProps, SliderValue } from '../types.js';
+	import { setSliderContext, type SliderChangeDetails, type SliderContext } from './context.js';
 	import {
 		clampSliderValue,
 		getDefaultLargeStep,
@@ -17,7 +17,7 @@
 		getThumbBounds,
 		normalizeSliderStep,
 		snapSliderValue
-	} from './slider-utils';
+	} from './slider-utils.js';
 
 	const generatedId = $props.id();
 

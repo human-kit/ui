@@ -4,10 +4,10 @@
 		swipeGesture,
 		getSwipeAxis,
 		type SwipeGestureOptions
-	} from '../../primitives/swipe-gesture';
-	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
-	import { requireDrawerContext } from '../root/context';
-	import type { DrawerSide } from '../root/types';
+	} from '../../primitives/swipe-gesture.js';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack.js';
+	import { requireDrawerContext } from '../root/context.js';
+	import type { DrawerSide } from '../root/types.js';
 
 	/**
 	 * Drawer.SwipeArea — an invisible strip along the viewport edge that opens the

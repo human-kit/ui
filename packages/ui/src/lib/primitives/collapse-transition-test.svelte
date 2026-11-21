@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createCollapseTransition } from './collapse-transition.svelte';
+	import { createCollapseTransition } from './collapse-transition.svelte.js';
 
 	let { initialOpen = false, forceMount = false }: { initialOpen?: boolean; forceMount?: boolean } =
 		$props();

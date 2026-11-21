@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Popover } from '../index';
+	import { Popover } from '../index.js';
 
 	// `bind:open` seeded with `false` — the shape that used to be misread as "controlled",
 	// which made the popover never open at all: the trigger reported the change and the

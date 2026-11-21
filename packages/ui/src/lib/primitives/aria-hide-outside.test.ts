@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { hideOutside } from './aria-hide-outside';
+import { hideOutside } from './aria-hide-outside.js';
 
 describe('hideOutside', () => {
 	beforeEach(() => {

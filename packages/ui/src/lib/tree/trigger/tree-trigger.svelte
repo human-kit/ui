@@ -2,12 +2,12 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useTreeContext } from '../root/context.svelte';
-	import { getTreeRenderMode } from '../root/render-mode';
-	import { useTreeItemContext } from '../item/context';
-	import type { TreeTriggerProps } from '../types';
+	import { useTreeContext } from '../root/context.svelte.js';
+	import { getTreeRenderMode } from '../root/render-mode.js';
+	import { useTreeItemContext } from '../item/context.js';
+	import type { TreeTriggerProps } from '../types.js';
 
 	let {
 		children,

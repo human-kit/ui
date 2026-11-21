@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Checkbox } from '../../checkbox';
-	import { getCheckboxContext } from '../../checkbox/root/context';
+	import { Checkbox } from '../../checkbox/index.js';
+	import { getCheckboxContext } from '../../checkbox/root/context.js';
 	import type { TableCheckboxIndicatorProps } from '../types.js';
 
 	let {

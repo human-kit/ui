@@ -2,8 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onDestroy, untrack } from 'svelte';
-	import { longPress, LONG_PRESS_DELAY_MS } from '../../primitives/long-press';
-	import { useMenuContext } from '../root/context';
+	import { longPress, LONG_PRESS_DELAY_MS } from '../../primitives/long-press.js';
+	import { useMenuContext } from '../root/context.js';
 
 	/**
 	 * Menu.ContextTrigger - A surface that opens the menu on right click, long press,

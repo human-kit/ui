@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { AccordionItemProps } from '../types.js';
-	import { useAccordionContext } from '../root/context.svelte';
-	import { setAccordionItemContext } from './context';
+	import { useAccordionContext } from '../root/context.svelte.js';
+	import { setAccordionItemContext } from './context.js';
 
 	let {
 		value,

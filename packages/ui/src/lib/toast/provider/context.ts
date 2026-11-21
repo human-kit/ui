@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { InternalToastManager, ToastManager } from './toast-manager.svelte';
+import type { InternalToastManager, ToastManager } from './toast-manager.svelte.js';
 
 const PROVIDER_KEY = Symbol('toast-provider');
 

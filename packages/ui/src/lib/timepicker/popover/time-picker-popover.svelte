@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import { useTimePickerContext } from '../root/context';
-	import { Popover } from '../../popover';
-	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
-	import { composeEventHandlers, sanitizeTimePickerProps } from '../internal/strict-props';
-	import { trackInteractionModality } from '../../primitives/input-modality';
+	import { useTimePickerContext } from '../root/context.js';
+	import { Popover } from '../../popover/index.js';
+	import type { PopoverOpenChangeDetails } from '../../popover/root/context.js';
+	import { composeEventHandlers, sanitizeTimePickerProps } from '../internal/strict-props.js';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
 
 	type ForbiddenPopoverProp = 'open' | 'triggerRef' | 'onOpenChange' | 'id';
 	type TimePickerPopoverProps = Omit<ComponentProps<typeof Popover.Content>, ForbiddenPopoverProp>;

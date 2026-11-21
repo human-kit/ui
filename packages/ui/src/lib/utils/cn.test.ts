@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { cn } from './cn';
+import { cn } from './cn.js';
 
 describe('cn', () => {
 	it('joins strings with a single space', () => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useTableContext, useTableSectionContext } from '../root/context.svelte';
+	import { useTableContext, useTableSectionContext } from '../root/context.svelte.js';
 	import type { TableEmptyStateProps } from '../types.js';
 
 	let { children, class: className = '' }: TableEmptyStateProps = $props();

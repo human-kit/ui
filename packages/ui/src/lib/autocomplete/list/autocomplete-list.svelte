@@ -1,7 +1,7 @@
 <script lang="ts" generics="T extends object = object">
 	import type { ComponentProps, Snippet } from 'svelte';
-	import { useAutocompleteContext } from '../root/context';
-	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox';
+	import { useAutocompleteContext } from '../root/context.js';
+	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox/index.js';
 
 	/**
 	 * Autocomplete.List - The always-visible, filterable listbox.

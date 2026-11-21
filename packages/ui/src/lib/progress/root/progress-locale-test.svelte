@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '../../index';
-	import { Progress } from '../index';
+	import { LocaleProvider } from '../../index.js';
+	import { Progress } from '../index.js';
 
 	type Props = {
 		locale?: string;

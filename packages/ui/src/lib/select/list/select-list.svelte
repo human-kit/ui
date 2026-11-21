@@ -1,7 +1,7 @@
 <script lang="ts" generics="T extends object = object">
 	import { tick, untrack } from 'svelte';
-	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox';
-	import { useSelectContext, type SelectKey } from '../root/context';
+	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox/index.js';
+	import { useSelectContext, type SelectKey } from '../root/context.js';
 	import type { ComponentProps, Snippet } from 'svelte';
 
 	type SelectListProps = Omit<

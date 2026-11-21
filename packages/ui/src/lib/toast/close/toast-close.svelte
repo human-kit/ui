@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ButtonRoot } from '../../button/index.js';
-	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture';
-	import { useToastContext } from '../root/context';
+	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture.js';
+	import { useToastContext } from '../root/context.js';
 	import type { ToastCloseProps } from '../types.js';
 
 	/**

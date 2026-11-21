@@ -4,12 +4,12 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		getToggleGroupContext,
 		type ToggleGroupValue
-	} from '../../toggle-group/root/context.svelte';
+	} from '../../toggle-group/root/context.svelte.js';
 
 	export type ToggleRenderState = {
 		selected: boolean;

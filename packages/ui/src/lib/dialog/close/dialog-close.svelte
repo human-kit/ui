@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { getDialogContext } from '../root/context';
+	import { getDialogContext } from '../root/context.js';
 
 	/**
 	 * Dialog.Close — a button that closes the dialog.

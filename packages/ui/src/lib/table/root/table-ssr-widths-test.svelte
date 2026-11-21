@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getTableSsrMinWidth, Table, type TableColumnWidth } from '../index';
+	import { getTableSsrMinWidth, Table, type TableColumnWidth } from '../index.js';
 
 	type Column = {
 		id: string;

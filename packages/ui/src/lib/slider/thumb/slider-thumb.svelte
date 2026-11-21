@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { isRtl } from '../../internal/rtl';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { isRtl } from '../../internal/rtl.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { useSliderContext, type SliderChangeDetails } from '../root/context';
-	import type { SliderThumbProps, SliderThumbRenderState } from '../types';
+	} from '../../primitives/input-modality.js';
+	import { useSliderContext, type SliderChangeDetails } from '../root/context.js';
+	import type { SliderThumbProps, SliderThumbRenderState } from '../types.js';
 
 	/**
 	 * Slider.Thumb — the handle of one value.

@@ -30,7 +30,7 @@ export {
 	type TabsKeyboardActivation,
 	type TabsOrientation,
 	type TabsValue
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 import * as TabsParts from './index.parts.js';
 export default TabsParts;

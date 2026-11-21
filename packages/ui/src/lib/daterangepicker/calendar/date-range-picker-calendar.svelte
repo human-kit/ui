@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte';
-	import { Calendar } from '../../calendar';
-	import { sanitizeDateRangePickerProps } from '../internal/strict-props';
-	import { useDateRangePickerContext } from '../root/context';
-	import type { CalendarRangeValue } from '../../calendar/root/context.svelte';
+	import { Calendar } from '../../calendar/index.js';
+	import { sanitizeDateRangePickerProps } from '../internal/strict-props.js';
+	import { useDateRangePickerContext } from '../root/context.js';
+	import type { CalendarRangeValue } from '../../calendar/root/context.svelte.js';
 
 	type ForbiddenCalendarProp =
 		| 'selectionMode'

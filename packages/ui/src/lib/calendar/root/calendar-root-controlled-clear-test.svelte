@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Calendar from '../index';
+	import Calendar from '../index.js';
 
 	let value = $state<string | null>('2026-02-10');
 </script>

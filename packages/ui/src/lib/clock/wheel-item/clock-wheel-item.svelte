@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { ClockEditableSegmentType } from '../root/context';
+	import type { ClockEditableSegmentType } from '../root/context.js';
 
 	type TimePickerWheelOption = {
 		value: string;

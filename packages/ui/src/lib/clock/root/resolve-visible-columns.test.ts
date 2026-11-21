@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveVisibleColumns } from './resolve-visible-columns';
+import { resolveVisibleColumns } from './resolve-visible-columns.js';
 
 describe('resolveVisibleColumns', () => {
 	it('returns hour and minute for minute granularity with 24h cycle', () => {

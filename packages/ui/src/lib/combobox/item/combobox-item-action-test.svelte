@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox, { type ComboBoxItemActionHandler } from '../index';
+	import ComboBox, { type ComboBoxItemActionHandler } from '../index.js';
 
 	type Props = {
 		onAction?: ComboBoxItemActionHandler;

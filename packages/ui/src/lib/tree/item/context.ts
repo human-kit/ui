@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { TreeNodeId, TreeSelectionState } from '../root/context.svelte';
+import type { TreeNodeId, TreeSelectionState } from '../root/context.svelte.js';
 
 const TREE_ITEM_KEY = Symbol('tree-item');
 

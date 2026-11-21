@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Table } from '../index';
+	import { Table } from '../index.js';
 	import type {
 		TableDisabledBehavior,
 		TableKeyboardNavigation,
 		TableSelectionBehavior,
 		TableSelectionKey,
 		TableSelectionMode
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableBodyVirtualizer } from '../types.js';
 
 	type DemoRow = {

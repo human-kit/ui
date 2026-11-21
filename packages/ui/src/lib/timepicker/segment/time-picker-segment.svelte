@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { TimePickerSegmentPart } from '../root/context';
-	import { useTimePickerContext } from '../root/context';
+	import type { TimePickerSegmentPart } from '../root/context.js';
+	import { useTimePickerContext } from '../root/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { isRtl } from '../../internal/rtl';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
+	} from '../../primitives/input-modality.js';
+	import { isRtl } from '../../internal/rtl.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
 
 	type TimePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,

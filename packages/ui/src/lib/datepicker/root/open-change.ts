@@ -1,4 +1,4 @@
-import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context';
+import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context.js';
 
 export function createDatePickerOpenChangeDetails(details?: {
 	reason?: DatePickerOpenChangeReason;

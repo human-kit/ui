@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLLabelAttributes } from 'svelte/elements';
-	import type { ClassValue } from '../utils/cn';
-	import { composeEventHandlers } from '../utils/compose-event-handlers';
+	import type { ClassValue } from '../utils/cn.js';
+	import { composeEventHandlers } from '../utils/compose-event-handlers.js';
 
 	type LabelProps = HTMLLabelAttributes & {
 		class?: ClassValue;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '../../locale-provider';
-	import TimePicker from '../index';
+	import { LocaleProvider } from '../../locale-provider/index.js';
+	import TimePicker from '../index.js';
 
 	let value = $state<string | null>('14:30');
 </script>

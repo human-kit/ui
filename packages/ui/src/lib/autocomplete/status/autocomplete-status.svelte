@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useAutocompleteContext } from '../root/context';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
+	import { useAutocompleteContext } from '../root/context.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
 
 	/**
 	 * Autocomplete.Status - Visually-hidden live region that announces the number

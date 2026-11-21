@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TimePicker from '../index';
+	import TimePicker from '../index.js';
 
 	let downCount = $state(0);
 	let focusCount = $state(0);

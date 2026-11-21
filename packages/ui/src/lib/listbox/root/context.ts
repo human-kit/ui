@@ -3,7 +3,7 @@ import { SvelteSet } from 'svelte/reactivity';
 import {
 	createKeyboardNavigation,
 	type KeyboardNavigationReturn
-} from '../../primitives/keyboard-navigation';
+} from '../../primitives/keyboard-navigation.js';
 
 /**
  * Context object shared between ListBox and ListBox.Item components.

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useAutocompleteContext } from '../root/context';
+	import { useAutocompleteContext } from '../root/context.js';
 
 	/**
 	 * Autocomplete.Empty - Rendered when no items match the current query.

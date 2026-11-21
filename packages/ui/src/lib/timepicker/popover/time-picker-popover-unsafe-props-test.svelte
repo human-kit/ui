@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TimePicker from '../index';
+	import TimePicker from '../index.js';
 
 	let value = $state<string | null>('14:30');
 	let open = $state(true);

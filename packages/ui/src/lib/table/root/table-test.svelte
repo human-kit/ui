@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table } from '../index';
+	import { Table } from '../index.js';
 	import type {
 		TableContext,
 		TableDisabledBehavior,
@@ -8,7 +8,7 @@
 		TableSelectionKey,
 		TableSelectionMode,
 		TableSortDescriptor
-	} from './context.svelte';
+	} from './context.svelte.js';
 
 	type DemoRow = {
 		id: string;

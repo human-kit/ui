@@ -4,12 +4,12 @@
 		useTableCellContext,
 		useTableColumnContext,
 		useTableContext
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableSortTriggerProps, TableSortTriggerRenderState } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 	import { ButtonRoot } from '../../button/index.js';
 
 	type SortTriggerMouseEvent = MouseEvent & {

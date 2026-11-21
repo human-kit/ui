@@ -5,7 +5,7 @@ import {
 	filterPinInputText,
 	getPinInputPattern,
 	insertPinInputText
-} from './pin-input-utils';
+} from './pin-input-utils.js';
 
 describe('pin input utils', () => {
 	it('keeps only the characters the type accepts', () => {

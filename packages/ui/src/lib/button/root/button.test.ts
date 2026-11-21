@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
+} from '../../test-utils/focus-contract.js';
 import ButtonTest from './button-test.svelte';
 import ButtonExpandedTest from './button-expanded-test.svelte';
 

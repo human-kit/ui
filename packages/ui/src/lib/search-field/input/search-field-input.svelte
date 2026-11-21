@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { composeEventHandlers } from '../../utils/compose-event-handlers';
-	import { useSearchFieldContext } from '../root/context';
+	} from '../../primitives/input-modality.js';
+	import { composeEventHandlers } from '../../utils/compose-event-handlers.js';
+	import { useSearchFieldContext } from '../root/context.js';
 
 	type SearchFieldInputProps = Omit<
 		HTMLInputAttributes,

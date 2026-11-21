@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Menu } from '../index';
-	import type { MenuOpenChangeDetails } from './context';
+	import { Menu } from '../index.js';
+	import type { MenuOpenChangeDetails } from './context.js';
 
 	type Props = {
 		closeOnSelect?: boolean;

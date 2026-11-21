@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dropzone from './index';
+	import Dropzone from './index.js';
 
 	type Props = {
 		disabled?: boolean;

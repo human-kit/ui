@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { getDialogContext } from '../root/context';
+	import { getDialogContext } from '../root/context.js';
 
 	/**
 	 * Dialog.Description — supporting text announced after the title.

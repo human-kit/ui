@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Drawer, createDrawerHandle } from '../index';
+	import { Drawer, createDrawerHandle } from '../index.js';
 
 	type User = { name: string };
 

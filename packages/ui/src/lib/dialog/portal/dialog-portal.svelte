@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { Portal } from '../../portal';
-	import { createPresence } from '../../primitives/presence.svelte';
-	import { getDialogContext } from '../root/context';
-	import { setDialogPresenceContext } from '../root/presence-context';
+	import { Portal } from '../../portal/index.js';
+	import { createPresence } from '../../primitives/presence.svelte.js';
+	import { getDialogContext } from '../root/context.js';
+	import { setDialogPresenceContext } from '../root/presence-context.js';
 
 	/**
 	 * Dialog.Portal - Renders Overlay + Content into a portal while the dialog is open, and keeps

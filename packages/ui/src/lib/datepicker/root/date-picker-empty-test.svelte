@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '../../locale-provider';
-	import DatePicker from '../index';
+	import { LocaleProvider } from '../../locale-provider/index.js';
+	import DatePicker from '../index.js';
 
 	let selectedValue = $state<string | null>('');
 </script>

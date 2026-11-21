@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { requireDrawerContext } from '../root/context';
-	import { getDrawerPresenceContext } from '../root/presence-context';
-	import { createStartingStyle } from '../root/starting-style.svelte';
-	import { getOverlayZIndex } from '../../primitives/layer-stack';
+	import { requireDrawerContext } from '../root/context.js';
+	import { getDrawerPresenceContext } from '../root/presence-context.js';
+	import { createStartingStyle } from '../root/starting-style.svelte.js';
+	import { getOverlayZIndex } from '../../primitives/layer-stack.js';
 
 	/**
 	 * Drawer.Overlay — the backdrop behind the panel.

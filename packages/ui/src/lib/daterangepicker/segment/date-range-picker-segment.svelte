@@ -16,14 +16,14 @@
 
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { DatePickerSegmentPart, DateRangePickerRangePart } from '../root/context';
-	import { useDateRangePickerContext } from '../root/context';
+	import type { DatePickerSegmentPart, DateRangePickerRangePart } from '../root/context.js';
+	import { useDateRangePickerContext } from '../root/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { isRtl } from '../../internal/rtl';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
+	} from '../../primitives/input-modality.js';
+	import { isRtl } from '../../internal/rtl.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
 
 	type DateRangePickerSegmentProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,

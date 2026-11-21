@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 
 import CollapseTransitionTest from './collapse-transition-test.svelte';
-import { exactSize } from './collapse-transition.svelte';
+import { exactSize } from './collapse-transition.svelte.js';
 
 function panel() {
 	return document.querySelector('[data-testid="panel"]');

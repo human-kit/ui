@@ -6,8 +6,8 @@ import type {
 	TimePickerSegmentPart,
 	TimePickerSegmentType,
 	TimePickerTimeValue
-} from './time-utils';
-import type { PopoverChangeReason, PopoverOpenChangeDetails } from '../../popover/root/context';
+} from './time-utils.js';
+import type { PopoverChangeReason, PopoverOpenChangeDetails } from '../../popover/root/context.js';
 
 const KEY = Symbol('time-picker');
 

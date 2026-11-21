@@ -1,5 +1,5 @@
 import { setContext, getContext } from 'svelte';
-import type { KeyboardNavigationReturn } from '../../primitives/keyboard-navigation';
+import type { KeyboardNavigationReturn } from '../../primitives/keyboard-navigation.js';
 
 export type MenuCanonicalCloseReason =
 	'escape-key' | 'outside-press' | 'focus-out' | 'item-select' | 'imperative-action' | 'none';

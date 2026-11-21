@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { PinInput } from '../index';
-	import type { PinInputChangeDetails, PinInputType } from '../types';
+	import { PinInput } from '../index.js';
+	import type { PinInputChangeDetails, PinInputType } from '../types.js';
 
 	type Props = {
 		value?: string;

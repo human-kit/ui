@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { setTooltipProviderContext } from '../root/context';
+	import { setTooltipProviderContext } from '../root/context.js';
 	import {
 		DEFAULT_TOOLTIP_CLOSE_DELAY,
 		DEFAULT_TOOLTIP_DELAY,
 		DEFAULT_TOOLTIP_SKIP_DELAY
-	} from '../root/tooltip-group';
-	import type { TooltipProviderProps } from '../types';
+	} from '../root/tooltip-group.js';
+	import type { TooltipProviderProps } from '../types.js';
 
 	/**
 	 * Tooltip.Provider — the delays of every tooltip inside it.

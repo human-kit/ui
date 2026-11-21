@@ -2,8 +2,8 @@ import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import type { TooltipOpenChangeDetails } from '../types';
-import { resetTooltipGroup } from './tooltip-group';
+import type { TooltipOpenChangeDetails } from '../types.js';
+import { resetTooltipGroup } from './tooltip-group.js';
 import TooltipTest from './tooltip-test.svelte';
 
 function byTestId<T extends HTMLElement = HTMLElement>(id: string): T {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { requireDrawerContext } from '../root/context';
+	import { requireDrawerContext } from '../root/context.js';
 
 	/**
 	 * Drawer.Title — the panel's accessible name.

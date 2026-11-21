@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Input from './index';
+	import Input from './index.js';
 
 	type Props = {
 		disabled?: boolean;

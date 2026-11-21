@@ -1,4 +1,4 @@
-import type { DatePickerDateValue, DatePickerSegmentPart } from './date-utils';
+import type { DatePickerDateValue, DatePickerSegmentPart } from './date-utils.js';
 import {
 	clampSegment,
 	clampSegmentDraft,
@@ -7,7 +7,7 @@ import {
 	normalizeSegmentInput,
 	type DatePickerSegmentDraft,
 	type EditableSegmentType
-} from './segment-state';
+} from './segment-state.js';
 
 /**
  * Shared date segment engine used by both DatePicker and DateRangePicker.

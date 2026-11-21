@@ -1,4 +1,4 @@
-import { decimalPlaces, roundToPrecision } from '../../internal/number-precision';
+import { decimalPlaces, roundToPrecision } from '../../internal/number-precision.js';
 export type NumberFieldStep = number | 'any';
 
 export type NumberParseResult =

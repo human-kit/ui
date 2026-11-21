@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Tree from '../index';
+	import Tree from '../index.js';
 </script>
 
 <Tree.Root aria-label="Static SSR tree" defaultExpandedKeys={['documents']}>

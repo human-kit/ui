@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProgressLabelProps } from '../types.js';
-	import { useProgressContext } from '../root/context';
+	import { useProgressContext } from '../root/context.js';
 
 	/**
 	 * Progress.Label — the name of the task.

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DatePicker from '../index';
+	import DatePicker from '../index.js';
 
 	type Props = {
 		defaultValue?: string;

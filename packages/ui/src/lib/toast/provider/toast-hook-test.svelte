@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useToastManager } from '../index';
+	import { useToastManager } from '../index.js';
 
 	// A component under the provider reaches the manager without a binding.
 	const manager = useToastManager();

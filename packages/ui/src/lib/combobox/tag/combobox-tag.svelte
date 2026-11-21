@@ -13,7 +13,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { getContext } from 'svelte';
-	import { getComboBoxTagDomId, useComboBoxContext } from '../root/context';
+	import { getComboBoxTagDomId, useComboBoxContext } from '../root/context.js';
 
 	/**
 	 * ComboBox.Tag - Individual tag representing a selected value.

@@ -16,7 +16,7 @@ describe('Tree.Section', () => {
 	});
 
 	it('renders top-level items declared outside sections alongside section items', async () => {
-		let treeContext: import('../index').TreeContext | undefined;
+		let treeContext: import('../index.js').TreeContext | undefined;
 		const screen = render(TreeSectionMixedTest, {
 			onContext: (context) => {
 				treeContext = context;

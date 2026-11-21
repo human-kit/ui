@@ -2,15 +2,15 @@
 	import { readable } from 'svelte/store';
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { isAriaInvalidValue } from '../../utils/aria-invalid';
-	import { composeEventHandlers } from '../../utils/compose-event-handlers';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { isAriaInvalidValue } from '../../utils/aria-invalid.js';
+	import { composeEventHandlers } from '../../utils/compose-event-handlers.js';
 	import {
 		setSearchFieldContext,
 		type SearchFieldChangeReason,
 		type SearchFieldContext
-	} from './context';
+	} from './context.js';
 
 	type SearchFieldRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'id'> & {
 		children?: Snippet;

@@ -1,4 +1,4 @@
-import type { DatePickerDateValue } from './date-utils';
+import type { DatePickerDateValue } from './date-utils.js';
 
 export type DatePickerValueLike = DatePickerDateValue | null | undefined;
 

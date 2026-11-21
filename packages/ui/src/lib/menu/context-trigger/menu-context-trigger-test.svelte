@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Menu } from '../index';
-	import type { MenuOpenChangeDetails } from '../root/context';
+	import { Menu } from '../index.js';
+	import type { MenuOpenChangeDetails } from '../root/context.js';
 
 	type Props = {
 		disabled?: boolean;

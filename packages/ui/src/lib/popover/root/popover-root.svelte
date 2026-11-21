@@ -9,12 +9,12 @@
 		type PopoverOpenChangeDetails,
 		type PopoverOpenReason,
 		type PopoverContext
-	} from './context';
+	} from './context.js';
 	import {
 		addTriggerBlurCleanup,
 		applyTriggerCloseFocusState,
 		clearTriggerFocusState
-	} from './focus-state';
+	} from './focus-state.js';
 
 	/**
 	 * Popover.Root - State management wrapper for Popover components.

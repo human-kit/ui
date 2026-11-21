@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { tick } from 'svelte';
 import { render } from 'vitest-browser-svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 import LocaleProbe from './progress-locale-test.svelte';
 import ProgressTest from './progress-test.svelte';
 

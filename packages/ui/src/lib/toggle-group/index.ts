@@ -17,7 +17,7 @@ export {
 	type ToggleGroupOrientation,
 	type ToggleGroupSelectionMode,
 	type ToggleGroupValue
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 import * as ToggleGroupParts from './index.parts.js';
 export default ToggleGroupParts;

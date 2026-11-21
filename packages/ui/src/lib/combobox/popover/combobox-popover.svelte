@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte';
-	import { useComboBoxContext } from '../root/context';
-	import { Popover } from '../../popover';
-	import { focusWithModality, type InputModality } from '../../primitives/input-modality';
-	import { containWheel } from '../../primitives/contain-wheel';
-	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
+	import { useComboBoxContext } from '../root/context.js';
+	import { Popover } from '../../popover/index.js';
+	import { focusWithModality, type InputModality } from '../../primitives/input-modality.js';
+	import { containWheel } from '../../primitives/contain-wheel.js';
+	import type { PopoverOpenChangeDetails } from '../../popover/root/context.js';
 
 	/**
 	 * ComboBox.Popover - Just the floating container wrapper.

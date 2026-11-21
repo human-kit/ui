@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Drawer } from '../index';
+	import { Drawer } from '../index.js';
 </script>
 
 <Drawer.Indent data-testid="indent">

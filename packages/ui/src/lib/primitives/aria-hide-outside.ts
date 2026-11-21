@@ -8,7 +8,7 @@
  * two exemptions (see `EXEMPT_SELECTOR`).
  */
 
-import { TOP_LAYER_SELECTOR } from './click-outside';
+import { TOP_LAYER_SELECTOR } from './click-outside.js';
 
 /**
  * Live regions are exempt from hiding ENTIRELY (neither `aria-hidden` nor `inert` is applied,

@@ -3,9 +3,9 @@
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { readable } from 'svelte/store';
 	import { ButtonRoot } from '../../button/index.js';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { useComboBoxContext } from '../root/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { useComboBoxContext } from '../root/context.js';
 
 	type ComboBoxTriggerProps = HTMLButtonAttributes & {
 		class?: string;

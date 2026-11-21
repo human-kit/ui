@@ -1,6 +1,6 @@
-import { dev } from './environment';
+import { dev } from './environment.js';
 
-export { composeEventHandlers } from '../utils/compose-event-handlers';
+export { composeEventHandlers } from '../utils/compose-event-handlers.js';
 
 const warnedMessages = new Set<string>();
 const sanitizeCache = new WeakMap<object, Map<string, Record<string, unknown>>>();

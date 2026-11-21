@@ -9,7 +9,7 @@
 <script lang="ts">
 	import { setContext, untrack } from 'svelte';
 	import ListBoxItem from '../../listbox/item/listbox-item.svelte';
-	import { getSelectItemDomId, useSelectContext } from '../root/context';
+	import { getSelectItemDomId, useSelectContext } from '../root/context.js';
 	import type { ComponentProps } from 'svelte';
 
 	type SelectItemProps = Omit<

@@ -2,13 +2,13 @@
 	import { untrack } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { ToastProviderProps } from '../types.js';
-	import { setToastProviderContext, type ToastProviderContext } from './context';
+	import { setToastProviderContext, type ToastProviderContext } from './context.js';
 	import {
 		createToastManager,
 		DEFAULT_TOAST_LIMIT,
 		DEFAULT_TOAST_TIMEOUT,
 		type InternalToastManager
-	} from './toast-manager.svelte';
+	} from './toast-manager.svelte.js';
 
 	/**
 	 * Toast.Provider — the list of toasts, and the manager that adds to it.

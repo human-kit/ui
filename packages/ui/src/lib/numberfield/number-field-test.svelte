@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '../locale-provider';
-	import { NumberField } from './index';
+	import { LocaleProvider } from '../locale-provider/index.js';
+	import { NumberField } from './index.js';
 
 	type Props = {
 		value?: number | null;

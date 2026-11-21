@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { CheckboxGroup } from '../index';
-	import type { CheckboxGroupValue } from '../root/context.svelte';
+	import { CheckboxGroup } from '../index.js';
+	import type { CheckboxGroupValue } from '../root/context.svelte.js';
 
 	type Props = {
 		defaultValue?: CheckboxGroupValue[];

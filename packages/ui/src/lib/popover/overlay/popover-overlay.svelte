@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { Portal } from '../../portal';
-	import { createPresence } from '../../primitives/presence.svelte';
-	import { getPopoverContext } from '../root/context';
-	import { getFloatingLayerOverlayZIndex } from '../../primitives/layer-stack';
+	import { Portal } from '../../portal/index.js';
+	import { createPresence } from '../../primitives/presence.svelte.js';
+	import { getPopoverContext } from '../root/context.js';
+	import { getFloatingLayerOverlayZIndex } from '../../primitives/layer-stack.js';
 
 	/**
 	 * Popover.Overlay - An optional backdrop rendered behind the popover.

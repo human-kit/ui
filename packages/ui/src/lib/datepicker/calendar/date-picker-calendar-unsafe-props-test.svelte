@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DatePicker from '../index';
+	import DatePicker from '../index.js';
 
 	let unsafeOnChangeCalls = $state(0);
 	let selectedValue = $state<string | null>('');

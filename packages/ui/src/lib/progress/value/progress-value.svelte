@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProgressValueProps } from '../types.js';
-	import { useProgressContext } from '../root/context';
+	import { useProgressContext } from '../root/context.js';
 
 	/**
 	 * Progress.Value — the value as text, for the user.

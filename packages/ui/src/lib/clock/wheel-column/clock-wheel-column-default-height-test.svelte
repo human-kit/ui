@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Clock from '../index.parts';
+	import * as Clock from '../index.parts.js';
 
 	let value = $state<string | null>('14:30');
 </script>

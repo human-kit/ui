@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { setClockContext, type ClockContext } from '../../clock/root/context';
+	import { setClockContext, type ClockContext } from '../../clock/root/context.js';
 	import {
 		resolveVisibleColumns,
 		type ClockColumnInfo
-	} from '../../clock/root/resolve-visible-columns';
+	} from '../../clock/root/resolve-visible-columns.js';
 	import ClockWheelColumn from '../../clock/wheel-column/clock-wheel-column.svelte';
-	import { useTimePickerContext } from '../root/context';
+	import { useTimePickerContext } from '../root/context.js';
 
 	type TimePickerClockProps = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> & {
 		column?: Snippet<[ClockColumnInfo]>;

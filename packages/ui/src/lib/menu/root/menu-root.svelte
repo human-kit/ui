@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onDestroy, untrack } from 'svelte';
-	import { setMenuContext, type MenuOpenChangeDetails } from './context';
-	import { createMenuState } from './menu-state.svelte';
+	import { setMenuContext, type MenuOpenChangeDetails } from './context.js';
+	import { createMenuState } from './menu-state.svelte.js';
 
 	/**
 	 * Menu.Root - State management wrapper for Menu components.

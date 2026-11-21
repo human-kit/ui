@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { parseColor, toCssColor } from '../root/color';
-	import { getColorPickerSwatchListContext, useColorPickerContext } from '../root/context';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { parseColor, toCssColor } from '../root/color.js';
+	import { getColorPickerSwatchListContext, useColorPickerContext } from '../root/context.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import type { ColorPickerSwatchProps } from '../types';
+	} from '../../primitives/input-modality.js';
+	import type { ColorPickerSwatchProps } from '../types.js';
 
 	/**
 	 * ColorPicker.Swatch — one color to choose.

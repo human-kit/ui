@@ -6,7 +6,7 @@ import {
 	getSliderValueFromPointer,
 	getThumbBounds,
 	snapSliderValue
-} from './slider-utils';
+} from './slider-utils.js';
 
 describe('snapSliderValue', () => {
 	it('snaps to the nearest step from min', () => {

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import TransferListTest from './transfer-list-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 function list(side: 'source' | 'target') {
 	return document.querySelector<HTMLElement>(`[role="listbox"][data-side="${side}"]`)!;

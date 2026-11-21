@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ButtonRoot } from '../../button/index.js';
-	import { useCollapsibleContext } from '../root/context';
+	import { useCollapsibleContext } from '../root/context.js';
 	import type { CollapsibleTriggerProps } from '../types.js';
 
 	type CollapsibleTriggerMouseEvent = MouseEvent & {

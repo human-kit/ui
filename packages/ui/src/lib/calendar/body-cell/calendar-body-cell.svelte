@@ -51,14 +51,14 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useCalendarContext } from '../root/context.svelte';
-	import { getCalendarMonthIndex } from '../grid/month-scope';
-	import { formatCalendarDate, getTodayUtcDate, parseCalendarDate } from '../root/date-utils';
+	import { useCalendarContext } from '../root/context.svelte.js';
+	import { getCalendarMonthIndex } from '../grid/month-scope.js';
+	import { formatCalendarDate, getTodayUtcDate, parseCalendarDate } from '../root/date-utils.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 
 	type CalendarBodyCellProps = Omit<HTMLAttributes<HTMLTableCellElement>, 'children'> & {
 		date: string;

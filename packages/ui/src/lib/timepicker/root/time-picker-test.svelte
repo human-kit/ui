@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TimePicker from '../index';
+	import TimePicker from '../index.js';
 
 	type Props = {
 		defaultValue?: string;

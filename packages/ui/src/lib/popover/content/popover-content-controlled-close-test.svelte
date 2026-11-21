@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Popover } from '../index';
+	import { Popover } from '../index.js';
 
 	// Controlled parent: owns the state, syncs it in onOpenChange, and flows it
 	// back down. In controlled mode Popover.Root never writes the prop itself.

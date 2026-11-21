@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useSelectContext } from '../root/context';
-	import type { SelectLabelProps } from '../types';
+	import { useSelectContext } from '../root/context.js';
+	import type { SelectLabelProps } from '../types.js';
 
 	/**
 	 * Select.Label — the accessible name of the field.

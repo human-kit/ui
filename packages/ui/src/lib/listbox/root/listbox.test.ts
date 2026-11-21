@@ -4,7 +4,7 @@ import { userEvent } from 'vitest/browser';
 import ListBoxTest from './listbox-test.svelte';
 import ListBoxBindValueTest from './listbox-bind-value-test.svelte';
 import ListBoxControlledTest from './listbox-controlled-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 describe('ListBox', () => {
 	describe('Accessibility', () => {

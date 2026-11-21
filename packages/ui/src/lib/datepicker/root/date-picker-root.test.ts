@@ -8,7 +8,7 @@ import DatePickerOpenCancelTest from './date-picker-open-cancel-test.svelte';
 import {
 	expectFocusVisibleImpliesFocusWithin,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
+} from '../../test-utils/focus-contract.js';
 
 function getSegment(type: 'day' | 'month' | 'year') {
 	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);

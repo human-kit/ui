@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CollapsiblePanelProps } from '../types.js';
-	import { createCollapseTransition } from '../../primitives/collapse-transition.svelte';
-	import { useCollapsibleContext } from '../root/context';
+	import { createCollapseTransition } from '../../primitives/collapse-transition.svelte.js';
+	import { useCollapsibleContext } from '../root/context.js';
 
 	let {
 		forceMount = false,

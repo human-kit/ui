@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Accordion } from '../index';
+	import { Accordion } from '../index.js';
 	import type {
 		AccordionOrientation,
 		AccordionSelectionMode,
 		AccordionValue
-	} from './context.svelte';
+	} from './context.svelte.js';
 
 	type AccordionTestProps = {
 		controlled?: boolean;

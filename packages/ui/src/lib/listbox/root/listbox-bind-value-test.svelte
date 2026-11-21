@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ListBox from '../index';
+	import ListBox from '../index.js';
 
 	// Uncontrolled + bound: no initial value, `bind:value` receives updates.
 	let value = $state<(string | number)[] | undefined>(undefined);

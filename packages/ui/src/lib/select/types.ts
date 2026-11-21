@@ -5,7 +5,7 @@ import type {
 	HTMLButtonAttributes,
 	HTMLLabelAttributes
 } from 'svelte/elements';
-import type { SelectContext, SelectOpenChangeDetails, SelectKey } from './root/context';
+import type { SelectContext, SelectOpenChangeDetails, SelectKey } from './root/context.js';
 
 export type { SelectOpenChangeDetails, SelectKey };
 

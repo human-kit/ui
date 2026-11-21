@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { isRtl } from '../../internal/rtl';
-	import { withColorChannel } from '../root/color';
-	import { useColorPickerContext, setColorPickerAreaContext } from '../root/context';
-	import type { ColorPickerAreaProps } from '../types';
+	import { isRtl } from '../../internal/rtl.js';
+	import { withColorChannel } from '../root/color.js';
+	import { useColorPickerContext, setColorPickerAreaContext } from '../root/context.js';
+	import type { ColorPickerAreaProps } from '../types.js';
 
 	/**
 	 * ColorPicker.Area — the square of two channels.

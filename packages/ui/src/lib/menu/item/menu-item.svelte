@@ -45,7 +45,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, onDestroy, untrack } from 'svelte';
-	import { useMenuContext } from '../root/context';
+	import { useMenuContext } from '../root/context.js';
 
 	/**
 	 * Menu.Item - An interactive menu item (role="menuitem").

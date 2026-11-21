@@ -3,7 +3,7 @@ import {
 	getPointerReleaseVelocity,
 	useWheelScroll,
 	type WheelScrollSample
-} from './use-wheel-scroll.svelte';
+} from './use-wheel-scroll.svelte.js';
 
 /**
  * Fake timers that also fake `performance.now`, so pointer-release velocity

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Popover } from '../index';
-	import type { PopoverOpenChangeDetails } from '../root/context';
+	import { Popover } from '../index.js';
+	import type { PopoverOpenChangeDetails } from '../root/context.js';
 
 	type Props = {
 		preventClose?: boolean;

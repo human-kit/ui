@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { getMenuGroupContext } from './context';
+	import { getMenuGroupContext } from './context.js';
 
 	/**
 	 * Menu.GroupLabel - Accessible label for a Menu.Group. Non-interactive.

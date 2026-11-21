@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { isRtl } from '../../internal/rtl';
-	import { setColorPickerSliderContext, useColorPickerContext } from '../root/context';
-	import type { ColorPickerSliderProps } from '../types';
+	import { isRtl } from '../../internal/rtl.js';
+	import { setColorPickerSliderContext, useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerSliderProps } from '../types.js';
 
 	/**
 	 * ColorPicker.Slider — the track of one channel.

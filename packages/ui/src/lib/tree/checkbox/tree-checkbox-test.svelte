@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import Tree from '../index';
+	import Tree from '../index.js';
 
 	let {
 		selectionMode = 'multiple',

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { writable } from 'svelte/store';
-	import { setLocaleContext } from './context';
+	import { setLocaleContext } from './context.js';
 
 	type LocaleProviderProps = {
 		locale?: string;

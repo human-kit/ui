@@ -4,7 +4,7 @@ import {
 	formatDateOnlyValue,
 	isValidDateOnlyValue,
 	parseDateOnlyValue
-} from './date-only';
+} from './date-only.js';
 
 describe('date-only utils', () => {
 	describe('isValidDateOnlyValue', () => {

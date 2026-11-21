@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 import type { HTMLAttributes } from 'svelte/elements';
-import type { RatingChangeDetails, RatingContext } from './root/context';
+import type { RatingChangeDetails, RatingContext } from './root/context.js';
 
 export type { RatingChangeDetails, RatingContext };
 

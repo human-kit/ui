@@ -24,7 +24,7 @@ import {
 	type CalendarFirstDayOfWeek,
 	type CalendarMonthHeadingStyle,
 	type CalendarWeekdayStyle
-} from './date-utils';
+} from './date-utils.js';
 
 const KEY = Symbol('calendar');
 

@@ -2,16 +2,20 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onDestroy, tick } from 'svelte';
-	import { browser } from '../../internal/environment';
-	import { createPointAnchor, floating, type ExtendedPlacement } from '../../primitives/floating';
-	import { clickOutside, isTargetInTopLayerAbove } from '../../primitives/click-outside';
-	import { scrollLock } from '../../primitives/scroll-lock';
-	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
-	import { createPresence } from '../../primitives/presence.svelte';
-	import { Portal } from '../../portal';
-	import { useMenuContext } from '../root/context';
-	import { pushMenuLayer, removeMenuLayer, isTopmostMenu } from '../root/menu-stack';
-	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
+	import { browser } from '../../internal/environment.js';
+	import {
+		createPointAnchor,
+		floating,
+		type ExtendedPlacement
+	} from '../../primitives/floating.js';
+	import { clickOutside, isTargetInTopLayerAbove } from '../../primitives/click-outside.js';
+	import { scrollLock } from '../../primitives/scroll-lock.js';
+	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant.js';
+	import { createPresence } from '../../primitives/presence.svelte.js';
+	import { Portal } from '../../portal/index.js';
+	import { useMenuContext } from '../root/context.js';
+	import { pushMenuLayer, removeMenuLayer, isTopmostMenu } from '../root/menu-stack.js';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack.js';
 
 	/**
 	 * Menu.Content - The floating menu panel (role="menu").

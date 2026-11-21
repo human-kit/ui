@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { Toggle } from '../../toggle/index.js';
-	import { ToggleGroup } from '../index';
+	import { ToggleGroup } from '../index.js';
 	import type {
 		ToggleGroupOrientation,
 		ToggleGroupSelectionMode,
 		ToggleGroupValue
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 
 	type Props = {
 		value?: ToggleGroupValue[];

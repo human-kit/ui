@@ -2,16 +2,16 @@
 	import { untrack } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { readable } from 'svelte/store';
-	import type { ListBoxContext } from '../../listbox/root/context';
-	import { dev } from '../../internal/environment';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { getLocaleContext } from '../../locale-provider/context';
+	import type { ListBoxContext } from '../../listbox/root/context.js';
+	import { dev } from '../../internal/environment.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
 	import {
 		focusWithModality,
 		getInteractionModality,
 		type InputModality
-	} from '../../primitives/input-modality';
-	import type { SelectRootProps } from '../types';
+	} from '../../primitives/input-modality.js';
+	import type { SelectRootProps } from '../types.js';
 	import {
 		setSelectContext,
 		type SelectChangeReason,
@@ -21,7 +21,7 @@
 		type SelectOpenFocusIntent,
 		type SelectOpenReason,
 		type SelectKey
-	} from './context';
+	} from './context.js';
 
 	const generatedId = $props.id();
 

@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onDestroy, untrack } from 'svelte';
-	import { useMenuContext } from '../root/context';
+	import { useMenuContext } from '../root/context.js';
 
 	/**
 	 * Menu.SubmenuTrigger - Opens a submenu. Acts as a menuitem in the parent menu

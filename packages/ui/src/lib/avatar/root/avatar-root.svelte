@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { AvatarRootProps } from '../types.js';
-	import { getAvatarGroupContext } from '../group/context';
-	import { setAvatarContext, type AvatarContext, type AvatarStatus } from './context';
+	import { getAvatarGroupContext } from '../group/context.js';
+	import { setAvatarContext, type AvatarContext, type AvatarStatus } from './context.js';
 
 	/**
 	 * Avatar.Root — a picture of a person or a thing, with a fallback for when the picture is

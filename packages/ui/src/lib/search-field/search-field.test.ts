@@ -6,7 +6,7 @@ import {
 	expectFocusVisibleImpliesFocused,
 	expectFocusVisibleImpliesFocusWithin,
 	expectNoFalseFocusAttributes
-} from '../test-utils/focus-contract';
+} from '../test-utils/focus-contract.js';
 import SearchFieldOrphanTest from './search-field-orphan-test.svelte';
 import SearchFieldTest from './search-field-test.svelte';
 

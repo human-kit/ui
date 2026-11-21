@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { useTreeContext, useTreeSectionContext } from '../root/context.svelte';
-	import { getTreeRenderMode } from '../root/render-mode';
-	import type { TreeHeaderProps } from '../types';
+	import { useTreeContext, useTreeSectionContext } from '../root/context.svelte.js';
+	import { getTreeRenderMode } from '../root/render-mode.js';
+	import type { TreeHeaderProps } from '../types.js';
 
 	let { children, class: className = '', id, ...restProps }: TreeHeaderProps = $props();
 

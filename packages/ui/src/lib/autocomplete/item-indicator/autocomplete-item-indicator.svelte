@@ -6,7 +6,7 @@
 		AUTOCOMPLETE_ITEM_CONTEXT_KEY,
 		type AutocompleteItemContext
 	} from '../item/autocomplete-item.svelte';
-	import { useAutocompleteContext } from '../root/context';
+	import { useAutocompleteContext } from '../root/context.js';
 
 	/**
 	 * Autocomplete.ItemIndicator - Visual indicator shown when an item is selected.

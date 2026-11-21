@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useClockContext } from '../root/context';
+	import { useClockContext } from '../root/context.js';
 
 	type ClockAxisProps = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> & {
 		class?: string;

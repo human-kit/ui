@@ -1,16 +1,16 @@
 <script lang="ts" generics="T extends object = object">
 	import type { Snippet } from 'svelte';
 	import { onDestroy, onMount, untrack } from 'svelte';
-	import { trackInteractionModality } from '../../primitives/input-modality';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
 	import TreeItemRenderer from '../item/tree-item-renderer.svelte';
 	import {
 		createTreeContext,
 		setTreeContext,
 		setTreeLevelContext,
 		type TreeNodeId
-	} from './context.svelte';
-	import { setTreeRenderMode } from './render-mode';
-	import type { TreeEmptyStateRenderProps, TreeRootProps } from '../types';
+	} from './context.svelte.js';
+	import { setTreeRenderMode } from './render-mode.js';
+	import type { TreeEmptyStateRenderProps, TreeRootProps } from '../types.js';
 
 	// Per-instance uid threaded into the context so generated DOM ids
 	// (`tree-item-*`, labels, headers) never collide across tree instances.

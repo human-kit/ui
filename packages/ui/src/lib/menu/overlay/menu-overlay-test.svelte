@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu } from '../index';
+	import { Menu } from '../index.js';
 
 	type Props = {
 		open?: boolean;

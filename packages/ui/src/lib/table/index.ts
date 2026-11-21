@@ -82,7 +82,7 @@ export {
 	type TableCellContext,
 	type CreateTableContextOptions,
 	DEFAULT_TABLE_COLUMN_MIN_WIDTH
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 export {
 	getTableSsrMinWidth,

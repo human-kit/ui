@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { TransferList } from '../index';
-	import type { TransferListKey, TransferListMoveDetails } from './types';
+	import { TransferList } from '../index.js';
+	import type { TransferListKey, TransferListMoveDetails } from './types.js';
 
 	type Fruit = { id: string; name: string };
 

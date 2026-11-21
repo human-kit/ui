@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ToggleGroup } from '../index';
-	import type { ToggleGroupValue } from '../root/context.svelte';
+	import { ToggleGroup } from '../index.js';
+	import type { ToggleGroupValue } from '../root/context.svelte.js';
 
 	type Props = {
 		defaultValue?: ToggleGroupValue[];

@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { requireDrawerContext } from '../root/context';
+	import { requireDrawerContext } from '../root/context.js';
 
 	/**
 	 * Drawer.Close — a button that closes the drawer.

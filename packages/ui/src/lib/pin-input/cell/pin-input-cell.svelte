@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { isRtl } from '../../internal/rtl';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { isRtl } from '../../internal/rtl.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { usePinInputContext } from '../root/context';
-	import type { PinInputCellProps } from '../types';
+	} from '../../primitives/input-modality.js';
+	import { usePinInputContext } from '../root/context.js';
+	import type { PinInputCellProps } from '../types.js';
 
 	/**
 	 * PinInput.Cell — one character of the value.

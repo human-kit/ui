@@ -7,7 +7,7 @@ import type {
 	ColorPickerChangeDetails,
 	ColorPickerContext,
 	ColorPickerSliderOrientation
-} from './root/context';
+} from './root/context.js';
 
 export type {
 	Color,

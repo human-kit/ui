@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { useColorPickerContext } from '../root/context';
-	import { toHexText } from '../root/color';
-	import type { ColorPickerHexFieldProps } from '../types';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { useColorPickerContext } from '../root/context.js';
+	import { toHexText } from '../root/color.js';
+	import type { ColorPickerHexFieldProps } from '../types.js';
 
 	/**
 	 * ColorPicker.HexField — the color as a hex text.

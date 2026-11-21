@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TabsIndicatorProps } from '../types.js';
-	import { useTabsContext } from '../root/context.svelte';
+	import { useTabsContext } from '../root/context.svelte.js';
 
 	type IndicatorMeasurement = {
 		left: number;

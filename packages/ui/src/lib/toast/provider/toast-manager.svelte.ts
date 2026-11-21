@@ -1,5 +1,5 @@
 import { untrack } from 'svelte';
-import type { ExtendedPlacement } from '../../primitives/floating';
+import type { ExtendedPlacement } from '../../primitives/floating.js';
 
 export type ToastPriority = 'low' | 'high';
 export type ToastStatus = 'open' | 'ending';

@@ -110,6 +110,14 @@ jobs:
 
       - run: pnpm run build
 
+      # The built package must load in Node as it is, with no bundler to guess a missing
+      # extension. These two entries are plain JavaScript; the root entry exports Svelte
+      # components and is only for a bundler.
+      - name: Load the built package in Node
+        working-directory: packages/ui
+        run: |
+          node --input-type=module -e "await import('./dist/primitives/index.js'); await import('./dist/utils/index.js');"
+
   changeset-check:
     name: Changeset Check
     runs-on: ubuntu-latest

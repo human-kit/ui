@@ -5,12 +5,12 @@
 		useDateRangePickerContext,
 		type DateRangePickerRangePart,
 		type DatePickerSegmentPart
-	} from '../root/context';
+	} from '../root/context.js';
 	import DateRangePickerSegment from '../segment/date-range-picker-segment.svelte';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type DateRangePickerInputProps = Omit<
 		HTMLAttributes<HTMLDivElement>,

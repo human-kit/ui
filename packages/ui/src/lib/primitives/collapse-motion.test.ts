@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cubicOut, linear } from 'svelte/easing';
-import { collapseMotion } from './collapse-motion';
+import { collapseMotion } from './collapse-motion.js';
 
 function createMeasuredNode() {
 	const node = document.createElement('div');

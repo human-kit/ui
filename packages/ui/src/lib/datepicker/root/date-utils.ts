@@ -16,7 +16,7 @@ import {
 	formatDateOnlyValue,
 	isValidDateOnlyValue,
 	parseDateOnlyValue
-} from '../../utils/date-only';
+} from '../../utils/date-only.js';
 
 type DatePickerSegmentTemplatePart =
 	| {

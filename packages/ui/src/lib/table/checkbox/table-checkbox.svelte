@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { Checkbox } from '../../checkbox';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { Checkbox } from '../../checkbox/index.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import {
 		useTableCellContext,
 		useTableContext,
 		useTableRowContext,
 		useTableSectionContext
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableCheckboxProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	let {
 		id,

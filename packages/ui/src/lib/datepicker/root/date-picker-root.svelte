@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { setDatePickerContext, type DatePickerContext } from './context';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { setDatePickerContext, type DatePickerContext } from './context.js';
 	import {
 		buildDatePickerSegments,
 		compareDatePickerValues,
@@ -11,29 +11,29 @@
 		type DatePickerDateValue,
 		type DatePickerEditableSegmentType,
 		type DatePickerSegmentType
-	} from './date-utils';
-	import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context';
+	} from './date-utils.js';
+	import type { DatePickerOpenChangeDetails, DatePickerOpenChangeReason } from './context.js';
 	import {
 		createEmptySegmentDraft,
 		toDraftFromValue,
 		type DatePickerSegmentDraft
-	} from './segment-state';
-	import { applyDraftToSegments, createDateSegmentEngine } from './segment-engine';
-	import { evaluateDatePickerDraft } from './draft-evaluation';
+	} from './segment-state.js';
+	import { applyDraftToSegments, createDateSegmentEngine } from './segment-engine.js';
+	import { evaluateDatePickerDraft } from './draft-evaluation.js';
 	import {
 		applyTriggerSelectionCloseState,
 		computeDatePickerFocusWithin
-	} from './focus-controller';
-	import { getInteractionModality } from '../../primitives/input-modality';
-	import { resolveDatePickerOpenChangeDetails } from './open-controller';
-	import { normalizeBindableDatePickerValue, normalizeDatePickerValue } from './value-commit';
+	} from './focus-controller.js';
+	import { getInteractionModality } from '../../primitives/input-modality.js';
+	import { resolveDatePickerOpenChangeDetails } from './open-controller.js';
+	import { normalizeBindableDatePickerValue, normalizeDatePickerValue } from './value-commit.js';
 	import {
 		createDatePickerSegmentRefs,
 		focusLastDatePickerSegment,
 		focusNextDatePickerSegment,
 		focusPreviousDatePickerSegment,
 		registerDatePickerSegmentRef
-	} from './segment-controller';
+	} from './segment-controller.js';
 
 	type DatePickerRootProps = {
 		id?: string;

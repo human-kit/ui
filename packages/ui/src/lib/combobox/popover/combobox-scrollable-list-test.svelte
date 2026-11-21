@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox from '../index';
+	import ComboBox from '../index.js';
 
 	const items = Array.from({ length: 12 }, (_, index) => ({
 		id: `item-${index + 1}`,

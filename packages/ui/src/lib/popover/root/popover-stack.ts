@@ -5,7 +5,7 @@
  * also closes its ancestors, across component kinds.
  */
 
-import { pushLayer, removeLayer, isTopmostLayer } from '../../primitives/layer-stack';
+import { pushLayer, removeLayer, isTopmostLayer } from '../../primitives/layer-stack.js';
 
 export function pushPopoverLayer(): symbol {
 	return pushLayer('popover');

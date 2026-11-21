@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox from '../index';
+	import ComboBox from '../index.js';
 
 	type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
 

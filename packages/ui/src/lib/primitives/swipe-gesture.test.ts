@@ -9,7 +9,7 @@ import {
 	SWIPE_IGNORE_ATTRIBUTE,
 	swipeGesture,
 	type SwipeSample
-} from './swipe-gesture';
+} from './swipe-gesture.js';
 
 describe('swipe-gesture geometry', () => {
 	it('maps each side to its travel axis', () => {

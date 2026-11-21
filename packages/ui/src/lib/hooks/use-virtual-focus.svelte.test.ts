@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { useVirtualFocus } from './use-virtual-focus.svelte';
+import { useVirtualFocus } from './use-virtual-focus.svelte.js';
 
 function flushMicrotasks() {
 	return new Promise<void>((resolve) => setTimeout(resolve, 0));

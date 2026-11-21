@@ -66,7 +66,7 @@ export {
 	type DateRangePickerRangeValue,
 	type DatePickerSegmentPart,
 	type DatePickerSegmentType
-} from './root/context';
+} from './root/context.js';
 
 import * as DateRangePickerParts from './index.parts.js';
 export default DateRangePickerParts;

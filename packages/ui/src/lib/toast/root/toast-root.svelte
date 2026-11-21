@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { createPresence } from '../../primitives/presence.svelte';
+	import { createPresence } from '../../primitives/presence.svelte.js';
 	import {
 		getSwipeAxis,
 		swipeGesture,
 		type SwipeSide,
 		type SwipeGestureOptions
-	} from '../../primitives/swipe-gesture';
-	import { useToastProviderContext } from '../provider/context';
+	} from '../../primitives/swipe-gesture.js';
+	import { useToastProviderContext } from '../provider/context.js';
 	import type { ToastRootProps } from '../types.js';
-	import { setToastContext, type ToastContext } from './context';
+	import { setToastContext, type ToastContext } from './context.js';
 
 	/**
 	 * Toast.Root — one toast.

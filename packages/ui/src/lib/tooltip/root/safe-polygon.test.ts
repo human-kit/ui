@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildSafePolygon, isPointInPolygon, isPointInRect } from './safe-polygon';
+import { buildSafePolygon, isPointInPolygon, isPointInRect } from './safe-polygon.js';
 
 const content = { left: 100, top: 20, right: 200, bottom: 60 };
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { computeListWindow, scrollTopForIndex } from './list-virtualizer';
+import { computeListWindow, scrollTopForIndex } from './list-virtualizer.js';
 
 const base = { itemHeight: 30, gap: 2, viewportHeight: 240, count: 1000, scrollTop: 0 };
 

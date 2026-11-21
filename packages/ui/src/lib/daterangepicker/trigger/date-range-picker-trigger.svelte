@@ -2,11 +2,11 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useDateRangePickerContext } from '../root/context';
+	import { useDateRangePickerContext } from '../root/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type DateRangePickerTriggerProps = Omit<
 		HTMLButtonAttributes,

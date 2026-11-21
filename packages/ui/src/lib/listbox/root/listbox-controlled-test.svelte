@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import ListBox from '../index';
+	import ListBox from '../index.js';
 
 	type Props = {
 		initialValue?: (string | number)[];

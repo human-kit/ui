@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { ToastItem } from '../provider/toast-manager.svelte';
+import type { ToastItem } from '../provider/toast-manager.svelte.js';
 
 const KEY = Symbol('toast');
 

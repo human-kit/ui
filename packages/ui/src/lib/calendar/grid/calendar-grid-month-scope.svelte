@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { setCalendarMonthIndex } from './month-scope';
+	import { setCalendarMonthIndex } from './month-scope.js';
 
 	type CalendarGridMonthScopeProps = {
 		monthIndex: number;

@@ -6,7 +6,7 @@
 		COMBOBOX_ITEM_CONTEXT_KEY,
 		type ComboBoxItemContext
 	} from '../item/combobox-listboxitem.svelte';
-	import { useComboBoxContext } from '../root/context';
+	import { useComboBoxContext } from '../root/context.js';
 
 	/**
 	 * ComboBox.ItemIndicator - Visual indicator shown when an item is selected.
