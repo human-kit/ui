@@ -7,7 +7,7 @@ import {
 	expectFocusVisibleImpliesFocusWithin,
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
+} from '../../test-utils/focus-contract.js';
 
 function queryListbox() {
 	return document.querySelector<HTMLElement>('[role="listbox"]');

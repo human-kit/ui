@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { AccordionHeaderProps } from '../types.js';
-	import { useAccordionContext } from '../root/context.svelte';
-	import { useAccordionItemContext } from '../item/context';
+	import { useAccordionContext } from '../root/context.svelte.js';
+	import { useAccordionItemContext } from '../item/context.js';
 
 	let {
 		level = 3,

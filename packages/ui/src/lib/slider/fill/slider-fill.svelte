@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useSliderContext } from '../root/context';
-	import type { SliderFillProps } from '../types';
+	import { useSliderContext } from '../root/context.js';
+	import type { SliderFillProps } from '../types.js';
 
 	/**
 	 * Slider.Fill — the part of the track between `min` and the thumb, or between the two thumbs

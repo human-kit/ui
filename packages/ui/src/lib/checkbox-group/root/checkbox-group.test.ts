@@ -4,7 +4,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
+} from '../../test-utils/focus-contract.js';
 import CheckboxGroupDuplicateTest from './checkbox-group-duplicate-test.svelte';
 import CheckboxGroupFormTest from './checkbox-group-form-test.svelte';
 import CheckboxGroupSelectAllTest from './checkbox-group-select-all-test.svelte';

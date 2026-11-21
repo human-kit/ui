@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { LocaleProvider } from '../index';
-	import Calendar from '../calendar';
+	import { LocaleProvider } from '../index.js';
+	import Calendar from '../calendar/index.js';
 
 	type Props = {
 		locale?: string;

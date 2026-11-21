@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CheckboxGroup } from '../index';
+	import { CheckboxGroup } from '../index.js';
 
 	type Props = {
 		showLabel?: boolean;

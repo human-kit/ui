@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Select } from '../index';
+	import { Select } from '../index.js';
 
 	const items = [
 		{ id: 'apple', label: 'Apple' },

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useTooltipContext } from '../root/context';
-	import type { TooltipTriggerProps, TooltipTriggerRenderState } from '../types';
+	import { useTooltipContext } from '../root/context.js';
+	import type { TooltipTriggerProps, TooltipTriggerRenderState } from '../types.js';
 
 	/**
 	 * Tooltip.Trigger — the button that the tooltip describes.

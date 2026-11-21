@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { TabsListProps, TabsValue } from '../types.js';
-	import { useTabsContext } from '../root/context.svelte';
-	import { trackInteractionModality } from '../../primitives/input-modality';
-	import { isRtl } from '../../internal/rtl';
+	import { useTabsContext } from '../root/context.svelte.js';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
+	import { isRtl } from '../../internal/rtl.js';
 
 	type TabsListKeyboardEvent = KeyboardEvent & {
 		currentTarget: EventTarget & HTMLDivElement;

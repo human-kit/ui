@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { AccordionValue } from '../root/context.svelte';
+import type { AccordionValue } from '../root/context.svelte.js';
 
 export type AccordionItemContext = {
 	readonly value: AccordionValue;

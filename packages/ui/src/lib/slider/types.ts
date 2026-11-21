@@ -1,6 +1,6 @@
 import type { Snippet } from 'svelte';
 import type { HTMLAttributes } from 'svelte/elements';
-import type { SliderChangeDetails, SliderContext, SliderOrientation } from './root/context';
+import type { SliderChangeDetails, SliderContext, SliderOrientation } from './root/context.js';
 
 export type { SliderChangeDetails, SliderOrientation };
 

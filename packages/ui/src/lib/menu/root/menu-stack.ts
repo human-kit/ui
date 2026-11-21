@@ -4,7 +4,7 @@
  * submenu, a popover, or a dialog opened after it — sits above it.
  */
 
-import { pushLayer, removeLayer, isTopmostLayer } from '../../primitives/layer-stack';
+import { pushLayer, removeLayer, isTopmostLayer } from '../../primitives/layer-stack.js';
 
 export function pushMenuLayer(): symbol {
 	return pushLayer('menu');

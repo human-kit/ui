@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import CalendarRootTest from '../root/calendar-root-test.svelte';
-import { formatCalendarDate, getTodayUtcDate } from '../root/date-utils';
+import { formatCalendarDate, getTodayUtcDate } from '../root/date-utils.js';
 
 function getGridCellByDate(date: string) {
 	const element = document.querySelector<HTMLElement>(`[role="gridcell"][data-date="${date}"]`);

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useDatePickerContext, type DatePickerSegmentPart } from '../root/context';
+	import { useDatePickerContext, type DatePickerSegmentPart } from '../root/context.js';
 	import DatePickerSegment from '../segment/date-picker-segment.svelte';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type DatePickerInputProps = Omit<
 		HTMLAttributes<HTMLDivElement>,

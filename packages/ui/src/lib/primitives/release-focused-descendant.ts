@@ -1,4 +1,4 @@
-import { browser } from '../internal/environment';
+import { browser } from '../internal/environment.js';
 
 /**
  * Blurs the currently focused element when it lives inside a floating container

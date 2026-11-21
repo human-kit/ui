@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte';
+	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte.js';
 	import { untrack } from 'svelte';
-	import { useAutocompleteContext } from '../root/context';
+	import { useAutocompleteContext } from '../root/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type AutocompleteInputProps = HTMLInputAttributes & {
 		/** The accessible name of the input. */

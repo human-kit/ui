@@ -12,7 +12,7 @@ import {
 	parseCalendarDate,
 	resolveFirstDayOfWeek,
 	startOfMonth
-} from './date-utils';
+} from './date-utils.js';
 
 describe('calendar date utils', () => {
 	it('validates YYYY-MM-DD format correctly', () => {

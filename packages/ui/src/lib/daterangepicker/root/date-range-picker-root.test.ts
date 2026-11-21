@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import DateRangePickerTest from './date-range-picker-test.svelte';
 import DateRangePickerBindableTest from './date-range-picker-bindable-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 function getSegment(part: 'start' | 'end', type: 'day' | 'month' | 'year') {
 	const element = document.querySelector<HTMLElement>(

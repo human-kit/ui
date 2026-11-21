@@ -1,5 +1,8 @@
-import { compareDatePickerValues, isValidDatePickerValue } from '../../datepicker/root/date-utils';
-import type { DateRangePickerRangeValue } from './context';
+import {
+	compareDatePickerValues,
+	isValidDatePickerValue
+} from '../../datepicker/root/date-utils.js';
+import type { DateRangePickerRangeValue } from './context.js';
 
 export type DateRangePickerValueLike = DateRangePickerRangeValue | null | undefined;
 

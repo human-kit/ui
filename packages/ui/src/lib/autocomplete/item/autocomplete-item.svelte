@@ -10,7 +10,7 @@
 	import type { ComponentProps } from 'svelte';
 	import { onDestroy, setContext, untrack } from 'svelte';
 	import ListBoxItem from '../../listbox/item/listbox-item.svelte';
-	import { useAutocompleteContext } from '../root/context';
+	import { useAutocompleteContext } from '../root/context.js';
 
 	/**
 	 * Autocomplete.Item wraps ListBox.Item and adds Autocomplete behavior:

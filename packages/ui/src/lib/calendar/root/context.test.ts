@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createCalendarContext } from './context.svelte';
-import { formatCalendarDate } from './date-utils';
+import { createCalendarContext } from './context.svelte.js';
+import { formatCalendarDate } from './date-utils.js';
 
 describe('calendar context', () => {
 	it('bounds focus search when all dates are unavailable', () => {

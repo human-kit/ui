@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LocaleProvider } from '../index';
+	import { LocaleProvider } from '../index.js';
 	import LocaleProviderValueProbe from './locale-provider-value-probe.svelte';
 
 	type Props = {

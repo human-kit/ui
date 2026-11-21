@@ -3,8 +3,8 @@
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { getDrawerContext } from '../root/context';
-	import type { DrawerHandle } from '../root/handle.svelte';
+	import { getDrawerContext } from '../root/context.js';
+	import type { DrawerHandle } from '../root/handle.svelte.js';
 
 	// Not exported: a generic component cannot re-export a type that mentions its own
 	// type parameter. The public `DrawerTriggerProps` comes from `ComponentProps` in

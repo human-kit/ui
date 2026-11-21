@@ -4,7 +4,7 @@ import { userEvent } from 'vitest/browser';
 import TableTest from './table-test.svelte';
 import TableReorderTest from './table-reorder-test.svelte';
 import TableDropColumnTest from './table-drop-column-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 function getHeaderCells(container: HTMLElement) {
 	return Array.from(container.querySelectorAll<HTMLElement>('thead [role="columnheader"]'));

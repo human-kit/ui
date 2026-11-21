@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Checkbox } from '../../checkbox/index.js';
-	import { CheckboxGroup } from '../index';
+	import { CheckboxGroup } from '../index.js';
 </script>
 
 <CheckboxGroup.Root aria-label="Colors">

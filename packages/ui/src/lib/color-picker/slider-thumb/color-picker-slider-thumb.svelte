@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { isRtl } from '../../internal/rtl';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { focusWithModality, shouldShowFocusVisible } from '../../primitives/input-modality';
-	import { useColorPickerContext, useColorPickerSliderContext } from '../root/context';
-	import type { ColorPickerSliderThumbProps, ColorPickerSliderThumbRenderState } from '../types';
+	import { isRtl } from '../../internal/rtl.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { focusWithModality, shouldShowFocusVisible } from '../../primitives/input-modality.js';
+	import { useColorPickerContext, useColorPickerSliderContext } from '../root/context.js';
+	import type { ColorPickerSliderThumbProps, ColorPickerSliderThumbRenderState } from '../types.js';
 
 	/**
 	 * ColorPicker.SliderThumb — the handle of one channel.

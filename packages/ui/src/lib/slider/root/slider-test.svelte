@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Slider } from '../index';
-	import type { SliderChangeDetails, SliderValue } from '../types';
+	import { Slider } from '../index.js';
+	import type { SliderChangeDetails, SliderValue } from '../types.js';
 
 	type Props = {
 		value?: SliderValue;

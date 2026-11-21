@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DatePicker from '../index';
+	import DatePicker from '../index.js';
 
 	const unsafePopoverProps: Record<string, unknown> = {
 		id: 'unsafe-popover-id',

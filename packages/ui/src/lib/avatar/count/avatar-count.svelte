@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import type { AvatarCountProps } from '../types.js';
-	import { useAvatarGroupContext } from '../group/context';
+	import { useAvatarGroupContext } from '../group/context.js';
 
 	/**
 	 * Avatar.Count — the count of avatars past the `max` of the group, such as `+3`.

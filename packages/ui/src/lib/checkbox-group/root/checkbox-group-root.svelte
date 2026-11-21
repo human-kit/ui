@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { CheckboxGroupRootProps } from '../types.js';
-	import { createCheckboxGroupContext, setCheckboxGroupContext } from './context.svelte';
+	import { createCheckboxGroupContext, setCheckboxGroupContext } from './context.svelte.js';
 
 	const generatedId = $props.id();
 

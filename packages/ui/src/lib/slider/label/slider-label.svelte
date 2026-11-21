@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useSliderContext } from '../root/context';
-	import type { SliderLabelProps } from '../types';
+	import { useSliderContext } from '../root/context.js';
+	import type { SliderLabelProps } from '../types.js';
 
 	/**
 	 * Slider.Label — the accessible name of the slider.

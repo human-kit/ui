@@ -5,14 +5,14 @@ import type {
 	AccordionOrientation,
 	AccordionSelectionMode,
 	AccordionValue
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 export type {
 	AccordionContext,
 	AccordionOrientation,
 	AccordionSelectionMode,
 	AccordionValue
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 export type AccordionRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class'> & {
 	/**

@@ -5,7 +5,7 @@ import DialogTest from './dialog-test.svelte';
 import DialogBindTest from './dialog-bind-test.svelte';
 import DialogExitAnimationTest from './dialog-exit-animation-test.svelte';
 import DialogExitKeyframesTest from './dialog-exit-keyframes-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 describe('Dialog', () => {
 	// Clean up any portaled content after each test

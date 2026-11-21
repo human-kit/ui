@@ -3,7 +3,7 @@ import type {
 	TimePickerEditableSegmentType,
 	TimePickerGranularity,
 	TimePickerHourCycle
-} from './time-utils';
+} from './time-utils.js';
 
 const KEY = Symbol('clock');
 

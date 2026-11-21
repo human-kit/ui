@@ -3,7 +3,7 @@
 	import {
 		setTableSsrWrapperRegistry,
 		type TableSsrWrapperColumn as RegisteredColumn
-	} from './table-ssr-wrapper-context';
+	} from './table-ssr-wrapper-context.js';
 
 	type DemoRow = {
 		id: string;

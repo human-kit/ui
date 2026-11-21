@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { SELECT_ITEM_CONTEXT_KEY, type SelectItemContext } from '../item/select-item.svelte';
-	import { useSelectContext } from '../root/context';
-	import type { SelectItemIndicatorProps } from '../types';
+	import { useSelectContext } from '../root/context.js';
+	import type { SelectItemIndicatorProps } from '../types.js';
 
 	/**
 	 * Select.ItemIndicator — the mark of a selected option. It is in the DOM only while its

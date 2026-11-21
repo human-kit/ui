@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Tree from '../index';
+	import Tree from '../index.js';
 </script>
 
 <!-- Two trees sharing the same item ids: DOM ids must not collide. -->

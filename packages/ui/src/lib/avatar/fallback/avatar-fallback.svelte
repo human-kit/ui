@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { AvatarFallbackProps } from '../types.js';
-	import { useAvatarContext } from '../root/context';
+	import { useAvatarContext } from '../root/context.js';
 
 	/**
 	 * Avatar.Fallback — what shows in place of the image: initials, an icon, a color.

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Calendar from '../index';
+	import Calendar from '../index.js';
 </script>
 
 <table>

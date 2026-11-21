@@ -1,7 +1,7 @@
 import { flushSync, getContext, setContext } from 'svelte';
 import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 import { asCommand } from '../../internal/as-command.js';
-import { isRtl } from '../../internal/rtl';
+import { isRtl } from '../../internal/rtl.js';
 
 const TABLE_KEY = Symbol('table');
 const TABLE_SECTION_KEY = Symbol('table-section');

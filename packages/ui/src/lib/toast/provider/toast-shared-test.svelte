@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Toast } from '../index';
+	import { Toast } from '../index.js';
 	import ToastHookTest from './toast-hook-test.svelte';
-	import type { ToastManager } from '../index';
+	import type { ToastManager } from '../index.js';
 
 	let manager = $state<ToastManager>();
 </script>

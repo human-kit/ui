@@ -2,25 +2,25 @@
 	import { untrack } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { readable } from 'svelte/store';
-	import { dev } from '../../internal/environment';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { isRtl } from '../../internal/rtl';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { dev } from '../../internal/environment.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { isRtl } from '../../internal/rtl.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		focusWithModality,
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import type { RatingRootProps } from '../types';
-	import { setRatingContext, type RatingChangeDetails, type RatingContext } from './context';
+	} from '../../primitives/input-modality.js';
+	import type { RatingRootProps } from '../types.js';
+	import { setRatingContext, type RatingChangeDetails, type RatingContext } from './context.js';
 	import {
 		getRatingItemFill,
 		getRatingValueFromPointer,
 		normalizeRatingCount,
 		normalizeRatingPrecision,
 		snapRatingValue
-	} from './rating-utils';
+	} from './rating-utils.js';
 
 	/**
 	 * Rating.Root — the scale, the value and the keyboard.

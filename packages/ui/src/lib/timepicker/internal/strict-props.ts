@@ -1,6 +1,6 @@
-import { sanitizeStrictProps } from '../../internal/strict-props';
+import { sanitizeStrictProps } from '../../internal/strict-props.js';
 
-export { composeEventHandlers } from '../../internal/strict-props';
+export { composeEventHandlers } from '../../internal/strict-props.js';
 
 export function sanitizeTimePickerProps(
 	componentName: string,

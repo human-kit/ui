@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { useTreeItemContext } from '../item/context';
-	import { getTreeRenderMode } from '../root/render-mode';
-	import type { TreeLabelProps } from '../types';
+	import { useTreeItemContext } from '../item/context.js';
+	import { getTreeRenderMode } from '../root/render-mode.js';
+	import type { TreeLabelProps } from '../types.js';
 
 	let { children, class: className = '', id, ...restProps }: TreeLabelProps = $props();
 

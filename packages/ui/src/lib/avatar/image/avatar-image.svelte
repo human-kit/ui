@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { AvatarImageProps } from '../types.js';
-	import { useAvatarContext } from '../root/context';
+	import { useAvatarContext } from '../root/context.js';
 
 	/**
 	 * Avatar.Image — the picture.

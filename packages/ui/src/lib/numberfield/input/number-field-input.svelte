@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte';
+	import { TypedBeforeHydration } from '../../primitives/typed-before-hydration.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { useNumberFieldContext } from '../root/context';
-	import { normalizeStep } from '../root/number-utils';
+	} from '../../primitives/input-modality.js';
+	import { useNumberFieldContext } from '../root/context.js';
+	import { normalizeStep } from '../root/number-utils.js';
 
 	type NumberFieldInputProps = Omit<
 		HTMLInputAttributes,

@@ -18,7 +18,7 @@ import {
 	formatDateOnlyValue,
 	isValidDateOnlyValue,
 	parseDateOnlyValue
-} from '../../utils/date-only';
+} from '../../utils/date-only.js';
 
 export function isValidCalendarDateValue(value: string): boolean {
 	return isValidDateOnlyValue(value);

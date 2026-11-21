@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Checkbox } from '../index.ts';
+	import { Checkbox } from '../index.js';
 
 	type Props = {
 		readonly?: boolean;

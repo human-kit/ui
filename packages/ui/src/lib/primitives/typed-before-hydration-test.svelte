@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Autocomplete } from '../autocomplete';
-	import { Input } from '../input';
-	import { NumberField } from '../numberfield';
-	import { SearchField } from '../search-field';
-	import { TextArea } from '../textarea';
+	import { Autocomplete } from '../autocomplete/index.js';
+	import { Input } from '../input/index.js';
+	import { NumberField } from '../numberfield/index.js';
+	import { SearchField } from '../search-field/index.js';
+	import { TextArea } from '../textarea/index.js';
 
 	// One field per way of owning a value: written one way and heard through `oninput`, and
 	// bound, for each component whose element a person types into.

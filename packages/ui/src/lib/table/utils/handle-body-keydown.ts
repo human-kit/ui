@@ -1,5 +1,5 @@
-import { trackInteractionModality } from '../../primitives/input-modality';
-import type { TableContext } from '../root/context.svelte';
+import { trackInteractionModality } from '../../primitives/input-modality.js';
+import type { TableContext } from '../root/context.svelte.js';
 
 type TableBodyKeydownOptions = {
 	event: KeyboardEvent;

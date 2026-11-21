@@ -4,10 +4,10 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { useAccordionContext } from '../root/context.svelte';
-	import { useAccordionItemContext } from '../item/context';
-	import { isRtl } from '../../internal/rtl';
+	} from '../../primitives/input-modality.js';
+	import { useAccordionContext } from '../root/context.svelte.js';
+	import { useAccordionItemContext } from '../item/context.js';
+	import { isRtl } from '../../internal/rtl.js';
 	import type { AccordionTriggerProps } from '../types.js';
 
 	type AccordionTriggerMouseEvent = MouseEvent & {

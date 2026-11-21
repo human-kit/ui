@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { AccordionPanelProps } from '../types.js';
-	import { createCollapseTransition } from '../../primitives/collapse-transition.svelte';
-	import { useAccordionContext } from '../root/context.svelte';
-	import { useAccordionItemContext } from '../item/context';
+	import { createCollapseTransition } from '../../primitives/collapse-transition.svelte.js';
+	import { useAccordionContext } from '../root/context.svelte.js';
+	import { useAccordionItemContext } from '../item/context.js';
 
 	let {
 		forceMount = false,

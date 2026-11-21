@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { RadioGroupLabelProps } from '../types.js';
-	import { getRadioGroupContext } from '../root/context.svelte';
+	import { getRadioGroupContext } from '../root/context.svelte.js';
 
 	/**
 	 * RadioGroup.Label — the accessible name of the group.

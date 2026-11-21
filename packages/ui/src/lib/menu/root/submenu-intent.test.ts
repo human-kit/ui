@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { MenuContext } from './context';
-import { createSubmenuIntent, SUBMENU_INTENT_STOP_MS } from './submenu-intent';
+import type { MenuContext } from './context.js';
+import { createSubmenuIntent, SUBMENU_INTENT_STOP_MS } from './submenu-intent.js';
 
 // An open submenu whose near (left) edge is at x = 200, from y = 0 to y = 200.
 function openSubmenu(): MenuContext {

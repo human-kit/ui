@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { useCalendarContext } from '../root/context.svelte';
-	import type { CalendarWeekdayStyle } from '../root/date-utils';
-	import { setCalendarGridContext } from './context';
+	import { useCalendarContext } from '../root/context.svelte.js';
+	import type { CalendarWeekdayStyle } from '../root/date-utils.js';
+	import { setCalendarGridContext } from './context.js';
 	import CalendarGridMonthScope from './calendar-grid-month-scope.svelte';
 
 	type CalendarGridProps = {

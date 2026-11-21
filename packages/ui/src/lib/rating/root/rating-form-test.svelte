@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Rating } from '../index';
+	import { Rating } from '../index.js';
 
 	type Props = {
 		defaultValue?: number;

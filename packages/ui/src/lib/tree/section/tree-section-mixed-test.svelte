@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Tree from '../index';
-	import type { TreeContext } from '../index';
+	import Tree from '../index.js';
+	import type { TreeContext } from '../index.js';
 
 	let { onContext }: { onContext?: (context: TreeContext) => void } = $props();
 

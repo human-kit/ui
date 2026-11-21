@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { drawerStack } from '../root/drawer-stack.svelte';
+	import { drawerStack } from '../root/drawer-stack.svelte.js';
 
 	/**
 	 * Drawer.IndentBackground — the surface revealed behind an indented app.

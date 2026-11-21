@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ColorPicker } from '../index';
-	import type { ColorFormat, ColorPickerChangeDetails } from '../types';
+	import { ColorPicker } from '../index.js';
+	import type { ColorFormat, ColorPickerChangeDetails } from '../types.js';
 
 	type Props = {
 		value?: string;

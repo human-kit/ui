@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox from '../index';
+	import ComboBox from '../index.js';
 
 	const units = [
 		{ id: 'box-100', name: 'CAJA X 100' },

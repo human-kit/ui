@@ -5,7 +5,7 @@ import {
 	getProgressPercent,
 	getProgressStatus,
 	normalizeProgressValue
-} from './progress-utils';
+} from './progress-utils.js';
 
 describe('normalizeProgressValue', () => {
 	it('keeps a finite number, and turns the rest into null', () => {

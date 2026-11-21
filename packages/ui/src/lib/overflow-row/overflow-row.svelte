@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { ClassValue } from '../utils/cn';
+	import type { ClassValue } from '../utils/cn.js';
 
 	export type OverflowRowState = {
 		/** Number of items that don't fit and are hidden. */

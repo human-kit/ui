@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useLocaleContext } from './context';
+	import { useLocaleContext } from './context.js';
 
 	type Props = {
 		onValue?: (value: string | undefined) => void;

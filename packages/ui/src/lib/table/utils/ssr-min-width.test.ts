@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_TABLE_COLUMN_MIN_WIDTH } from '../root/context.svelte';
-import { getTableSsrMinWidth } from './ssr-min-width';
+import { DEFAULT_TABLE_COLUMN_MIN_WIDTH } from '../root/context.svelte.js';
+import { getTableSsrMinWidth } from './ssr-min-width.js';
 
 describe('getTableSsrMinWidth', () => {
 	it('sums authored px widths and floors a trailing fr column at its minWidth', () => {

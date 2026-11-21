@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { Portal } from '../../portal';
-	import { createPresence } from '../../primitives/presence.svelte';
-	import { requireDrawerContext } from '../root/context';
-	import { setDrawerPresenceContext } from '../root/presence-context';
+	import { Portal } from '../../portal/index.js';
+	import { createPresence } from '../../primitives/presence.svelte.js';
+	import { requireDrawerContext } from '../root/context.js';
+	import { setDrawerPresenceContext } from '../root/presence-context.js';
 
 	/**
 	 * Drawer.Portal — renders the overlay and panel outside the app's DOM position

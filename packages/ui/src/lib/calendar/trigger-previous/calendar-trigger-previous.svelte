@@ -2,8 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useCalendarContext } from '../root/context.svelte';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useCalendarContext } from '../root/context.svelte.js';
 
 	type CalendarTriggerPreviousProps = Omit<
 		HTMLButtonAttributes,

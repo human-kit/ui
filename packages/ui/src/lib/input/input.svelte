@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
-	import { TypedBeforeHydration } from '../primitives/typed-before-hydration.svelte';
-	import { isAriaInvalidValue } from '../utils/aria-invalid';
-	import type { ClassValue } from '../utils/cn';
-	import { composeEventHandlers } from '../utils/compose-event-handlers';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../primitives/input-modality.js';
+	import { TypedBeforeHydration } from '../primitives/typed-before-hydration.svelte.js';
+	import { isAriaInvalidValue } from '../utils/aria-invalid.js';
+	import type { ClassValue } from '../utils/cn.js';
+	import { composeEventHandlers } from '../utils/compose-event-handlers.js';
 
 	type AriaInvalidValue = HTMLInputAttributes['aria-invalid'];
 

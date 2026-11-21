@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { getMotionTime, trackMotionEnd } from './motion';
+import { getMotionTime, trackMotionEnd } from './motion.js';
 
 const KEYFRAMES = `
 @keyframes hk-motion-test-fade { from { opacity: 1; } to { opacity: 0; } }

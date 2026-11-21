@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { useComboBoxContext } from '../root/context';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { useComboBoxContext } from '../root/context.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
 
 	/**
 	 * ComboBox.Status - Visually-hidden live region that announces the number of

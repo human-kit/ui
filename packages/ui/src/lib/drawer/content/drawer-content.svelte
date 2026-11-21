@@ -2,11 +2,11 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '../../internal/environment';
-	import { focusTrap } from '../../primitives/focus-trap';
-	import { scrollLock } from '../../primitives/scroll-lock';
-	import { clickOutside } from '../../primitives/click-outside';
-	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
+	import { browser } from '../../internal/environment.js';
+	import { focusTrap } from '../../primitives/focus-trap.js';
+	import { scrollLock } from '../../primitives/scroll-lock.js';
+	import { clickOutside } from '../../primitives/click-outside.js';
+	import { ariaHideOutside } from '../../primitives/aria-hide-outside.js';
 	import {
 		swipeGesture,
 		getSwipeAxis,
@@ -14,13 +14,13 @@
 		projectRelease,
 		applyRubberBand,
 		type SwipeGestureOptions
-	} from '../../primitives/swipe-gesture';
+	} from '../../primitives/swipe-gesture.js';
 	import {
 		resolveSnapOffsets,
 		resolveSnapPointSize,
 		findNearestSnapIndex,
 		resolveSnapOnRelease
-	} from '../root/snap-points';
+	} from '../root/snap-points.js';
 	import {
 		pushLayer,
 		removeLayer,
@@ -28,7 +28,7 @@
 		getLayerKindIndex,
 		getContentZIndex,
 		subscribeLayerStack
-	} from '../../primitives/layer-stack';
+	} from '../../primitives/layer-stack.js';
 	import {
 		registerDrawer,
 		unregisterDrawer,
@@ -38,13 +38,13 @@
 		getDepthFromFront,
 		getDrawerIndex,
 		drawerStack
-	} from '../root/drawer-stack.svelte';
-	import { requireDrawerContext } from '../root/context';
-	import { getDrawerPresenceContext } from '../root/presence-context';
-	import { hasDrawerViewport } from '../root/viewport-context';
-	import { getDrawerKeyboardContext } from '../root/keyboard-context';
-	import { createStartingStyle } from '../root/starting-style.svelte';
-	import type { DrawerSide, DrawerSnapPoint } from '../root/types';
+	} from '../root/drawer-stack.svelte.js';
+	import { requireDrawerContext } from '../root/context.js';
+	import { getDrawerPresenceContext } from '../root/presence-context.js';
+	import { hasDrawerViewport } from '../root/viewport-context.js';
+	import { getDrawerKeyboardContext } from '../root/keyboard-context.js';
+	import { createStartingStyle } from '../root/starting-style.svelte.js';
+	import type { DrawerSide, DrawerSnapPoint } from '../root/types.js';
 
 	/**
 	 * Drawer.Content — the panel itself.

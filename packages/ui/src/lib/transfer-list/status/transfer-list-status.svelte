@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { useTransferListContext } from '../root/context';
-	import type { TransferListMoveDetails } from '../root/types';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { useTransferListContext } from '../root/context.js';
+	import type { TransferListMoveDetails } from '../root/types.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
 
 	/**
 	 * TransferList.Status - Visually-hidden live region that announces each move.

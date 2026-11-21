@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { floating, type FloatingAnchor } from '../../primitives/floating';
-	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
-	import { createPresence } from '../../primitives/presence.svelte';
-	import { Portal } from '../../portal';
-	import { useTooltipContext } from '../root/context';
-	import type { TooltipContentProps } from '../types';
+	import { floating, type FloatingAnchor } from '../../primitives/floating.js';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack.js';
+	import { createPresence } from '../../primitives/presence.svelte.js';
+	import { Portal } from '../../portal/index.js';
+	import { useTooltipContext } from '../root/context.js';
+	import type { TooltipContentProps } from '../types.js';
 
 	/**
 	 * Tooltip.Content — the floating panel with the description.

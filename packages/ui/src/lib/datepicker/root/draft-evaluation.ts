@@ -1,5 +1,5 @@
-import type { DatePickerDateValue } from './date-utils';
-import { getCandidateValueFromDraft, type DatePickerSegmentDraft } from './segment-state';
+import type { DatePickerDateValue } from './date-utils.js';
+import { getCandidateValueFromDraft, type DatePickerSegmentDraft } from './segment-state.js';
 
 export type DatePickerDraftStatus =
 	'empty' | 'incomplete' | 'invalid' | 'out-of-range' | 'unavailable' | 'valid';

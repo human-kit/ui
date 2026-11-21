@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLLabelAttributes } from 'svelte/elements';
-	import { useSearchFieldContext } from '../root/context';
+	import { useSearchFieldContext } from '../root/context.js';
 
 	type SearchFieldLabelProps = Omit<HTMLLabelAttributes, 'class' | 'for'> & {
 		class?: string;

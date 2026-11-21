@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { getPopoverContext } from '../root/context';
+	import { getPopoverContext } from '../root/context.js';
 
 	export type PopoverTriggerProps = Omit<
 		HTMLButtonAttributes,

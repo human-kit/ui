@@ -5,7 +5,7 @@ import {
 	longPress,
 	LONG_PRESS_MOVE_TOLERANCE_PX,
 	type LongPressPoint
-} from './long-press';
+} from './long-press.js';
 
 describe('hasMovedBeyond', () => {
 	const origin: LongPressPoint = { x: 100, y: 100 };

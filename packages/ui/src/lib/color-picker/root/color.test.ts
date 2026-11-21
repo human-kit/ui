@@ -11,7 +11,7 @@ import {
 	rgbToHsb,
 	toCssColor,
 	withColorChannel
-} from './color';
+} from './color.js';
 
 describe('color', () => {
 	it('reads a hex color of three, four, six and eight digits', () => {

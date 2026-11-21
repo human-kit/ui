@@ -1,8 +1,8 @@
 <script lang="ts" generics="T extends object = object">
 	import type { ComponentProps, Snippet } from 'svelte';
-	import { dev } from '../../internal/environment';
-	import { useComboBoxContext } from '../root/context';
-	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox';
+	import { dev } from '../../internal/environment.js';
+	import { useComboBoxContext } from '../root/context.js';
+	import { ListBoxRoot as ListBox, type ListBoxContext } from '../../listbox/index.js';
 
 	/**
 	 * ComboBox.ListBox - The list wrapper with selection management.

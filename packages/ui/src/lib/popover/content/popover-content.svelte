@@ -2,27 +2,27 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onDestroy } from 'svelte';
-	import { browser } from '../../internal/environment';
-	import { floating, type ExtendedPlacement } from '../../primitives/floating';
-	import { focusTrap, type FocusTrapOptions } from '../../primitives/focus-trap';
-	import { allowScrollWithin, scrollLock } from '../../primitives/scroll-lock';
-	import { clickOutside } from '../../primitives/click-outside';
-	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
-	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant';
-	import { createPresence } from '../../primitives/presence.svelte';
-	import { Portal } from '../../portal';
+	import { browser } from '../../internal/environment.js';
+	import { floating, type ExtendedPlacement } from '../../primitives/floating.js';
+	import { focusTrap, type FocusTrapOptions } from '../../primitives/focus-trap.js';
+	import { allowScrollWithin, scrollLock } from '../../primitives/scroll-lock.js';
+	import { clickOutside } from '../../primitives/click-outside.js';
+	import { ariaHideOutside } from '../../primitives/aria-hide-outside.js';
+	import { releaseFocusedDescendant } from '../../primitives/release-focused-descendant.js';
+	import { createPresence } from '../../primitives/presence.svelte.js';
+	import { Portal } from '../../portal/index.js';
 	import {
 		getPopoverContext,
 		type PopoverOpenChangeDetails,
 		type PopoverCloseReason
-	} from '../root/context';
-	import { pushPopoverLayer, removePopoverLayer, isTopmostPopover } from '../root/popover-stack';
-	import { getFloatingLayerZIndex } from '../../primitives/layer-stack';
+	} from '../root/context.js';
+	import { pushPopoverLayer, removePopoverLayer, isTopmostPopover } from '../root/popover-stack.js';
+	import { getFloatingLayerZIndex } from '../../primitives/layer-stack.js';
 	import {
 		addTriggerBlurCleanup,
 		applyTriggerCloseFocusState,
 		clearTriggerFocusState
-	} from '../root/focus-state';
+	} from '../root/focus-state.js';
 
 	/**
 	 * Popover.Content - The floating content panel.

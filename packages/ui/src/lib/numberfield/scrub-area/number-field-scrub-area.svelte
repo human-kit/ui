@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn } from '../../utils/cn';
-	import { useNumberFieldContext } from '../root/context';
+	import { cn } from '../../utils/cn.js';
+	import { useNumberFieldContext } from '../root/context.js';
 
 	type NumberFieldScrubDirection = 'horizontal' | 'vertical';
 

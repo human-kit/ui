@@ -3,8 +3,8 @@
  * Traps keyboard focus within a container element.
  */
 
-import { HIDE_OUTSIDE_EXEMPT_ATTRIBUTE } from './aria-hide-outside';
-import { focusWithModality, getInteractionModality } from './input-modality';
+import { HIDE_OUTSIDE_EXEMPT_ATTRIBUTE } from './aria-hide-outside.js';
+import { focusWithModality, getInteractionModality } from './input-modality.js';
 
 const FOCUSABLE_SELECTOR = [
 	'a[href]',

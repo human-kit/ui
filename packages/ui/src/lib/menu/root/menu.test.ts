@@ -5,7 +5,7 @@ import { userEvent } from 'vitest/browser';
 import MenuTest from './menu-test.svelte';
 import MenuRichContentTest from './menu-rich-content-test.svelte';
 import MenuControlledCloseTest from './menu-controlled-close-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 function queryMenus() {
 	return document.querySelectorAll('[role="menu"]');

@@ -24,7 +24,7 @@ export {
 	type RadioGroupContext,
 	type RadioGroupOrientation,
 	type RadioGroupValue
-} from './root/context.svelte';
+} from './root/context.svelte.js';
 
 export {
 	getRadioGroupItemContext,

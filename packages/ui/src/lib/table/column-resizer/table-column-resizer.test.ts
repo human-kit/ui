@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import { distributeRoundedWidths, type TableColumnWidth } from '../root/context.svelte';
+import { distributeRoundedWidths, type TableColumnWidth } from '../root/context.svelte.js';
 import ColumnResizerTest from './table-column-resizer-test.svelte';
 import ColumnResizerFixedWidthTest from './table-column-resizer-fixed-width-test.svelte';
 import ColumnResizerFreezeLayoutTest from './table-column-resizer-freeze-layout-test.svelte';

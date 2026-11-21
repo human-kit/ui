@@ -2,9 +2,9 @@
 	import { get, readable } from 'svelte/store';
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { cn } from '../../utils/cn';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { cn } from '../../utils/cn.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import {
 		clampNumber,
 		formatNumberValue,
@@ -14,13 +14,13 @@
 		roundNumberValueToFormat,
 		stepNumberValue,
 		type NumberFieldStep
-	} from './number-utils';
+	} from './number-utils.js';
 	import {
 		setNumberFieldContext,
 		type NumberFieldChangeReason,
 		type NumberFieldContext,
 		type NumberFieldInputState
-	} from './context';
+	} from './context.js';
 
 	type NumberFieldRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'id'> & {
 		children?: Snippet;

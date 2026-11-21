@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { useColorPickerContext } from '../root/context';
-	import type { ColorPickerEyeDropperProps } from '../types';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerEyeDropperProps } from '../types.js';
 
 	/**
 	 * ColorPicker.EyeDropper — takes a color from the screen.

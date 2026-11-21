@@ -5,13 +5,13 @@
 		useTableContext,
 		useTableRowContext,
 		type TableSelectionKey
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableInteractiveCellProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
+	} from '../../primitives/input-modality.js';
+	import { handleTableBodyKeydown } from '../utils/handle-body-keydown.js';
 
 	let { children, class: className = '', ...restProps }: TableInteractiveCellProps = $props();
 

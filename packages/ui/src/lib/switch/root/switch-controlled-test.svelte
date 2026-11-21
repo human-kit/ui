@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Switch } from '../index';
+	import { Switch } from '../index.js';
 
 	type Props = {
 		acceptChanges?: boolean;

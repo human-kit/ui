@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { useTableContext, useTableSectionContext } from '../root/context.svelte';
+	import { useTableContext, useTableSectionContext } from '../root/context.svelte.js';
 	import type { TableSectionRowProps } from '../types.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { handleTableBodyKeydown } from '../utils/handle-body-keydown';
+	} from '../../primitives/input-modality.js';
+	import { handleTableBodyKeydown } from '../utils/handle-body-keydown.js';
 
 	let {
 		id,

@@ -3,7 +3,7 @@
 	generics="T extends Record<string, unknown> & { id: string | number } = Record<string, unknown> & { id: string | number }"
 >
 	import { flushSync, type Snippet } from 'svelte';
-	import { setTableSectionContext, useTableContext } from '../root/context.svelte';
+	import { setTableSectionContext, useTableContext } from '../root/context.svelte.js';
 	import type { TableBodyProps } from '../types.js';
 
 	let {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import ComboBox from '../index';
-	import type { PopoverContent } from '../../popover';
+	import ComboBox from '../index.js';
+	import type { PopoverContent } from '../../popover/index.js';
 
 	type Props = {
 		offset?: number;

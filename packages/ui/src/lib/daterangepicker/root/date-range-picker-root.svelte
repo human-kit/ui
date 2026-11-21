@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { setDateRangePickerContext, type DateRangePickerContext } from './context';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { setDateRangePickerContext, type DateRangePickerContext } from './context.js';
 	import type {
 		DateRangePickerOpenChangeDetails,
 		DateRangePickerOpenChangeReason,
 		DateRangePickerRangePart,
 		DateRangePickerRangeValue
-	} from './context';
+	} from './context.js';
 	import {
 		buildDatePickerSegments,
 		compareDatePickerValues,
@@ -17,30 +17,30 @@
 		type DatePickerDateValue,
 		type DatePickerEditableSegmentType,
 		type DatePickerSegmentType
-	} from '../../datepicker/root/date-utils';
+	} from '../../datepicker/root/date-utils.js';
 	import {
 		createEmptySegmentDraft,
 		toDraftFromValue,
 		type DatePickerSegmentDraft
-	} from '../../datepicker/root/segment-state';
+	} from '../../datepicker/root/segment-state.js';
 	import {
 		applyDraftToSegments,
 		createDateSegmentEngine
-	} from '../../datepicker/root/segment-engine';
-	import { evaluateDatePickerDraft } from '../../datepicker/root/draft-evaluation';
+	} from '../../datepicker/root/segment-engine.js';
+	import { evaluateDatePickerDraft } from '../../datepicker/root/draft-evaluation.js';
 	import {
 		applyTriggerSelectionCloseState,
 		computeDatePickerFocusWithin
-	} from '../../datepicker/root/focus-controller';
-	import { getInteractionModality } from '../../primitives/input-modality';
-	import { resolveDatePickerOpenChangeDetails } from '../../datepicker/root/open-controller';
-	import { normalizeDateRangePickerValue } from './value-commit';
+	} from '../../datepicker/root/focus-controller.js';
+	import { getInteractionModality } from '../../primitives/input-modality.js';
+	import { resolveDatePickerOpenChangeDetails } from '../../datepicker/root/open-controller.js';
+	import { normalizeDateRangePickerValue } from './value-commit.js';
 	import {
 		addDays,
 		compareDates,
 		formatCalendarDate,
 		parseCalendarDate
-	} from '../../calendar/root/date-utils';
+	} from '../../calendar/root/date-utils.js';
 	import {
 		createDatePickerSegmentRefs,
 		focusLastDatePickerSegment,
@@ -48,7 +48,7 @@
 		focusPreviousDatePickerSegment,
 		registerDatePickerSegmentRef,
 		type DatePickerSegmentRefs
-	} from '../../datepicker/root/segment-controller';
+	} from '../../datepicker/root/segment-controller.js';
 
 	type DateRangePickerRootProps = {
 		id?: string;

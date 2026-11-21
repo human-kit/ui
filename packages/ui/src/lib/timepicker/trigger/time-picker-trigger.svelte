@@ -2,12 +2,12 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useTimePickerContext } from '../root/context';
+	import { useTimePickerContext } from '../root/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { composeEventHandlers } from '../internal/strict-props';
+	} from '../../primitives/input-modality.js';
+	import { composeEventHandlers } from '../internal/strict-props.js';
 
 	type TimePickerTriggerProps = Omit<
 		HTMLButtonAttributes,

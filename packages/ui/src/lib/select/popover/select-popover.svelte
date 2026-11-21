@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Popover } from '../../popover';
-	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
-	import { containWheel } from '../../primitives/contain-wheel';
-	import { useSelectContext, type SelectCloseReason } from '../root/context';
+	import { Popover } from '../../popover/index.js';
+	import type { PopoverOpenChangeDetails } from '../../popover/root/context.js';
+	import { containWheel } from '../../primitives/contain-wheel.js';
+	import { useSelectContext, type SelectCloseReason } from '../root/context.js';
 	import type { ComponentProps, Snippet } from 'svelte';
 
 	type SelectPopoverProps = Omit<

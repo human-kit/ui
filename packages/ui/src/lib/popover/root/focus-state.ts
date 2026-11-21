@@ -1,10 +1,10 @@
-import type { PopoverCloseReason } from './context';
+import type { PopoverCloseReason } from './context.js';
 import {
 	applyTriggerCloseFocusState as applyTriggerCloseFocusStateShared,
 	addTriggerBlurCleanup,
 	clearTriggerFocusState,
 	focusFellToBody
-} from '../../primitives/trigger-focus-state';
+} from '../../primitives/trigger-focus-state.js';
 
 export { addTriggerBlurCleanup, clearTriggerFocusState, focusFellToBody };
 

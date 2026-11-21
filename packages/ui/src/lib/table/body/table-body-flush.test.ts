@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { insideEffect } from './effect-tracking.svelte';
+import { insideEffect } from './effect-tracking.svelte.js';
 import TableBodyItemsTest from './table-body-items-test.svelte';
 
 const flushedInsideEffect = vi.hoisted(() => ({ count: 0 }));

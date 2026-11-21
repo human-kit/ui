@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte';
 	import { ButtonRoot } from '../../button/index.js';
-	import { trackInteractionModality } from '../../primitives/input-modality';
-	import { composeEventHandlers } from '../../utils/compose-event-handlers';
-	import { useSearchFieldContext } from '../root/context';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
+	import { composeEventHandlers } from '../../utils/compose-event-handlers.js';
+	import { useSearchFieldContext } from '../root/context.js';
 
 	type SearchFieldClearProps = Omit<
 		ComponentProps<typeof ButtonRoot>,

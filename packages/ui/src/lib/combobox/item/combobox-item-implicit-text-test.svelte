@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ComboBox } from '../index';
+	import { ComboBox } from '../index.js';
 
 	let selected = $state<string | number | null>(null);
 </script>

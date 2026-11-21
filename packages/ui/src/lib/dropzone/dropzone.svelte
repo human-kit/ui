@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
-	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
-	import { visuallyHiddenStyle } from '../primitives/visually-hidden';
-	import type { ClassValue } from '../utils/cn';
-	import { composeEventHandlers } from '../utils/compose-event-handlers';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../primitives/input-modality.js';
+	import { visuallyHiddenStyle } from '../primitives/visually-hidden.js';
+	import type { ClassValue } from '../utils/cn.js';
+	import { composeEventHandlers } from '../utils/compose-event-handlers.js';
 
 	export type DropzoneRenderState = {
 		/** A drag is currently hovering the zone with droppable file content. */

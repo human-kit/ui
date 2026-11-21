@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Tree from '../index';
+	import Tree from '../index.js';
 
 	let {
 		defaultExpandedKeys = ['documents'],

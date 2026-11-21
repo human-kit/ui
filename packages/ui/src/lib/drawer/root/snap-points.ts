@@ -15,8 +15,8 @@
  *   sign of a swipe, so a release can be resolved by comparing plain numbers.
  */
 
-import { projectRelease } from '../../primitives/swipe-gesture';
-import type { DrawerSnapPoint } from './types';
+import { projectRelease } from '../../primitives/swipe-gesture.js';
+import type { DrawerSnapPoint } from './types.js';
 
 /**
  * Visible extent, in px, that `point` asks for.

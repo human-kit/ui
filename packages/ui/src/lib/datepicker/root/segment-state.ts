@@ -2,7 +2,7 @@ import {
 	isValidDatePickerValue,
 	type DatePickerDateValue,
 	type DatePickerSegmentType
-} from './date-utils';
+} from './date-utils.js';
 
 export type EditableSegmentType = Exclude<DatePickerSegmentType, 'literal'>;
 

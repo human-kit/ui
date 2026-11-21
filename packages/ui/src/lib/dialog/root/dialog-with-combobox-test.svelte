@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Dialog } from '../index';
-	import { ComboBox } from '../../combobox';
+	import { Dialog } from '../index.js';
+	import { ComboBox } from '../../combobox/index.js';
 
 	type Props = {
 		comboboxAutofocus?: boolean;

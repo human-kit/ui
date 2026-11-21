@@ -1,7 +1,10 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { watchFocusVisible } from '../primitives/focus-visible.svelte';
-	import { shouldShowFocusVisible, trackInteractionModality } from '../primitives/input-modality';
+	import { watchFocusVisible } from '../primitives/focus-visible.svelte.js';
+	import {
+		shouldShowFocusVisible,
+		trackInteractionModality
+	} from '../primitives/input-modality.js';
 	import type { SeparatorOrientation } from './types.js';
 
 	type SeparatorProps = Omit<

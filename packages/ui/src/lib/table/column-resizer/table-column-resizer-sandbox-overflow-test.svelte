@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Table } from '../index';
-	import type { TableColumnWidth } from '../root/context.svelte';
+	import { Table } from '../index.js';
+	import type { TableColumnWidth } from '../root/context.svelte.js';
 
 	let currentColumnWidths = $state<Map<string, TableColumnWidth> | undefined>(undefined);
 	const rows = Array.from({ length: 24 }, (_, index) => ({

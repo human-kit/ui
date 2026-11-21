@@ -1,4 +1,4 @@
-import { trackMotionEnd, type MotionTracker } from './motion';
+import { trackMotionEnd, type MotionTracker } from './motion.js';
 
 export type CollapseTransitionStatus = 'starting' | 'ending' | undefined;
 

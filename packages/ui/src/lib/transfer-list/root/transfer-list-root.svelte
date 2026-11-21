@@ -2,10 +2,10 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { untrack } from 'svelte';
-	import { dev } from '../../internal/environment';
-	import type { ListBoxContext } from '../../listbox/root/context';
-	import { setTransferListContext, type TransferListContext } from './context';
-	import { oppositeSide, type TransferListKey, type TransferListMoveDetails } from './types';
+	import { dev } from '../../internal/environment.js';
+	import type { ListBoxContext } from '../../listbox/root/context.js';
+	import { setTransferListContext, type TransferListContext } from './context.js';
+	import { oppositeSide, type TransferListKey, type TransferListMoveDetails } from './types.js';
 
 	/**
 	 * TransferList.Root - Owns which side each item is on and shares it with the two

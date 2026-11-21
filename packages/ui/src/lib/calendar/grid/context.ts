@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { CalendarWeekdayStyle } from '../root/date-utils';
+import type { CalendarWeekdayStyle } from '../root/date-utils.js';
 
 const GRID_CONTEXT_KEY = Symbol('calendar-grid');
 

@@ -4,9 +4,9 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { setSwitchContext, type SwitchContext } from './context';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { setSwitchContext, type SwitchContext } from './context.js';
 
 	type SwitchRootProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,

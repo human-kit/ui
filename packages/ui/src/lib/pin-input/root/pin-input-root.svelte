@@ -2,19 +2,23 @@
 	import { untrack } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { readable } from 'svelte/store';
-	import { dev } from '../../internal/environment';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { focusWithModality } from '../../primitives/input-modality';
-	import type { PinInputRootProps } from '../types';
-	import { setPinInputContext, type PinInputChangeDetails, type PinInputContext } from './context';
+	import { dev } from '../../internal/environment.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { focusWithModality } from '../../primitives/input-modality.js';
+	import type { PinInputRootProps } from '../types.js';
+	import {
+		setPinInputContext,
+		type PinInputChangeDetails,
+		type PinInputContext
+	} from './context.js';
 	import {
 		clampPinInputIndex,
 		deletePinInputCharacter,
 		filterPinInputText,
 		getPinInputPattern,
 		insertPinInputText
-	} from './pin-input-utils';
+	} from './pin-input-utils.js';
 
 	/**
 	 * PinInput.Root — the value, the cells and the focus between them.

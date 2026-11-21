@@ -4,10 +4,10 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { cn } from '../../utils/cn';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { cn } from '../../utils/cn.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
 
 	export type ButtonRenderState = {
 		hovered: boolean;

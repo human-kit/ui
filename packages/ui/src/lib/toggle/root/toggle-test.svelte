@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toggle } from '../index';
+	import { Toggle } from '../index.js';
 
 	type Props = {
 		value?: string;

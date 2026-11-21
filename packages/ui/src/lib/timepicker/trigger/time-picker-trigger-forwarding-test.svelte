@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TimePicker from '../index';
+	import TimePicker from '../index.js';
 
 	let mouseDownCount = $state(0);
 	let clickCount = $state(0);

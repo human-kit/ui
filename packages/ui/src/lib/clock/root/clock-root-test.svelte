@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import * as Clock from '../index.parts';
-	import type { ClockColumnInfo } from './resolve-visible-columns';
+	import * as Clock from '../index.parts.js';
+	import type { ClockColumnInfo } from './resolve-visible-columns.js';
 
 	type Props = {
 		defaultValue?: string | null;

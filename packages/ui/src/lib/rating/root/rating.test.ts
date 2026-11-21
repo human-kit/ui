@@ -5,8 +5,8 @@ import { userEvent } from 'vitest/browser';
 import {
 	expectFocusVisibleImpliesFocusWithin,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
-import type { RatingChangeDetails } from '../types';
+} from '../../test-utils/focus-contract.js';
+import type { RatingChangeDetails } from '../types.js';
 import RatingFormTest from './rating-form-test.svelte';
 import RatingTest from './rating-test.svelte';
 

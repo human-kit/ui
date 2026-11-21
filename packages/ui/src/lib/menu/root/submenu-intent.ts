@@ -1,4 +1,4 @@
-import type { MenuContext } from './context';
+import type { MenuContext } from './context.js';
 
 /**
  * "Safe triangle" pointer intent for submenus.

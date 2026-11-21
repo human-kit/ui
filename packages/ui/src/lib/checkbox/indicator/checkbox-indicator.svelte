@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { useCheckboxContext } from '../root/context';
+	import { useCheckboxContext } from '../root/context.js';
 
 	type CheckboxIndicatorProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
 		/** Keeps the indicator in the DOM even while the checkbox is unchecked. */

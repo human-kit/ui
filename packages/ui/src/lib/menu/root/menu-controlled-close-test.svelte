@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu } from '../index';
+	import { Menu } from '../index.js';
 
 	// Mirrors the centralized filter menu: content hosts a focusable input and an "Apply"
 	// button that closes the menu by flipping the bound `open` (no internal close handler).

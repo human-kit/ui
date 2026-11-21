@@ -6,9 +6,9 @@
 		defaultAutocompleteFilter,
 		type AutocompleteContext,
 		type AutocompleteFilter
-	} from './context';
-	import type { ListBoxContext } from '../../listbox/root/context';
-	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
+	} from './context.js';
+	import type { ListBoxContext } from '../../listbox/root/context.js';
+	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte.js';
 
 	type AutocompleteProps = {
 		/** A stable id, from which the component makes its internal ARIA ids. Give one on a server. */

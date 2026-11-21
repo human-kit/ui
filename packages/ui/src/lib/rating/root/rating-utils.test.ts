@@ -5,7 +5,7 @@ import {
 	normalizeRatingCount,
 	normalizeRatingPrecision,
 	snapRatingValue
-} from './rating-utils';
+} from './rating-utils.js';
 
 describe('rating utils', () => {
 	it('keeps the precision between 0 and 1', () => {

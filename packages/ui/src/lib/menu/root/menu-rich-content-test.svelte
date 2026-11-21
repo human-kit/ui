@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Menu } from '../index';
-	import { Popover } from '../../popover';
+	import { Menu } from '../index.js';
+	import { Popover } from '../../popover/index.js';
 
 	// Exercises a Menu whose content hosts interactive, non-menuitem widgets (an editable
 	// input, panels that swap on click, and a nested popover/dialog). These must keep their

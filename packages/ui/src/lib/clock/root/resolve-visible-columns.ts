@@ -1,5 +1,5 @@
-import type { ClockEditableSegmentType } from './context';
-import type { TimePickerGranularity, TimePickerHourCycle } from './time-utils';
+import type { ClockEditableSegmentType } from './context.js';
+import type { TimePickerGranularity, TimePickerHourCycle } from './time-utils.js';
 
 export type ClockColumnInfo = {
 	type: ClockEditableSegmentType;

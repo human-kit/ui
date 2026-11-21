@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tabs } from '../index';
+	import { Tabs } from '../index.js';
 
 	let value = $state<string | number>(1);
 </script>

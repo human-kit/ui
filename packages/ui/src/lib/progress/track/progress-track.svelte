@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ProgressTrackProps } from '../types.js';
-	import { useProgressContext } from '../root/context';
+	import { useProgressContext } from '../root/context.js';
 
 	/**
 	 * Progress.Track — the full length of the task. The indicator fills a part of it.

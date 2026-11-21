@@ -1,6 +1,6 @@
 import { setContext, getContext } from 'svelte';
-import type { ListBoxContext } from '../../listbox/root/context';
-import type { PopoverCloseReason } from '../../popover/root/context';
+import type { ListBoxContext } from '../../listbox/root/context.js';
+import type { PopoverCloseReason } from '../../popover/root/context.js';
 
 export type SelectKey = string | number;
 

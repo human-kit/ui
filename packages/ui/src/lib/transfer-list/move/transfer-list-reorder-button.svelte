@@ -2,10 +2,10 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { readable } from 'svelte/store';
-	import { ButtonRoot } from '../../button';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { useTransferListContext } from '../root/context';
+	import { ButtonRoot } from '../../button/index.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { useTransferListContext } from '../root/context.js';
 
 	/**
 	 * The button behind TransferList.MoveUp and TransferList.MoveDown.

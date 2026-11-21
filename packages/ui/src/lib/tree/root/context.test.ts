@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createTreeContext, type TreeNodeId } from './context.svelte';
+import { createTreeContext, type TreeNodeId } from './context.svelte.js';
 
 function flushMicrotasks() {
 	return new Promise<void>((resolve) => {

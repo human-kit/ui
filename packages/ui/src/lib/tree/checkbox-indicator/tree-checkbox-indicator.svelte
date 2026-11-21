@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Checkbox } from '../../checkbox';
-	import { getCheckboxContext } from '../../checkbox/root/context';
-	import type { TreeCheckboxIndicatorProps } from '../types';
+	import { Checkbox } from '../../checkbox/index.js';
+	import { getCheckboxContext } from '../../checkbox/root/context.js';
+	import type { TreeCheckboxIndicatorProps } from '../types.js';
 
 	let {
 		forceMount = false,

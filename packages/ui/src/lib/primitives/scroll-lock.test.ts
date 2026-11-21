@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { allowScrollWithin, scrollLock } from './scroll-lock';
+import { allowScrollWithin, scrollLock } from './scroll-lock.js';
 
 function resetBodyStyles() {
 	document.body.style.overflow = '';

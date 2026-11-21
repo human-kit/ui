@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useTooltipContext } from '../root/context';
-	import type { TooltipArrowProps } from '../types';
+	import { useTooltipContext } from '../root/context.js';
+	import type { TooltipArrowProps } from '../types.js';
 
 	/**
 	 * Tooltip.Arrow — the pointer of the panel toward the trigger.

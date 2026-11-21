@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Avatar } from '../index';
-	import type { AvatarStatus } from '../index';
+	import { Avatar } from '../index.js';
+	import type { AvatarStatus } from '../index.js';
 
 	let {
 		src = undefined,

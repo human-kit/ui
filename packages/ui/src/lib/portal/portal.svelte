@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onDestroy } from 'svelte';
-	import { browser } from '../internal/environment';
+	import { browser } from '../internal/environment.js';
 
 	type PortalProps = {
 		/** Target element or selector to render into. Defaults to document.body */

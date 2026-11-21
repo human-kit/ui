@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../test-utils/focus-contract';
+} from '../test-utils/focus-contract.js';
 import NumberFieldTest from './number-field-test.svelte';
 
 function getValueOutput(): string | null {

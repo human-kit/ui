@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '../index';
+	import { Button } from '../index.js';
 
 	let { opt = true }: { opt?: boolean } = $props();
 	let expanded = $state(false);

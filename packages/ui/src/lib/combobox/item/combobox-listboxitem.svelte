@@ -10,7 +10,7 @@
 	import type { ComponentProps } from 'svelte';
 	import { untrack, onDestroy, setContext } from 'svelte';
 	import ListBoxItem from '../../listbox/item/listbox-item.svelte';
-	import { useComboBoxContext, type ComboBoxItemActionHandler } from '../root/context';
+	import { useComboBoxContext, type ComboBoxItemActionHandler } from '../root/context.js';
 
 	/**
 	 * ComboBox.ListBoxItem wraps ListBox.Item and provides ComboBox-specific behavior:

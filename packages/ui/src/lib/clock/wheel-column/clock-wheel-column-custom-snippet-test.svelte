@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Clock from '../index.parts';
+	import * as Clock from '../index.parts.js';
 
 	type Props = {
 		defaultValue?: string;

@@ -1,11 +1,11 @@
 import { SvelteMap } from 'svelte/reactivity';
-import { createKeyboardNavigation } from '../../primitives/keyboard-navigation';
-import { createSubmenuIntent } from './submenu-intent';
+import { createKeyboardNavigation } from '../../primitives/keyboard-navigation.js';
+import { createSubmenuIntent } from './submenu-intent.js';
 import {
 	addTriggerBlurCleanup,
 	applyTriggerCloseFocusState,
 	clearTriggerFocusState
-} from './focus-state';
+} from './focus-state.js';
 import type {
 	MenuAnchorPoint,
 	MenuCanonicalCloseReason,
@@ -17,7 +17,7 @@ import type {
 	MenuOpenChangeDetails,
 	MenuOpenFocusIntent,
 	MenuOpenReason
-} from './context';
+} from './context.js';
 
 export type CreateMenuStateOptions = {
 	/** Reads the controlled open value (undefined when uncontrolled). */

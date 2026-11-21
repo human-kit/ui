@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DateRangePicker, { type DateRangePickerRangeValue } from '../index';
+	import DateRangePicker, { type DateRangePickerRangeValue } from '../index.js';
 
 	let value = $state<DateRangePickerRangeValue | null>({
 		start: '2026-02-10',

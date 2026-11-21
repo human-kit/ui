@@ -6,7 +6,7 @@ import DatePickerEmptyTest from '../root/date-picker-empty-test.svelte';
 import DatePickerLocaleTypingTest from '../root/date-picker-locale-typing-test.svelte';
 import DatePickerMinChangeTest from '../root/date-picker-min-change-test.svelte';
 import DatePickerCalendarUnsafePropsTest from './date-picker-calendar-unsafe-props-test.svelte';
-import { addDays, formatCalendarDate, getTodayUtcDate } from '../../calendar/root/date-utils';
+import { addDays, formatCalendarDate, getTodayUtcDate } from '../../calendar/root/date-utils.js';
 
 function getSegment(type: 'day' | 'month' | 'year') {
 	const element = document.querySelector<HTMLElement>(`[role="spinbutton"][data-type="${type}"]`);

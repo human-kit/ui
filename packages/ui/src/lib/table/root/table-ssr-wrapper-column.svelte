@@ -3,7 +3,7 @@
 	import {
 		useTableSsrWrapperRegistry,
 		type TableSsrWrapperColumn
-	} from './table-ssr-wrapper-context';
+	} from './table-ssr-wrapper-context.js';
 
 	let { id, header }: TableSsrWrapperColumn = $props();
 

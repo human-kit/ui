@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { ProgressStatus } from './progress-utils';
+import type { ProgressStatus } from './progress-utils.js';
 
 const KEY = Symbol('progress');
 

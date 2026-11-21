@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { drawerStack } from '../root/drawer-stack.svelte';
+	import { drawerStack } from '../root/drawer-stack.svelte.js';
 
 	/**
 	 * Drawer.Indent — wraps the app UI so it can pull back while a drawer is open.

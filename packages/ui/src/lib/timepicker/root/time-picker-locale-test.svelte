@@ -1,6 +1,6 @@
 <script lang="ts">
-	import TimePicker from '../index';
-	import { LocaleProvider } from '../../locale-provider';
+	import TimePicker from '../index.js';
+	import { LocaleProvider } from '../../locale-provider/index.js';
 
 	type Props = {
 		locale?: string;

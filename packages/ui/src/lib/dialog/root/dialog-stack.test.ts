@@ -8,7 +8,7 @@ import {
 	getDialogCount,
 	getDialogLevel,
 	subscribeDialogStack
-} from './dialog-stack';
+} from './dialog-stack.js';
 
 describe('Dialog Stack', () => {
 	// Reset the stack before each test by popping all dialogs

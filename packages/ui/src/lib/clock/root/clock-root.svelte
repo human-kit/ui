@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { setClockContext, type ClockContext } from './context';
-	import { resolveVisibleColumns, type ClockColumnInfo } from './resolve-visible-columns';
-	import { createTimeSelectionState } from './create-time-selection-state.svelte';
+	import { setClockContext, type ClockContext } from './context.js';
+	import { resolveVisibleColumns, type ClockColumnInfo } from './resolve-visible-columns.js';
+	import { createTimeSelectionState } from './create-time-selection-state.svelte.js';
 	import ClockWheelColumn from '../wheel-column/clock-wheel-column.svelte';
 	import type {
 		TimePickerGranularity,
 		TimePickerHourCycle,
 		TimePickerTimeValue
-	} from './time-utils';
+	} from './time-utils.js';
 
 	type ClockRootProps = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> & {
 		id?: string;

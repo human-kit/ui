@@ -1,7 +1,7 @@
 import { untrack } from 'svelte';
 import { fromStore } from 'svelte/store';
-import { useLocaleContextOptional } from '../../locale-provider/context';
-import { buildWheelOptions } from './wheel-options';
+import { useLocaleContextOptional } from '../../locale-provider/context.js';
+import { buildWheelOptions } from './wheel-options.js';
 import {
 	buildTimePartsFromDraft,
 	clampToStep,
@@ -21,7 +21,7 @@ import {
 	type TimePickerGranularity,
 	type TimePickerHourCycle,
 	type TimePickerTimeValue
-} from './time-utils';
+} from './time-utils.js';
 
 export type TimeSelectionWheelOption = {
 	value: string;

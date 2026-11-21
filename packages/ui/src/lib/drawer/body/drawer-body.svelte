@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture';
+	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture.js';
 
 	/**
 	 * Drawer.Body — the content region inside the panel.

@@ -1,13 +1,13 @@
 import type { Snippet } from 'svelte';
 import type { HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
-import type { ExtendedPlacement } from '../primitives/floating';
+import type { ExtendedPlacement } from '../primitives/floating.js';
 import type {
 	TooltipChangeReason,
 	TooltipCloseReason,
 	TooltipContext,
 	TooltipOpenChangeDetails,
 	TooltipOpenReason
-} from './root/context';
+} from './root/context.js';
 
 export type {
 	TooltipChangeReason,

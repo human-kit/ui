@@ -11,7 +11,7 @@
  */
 
 import { untrack } from 'svelte';
-import { trackMotionEnd, type MotionTracker } from './motion';
+import { trackMotionEnd, type MotionTracker } from './motion.js';
 
 export type PresenceOptions = {
 	/**

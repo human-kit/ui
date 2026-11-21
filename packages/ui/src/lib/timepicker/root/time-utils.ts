@@ -26,4 +26,4 @@ export {
 	buildTimePickerSegments,
 	getEditableSegmentOrder,
 	getSegmentLabel
-} from '../../clock/root/time-utils';
+} from '../../clock/root/time-utils.js';

@@ -46,13 +46,13 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useListBoxContext } from '../root/context';
+	import { useListBoxContext } from '../root/context.js';
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import {
 		focusWithModality,
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	/**
 	 * Props for the ListBox.Item component.

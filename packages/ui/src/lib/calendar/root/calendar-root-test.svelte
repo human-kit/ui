@@ -1,12 +1,16 @@
 <script lang="ts">
-	import Calendar from '../index';
-	import { LocaleProvider } from '../../locale-provider';
-	import type { CalendarRangeValue, CalendarSelectionMode, CalendarValue } from './context.svelte';
+	import Calendar from '../index.js';
+	import { LocaleProvider } from '../../locale-provider/index.js';
+	import type {
+		CalendarRangeValue,
+		CalendarSelectionMode,
+		CalendarValue
+	} from './context.svelte.js';
 	import type {
 		CalendarFirstDayOfWeek,
 		CalendarMonthHeadingStyle,
 		CalendarWeekdayStyle
-	} from './date-utils';
+	} from './date-utils.js';
 
 	type Props = {
 		selectionMode?: CalendarSelectionMode;

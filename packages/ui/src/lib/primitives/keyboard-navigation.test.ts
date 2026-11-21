@@ -3,7 +3,7 @@ import {
 	createKeyboardNavigation,
 	rovingTabindex,
 	type KeyboardNavigationOptions
-} from './keyboard-navigation';
+} from './keyboard-navigation.js';
 
 function createItems(container: HTMLElement, labels: string[]): HTMLElement[] {
 	return labels.map((label) => {

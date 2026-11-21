@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useRatingContext } from '../root/context';
-	import type { RatingOutputProps, RatingOutputRenderState } from '../types';
+	import { useRatingContext } from '../root/context.js';
+	import type { RatingOutputProps, RatingOutputRenderState } from '../types.js';
 
 	/**
 	 * Rating.Output — the text of the value.

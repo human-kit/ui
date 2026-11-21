@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import { useDateRangePickerContext } from '../root/context';
-	import { Popover } from '../../popover';
-	import type { PopoverOpenChangeDetails } from '../../popover/root/context';
-	import { composeEventHandlers, sanitizeDateRangePickerProps } from '../internal/strict-props';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { trackInteractionModality } from '../../primitives/input-modality';
+	import { useDateRangePickerContext } from '../root/context.js';
+	import { Popover } from '../../popover/index.js';
+	import type { PopoverOpenChangeDetails } from '../../popover/root/context.js';
+	import { composeEventHandlers, sanitizeDateRangePickerProps } from '../internal/strict-props.js';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
 
 	type ForbiddenPopoverProp = 'open' | 'triggerRef' | 'onOpenChange' | 'id';
 

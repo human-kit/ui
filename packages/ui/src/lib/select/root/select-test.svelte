@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { Select } from '../index';
-	import type { SelectKey, SelectOpenChangeDetails } from '../types';
+	import { Select } from '../index.js';
+	import type { SelectKey, SelectOpenChangeDetails } from '../types.js';
 
 	type Props = {
 		selectionMode?: 'single' | 'multiple';

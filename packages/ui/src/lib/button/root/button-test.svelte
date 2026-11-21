@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '../index';
+	import { Button } from '../index.js';
 
 	type Props = {
 		disabled?: boolean;

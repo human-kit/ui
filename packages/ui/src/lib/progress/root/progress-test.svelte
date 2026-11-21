@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Progress } from '../index';
-	import type { ProgressContext, ProgressOrientation } from '../index';
+	import { Progress } from '../index.js';
+	import type { ProgressContext, ProgressOrientation } from '../index.js';
 
 	type Props = {
 		value?: number | null;

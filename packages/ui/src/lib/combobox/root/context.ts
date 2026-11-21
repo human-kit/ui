@@ -1,5 +1,5 @@
 import { setContext, getContext } from 'svelte';
-import type { ListBoxContext } from '../../listbox/root/context';
+import type { ListBoxContext } from '../../listbox/root/context.js';
 
 export type ComboBoxFilter = (textValue: string, inputValue: string) => boolean;
 

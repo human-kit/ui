@@ -4,7 +4,7 @@ import {
 	type TimePickerEditableSegmentType,
 	type TimePickerGranularity,
 	type TimePickerHourCycle
-} from './time-utils';
+} from './time-utils.js';
 
 export type WheelOption = {
 	value: string;

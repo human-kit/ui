@@ -3,7 +3,7 @@
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import { untrack } from 'svelte';
 	import { ButtonRoot } from '../../button/index.js';
-	import { useMenuContext } from '../root/context';
+	import { useMenuContext } from '../root/context.js';
 
 	export type MenuTriggerProps = Omit<
 		HTMLButtonAttributes,

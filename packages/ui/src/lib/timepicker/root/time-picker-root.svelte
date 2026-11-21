@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
-	import type { TimePickerOpenChangeDetails, TimePickerOpenChangeReason } from './context';
-	import { setTimePickerContext, type TimePickerContext } from './context';
-	import { createTimeSelectionState } from '../../clock/root/create-time-selection-state.svelte';
+	import type { TimePickerOpenChangeDetails, TimePickerOpenChangeReason } from './context.js';
+	import { setTimePickerContext, type TimePickerContext } from './context.js';
+	import { createTimeSelectionState } from '../../clock/root/create-time-selection-state.svelte.js';
 	import {
 		adjustSegmentWithStep,
 		buildTimePickerSegments,
@@ -15,7 +15,7 @@
 		type TimePickerHourCycle,
 		type TimePickerSegmentType,
 		type TimePickerTimeValue
-	} from './time-utils';
+	} from './time-utils.js';
 
 	type TimePickerRootProps = {
 		id?: string;

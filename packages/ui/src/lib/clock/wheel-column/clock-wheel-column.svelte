@@ -1,16 +1,16 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
-	import { useClockContext, type ClockEditableSegmentType } from '../root/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
+	import { useClockContext, type ClockEditableSegmentType } from '../root/context.js';
 	import TimePickerWheelItem from '../wheel-item/clock-wheel-item.svelte';
-	import { useWheelScroll, type WheelScrollBehavior } from '../hooks/use-wheel-scroll.svelte';
+	import { useWheelScroll, type WheelScrollBehavior } from '../hooks/use-wheel-scroll.svelte.js';
 	import {
 		focusWithModality,
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type TimePickerWheelOption = {
 		value: string;

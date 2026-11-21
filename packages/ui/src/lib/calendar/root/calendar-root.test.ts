@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-svelte';
 import CalendarRootTest from './calendar-root-test.svelte';
 import CalendarRootBindValueTest from './calendar-root-bind-value-test.svelte';
 import CalendarRootControlledClearTest from './calendar-root-controlled-clear-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 function pressKey(element: Element, key: string, options?: { shiftKey?: boolean }) {
 	element.dispatchEvent(

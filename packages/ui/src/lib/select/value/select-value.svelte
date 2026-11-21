@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { useSelectContext } from '../root/context';
-	import type { SelectValueProps, SelectValueRenderState } from '../types';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { useSelectContext } from '../root/context.js';
+	import type { SelectValueProps, SelectValueRenderState } from '../types.js';
 
 	/**
 	 * Select.Value — the text of the selection, inside the trigger.

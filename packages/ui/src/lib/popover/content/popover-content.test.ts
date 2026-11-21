@@ -5,7 +5,7 @@ import PopoverContentTest from './popover-content-test.svelte';
 import PopoverContentControlledCloseTest from './popover-content-controlled-close-test.svelte';
 import PopoverContentNestedTest from './popover-content-nested-test.svelte';
 import PopoverContentStandaloneTest from './popover-content-standalone-test.svelte';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 
 describe('Popover.Content', () => {
 	// Clean up any portaled content after each test

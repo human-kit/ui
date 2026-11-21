@@ -2,9 +2,9 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { tick } from 'svelte';
-	import { ListBoxItem } from '../../listbox';
-	import { useTransferListContext, useTransferListSide } from '../root/context';
-	import { oppositeSide } from '../root/types';
+	import { ListBoxItem } from '../../listbox/index.js';
+	import { useTransferListContext, useTransferListSide } from '../root/context.js';
+	import { oppositeSide } from '../root/types.js';
 
 	/**
 	 * TransferList.Item - One row, on whichever side it currently lives.

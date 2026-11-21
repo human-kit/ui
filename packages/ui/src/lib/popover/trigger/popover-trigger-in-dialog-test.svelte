@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Dialog } from '../../dialog';
-	import { Popover } from '../../popover';
+	import { Dialog } from '../../dialog/index.js';
+	import { Popover } from '../../popover/index.js';
 </script>
 
 <Dialog.Root>

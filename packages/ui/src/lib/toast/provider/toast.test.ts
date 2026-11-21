@@ -2,7 +2,7 @@ import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import type { ToastManager } from '../index';
+import type { ToastManager } from '../index.js';
 import ToastModalTest from './toast-modal-test.svelte';
 import ToastSharedTest from './toast-shared-test.svelte';
 import ToastTest from './toast-test.svelte';

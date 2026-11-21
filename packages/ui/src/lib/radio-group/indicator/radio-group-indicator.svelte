@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { useRadioGroupItemContext } from '../item/context';
+	import { useRadioGroupItemContext } from '../item/context.js';
 
 	type RadioGroupIndicatorProps = Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'class'> & {
 		/** Keeps the indicator in the DOM while the radio is not checked, for exit animations. */

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { AccordionRootProps } from '../types.js';
-	import { createAccordionContext, setAccordionContext } from './context.svelte';
+	import { createAccordionContext, setAccordionContext } from './context.svelte.js';
 
 	const generatedId = $props.id();
 

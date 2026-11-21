@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PinInput } from '../index';
+	import { PinInput } from '../index.js';
 
 	type Props = {
 		defaultValue?: string;

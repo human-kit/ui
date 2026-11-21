@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table } from '../index';
+	import { Table } from '../index.js';
 
 	let { recycle = true }: { recycle?: boolean } = $props();
 

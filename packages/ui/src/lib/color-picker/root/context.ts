@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { Color, ColorChannel, ColorChannelRange, ColorFormat } from './color';
+import type { Color, ColorChannel, ColorChannelRange, ColorFormat } from './color.js';
 
 export type { Color, ColorChannel, ColorChannelRange, ColorFormat };
 

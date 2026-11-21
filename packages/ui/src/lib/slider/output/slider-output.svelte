@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { readable } from 'svelte/store';
-	import { getLocaleContext } from '../../locale-provider/context';
-	import { useSliderContext } from '../root/context';
-	import type { SliderOutputProps, SliderOutputRenderState } from '../types';
+	import { getLocaleContext } from '../../locale-provider/context.js';
+	import { useSliderContext } from '../root/context.js';
+	import type { SliderOutputProps, SliderOutputRenderState } from '../types.js';
 
 	/**
 	 * Slider.Output — the text of the value.

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import DateRangePicker, { type DateRangePickerRangeValue } from '../index';
+	import DateRangePicker, { type DateRangePickerRangeValue } from '../index.js';
 
 	type Props = {
 		defaultValue?: DateRangePickerRangeValue | null;

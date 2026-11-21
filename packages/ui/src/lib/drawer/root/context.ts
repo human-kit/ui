@@ -1,5 +1,5 @@
 import { setContext, getContext } from 'svelte';
-import type { DrawerModal, DrawerSide, DrawerCloseReason, DrawerSnapPoint } from './types';
+import type { DrawerModal, DrawerSide, DrawerCloseReason, DrawerSnapPoint } from './types.js';
 
 /**
  * Context shared by every Drawer part.

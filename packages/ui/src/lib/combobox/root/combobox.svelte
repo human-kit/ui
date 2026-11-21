@@ -1,21 +1,21 @@
 <script lang="ts" generics="T extends object = object">
 	import { untrack, type Snippet } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-	import { dev } from '../../internal/environment';
-	import { foldForSearch } from '../../primitives/text';
+	import { dev } from '../../internal/environment.js';
+	import { foldForSearch } from '../../primitives/text.js';
 	import {
 		setComboBoxContext,
 		type ComboBoxContext,
 		type ComboBoxFilter,
 		type ComboBoxItemActionRegistration,
 		type ComboBoxItemActionSource
-	} from './context';
-	import type { ListBoxContext } from '../../listbox/root/context';
-	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte';
+	} from './context.js';
+	import type { ListBoxContext } from '../../listbox/root/context.js';
+	import { useVirtualFocus } from '../../hooks/use-virtual-focus.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	type ComboBoxProps<T> = {
 		/** A stable id, from which the component makes its internal ARIA ids. Give one on a server. */

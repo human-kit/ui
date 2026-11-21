@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import { dev } from '../../internal/environment';
+	import { dev } from '../../internal/environment.js';
 
 	let warnedMissingAccessibleName = false;
 
@@ -15,14 +15,14 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
 	import type { TableRootProps } from '../types.js';
 	import {
 		createTableContext,
@@ -30,7 +30,7 @@
 		type TableColumnWidth,
 		type TableSelectionKey,
 		type TableSortDescriptor
-	} from './context.svelte';
+	} from './context.svelte.js';
 
 	let {
 		selectionMode = 'none',

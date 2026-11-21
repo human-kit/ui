@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Toggle } from '../../toggle/index.js';
-	import { ToggleGroup } from '../index';
+	import { ToggleGroup } from '../index.js';
 
 	let values = $state(['one', 'two', 'three']);
 </script>

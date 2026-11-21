@@ -2,9 +2,9 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, tick, untrack } from 'svelte';
-	import { createListBoxContext, type ListBoxContext } from './context';
-	import { trackInteractionModality } from '../../primitives/input-modality';
-	import { computeListWindow, scrollTopForIndex } from '../../primitives/list-virtualizer';
+	import { createListBoxContext, type ListBoxContext } from './context.js';
+	import { trackInteractionModality } from '../../primitives/input-modality.js';
+	import { computeListWindow, scrollTopForIndex } from '../../primitives/list-virtualizer.js';
 
 	/**
 	 * Props for the ListBox component.

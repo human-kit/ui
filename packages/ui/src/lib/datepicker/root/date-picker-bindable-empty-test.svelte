@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DatePicker from '../index';
+	import DatePicker from '../index.js';
 
 	let value = $state<string | null | undefined>(undefined);
 	let onChangeCalls = $state(0);

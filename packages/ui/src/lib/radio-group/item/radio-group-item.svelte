@@ -4,10 +4,10 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { useRadioGroupContext } from '../root/context.svelte';
-	import { setRadioGroupItemContext, type RadioGroupItemContext } from './context';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { useRadioGroupContext } from '../root/context.svelte.js';
+	import { setRadioGroupItemContext, type RadioGroupItemContext } from './context.js';
 
 	type RadioGroupItemProps = Omit<
 		HTMLAttributes<HTMLSpanElement>,

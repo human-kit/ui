@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { PinInputType } from './pin-input-utils';
+import type { PinInputType } from './pin-input-utils.js';
 
 export type { PinInputType };
 

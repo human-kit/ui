@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Breadcrumbs } from '../index';
-	import LocaleProvider from '../../locale-provider/index';
+	import { Breadcrumbs } from '../index.js';
+	import LocaleProvider from '../../locale-provider/index.js';
 
 	let {
 		pages = ['Home', 'Docs', 'Components', 'Navigation', 'Breadcrumbs'],

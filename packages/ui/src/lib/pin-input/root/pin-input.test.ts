@@ -2,7 +2,7 @@ import { tick } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract';
+import { expectNoFalseFocusAttributes } from '../../test-utils/focus-contract.js';
 import PinInputFormTest from './pin-input-form-test.svelte';
 import PinInputTest from './pin-input-test.svelte';
 

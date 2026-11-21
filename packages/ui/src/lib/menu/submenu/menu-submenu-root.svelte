@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onDestroy, untrack } from 'svelte';
-	import { setMenuContext, useMenuContext, type MenuOpenChangeDetails } from '../root/context';
-	import { createMenuState } from '../root/menu-state.svelte';
+	import { setMenuContext, useMenuContext, type MenuOpenChangeDetails } from '../root/context.js';
+	import { createMenuState } from '../root/menu-state.svelte.js';
 
 	/**
 	 * Menu.SubmenuRoot - Provides a nested menu context for a submenu.

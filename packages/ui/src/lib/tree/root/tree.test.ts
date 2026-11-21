@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
-import { collapseMotion } from '../../primitives/collapse-motion';
-import type { TreeItemTransition } from '../types';
+import { collapseMotion } from '../../primitives/collapse-motion.js';
+import type { TreeItemTransition } from '../types.js';
 import TreeTest from './tree-test.svelte';
 import TreeDisabledKeysTest from './tree-disabled-keys-test.svelte';
 import TreeLabelFallbackTest from './tree-label-fallback-test.svelte';
@@ -31,7 +31,7 @@ describe('Tree.Root', () => {
 	});
 
 	it('renders visible items and omits collapsed descendants from the DOM', async () => {
-		let treeContext: import('../index').TreeContext | undefined;
+		let treeContext: import('../index.js').TreeContext | undefined;
 		const screen = render(TreeTest, {
 			onContext: (context) => {
 				treeContext = context;
@@ -214,7 +214,7 @@ describe('Tree.Root', () => {
 	});
 
 	it('supports descendant propagation when selecting a parent', async () => {
-		let treeContext: import('../index').TreeContext | undefined;
+		let treeContext: import('../index.js').TreeContext | undefined;
 		const screen = render(TreeTest, {
 			selectionMode: 'multiple',
 			selectionPropagation: 'descendants',
@@ -464,7 +464,7 @@ describe('Tree.Root', () => {
 	});
 
 	it('uses Tree.Label text for typeahead when title is omitted', async () => {
-		let treeContext: import('../index').TreeContext | undefined;
+		let treeContext: import('../index.js').TreeContext | undefined;
 		const screen = render(TreeLabelFallbackTest, {
 			onContext: (context) => {
 				treeContext = context;

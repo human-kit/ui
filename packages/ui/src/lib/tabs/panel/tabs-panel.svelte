@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { useTabsContext } from '../root/context.svelte';
+	import { useTabsContext } from '../root/context.svelte.js';
 	import type { TabsPanelProps } from '../types.js';
 
 	let {

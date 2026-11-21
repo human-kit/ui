@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import {
 		DEFAULT_TABLE_COLUMN_MIN_WIDTH,
 		getTableCellContext,
 		useTableColumnContext,
 		useTableContext
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableColumnResizerProps } from '../types.js';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { isRtl } from '../../internal/rtl';
+	} from '../../primitives/input-modality.js';
+	import { isRtl } from '../../internal/rtl.js';
 
 	let {
 		step = 16,

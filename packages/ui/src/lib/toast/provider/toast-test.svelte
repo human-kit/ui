@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Toast } from '../index';
-	import type { ToastManager } from '../index';
-	import type { SwipeSide } from '../../primitives/swipe-gesture';
+	import { Toast } from '../index.js';
+	import type { ToastManager } from '../index.js';
+	import type { SwipeSide } from '../../primitives/swipe-gesture.js';
 
 	type Props = {
 		timeout?: number;

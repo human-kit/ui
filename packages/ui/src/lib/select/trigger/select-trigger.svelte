@@ -5,10 +5,10 @@
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { useSelectContext } from '../root/context';
-	import type { SelectTriggerProps, SelectTriggerRenderState } from '../types';
+	} from '../../primitives/input-modality.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { useSelectContext } from '../root/context.js';
+	import type { SelectTriggerProps, SelectTriggerRenderState } from '../types.js';
 
 	/**
 	 * Select.Trigger — the button that opens the list and shows the value.

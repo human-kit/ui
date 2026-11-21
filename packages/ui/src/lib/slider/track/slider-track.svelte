@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useSliderContext } from '../root/context';
-	import type { SliderTrackProps } from '../types';
+	import { useSliderContext } from '../root/context.js';
+	import type { SliderTrackProps } from '../types.js';
 
 	/**
 	 * Slider.Track — the rail, and the surface of the pointer.

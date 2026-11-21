@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { browser } from '../../internal/environment';
-	import { setDrawerKeyboardContext } from '../root/keyboard-context';
+	import { browser } from '../../internal/environment.js';
+	import { setDrawerKeyboardContext } from '../root/keyboard-context.js';
 
 	/**
 	 * Drawer.VirtualKeyboardProvider — keeps a drawer's fields above the software

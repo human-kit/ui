@@ -4,11 +4,11 @@
 		focusWithModality,
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import { setTreeItemContext } from './context';
-	import { setTreeRenderMode } from '../root/render-mode';
-	import { useTreeContext, type TreeVisibleNode } from '../root/context.svelte';
-	import type { TreeItemTransition } from '../types';
+	} from '../../primitives/input-modality.js';
+	import { setTreeItemContext } from './context.js';
+	import { setTreeRenderMode } from '../root/render-mode.js';
+	import { useTreeContext, type TreeVisibleNode } from '../root/context.svelte.js';
+	import type { TreeItemTransition } from '../types.js';
 	import type { TransitionConfig } from 'svelte/transition';
 
 	let {

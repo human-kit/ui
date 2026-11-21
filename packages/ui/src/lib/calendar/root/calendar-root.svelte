@@ -6,14 +6,14 @@
 		type CalendarRangeValue,
 		type CalendarSelectionMode,
 		type CalendarValue
-	} from './context.svelte';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	} from './context.svelte.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import {
 		isValidCalendarDateValue,
 		type CalendarDateValue,
 		type CalendarFirstDayOfWeek,
 		type CalendarMonthHeadingStyle
-	} from './date-utils';
+	} from './date-utils.js';
 
 	function isRangeValue(
 		valueToCheck: CalendarValue | undefined

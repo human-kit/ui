@@ -6,8 +6,8 @@ import {
 	expectFocusVisibleImpliesFocusWithin,
 	expectFocusVisibleImpliesFocused,
 	expectNoFalseFocusAttributes
-} from '../../test-utils/focus-contract';
-import type { SliderChangeDetails, SliderValue } from '../types';
+} from '../../test-utils/focus-contract.js';
+import type { SliderChangeDetails, SliderValue } from '../types.js';
 import SliderFormTest from './slider-form-test.svelte';
 import SliderTest from './slider-test.svelte';
 

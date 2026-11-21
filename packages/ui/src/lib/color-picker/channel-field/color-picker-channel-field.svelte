@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { useColorPickerContext } from '../root/context';
-	import type { ColorPickerChannelFieldProps } from '../types';
+	import { useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerChannelFieldProps } from '../types.js';
 
 	/**
 	 * ColorPicker.ChannelField — one channel as a number.

@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { resolveLocalizedString } from '../../internal/localized-strings';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
-	import { Portal } from '../../portal';
-	import { HIDE_OUTSIDE_EXEMPT_ATTRIBUTE } from '../../primitives/aria-hide-outside';
-	import { getFocusableElements } from '../../primitives/focus-trap';
-	import { shouldShowFocusVisible } from '../../primitives/input-modality';
-	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture';
-	import { visuallyHiddenStyle } from '../../primitives/visually-hidden';
-	import { useToastProviderContext } from '../provider/context';
-	import type { ToastItem } from '../provider/toast-manager.svelte';
+	import { resolveLocalizedString } from '../../internal/localized-strings.js';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
+	import { Portal } from '../../portal/index.js';
+	import { HIDE_OUTSIDE_EXEMPT_ATTRIBUTE } from '../../primitives/aria-hide-outside.js';
+	import { getFocusableElements } from '../../primitives/focus-trap.js';
+	import { shouldShowFocusVisible } from '../../primitives/input-modality.js';
+	import { SWIPE_IGNORE_ATTRIBUTE } from '../../primitives/swipe-gesture.js';
+	import { visuallyHiddenStyle } from '../../primitives/visually-hidden.js';
+	import { useToastProviderContext } from '../provider/context.js';
+	import type { ToastItem } from '../provider/toast-manager.svelte.js';
 	import type { ToastViewportProps } from '../types.js';
 
 	/**

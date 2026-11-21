@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
-	import { getRatingValueFromPointer, snapRatingValue } from '../root/rating-utils';
-	import { useRatingContext } from '../root/context';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
+	import { getRatingValueFromPointer, snapRatingValue } from '../root/rating-utils.js';
+	import { useRatingContext } from '../root/context.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
 	import {
 		shouldShowFocusVisible,
 		trackInteractionModality
-	} from '../../primitives/input-modality';
-	import type { RatingItemProps, RatingItemRenderState } from '../types';
+	} from '../../primitives/input-modality.js';
+	import type { RatingItemProps, RatingItemRenderState } from '../types.js';
 
 	/**
 	 * Rating.Item — one item of the scale, for example one star.

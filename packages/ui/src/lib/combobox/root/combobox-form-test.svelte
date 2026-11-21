@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox from '../index';
+	import ComboBox from '../index.js';
 
 	let submitCount = $state(0);
 	let selectedValue = $state<string | number | null | undefined>();

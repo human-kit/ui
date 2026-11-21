@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Calendar from '../index';
+	import Calendar from '../index.js';
 </script>
 
 <Calendar.Root defaultValue="2026-02-10" aria-label="Header custom test">

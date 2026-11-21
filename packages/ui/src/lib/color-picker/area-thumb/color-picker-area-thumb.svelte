@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { isRtl } from '../../internal/rtl';
-	import { watchFocusVisible } from '../../primitives/focus-visible.svelte';
-	import { focusWithModality, shouldShowFocusVisible } from '../../primitives/input-modality';
-	import { useColorPickerAreaContext, useColorPickerContext } from '../root/context';
-	import type { ColorPickerAreaThumbProps, ColorPickerAreaThumbRenderState } from '../types';
+	import { isRtl } from '../../internal/rtl.js';
+	import { watchFocusVisible } from '../../primitives/focus-visible.svelte.js';
+	import { focusWithModality, shouldShowFocusVisible } from '../../primitives/input-modality.js';
+	import { useColorPickerAreaContext, useColorPickerContext } from '../root/context.js';
+	import type { ColorPickerAreaThumbProps, ColorPickerAreaThumbRenderState } from '../types.js';
 
 	/**
 	 * ColorPicker.AreaThumb — the handle of the square.

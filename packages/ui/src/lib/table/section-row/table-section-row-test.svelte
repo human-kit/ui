@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Table } from '../index';
+	import { Table } from '../index.js';
 	import type {
 		TableKeyboardNavigation,
 		TableSelectionKey,
 		TableSelectionMode
-	} from '../root/context.svelte';
+	} from '../root/context.svelte.js';
 	import type { TableBodyVirtualizer } from '../types.js';
 
 	type GroupItem = { id: string; kind: 'group'; label: string; count: number };

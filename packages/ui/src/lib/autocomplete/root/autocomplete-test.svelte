@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Autocomplete from '../index';
+	import Autocomplete from '../index.js';
 
 	type AutocompleteFilter = (textValue: string, inputValue: string) => boolean;
 

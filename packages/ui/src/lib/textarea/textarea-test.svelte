@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TextArea from './index';
+	import TextArea from './index.js';
 
 	type Props = {
 		disabled?: boolean;

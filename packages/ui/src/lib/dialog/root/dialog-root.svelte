@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { tick, untrack, type Snippet } from 'svelte';
-	import { setDialogContext, type DialogContext } from './context';
-	import type { DialogStateHelpers } from './types';
-	import { focusFellToBody } from '../../primitives/trigger-focus-state';
+	import { setDialogContext, type DialogContext } from './context.js';
+	import type { DialogStateHelpers } from './types.js';
+	import { focusFellToBody } from '../../primitives/trigger-focus-state.js';
 	import {
 		focusWithModality,
 		resolveCloseInteractionModality
-	} from '../../primitives/input-modality';
-	import type { DialogCloseReason } from './context';
+	} from '../../primitives/input-modality.js';
+	import type { DialogCloseReason } from './context.js';
 
 	/**
 	 * Dialog.Root - State management wrapper for Dialog components.

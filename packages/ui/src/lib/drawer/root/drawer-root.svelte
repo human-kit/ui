@@ -5,20 +5,20 @@
 -->
 <script lang="ts" generics="Payload = unknown">
 	import { tick, untrack, type Snippet } from 'svelte';
-	import { setDrawerContext, type DrawerContext } from './context';
+	import { setDrawerContext, type DrawerContext } from './context.js';
 	import type {
 		DrawerCloseReason,
 		DrawerModal,
 		DrawerSide,
 		DrawerSnapPoint,
 		DrawerStateHelpers
-	} from './types';
-	import type { DrawerHandle } from './handle.svelte';
-	import { focusFellToBody } from '../../primitives/trigger-focus-state';
+	} from './types.js';
+	import type { DrawerHandle } from './handle.svelte.js';
+	import { focusFellToBody } from '../../primitives/trigger-focus-state.js';
 	import {
 		focusWithModality,
 		resolveCloseInteractionModality
-	} from '../../primitives/input-modality';
+	} from '../../primitives/input-modality.js';
 
 	/**
 	 * Drawer.Root — state container for the whole drawer.

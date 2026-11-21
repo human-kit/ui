@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { releaseFocusedDescendant } from './release-focused-descendant';
+import { releaseFocusedDescendant } from './release-focused-descendant.js';
 
 describe('releaseFocusedDescendant', () => {
 	let container: HTMLElement;

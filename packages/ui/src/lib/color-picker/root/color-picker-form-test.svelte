@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ColorPicker } from '../index';
+	import { ColorPicker } from '../index.js';
 
 	type Props = {
 		defaultValue?: string;

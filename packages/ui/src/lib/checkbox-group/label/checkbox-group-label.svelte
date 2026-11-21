@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { CheckboxGroupLabelProps } from '../types.js';
-	import { getCheckboxGroupContext } from '../root/context.svelte';
+	import { getCheckboxGroupContext } from '../root/context.svelte.js';
 
 	/**
 	 * CheckboxGroup.Label — the accessible name of the group.

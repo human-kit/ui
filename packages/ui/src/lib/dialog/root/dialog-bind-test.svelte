@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Dialog } from '../index';
+	import { Dialog } from '../index.js';
 
 	// `bind:open` seeded with `false` — the shape that used to be misread as "controlled"
 	// and left the dialog impossible to dismiss. The rendered state text lets a test assert

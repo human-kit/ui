@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { readable } from 'svelte/store';
-	import { useLocaleContextOptional } from '../../locale-provider/context';
+	import { useLocaleContextOptional } from '../../locale-provider/context.js';
 	import type { ProgressRootProps } from '../types.js';
-	import { setProgressContext, type ProgressContext } from './context';
+	import { setProgressContext, type ProgressContext } from './context.js';
 	import {
 		clampProgressValue,
 		formatProgressValue,
 		getProgressPercent,
 		getProgressStatus,
 		normalizeProgressValue
-	} from './progress-utils';
+	} from './progress-utils.js';
 
 	/**
 	 * Progress.Root — the status of a task that takes time.

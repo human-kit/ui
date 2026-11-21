@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import type { NumberFieldStep } from './number-utils';
+import type { NumberFieldStep } from './number-utils.js';
 
 const KEY = Symbol('number-field');
 

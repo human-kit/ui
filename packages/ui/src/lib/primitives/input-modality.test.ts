@@ -5,7 +5,7 @@ import {
 	initInputModality,
 	shouldShowFocusVisible,
 	trackInteractionModality
-} from './input-modality';
+} from './input-modality.js';
 
 describe('input-modality primitive', () => {
 	beforeEach(() => {

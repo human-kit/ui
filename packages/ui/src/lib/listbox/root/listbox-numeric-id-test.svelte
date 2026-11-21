@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ListBox from '../index';
+	import ListBox from '../index.js';
 
 	let selected = $state<string | number | undefined>();
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { RadioGroup } from '../index';
-	import type { RadioGroupOrientation, RadioGroupValue } from '../root/context.svelte';
+	import { RadioGroup } from '../index.js';
+	import type { RadioGroupOrientation, RadioGroupValue } from '../root/context.svelte.js';
 
 	type Props = {
 		value?: RadioGroupValue | null;

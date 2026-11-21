@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Drawer } from '../index';
-	import type { DrawerModal, DrawerSide, DrawerSnapPoint } from './types';
+	import { Drawer } from '../index.js';
+	import type { DrawerModal, DrawerSide, DrawerSnapPoint } from './types.js';
 
 	type Props = {
 		open?: boolean;

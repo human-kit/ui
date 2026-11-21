@@ -2,13 +2,13 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '../../internal/environment';
-	import { focusTrap } from '../../primitives/focus-trap';
-	import { scrollLock } from '../../primitives/scroll-lock';
-	import { clickOutside } from '../../primitives/click-outside';
-	import { ariaHideOutside } from '../../primitives/aria-hide-outside';
-	import { getDialogContext } from '../root/context';
-	import { getDialogPresenceContext } from '../root/presence-context';
+	import { browser } from '../../internal/environment.js';
+	import { focusTrap } from '../../primitives/focus-trap.js';
+	import { scrollLock } from '../../primitives/scroll-lock.js';
+	import { clickOutside } from '../../primitives/click-outside.js';
+	import { ariaHideOutside } from '../../primitives/aria-hide-outside.js';
+	import { getDialogContext } from '../root/context.js';
+	import { getDialogPresenceContext } from '../root/presence-context.js';
 	import {
 		pushDialog,
 		popDialog,
@@ -16,7 +16,7 @@
 		getContentZIndex,
 		getDialogLevel,
 		subscribeDialogStack
-	} from '../root/dialog-stack';
+	} from '../root/dialog-stack.js';
 
 	/**
 	 * Dialog.Content - The centered modal dialog panel.

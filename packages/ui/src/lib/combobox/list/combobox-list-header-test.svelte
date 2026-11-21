@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ComboBox from '../index';
+	import ComboBox from '../index.js';
 
 	const items = [
 		{ id: 'ar', name: 'Argentina' },

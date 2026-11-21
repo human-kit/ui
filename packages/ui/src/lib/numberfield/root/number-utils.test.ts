@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseNumberInput, roundNumberValueToFormat } from './number-utils';
+import { parseNumberInput, roundNumberValueToFormat } from './number-utils.js';
 
 describe('roundNumberValueToFormat', () => {
 	const formatOptions: Intl.NumberFormatOptions = { maximumFractionDigits: 2 };

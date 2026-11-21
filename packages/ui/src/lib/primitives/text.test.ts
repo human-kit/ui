@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { foldForSearch } from './text';
+import { foldForSearch } from './text.js';
 
 describe('foldForSearch', () => {
 	it('lowercases', () => {
