@@ -1,7 +1,23 @@
 [
 	{
+		"version": "1.7.0",
+		"date": "2026-11-23T19:05:30.664Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 171,
+						"prUrl": "https://github.com/human-kit/ui/pull/171",
+						"html": "<p>Add <code>Chart.Rule</code>, a reference line across the plot at a fixed value, for example a target or an average. The keyboard does not stop on a rule. Its label and its value go into the description of the plot and into a footer row of the data table. <code>compare</code> adds a comparison with the rule to the name of each point.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.6.0",
-		"date": "2026-11-23T17:56:57.115Z",
+		"date": "2026-11-23T15:03:04-03:00",
 		"sections": [
 			{
 				"type": "Minor",
