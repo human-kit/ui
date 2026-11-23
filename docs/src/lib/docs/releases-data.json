@@ -1,7 +1,33 @@
 [
 	{
+		"version": "1.6.0",
+		"date": "2026-11-23T17:56:57.115Z",
+		"sections": [
+			{
+				"type": "Minor",
+				"entries": [
+					{
+						"pr": 170,
+						"prUrl": "https://github.com/human-kit/ui/pull/170",
+						"html": "<p>Add <code>Chart</code>, a set of headless chart parts: <code>Chart.Root</code>, <code>Chart.Title</code>, <code>Chart.Plot</code>, the marks (<code>Line</code>, <code>Area</code>, <code>Bar</code>, <code>Dot</code>, <code>Arc</code>), the guides (<code>Axis</code>, <code>Grid</code>, <code>Legend</code>), <code>Chart.Tooltip</code> and <code>Chart.DataTable</code>. A chart is one tab stop, the arrow keys move the focus over the data, and each point has an accessible name. Import the parts from <code>@human-kit/ui</code> or <code>@human-kit/ui/chart</code>, and the scales from <code>@human-kit/ui/chart/scales/linear</code>, <code>/time</code> and <code>/band</code>.</p>\n<p>This code was the package <code>@human-kit/charts</code>. That package gets no new versions. To move, change the import of <code>Chart</code> to <code>@human-kit/ui</code>, and change <code>@human-kit/charts/scales/</code> to <code>@human-kit/ui/chart/scales/</code>.</p>\n<p>The charts are a preview: their API can change in a minor version until a release note tells you that it is stable.</p>"
+					}
+				]
+			},
+			{
+				"type": "Patch",
+				"entries": [
+					{
+						"pr": 167,
+						"prUrl": "https://github.com/human-kit/ui/pull/167",
+						"html": "<p>Write the file extension on each relative import of the package. <code>@human-kit/ui/primitives</code> and <code>@human-kit/ui/utils</code> now load in Node without a bundler, and the types resolve with <code>moduleResolution: node16</code> and <code>nodenext</code>, where props and helpers were typed as <code>any</code> before.</p>"
+					}
+				]
+			}
+		]
+	},
+	{
 		"version": "1.5.3",
-		"date": "2026-11-19T00:25:22.157Z",
+		"date": "2026-11-18T21:37:29-03:00",
 		"sections": [
 			{
 				"type": "Patch",
