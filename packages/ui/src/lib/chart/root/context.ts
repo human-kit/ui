@@ -92,6 +92,23 @@ export type ChartMark = {
 	share?: (point: ChartPoint) => string;
 };
 
+/**
+ * A rule, as it registers with the root. A rule is not a mark: it has no points, and the keyboard
+ * does not stop on it.
+ */
+export type ChartRule = {
+	/** The id of the element with the description of the rule. */
+	readonly id: string;
+	/** The text of the rule, for example "Target". */
+	readonly label: string;
+	/** The value as text, in the format of its axis. It is empty when the rule makes no line. */
+	readonly text: string;
+	/** The value, when it goes into the domain of its axis: a number or a date. */
+	extent: () => ChartExtent;
+	/** The text that the rule adds to the name of a point. It can be empty. */
+	note: (point: ChartPoint) => string;
+};
+
 /** One series of a mark with points, in the order of the keyboard. */
 export type ChartEntry = {
 	mark: string;
@@ -173,6 +190,10 @@ export type ChartContext = {
 	toY(value: ChartValue): number;
 	/** Adds a mark. The root reads its functions again each time the data changes. */
 	register(mark: ChartMark): { id: string; unregister(): void };
+	/** Adds a rule. It returns the function that removes it. */
+	rule(rule: ChartRule): () => void;
+	/** The rules that make a line, in mount order. The plot lists their ids in `aria-describedby`. */
+	readonly rules: ReadonlyArray<ChartRule>;
 	/** The marks, in mount order. A part reads their series, for example a legend. */
 	readonly marks: ReadonlyArray<ChartMark>;
 	/** The series of all of the marks with points, in the order of the keyboard. */

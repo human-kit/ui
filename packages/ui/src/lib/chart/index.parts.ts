@@ -11,3 +11,4 @@ export { default as DataTable } from './data-table/chart-data-table.svelte';
 export { default as Tooltip } from './tooltip/chart-tooltip.svelte';
 export { default as Axis } from './axis/chart-axis.svelte';
 export { default as Grid } from './grid/chart-grid.svelte';
+export { default as Rule } from './rule/chart-rule.svelte';

@@ -45,6 +45,10 @@
 					"description": "On the table: `visible` or `screen-reader`."
 				},
 				{
+					"name": "data-rule",
+					"description": "On the row of each rule, in the `<tfoot>`."
+				},
+				{
 					"name": "data-selected",
 					"description": "On the cell of the selected point, or on the row of a selected dot or slice."
 				}
