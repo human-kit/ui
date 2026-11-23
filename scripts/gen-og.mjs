@@ -1,14 +1,17 @@
 /**
  * Renders the site's social card to `docs/static/og.png`.
  *
- * Run it with `pnpm docs:og` after changing the wordmark or the tagline; the PNG
+ * Run it with `pnpm docs:og` after changing the logo or the tagline; the PNG
  * is committed, so nothing generates at build or request time and the card works
  * on every crawler regardless of what it can execute.
  *
- * The wordmark is read out of the real `logo.svelte` rather than copied here, so
- * the card cannot drift from the header. Geist is loaded from the same
- * @fontsource package the site uses — without it Chromium falls back to whatever
+ * The logo is read out of the real `logo.svelte` rather than copied here, so
+ * the card cannot drift from the header. The faces are loaded from the same
+ * @fontsource packages the site uses — without them Chromium falls back to whatever
  * the machine happens to have, and the committed image would differ per author.
+ *
+ * The card is set as the site is: the sheet of a plan, with its frame, its grid
+ * and its label.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -26,17 +29,25 @@ const TAGLINE = 'Headless, accessible UI components for Svelte 5';
 const DOMAIN = 'ui.human-kit.com';
 
 const logo = readFileSync(resolve(root, 'docs/src/lib/docs/components/icons/logo.svelte'), 'utf8');
-const svg = logo.match(/<svg[\s\S]*<\/svg>/)?.[0];
-if (!svg) throw new Error('Could not find the wordmark <svg> in logo.svelte');
+// The first drawing in the file is the whole form: the symbol and the logo of the family.
+const svg = logo.match(/<svg[\s\S]*?<\/svg>/)?.[0].replace('class={className}', '');
+if (!svg) throw new Error('Could not find the logo <svg> in logo.svelte');
+
+const version = JSON.parse(readFileSync(resolve(root, 'packages/ui/package.json'), 'utf8')).version;
 
 // Resolved from the docs workspace, which is what depends on the fonts — pnpm
-// does not hoist them to the repo root. Both faces are here because the card
-// follows the site's split: serif for the title, sans for everything else.
+// does not hoist them to the repo root.
 const requireFromDocs = createRequire(resolve(root, 'docs/package.json'));
 const embed = (specifier) => readFileSync(requireFromDocs.resolve(specifier)).toString('base64');
 
-const sans = embed('@fontsource-variable/geist/files/geist-latin-wght-normal.woff2');
-const serif = embed('@fontsource-variable/roboto-serif/files/roboto-serif-latin-wght-normal.woff2');
+const mono = embed('@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2');
+
+const fields = [
+	['Project', 'human-kit / ui'],
+	['Content', 'Primitives for Svelte 5'],
+	['Site', DOMAIN],
+	['License', 'MIT']
+];
 
 const html = `<!doctype html>
 <html>
@@ -44,13 +55,8 @@ const html = `<!doctype html>
 <meta charset="utf-8" />
 <style>
   @font-face {
-    font-family: 'Geist';
-    src: url(data:font/woff2;base64,${sans}) format('woff2-variations');
-    font-weight: 100 900;
-  }
-  @font-face {
-    font-family: 'Roboto Serif';
-    src: url(data:font/woff2;base64,${serif}) format('woff2-variations');
+    font-family: 'Geist Mono';
+    src: url(data:font/woff2;base64,${mono}) format('woff2-variations');
     font-weight: 100 900;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -58,47 +64,51 @@ const html = `<!doctype html>
     width: ${WIDTH}px;
     height: ${HEIGHT}px;
     background: #0a0a0a;
-    color: #fafafa;
-    font-family: 'Geist', sans-serif;
+    color: #fff;
+    font-family: 'Geist Mono', monospace;
+    padding: 40px;
+  }
+  /* The sheet: one frame, the grid behind, and the label along its foot. */
+  .sheet {
+    height: 100%;
+    border: 1px solid #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 72px 80px;
-    /* A single hairline frame inset from the edge: enough structure that the card
-       reads as a deliberate object in a feed, without competing with the type. */
-    box-shadow: inset 0 0 0 1px #262626;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: -1px -1px;
   }
-  .mark { width: 300px; color: #fafafa; }
-  .mark svg { width: 100%; height: auto; display: block; }
-  /* Serif, like every title on the site (see .hd-prose h1 in theme.css). */
+  .body { flex: 1; padding: 48px 56px; display: flex; flex-direction: column; justify-content: space-between; }
+  .mark svg { height: 72px; width: auto; display: block; }
   h1 {
-    font-family: 'Roboto Serif', serif;
-    font-size: 60px;
+    font-size: 58px;
     font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    /* Balanced rather than a hand-picked width: it evens the lines out instead
-       of leaving "Svelte 5" — or worse, "5" — stranded on the last one. */
-    max-width: 22ch;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    max-width: 20ch;
     text-wrap: balance;
   }
-  .foot {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 24px;
-    color: #a3a3a3;
-  }
-  .dot { width: 5px; height: 5px; border-radius: 50%; background: #525252; }
+  .label { display: grid; grid-template-columns: 1.1fr 1.5fr 1.1fr 0.5fr; border-top: 1px solid #fff; background: #0a0a0a; }
+  .label div { padding: 14px 20px; border-left: 1px solid #fff; }
+  .label div:first-child { border-left: 0; padding-left: 56px; }
+  .label dt { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #a3a3a3; }
+  .label dd { margin-top: 8px; font-size: 19px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .rev { position: absolute; top: 88px; right: 96px; font-size: 16px; letter-spacing: 0.14em; color: #a3a3a3; }
 </style>
 </head>
 <body>
-  <div class="mark">${svg}</div>
-  <h1>${TAGLINE}</h1>
-  <div class="foot">
-    <span>${DOMAIN}</span>
-    <span class="dot"></span>
-    <span>MIT</span>
+  <div class="sheet">
+    <div class="body">
+      <div class="mark">${svg}</div>
+      <span class="rev">REV ${version}</span>
+      <h1>${TAGLINE}</h1>
+    </div>
+    <dl class="label">
+      ${fields.map(([name, value]) => `<div><dt>${name}</dt><dd>${value}</dd></div>`).join('')}
+    </dl>
   </div>
 </body>
 </html>`;

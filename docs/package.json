@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/geist": "^5.2.9",
-		"@fontsource-variable/roboto-serif": "^5.2.9",
+		"@fontsource-variable/geist-mono": "^5.3.0",
 		"@human-kit/markdown": "^0.3.2",
 		"@human-kit/ui": "workspace:*",
 		"@lucide/svelte": "^0.574.0",

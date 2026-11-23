@@ -8,7 +8,26 @@
 
 @theme {
 	--font-sans: 'Geist Variable', sans-serif;
-	--font-serif: 'Roboto Serif Variable', serif;
+	/* The voice of ui: labels, titles, figures and code. The serif is the family's, and it
+	   comes here only inside the family's logo, which is a drawing. */
+	--font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+	/*
+	 * A plan has no round corners. Every `rounded-*` utility reads one of these, so the
+	 * whole site is squared from here and no component restates it. `rounded-full` does not
+	 * read them: a circle (a radio, a switch thumb, an avatar) stays a circle.
+	 */
+	--radius-xs: 0;
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-xl: 0;
+	--radius-2xl: 0;
+	--radius-3xl: 0;
+	--radius-4xl: 0;
+
+	/* The pen that marks a plan: measures and notes, never text or a control. */
+	--color-redline: var(--redline);
 
 	/*
 	 * 15px-based type scale (the browser default is 16px). The rem base stays 16px
