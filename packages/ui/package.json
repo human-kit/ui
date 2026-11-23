@@ -32,7 +32,11 @@
 		"svelte-ui",
 		"sveltekit",
 		"aria",
-		"wai-aria"
+		"wai-aria",
+		"charts",
+		"chart",
+		"data-visualization",
+		"svg"
 	],
 	"type": "module",
 	"engines": {
@@ -285,7 +289,24 @@
 			"svelte": "./dist/utils/index.js",
 			"default": "./dist/utils/index.js"
 		},
-		"./package.json": "./package.json"
+		"./package.json": "./package.json",
+		"./chart": {
+			"types": "./dist/chart/index.d.ts",
+			"svelte": "./dist/chart/index.js",
+			"default": "./dist/chart/index.js"
+		},
+		"./chart/scales/linear": {
+			"types": "./dist/chart/scales/linear.d.ts",
+			"default": "./dist/chart/scales/linear.js"
+		},
+		"./chart/scales/time": {
+			"types": "./dist/chart/scales/time.d.ts",
+			"default": "./dist/chart/scales/time.js"
+		},
+		"./chart/scales/band": {
+			"types": "./dist/chart/scales/band.d.ts",
+			"default": "./dist/chart/scales/band.js"
+		}
 	},
 	"files": [
 		"dist",

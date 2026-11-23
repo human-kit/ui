@@ -15,6 +15,7 @@ give you the behavior, and you give them the styles.
   and a keyboard.
 - **International.** `LocaleProvider` gives a locale to the dates, the times,
   and the numbers, and the built-in labels are in six languages.
+- **Charts.** `Chart` is a set of headless, accessible chart parts.
 - **Small.** Native ESM with one subpath export for each component, and one
   dependency at run time: `@floating-ui/dom`.
 

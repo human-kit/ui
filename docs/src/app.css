@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './lib/docs/theme.css';
+@import './lib/docs/chart-demos.css';
 
 @plugin "@toolwind/corner-shape";
 @plugin "tailwindcss-animate";

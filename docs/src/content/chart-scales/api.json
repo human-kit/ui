@@ -1,0 +1,119 @@
+{
+	"component": "chart-scales",
+	"parts": [
+		{
+			"name": "ScaleOptions",
+			"description": "The value of the `xScale` and `yScale` props of `Chart.Root`.",
+			"element": null,
+			"props": [
+				{
+					"name": "type",
+					"type": "ScaleType",
+					"required": false,
+					"default": null,
+					"description": "The type of scale: `scaleLinear` (the default), `scaleTime` or `scaleBand`. Import the type\nfrom its subpath, thus a chart includes only the scales that it uses."
+				},
+				{
+					"name": "domain",
+					"type": "[number | Date, number | Date]",
+					"required": false,
+					"default": null,
+					"description": "The values at the two ends. Without it, the root uses the smallest and the largest value."
+				},
+				{
+					"name": "nice",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Extends the domain to round values. The default is the same as for `zero`."
+				},
+				{
+					"name": "zero",
+					"type": "boolean",
+					"required": false,
+					"default": null,
+					"description": "Extends the domain to include zero. A bar starts at zero, thus a bar chart needs it. The\ndefault is `true` for the value axis of a chart with categories on the other axis, and for y\nwhen no axis has categories."
+				},
+				{
+					"name": "padding",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The space between two bands of a band scale, as a fraction of a step. The default is 0.2."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Scale",
+			"description": "The function that a scale type makes. It maps a value to a position in pixels.",
+			"element": null,
+			"props": [
+				{
+					"name": "kind",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The name of the type of scale."
+				},
+				{
+					"name": "domain",
+					"type": "readonly [number, number]",
+					"required": true,
+					"default": null,
+					"description": "The values at the two ends of the scale."
+				},
+				{
+					"name": "range",
+					"type": "readonly [number, number]",
+					"required": true,
+					"default": null,
+					"description": "The positions, in pixels, of the two ends of the scale."
+				},
+				{
+					"name": "bandwidth",
+					"type": "number",
+					"required": true,
+					"default": null,
+					"description": "The width of one band, in pixels, for a band scale. The scale gives the middle of the band.\nIt is 0 for a continuous scale."
+				},
+				{
+					"name": "invert",
+					"type": "(position: number) => number",
+					"required": true,
+					"default": null,
+					"description": "The position back to a value."
+				},
+				{
+					"name": "ticks",
+					"type": "(count?: number) => number[]",
+					"required": true,
+					"default": null,
+					"description": "Round values in the domain, about `count` of them."
+				},
+				{
+					"name": "tickFormat",
+					"type": "(count?: number, locale?: string) => (value: number) => string",
+					"required": true,
+					"default": null,
+					"description": "The function that writes the labels of the ticks that `ticks(count)` gives."
+				},
+				{
+					"name": "valueFormat",
+					"type": "(values: number[], locale?: string, options?: FormatOptions) => (value: number) => string",
+					"required": true,
+					"default": null,
+					"description": "The function that writes a value in full, for the names of the points and the data table.\n`values` are all of the values of the channel. Without `options`, a time scale chooses the\nprecision from them."
+				},
+				{
+					"name": "nice",
+					"type": "(count?: number) => [number, number]",
+					"required": true,
+					"default": null,
+					"description": "The domain, extended to round values."
+				}
+			],
+			"dataAttributes": []
+		}
+	]
+}

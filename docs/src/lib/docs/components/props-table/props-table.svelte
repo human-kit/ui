@@ -2,6 +2,7 @@
 	import { Collapsible } from '../collapsible';
 	import { ChevronDown } from '@lucide/svelte';
 	import type { ApiProp } from '../../api-types.js';
+	import CodeText from '../code-text/code-text.svelte';
 
 	interface Props {
 		part: string;
@@ -151,7 +152,9 @@
 							</dd>
 
 							<dt class="text-muted-foreground">Description</dt>
-							<dd class="col-span-3 text-subtle-foreground">{prop.description}</dd>
+							<dd class="col-span-3 text-subtle-foreground">
+								<CodeText text={prop.description} />
+							</dd>
 						</dl>
 					</Collapsible.Panel>
 				</Collapsible.Root>

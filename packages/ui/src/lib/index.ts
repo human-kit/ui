@@ -6,6 +6,7 @@ export { Autocomplete } from './autocomplete/index.js';
 export { Avatar } from './avatar/index.js';
 export { Breadcrumbs } from './breadcrumbs/index.js';
 export { Button } from './button/index.js';
+export { Chart } from './chart/index.js';
 export { Checkbox } from './checkbox/index.js';
 export { CheckboxGroup } from './checkbox-group/index.js';
 export { Collapsible } from './collapsible/index.js';
@@ -56,6 +57,7 @@ export type { SeparatorOrientation, SeparatorProps } from './separator/index.js'
 export * from './accordion/index.js';
 export * from './autocomplete/index.js';
 export * from './button/index.js';
+export * from './chart/index.js';
 export * from './checkbox/index.js';
 export * from './checkbox-group/index.js';
 export * from './avatar/index.js';

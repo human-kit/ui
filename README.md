@@ -21,6 +21,8 @@ give you the behavior, and you give them the styles.
 - **International.** `LocaleProvider` gives a locale to the dates, the times,
   and the numbers. The built-in labels are in six languages, and the arrow keys
   obey a right-to-left layout.
+- **Charts.** `Chart` is a set of headless chart parts. A chart is one tab
+  stop, the arrow keys move over the data, and each point has a name.
 - **Made for Svelte 5.** The components use runes, snippets, and `bind:`, and
   every prop has a type.
 - **Small.** The package is native ESM with one subpath export for each

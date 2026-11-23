@@ -1,0 +1,307 @@
+{
+	"component": "chart",
+	"parts": [
+		{
+			"name": "Root",
+			"description": "The chart. It makes a `<figure>`, holds the data and the scales, and controls the focus and the selection of the points.",
+			"element": "figure",
+			"props": [
+				{
+					"name": "id",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "A stable id, from which the component makes its internal ids. Give one on a server."
+				},
+				{
+					"name": "data",
+					"type": "readonly T[]",
+					"required": false,
+					"default": "[]",
+					"description": "The rows. Each mark uses them when it has no `data` of its own."
+				},
+				{
+					"name": "x",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The x channel: a field name of the row, or a function of the row."
+				},
+				{
+					"name": "y",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The y channel: a field name of the row, or a function of the row."
+				},
+				{
+					"name": "series",
+					"type": "Channel<T, string>",
+					"required": false,
+					"default": null,
+					"description": "The channel that divides the rows into series. Without it, the chart has one series."
+				},
+				{
+					"name": "key",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The channel that identifies a row in its series across data updates, for example a date or\nan id. Then the focus and the selection stay on the same row when the rows move. Without it,\nthe key is the row index. When two rows of a series have the same key, that series uses the\nrow index."
+				},
+				{
+					"name": "xScale",
+					"type": "ScaleOptions",
+					"required": false,
+					"default": null,
+					"description": "The x scale."
+				},
+				{
+					"name": "yScale",
+					"type": "ScaleOptions",
+					"required": false,
+					"default": null,
+					"description": "The y scale."
+				},
+				{
+					"name": "width",
+					"type": "number",
+					"required": false,
+					"default": null,
+					"description": "The width of the SVG, in pixels. Without it, the chart follows the width of its container."
+				},
+				{
+					"name": "height",
+					"type": "number",
+					"required": false,
+					"default": "300",
+					"description": "The height of the SVG, in pixels. The default is 300."
+				},
+				{
+					"name": "margin",
+					"type": "Partial<ChartMargin>",
+					"required": false,
+					"default": null,
+					"description": "The space around the plot, in pixels."
+				},
+				{
+					"name": "focused",
+					"type": "ChartPoint<T> | null",
+					"required": false,
+					"default": "null",
+					"description": "The point that has the focus, or `null`. You can bind it with `bind:focused`. The component\nwrites it; it does not read it."
+				},
+				{
+					"name": "selected",
+					"type": "ChartPoint<T> | null",
+					"required": false,
+					"default": "null",
+					"description": "The selected point, or `null`. You can bind it with `bind:selected`. `Enter`, `Space` or a\nclick selects a point, and a second time clears the selection. The selected point has\n`aria-current=\"true\"` and `data-selected`, and so has its cell in `Chart.DataTable`. The\nselection follows the key and the series of the point."
+				},
+				{
+					"name": "onSelect",
+					"type": "(point: ChartPoint<T>) => void",
+					"required": false,
+					"default": null,
+					"description": "The component calls it when the user activates a point with `Enter`, `Space` or a click."
+				},
+				{
+					"name": "locale",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The locale of the values in the names and the ticks. The default is the locale of the page."
+				},
+				{
+					"name": "xFormat",
+					"type": "ValueFormat",
+					"required": false,
+					"default": null,
+					"description": "The format of the x values in the accessible names and the ticks. Without it, a time scale\nshows dates as precise as the data."
+				},
+				{
+					"name": "yFormat",
+					"type": "ValueFormat",
+					"required": false,
+					"default": null,
+					"description": "The format of the y values in the accessible names and the ticks."
+				},
+				{
+					"name": "xLabel",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the x channel for a user, for example \"Weight (lb)\". The name of a point puts it\nbefore the x value. An x axis without a `label` shows it, and the data table uses it as a\ncolumn header. Give it when the x values are measures and not positions, as on a scatter plot."
+				},
+				{
+					"name": "yLabel",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the y channel for a user, for example \"Fuel economy (mpg)\". See `xLabel`."
+				},
+				{
+					"name": "aria-label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The accessible name of the chart, for when there is no `Chart.Title`."
+				},
+				{
+					"name": "aria-labelledby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that gives the chart its name."
+				},
+				{
+					"name": "aria-describedby",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The id of the element that describes the chart, for example a summary of the trend."
+				},
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The content: the title, the plot and the other parts."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the root element."
+				},
+				{
+					"name": "element",
+					"type": "HTMLElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the root element."
+				},
+				{
+					"name": "context",
+					"type": "ChartContext",
+					"required": false,
+					"default": null,
+					"description": "A bindable reference to the context, for a composition of your own."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-chart",
+					"description": "Always on the root."
+				},
+				{
+					"name": "data-focus-within",
+					"description": "When a point of the chart has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "When the focused point shows the focus ring."
+				}
+			]
+		},
+		{
+			"name": "Title",
+			"description": "The title. It makes a `<figcaption>`, and it gives the chart its accessible name.",
+			"element": "figcaption",
+			"props": [
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the title."
+				}
+			],
+			"dataAttributes": []
+		},
+		{
+			"name": "Plot",
+			"description": "The plot. It makes the `<svg>` that holds the marks and the guides, and it has the keyboard handlers.",
+			"element": "svg",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet",
+					"required": false,
+					"default": null,
+					"description": "The marks and the guides."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the SVG element."
+				},
+				{
+					"name": "element",
+					"type": "SVGSVGElement | null",
+					"required": false,
+					"default": "null",
+					"description": "A bindable reference to the SVG element."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-plot",
+					"description": "Always on the SVG element."
+				}
+			]
+		},
+		{
+			"name": "ChartPoint",
+			"description": "A point, as `focused`, `selected` and `onSelect` give it.",
+			"element": null,
+			"props": [
+				{
+					"name": "datum",
+					"type": "T",
+					"required": true,
+					"default": null,
+					"description": "The row of the data."
+				},
+				{
+					"name": "index",
+					"type": "number",
+					"required": true,
+					"default": null,
+					"description": "The index of the row in the data of its mark."
+				},
+				{
+					"name": "key",
+					"type": "string | number",
+					"required": true,
+					"default": null,
+					"description": "The value that identifies the point in its series across updates, from the `key` channel. A\ndate is its time."
+				},
+				{
+					"name": "series",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The name of the series. It is empty when the chart has one series."
+				},
+				{
+					"name": "x",
+					"type": "ChartValue",
+					"required": true,
+					"default": null,
+					"description": "The value of the x channel."
+				},
+				{
+					"name": "y",
+					"type": "ChartValue",
+					"required": true,
+					"default": null,
+					"description": "The value of the y channel."
+				}
+			],
+			"dataAttributes": []
+		}
+	]
+}

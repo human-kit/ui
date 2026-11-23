@@ -1,6 +1,8 @@
 export interface NavItem {
 	slug: string;
 	title: string;
+	/** A page that is a guide in a group of components. */
+	guide?: boolean;
 }
 
 export interface NavGroup {
@@ -76,6 +78,24 @@ export const nav: NavGroup[] = [
 			{ slug: 'table', title: 'Table' },
 			{ slug: 'tabs', title: 'Tabs' },
 			{ slug: 'tree', title: 'Tree' }
+		]
+	},
+	{
+		label: 'Charts',
+		items: [
+			{ slug: 'charts', title: 'Introduction', guide: true },
+			{ slug: 'chart-accessibility', title: 'Accessibility', guide: true },
+			{ slug: 'chart', title: 'Chart' },
+			{ slug: 'chart-scales', title: 'Scales' },
+			{ slug: 'chart-line', title: 'Line' },
+			{ slug: 'chart-area', title: 'Area' },
+			{ slug: 'chart-bar', title: 'Bar' },
+			{ slug: 'chart-dot', title: 'Dot' },
+			{ slug: 'chart-arc', title: 'Arc' },
+			{ slug: 'chart-axis-and-grid', title: 'Axis and Grid' },
+			{ slug: 'chart-legend', title: 'Legend' },
+			{ slug: 'chart-tooltip', title: 'Tooltip' },
+			{ slug: 'chart-data-table', title: 'DataTable' }
 		]
 	}
 ];

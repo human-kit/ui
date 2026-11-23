@@ -49,6 +49,9 @@ describe('titles', () => {
 	it('separates components from guides', () => {
 		expect(isComponentSlug('drawer')).toBe(true);
 		expect(isComponentSlug('quick-start')).toBe(false);
+		// A guide can be in a group of components.
+		expect(isComponentSlug('chart-line')).toBe(true);
+		expect(isComponentSlug('charts')).toBe(false);
 	});
 });
 

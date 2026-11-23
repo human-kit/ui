@@ -1,0 +1,113 @@
+{
+	"component": "chart-arc",
+	"parts": [
+		{
+			"name": "Arc",
+			"description": "An arc mark for pie and donut charts. It makes one `<path>` per row, a slice of a circle.",
+			"element": null,
+			"props": [
+				{
+					"name": "data",
+					"type": "readonly T[]",
+					"required": false,
+					"default": null,
+					"description": "The rows of this mark. Without it, the mark uses the data of the root."
+				},
+				{
+					"name": "x",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The x channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "y",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The y channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "series",
+					"type": "Channel<T, string>",
+					"required": false,
+					"default": null,
+					"description": "The series channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "key",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The key channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the series of this mark, when it has no series channel. The names of the slices\nand the data table show it. The mark draws only the first series."
+				},
+				{
+					"name": "inner",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "The radius of the hole, as a fraction of the radius of the circle. The default is 0: a pie\nchart. A value of 0.6 makes a donut chart."
+				},
+				{
+					"name": "labels",
+					"type": "boolean | ((point: ChartPoint<T>) => string)",
+					"required": false,
+					"default": "false",
+					"description": "Shows a text in the middle of each slice. `true` writes the value in the format of the y\nchannel; a function writes the text of each point. A text that is wider than its slice does\nnot show. The labels are hidden from assistive technology: the name of each slice already\nhas the value. The default is `false`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the group of the mark."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-mark",
+					"description": "On the group of the mark. The value is `arc`."
+				},
+				{
+					"name": "data-series",
+					"description": "On the group of the series. The value is the name of the series."
+				},
+				{
+					"name": "data-category",
+					"description": "On each slice and each label. The value is the x value of the row."
+				},
+				{
+					"name": "data-arc-labels",
+					"description": "On the group of the labels."
+				},
+				{
+					"name": "data-arc-label",
+					"description": "On each label."
+				},
+				{
+					"name": "data-point",
+					"description": "On each point: a circle, a rect for a bar, or a path for a dot or a slice."
+				},
+				{
+					"name": "data-focused",
+					"description": "On the point that has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "On the focused point, when the focus came from the keyboard."
+				},
+				{
+					"name": "data-selected",
+					"description": "On the selected point. The point also has `aria-current=\"true\"`."
+				}
+			]
+		}
+	]
+}

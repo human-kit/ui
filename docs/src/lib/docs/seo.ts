@@ -32,7 +32,9 @@ export interface Seo {
 const GUIDE_GROUP = 'Overview';
 
 const componentSlugs = new Set(
-	nav.filter((group) => group.label !== GUIDE_GROUP).flatMap((g) => g.items.map((i) => i.slug))
+	nav
+		.filter((group) => group.label !== GUIDE_GROUP)
+		.flatMap((group) => group.items.filter((item) => !item.guide).map((item) => item.slug))
 );
 
 export function isComponentSlug(slug: string): boolean {

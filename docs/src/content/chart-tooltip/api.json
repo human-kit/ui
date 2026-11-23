@@ -1,0 +1,112 @@
+{
+	"component": "chart-tooltip",
+	"parts": [
+		{
+			"name": "Tooltip",
+			"description": "A box near the point under the pointer, or near the point that has the keyboard focus.",
+			"element": "div",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[ChartTooltipState]>",
+					"required": false,
+					"default": null,
+					"description": "The content. It receives the point, and the x and y values as text. Without it, the tooltip\nshows the x value, the series and the y value."
+				},
+				{
+					"name": "offset",
+					"type": "number",
+					"required": false,
+					"default": "8",
+					"description": "The distance between the point and the tooltip, in pixels. The default is 8."
+				},
+				{
+					"name": "follow",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Moves the tooltip along with the pointer, at the height of the point under it. For a large\nmark, as a long bar, whose anchor can be far from the pointer. The point that has the\nkeyboard focus keeps its tooltip at the point. The default is `false`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the tooltip. It has `data-entering` while it opens and `data-exiting`\nwhile it closes, for CSS animations: it closes after the animations end."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-tooltip",
+					"description": "On the box."
+				},
+				{
+					"name": "data-series",
+					"description": "On the box. The value is the name of the series of the point."
+				},
+				{
+					"name": "data-tooltip-key",
+					"description": "On the line with the category or the x value."
+				},
+				{
+					"name": "data-tooltip-value",
+					"description": "On the line with the series and the value."
+				},
+				{
+					"name": "data-tooltip-series",
+					"description": "On the name of the series."
+				}
+			]
+		},
+		{
+			"name": "ChartTooltipState",
+			"description": "The value that the children snippet receives.",
+			"element": null,
+			"props": [
+				{
+					"name": "point",
+					"type": "ChartPoint<T>",
+					"required": true,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "x",
+					"type": "number",
+					"required": true,
+					"default": null,
+					"description": "The position of the point in the plot, in pixels."
+				},
+				{
+					"name": "y",
+					"type": "number",
+					"required": true,
+					"default": null,
+					"description": ""
+				},
+				{
+					"name": "xText",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The x value as text."
+				},
+				{
+					"name": "yText",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The y value as text."
+				},
+				{
+					"name": "horizontal",
+					"type": "boolean",
+					"required": true,
+					"default": null,
+					"description": "Whether the categories of the mark are on the y axis, as in a horizontal bar chart. Then\n`yText` names the category and `xText` is the value."
+				}
+			],
+			"dataAttributes": []
+		}
+	]
+}
