@@ -28,11 +28,11 @@ export interface Seo {
 	jsonLd?: Record<string, unknown>[];
 }
 
-/** The nav group that holds guides rather than components. */
-const GUIDE_GROUP = 'Overview';
+/** The nav groups that hold guides rather than components. */
+const GUIDE_GROUPS = new Set(['Overview', 'Charts']);
 
 const componentSlugs = new Set(
-	nav.filter((group) => group.label !== GUIDE_GROUP).flatMap((g) => g.items.map((i) => i.slug))
+	nav.filter((group) => !GUIDE_GROUPS.has(group.label)).flatMap((g) => g.items.map((i) => i.slug))
 );
 
 export function isComponentSlug(slug: string): boolean {

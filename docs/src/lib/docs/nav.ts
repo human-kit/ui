@@ -77,5 +77,9 @@ export const nav: NavGroup[] = [
 			{ slug: 'tabs', title: 'Tabs' },
 			{ slug: 'tree', title: 'Tree' }
 		]
+	},
+	{
+		label: 'Charts',
+		items: [{ slug: 'charts', title: 'Introduction' }]
 	}
 ];

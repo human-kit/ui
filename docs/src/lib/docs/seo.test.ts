@@ -49,6 +49,8 @@ describe('titles', () => {
 	it('separates components from guides', () => {
 		expect(isComponentSlug('drawer')).toBe(true);
 		expect(isComponentSlug('quick-start')).toBe(false);
+		// The charts page is the entry to another package, not a component of this one.
+		expect(isComponentSlug('charts')).toBe(false);
 	});
 });
 
