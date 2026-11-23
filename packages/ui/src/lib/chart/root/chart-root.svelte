@@ -16,6 +16,7 @@
 		type ChartMargin,
 		type ChartMark,
 		type ChartPoint,
+		type ChartRule,
 		type ChartTick,
 		type ChartValue
 	} from './context.js';
@@ -82,6 +83,13 @@
 	const marks = new SvelteMap<string, ChartMark>();
 	let markCount = 0;
 
+	// The rules, in mount order. A rule is not a mark: it is not in `entries`, thus the keyboard
+	// does not stop on it, and the parts that read the first mark do not see it.
+	const rules = new SvelteMap<ChartRule, 0>();
+	// The rules that make a line. A function and not a `$derived`: on a server, a `$derived` keeps
+	// the value of its first read, and the plot reads it before the rules in it start.
+	const ruleList = () => [...rules.keys()].filter((rule) => rule.text);
+
 	const entries = $derived.by(() => {
 		const out: ChartEntry[] = [];
 		for (const [mark, m] of marks) {
@@ -143,7 +151,9 @@
 		}
 		return { xs, ys };
 	});
-	const extents = $derived([...marks.values()].flatMap((m) => (m.extent ? [m.extent()] : [])));
+	const extents = $derived(
+		[...marks.values(), ...rules.keys()].flatMap((m) => (m.extent ? [m.extent()] : []))
+	);
 	const rawX = $derived([...rootValues.xs, ...extents.flatMap((e) => e.x ?? [])]);
 	const rawY = $derived([...rootValues.ys, ...extents.flatMap((e) => e.y ?? [])]);
 
@@ -287,10 +297,11 @@
 		const yText = labelled(yLabel, yValueFormat(toY(point.y)));
 		const horizontal = mark?.horizontal?.() ?? false;
 		const parts = [horizontal ? yText : xText, horizontal ? xText : yText];
-		if (point.series) parts.splice(mark?.list ? 0 : 1, 0, point.series);
-		const share = mark?.share?.(point);
-		if (share) parts.push(share);
-		return parts.join(', ');
+		parts.splice(mark?.list ? 0 : 1, 0, point.series);
+		// The share of a slice and the texts of the rules come last. An empty text adds nothing.
+		return [...parts, mark?.share?.(point), ...[...rules.keys()].map((rule) => rule.note(point))]
+			.filter(Boolean)
+			.join(', ');
 	}
 
 	// The point that has the tab stop. Without a valid one, the first point has it.
@@ -456,7 +467,9 @@
 	const labels = $derived({
 		'aria-label': ariaLabel,
 		'aria-labelledby': ariaLabel ? undefined : (ariaLabelledBy ?? titleId ?? undefined),
-		'aria-describedby': ariaDescribedBy
+		// The description of each rule comes after the description from the consumer.
+		'aria-describedby':
+			[ariaDescribedBy, ...ruleList().map((rule) => rule.id)].join(' ').trim() || undefined
 	});
 
 	const ctx: ChartContext = {
@@ -538,6 +551,13 @@
 		},
 		get marks() {
 			return [...marks.values()];
+		},
+		rule(rule) {
+			rules.set(rule, 0);
+			return () => rules.delete(rule);
+		},
+		get rules() {
+			return ruleList();
 		},
 		get entries() {
 			return entries;

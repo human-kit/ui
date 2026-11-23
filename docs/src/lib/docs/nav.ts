@@ -92,6 +92,7 @@ export const nav: NavGroup[] = [
 			{ slug: 'chart-bar', title: 'Bar' },
 			{ slug: 'chart-dot', title: 'Dot' },
 			{ slug: 'chart-arc', title: 'Arc' },
+			{ slug: 'chart-rule', title: 'Rule' },
 			{ slug: 'chart-axis-and-grid', title: 'Axis and Grid' },
 			{ slug: 'chart-legend', title: 'Legend' },
 			{ slug: 'chart-tooltip', title: 'Tooltip' },

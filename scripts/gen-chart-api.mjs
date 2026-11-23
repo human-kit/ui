@@ -153,6 +153,19 @@ const PAGES = {
 			]
 		}
 	],
+	'chart-rule': [
+		{
+			name: 'Rule',
+			type: 'ChartRuleProps',
+			file: 'rule/chart-rule.svelte',
+			description:
+				'A rule: a line across the plot at a fixed value. It makes a `<g>` with a `<line>`, a `<text>` and a `<desc>`.',
+			dataAttributes: [
+				['data-rule', 'On the group of the rule.'],
+				['data-axis', 'On the group of the rule. The value is the `axis`.']
+			]
+		}
+	],
 	'chart-axis-and-grid': [
 		{
 			name: 'Axis',
@@ -234,6 +247,7 @@ const PAGES = {
 			dataAttributes: [
 				['data-data-table', 'On the table.'],
 				['data-visibility', 'On the table: `visible` or `screen-reader`.'],
+				['data-rule', 'On the row of each rule, in the `<tfoot>`.'],
 				[
 					'data-selected',
 					'On the cell of the selected point, or on the row of a selected dot or slice.'

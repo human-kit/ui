@@ -78,6 +78,20 @@
 	font-weight: 600;
 }
 
+/* A dash pattern keeps a rule apart from a grid line, also without color. */
+.demo-chart [data-rule] {
+	color: var(--foreground);
+	pointer-events: none;
+}
+
+.demo-chart [data-rule] line {
+	stroke-dasharray: 6 4;
+}
+
+.demo-chart [data-rule] text {
+	font-weight: 500;
+}
+
 .demo-chart [data-grid] {
 	color: var(--border);
 }
@@ -209,6 +223,11 @@
 	text-align: left;
 }
 
+.demo-chart [data-data-table] tfoot :is(th, td) {
+	border-bottom: 0;
+	color: var(--foreground);
+}
+
 .demo-chart [data-data-table] td[data-selected] {
 	background: var(--accent);
 	font-weight: 600;
@@ -229,6 +248,9 @@
 	}
 	.demo-chart [data-arc-label] {
 		fill: Canvas;
+	}
+	.demo-chart [data-rule] {
+		color: CanvasText;
 	}
 	.demo-chart [data-point][data-focus-visible] {
 		stroke: Highlight;

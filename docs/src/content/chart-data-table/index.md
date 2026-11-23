@@ -45,6 +45,8 @@ An arc mark makes a table with one row for each slice, and a last column with th
 
 The first mark of the chart sets the form of the table.
 
+Each `Chart.Rule` adds a row to a `<tfoot>`. The header cell of the row is the label of the rule, and one cell with the value spans the other columns.
+
 The header of a column of values is the `xLabel` or the `yLabel` of the root. Without a label, it is the name of the field of the channel. Give `rowHeader` for a text of your own in the first column. A series without a name gets the name of the field of the value channel. A channel that is a function has no field name, thus its header is `x` or `y`.
 
 ## Visibility
@@ -69,6 +71,7 @@ The cell of the selected point has `aria-current="true"` and `data-selected`. In
 | Table                      | `data-data-table` | Empty.                        |
 | Table                      | `data-visibility` | `visible` or `screen-reader`. |
 | Cell of the selected point | `data-selected`   | `true`.                       |
+| Row of a rule              | `data-rule`       | Empty.                        |
 
 With `screen-reader`, the table has an inline style that removes it from the screen. Do not give it a `display` or a `position` in your CSS.
 
