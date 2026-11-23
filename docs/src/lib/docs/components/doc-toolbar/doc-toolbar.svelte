@@ -33,7 +33,18 @@
 	// The page's raw markdown, served in-app by /docs/[slug].md; and the source
 	// folder on GitHub.
 	const markdownUrl = $derived(`/docs/${slug}.md`);
-	const sourceUrl = $derived(`${REPO}/tree/${SOURCE_BRANCH}/${SOURCE_DIR}/${slug}`);
+	// A chart page is one part of the `chart` folder, and its slug has the `chart-` prefix.
+	// The two guides of the charts and the pages with their own name go to the folder that fits.
+	const CHART_FOLDERS: Record<string, string> = {
+		charts: 'chart',
+		'chart-accessibility': 'chart',
+		chart: 'chart/root',
+		'chart-axis-and-grid': 'chart/axis'
+	};
+	const folder = $derived(
+		CHART_FOLDERS[slug] ?? (slug.startsWith('chart-') ? `chart/${slug.slice(6)}` : slug)
+	);
+	const sourceUrl = $derived(`${REPO}/tree/${SOURCE_BRANCH}/${SOURCE_DIR}/${folder}`);
 
 	const iconButton = buttonVariants({ variant: 'outline', size: 'icon-sm' });
 	// `hk-button-link` opts the anchors out of the prose link styling (see
