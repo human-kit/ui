@@ -13,6 +13,7 @@ export { default as ChartDataTable } from './data-table/chart-data-table.svelte'
 export { default as ChartTooltip } from './tooltip/chart-tooltip.svelte';
 export { default as ChartAxis } from './axis/chart-axis.svelte';
 export { default as ChartGrid } from './grid/chart-grid.svelte';
+export { default as ChartRule } from './rule/chart-rule.svelte';
 
 export type {
 	Channel,
@@ -35,6 +36,7 @@ export type {
 	ChartTooltipProps,
 	ChartTooltipState,
 	ChartGridProps,
+	ChartRuleProps,
 	ChartTick,
 	FormatOptions,
 	Scale,

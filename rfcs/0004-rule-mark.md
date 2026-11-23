@@ -269,7 +269,76 @@ before this RFC.
 
 ## Prototype results
 
-None yet.
+Steps 1 to 6 are complete (2026-10-29). The NVDA test is not done yet.
+
+- `Chart.Rule` is in `packages/charts`. It registers with `ctx.rule(rule)`,
+  in a second list next to the marks. Thus `entries`, the legend and the
+  `ctx.marks[0]` of the data table do not see a rule.
+- A rule gives `extent()`, as a mark does. The root reads the extents of the
+  marks and of the rules in one pass. A category gives no extent, thus a rule
+  does not add a category to a band scale.
+- A rule gives `note(point)`, the text of `compare` for its value. The root
+  puts the notes at the end of the name, after the share of a slice.
+- The rule makes the id of its description from `$props.id()`. A counter in
+  the root made the root larger. Thus the ids are `chart-<id>-rule-<uid>`,
+  and not `chart-1-rule-0`.
+- The description is a `<desc>` in the group of the rule. In Chrome, the
+  accessibility tree gives the plot its name and the description "Three
+  months of sales. Target, Sales 130". The text of the line is not in the
+  tree. A test reads this tree through the Chrome DevTools Protocol.
+- The type of `compare` uses `ChartValue` for the point and for the value.
+  TypeScript accepts `point.y >= target` for two values of this type.
+
+### Changes from the RFC
+
+- **The server does not write the description.** The plot writes its
+  attributes before the rules in it start. Thus the server markup has no
+  `aria-describedby` for the rules. The client adds the ids when it hydrates
+  the chart. A page without JavaScript gets the rules from the data table
+  only.
+- **The root makes the change, not `Chart.Plot`.** The plot spreads
+  `ctx.labels`, thus the root adds the ids, and the plot has no change.
+- **The list of rules is a function, not a `$derived`.** On a server, a
+  `$derived` keeps the value of its first read. The plot reads the list
+  before the rules start, thus a `$derived` stayed empty for the data table.
+- **A value out of the range makes no line.** The RFC did not tell this
+  case. A value out of a domain that the user gives is not on the plot. Thus
+  it gets no description and no table row, as open question 8 decided for
+  the parity of the channels. A number on a band scale, or a category on a
+  continuous scale, also makes no line. In a development build, the rule
+  writes a warning.
+- **The `<tfoot>` is always in the table.** An `{#if}` around it added
+  about 45 bytes gzip. A `<tfoot>` with no rows is valid HTML, and it adds
+  nothing to the text that a screen reader reads.
+
+### Size
+
+Sizes from `pnpm size`, gzip, without the Svelte runtime:
+
+| Chart                                                     | Before   | After    | Change |
+| --------------------------------------------------------- | -------- | -------- | ------ |
+| A line with the keyboard operation                        | 5.65 kB  | 5.75 kB  | +99 B  |
+| Stacked bars on a band scale, axes and grid               | 8.61 kB  | 8.71 kB  | +102 B |
+| A line on a time scale, two axes and a grid               | 7.86 kB  | 7.95 kB  | +99 B  |
+| A scatter plot with two axes, a grid and a legend         | 7.80 kB  | 7.90 kB  | +103 B |
+| A donut with a legend and a data table                    | 8.42 kB  | 8.59 kB  | +180 B |
+| Stacked areas, axes, grid, legend, tooltip and data table | 11.26 kB | 11.46 kB | +203 B |
+| Bars with a target rule and a data table                  | —        | 9.29 kB  | new    |
+
+- The root adds about 100 B. That is at the limit of 0.1 kB.
+- The data table adds about 85 B. The size of the same bars with a data
+  table and no rule gives this number.
+- The rule itself is 572 B: the new fixture minus the same chart without the
+  rule. It is below the limit of 0.6 kB.
+- The fixtures with a data table grow by 0.18 kB and 0.2 kB. They get the
+  change to the root and the change to the data table. Thus the limit "in
+  0.1 kB of their sizes" cannot hold for them while each change is near
+  0.1 kB. The limit for an existing fixture must be 0.1 kB for each part
+  that changes.
+
+### Screen reader test
+
+The NVDA test is not done yet.
 
 ## Open questions
 

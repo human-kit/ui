@@ -21,7 +21,8 @@ Accessibility is the primary requirement of this library. A keyboard user and a 
 - The `<svg>` of `Chart.Plot` has `role="application"`, `aria-roledescription="chart"` and the accessible name of the chart.
 - Each series is a group with the name of the series.
 - Each point has `role="img"` and an accessible name with all of its values.
-- The paths, the axes, the grid lines and the legend have `aria-hidden="true"`. The names of the points and the data table give the same information.
+- The paths, the axes, the grid lines, the rules and the legend have `aria-hidden="true"`. The names of the points and the data table give the same information.
+- Each rule adds the id of a text with its label and its value to the `aria-describedby` of the plot.
 
 ## Screen readers
 
@@ -49,6 +50,8 @@ The plot is one tab stop. The focus moves with a roving `tabindex` over the poin
 
 The keys do not wrap. At the last point of a series, `ArrowRight` does nothing.
 
+The keyboard does not stop on a rule. A rule is a reference for the values, not a value.
+
 The horizontal arrows follow the direction of the x axis on the screen, not the direction of the text.
 
 A mark can have its categories on the y axis, as horizontal bars do. Then the vertical arrows move in the series, and the horizontal arrows move between the series.
@@ -68,6 +71,8 @@ With `xLabel` and `yLabel` on `Chart.Root`, each value comes after the label of 
 A slice of an arc mark adds its share of the total after the value: "Solar, Energy (GWh) 412, 37.9%".
 
 The name does not include the name of the field. A field name is a name in the code, for example `revenue_usd`. It is not a text for a user. When two marks show two fields of the same rows, give each mark a `name`. The name is the name of the series of the mark, thus a point is "2015, Cost, 40" and not "2015, 40".
+
+A rule with `compare` adds its text at the end of the name: "Mar, Sales 132, above target".
 
 A time scale writes a date as precise as the data. Dates that are all on the first of January show as "2025". Dates on the first of a month show as "March 2025".
 

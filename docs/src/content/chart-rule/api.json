@@ -1,0 +1,57 @@
+{
+	"component": "chart-rule",
+	"parts": [
+		{
+			"name": "Rule",
+			"description": "A rule: a line across the plot at a fixed value. It makes a `<g>` with a `<line>`, a `<text>` and a `<desc>`.",
+			"element": null,
+			"props": [
+				{
+					"name": "value",
+					"type": "ChartValue",
+					"required": true,
+					"default": null,
+					"description": "The value of the rule: a number, a date, or a category of a band scale. A number or a date\ngoes into the domain of its axis. A value with no place on the scale makes no line."
+				},
+				{
+					"name": "axis",
+					"type": "'x' | 'y'",
+					"required": false,
+					"default": "'y'",
+					"description": "The axis of the value. The default is `y`: a horizontal line. `x` makes a vertical line."
+				},
+				{
+					"name": "label",
+					"type": "string",
+					"required": true,
+					"default": null,
+					"description": "The text of the rule, for example \"Target\". The plot shows it at the end of the line. The\ndescription of the plot and the data table give it with the value."
+				},
+				{
+					"name": "compare",
+					"type": "(point: ChartPoint, value: ChartValue) => string",
+					"required": false,
+					"default": null,
+					"description": "A function of a point and the value of the rule. Its text goes at the end of the name of the\npoint, for example \"above target\". An empty text adds nothing."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the group of the rule."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-rule",
+					"description": "On the group of the rule."
+				},
+				{
+					"name": "data-axis",
+					"description": "On the group of the rule. The value is the `axis`."
+				}
+			]
+		}
+	]
+}

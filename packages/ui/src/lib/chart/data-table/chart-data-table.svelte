@@ -123,4 +123,12 @@
 			</tr>
 		{/each}
 	</tbody>
+	<!-- A rule is not a row of the data: its row is in the footer, and its value spans the columns. -->
+	<tfoot>
+		{#each ctx.rules as rule, i (i)}
+			<tr data-rule=""
+				><th scope="row">{rule.label}</th><td colspan={table.head.length - 1}>{rule.text}</td></tr
+			>
+		{/each}
+	</tfoot>
 </table>

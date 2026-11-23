@@ -242,6 +242,30 @@ export type ChartGridProps = {
 	class?: string;
 };
 
+export type ChartRuleProps = {
+	/**
+	 * The value of the rule: a number, a date, or a category of a band scale. A number or a date
+	 * goes into the domain of its axis. A value with no place on the scale makes no line.
+	 */
+	value: ChartValue;
+	/**
+	 * The axis of the value. The default is `y`: a horizontal line. `x` makes a vertical line.
+	 */
+	axis?: 'x' | 'y';
+	/**
+	 * The text of the rule, for example "Target". The plot shows it at the end of the line. The
+	 * description of the plot and the data table give it with the value.
+	 */
+	label: string;
+	/**
+	 * A function of a point and the value of the rule. Its text goes at the end of the name of the
+	 * point, for example "above target". An empty text adds nothing.
+	 */
+	compare?: (point: ChartPoint, value: ChartValue) => string;
+	/** The CSS class names of the group of the rule. */
+	class?: string;
+};
+
 export type ChartBarProps<T> = ChartMarkData<T> & {
 	/**
 	 * The name of the series of this mark, when it has no series channel. The legend, the names of
