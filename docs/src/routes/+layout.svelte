@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@fontsource-variable/geist';
-	import '@fontsource-variable/roboto-serif';
+	import '@fontsource-variable/geist-mono';
 	import '../app.css';
 	import { dev } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
