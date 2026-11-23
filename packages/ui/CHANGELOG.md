@@ -1,5 +1,11 @@
 # @human-kit/ui
 
+## 1.7.0
+
+### Minor Changes
+
+- [#171](https://github.com/human-kit/ui/pull/171) [`6d087b7`](https://github.com/human-kit/ui/commit/6d087b799d8d07bfebdab6441134f4bb0b41c972) Thanks [@Agustin-Delgado](https://github.com/Agustin-Delgado)! - Add `Chart.Rule`, a reference line across the plot at a fixed value, for example a target or an average. The keyboard does not stop on a rule. Its label and its value go into the description of the plot and into a footer row of the data table. `compare` adds a comparison with the rule to the name of each point.
+
 ## 1.6.0
 
 ### Minor Changes
