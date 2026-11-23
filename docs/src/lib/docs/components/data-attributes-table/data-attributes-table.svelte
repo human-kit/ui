@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ApiDataAttribute } from '../../api-types.js';
+	import CodeText from '../code-text/code-text.svelte';
 
 	interface Props {
 		attributes: ApiDataAttribute[];
@@ -43,7 +44,9 @@
 					<span class="w-fit rounded bg-accent px-1.5 py-0.5 font-mono text-xs text-foreground">
 						{attribute.name}
 					</span>
-					<span class="text-sm text-subtle-foreground">{attribute.description}</span>
+					<span class="text-sm text-subtle-foreground"
+						><CodeText text={attribute.description} /></span
+					>
 				</div>
 			{/each}
 		</div>

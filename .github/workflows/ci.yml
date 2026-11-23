@@ -118,6 +118,33 @@ jobs:
         run: |
           node --input-type=module -e "await import('./dist/primitives/index.js'); await import('./dist/utils/index.js');"
 
+  size:
+    name: Chart size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The size of a set of fixed charts, without the Svelte runtime. The summary of
+      # the run shows it, so a change that adds bytes to a chart shows in its pull request.
+      - name: Measure the size of the chart fixtures
+        run: |
+          {
+            echo '## Chart size'
+            echo
+            echo '```'
+            node scripts/chart-size.mjs
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   changeset-check:
     name: Changeset Check
     runs-on: ubuntu-latest

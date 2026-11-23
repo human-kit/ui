@@ -1,0 +1,92 @@
+{
+	"component": "chart-axis-and-grid",
+	"parts": [
+		{
+			"name": "Axis",
+			"description": "The ticks, the tick labels and the label of one axis.",
+			"element": null,
+			"props": [
+				{
+					"name": "position",
+					"type": "'top' | 'right' | 'bottom' | 'left'",
+					"required": false,
+					"default": "'bottom'",
+					"description": "The side of the plot. The default is `bottom`. `top` and `bottom` show the x scale."
+				},
+				{
+					"name": "label",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The text of the axis, for example the name and the unit of the values."
+				},
+				{
+					"name": "tickSize",
+					"type": "number",
+					"required": false,
+					"default": "6",
+					"description": "The length of a tick line, in pixels. The default is 6."
+				},
+				{
+					"name": "tickPadding",
+					"type": "number",
+					"required": false,
+					"default": "3",
+					"description": "The distance between a tick line and its label, in pixels. The default is 3."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the group of the axis."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-axis",
+					"description": "On the group of the axis. The value is the `position`."
+				},
+				{
+					"name": "data-axis-line",
+					"description": "On the line along the plot."
+				},
+				{
+					"name": "data-tick",
+					"description": "On the group of each tick: its line and its label."
+				},
+				{
+					"name": "data-axis-label",
+					"description": "On the text of the `label`."
+				}
+			]
+		},
+		{
+			"name": "Grid",
+			"description": "The grid lines of one axis, one line at each tick.",
+			"element": null,
+			"props": [
+				{
+					"name": "axis",
+					"type": "'x' | 'y'",
+					"required": false,
+					"default": "'y'",
+					"description": "The axis whose ticks give the lines. The default is `y`: horizontal lines."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the group of the grid."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-grid",
+					"description": "On the group of the lines. The value is the `axis`."
+				}
+			]
+		}
+	]
+}

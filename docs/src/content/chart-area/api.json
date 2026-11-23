@@ -1,0 +1,120 @@
+{
+	"component": "chart-area",
+	"parts": [
+		{
+			"name": "Area",
+			"description": "An area mark. It makes one filled `<path>` and one line per series. The points show only when they have the focus.",
+			"element": null,
+			"props": [
+				{
+					"name": "data",
+					"type": "readonly T[]",
+					"required": false,
+					"default": null,
+					"description": "The rows of this mark. Without it, the mark uses the data of the root."
+				},
+				{
+					"name": "x",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The x channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "y",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The y channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "series",
+					"type": "Channel<T, string>",
+					"required": false,
+					"default": null,
+					"description": "The series channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "key",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The key channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the series of this mark, when it has no series channel. The legend, the names of\nthe points and the data table show it. Give a name to each mark when two marks show two\nfields, for example the revenue and the cost."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the group of the mark."
+				},
+				{
+					"name": "stacked",
+					"type": "boolean",
+					"required": false,
+					"default": "false",
+					"description": "Puts the series one on the other. The default is `false`: each area starts at zero."
+				},
+				{
+					"name": "r",
+					"type": "number",
+					"required": false,
+					"default": "0",
+					"description": "The radius of the point of each row, in pixels. The default is 0: the points are hidden."
+				},
+				{
+					"name": "focusRadius",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "The radius of the point that has the focus, in pixels. The default is 4."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-mark",
+					"description": "On the group of the mark. The value is `area`."
+				},
+				{
+					"name": "data-stacked",
+					"description": "On the group of the mark, when `stacked` is `true`."
+				},
+				{
+					"name": "data-series",
+					"description": "On the group of each series. The value is the name of the series."
+				},
+				{
+					"name": "data-area",
+					"description": "On the filled path of each series."
+				},
+				{
+					"name": "data-line",
+					"description": "On the top line of each series."
+				},
+				{
+					"name": "data-point",
+					"description": "On each point: a circle, a rect for a bar, or a path for a dot or a slice."
+				},
+				{
+					"name": "data-focused",
+					"description": "On the point that has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "On the focused point, when the focus came from the keyboard."
+				},
+				{
+					"name": "data-selected",
+					"description": "On the selected point. The point also has `aria-current=\"true\"`."
+				}
+			]
+		}
+	]
+}

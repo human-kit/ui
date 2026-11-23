@@ -1,0 +1,236 @@
+/*
+ * The styles of the chart demos. The chart parts are headless: they set no color,
+ * no font and no size. Each demo puts `class="demo-chart"` on `Chart.Root`, and
+ * these rules give it a look that follows the light and the dark theme of the
+ * site. They read only the `data-*` attributes that the parts set.
+ *
+ * Unlayered on purpose, so they win over the `.hd-prose` rules (a layer) that
+ * would otherwise give the legend list bullets and the table its prose look.
+ */
+.demo-chart {
+	--chart-1: oklch(0.55 0.2 260);
+	--chart-2: oklch(0.65 0.17 55);
+	--chart-3: oklch(0.6 0.14 160);
+	--chart-4: oklch(0.58 0.2 15);
+
+	width: 100%;
+	margin: 0;
+	font-size: 0.75rem;
+	color: var(--muted-foreground);
+}
+
+.dark .demo-chart {
+	--chart-1: oklch(0.72 0.14 255);
+	--chart-2: oklch(0.8 0.14 75);
+	--chart-3: oklch(0.78 0.13 165);
+	--chart-4: oklch(0.72 0.16 15);
+}
+
+.demo-chart figcaption {
+	margin-bottom: 0.75rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--foreground);
+}
+
+.demo-chart svg {
+	display: block;
+	overflow: visible;
+}
+
+/* One color per series, in the order of the series. The legend uses the same order. */
+.demo-chart :is([data-mark] > g, [data-legend] > li):nth-child(4n + 1) {
+	--series: var(--chart-1);
+}
+.demo-chart :is([data-mark] > g, [data-legend] > li):nth-child(4n + 2) {
+	--series: var(--chart-2);
+}
+.demo-chart :is([data-mark] > g, [data-legend] > li):nth-child(4n + 3) {
+	--series: var(--chart-3);
+}
+.demo-chart :is([data-mark] > g, [data-legend] > li):nth-child(4n + 4) {
+	--series: var(--chart-4);
+}
+.demo-chart [data-mark] > g {
+	color: var(--series);
+}
+
+/* A slice gets the color of its place, as the legend item of its category does. */
+.demo-chart [data-mark='arc'] [data-point]:nth-child(4n + 1) {
+	color: var(--chart-1);
+}
+.demo-chart [data-mark='arc'] [data-point]:nth-child(4n + 2) {
+	color: var(--chart-2);
+}
+.demo-chart [data-mark='arc'] [data-point]:nth-child(4n + 3) {
+	color: var(--chart-3);
+}
+.demo-chart [data-mark='arc'] [data-point]:nth-child(4n + 4) {
+	color: var(--chart-4);
+}
+.demo-chart [data-mark='arc'] [data-point]:not([data-focus-visible], [data-selected]) {
+	stroke: var(--background);
+	stroke-width: 1.5;
+}
+
+.demo-chart [data-arc-label] {
+	fill: var(--background);
+	font-weight: 600;
+}
+
+.demo-chart [data-grid] {
+	color: var(--border);
+}
+
+.demo-chart [data-axis] {
+	color: var(--muted-foreground);
+}
+
+.demo-chart [data-axis-line],
+.demo-chart [data-tick] line {
+	color: var(--border);
+}
+
+.demo-chart [data-axis-label] {
+	fill: var(--subtle-foreground);
+}
+
+.demo-chart [data-line] {
+	stroke-width: 2;
+	stroke-linejoin: round;
+}
+
+.demo-chart [data-area] {
+	opacity: 0.2;
+}
+
+.demo-chart [data-point] {
+	outline: none;
+	cursor: pointer;
+}
+
+.demo-chart [data-mark='line'] [data-point][data-focused] {
+	r: 5;
+}
+
+.demo-chart [data-bar][data-focused] {
+	opacity: 0.8;
+}
+
+/* The focus ring shows only after a key press, as `data-focus-visible` says. */
+.demo-chart [data-point][data-focus-visible] {
+	stroke: var(--foreground);
+	stroke-width: 2;
+}
+
+.demo-chart [data-point][data-selected] {
+	stroke: var(--foreground);
+	stroke-width: 2;
+	stroke-dasharray: 3 2;
+}
+
+.demo-chart [data-legend] {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	margin: 0.75rem 0 0;
+	padding: 0;
+	list-style: none;
+	color: var(--subtle-foreground);
+}
+
+.demo-chart [data-legend-item] {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	margin: 0;
+}
+
+.demo-chart [data-swatch] {
+	width: 0.75rem;
+	height: 0.75rem;
+	border-radius: 2px;
+	background: var(--series);
+}
+
+.demo-chart [data-symbol] [data-swatch] {
+	display: flex;
+	background: none;
+	color: var(--series);
+}
+
+.demo-chart [data-swatch] svg {
+	width: 100%;
+	height: 100%;
+}
+
+.demo-chart [data-tooltip] {
+	z-index: 1;
+	padding: 0.375rem 0.5rem;
+	border-radius: 0.375rem;
+	background: var(--foreground);
+	color: var(--background);
+	white-space: nowrap;
+	line-height: 1.4;
+	box-shadow: 0 4px 12px oklch(0 0 0 / 0.15);
+}
+
+.demo-chart [data-tooltip-key] {
+	font-weight: 600;
+}
+
+.demo-chart [data-tooltip-series] {
+	margin-right: 0.25rem;
+	opacity: 0.75;
+}
+
+.demo-chart [data-data-table][data-visibility='visible'] {
+	width: 100%;
+	margin-top: 1rem;
+	border-collapse: collapse;
+	font-size: 0.75rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.demo-chart [data-data-table] :is(th, td) {
+	padding: 0.25rem 0.5rem;
+	border-bottom: 1px solid var(--border-subtle);
+	text-align: right;
+	font-weight: 400;
+	color: var(--subtle-foreground);
+}
+
+.demo-chart [data-data-table] thead th {
+	font-weight: 600;
+	color: var(--foreground);
+}
+
+.demo-chart [data-data-table] :is(th[scope='row'], thead th:first-child) {
+	text-align: left;
+}
+
+.demo-chart [data-data-table] td[data-selected] {
+	background: var(--accent);
+	font-weight: 600;
+	color: var(--foreground);
+}
+
+/* In forced colors, the system colors replace the series colors. */
+@media (forced-colors: active) {
+	.demo-chart [data-mark] > g {
+		color: CanvasText;
+	}
+	.demo-chart [data-swatch] {
+		background: CanvasText;
+	}
+	.demo-chart [data-mark='arc'] [data-point] {
+		color: CanvasText;
+		stroke: Canvas;
+	}
+	.demo-chart [data-arc-label] {
+		fill: Canvas;
+	}
+	.demo-chart [data-point][data-focus-visible] {
+		stroke: Highlight;
+	}
+}

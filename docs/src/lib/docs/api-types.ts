@@ -17,6 +17,12 @@ export interface ApiDataAttribute {
 export interface ApiPart {
 	name: string;
 	description: string;
+	/**
+	 * The element that a chart part makes, when the part also takes the attributes of
+	 * that element. `null` for a chart part that takes only its own props. The other
+	 * components do not write it: each of their parts takes the native attributes.
+	 */
+	element?: string | null;
 	props: ApiProp[];
 	dataAttributes: ApiDataAttribute[];
 }

@@ -1,0 +1,54 @@
+{
+	"component": "chart-data-table",
+	"parts": [
+		{
+			"name": "DataTable",
+			"description": "A `<table>` with all of the values of the chart: one row per category or x value, and one column per series.",
+			"element": "table",
+			"props": [
+				{
+					"name": "visibility",
+					"type": "'visible' | 'screen-reader'",
+					"required": false,
+					"default": "'screen-reader'",
+					"description": "`visible` shows the table. `screen-reader` keeps it only in the accessibility tree. The\ndefault is `screen-reader`."
+				},
+				{
+					"name": "caption",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The caption of the table. Without it, the `Chart.Title` names the table."
+				},
+				{
+					"name": "rowHeader",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The header of the first column. It is the column of the categories or of the x values. In a\ntable with a row per point, it is the column of the series. The default is the label or the\nname of the field."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the table."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-data-table",
+					"description": "On the table."
+				},
+				{
+					"name": "data-visibility",
+					"description": "On the table: `visible` or `screen-reader`."
+				},
+				{
+					"name": "data-selected",
+					"description": "On the cell of the selected point, or on the row of a selected dot or slice."
+				}
+			]
+		}
+	]
+}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import CodeText from '../code-text/code-text.svelte';
 	import PropsTable from '../props-table/props-table.svelte';
 	import DataAttributesTable from '../data-attributes-table/data-attributes-table.svelte';
 	import { registerHeadings } from '../toc/toc-registry.svelte.js';
@@ -27,7 +28,7 @@
 {#each api.parts as part (part.name)}
 	<h3 id="api-{part.name.toLowerCase()}">{part.name}</h3>
 	{#if part.description}
-		<p>{part.description}</p>
+		<p><CodeText text={part.description} /></p>
 	{/if}
 
 	{#if part.props.length > 0}
@@ -35,7 +36,12 @@
 			<PropsTable part={part.name.toLowerCase()} props={part.props} />
 		</div>
 		<p class="mt-2 text-xs text-muted-foreground">
-			* required. Native HTML attributes of the underlying element are also accepted.
+			* required.
+			{#if part.element}
+				The part also accepts the attributes of the <code>&lt;{part.element}&gt;</code> element.
+			{:else if part.element === undefined}
+				Native HTML attributes of the underlying element are also accepted.
+			{/if}
 		</p>
 	{/if}
 

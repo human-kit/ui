@@ -1,0 +1,52 @@
+{
+	"component": "chart-legend",
+	"parts": [
+		{
+			"name": "Legend",
+			"description": "A list of the series of the chart. It makes a `<ul>` with one item per series.",
+			"element": "ul",
+			"props": [
+				{
+					"name": "children",
+					"type": "Snippet<[{ name: string; index: number; symbol: ChartSymbol | undefined }]>",
+					"required": false,
+					"default": null,
+					"description": "The content of an item. It receives the name and the index of the series, and the shape of its\ndots when a dot mark shows the series. Without it, an item shows a `data-swatch` element and\nthe name. For a series with a shape, the swatch holds an SVG of the shape."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the list."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-legend",
+					"description": "On the list."
+				},
+				{
+					"name": "data-legend-item",
+					"description": "On each item."
+				},
+				{
+					"name": "data-series",
+					"description": "On each item of a series. The value is the name of the series."
+				},
+				{
+					"name": "data-category",
+					"description": "On each item of an arc mark, in place of `data-series`. The value is the category."
+				},
+				{
+					"name": "data-symbol",
+					"description": "On each item of a series with a shape. The value is the name of the shape."
+				},
+				{
+					"name": "data-swatch",
+					"description": "On the element at the start of an item without children. It holds an SVG of the shape of a series with a shape."
+				}
+			]
+		}
+	]
+}

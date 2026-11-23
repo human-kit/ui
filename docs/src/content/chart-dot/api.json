@@ -1,0 +1,105 @@
+{
+	"component": "chart-dot",
+	"parts": [
+		{
+			"name": "Dot",
+			"description": "A dot mark. It makes one `<path>` per row, in the shape of its series.",
+			"element": null,
+			"props": [
+				{
+					"name": "data",
+					"type": "readonly T[]",
+					"required": false,
+					"default": null,
+					"description": "The rows of this mark. Without it, the mark uses the data of the root."
+				},
+				{
+					"name": "x",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The x channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "y",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The y channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "series",
+					"type": "Channel<T, string>",
+					"required": false,
+					"default": null,
+					"description": "The series channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "key",
+					"type": "Channel<T, ChartValue>",
+					"required": false,
+					"default": null,
+					"description": "The key channel of this mark. It needs `data`. Without it, the mark uses the channel of the root."
+				},
+				{
+					"name": "name",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The name of the series of this mark, when it has no series channel. The legend, the names of\nthe points and the data table show it."
+				},
+				{
+					"name": "r",
+					"type": "number",
+					"required": false,
+					"default": "4",
+					"description": "The radius of a circle, in pixels. The other shapes have the same area as that circle. The\ndefault is 4."
+				},
+				{
+					"name": "symbol",
+					"type": "'auto' | ChartSymbol",
+					"required": false,
+					"default": "'auto'",
+					"description": "The shape of the dots. `auto` gives each series the next shape of `circle`, `square`,\n`triangle`, `diamond`, `cross` and `triangle-down`, thus color does not identify a series\nalone. A shape name gives all of the series that shape. The default is `auto`."
+				},
+				{
+					"name": "class",
+					"type": "string",
+					"required": false,
+					"default": null,
+					"description": "The CSS class names of the group of the mark."
+				}
+			],
+			"dataAttributes": [
+				{
+					"name": "data-mark",
+					"description": "On the group of the mark. The value is `dot`."
+				},
+				{
+					"name": "data-series",
+					"description": "On the group of each series. The value is the name of the series."
+				},
+				{
+					"name": "data-symbol",
+					"description": "On the group of each series. The value is the name of the shape."
+				},
+				{
+					"name": "data-point",
+					"description": "On each point: a circle, a rect for a bar, or a path for a dot or a slice."
+				},
+				{
+					"name": "data-focused",
+					"description": "On the point that has the focus."
+				},
+				{
+					"name": "data-focus-visible",
+					"description": "On the focused point, when the focus came from the keyboard."
+				},
+				{
+					"name": "data-selected",
+					"description": "On the selected point. The point also has `aria-current=\"true\"`."
+				}
+			]
+		}
+	]
+}
