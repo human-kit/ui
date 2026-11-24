@@ -21,6 +21,26 @@ The charts are a preview. Their API can change in a minor version of the package
 
 The charts are in the package, and they add no dependency. Each scale has a subpath export. Thus your bundler includes only the parts that you import.
 
+## Moving from @human-kit/charts
+
+The charts were the package `@human-kit/charts`. That package gets no new versions. To move to `@human-kit/ui`, do these steps:
+
+1. Remove `@human-kit/charts` and install `@human-kit/ui`.
+2. Change the import of `Chart` from `@human-kit/charts` to `@human-kit/ui`.
+3. Change each import from `@human-kit/charts/scales/` to `@human-kit/ui/chart/scales/`.
+
+```ts
+// Before
+import { Chart } from '@human-kit/charts';
+import { scaleLinear } from '@human-kit/charts/scales/linear';
+
+// After
+import { Chart } from '@human-kit/ui';
+import { scaleLinear } from '@human-kit/ui/chart/scales/linear';
+```
+
+The parts and their props did not change.
+
 ## Your first chart
 
 A chart is a set of parts in the `Chart` namespace:
