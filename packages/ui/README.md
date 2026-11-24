@@ -48,6 +48,15 @@ or from its subpath for the smallest bundle:
 Each component page in the documentation gives the anatomy, the data
 attributes, and the full API reference.
 
+## The human-kit family
+
+`@human-kit/ui` is one of the [human-kit](https://human-kit.com) libraries for
+Svelte 5.
+
+- [human-kit design](https://design.human-kit.com) gives you the same parts,
+  styled and finished, to copy into your app.
+- [human-kit.com](https://human-kit.com) presents the family.
+
 ## License
 
 [MIT](./LICENSE) © Agustin Delgado

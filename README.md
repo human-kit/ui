@@ -75,6 +75,15 @@ each version. The full history is in the
   issue.
 - [Table performance benchmarks](./BENCHMARKS.md)
 
+## The human-kit family
+
+`@human-kit/ui` is one of the [human-kit](https://human-kit.com) libraries for
+Svelte 5.
+
+- [human-kit design](https://design.human-kit.com) gives you the same parts,
+  styled and finished, to copy into your app.
+- [human-kit.com](https://human-kit.com) presents the family.
+
 ## License
 
 [MIT](./LICENSE) © Agustin Delgado
