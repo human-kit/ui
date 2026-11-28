@@ -11,6 +11,8 @@ build
 **/.svelte-kit
 **/dist
 **/build
+# The docs in the npm package, written by scripts/gen-package-docs.mjs.
+packages/ui/docs
 
 *storybook.log
 storybook-static

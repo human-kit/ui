@@ -118,6 +118,66 @@ function apiMarkdown(api: ComponentApi): string {
 	return api.parts.map(partSection).join('\n\n');
 }
 
+/** Not a table cell, so a `|` stays as it is. */
+function oneLine(text: string): string {
+	return text.replace(/\s*\n\s*/g, ' ').trim();
+}
+
+/**
+ * One part in a few lines: the props as `name: type = default`, then the data
+ * attributes by name. No descriptions, which are most of the size of the full
+ * tables; the per-page markdown keeps them.
+ */
+function compactPart(part: ApiPart): string {
+	const lines = [`### ${part.name}`];
+	if (part.props.length > 0) {
+		const props = part.props.map((prop) => {
+			const optional = prop.required ? '' : '?';
+			const def = prop.default ? ` = ${oneLine(prop.default)}` : '';
+			return `\`${prop.name}${optional}: ${oneLine(prop.type)}${def}\``;
+		});
+		lines.push(`Props: ${props.join(', ')}`);
+	}
+	if (part.dataAttributes.length > 0) {
+		lines.push(`Data attributes: ${part.dataAttributes.map((a) => `\`${a.name}\``).join(', ')}`);
+	}
+	return lines.join('\n');
+}
+
+/** The section that starts at `## <heading>`, up to the next h2. */
+function section(body: string, heading: string): string | null {
+	const match = body.match(new RegExp(`^## ${heading}\\n([\\s\\S]*?)(?=^## |(?![\\s\\S]))`, 'm'));
+	return match ? match[1].trim() : null;
+}
+
+/**
+ * A short form of one docs page for `/llms-small.txt`: the title, the
+ * description, the anatomy example, and the API with no descriptions. About a
+ * seventh of the size of the full page, so the whole library (about 30k tokens)
+ * fits in one context window. `fullPage` is the link to the full text of the page. Returns null
+ * for a slug with no markdown behind it.
+ */
+export function pageSummary(slug: string, fullPage: string): string | null {
+	const source = pages[`/src/content/${slug}/index.md`];
+	if (source === undefined) return null;
+
+	const imports = importMap(source, slug);
+	const { title, description, body } = parsePageSource(source);
+	const blocks = [`## ${title}`];
+	if (description) blocks.push(description);
+
+	const anatomy = section(body, 'Anatomy')?.match(/```svelte\n[\s\S]*?```/)?.[0];
+	if (anatomy) blocks.push(anatomy);
+
+	for (const [, name] of body.matchAll(/<ApiReference\s+api=\{([\w$]+)\}\s*\/>/g)) {
+		const api = apis[imports[name]]?.default;
+		if (api) blocks.push(api.parts.map(compactPart).join('\n\n'));
+	}
+
+	blocks.push(`Full page: ${fullPage}`);
+	return blocks.join('\n\n');
+}
+
 function fence(lang: string, code: string): string {
 	return `\`\`\`${lang}\n${code.trim()}\n\`\`\``;
 }

@@ -16,6 +16,7 @@ export const nav: NavGroup[] = [
 		items: [
 			{ slug: 'quick-start', title: 'Quick Start' },
 			{ slug: 'accessibility', title: 'Accessibility' },
+			{ slug: 'ai-agents', title: 'AI agents' },
 			{ slug: 'releases', title: 'Releases' },
 			{ slug: 'about', title: 'About' }
 		]

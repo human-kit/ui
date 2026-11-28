@@ -5,8 +5,12 @@
 	import { buttonVariants } from '../button/recipe';
 	import { Menu } from '../menu';
 	import { nav } from '../../nav.js';
+	import Check from '../icons/check.svelte';
+	import Copy from '../icons/copy.svelte';
 	import Github from '../icons/github.svelte';
 	import Markdown from '../icons/markdown.svelte';
+	import { absolute } from '../../site.js';
+	import { track } from '$lib/docs/telemetry';
 
 	// Repository the component sources live in. NOTE: `SOURCE_DIR` resolves once
 	// the packages/svelte → packages/ui rename lands on `main`.
@@ -56,6 +60,31 @@
 	}
 	function openMarkdown() {
 		window.location.href = markdownUrl;
+	}
+
+	// The markdown of the page, for a reader who pastes it into a chat with an
+	// assistant. The item stays open and shows "Copied" for a moment, the same
+	// feedback as the copy buttons of the code blocks.
+	let copied = $state(false);
+	let copiedTimeout: ReturnType<typeof setTimeout>;
+	async function copyMarkdown() {
+		const response = await fetch(markdownUrl);
+		if (!response.ok) return;
+		await navigator.clipboard.writeText(await response.text());
+		copied = true;
+		clearTimeout(copiedTimeout);
+		copiedTimeout = setTimeout(() => (copied = false), 1500);
+		track('copy', { source: 'page-markdown', detail: slug });
+	}
+
+	// Opens a new chat that starts from this page. The assistant reads the
+	// markdown twin, so the prompt names that URL and not the HTML page.
+	function assistantPrompt(): string {
+		return `Read ${absolute(markdownUrl)}. It is a page of the documentation of @human-kit/ui, a library of headless components for Svelte 5. Then help me with my questions about it.`;
+	}
+	function openIn(base: string) {
+		const url = `${base}${encodeURIComponent(assistantPrompt())}`;
+		window.open(url, '_blank', 'noopener,noreferrer');
 	}
 </script>
 
@@ -111,10 +140,16 @@
 				<Ellipsis />
 			</Menu.Trigger>
 			<Menu.Content placement="bottom-end" overlay={false}>
+				<Menu.Item onAction={copyMarkdown} closeOnSelect={false}>
+					{#if copied}<Check />{:else}<Copy />{/if}
+					{copied ? 'Copied' : 'Copy page as Markdown'}
+				</Menu.Item>
 				<Menu.Item onAction={openMarkdown}>
 					<Markdown />
 					View as Markdown
 				</Menu.Item>
+				<Menu.Item onAction={() => openIn('https://claude.ai/new?q=')}>Open in Claude</Menu.Item>
+				<Menu.Item onAction={() => openIn('https://chatgpt.com/?q=')}>Open in ChatGPT</Menu.Item>
 				<Menu.Item onAction={openSource}>
 					<Github />
 					View source
