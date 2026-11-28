@@ -1,5 +1,7 @@
 # GitHub Copilot Instructions
 
+`AGENTS.md` at the root of the repository has the same rules for each coding agent. Keep the two files in agreement.
+
 ## Project Map
 
 - This is a pnpm monorepo: publishable library in `packages/ui`, docs/playground app in `docs`.

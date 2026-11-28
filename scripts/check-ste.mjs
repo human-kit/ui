@@ -201,7 +201,13 @@ function checkMarkdown(file, source) {
 	masked.forEach((block, index) => checkProse(file, 'prose', block, plain[index] ?? block));
 }
 
-for (const file of ['README.md', 'packages/ui/README.md']) {
+for (const file of [
+	'README.md',
+	'packages/ui/README.md',
+	'AGENTS.md',
+	'skills/human-kit-ui/SKILL.md',
+	'packages/mcp/README.md'
+]) {
 	const path = resolve(root, file);
 	if (!existsSync(path)) continue;
 	checkMarkdown(file, readFileSync(path, 'utf8'));

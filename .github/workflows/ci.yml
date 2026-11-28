@@ -93,6 +93,9 @@ jobs:
 
       - run: pnpm run test -- --run
 
+      # The MCP server has its own tests on `node:test`. They need no browser.
+      - run: pnpm --filter @human-kit/mcp test
+
   build:
     name: Build
     runs-on: ubuntu-latest

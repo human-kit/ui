@@ -24,7 +24,13 @@ describe('DocToolbar', () => {
 			.poll(() =>
 				[...document.querySelectorAll('[role="menuitem"]')].map((i) => i.textContent?.trim())
 			)
-			.toEqual(['View as Markdown', 'View source']);
+			.toEqual([
+				'Copy page as Markdown',
+				'View as Markdown',
+				'Open in Claude',
+				'Open in ChatGPT',
+				'View source'
+			]);
 	});
 
 	it('points the markdown action at the in-app raw markdown route via a real navigation', async () => {
@@ -39,5 +45,31 @@ describe('DocToolbar', () => {
 		);
 		expect(labels).toContain('View as Markdown');
 		expect(labels).toContain('View source');
+	});
+
+	it('opens a new chat that reads the markdown twin of the page', async () => {
+		setPage({ params: { slug: 'dialog' } });
+		const opened: string[] = [];
+		const original = window.open;
+		window.open = ((url: string) => {
+			opened.push(url);
+			return null;
+		}) as typeof window.open;
+		try {
+			render(DocToolbar);
+			await userEvent.click(document.querySelector('button[aria-label="Page options"]')!);
+			const claude = () =>
+				[...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find(
+					(i) => i.textContent?.trim() === 'Open in Claude'
+				);
+			await expect.poll(claude).toBeDefined();
+			await userEvent.click(claude()!);
+			await expect.poll(() => opened.length).toBe(1);
+			const url = new URL(opened[0]);
+			expect(url.origin).toBe('https://claude.ai');
+			expect(url.searchParams.get('q')).toContain('https://ui.human-kit.com/docs/dialog.md');
+		} finally {
+			window.open = original;
+		}
 	});
 });
